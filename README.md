@@ -1,5 +1,10 @@
 # appwrite-console-poc
 
+This is a PoC that was a result of about 2 hours coding, investigating a possible structure of the new console.
+
+For simplicity I used [Pico CSS](https://picocss.com/) and didn't focus on styling at all.
+
+Therefore, Pico CSS is the only Dependency that got added beside necessary ones from Svelte and Developer Tooling (Sass, Linter, Formatter, etc).
 ## Structure
 
 ```
