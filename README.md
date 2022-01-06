@@ -13,7 +13,7 @@ Therefore, Pico CSS is the only Dependency that got added beside necessary ones 
 │   │   ├── components                  // Re-usable components (with more components they will also be structured inside)
 │   │   ├── layout                      // Global components for the layout (Nav/Content/Container)
 │   │   └── stores                      // Global stores (state management)
-│   └├── routes
+│   └─── routes
 │       ├── console                     // Routes that need authentication
 │       │   └──[project]
 │       │       ├── database            // Database Service
