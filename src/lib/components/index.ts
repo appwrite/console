@@ -1,0 +1,9 @@
+export { default as Button } from './button.svelte';
+export { default as InputEmail } from './inputEmail.svelte';
+export { default as InputPassword } from './inputPassword.svelte';
+export { default as InputText } from './inputText.svelte';
+export { default as InputNumber } from './inputNumber.svelte';
+export { default as InputBoolean } from './inputBoolean.svelte';
+export { default as Modal } from './modal.svelte';
+export { default as Table } from './table.svelte';
+export { default as Pagination } from './pagination.svelte';
