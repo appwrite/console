@@ -10,12 +10,12 @@
 	const limit = 25;
 
 	const project = $page.params.project;
-	const getUsers = () => sdkForProject.users.list(search, limit, offset);
+	const getTeams = () => sdkForProject.teams.list(search, limit, offset);
 	const doSearch = () => {
 		offset = 0;
-		request = getUsers();
+		request = getTeams();
 	};
-	let request = getUsers();
+	let request = getTeams();
 </script>
 
 <form on:submit|preventDefault={doSearch}>
@@ -28,17 +28,17 @@
 		<Table
 			columns={[
 				{ key: 'name', title: 'Name' },
-				{ key: 'email', title: 'E-Mail' }
+				{ key: 'sum', title: 'Members' }
 			]}
-			data={response.users}
-			anchor={`/console/${project}/users/user/:$id`}
+			data={response.teams}
+			anchor={`/console/${project}/users/:$id`}
 			anchorReplace={{
 				$id: ':$id'
 			}}
 		/>
-		<Pagination {limit} bind:offset sum={response.sum} on:change={() => (request = getUsers())} />
+		<Pagination {limit} bind:offset sum={response.sum} on:change={() => (request = getTeams())} />
 	{/await}
 </section>
 
-<Button on:click={() => (showCreate = true)}>Create User</Button>
-<Create bind:showCreate on:created={() => (request = getUsers())} />
+<Button on:click={() => (showCreate = true)}>Create Team</Button>
+<Create bind:showCreate on:created={() => (request = getTeams())} />

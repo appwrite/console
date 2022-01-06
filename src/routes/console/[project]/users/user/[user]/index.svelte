@@ -8,6 +8,9 @@
 {#await request}
 	<div aria-busy="true" />
 {:then user}
-	<p>Name: {user.name}</p>
-	<p>Mail: {user.email}</p>
+		<div>
+			<p>Name: {user.name}</p>
+			<p>Mail: {user.email}</p>
+		</div>
 {/await}
+
