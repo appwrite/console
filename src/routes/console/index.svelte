@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components';
 	import { sdkForConsole } from '$lib/stores/sdk';
-	import CreateProject from './_createProject.svelte';
+	import Create from './_create.svelte';
 
 	const request = sdkForConsole.projects.list();
 
@@ -19,4 +19,4 @@
 	<Button on:click={() => (addProject = true)}>New Project</Button>
 {/await}
 
-<CreateProject bind:show={addProject} />
+<Create bind:show={addProject} />
