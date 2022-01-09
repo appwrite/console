@@ -29,8 +29,9 @@
 		<Table>
 			<TableHeader>
 				<TableCell>#</TableCell>
-				<TableCell>Name</TableCell>
-				<TableCell>E-Mail</TableCell>
+				<TableCell>Type</TableCell>
+				<TableCell>Size</TableCell>
+				<TableCell>Date Created</TableCell>
 			</TableHeader>
 			<TableBody>
 				{#each response.files as file}

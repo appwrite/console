@@ -11,7 +11,6 @@
 		TableCell
 	} from '$lib/components';
 	import Create from './_create.svelte';
-	import { user } from '$lib/stores/user';
 
 	let search = '';
 	let showCreate = false;
@@ -19,7 +18,8 @@
 	const limit = 25;
 
 	const project = $page.params.project;
-	const getUsers = () => sdkForProject.users.list(search, limit, offset);
+	const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
+	const getUsers = () => sdkForProject.users.list(search, limit, offset, undefined, undefined, 'DESC');
 	const doSearch = () => {
 		offset = 0;
 		request = getUsers();
@@ -36,20 +36,26 @@
 	{:then response}
 		<Table>
 			<TableHeader>
-				<TableCell>#</TableCell>
+				<TableCell width={80} />
 				<TableCell>Name</TableCell>
 				<TableCell>E-Mail</TableCell>
+				<TableCell>Status</TableCell>
+				<TableCell>Joined</TableCell>
 			</TableHeader>
 			<TableBody>
 				{#each response.users as user}
 					<TableRow>
 						<TableCell>
+								<img src={getAvatar(user.name)} alt={user.name} class="avatar">
+						</TableCell>
+						<TableCell>
 							<a href={`/console/${project}/users/user/${user.$id}`}>
-								{user.$id}
+								{user.name}
 							</a>
 						</TableCell>
-						<TableCell>{user.name}</TableCell>
 						<TableCell>{user.email}</TableCell>
+						<TableCell>{user.emailVerification}</TableCell>
+						<TableCell>{user.registration}</TableCell>
 					</TableRow>
 				{/each}
 			</TableBody>
@@ -60,3 +66,9 @@
 
 <Button on:click={() => (showCreate = true)}>Create User</Button>
 <Create bind:showCreate on:created={() => (request = getUsers())} />
+
+	<style>
+		.avatar {
+			border-radius: 50%;
+		}
+	</style>
