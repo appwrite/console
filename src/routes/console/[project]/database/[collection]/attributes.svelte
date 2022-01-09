@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Table, Button } from '$lib/components';
+	import { Table, TableCell, TableHeader, TableBody, TableRow, Button } from '$lib/components';
 	import Create from './attributes/_create.svelte';
 	import { collection } from './store';
 
@@ -7,14 +7,22 @@
 </script>
 
 <section>
-	<Table
-		columns={[
-			{ key: 'status', title: 'Status' },
-			{ key: 'key', title: 'Key' },
-			{ key: 'type', title: 'Type' }
-		]}
-		data={$collection.attributes}
-	/>
+	<Table>
+		<TableHeader>
+			<TableCell>Status</TableCell>
+			<TableCell>Key</TableCell>
+			<TableCell>Type</TableCell>
+		</TableHeader>
+		<TableBody>
+			{#each $collection.attributes as attribute}
+				<TableRow>
+					<TableCell>{attribute.status}</TableCell>
+					<TableCell>{attribute.key}</TableCell>
+					<TableCell>{attribute.type}</TableCell>
+				</TableRow>
+			{/each}
+		</TableBody>
+	</Table>
 </section>
 
 <Button on:click={() => (showCreate = true)}>Create Attribute</Button>

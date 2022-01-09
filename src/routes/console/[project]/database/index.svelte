@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Table, Button, Pagination } from '$lib/components';
+	import {
+		Table,
+		Button,
+		Pagination,
+		TableRow,
+		TableBody,
+		TableHeader,
+		TableCell
+	} from '$lib/components';
 	import Create from './_create.svelte';
 
 	let search = '';
@@ -26,17 +34,22 @@
 	{#await request}
 		<div aria-busy="true" />
 	{:then response}
-		<Table
-			columns={[
-				{ key: '$id', title: 'ID' },
-				{ key: 'name', title: 'Name' }
-			]}
-			data={response.collections}
-			anchor={`/console/${project}/database/:$id`}
-			anchorReplace={{
-				$id: ':$id'
-			}}
-		/>
+		<Table>
+			<TableHeader>
+				<TableCell>#</TableCell>
+				<TableCell>Name</TableCell>
+			</TableHeader>
+			<TableBody>
+				{#each response.collections as collection}
+					<TableRow>
+						<TableCell>
+							<a href={`/console/${project}/database/${collection.$id}`}>{collection.$id}</a>
+						</TableCell>
+						<TableCell>{collection.name}</TableCell>
+					</TableRow>
+				{/each}
+			</TableBody>
+		</Table>
 		<Pagination
 			{limit}
 			bind:offset

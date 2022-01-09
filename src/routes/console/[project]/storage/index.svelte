@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Table, Button, Pagination } from '$lib/components';
+	import { Table, Button, Pagination, TableHeader, TableCell, TableBody, TableRow } from '$lib/components';
 	import Create from './_create.svelte';
 
 	let search = '';
@@ -26,19 +26,28 @@
 	{#await request}
 		<div aria-busy="true" />
 	{:then response}
-		<Table
-			columns={[
-				{ key: 'name', title: 'Name' },
-				{ key: 'mimeType', title: 'Type' },
-				{ key: 'sizeOriginal', title: 'Size' },
-				{ key: 'dateCreated', title: 'Created' }
-			]}
-			data={response.files}
-			anchor={`/console/${project}/storage/:$id`}
-			anchorReplace={{
-				$id: ':$id'
-			}}
-		/>
+		<Table>
+			<TableHeader>
+				<TableCell>#</TableCell>
+				<TableCell>Name</TableCell>
+				<TableCell>E-Mail</TableCell>
+			</TableHeader>
+			<TableBody>
+				{#each response.files as file}
+					<TableRow>
+						<TableCell>
+							<a href={`/console/${project}/storage/${file.$id}`}>
+								{file.$id}
+							</a>
+						</TableCell>
+						<TableCell>{file.mimeType}</TableCell>
+						<TableCell>{file.sizeOriginal}</TableCell>
+						<TableCell>{file.dateCreated}</TableCell>
+					</TableRow>
+				{/each}
+			</TableBody>
+		</Table>
+
 		<Pagination {limit} bind:offset sum={response.sum} on:change={() => (request = getUsers())} />
 	{/await}
 </section>

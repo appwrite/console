@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Table, Pagination } from '$lib/components';
+	import { Table, TableHeader, TableRow, TableBody, TableCell, Pagination } from '$lib/components';
 	import { collection } from './store';
 
 	let offset = 0;
@@ -11,10 +11,13 @@
 	const getDocuments = () =>
 		sdkForProject.database.listDocuments($collection.$id, [], limit, offset);
 
-	const columns = $collection.attributes.map((attribute) => ({
-		key: attribute.key,
-		title: attribute.key
-	}));
+	const columns = [
+		{ key: '$id', title: '#' },
+		...$collection.attributes.map((attribute) => ({
+			key: attribute.key,
+			title: attribute.key
+		}))
+	];
 
 	let request = getDocuments();
 </script>
@@ -23,16 +26,27 @@
 	{#await request}
 		<div aria-busy="true" />
 	{:then response}
-		<figure>
-			<Table
-				columns={[{ key: '$id', title: '#' }, ...columns]}
-				data={response.documents}
-				anchor={`/console/${project}/database/${$collection.$id}/:$id`}
-				anchorReplace={{
-					$id: ':$id'
-				}}
-			/>
-		</figure>
+		<Table horizontalScroll={true}>
+			<TableHeader>
+				{#each columns as column}
+					<TableCell>{column.title}</TableCell>
+				{/each}
+			</TableHeader>
+			<TableBody>
+				{#each response.documents as document}
+					<TableRow>
+						{#each columns as column}
+							<TableCell>
+								<a href={`/console/${project}/database/${$collection.$id}/${document.$id}`}>
+									{document[column.key] ?? 'n/a'}
+								</a>
+							</TableCell>
+						{/each}
+					</TableRow>
+				{/each}
+			</TableBody>
+		</Table>
+
 		<Pagination
 			{limit}
 			bind:offset

@@ -1,8 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Table, Button, Pagination } from '$lib/components';
+	import {
+		Table,
+		Button,
+		Pagination,
+		TableHeader,
+		TableBody,
+		TableRow,
+		TableCell
+	} from '$lib/components';
 	import Create from './_create.svelte';
+	import { user } from '$lib/stores/user';
 
 	let search = '';
 	let showCreate = false;
@@ -25,17 +34,26 @@
 	{#await request}
 		<div aria-busy="true" />
 	{:then response}
-		<Table
-			columns={[
-				{ key: 'name', title: 'Name' },
-				{ key: 'email', title: 'E-Mail' }
-			]}
-			data={response.users}
-			anchor={`/console/${project}/users/user/:$id`}
-			anchorReplace={{
-				$id: ':$id'
-			}}
-		/>
+		<Table>
+			<TableHeader>
+				<TableCell>#</TableCell>
+				<TableCell>Name</TableCell>
+				<TableCell>E-Mail</TableCell>
+			</TableHeader>
+			<TableBody>
+				{#each response.users as user}
+					<TableRow>
+						<TableCell>
+							<a href={`/console/${project}/users/user/${user.$id}`}>
+								{user.$id}
+							</a>
+						</TableCell>
+						<TableCell>{user.name}</TableCell>
+						<TableCell>{user.email}</TableCell>
+					</TableRow>
+				{/each}
+			</TableBody>
+		</Table>
 		<Pagination {limit} bind:offset sum={response.sum} on:change={() => (request = getUsers())} />
 	{/await}
 </section>
