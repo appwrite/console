@@ -2,9 +2,10 @@
 	import { onMount } from 'svelte';
 
 	export let label: string;
-	export let value: string;
+	export let value = '';
 	export let placeholder = '';
 	export let required = false;
+	export let disabled = false;
 	export let autofocus = false;
 
 	let element: HTMLInputElement;
@@ -18,5 +19,5 @@
 
 <label>
 	<span>{label}</span>
-	<input {placeholder} {required} type="text" bind:value bind:this={element} />
+	<input {placeholder} {disabled} {required} type="text" bind:value bind:this={element} />
 </label>

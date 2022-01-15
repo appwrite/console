@@ -16,7 +16,7 @@ function createCollection() {
 		updateAttribute: (attribute: Models.Attributes) =>
 			update((n) => {
 				const index = n.attributes.findIndex((a) => a.key === attribute.key);
-				n.attributes[index] =attribute;
+				n.attributes[index] = attribute;
 
 				return n;
 			}),

@@ -5,7 +5,6 @@
 	import { Button } from '$lib/components';
 	import { sdkForProject } from '$lib/stores/sdk';
 
-	let id: HTMLInputElement;
 	const request = sdkForProject.users.get($page.params.user);
 	const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 128, 128).toString();
 	const deleteUser = async (id: string) => {

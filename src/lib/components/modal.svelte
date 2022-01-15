@@ -15,7 +15,7 @@
 	<dialog open>
 		<article>
 			<header>
-				<span on:click={() => (show = false)} aria-label="Close" class="close" />
+				<span on:click={() => (show = false)} aria-label="Close" title="Close" class="close" />
 				<slot name="header" />
 			</header>
 

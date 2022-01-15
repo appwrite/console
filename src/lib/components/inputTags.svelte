@@ -55,9 +55,9 @@
 		</ul>
 		<input
 			type="text"
+			{placeholder}
 			on:keydown={handleInput}
 			on:blur={handleBlur}
-			{placeholder}
 			bind:value
 			bind:this={element}
 		/>

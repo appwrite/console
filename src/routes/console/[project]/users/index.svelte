@@ -19,7 +19,8 @@
 
 	const project = $page.params.project;
 	const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
-	const getUsers = () => sdkForProject.users.list(search, limit, offset, undefined, undefined, 'DESC');
+	const getUsers = () =>
+		sdkForProject.users.list(search, limit, offset, undefined, undefined, 'DESC');
 	const doSearch = () => {
 		offset = 0;
 		request = getUsers();
@@ -46,7 +47,7 @@
 				{#each response.users as user}
 					<TableRow>
 						<TableCell>
-								<img src={getAvatar(user.name)} alt={user.name} class="avatar">
+							<img src={getAvatar(user.name)} alt={user.name} class="avatar" />
 						</TableCell>
 						<TableCell>
 							<a href={`/console/${project}/users/user/${user.$id}`}>
@@ -67,8 +68,8 @@
 <Button on:click={() => (showCreate = true)}>Create User</Button>
 <Create bind:showCreate on:created={() => (request = getUsers())} />
 
-	<style>
-		.avatar {
-			border-radius: 50%;
-		}
-	</style>
+<style>
+	.avatar {
+		border-radius: 50%;
+	}
+</style>

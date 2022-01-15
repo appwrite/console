@@ -5,6 +5,7 @@ This is a PoC that was a result of about 2 hours coding, investigating a possibl
 For simplicity I used [Pico CSS](https://picocss.com/) and didn't focus on styling at all.
 
 Therefore, Pico CSS is the only Dependency that got added beside necessary ones from Svelte and Developer Tooling (Sass, Linter, Formatter, etc).
+
 ## Structure
 
 ```
@@ -35,6 +36,7 @@ Once you've created a project and installed dependencies with `npm install`, sta
 ```bash
 npm run dev
 ```
+
 ## Building
 
 ```bash
@@ -43,6 +45,13 @@ npm run build
 
 > You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
 
+## Tests
+
+```bash
+npm test
+```
+
+This will run tests in the `tests/` directory.
 
 ## Format
 

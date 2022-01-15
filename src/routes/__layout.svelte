@@ -31,6 +31,5 @@
 	$line-height: 1rem;
 	$typography-spacing-vertical: 1rem;
 
-
 	@import '@picocss/pico/scss/pico';
 </style>

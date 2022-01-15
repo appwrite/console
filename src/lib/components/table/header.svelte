@@ -1,5 +1,5 @@
 <thead>
-    <tr>
-        <slot />
-    </tr>
+	<tr>
+		<slot />
+	</tr>
 </thead>

@@ -2,9 +2,10 @@
 	export let label: string;
 	export let files: FileList;
 	export let required = false;
+	export let disabled = false;
 </script>
 
 <label>
 	<span>{label}</span>
-	<input type="file" bind:files {required} />
+	<input type="file" bind:files {required} {disabled} />
 </label>

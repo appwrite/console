@@ -1,21 +1,29 @@
-<script>
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
 	import { Button } from '.';
 
-	export let limit;
-	export let offset;
-	export let sum;
+	export let limit: number;
+	export let offset: number;
+	export let sum: number;
 
 	const dispatch = createEventDispatcher();
 
 	const next = () => {
-		offset += limit;
+		if (offset + limit > sum) {
+			offset = sum;
+		} else {
+			offset += limit;
+		}
 		dispatch('change');
 	};
 
 	const prev = () => {
-		offset -= limit;
+		if (offset - limit < 0) {
+			offset = 0;
+		} else {
+			offset -= limit;
+		}
 		dispatch('change');
 	};
 </script>

@@ -29,7 +29,7 @@
 
 	let selected: Option;
 
-	const change = (e) => {
+	const change = (e: any) => {
 		if (e.target.value >= 0) {
 			selected = options[e.target.value];
 		}
