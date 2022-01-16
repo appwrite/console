@@ -28,11 +28,10 @@
 	];
 
 	let selected: Option;
+	let element: HTMLSelectElement;
 
-	const change = (e: any) => {
-		if (e.target.value >= 0) {
-			selected = options[e.target.value];
-		}
+	const change = () => {
+		selected = options[element.value];
 	};
 </script>
 
@@ -45,7 +44,7 @@
 
 	<label>
 		<span>Type</span>
-		<select required on:change={change}>
+		<select required on:change={change} bind:this={element}>
 			<option value="-1" selected>Select a type…</option>
 			{#each options as option, index}
 				<option class="option" value={index}>{option.name}</option>
