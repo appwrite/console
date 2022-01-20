@@ -36,6 +36,9 @@
 			<li>
 				<a href={`/console/${project}/storage`}>Storage</a>
 			</li>
+			<li>
+				<a href={`/console/${project}/settings`}>Settings</a>
+			</li>
 		{/if}
 	</ul>
 	{#if $user}
