@@ -1,10 +1,34 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Pagination, Table, TableCell, TableHeader, TableBody, TableRow } from '$lib/components';
+	import {
+		Pagination,
+		Table,
+		TableCell,
+		TableHeader,
+		TableBody,
+		TableRow,
+		Button
+	} from '$lib/components';
 	import { sdkForProject } from '$lib/stores/sdk';
 
 	const getSessions = () => sdkForProject.users.getSessions($page.params.user);
-
+	const deleteSession = async (id: string) => {
+		try {
+			await sdkForProject.users.deleteSession($page.params.user, id);
+			request = getSessions();
+		} catch (error) {
+			alert(error.message);
+		}
+	};
+	const deleteAllSessions = async () => {
+		try {
+			if (confirm('You really want to delete all sessions?')) {
+				await sdkForProject.users.deleteSessions($page.params.user);
+			}
+		} catch (error) {
+			alert(error.message);
+		}
+	};
 	let offset = 0;
 	const limit = 25;
 
@@ -19,6 +43,7 @@
 			<TableCell>Country</TableCell>
 			<TableCell>OS</TableCell>
 			<TableCell>IP</TableCell>
+			<TableCell />
 		</TableHeader>
 		<TableBody>
 			{#each response.sessions as session}
@@ -26,10 +51,12 @@
 					<TableCell>{session.countryName}</TableCell>
 					<TableCell>{session.osName}</TableCell>
 					<TableCell>{session.ip}</TableCell>
+					<TableCell><Button on:click={() => deleteSession(session.$id)}>Logout</Button></TableCell>
 				</TableRow>
 			{/each}
 		</TableBody>
 	</Table>
 
 	<Pagination {limit} bind:offset sum={response.sum} on:change={() => (request = getSessions())} />
+	<Button on:click={deleteAllSessions}>Logout from all sessions</Button>
 {/await}

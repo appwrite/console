@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import Notifications from '$lib/layout/notifications.svelte';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { user } from '$lib/stores/user';
 	import { onMount } from 'svelte';
@@ -20,6 +21,7 @@
 	});
 </script>
 
+<Notifications />
 <main class="container">
 	<slot />
 </main>

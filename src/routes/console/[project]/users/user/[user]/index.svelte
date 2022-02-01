@@ -24,7 +24,7 @@
 	<h1>Overview</h1>
 	<article class="overview">
 		<p><img src={getAvatar(user.name)} alt={user.name} class="avatar" /></p>
-		<p class="id" data-tooltip="Click to copy.">{user.$id}</p>
+		<p>{user.$id}</p>
 		<p>Member since {user.registration}</p>
 		<p>{user.emailVerification ? 'Verified' : 'Unverified'}</p>
 		<p>{user.email}</p>
@@ -53,10 +53,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-
-		.id {
-			cursor: pointer;
-		}
 
 		.avatar {
 			border-radius: 50%;
