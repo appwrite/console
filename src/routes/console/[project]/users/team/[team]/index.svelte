@@ -6,9 +6,9 @@
 	import { sdkForProject } from '$lib/stores/sdk';
 
 	const request = Promise.all([
-        sdkForProject.teams.get($page.params.team),
-        sdkForProject.teams.getMemberships($page.params.team)
-    ]) ;
+		sdkForProject.teams.get($page.params.team),
+		sdkForProject.teams.getMemberships($page.params.team)
+	]);
 
 	const deleteTeam = async (id: string) => {
 		try {
@@ -20,14 +20,14 @@
 		}
 	};
 
-    const deleteMembership = async (id: string) => {
-        try {
+	const deleteMembership = async (id: string) => {
+		try {
 			if (!confirm('Are you sure you want to delete that membership?')) return;
 			await sdkForProject.teams.deleteMembership($page.params.team, id);
 		} catch (error) {
 			console.error(error);
 		}
-    };
+	};
 </script>
 
 {#await request}
@@ -42,16 +42,20 @@
 	<h1>Members</h1>
 	<article>
 		{#each members.memberships as membership}
-			<p>{membership.name} {membership.email} <Button on:click={() => deleteMembership(membership.$id)}>Remove</Button></p>
 			<p>
-                Roles: {membership.roles.join(', ')}
-            </p>
+				{membership.name}
+				{membership.email}
+				<Button on:click={() => deleteMembership(membership.$id)}>Remove</Button>
+			</p>
+			<p>
+				Roles: {membership.roles.join(', ')}
+			</p>
 		{:else}
 			No members found.
 		{/each}
 	</article>
 
-    <Button on:click={() => deleteTeam(team.$id)}>Delete Team</Button>
+	<Button on:click={() => deleteTeam(team.$id)}>Delete Team</Button>
 {/await}
 
 <style lang="scss">
@@ -59,16 +63,5 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-
-		.avatar {
-			border-radius: 50%;
-		}
-	}
-
-	article.danger {
-		background-color: #f53d3d;
-		p {
-			color: #ffffff;
-		}
 	}
 </style>

@@ -27,10 +27,14 @@
 				<TableRow>
 					<TableCell>{log.time}</TableCell>
 					<TableCell>{log.event}</TableCell>
-					<TableCell>{log.clientName} {log.clientVersion} on {log.osName} {log.osVersion}</TableCell>
+					<TableCell>{log.clientName} {log.clientVersion} on {log.osName} {log.osVersion}</TableCell
+					>
 					<TableCell>
 						{#if log.countryCode !== '--'}
-							<img src={sdkForProject.avatars.getFlag(log.countryCode, 32, 32).toString()} alt={log.countryName} />{log.countryName}
+							<img
+								src={sdkForProject.avatars.getFlag(log.countryCode, 32, 32).toString()}
+								alt={log.countryName}
+							/>{log.countryName}
 						{:else}
 							Unknown
 						{/if}
