@@ -40,6 +40,7 @@
 {:then response}
 	<Table>
 		<TableHeader>
+			<TableCell>Browser</TableCell>
 			<TableCell>Country</TableCell>
 			<TableCell>OS</TableCell>
 			<TableCell>IP</TableCell>
@@ -48,6 +49,7 @@
 		<TableBody>
 			{#each response.sessions as session}
 				<TableRow>
+					<TableCell><img src={sdkForProject.avatars.getBrowser(session.clientCode, 32,32).toString()} alt={session.clientName} /></TableCell>
 					<TableCell>{session.countryName}</TableCell>
 					<TableCell>{session.osName}</TableCell>
 					<TableCell>{session.ip}</TableCell>
