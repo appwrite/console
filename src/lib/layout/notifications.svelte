@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Notification from './notification.svelte';
 
-	import { dismissToast, toasts } from '../notifications';
+	import { dismissToast, toasts } from '../stores/notifications';
 </script>
 
 {#if $toasts}
