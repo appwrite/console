@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import type { Notification } from '../notifications';
+	import type { Notification } from '../stores/notifications';
 	const dispatch = createEventDispatcher();
 
 	export let type: Notification['type'] = 'info';
