@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, InputText } from '$lib/components';
+	import { Button, InputText } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { project } from './store';
 

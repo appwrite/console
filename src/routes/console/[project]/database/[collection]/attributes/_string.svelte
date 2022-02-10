@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { Button, InputNumber, InputText } from '$lib/components';
-	import InputBoolean from '$lib/components/inputBoolean.svelte';
+	import { Button, InputNumber, InputText, InputBoolean } from '$lib/elements/forms';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { collection } from '../store';
 

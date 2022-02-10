@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Table, TableCell, TableHeader, TableBody, TableRow, Button } from '$lib/components';
+	import { Button } from '$lib/elements/forms';
+	import { Table, TableCell, TableHeader, TableBody, TableRow } from '$lib/elements/table';
 	import Create from './attributes/_create.svelte';
 	import { collection } from './store';
 

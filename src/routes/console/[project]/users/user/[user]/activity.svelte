@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Pagination, Table, TableBody, TableHeader, TableRow, TableCell } from '$lib/components';
+	import { Pagination } from '$lib/components';
+	import { Table, TableBody, TableHeader, TableRow, TableCell } from '$lib/elements/table';
 	import { sdkForProject } from '$lib/stores/sdk';
 
 	const getLogs = () => sdkForProject.users.getLogs($page.params.user);

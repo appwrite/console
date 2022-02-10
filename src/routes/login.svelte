@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	import { Button, InputEmail, InputPassword } from '$lib/components';
+	import { Button, InputEmail, InputPassword } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 
 	let mail: string, pass: string;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Button } from '$lib/components';
+	import { Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import type { Models } from 'src/sdk';
 	import { project } from './store';

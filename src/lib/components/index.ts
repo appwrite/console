@@ -1,13 +1,2 @@
-export { default as Button } from './button.svelte';
-export { default as InputEmail } from './inputEmail.svelte';
-export { default as InputPassword } from './inputPassword.svelte';
-export { default as InputText } from './inputText.svelte';
-export { default as InputNumber } from './inputNumber.svelte';
-export { default as InputBoolean } from './inputBoolean.svelte';
-export { default as InputTags } from './inputTags.svelte';
-export { default as InputFile } from './inputFile.svelte';
-export { default as InputCustomId } from './inputCustomId.svelte';
 export { default as Modal } from './modal.svelte';
-export { default as Table } from './table/table.svelte';
 export { default as Pagination } from './pagination.svelte';
-export * from './table';

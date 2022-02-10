@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib/components';
+	import { Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import type { Models } from 'src/sdk';
 	import CreateOrganization from './_createOrganization.svelte';

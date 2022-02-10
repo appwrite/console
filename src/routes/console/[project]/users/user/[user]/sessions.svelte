@@ -1,14 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import {
-		Pagination,
-		Table,
-		TableCell,
-		TableHeader,
-		TableBody,
-		TableRow,
-		Button
-	} from '$lib/components';
+	import { Pagination } from '$lib/components';
+	import { Button } from '$lib/elements/forms';
+	import { Table, TableCell, TableHeader, TableBody, TableRow } from '$lib/elements/table';
 	import { sdkForProject } from '$lib/stores/sdk';
 
 	const getSessions = () => sdkForProject.users.getSessions($page.params.user);

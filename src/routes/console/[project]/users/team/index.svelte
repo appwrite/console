@@ -1,15 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import {
-		Table,
-		Button,
-		Pagination,
-		TableHeader,
-		TableCell,
-		TableBody,
-		TableRow
-	} from '$lib/components';
+	import { Table, TableHeader, TableCell, TableBody, TableRow } from '$lib/elements/table';
+	import { Button } from '$lib/elements/forms';
+	import { Pagination } from '$lib/components';
 	import Create from './_create.svelte';
 
 	let search = '';

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
-	import { Button } from '.';
+	import { Button } from '$lib/elements/forms';
 
 	export let limit: number;
 	export let offset: number;

@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	import { page } from '$app/stores';
-	import { Button } from '$lib/components';
+	import { Button } from '$lib/elements/forms';
 	import { sdkForProject } from '$lib/stores/sdk';
 
 	const request = sdkForProject.storage.getFile($page.params.file);

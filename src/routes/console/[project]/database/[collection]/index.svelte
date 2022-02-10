@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Table, TableHeader, TableRow, TableBody, TableCell, Pagination } from '$lib/components';
+	import { Table, TableRow, TableBody, TableHeader, TableCell } from '$lib/elements/table';
+	import { Pagination } from '$lib/components';
 	import { collection } from './store';
 
 	let offset = 0;

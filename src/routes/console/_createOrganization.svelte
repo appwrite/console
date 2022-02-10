@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Modal, InputText, Button } from '$lib/components';
+	import { Modal } from '$lib/components';
+	import { InputText, Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
 

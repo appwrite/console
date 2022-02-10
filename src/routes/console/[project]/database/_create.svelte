@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Button from '$lib/components/button.svelte';
-	import InputFile from '$lib/components/inputFile.svelte';
-	import Modal from '$lib/components/modal.svelte';
+	import { Modal } from '$lib/components';
+	import { Button, InputFile } from '$lib/elements/forms';
+
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
 
