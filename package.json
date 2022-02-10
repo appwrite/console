@@ -13,8 +13,10 @@
 		"test": "jest tests",
 		"test:watch": "npm run test -- --watch"
 	},
+	"dependencies": {
+		"@picocss/pico": "^1.4.4"
+	},
 	"devDependencies": {
-		"@picocss/pico": "^1.4.4",
 		"@sveltejs/adapter-static": "next",
 		"@sveltejs/kit": "next",
 		"@testing-library/dom": "^8.11.3",
