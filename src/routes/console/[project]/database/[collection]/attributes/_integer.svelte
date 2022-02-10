@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button, InputNumber, InputText, InputBoolean } from '$lib/elements/forms';
+	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { collection } from '../store';
 
@@ -24,7 +25,10 @@
 			);
 			show = false;
 		} catch (error) {
-			alert(error.message);
+			addNotification({
+				type: 'error',
+				message: error.message
+			});
 		}
 	};
 </script>

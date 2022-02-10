@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Modal } from '$lib/components';
 	import { InputText, Button, InputCustomId } from '$lib/elements/forms';
+	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
 
@@ -18,7 +19,10 @@
 			id = name = null;
 			dispatch('created');
 		} catch (error) {
-			alert(error.message);
+			addNotification({
+				type: 'error',
+				message: error.message
+			});
 		}
 	};
 </script>

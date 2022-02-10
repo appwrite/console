@@ -2,10 +2,11 @@
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import type { Notification } from '../stores/notifications';
-	const dispatch = createEventDispatcher();
 
 	export let type: Notification['type'] = 'info';
 	export let dismissible = true;
+
+	const dispatch = createEventDispatcher();
 </script>
 
 <article class={type} role="alert" transition:fade>

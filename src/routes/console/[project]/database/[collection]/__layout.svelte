@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { page } from '$app/stores';
+	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { collection } from './store';
 
@@ -8,13 +9,14 @@
 	$: collectionId = $page.params.collection;
 
 	page.subscribe(async (p) => {
-		if (browser) {
-			if (p.params.collection) {
-				try {
-					collection.set(await sdkForProject.database.getCollection(p.params.collection));
-				} catch (error) {
-					console.log(error);
-				}
+		if (browser && p.params.collection) {
+			try {
+				collection.set(await sdkForProject.database.getCollection(p.params.collection));
+			} catch (error) {
+				addNotification({
+					type: 'error',
+					message: error.message
+				});
 			}
 		}
 	});

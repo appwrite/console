@@ -3,6 +3,7 @@
 	import { Pagination } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
 	import { Table, TableCell, TableHeader, TableBody, TableRow } from '$lib/elements/table';
+	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 
 	const getSessions = () => sdkForProject.users.getSessions($page.params.user);
@@ -11,7 +12,10 @@
 			await sdkForProject.users.deleteSession($page.params.user, id);
 			request = getSessions();
 		} catch (error) {
-			alert(error.message);
+			addNotification({
+				type: 'error',
+				message: error.message
+			});
 		}
 	};
 	const deleteAllSessions = async () => {
@@ -20,7 +24,10 @@
 				await sdkForProject.users.deleteSessions($page.params.user);
 			}
 		} catch (error) {
-			alert(error.message);
+			addNotification({
+				type: 'error',
+				message: error.message
+			});
 		}
 	};
 	let offset = 0;

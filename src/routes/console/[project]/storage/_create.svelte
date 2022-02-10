@@ -3,6 +3,7 @@
 	import { Modal } from '$lib/components';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
+	import { addNotification } from '$lib/stores/notifications';
 
 	export let showCreate = false;
 
@@ -19,7 +20,10 @@
 			showCreate = false;
 			dispatch('created');
 		} catch (error) {
-			alert(error.message);
+			addNotification({
+				type: 'error',
+				message: error.message
+			});
 		}
 	};
 </script>

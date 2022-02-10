@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button, InputText } from '$lib/elements/forms';
+	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { project } from './store';
 
@@ -8,7 +9,10 @@
 			await sdkForConsole.projects.update($project.$id, $project.name);
 			await project.load($project.$id);
 		} catch (error) {
-			alert(error.message);
+			addNotification({
+				type: 'error',
+				message: error.message
+			});
 		}
 	};
 </script>

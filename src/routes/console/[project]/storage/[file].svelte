@@ -3,6 +3,7 @@
 
 	import { page } from '$app/stores';
 	import { Button } from '$lib/elements/forms';
+	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 
 	const request = sdkForProject.storage.getFile($page.params.file);
@@ -16,7 +17,10 @@
 			await sdkForProject.storage.deleteFile($page.params.file);
 			await goto(`/console/${$page.params.project}/storage`);
 		} catch (error) {
-			alert(error.message);
+			addNotification({
+				type: 'error',
+				message: error.message
+			});
 		}
 	};
 </script>

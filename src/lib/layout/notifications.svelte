@@ -1,27 +1,26 @@
 <script lang="ts">
 	import Notification from './notification.svelte';
-
-	import { dismissToast, toasts } from '../stores/notifications';
+	import { dismissNotification, notifications } from '../stores/notifications';
 </script>
 
-{#if $toasts}
+{#if $notifications}
 	<section>
-		{#each $toasts as toast (toast.id)}
+		{#each $notifications as notification (notification.id)}
 			<Notification
-				type={toast.type}
-				dismissible={toast.dismissible}
-				on:dismiss={() => dismissToast(toast.id)}
+				type={notification.type}
+				dismissible={notification.dismissible}
+				on:dismiss={() => dismissNotification(notification.id)}
 			>
-				{toast.message}
+				{notification.message}
 			</Notification>
 		{/each}
 	</section>
 {/if}
 
-<style lang="postcss">
+<style lang="scss">
 	section {
 		position: fixed;
-		top: 0;
+		bottom: 0;
 		left: 0;
 		right: 0;
 		width: 100%;
