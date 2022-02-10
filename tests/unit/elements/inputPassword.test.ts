@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import { InputPassword } from '../../../src/lib/components';
+import { InputPassword } from '../../../src/lib/elements/forms';
 
 test('shows password input', () => {
 	const { getByText, getByLabelText } = render(InputPassword, { label: 'input' });

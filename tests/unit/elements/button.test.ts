@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, fireEvent } from '@testing-library/svelte';
 
-import { Button } from '../../../src/lib/components';
+import { Button } from '../../../src/lib/elements/forms';
 
 test('shows button', () => {
 	const { getByRole } = render(Button);

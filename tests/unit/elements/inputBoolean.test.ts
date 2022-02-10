@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, fireEvent } from '@testing-library/svelte';
-import { InputBoolean } from '../../../src/lib/components';
+import { InputBoolean } from '../../../src/lib/elements/forms';
 
 test('shows boolean input', () => {
 	const { getByText, getByRole } = render(InputBoolean, { label: 'Bool' });

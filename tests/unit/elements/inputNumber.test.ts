@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import { InputNumber } from '../../../src/lib/components';
+import { InputNumber } from '../../../src/lib/elements/forms';
 
 test('shows number input', () => {
 	const { getByText, getByLabelText } = render(InputNumber, { label: 'input' });

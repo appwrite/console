@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/svelte';
-import { InputFile } from '../../../src/lib/components';
+import { InputFile } from '../../../src/lib/elements/forms';
 
 test('shows file input', () => {
 	const { getByText, getByLabelText } = render(InputFile, { label: 'input', files: null });

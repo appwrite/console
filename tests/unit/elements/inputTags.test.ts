@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { render, fireEvent } from '@testing-library/svelte';
-import { InputTags } from '../../../src/lib/components';
+import { InputTags } from '../../../src/lib/elements/forms';
 
 test('shows label', () => {
 	const { getByText } = render(InputTags, { label: 'Tags' });
