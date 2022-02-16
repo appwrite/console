@@ -2,14 +2,33 @@
 	import { page } from '$app/stores';
 	import { Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
-	import type { Models } from 'src/sdk';
 	import { project } from './store';
+	import type { Models } from 'src/sdk';
+	import CreatePlatform from './_createPlatform.svelte';
+	import { addNotification } from '$lib/stores/notifications';
 
 	let range: '24h' | '30d' | '90d' = '30d';
 	let requestUsage = sdkForConsole.projects.getUsage($page.params.project, range);
+	let addPlatform = false;
 
 	const getLast = (list: Models.MetricList[]) => list[list.length - 1];
-	// const getTotal = (list: Models.MetricList[]) => list.reduce((prev, curr) => curr.value + prev, 0);
+	const deletePlatform = async (id: string) => {
+		if (confirm('You sure you wanna delete this?')) {
+			try {
+				await sdkForConsole.projects.deletePlatform($project.$id, id);
+				await project.load($project.$id);
+				addNotification({
+					message: 'Platform was deleted.',
+					type: 'success'
+				});
+			} catch (error) {
+				addNotification({
+					message: error.message,
+					type: 'error'
+				});
+			}
+		}
+	};
 </script>
 
 <article>
@@ -57,11 +76,20 @@
 					<Button secondary>Update</Button>
 				</div>
 				<div>
-					<Button>Delete</Button>
+					<Button on:click={() => deletePlatform(platform.$id)}>Delete</Button>
+				</div>
+			</div>
+		{:else}
+			<div class="grid">
+				<div>
+					<h4>No Platforms Added to Your Project</h4>
+					<p>Add your first platform and build your new application.</p>
 				</div>
 			</div>
 		{/each}
 	</article>
+	<Button on:click={() => (addPlatform = true)}>Add Platform</Button>
+	<CreatePlatform bind:show={addPlatform} />
 {/if}
 
 <style>
