@@ -17,7 +17,8 @@
 		"test:watch": "npm run test -- --watch"
 	},
 	"dependencies": {
-		"@picocss/pico": "^1.4.4"
+		"@picocss/pico": "^1.4.4",
+		"pre-commit": "^1.2.2"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "next",
@@ -66,5 +67,9 @@
 			"ts",
 			"svelte"
 		]
-	}
+	},
+	"pre-commit": [
+		"format",
+		"test"
+	  ]
 }
