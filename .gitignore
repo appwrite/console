@@ -6,3 +6,9 @@ node_modules
 .env
 .env.*
 !.env.example
+
+.DS_STORE
+.cache
+.temp
+node_modules/
+dist/
