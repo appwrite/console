@@ -20,7 +20,7 @@
 		"vitebook:preview": "vitebook preview"
 	},
 	"dependencies": {
-		"@picocss/pico": "^1.4.4"
+		"ui": "github:appwrite/ui#style-level-3"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "next",

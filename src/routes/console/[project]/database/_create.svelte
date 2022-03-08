@@ -30,7 +30,7 @@
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
 		<span slot="header">Upload File</span>
-		<InputFile label="Name" bind:files required />
+		<InputFile id="file" label="File" bind:files required />
 		<footer>
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Upload</Button>

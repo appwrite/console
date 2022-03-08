@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 
 	export let label: string;
+	export let id: string;
 	export let value = '';
 	export let placeholder = '';
 	export let required = false;
@@ -17,7 +18,16 @@
 	});
 </script>
 
-<label>
-	<span>{label}</span>
-	<input {placeholder} {disabled} {required} type="text" bind:value bind:this={element} />
-</label>
+<label class="label" for={id}>{label}</label>
+<div class="input-text-wrapper">
+	<input
+		{id}
+		{placeholder}
+		{disabled}
+		{required}
+		type="text"
+		class="input-text"
+		bind:value
+		bind:this={element}
+	/>
+</div>

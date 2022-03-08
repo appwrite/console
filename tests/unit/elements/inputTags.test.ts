@@ -4,26 +4,30 @@ import { render, fireEvent } from '@testing-library/svelte';
 import { InputTags } from '../../../src/lib/elements/forms';
 
 test('shows label', () => {
-	const { getByText } = render(InputTags, { label: 'Tags' });
+	const { getByText } = render(InputTags, { id: 'input', label: 'Tags' });
 
 	expect(getByText('Tags')).toBeInTheDocument();
 });
 
 test('shows input - autofocus', () => {
-	const { getByLabelText } = render(InputTags, { label: 'Tags', autofocus: true });
+	const { getByLabelText } = render(InputTags, { id: 'input', label: 'Tags', autofocus: true });
 
 	expect(getByLabelText('Tags')).toHaveFocus();
 });
 
 test('shows tags', () => {
-	const { getByText } = render(InputTags, { label: 'Tags', tags: ['first', 'second'] });
+	const { getByText } = render(InputTags, {
+		id: 'input',
+		label: 'Tags',
+		tags: ['first', 'second']
+	});
 
 	expect(getByText('first')).toBeInTheDocument();
 	expect(getByText('second')).toBeInTheDocument();
 });
 
 test('adds and removes tags by input', async () => {
-	const { component, getByLabelText } = render(InputTags, { label: 'Tags' });
+	const { component, getByLabelText } = render(InputTags, { id: 'input', label: 'Tags' });
 	const input = getByLabelText('Tags');
 
 	// Add tag by enter
@@ -50,6 +54,7 @@ test('adds and removes tags by input', async () => {
 
 test('removes tag on click', async () => {
 	const { component, getByText, queryByText } = render(InputTags, {
+		id: 'input',
 		label: 'Tags',
 		tags: ['first', 'second']
 	});
@@ -57,15 +62,15 @@ test('removes tag on click', async () => {
 	expect(component.tags).toHaveLength(2);
 	expect(component.tags).toContain('first');
 	expect(component.tags).toContain('second');
+	const first = getByText('first').nextElementSibling;
 
-	const first = getByText('first');
 	await fireEvent.click(first);
 	expect(component.tags).toHaveLength(1);
 	expect(component.tags).toContain('second');
 	expect(component.tags).not.toContain('first');
 	expect(queryByText('first')).not.toBeInTheDocument();
 
-	const second = getByText('second');
+	const second = getByText('second').nextElementSibling;
 	await fireEvent.click(second);
 	expect(component.tags).toHaveLength(0);
 	expect(component.tags).not.toContain('second');

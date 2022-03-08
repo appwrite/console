@@ -30,8 +30,8 @@
 <form on:submit|preventDefault={create}>
 	<Modal bind:show>
 		<span slot="header">Create Project</span>
-		<InputCustomId label="ID" bind:value={id} required />
-		<InputText label="Name" bind:value={name} required />
+		<InputCustomId id="id" label="ID" bind:value={id} required />
+		<InputText id="name" label="Name" bind:value={name} required />
 		<footer>
 			<Button secondary on:click={() => (show = false)}>Cancel</Button>
 			<Button submit>Create</Button>

@@ -31,6 +31,7 @@
 
 <form on:submit|preventDefault={login}>
 	<InputEmail
+		id="email"
 		label="E-Mail"
 		placeholder="test@example.com"
 		autofocus={true}
@@ -38,7 +39,13 @@
 		bind:value={mail}
 	/>
 
-	<InputPassword label="Password" placeholder="********" required={true} bind:value={pass} />
+	<InputPassword
+		id="password"
+		label="Password"
+		placeholder="********"
+		required={true}
+		bind:value={pass}
+	/>
 
 	<Button submit>Login</Button>
 </form>

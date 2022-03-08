@@ -31,9 +31,9 @@
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
 		<span slot="header">Upload File</span>
-		<InputFile label="Name" bind:files required />
-		<InputTags label="Read" bind:tags={read} />
-		<InputTags label="Write" bind:tags={write} />
+		<InputFile id="file" label="File" bind:files required />
+		<InputTags id="read" label="Read" bind:tags={read} />
+		<InputTags id="write" label="Write" bind:tags={write} />
 		<footer>
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Upload</Button>

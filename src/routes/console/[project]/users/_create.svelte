@@ -29,9 +29,21 @@
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
 		<span slot="header">Create User</span>
-		<InputText label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
-		<InputEmail label="E-Mail" placeholder="test@example.com" required={true} bind:value={mail} />
-		<InputPassword label="Password" placeholder="*****" required={true} bind:value={pass} />
+		<InputText id="name" label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
+		<InputEmail
+			id="email"
+			label="E-Mail"
+			placeholder="test@example.com"
+			required={true}
+			bind:value={mail}
+		/>
+		<InputPassword
+			id="password"
+			label="Password"
+			placeholder="*****"
+			required={true}
+			bind:value={pass}
+		/>
 		<footer>
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Create</Button>

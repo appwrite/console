@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
+	export let id: string;
 	export let label: string;
 	export let value = '';
 	export let placeholder = '';
@@ -28,7 +29,18 @@
 	});
 </script>
 
-<label>
-	<span>{label} <span role="button" on:click={() => (unique = !unique)}>Switch</span></span>
-	<input {placeholder} {disabled} {required} type="text" bind:value bind:this={element} />
-</label>
+<label class="label" for={id}>{label}</label>
+<div class="input-text-wrapper is-with-end-button">
+	<input
+		{placeholder}
+		{disabled}
+		{required}
+		type="text"
+		class="input-text"
+		bind:value
+		bind:this={element}
+	/>
+	<button class="input-button" aria-label="Switch" on:click={() => (unique = !unique)}>
+		<span class:icon-edit={unique} class:icon-shuffle={!unique} aria-hidden="true" />
+	</button>
+</div>

@@ -34,15 +34,15 @@
 </script>
 
 <form on:submit|preventDefault={submit}>
-	<InputText label="Key" bind:value={key} required autofocus />
+	<InputText id="key" label="Key" bind:value={key} required autofocus />
 	<div class="grid">
-		<InputNumber label="Min" bind:value={min} />
-		<InputNumber label="Max" bind:value={max} />
+		<InputNumber id="min" label="Min" bind:value={min} />
+		<InputNumber id="max" label="Max" bind:value={max} />
 	</div>
 
-	<InputBoolean label="Required" bind:value={required} />
-	<InputBoolean label="Array" bind:value={array} />
-	<InputNumber label="Default" bind:value={def} />
+	<InputBoolean id="required" label="Required" bind:value={required} />
+	<InputBoolean id="array" label="Array" bind:value={array} />
+	<InputNumber id="default" label="Default" bind:value={def} />
 
 	<footer>
 		<Button secondary on:click={() => (show = false)}>Cancel</Button>

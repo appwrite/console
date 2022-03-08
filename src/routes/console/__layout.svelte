@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import Shell from '$lib/layout/shell.svelte';
+	import SideNavigation from '$lib/layout/navigation.svelte';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { user } from '$lib/stores/user';
 	import { onMount } from 'svelte';
-
-	$: project = $page.params.project;
+	import Header from '$lib/layout/header.svelte';
 
 	onMount(async () => {
 		try {
@@ -18,34 +18,12 @@
 	});
 </script>
 
-<nav>
-	<ul>
-		<li>
-			<a href="/console">Appwrite</a>
-		</li>
-		{#if project}
-			<li>
-				<a href={`/console/${project}`}>Home</a>
-			</li>
-			<li>
-				<a href={`/console/${project}/users`}>Users</a>
-			</li>
-			<li>
-				<a href={`/console/${project}/database`}>Database</a>
-			</li>
-			<li>
-				<a href={`/console/${project}/storage`}>Storage</a>
-			</li>
-			<li>
-				<a href={`/console/${project}/settings`}>Settings</a>
-			</li>
-		{/if}
-	</ul>
-	{#if $user}
-		<ul>
-			<li><a href="/console/@me">{$user.name}</a></li>
-		</ul>
-	{/if}
-</nav>
-
-<slot />
+<Shell>
+	<svelte:fragment slot="header">
+		<Header />
+	</svelte:fragment>
+	<svelte:fragment slot="side">
+		<SideNavigation />
+	</svelte:fragment>
+	<slot />
+</Shell>

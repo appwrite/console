@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { InputPassword } from '../../../src/lib/elements/forms';
 
 test('shows password input', () => {
-	const { getByText, getByLabelText } = render(InputPassword, { label: 'input' });
+	const { getByText, getByLabelText } = render(InputPassword, { id: 'input', label: 'input' });
 	const input = getByLabelText('input');
 
 	expect(getByText('input')).toBeInTheDocument();
@@ -13,25 +13,30 @@ test('shows password input', () => {
 });
 
 test('shows password input - required', () => {
-	const { getByLabelText } = render(InputPassword, { label: 'input', required: true });
+	const { getByLabelText } = render(InputPassword, { id: 'input', label: 'input', required: true });
 
 	expect(getByLabelText('input')).toBeRequired();
 });
 
 test('shows password input - disabled', () => {
-	const { getByLabelText } = render(InputPassword, { label: 'input', disabled: true });
+	const { getByLabelText } = render(InputPassword, { id: 'input', label: 'input', disabled: true });
 
 	expect(getByLabelText('input')).toBeDisabled();
 });
 
 test('shows password input - autofocus', () => {
-	const { getByLabelText } = render(InputPassword, { label: 'input', autofocus: true });
+	const { getByLabelText } = render(InputPassword, {
+		id: 'input',
+		label: 'input',
+		autofocus: true
+	});
 
 	expect(getByLabelText('input')).toHaveFocus();
 });
 
 test('shows password input - placeholder', () => {
 	const { getByPlaceholderText } = render(InputPassword, {
+		id: 'input',
 		label: 'input',
 		placeholder: 'find me'
 	});
@@ -40,7 +45,11 @@ test('shows password input - placeholder', () => {
 });
 
 test('state', async () => {
-	const { component, getByLabelText } = render(InputPassword, { label: 'input', value: '' });
+	const { component, getByLabelText } = render(InputPassword, {
+		id: 'input',
+		label: 'input',
+		value: ''
+	});
 	const input = getByLabelText('input');
 
 	expect(component.value).toEqual('');

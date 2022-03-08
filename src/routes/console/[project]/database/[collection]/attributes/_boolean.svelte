@@ -31,11 +31,11 @@
 </script>
 
 <form on:submit|preventDefault={submit}>
-	<InputText label="Key" bind:value={key} required autofocus />
+	<InputText id="key" label="Key" bind:value={key} required autofocus />
 
-	<InputBoolean label="Required" bind:value={required} />
-	<InputBoolean label="Array" bind:value={array} />
-	<InputBoolean label="Default" bind:value={def} />
+	<InputBoolean id="required" label="Required" bind:value={required} />
+	<InputBoolean id="array" label="Array" bind:value={array} />
+	<InputBoolean id="default" label="Default" bind:value={def} />
 
 	<footer>
 		<Button secondary on:click={() => (show = false)}>Cancel</Button>

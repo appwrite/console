@@ -29,7 +29,7 @@
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
 		<span slot="header">Create Team</span>
-		<InputText label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
+		<InputText id="name" label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
 		<footer>
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Create</Button>

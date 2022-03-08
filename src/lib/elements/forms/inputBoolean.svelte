@@ -1,11 +1,20 @@
 <script lang="ts">
 	export let label: string;
+	export let id: string;
 	export let value = false;
 	export let required = false;
 	export let disabled = false;
 </script>
 
-<label>
-	<span>{label}</span>
-	<input type="checkbox" bind:checked={value} role="switch" {required} {disabled} />
-</label>
+<label class="label" for={id}>{label}</label>
+<div class="input-text-wrapper">
+	<input
+		{id}
+		{disabled}
+		{required}
+		type="checkbox"
+		class="switch"
+		role="switch"
+		bind:checked={value}
+	/>
+</div>

@@ -21,7 +21,7 @@
 	<h2>Overview</h2>
 	<article>
 		<form on:submit|preventDefault={update}>
-			<InputText label="Name" bind:value={$project.name} required />
+			<InputText id="name" label="Name" bind:value={$project.name} required />
 			<Button submit>Update</Button>
 		</form>
 	</article>

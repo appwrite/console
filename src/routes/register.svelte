@@ -27,9 +27,21 @@
 <h1>Register</h1>
 
 <form on:submit|preventDefault={register}>
-	<InputText label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
-	<InputEmail label="E-Mail" placeholder="test@example.com" required={true} bind:value={mail} />
-	<InputPassword label="Password" placeholder="********" required={true} bind:value={pass} />
+	<InputText id="name" label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
+	<InputEmail
+		id="email"
+		label="E-Mail"
+		placeholder="test@example.com"
+		required={true}
+		bind:value={mail}
+	/>
+	<InputPassword
+		id="password"
+		label="Password"
+		placeholder="********"
+		required={true}
+		bind:value={pass}
+	/>
 
 	<Button submit>Register</Button>
 </form>

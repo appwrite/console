@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
+	export let id: string;
 	export let label: string;
 	export let tags: string[] = [];
 	export let placeholder = '';
@@ -44,17 +45,31 @@
 	};
 </script>
 
-<!-- svelte-ignore a11y-label-has-associated-control -->
-<label>
-	<span>{label}</span>
-	<div class="tags">
-		<ul>
-			{#each tags as tag}
-				<li on:click={() => removeValue(tag)}>{tag}</li>
-			{/each}
-		</ul>
+<label class="label" for={id}>{label}</label>
+<div class="input-text-wrapper">
+	<div class="tags-input">
+		<div class="tags">
+			<ul class="tags-list">
+				{#each tags as tag}
+					<li class="tags-item">
+						<div class="tag">
+							<span class="tag-text">{tag}</span>
+							<button
+								class="x-button"
+								aria-label={`delete ${tag} tag`}
+								on:click={() => removeValue(tag)}
+							>
+								<span class="icon-cancel" aria-hidden="true" />
+							</button>
+						</div>
+					</li>
+				{/each}
+			</ul>
+		</div>
 		<input
 			type="text"
+			class="tags-input-text"
+			{id}
 			{placeholder}
 			on:keydown={handleInput}
 			on:blur={handleBlur}
@@ -62,49 +77,4 @@
 			bind:this={element}
 		/>
 	</div>
-</label>
-
-<style lang="scss">
-	.tags {
-		-webkit-appearance: none;
-		-moz-appearance: none;
-		box-sizing: content-box;
-		color: #313131;
-		height: 1.5rem;
-		line-height: 1.5rem;
-		border: solid 1px black;
-		border-radius: 0.5rem;
-		padding: 0.5rem 1rem;
-		display: block;
-		width: calc(100% - 2rem);
-		margin-bottom: 2rem;
-		background: white;
-		height: auto;
-		cursor: text;
-
-		ul {
-			display: inline;
-			white-space: pre-line;
-			li {
-				display: inline-block;
-				margin-right: 0.5rem;
-				padding: 0.25rem 0.5rem;
-				cursor: pointer;
-				-webkit-user-select: none;
-				-moz-user-select: none;
-				-ms-user-select: none;
-				user-select: none;
-			}
-		}
-
-		input {
-			display: inline-block;
-			border: none;
-			padding: 0;
-			width: auto;
-			margin: 0;
-			max-width: 100%;
-			min-width: 200px;
-		}
-	}
-</style>
+</div>

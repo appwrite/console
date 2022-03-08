@@ -9,6 +9,7 @@
 <button
 	on:click
 	{disabled}
+	class="button"
 	class:secondary
 	class:contrast
 	class:outline

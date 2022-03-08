@@ -53,5 +53,5 @@
 	{/await}
 </section>
 
-<Button on:click={() => (showCreate = true)}>Upload</Button>
+<Button on:click={() => (showCreate = true)}>Create Collection</Button>
 <Create bind:showCreate on:created={() => (request = getCollections())} />

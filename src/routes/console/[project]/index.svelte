@@ -8,8 +8,9 @@
 	import { addNotification } from '$lib/stores/notifications';
 
 	let range: '24h' | '30d' | '90d' = '30d';
-	let requestUsage = sdkForConsole.projects.getUsage($page.params.project, range);
 	let addPlatform = false;
+
+	$: requestUsage = sdkForConsole.projects.getUsage($page.params.project, range);
 
 	const getLast = (list: Models.MetricList[]) => list[list.length - 1];
 	const deletePlatform = async (id: string) => {

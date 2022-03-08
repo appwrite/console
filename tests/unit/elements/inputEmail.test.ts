@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { InputEmail } from '../../../src/lib/elements/forms';
 
 test('shows email input', () => {
-	const { getByText, getByLabelText } = render(InputEmail, { label: 'input' });
+	const { getByText, getByLabelText } = render(InputEmail, { id: 'input', label: 'input' });
 	const input = getByLabelText('input');
 
 	expect(getByText('input')).toBeInTheDocument();
@@ -13,31 +13,39 @@ test('shows email input', () => {
 });
 
 test('shows email input - required', () => {
-	const { getByLabelText } = render(InputEmail, { label: 'input', required: true });
+	const { getByLabelText } = render(InputEmail, { id: 'input', label: 'input', required: true });
 
 	expect(getByLabelText('input')).toBeRequired();
 });
 
 test('shows email input - disabled', () => {
-	const { getByLabelText } = render(InputEmail, { label: 'input', disabled: true });
+	const { getByLabelText } = render(InputEmail, { id: 'input', label: 'input', disabled: true });
 
 	expect(getByLabelText('input')).toBeDisabled();
 });
 
 test('shows email input - autofocus', () => {
-	const { getByLabelText } = render(InputEmail, { label: 'input', autofocus: true });
+	const { getByLabelText } = render(InputEmail, { id: 'input', label: 'input', autofocus: true });
 
 	expect(getByLabelText('input')).toHaveFocus();
 });
 
 test('shows email input - placeholder', () => {
-	const { getByPlaceholderText } = render(InputEmail, { label: 'input', placeholder: 'find me' });
+	const { getByPlaceholderText } = render(InputEmail, {
+		id: 'input',
+		label: 'input',
+		placeholder: 'find me'
+	});
 
 	expect(getByPlaceholderText('find me')).toBeInTheDocument();
 });
 
 test('state', async () => {
-	const { component, getByLabelText } = render(InputEmail, { label: 'input', value: '' });
+	const { component, getByLabelText } = render(InputEmail, {
+		id: 'input',
+		label: 'input',
+		value: ''
+	});
 	const input = getByLabelText('input');
 
 	expect(component.value).toEqual('');
