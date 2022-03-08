@@ -23,8 +23,13 @@ export default defineConfig<DefaultThemeConfig>({
 		})
 	],
 	site: {
-		title: 'appwrite',
+		title: '@appwrite/ui',
 		description: '',
-		theme: {}
+		theme: {
+			sidebar: {
+				categories: true,
+				style: 'explorer'
+			}
+		}
 	}
 });

@@ -10,7 +10,7 @@
 <script>
 	import { Variant } from '@vitebook/client';
 	import { ControlsAddon, EventsAddon, eventCallback } from '@vitebook/client/addons';
-	import Button from './button.svelte';
+	import { InputText, InputBoolean, Button } from '.';
 
 	let title = 'Click Me';
 	let disabled = false;
@@ -33,12 +33,8 @@
 </Variant>
 
 <ControlsAddon>
-	<label>
-		Title <input type="text" bind:value={title} />
-	</label>
-	<label style="margin-top: 24px;">
-		Disabled <input type="checkbox" bind:checked={disabled} />
-	</label>
+	<InputText id="title" label="Title" bind:value={title} />
+	<InputBoolean id="disabled" label="Disabled" bind:value={disabled} />
 </ControlsAddon>
 
 <EventsAddon />
