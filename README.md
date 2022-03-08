@@ -79,6 +79,7 @@ npm run check
 ### Consistency
 
 Before commiting always make sure to run all available tools to improve the codebase:
+
 - Formatter
   - `npm run format`
 - Tests
