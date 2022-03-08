@@ -22,7 +22,7 @@ Table of Contents:
   - [Guidelines](#guidelines)
   - [Structure](#structure)
 
-## Development
+# Development
 
 Once you've created a project and installed dependencies with `npm install`, start a development server:
 
@@ -30,7 +30,7 @@ Once you've created a project and installed dependencies with `npm install`, sta
 npm run dev
 ```
 
-### Build
+## Build
 
 ```bash
 npm run build
@@ -38,7 +38,7 @@ npm run build
 
 > You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
 
-### Tests
+## Tests
 
 ```bash
 npm test
@@ -46,7 +46,7 @@ npm test
 
 This will run tests in the `tests/` directory.
 
-### Format
+## Format
 
 Code should like everywhere the same, for this reason a code-formatter is mandatory.
 
@@ -54,13 +54,13 @@ Code should like everywhere the same, for this reason a code-formatter is mandat
 npm run format
 ```
 
-### Linter
+## Linter
 
 ```bash
 npm run lint
 ```
 
-### Diagnostics
+## Diagnostics
 
 Diagnostic tool that checks for following:
 
@@ -72,11 +72,21 @@ Diagnostic tool that checks for following:
 npm run check
 ```
 
-## Contributing
+# Contributing
 
-### Guidelines
+## Guidelines
 
-#### Performance
+### Consistency
+
+Before commiting always make sure to run all available tools to improve the codebase:
+- Formatter
+  - `npm run format`
+- Tests
+  - `npm test`
+- Diagnostics
+  - `npm run check`
+
+### Performance
 
 Page load times are a key consideration for users of all browsers and device types.
 
@@ -86,13 +96,13 @@ There are some general things we can do in front-end development:
 - Minimise blocking – content should be readable before client side processing
 - Lazy load 'supplementary' content (especially images)
 
-#### Don't Repeat Yourself (DRY)
+### Don't Repeat Yourself (DRY)
 
 If you repeat anything that has already been defined in code, refactor it so that it only ever has one representation in the codebase.
 
 If you stick to this principle, you will ensure that you will only ever need to change one implementation of a feature without worrying about needing to change any other part of the code.
 
-#### Separation of concerns
+### Separation of concerns
 
 Separate _structure_ from _presentation_ from _behaviour_ to aid maintainability and understanding.
 
@@ -103,23 +113,23 @@ Separate _structure_ from _presentation_ from _behaviour_ to aid maintainability
 - Where appropriate, use CSS or Svelte rather than Javascript for animations and transitions
 - Try to use templates when defining markup in Javascript
 
-#### Write code to be read
+### Write code to be read
 
 Follow the principles of ['Keep It Simple, Stupid'](http://en.wikipedia.org/wiki/KISS_principle) (KISS); hard to read or obfuscated code is difficult to maintain and debug. Don't be too clever; write code to be read.
 
-#### Identify technical debt
+### Identify technical debt
 
 Use code comment annotations (`@todo`) to mark parts of your code that require further work. This will allow the measurement and management of technical debt.
 
 Don't use `@fixme` (which defines things that are broken) - you shouldn't be committing broken code to the repo.
 
-#### Dependencies
+### Dependencies
 
 Please avoid introducing new dependencies to Appwrite without consulting the team. New dependencies can be very helpful but also introduce new security and privacy issues, complexity, and impact total docker image size.
 
 Adding a new dependency should have vital value on the product with minimum possible risk.
 
-### Structure
+## Structure
 
 ```
 ├── src
