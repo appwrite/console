@@ -10,17 +10,15 @@
 	let search = '';
 	let showCreate = false;
 	let offset = 0;
-	const limit = 25;
 
+	const limit = 25;
 	const project = $page.params.project;
 	const functionId = $page.params.function;
-	const getDeployments = () =>
-		sdkForProject.functions.listDeployments(functionId, search, limit, offset);
 	// const doSearch = () => {
 	// 	offset = 0;
 	// 	request = getDeployments();
 	// };
-	let request = getDeployments();
+	$: request = sdkForProject.functions.listDeployments(functionId, search, limit, offset);
 </script>
 
 <h1>Overview</h1>
@@ -63,14 +61,9 @@
 			</TableBody>
 		</Table>
 
-		<Pagination
-			{limit}
-			bind:offset
-			sum={response.total}
-			on:change={() => (request = getDeployments())}
-		/>
+		<Pagination {limit} bind:offset sum={response.total} />
 	{/await}
 </Card>
 
 <Button on:click={() => (showCreate = true)}>Upload</Button>
-<Create bind:showCreate on:created={() => (request = getDeployments())} />
+<Create bind:showCreate />

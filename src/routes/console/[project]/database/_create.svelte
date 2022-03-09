@@ -15,10 +15,10 @@
 
 	const create = async () => {
 		try {
-			await sdkForProject.database.createCollection(id, name, 'collection', [], []);
+			const bucket = await sdkForProject.database.createCollection(id, name, 'collection', [], []);
 			id = name = '';
 			showCreate = false;
-			dispatch('created');
+			dispatch('created', bucket);
 		} catch (error) {
 			addNotification({
 				type: 'error',

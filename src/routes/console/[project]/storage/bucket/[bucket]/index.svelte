@@ -13,12 +13,11 @@
 
 	const project = $page.params.project;
 	const bucket = $page.params.bucket;
-	const getBuckets = () => sdkForProject.storage.listFiles(bucket, search, limit, offset);
 	const doSearch = () => {
 		offset = 0;
-		request = getBuckets();
 	};
-	let request = getBuckets();
+
+	$: request = sdkForProject.storage.listFiles(bucket, search, limit, offset);
 </script>
 
 <form on:submit|preventDefault={doSearch}>
@@ -52,14 +51,9 @@
 			</TableBody>
 		</Table>
 
-		<Pagination
-			{limit}
-			bind:offset
-			sum={response.total}
-			on:change={() => (request = getBuckets())}
-		/>
+		<Pagination {limit} bind:offset sum={response.total} />
 	{/await}
 </Card>
 
 <Button on:click={() => (showCreate = true)}>Upload</Button>
-<Create bind:showCreate on:created={() => (request = getBuckets())} />
+<Create bind:showCreate />

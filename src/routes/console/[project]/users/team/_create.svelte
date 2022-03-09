@@ -13,10 +13,10 @@
 
 	const create = async () => {
 		try {
-			await sdkForProject.teams.create('unique()', name);
+			const team = await sdkForProject.teams.create('unique()', name);
 			name = '';
 			showCreate = false;
-			dispatch('created');
+			dispatch('created', team);
 		} catch (error) {
 			addNotification({
 				type: 'error',

@@ -5,19 +5,22 @@
 	import { Button } from '$lib/elements/forms';
 	import { Card, Pagination } from '$lib/components';
 	import Create from './_create.svelte';
+	import { goto } from '$app/navigation';
+	import type { Models } from 'src/sdk';
 
 	let search = '';
 	let showCreate = false;
 	let offset = 0;
 	const limit = 25;
-
 	const project = $page.params.project;
-	const getCollections = () => sdkForProject.database.listCollections(search, limit, offset);
 	const doSearch = () => {
 		offset = 0;
-		request = getCollections();
 	};
-	let request = getCollections();
+	const collectionCreated = async (event: CustomEvent<Models.Collection>) => {
+		await goto(`/console/${project}/database/collection/${event.detail.$id}`);
+	};
+
+	$: request = sdkForProject.database.listCollections(search, limit, offset);
 </script>
 
 <h1>Collections</h1>
@@ -49,14 +52,9 @@
 				{/each}
 			</TableBody>
 		</Table>
-		<Pagination
-			{limit}
-			bind:offset
-			sum={response.total}
-			on:change={() => (request = getCollections())}
-		/>
+		<Pagination {limit} bind:offset sum={response.total} />
 	{/await}
 </Card>
 
 <Button on:click={() => (showCreate = true)}>Create Collection</Button>
-<Create bind:showCreate on:created={() => (request = getCollections())} />
+<Create bind:showCreate on:created={collectionCreated} />

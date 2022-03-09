@@ -14,10 +14,10 @@
 
 	const create = async () => {
 		try {
-			await sdkForProject.storage.createBucket('unique()', name, 'bucket');
+			const bucket = await sdkForProject.storage.createBucket('unique()', name, 'bucket');
 			name = null;
 			showCreate = false;
-			dispatch('created');
+			dispatch('created', bucket);
 		} catch (error) {
 			addNotification({
 				type: 'error',

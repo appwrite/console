@@ -4,12 +4,10 @@
 	import { Table, TableBody, TableHeader, TableRow, TableCell } from '$lib/elements/table';
 	import { sdkForProject } from '$lib/stores/sdk';
 
-	const getLogs = () => sdkForProject.users.getLogs($page.params.user);
-
 	let offset = 0;
 	const limit = 25;
 
-	let request = getLogs();
+	$: request = sdkForProject.users.getLogs($page.params.user, limit, offset);
 </script>
 
 <h1>Activity</h1>
@@ -49,6 +47,6 @@
 			</TableBody>
 		</Table>
 
-		<Pagination {limit} bind:offset sum={response.total} on:change={() => (request = getLogs())} />
+		<Pagination {limit} bind:offset sum={response.total} />
 	{/await}
 </Card>

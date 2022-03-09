@@ -6,11 +6,9 @@
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 
-	const getSessions = () => sdkForProject.users.getSessions($page.params.user);
 	const deleteSession = async (id: string) => {
 		try {
 			await sdkForProject.users.deleteSession($page.params.user, id);
-			request = getSessions();
 		} catch (error) {
 			addNotification({
 				type: 'error',
@@ -30,10 +28,11 @@
 			});
 		}
 	};
+
 	let offset = 0;
 	const limit = 25;
 
-	let request = getSessions();
+	$: request = sdkForProject.users.getSessions($page.params.user);
 </script>
 
 <h1>Sessions</h1>
@@ -69,12 +68,7 @@
 			</TableBody>
 		</Table>
 
-		<Pagination
-			{limit}
-			bind:offset
-			sum={response.total}
-			on:change={() => (request = getSessions())}
-		/>
+		<Pagination {limit} bind:offset sum={response.total} />
 		<Button on:click={deleteAllSessions}>Logout from all sessions</Button>
 	{/await}
 </Card>

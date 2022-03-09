@@ -13,10 +13,10 @@
 
 	const create = async () => {
 		try {
-			await sdkForProject.users.create('unique()', mail, pass, name);
+			const user = await sdkForProject.users.create('unique()', mail, pass, name);
 			mail = pass = name = '';
 			showCreate = false;
-			dispatch('created');
+			dispatch('created', user);
 		} catch (error) {
 			addNotification({
 				type: 'error',

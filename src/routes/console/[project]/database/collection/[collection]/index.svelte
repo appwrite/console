@@ -7,11 +7,7 @@
 
 	let offset = 0;
 	const limit = 25;
-
 	const project = $page.params.project;
-	const getDocuments = () =>
-		sdkForProject.database.listDocuments($collection.$id, [], limit, offset);
-
 	const columns = [
 		{ key: '$id', title: '#' },
 		...$collection.attributes.map((attribute) => ({
@@ -20,7 +16,7 @@
 		}))
 	];
 
-	let request = getDocuments();
+	$: request = sdkForProject.database.listDocuments($collection.$id, [], limit, offset);
 </script>
 
 <h1>Documents</h1>
@@ -49,11 +45,6 @@
 			</TableBody>
 		</Table>
 
-		<Pagination
-			{limit}
-			bind:offset
-			sum={response.total}
-			on:change={() => (request = getDocuments())}
-		/>
+		<Pagination {limit} bind:offset sum={response.total} />
 	{/await}
 </Card>

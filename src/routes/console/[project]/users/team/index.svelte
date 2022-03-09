@@ -5,6 +5,8 @@
 	import { Button } from '$lib/elements/forms';
 	import { Card, Pagination } from '$lib/components';
 	import Create from './_create.svelte';
+	import { goto } from '$app/navigation';
+	import type { Models } from 'src/sdk';
 
 	let search = '';
 	let showCreate = false;
@@ -12,19 +14,15 @@
 	const limit = 25;
 
 	const project = $page.params.project;
-	const getTeams = () => sdkForProject.teams.list(search, limit, offset);
-	const doSearch = () => {
-		offset = 0;
-		request = getTeams();
+	const teamCreated = async (event: CustomEvent<Models.Team>) => {
+		await goto(`/console/${project}/users/team/${event.detail.$id}`);
 	};
-	let request = getTeams();
+	$: request = sdkForProject.teams.list(search, limit, offset);
 </script>
 
 <h1>Teams</h1>
 <Card>
-	<form on:submit|preventDefault={doSearch}>
-		<input type="search" bind:value={search} />
-	</form>
+	<input type="search" bind:value={search} />
 </Card>
 
 <Card>
@@ -52,9 +50,9 @@
 			</TableBody>
 		</Table>
 
-		<Pagination {limit} bind:offset sum={response.total} on:change={() => (request = getTeams())} />
+		<Pagination {limit} bind:offset sum={response.total} />
 	{/await}
 </Card>
 
-<Button on:click={() => (showCreate = true)}>Create Team</Button>
-<Create bind:showCreate on:created={() => (request = getTeams())} />
+<Button>Create Team</Button>
+<Create bind:showCreate on:created={teamCreated} />

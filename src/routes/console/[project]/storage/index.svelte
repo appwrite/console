@@ -1,30 +1,30 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Table, TableRow, TableBody, TableHeader, TableCell } from '$lib/elements/table';
 	import { Button } from '$lib/elements/forms';
 	import { Card, Pagination } from '$lib/components';
 	import Create from './_create.svelte';
+	import type { Models } from 'src/sdk';
 
 	let search = '';
 	let showCreate = false;
 	let offset = 0;
-	const limit = 25;
 
+	const limit = 25;
 	const project = $page.params.project;
-	const getCollections = () => sdkForProject.storage.listBuckets(search, limit, offset);
-	const doSearch = () => {
-		offset = 0;
-		request = getCollections();
+	const bucketCreated = async (event: CustomEvent<Models.Bucket>) => {
+		showCreate = false;
+		await goto(`/console/${project}/storage/bucket/${event.detail.$id}`);
 	};
-	let request = getCollections();
+
+	$: request = sdkForProject.storage.listBuckets(search, limit, offset);
 </script>
 
 <h1>Buckets</h1>
 <Card>
-	<form on:submit|preventDefault={doSearch}>
-		<input type="search" bind:value={search} />
-	</form>
+	<input type="search" bind:value={search} />
 </Card>
 
 <Card>
@@ -47,14 +47,9 @@
 				{/each}
 			</TableBody>
 		</Table>
-		<Pagination
-			{limit}
-			bind:offset
-			sum={response.total}
-			on:change={() => (request = getCollections())}
-		/>
+		<Pagination {limit} bind:offset sum={response.total} />
 	{/await}
 </Card>
 
 <Button on:click={() => (showCreate = true)}>Create Bucket</Button>
-<Create bind:showCreate on:created={() => (request = getCollections())} />
+<Create bind:showCreate on:created={bucketCreated} />

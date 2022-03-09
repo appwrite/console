@@ -12,12 +12,10 @@
 	const limit = 25;
 
 	const project = $page.params.project;
-	const getFunctions = () => sdkForProject.functions.list(search, limit, offset);
 	const doSearch = () => {
 		offset = 0;
-		request = getFunctions();
 	};
-	let request = getFunctions();
+	$: request = sdkForProject.functions.list(search, limit, offset);
 </script>
 
 <h1>Functions</h1>
@@ -47,14 +45,9 @@
 				{/each}
 			</TableBody>
 		</Table>
-		<Pagination
-			{limit}
-			bind:offset
-			sum={response.total}
-			on:change={() => (request = getFunctions())}
-		/>
+		<Pagination {limit} bind:offset sum={response.total} />
 	{/await}
 </Card>
 
 <Button on:click={() => (showCreate = true)}>Create Function</Button>
-<Create bind:showCreate on:created={() => (request = getFunctions())} />
+<Create bind:showCreate />

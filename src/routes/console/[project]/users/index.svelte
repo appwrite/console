@@ -5,6 +5,8 @@
 	import { Button } from '$lib/elements/forms';
 	import { Table, TableHeader, TableBody, TableRow, TableCell } from '$lib/elements/table';
 	import Create from './_create.svelte';
+	import type { Models } from 'src/sdk';
+	import { goto } from '$app/navigation';
 
 	let search = '';
 	let showCreate = false;
@@ -13,20 +15,15 @@
 
 	const project = $page.params.project;
 	const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
-	const getUsers = () =>
-		sdkForProject.users.list(search, limit, offset, undefined, undefined, 'DESC');
-	const doSearch = () => {
-		offset = 0;
-		request = getUsers();
+	const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
+		await goto(`/console/${project}/users/user/${event.detail.$id}`);
 	};
-	let request = getUsers();
+	$: request = sdkForProject.users.list(search, limit, offset, undefined, undefined, 'DESC');
 </script>
 
 <h1>Users</h1>
 <Card>
-	<form on:submit|preventDefault={doSearch}>
-		<input type="search" bind:value={search} />
-	</form>
+	<input type="search" bind:value={search} />
 </Card>
 <Card>
 	{#await request}
@@ -44,7 +41,7 @@
 				{#each response.users as user}
 					<TableRow>
 						<TableCell>
-							<img src={getAvatar(user.name)} alt={user.name} class="avatar" />
+							<img src={getAvatar(user.name)} alt={user.name} />
 						</TableCell>
 						<TableCell>
 							<a href={`/console/${project}/users/user/${user.$id}`}>
@@ -58,15 +55,9 @@
 				{/each}
 			</TableBody>
 		</Table>
-		<Pagination {limit} bind:offset sum={response.total} on:change={() => (request = getUsers())} />
+		<Pagination {limit} bind:offset sum={response.total} />
 	{/await}
 </Card>
 
 <Button on:click={() => (showCreate = true)}>Create User</Button>
-<Create bind:showCreate on:created={() => (request = getUsers())} />
-
-<style>
-	.avatar {
-		border-radius: 50%;
-	}
-</style>
+<Create bind:showCreate on:created={userCreated} />
