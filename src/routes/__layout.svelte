@@ -27,10 +27,16 @@
 
 <Notifications />
 
-<slot />
+<main>
+	<slot />
+</main>
 
-<style global>
-	:root {
+<style>
+	main {
+		max-width: 48rem;
+		margin: 0 auto;
+	}
+	:global(:root) {
 		--main-color-hue: 343;
 		--color-primary: var(--main-color-hue) 87% 56%; /*#f02e65*/
 		--color-primary-hover: var(--main-color-hue) 100% 72%; /*#ff729b*/

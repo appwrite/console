@@ -6,6 +6,7 @@
 	import { user } from '$lib/stores/user';
 	import { onMount } from 'svelte';
 	import Header from '$lib/layout/header.svelte';
+	import Notifications from '$lib/layout/notifications.svelte';
 
 	onMount(async () => {
 		try {
@@ -18,6 +19,7 @@
 	});
 </script>
 
+<Notifications />
 <Shell>
 	<svelte:fragment slot="header">
 		<Header />
