@@ -6,6 +6,7 @@
 	import type { Models } from 'src/sdk';
 	import CreatePlatform from './_createPlatform.svelte';
 	import { addNotification } from '$lib/stores/notifications';
+	import { Card } from '$lib/components';
 
 	let range: '24h' | '30d' | '90d' = '30d';
 	let addPlatform = false;
@@ -32,65 +33,69 @@
 	};
 </script>
 
-<article>
-	{#await requestUsage}
-		<div aria-busy="true" />
-	{:then usage}
-		<div class="grid">
-			<div>
-				<h2>{getLast(usage.users)}</h2>
-				<small>Users</small>
-			</div>
-			<div>
-				<h2>{getLast(usage.documents)}</h2>
-				<small>Documents</small>
-			</div>
-			<div>
-				<h2>{getLast(usage.functions)}</h2>
-				<small>Executions</small>
-			</div>
-			<div>
-				<h2>{getLast(usage.storage)}</h2>
-				<small>Storage</small>
-			</div>
-		</div>
-	{/await}
-</article>
-
 {#if $project}
-	<h2>Platforms</h2>
-	<article>
-		{#each $project.platforms as platform}
+	<h1>{$project.name}</h1>
+	<Card>
+		<button on:click={() => (range = '30d')}>30d</button>
+		<button on:click={() => (range = '90d')}>90d</button>
+		{#await requestUsage}
+			<div aria-busy="true" />
+		{:then usage}
 			<div class="grid">
 				<div>
-					{platform.type}
+					<h2>{getLast(usage.users)}</h2>
+					<small>Users</small>
 				</div>
 				<div>
-					<p>
-						{platform.name}
-						<br />
-						<small>{platform.hostname}</small>
-					</p>
-				</div>
-				<div />
-				<div>
-					<Button secondary>Update</Button>
+					<h2>{getLast(usage.documents)}</h2>
+					<small>Documents</small>
 				</div>
 				<div>
-					<Button on:click={() => deletePlatform(platform.$id)}>Delete</Button>
+					<h2>{getLast(usage.functions)}</h2>
+					<small>Executions</small>
+				</div>
+				<div>
+					<h2>{getLast(usage.storage)}</h2>
+					<small>Storage</small>
 				</div>
 			</div>
-		{:else}
-			<div class="grid">
-				<div>
-					<h4>No Platforms Added to Your Project</h4>
-					<p>Add your first platform and build your new application.</p>
+		{/await}
+	</Card>
+	<Card>
+		<h2>Platforms</h2>
+		<article>
+			{#each $project.platforms as platform}
+				<div class="grid">
+					<div>
+						{platform.type}
+					</div>
+					<div>
+						<p>
+							{platform.name}
+							<br />
+							<small>{platform.hostname}</small>
+						</p>
+					</div>
+					<div />
+					<div>
+						<Button secondary>Update</Button>
+					</div>
+					<div>
+						<Button on:click={() => deletePlatform(platform.$id)}>Delete</Button>
+					</div>
 				</div>
-			</div>
-		{/each}
-	</article>
-	<Button on:click={() => (addPlatform = true)}>Add Platform</Button>
-	<CreatePlatform bind:show={addPlatform} />
+			{:else}
+				<div class="grid">
+					<div>
+						<h4>No Platforms Added to Your Project</h4>
+						<p>Add your first platform and build your new application.</p>
+					</div>
+				</div>
+			{/each}
+		</article>
+		<Button on:click={() => (addPlatform = true)}>Add Platform</Button>
+		<CreatePlatform bind:show={addPlatform} />
+	</Card>
 {/if}
 
 <style>

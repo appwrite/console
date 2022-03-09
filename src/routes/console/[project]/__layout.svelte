@@ -2,9 +2,9 @@
 	import { browser } from '$app/env';
 	import { page } from '$app/stores';
 	import { sdkForConsole, setProject } from '$lib/stores/sdk';
-	import type { Models } from 'src/sdk';
 	import { collection } from './database/collection/[collection]/store';
 	import { project } from './store';
+	import type { Models } from 'src/sdk';
 
 	type Attributes =
 		| Models.AttributeBoolean

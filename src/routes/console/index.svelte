@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Card } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import type { Models } from 'src/sdk';
@@ -37,13 +38,15 @@
 	<div aria-busy="true" />
 {:then organizations}
 	{#each organizations as organization}
-		<h2>{organization.name}</h2>
-		{#each organization.projects as project}
-			<a href={`/console/${project.$id}`}><article>{project.name}</article></a>
-		{/each}
-		<article class="new-project" on:click={() => createProject(organization.$id)}>
-			New Project
-		</article>
+		<h1>{organization.name}</h1>
+		<Card>
+			{#each organization.projects as project}
+				<a href={`/console/${project.$id}`}><article>{project.name}</article></a>
+			{/each}
+			<article class="new-project" on:click={() => createProject(organization.$id)}>
+				New Project
+			</article>
+		</Card>
 	{/each}
 	<Button on:click={() => (addOrganization = true)}>Add Organization</Button>
 {/await}

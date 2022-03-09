@@ -1,5 +1,5 @@
 <script context="module">
-	import 'ui/src/_index.scss';
+	import 'aw-labs-ui/src/_index.scss';
 </script>
 
 <script lang="ts">
