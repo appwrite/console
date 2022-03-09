@@ -7,9 +7,7 @@ const config = {
 	// for more information about preprocessors
 	preprocess: preprocess(),
 	kit: {
-		adapter: adapter({
-			fallback: 'index.html'
-		}),
+		adapter: adapter(),
 		prerender: {
 			default: true
 		},
