@@ -43,22 +43,3 @@
 	<p>PLEASE NOTE: User deletion is irreversible.</p>
 	<Button on:click={() => deleteUser($user.$id)}>Delete User</Button>
 </Card>
-
-<style lang="scss">
-	article.overview {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-
-		.avatar {
-			border-radius: 50%;
-		}
-	}
-
-	article.danger {
-		background-color: #f53d3d;
-		p {
-			color: #ffffff;
-		}
-	}
-</style>

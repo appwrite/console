@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-
 	import { page } from '$app/stores';
 	import { Button } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 
-	const request = sdkForProject.storage.getFile($page.params.file);
+	const bucket = $page.params.bucket;
+	const request = sdkForProject.storage.getFile($page.params.bucket, $page.params.file);
 
 	const deleteFile = async () => {
 		try {
@@ -14,7 +14,7 @@
 				return;
 			}
 
-			await sdkForProject.storage.deleteFile($page.params.file);
+			await sdkForProject.storage.deleteFile(bucket, $page.params.file);
 			await goto(`/console/${$page.params.project}/storage`);
 		} catch (error) {
 			addNotification({
@@ -27,11 +27,11 @@
 
 {#await request}
 	<div aria-busy="true" />
-{:then user}
-	<p>Name: {user.name}</p>
-	<p>Type: {user.mimeType}</p>
-	<p>Size: {user.sizeOriginal}</p>
-	<p>Create: {user.dateCreated}</p>
+{:then file}
+	<p>Name: {file.name}</p>
+	<p>Type: {file.mimeType}</p>
+	<p>Size: {file.sizeOriginal}</p>
+	<p>Create: {file.dateCreated}</p>
 {/await}
 
 <Button contrast on:click={deleteFile}>Delete File</Button>

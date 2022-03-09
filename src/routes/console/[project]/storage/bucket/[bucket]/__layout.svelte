@@ -2,25 +2,23 @@
 	import { browser } from '$app/env';
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
-	import { collection } from './store';
+	import { bucket } from './store';
 	import Tabs from './_tabs.svelte';
 
 	const project = $page.params.project;
-	const collectionId = $page.params.collection;
+	const bucketId = $page.params.bucket;
 
 	$: {
 		if (browser) {
-			collection.load(collectionId);
+			bucket.load(bucketId);
 		}
 	}
 </script>
 
-<Back href={`/console/${project}/database`}>Database</Back>
-
-{#if $collection}
-	<h1>{$collection.name}</h1>
+<Back href={`/console/${project}/storage`}>Storage</Back>
+{#if $bucket}
+	<h1>{$bucket.name}</h1>
 	<Tabs />
+
 	<slot />
-{:else}
-	<div aria-busy="true" />
 {/if}

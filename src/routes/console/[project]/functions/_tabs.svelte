@@ -1,0 +1,17 @@
+<script>
+	import { page } from '$app/stores';
+
+	$: project = $page.params.project;
+</script>
+
+<ul class="tabs">
+	<li class="tabs-item">
+		<a
+			class="tabs-button is-selected"
+			href={`/console/${project}/storage`}
+			class:is-selected={$page.url.pathname === `/console/${project}/functions/`}
+		>
+			<span class="text">Functions</span>
+		</a>
+	</li>
+</ul>

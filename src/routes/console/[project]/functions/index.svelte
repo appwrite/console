@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Table, TableHeader, TableCell, TableBody, TableRow } from '$lib/elements/table';
+	import { Table, TableRow, TableBody, TableHeader, TableCell } from '$lib/elements/table';
 	import { Button } from '$lib/elements/forms';
 	import { Card, Pagination } from '$lib/components';
 	import Create from './_create.svelte';
@@ -12,15 +12,15 @@
 	const limit = 25;
 
 	const project = $page.params.project;
-	const getTeams = () => sdkForProject.teams.list(search, limit, offset);
+	const getFunctions = () => sdkForProject.functions.list(search, limit, offset);
 	const doSearch = () => {
 		offset = 0;
-		request = getTeams();
+		request = getFunctions();
 	};
-	let request = getTeams();
+	let request = getFunctions();
 </script>
 
-<h1>Teams</h1>
+<h1>Functions</h1>
 <Card>
 	<form on:submit|preventDefault={doSearch}>
 		<input type="search" bind:value={search} />
@@ -35,26 +35,26 @@
 			<TableHeader>
 				<TableCell>#</TableCell>
 				<TableCell>Name</TableCell>
-				<TableCell>Members</TableCell>
 			</TableHeader>
 			<TableBody>
-				{#each response.teams as team}
+				{#each response.functions as func}
 					<TableRow>
 						<TableCell>
-							<a href={`/console/${project}/users/team/${team.$id}`}>
-								{team.$id}
-							</a>
+							<a href={`/console/${project}/functions/function/${func.$id}`}>{func.$id}</a>
 						</TableCell>
-						<TableCell>{team.name}</TableCell>
-						<TableCell>{team.total}</TableCell>
+						<TableCell>{func.name}</TableCell>
 					</TableRow>
 				{/each}
 			</TableBody>
 		</Table>
-
-		<Pagination {limit} bind:offset sum={response.total} on:change={() => (request = getTeams())} />
+		<Pagination
+			{limit}
+			bind:offset
+			sum={response.total}
+			on:change={() => (request = getFunctions())}
+		/>
 	{/await}
 </Card>
 
-<Button on:click={() => (showCreate = true)}>Create Team</Button>
-<Create bind:showCreate on:created={() => (request = getTeams())} />
+<Button on:click={() => (showCreate = true)}>Create Function</Button>
+<Create bind:showCreate on:created={() => (request = getFunctions())} />

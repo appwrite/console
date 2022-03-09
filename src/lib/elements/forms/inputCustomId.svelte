@@ -40,7 +40,12 @@
 		bind:value
 		bind:this={element}
 	/>
-	<button class="input-button" aria-label="Switch" on:click={() => (unique = !unique)}>
+	<button
+		class="input-button"
+		aria-label="Switch"
+		on:click={() => (unique = !unique)}
+		type="button"
+	>
 		<span class:icon-edit={unique} class:icon-shuffle={!unique} aria-hidden="true" />
 	</button>
 </div>

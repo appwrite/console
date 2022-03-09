@@ -1,3 +1,4 @@
+import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from 'src/sdk';
 import { writable } from 'svelte/store';
 
@@ -17,6 +18,9 @@ function createCollection() {
 	return {
 		subscribe,
 		set,
+		load: async (collectionId: string) => {
+			set(await sdkForProject.database.getCollection(collectionId));
+		},
 		addAttribute: (attribute: Attributes) =>
 			update((n) => {
 				n.attributes.push(attribute);

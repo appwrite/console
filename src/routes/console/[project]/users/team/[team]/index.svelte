@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	import { page } from '$app/stores';
+	import { Card } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
 	import { sdkForProject } from '$lib/stores/sdk';
 
@@ -34,13 +35,13 @@
 	<div aria-busy="true" />
 {:then [team, members]}
 	<h1>Overview</h1>
-	<article class="overview">
+	<Card>
 		<p>{team.$id}</p>
 		<p>Created {team.dateCreated}</p>
-	</article>
+	</Card>
 
 	<h1>Members</h1>
-	<article>
+	<Card>
 		{#each members.memberships as membership}
 			<p>
 				{membership.name}
@@ -53,15 +54,7 @@
 		{:else}
 			No members found.
 		{/each}
-	</article>
+	</Card>
 
 	<Button on:click={() => deleteTeam(team.$id)}>Delete Team</Button>
 {/await}
-
-<style lang="scss">
-	article.overview {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-</style>

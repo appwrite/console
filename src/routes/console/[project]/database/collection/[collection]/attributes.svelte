@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Card } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
 	import { Table, TableCell, TableHeader, TableBody, TableRow } from '$lib/elements/table';
 	import Create from './attributes/_create.svelte';
@@ -7,7 +8,9 @@
 	let showCreate = false;
 </script>
 
-<section>
+<h1>Attributes</h1>
+
+<Card>
 	<Table>
 		<TableHeader>
 			<TableCell>Status</TableCell>
@@ -24,7 +27,7 @@
 			{/each}
 		</TableBody>
 	</Table>
-</section>
+</Card>
 
 <Button on:click={() => (showCreate = true)}>Create Attribute</Button>
 <Create bind:show={showCreate} />

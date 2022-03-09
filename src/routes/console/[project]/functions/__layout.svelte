@@ -6,9 +6,9 @@
 	const project = $page.params.project;
 </script>
 
-{#if $page.url.pathname === `/console/${project}/storage/` || $page.url.pathname === `/console/${project}/storage/usage/`}
+{#if $page.url.pathname === `/console/${project}/functions/`}
 	<Back href={`/console/${project}`}>Home</Back>
-	<h1>Storage</h1>
+	<h1>Functions</h1>
 	<Tabs />
 {/if}
 <slot />

@@ -2,25 +2,23 @@
 	import { browser } from '$app/env';
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
-	import { collection } from './store';
+	import { func } from './store';
 	import Tabs from './_tabs.svelte';
 
 	const project = $page.params.project;
-	const collectionId = $page.params.collection;
+	const functionId = $page.params.function;
 
 	$: {
 		if (browser) {
-			collection.load(collectionId);
+			func.load(functionId);
 		}
 	}
 </script>
 
-<Back href={`/console/${project}/database`}>Database</Back>
-
-{#if $collection}
-	<h1>{$collection.name}</h1>
+<Back href={`/console/${project}/functions`}>Functions</Back>
+{#if $func}
+	<h1>{$func.name}</h1>
 	<Tabs />
+
 	<slot />
-{:else}
-	<div aria-busy="true" />
 {/if}

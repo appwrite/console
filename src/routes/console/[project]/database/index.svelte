@@ -20,6 +20,7 @@
 	let request = getCollections();
 </script>
 
+<h1>Collections</h1>
 <Card>
 	<form on:submit|preventDefault={doSearch}>
 		<input type="search" bind:value={search} />

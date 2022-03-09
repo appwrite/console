@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Table, TableRow, TableBody, TableHeader, TableCell } from '$lib/elements/table';
-	import { Pagination } from '$lib/components';
+	import { Card, Pagination } from '$lib/components';
 	import { collection } from './store';
 
 	let offset = 0;
@@ -23,7 +23,8 @@
 	let request = getDocuments();
 </script>
 
-<section>
+<h1>Documents</h1>
+<Card>
 	{#await request}
 		<div aria-busy="true" />
 	{:then response}
@@ -51,8 +52,8 @@
 		<Pagination
 			{limit}
 			bind:offset
-			sum={response.sum}
+			sum={response.total}
 			on:change={() => (request = getDocuments())}
 		/>
 	{/await}
-</section>
+</Card>

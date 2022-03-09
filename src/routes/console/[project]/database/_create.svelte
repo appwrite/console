@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Modal } from '$lib/components';
-	import { Button, InputFile } from '$lib/elements/forms';
+	import { Button, InputText, InputCustomId } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 
 	import { sdkForProject } from '$lib/stores/sdk';
@@ -10,12 +10,13 @@
 
 	const dispatch = createEventDispatcher();
 
-	let files: FileList;
+	let id = '';
+	let name = '';
 
 	const create = async () => {
 		try {
-			await sdkForProject.storage.createFile('unique()', files[0]);
-			files = null;
+			await sdkForProject.database.createCollection(id, name, 'collection', [], []);
+			id = name = '';
 			showCreate = false;
 			dispatch('created');
 		} catch (error) {
@@ -29,11 +30,12 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
-		<span slot="header">Upload File</span>
-		<InputFile id="file" label="File" bind:files required />
+		<span slot="header">Create Collection</span>
+		<InputCustomId label="ID" id="id" bind:value={id} />
+		<InputText label="Name" id="name" bind:value={name} />
 		<footer>
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-			<Button submit>Upload</Button>
+			<Button submit>Create</Button>
 		</footer>
 	</Modal>
 </form>

@@ -8,17 +8,17 @@
 	<li class="tabs-item">
 		<a
 			class="tabs-button is-selected"
-			href={`/console/${project}/database`}
-			class:is-selected={$page.url.pathname === `/console/${project}/database/`}
+			href={`/console/${project}/storage`}
+			class:is-selected={$page.url.pathname === `/console/${project}/storage/`}
 		>
-			<span class="text">Collections</span>
+			<span class="text">Buckets</span>
 		</a>
 	</li>
 	<li class="tabs-item">
 		<a
 			class="tabs-button is-selected"
-			href={`/console/${project}/database/usage`}
-			class:is-selected={$page.url.pathname === `/console/${project}/database/usage/`}
+			href={`/console/${project}/storage/usage`}
+			class:is-selected={$page.url.pathname === `/console/${project}/storage/usage/`}
 		>
 			<span class="text">Usage</span>
 		</a>

@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
 
 	$: project = $page.params.project;
-	$: collectionId = $page.params.collection;
-	$: path = `/console/${project}/database/collection/${collectionId}`;
+	$: functionId = $page.params.function;
+	$: path = `/console/${project}/functions/function/${functionId}`;
 </script>
 
 <ul class="tabs">
@@ -13,32 +13,32 @@
 			href={path}
 			class:is-selected={$page.url.pathname === `${path}/`}
 		>
-			<span class="text">Documents</span>
+			<span class="text">Files</span>
 		</a>
 	</li>
 	<li class="tabs-item">
 		<a
 			class="tabs-button"
-			href={`${path}/attributes`}
-			class:is-selected={$page.url.pathname.startsWith(`${path}/attributes`)}
+			href={`${path}/monitors`}
+			class:is-selected={$page.url.pathname === `${path}/monitors/`}
 		>
-			<span class="text">Attributes</span>
+			<span class="text">Monitors</span>
 		</a>
 	</li>
 	<li class="tabs-item">
 		<a
 			class="tabs-button"
-			href={`${path}/indexes`}
-			class:is-selected={$page.url.pathname.startsWith(`${path}/indexes`)}
+			href={`${path}/logs`}
+			class:is-selected={$page.url.pathname === `${path}/logs/`}
 		>
-			<span class="text">Indexes</span>
+			<span class="text">Logs</span>
 		</a>
 	</li>
 	<li class="tabs-item">
 		<a
 			class="tabs-button"
 			href={`${path}/settings`}
-			class:is-selected={$page.url.pathname.startsWith(`${path}/settings`)}
+			class:is-selected={$page.url.pathname === `${path}/settings/`}
 		>
 			<span class="text">Settings</span>
 		</a>
