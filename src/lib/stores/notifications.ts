@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 
 export type Notification = {
 	id: number;
-	type: 'success' | 'error' | 'info';
+	type: 'success' | 'error' | 'info' | 'warning';
 	dismissible?: boolean;
 	timeout?: number;
 	message: string;

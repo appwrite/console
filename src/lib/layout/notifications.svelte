@@ -4,16 +4,17 @@
 </script>
 
 {#if $notifications}
-	<section>
-		{#each $notifications as notification (notification.id)}
-			<Notification
-				type={notification.type}
-				dismissible={notification.dismissible}
-				on:dismiss={() => dismissNotification(notification.id)}
-			>
-				{notification.message}
-			</Notification>
-		{/each}
+	<section class="toaster">
+		<ul class="toaster-list">
+			{#each $notifications as notification (notification.id)}
+				<Notification
+					type={notification.type}
+					on:dismiss={() => dismissNotification(notification.id)}
+				>
+					{notification.message}
+				</Notification>
+			{/each}
+		</ul>
 	</section>
 {/if}
 
@@ -23,11 +24,7 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
-		width: 100%;
-		display: flex;
-		margin-top: 1rem;
-		justify-content: center;
-		flex-direction: column;
 		z-index: 1000;
+		margin-bottom: 0.5rem;
 	}
 </style>
