@@ -355,7 +355,16 @@ namespace Models {
 		/**
 		 * Collection attributes.
 		 */
-		attributes: string[];
+		attributes: (
+			| AttributeBoolean
+			| AttributeEmail
+			| AttributeEnum
+			| AttributeFloat
+			| AttributeInteger
+			| AttributeIp
+			| AttributeString
+			| AttributeUrl
+		)[];
 		/**
 		 * Collection indexes.
 		 */

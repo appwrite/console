@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Pagination } from '$lib/components';
+	import { Card, Pagination } from '$lib/components';
 	import { Table, TableBody, TableHeader, TableRow, TableCell } from '$lib/elements/table';
 	import { sdkForProject } from '$lib/stores/sdk';
 
@@ -12,39 +12,43 @@
 	let request = getLogs();
 </script>
 
-{#await request}
-	<div aria-busy="true" />
-{:then response}
-	<Table>
-		<TableHeader>
-			<TableCell>Date</TableCell>
-			<TableCell>Event</TableCell>
-			<TableCell>Client</TableCell>
-			<TableCell>Location</TableCell>
-			<TableCell>IP</TableCell>
-		</TableHeader>
-		<TableBody>
-			{#each response.logs as log}
-				<TableRow>
-					<TableCell>{log.time}</TableCell>
-					<TableCell>{log.event}</TableCell>
-					<TableCell>{log.clientName} {log.clientVersion} on {log.osName} {log.osVersion}</TableCell
-					>
-					<TableCell>
-						{#if log.countryCode !== '--'}
-							<img
-								src={sdkForProject.avatars.getFlag(log.countryCode, 32, 32).toString()}
-								alt={log.countryName}
-							/>{log.countryName}
-						{:else}
-							Unknown
-						{/if}
-					</TableCell>
-					<TableCell>{log.ip}</TableCell>
-				</TableRow>
-			{/each}
-		</TableBody>
-	</Table>
+<h1>Activity</h1>
+<Card>
+	{#await request}
+		<div aria-busy="true" />
+	{:then response}
+		<Table>
+			<TableHeader>
+				<TableCell>Date</TableCell>
+				<TableCell>Event</TableCell>
+				<TableCell>Client</TableCell>
+				<TableCell>Location</TableCell>
+				<TableCell>IP</TableCell>
+			</TableHeader>
+			<TableBody>
+				{#each response.logs as log}
+					<TableRow>
+						<TableCell>{log.time}</TableCell>
+						<TableCell>{log.event}</TableCell>
+						<TableCell
+							>{log.clientName} {log.clientVersion} on {log.osName} {log.osVersion}</TableCell
+						>
+						<TableCell>
+							{#if log.countryCode !== '--'}
+								<img
+									src={sdkForProject.avatars.getFlag(log.countryCode, 32, 32).toString()}
+									alt={log.countryName}
+								/>{log.countryName}
+							{:else}
+								Unknown
+							{/if}
+						</TableCell>
+						<TableCell>{log.ip}</TableCell>
+					</TableRow>
+				{/each}
+			</TableBody>
+		</Table>
 
-	<Pagination {limit} bind:offset sum={response.sum} on:change={() => (request = getLogs())} />
-{/await}
+		<Pagination {limit} bind:offset sum={response.total} on:change={() => (request = getLogs())} />
+	{/await}
+</Card>

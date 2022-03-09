@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Pagination } from '$lib/components';
+	import { Card, Pagination } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
 	import { Table, TableCell, TableHeader, TableBody, TableRow } from '$lib/elements/table';
 	import { addNotification } from '$lib/stores/notifications';
@@ -36,35 +36,45 @@
 	let request = getSessions();
 </script>
 
-{#await request}
-	<div aria-busy="true" />
-{:then response}
-	<Table>
-		<TableHeader>
-			<TableCell>Browser</TableCell>
-			<TableCell>Country</TableCell>
-			<TableCell>OS</TableCell>
-			<TableCell>IP</TableCell>
-			<TableCell />
-		</TableHeader>
-		<TableBody>
-			{#each response.sessions as session}
-				<TableRow>
-					<TableCell
-						><img
-							src={sdkForProject.avatars.getBrowser(session.clientCode, 32, 32).toString()}
-							alt={session.clientName}
-						/></TableCell
-					>
-					<TableCell>{session.countryName}</TableCell>
-					<TableCell>{session.osName}</TableCell>
-					<TableCell>{session.ip}</TableCell>
-					<TableCell><Button on:click={() => deleteSession(session.$id)}>Logout</Button></TableCell>
-				</TableRow>
-			{/each}
-		</TableBody>
-	</Table>
+<h1>Sessions</h1>
+<Card>
+	{#await request}
+		<div aria-busy="true" />
+	{:then response}
+		<Table>
+			<TableHeader>
+				<TableCell>Browser</TableCell>
+				<TableCell>Country</TableCell>
+				<TableCell>OS</TableCell>
+				<TableCell>IP</TableCell>
+				<TableCell />
+			</TableHeader>
+			<TableBody>
+				{#each response.sessions as session}
+					<TableRow>
+						<TableCell
+							><img
+								src={sdkForProject.avatars.getBrowser(session.clientCode, 32, 32).toString()}
+								alt={session.clientName}
+							/></TableCell
+						>
+						<TableCell>{session.countryName}</TableCell>
+						<TableCell>{session.osName}</TableCell>
+						<TableCell>{session.ip}</TableCell>
+						<TableCell
+							><Button on:click={() => deleteSession(session.$id)}>Logout</Button></TableCell
+						>
+					</TableRow>
+				{/each}
+			</TableBody>
+		</Table>
 
-	<Pagination {limit} bind:offset sum={response.sum} on:change={() => (request = getSessions())} />
-	<Button on:click={deleteAllSessions}>Logout from all sessions</Button>
-{/await}
+		<Pagination
+			{limit}
+			bind:offset
+			sum={response.total}
+			on:change={() => (request = getSessions())}
+		/>
+		<Button on:click={deleteAllSessions}>Logout from all sessions</Button>
+	{/await}
+</Card>

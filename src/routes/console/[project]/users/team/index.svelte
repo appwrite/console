@@ -20,6 +20,7 @@
 	let request = getTeams();
 </script>
 
+<h1>Teams</h1>
 <form on:submit|preventDefault={doSearch}>
 	<input type="search" bind:value={search} />
 </form>
@@ -42,13 +43,13 @@
 							</a>
 						</TableCell>
 						<TableCell>{team.name}</TableCell>
-						<TableCell>{team.sum}</TableCell>
+						<TableCell>{team.total}</TableCell>
 					</TableRow>
 				{/each}
 			</TableBody>
 		</Table>
 
-		<Pagination {limit} bind:offset sum={response.sum} on:change={() => (request = getTeams())} />
+		<Pagination {limit} bind:offset sum={response.total} on:change={() => (request = getTeams())} />
 	{/await}
 </section>
 

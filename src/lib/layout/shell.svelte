@@ -31,4 +31,10 @@
 	.grid-with-side {
 		min-height: 100vh;
 	}
+
+	.main-content {
+		max-width: 48rem;
+		width: 100%;
+		margin: 0 auto;
+	}
 </style>

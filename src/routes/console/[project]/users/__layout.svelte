@@ -1,24 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import Tabs from './_tabs.svelte';
 
 	$: project = $page.params.project;
 </script>
 
-<h1>Users</h1>
-<nav>
-	<ul>
-		<li>
-			<a href={`/console/${project}/users`}>Users</a>
-		</li>
-		<li>
-			<a href={`/console/${project}/users/team`}>Teams</a>
-		</li>
-		<li>
-			<a href={`/console/${project}/users/settings`}>Settings</a>
-		</li>
-		<li>
-			<a href={`/console/${project}/users/usage`}>Usage</a>
-		</li>
-	</ul>
-</nav>
+{#if !($page.url.pathname.startsWith(`/console/${project}/users/user/`) || $page.url.pathname.startsWith(`/console/${project}/users/team/`))}
+	<h1>Users</h1>
+	<Tabs />
+{/if}
+
 <slot />

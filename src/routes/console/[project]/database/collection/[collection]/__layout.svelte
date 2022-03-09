@@ -4,9 +4,7 @@
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { collection } from './store';
-
-	$: project = $page.params.project;
-	$: collectionId = $page.params.collection;
+	import Tabs from './_tabs.svelte';
 
 	page.subscribe(async (p) => {
 		if (browser && p.params.collection) {
@@ -22,22 +20,8 @@
 	});
 </script>
 
-<nav>
-	<ul>
-		<li>
-			<a href={`/console/${project}/database/${collectionId}`}>Documents</a>
-		</li>
-		<li>
-			<a href={`/console/${project}/database/${collectionId}/attributes`}>Attributes</a>
-		</li>
-		<li>
-			<a href={`/console/${project}/database/${collectionId}/indexes`}>Indexes</a>
-		</li>
-		<li>
-			<a href={`/console/${project}/database/${collectionId}/settings`}>Settings</a>
-		</li>
-	</ul>
-</nav>
+<Tabs />
+
 {#if $collection}
 	<slot />
 {:else}

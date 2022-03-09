@@ -73,4 +73,8 @@
 		/* transparent */
 		--transparent: 0 0 0 / 0;
 	}
+
+	:global(body) {
+		background-color: #eceff1;
+	}
 </style>

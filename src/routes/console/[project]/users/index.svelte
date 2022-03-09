@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Pagination } from '$lib/components';
+	import { Card, Pagination } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
 	import { Table, TableHeader, TableBody, TableRow, TableCell } from '$lib/elements/table';
 	import Create from './_create.svelte';
@@ -22,10 +22,13 @@
 	let request = getUsers();
 </script>
 
-<form on:submit|preventDefault={doSearch}>
-	<input type="search" bind:value={search} />
-</form>
-<section>
+<h1>Users</h1>
+<Card>
+	<form on:submit|preventDefault={doSearch}>
+		<input type="search" bind:value={search} />
+	</form>
+</Card>
+<Card>
 	{#await request}
 		<div aria-busy="true" />
 	{:then response}
@@ -55,9 +58,9 @@
 				{/each}
 			</TableBody>
 		</Table>
-		<Pagination {limit} bind:offset sum={response.sum} on:change={() => (request = getUsers())} />
+		<Pagination {limit} bind:offset sum={response.total} on:change={() => (request = getUsers())} />
 	{/await}
-</section>
+</Card>
 
 <Button on:click={() => (showCreate = true)}>Create User</Button>
 <Create bind:showCreate on:created={() => (request = getUsers())} />

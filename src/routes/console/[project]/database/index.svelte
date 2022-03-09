@@ -3,7 +3,7 @@
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Table, TableRow, TableBody, TableHeader, TableCell } from '$lib/elements/table';
 	import { Button } from '$lib/elements/forms';
-	import { Pagination } from '$lib/components';
+	import { Card, Pagination } from '$lib/components';
 	import Create from './_create.svelte';
 
 	let search = '';
@@ -20,11 +20,13 @@
 	let request = getCollections();
 </script>
 
-<form on:submit|preventDefault={doSearch}>
-	<input type="search" bind:value={search} />
-</form>
+<Card>
+	<form on:submit|preventDefault={doSearch}>
+		<input type="search" bind:value={search} />
+	</form>
+</Card>
 
-<section>
+<Card>
 	{#await request}
 		<div aria-busy="true" />
 	{:then response}
@@ -37,7 +39,9 @@
 				{#each response.collections as collection}
 					<TableRow>
 						<TableCell>
-							<a href={`/console/${project}/database/${collection.$id}`}>{collection.$id}</a>
+							<a href={`/console/${project}/database/collection/${collection.$id}`}
+								>{collection.$id}</a
+							>
 						</TableCell>
 						<TableCell>{collection.name}</TableCell>
 					</TableRow>
@@ -47,11 +51,11 @@
 		<Pagination
 			{limit}
 			bind:offset
-			sum={response.sum}
+			sum={response.total}
 			on:change={() => (request = getCollections())}
 		/>
 	{/await}
-</section>
+</Card>
 
 <Button on:click={() => (showCreate = true)}>Create Collection</Button>
 <Create bind:showCreate on:created={() => (request = getCollections())} />

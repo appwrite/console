@@ -1,26 +1,21 @@
 <script lang="ts">
+	import { browser } from '$app/env';
 	import { page } from '$app/stores';
+	import { user } from './store';
+	import Tabs from './_tabs.svelte';
 
-	$: path = `/console/${$page.params.project}/users/user/${$page.params.user}`;
+	const userId = $page.params.user;
+
+	$: {
+		if (browser) {
+			user.load(userId);
+		}
+	}
 </script>
 
-<div class="grid">
-	<aside>
-		<nav>
-			<ul>
-				<li><a href={path}>Overview</a></li>
-				<li><a href={`${path}/sessions`}>Sessions</a></li>
-				<li><a href={`${path}/activity`}>Activity</a></li>
-			</ul>
-		</nav>
-	</aside>
-	<div>
-		<slot />
-	</div>
-</div>
+{#if $user}
+	<h1>{$user.name}</h1>
+	<Tabs />
 
-<style>
-	.grid {
-		grid-template-columns: 1fr 3fr;
-	}
-</style>
+	<slot />
+{/if}
