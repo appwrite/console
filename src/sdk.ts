@@ -1,12 +1,25 @@
 namespace Models {
 	/**
+	 * Documents List
+	 */
+	export type DocumentList<Document extends Models.Document> = {
+		/**
+		 * Total number of documents documents that matched your query.
+		 */
+		total: number;
+		/**
+		 * List of documents.
+		 */
+		documents: Document[];
+	};
+	/**
 	 * Collections List
 	 */
 	export type CollectionList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of collections documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of collections.
 		 */
@@ -17,35 +30,22 @@ namespace Models {
 	 */
 	export type IndexList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of indexes documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of indexes.
 		 */
 		indexes: Index[];
 	};
 	/**
-	 * Documents List
-	 */
-	export type DocumentList<Document extends Models.Document> = {
-		/**
-		 * Total number of items available on the server.
-		 */
-		sum: number;
-		/**
-		 * List of documents.
-		 */
-		documents: Document[];
-	};
-	/**
 	 * Users List
 	 */
 	export type UserList<Preferences extends Models.Preferences> = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of users documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of users.
 		 */
@@ -56,9 +56,9 @@ namespace Models {
 	 */
 	export type SessionList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of sessions documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of sessions.
 		 */
@@ -69,9 +69,9 @@ namespace Models {
 	 */
 	export type LogList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of logs documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of logs.
 		 */
@@ -82,22 +82,35 @@ namespace Models {
 	 */
 	export type FileList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of files documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of files.
 		 */
 		files: File[];
 	};
 	/**
+	 * Buckets List
+	 */
+	export type BucketList = {
+		/**
+		 * Total number of buckets documents that matched your query.
+		 */
+		total: number;
+		/**
+		 * List of buckets.
+		 */
+		buckets: Bucket[];
+	};
+	/**
 	 * Teams List
 	 */
 	export type TeamList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of teams documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of teams.
 		 */
@@ -108,9 +121,9 @@ namespace Models {
 	 */
 	export type MembershipList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of memberships documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of memberships.
 		 */
@@ -121,9 +134,9 @@ namespace Models {
 	 */
 	export type FunctionList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of functions documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of functions.
 		 */
@@ -134,35 +147,35 @@ namespace Models {
 	 */
 	export type RuntimeList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of runtimes documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of runtimes.
 		 */
 		runtimes: Runtime[];
 	};
 	/**
-	 * Tags List
+	 * Deployments List
 	 */
-	export type TagList = {
+	export type DeploymentList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of deployments documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
-		 * List of tags.
+		 * List of deployments.
 		 */
-		tags: Tag[];
+		deployments: Deployment[];
 	};
 	/**
 	 * Executions List
 	 */
 	export type ExecutionList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of executions documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of executions.
 		 */
@@ -173,9 +186,9 @@ namespace Models {
 	 */
 	export type ProjectList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of projects documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of projects.
 		 */
@@ -186,9 +199,9 @@ namespace Models {
 	 */
 	export type WebhookList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of webhooks documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of webhooks.
 		 */
@@ -199,9 +212,9 @@ namespace Models {
 	 */
 	export type KeyList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of keys documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of keys.
 		 */
@@ -212,9 +225,9 @@ namespace Models {
 	 */
 	export type PlatformList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of platforms documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of platforms.
 		 */
@@ -225,9 +238,9 @@ namespace Models {
 	 */
 	export type DomainList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of domains documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of domains.
 		 */
@@ -238,9 +251,9 @@ namespace Models {
 	 */
 	export type CountryList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of countries documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of countries.
 		 */
@@ -251,9 +264,9 @@ namespace Models {
 	 */
 	export type ContinentList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of continents documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of continents.
 		 */
@@ -264,9 +277,9 @@ namespace Models {
 	 */
 	export type LanguageList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of languages documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of languages.
 		 */
@@ -277,9 +290,9 @@ namespace Models {
 	 */
 	export type CurrencyList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of currencies documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of currencies.
 		 */
@@ -290,9 +303,9 @@ namespace Models {
 	 */
 	export type PhoneList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of phones documents that matched your query.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of phones.
 		 */
@@ -303,13 +316,13 @@ namespace Models {
 	 */
 	export type MetricList = {
 		/**
-		 * Total number of items available on the server.
+		 * Total number of metrics documents that matched your query.
 		 */
-		value: number;
+		total: number;
 		/**
 		 * List of metrics.
 		 */
-		timestamp: number;
+		metrics: Metric[];
 	};
 	/**
 	 * Collection
@@ -342,7 +355,7 @@ namespace Models {
 		/**
 		 * Collection attributes.
 		 */
-		attributes: Attributes[];
+		attributes: string[];
 		/**
 		 * Collection indexes.
 		 */
@@ -353,23 +366,14 @@ namespace Models {
 	 */
 	export type AttributeList = {
 		/**
-		 * Total sum of items in the list.
+		 * Total number of attributes in the given collection.
 		 */
-		sum: number;
+		total: number;
 		/**
 		 * List of attributes.
 		 */
-		attributes: Attributes[];
+		attributes: string[];
 	};
-	export type Attributes =
-		| AttributeBoolean
-		| AttributeEmail
-		| AttributeEnum
-		| AttributeFloat
-		| AttributeInteger
-		| AttributeIp
-		| AttributeString
-		| AttributeUrl;
 	/**
 	 * AttributeString
 	 */
@@ -397,7 +401,7 @@ namespace Models {
 		/**
 		 * Attribute size.
 		 */
-		size: string;
+		size: number;
 		/**
 		 * Default value for attribute when not provided. Cannot be set when attribute is required.
 		 */
@@ -843,9 +847,17 @@ namespace Models {
 		 */
 		providerUid: string;
 		/**
-		 * Session Provider Token.
+		 * Session Provider Access Token.
 		 */
-		providerToken: string;
+		providerAccessToken: string;
+		/**
+		 * Date, the Unix timestamp of when the access token expires.
+		 */
+		providerAccessTokenExpiry: number;
+		/**
+		 * Session Provider Refresh Token.
+		 */
+		providerRefreshToken: string;
 		/**
 		 * IP in use when the session was created.
 		 */
@@ -983,6 +995,10 @@ namespace Models {
 		 */
 		$id: string;
 		/**
+		 * Bucket ID.
+		 */
+		bucketId: string;
+		/**
 		 * File read permissions.
 		 */
 		$read: string[];
@@ -1010,6 +1026,67 @@ namespace Models {
 		 * File original size in bytes.
 		 */
 		sizeOriginal: number;
+		/**
+		 * Total number of chunks available
+		 */
+		chunksTotal: number;
+		/**
+		 * Total number of chunks uploaded
+		 */
+		chunksUploaded: number;
+	};
+	/**
+	 * Bucket
+	 */
+	export type Bucket = {
+		/**
+		 * Bucket ID.
+		 */
+		$id: string;
+		/**
+		 * File read permissions.
+		 */
+		$read: string[];
+		/**
+		 * File write permissions.
+		 */
+		$write: string[];
+		/**
+		 * Bucket permission model. Possible values: `bucket` or `file`
+		 */
+		permission: string;
+		/**
+		 * Bucket creation date in Unix timestamp.
+		 */
+		dateCreated: number;
+		/**
+		 * Bucket update date in Unix timestamp.
+		 */
+		dateUpdated: number;
+		/**
+		 * Bucket name.
+		 */
+		name: string;
+		/**
+		 * Bucket enabled.
+		 */
+		enabled: boolean;
+		/**
+		 * Maximum file size supported.
+		 */
+		maximumFileSize: number;
+		/**
+		 * Allowed file extensions.
+		 */
+		allowedFileExtensions: string[];
+		/**
+		 * Bucket is encrypted.
+		 */
+		encryption: boolean;
+		/**
+		 * Virus scanning is enabled.
+		 */
+		antivirus: boolean;
 	};
 	/**
 	 * Team
@@ -1028,9 +1105,9 @@ namespace Models {
 		 */
 		dateCreated: number;
 		/**
-		 * Total sum of team members.
+		 * Total number of team members.
 		 */
-		sum: number;
+		total: number;
 	};
 	/**
 	 * Membership
@@ -1084,7 +1161,7 @@ namespace Models {
 		/**
 		 * Execution permissions.
 		 */
-		execute: string;
+		execute: string[];
 		/**
 		 * Function name.
 		 */
@@ -1106,13 +1183,13 @@ namespace Models {
 		 */
 		runtime: string;
 		/**
-		 * Function active tag ID.
+		 * Function&#039;s active deployment ID.
 		 */
-		tag: string;
+		deployment: string;
 		/**
 		 * Function environment variables.
 		 */
-		vars: string;
+		vars: object;
 		/**
 		 * Function trigger events.
 		 */
@@ -1168,29 +1245,53 @@ namespace Models {
 		supports: string[];
 	};
 	/**
-	 * Tag
+	 * Deployment
 	 */
-	export type Tag = {
+	export type Deployment = {
 		/**
-		 * Tag ID.
+		 * Deployment ID.
 		 */
 		$id: string;
 		/**
-		 * Function ID.
+		 * Resource ID.
 		 */
-		functionId: string;
+		resourceId: string;
 		/**
-		 * The tag creation date in Unix timestamp.
+		 * Resource type.
+		 */
+		resourceType: string;
+		/**
+		 * The deployment creation date in Unix timestamp.
 		 */
 		dateCreated: number;
 		/**
-		 * The entrypoint command in use to execute the tag code.
+		 * The entrypoint file to use to execute the deployment code.
 		 */
-		command: string;
+		entrypoint: string;
 		/**
 		 * The code size in bytes.
 		 */
-		size: string;
+		size: number;
+		/**
+		 * The current build ID.
+		 */
+		buildId: string;
+		/**
+		 * Whether the deployment should be automatically activated.
+		 */
+		activate: boolean;
+		/**
+		 * The deployment status.
+		 */
+		status: string;
+		/**
+		 * The build stdout.
+		 */
+		buildStdout: string;
+		/**
+		 * The build stderr.
+		 */
+		buildStderr: string;
 	};
 	/**
 	 * Execution
@@ -1221,9 +1322,9 @@ namespace Models {
 		 */
 		status: string;
 		/**
-		 * The script exit code.
+		 * The script status code.
 		 */
-		exitCode: number;
+		statusCode: number;
 		/**
 		 * The script stdout output string. Logs the last 4,000 characters of the execution stdout output.
 		 */
@@ -1414,6 +1515,14 @@ namespace Models {
 		 */
 		providerMicrosoftSecret: string;
 		/**
+		 * Notion OAuth app ID.
+		 */
+		providerNotionAppid: string;
+		/**
+		 * Notion OAuth secret ID.
+		 */
+		providerNotionSecret: string;
+		/**
 		 * PayPal OAuth app ID.
 		 */
 		providerPaypalAppid: string;
@@ -1517,6 +1626,14 @@ namespace Models {
 		 * WordPress OAuth secret ID.
 		 */
 		providerWordpressSecret: string;
+		/**
+		 * Stripe OAuth app ID.
+		 */
+		providerStripeAppid: string;
+		/**
+		 * Stripe OAuth secret ID.
+		 */
+		providerStripeSecret: string;
 		/**
 		 * Mock OAuth app ID.
 		 */
@@ -1852,6 +1969,19 @@ namespace Models {
 		diff: number;
 	};
 	/**
+	 * Metric
+	 */
+	export type Metric = {
+		/**
+		 * The value of this metric at the timestamp.
+		 */
+		value: number;
+		/**
+		 * The UNIX timestamp at which this metric was aggregated.
+		 */
+		timestamp: number;
+	};
+	/**
 	 * UsageDatabase
 	 */
 	export type UsageDatabase = {
@@ -1979,13 +2109,53 @@ namespace Models {
 		 */
 		range: string;
 		/**
-		 * Aggregated stats for the occupied storage size (in bytes).
+		 * Aggregated stats for the occupied storage size by files (in bytes).
 		 */
-		storage: MetricList[];
+		filesStorage: MetricList[];
+		/**
+		 * Aggregated stats for the occupied storage size by tags (in bytes).
+		 */
+		tagsStorage: MetricList[];
 		/**
 		 * Aggregated stats for total number of files.
 		 */
-		files: MetricList[];
+		filesCount: MetricList[];
+		/**
+		 * Aggregated stats for total number of buckets.
+		 */
+		bucketsCount: MetricList[];
+		/**
+		 * Aggregated stats for buckets created.
+		 */
+		bucketsCreate: MetricList[];
+		/**
+		 * Aggregated stats for buckets read.
+		 */
+		bucketsRead: MetricList[];
+		/**
+		 * Aggregated stats for buckets updated.
+		 */
+		bucketsUpdate: MetricList[];
+		/**
+		 * Aggregated stats for buckets deleted.
+		 */
+		bucketsDelete: MetricList[];
+		/**
+		 * Aggregated stats for files created.
+		 */
+		filesCreate: MetricList[];
+		/**
+		 * Aggregated stats for files read.
+		 */
+		filesRead: MetricList[];
+		/**
+		 * Aggregated stats for files updated.
+		 */
+		filesUpdate: MetricList[];
+		/**
+		 * Aggregated stats for files deleted.
+		 */
+		filesDelete: MetricList[];
 	};
 	/**
 	 * UsageBuckets
@@ -1999,6 +2169,10 @@ namespace Models {
 		 * Aggregated stats for total number of files in this bucket.
 		 */
 		filesCount: MetricList[];
+		/**
+		 * Aggregated stats for total storage of files in this bucket.
+		 */
+		filesStorage: MetricList[];
 		/**
 		 * Aggregated stats for files created.
 		 */
@@ -2148,19 +2322,31 @@ type Realtime = {
 	onMessage: (event: MessageEvent) => void;
 };
 
+export type UploadProgress = {
+	$id: string;
+	progress: number;
+	sizeUploaded: number;
+	chunksTotal: number;
+	chunksUploaded: number;
+};
+
 class AppwriteException extends Error {
 	code: number;
 	response: string;
-	constructor(message: string, code: number = 0, response: string = '') {
+	type: string;
+	constructor(message: string, code: number = 0, type: string = '', response: string = '') {
 		super(message);
 		this.name = 'AppwriteException';
 		this.message = message;
 		this.code = code;
+		this.type = type;
 		this.response = response;
 	}
 }
 
 class Appwrite {
+	static CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
+
 	config = {
 		endpoint: 'https://HOSTNAME/v1',
 		endpointRealtime: '',
@@ -2171,8 +2357,8 @@ class Appwrite {
 		mode: ''
 	};
 	headers: Headers = {
-		'x-sdk-version': 'appwrite:web:4.0.4',
-		'X-Appwrite-Response-Format': '0.12.0'
+		'x-sdk-version': 'appwrite:web:5.0.0',
+		'X-Appwrite-Response-Format': '0.13.0'
 	};
 
 	/**
@@ -2471,10 +2657,9 @@ class Appwrite {
 		params: Payload = {}
 	): Promise<any> {
 		method = method.toUpperCase();
-		headers = {
-			...headers,
-			...this.headers
-		};
+
+		headers = Object.assign({}, this.headers, headers);
+
 		let options: RequestInit = {
 			method,
 			headers,
@@ -2527,7 +2712,7 @@ class Appwrite {
 			}
 
 			if (400 <= response.status) {
-				throw new AppwriteException(data?.message, response.status, data);
+				throw new AppwriteException(data?.message, response.status, data?.type, data);
 			}
 
 			const cookieFallback = response.headers.get('X-Fallback-Cookies');
@@ -2895,15 +3080,16 @@ class Appwrite {
 		/**
 		 * Update Account Preferences
 		 *
-		 * Update currently logged in user account preferences. You can pass only the
-		 * specific settings you wish to update.
+		 * Update currently logged in user account preferences. The object you pass is
+		 * stored as is, and replaces any previous value. The maximum allowed prefs
+		 * size is 64kB and throws error if exceeded.
 		 *
-		 * @param {object} prefs
+		 * @param {Partial<Preferences>} prefs
 		 * @throws {AppwriteException}
 		 * @returns {Promise}
 		 */
 		updatePrefs: async <Preferences extends Models.Preferences>(
-			prefs: object
+			prefs: Partial<Preferences>
 		): Promise<Models.User<Preferences>> => {
 			if (typeof prefs === 'undefined') {
 				throw new AppwriteException('Missing required parameter: "prefs"');
@@ -3366,11 +3552,39 @@ class Appwrite {
 		},
 
 		/**
+		 * Update Session (Refresh Tokens)
+		 *
+		 *
+		 * @param {string} sessionId
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		updateSession: async (sessionId: string): Promise<Models.Session> => {
+			if (typeof sessionId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "sessionId"');
+			}
+
+			let path = '/account/sessions/{sessionId}'.replace('{sessionId}', sessionId);
+			let payload: Payload = {};
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'patch',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
 		 * Delete Account Session
 		 *
 		 * Use this endpoint to log out the currently logged in user from all their
 		 * account sessions across all of their different devices. When using the
-		 * option id argument, only the session unique ID provider will be deleted.
+		 * Session ID argument, only the unique session ID provided is deleted.
+		 *
 		 *
 		 * @param {string} sessionId
 		 * @throws {AppwriteException}
@@ -4310,9 +4524,9 @@ class Appwrite {
 		 * @param {string} collectionId
 		 * @param {string} key
 		 * @param {boolean} required
-		 * @param {string} min
-		 * @param {string} max
-		 * @param {string} xdefault
+		 * @param {number} min
+		 * @param {number} max
+		 * @param {number} xdefault
 		 * @param {boolean} array
 		 * @throws {AppwriteException}
 		 * @returns {Promise}
@@ -4321,9 +4535,9 @@ class Appwrite {
 			collectionId: string,
 			key: string,
 			required: boolean,
-			min?: string,
-			max?: string,
-			xdefault?: string,
+			min?: number,
+			max?: number,
+			xdefault?: number,
 			array?: boolean
 		): Promise<Models.AttributeFloat> => {
 			if (typeof collectionId === 'undefined') {
@@ -4822,7 +5036,7 @@ class Appwrite {
 		 *
 		 * @param {string} collectionId
 		 * @param {string} documentId
-		 * @param {object} data
+		 * @param {Omit<Document, keyof Models.Document>} data
 		 * @param {string[]} read
 		 * @param {string[]} write
 		 * @throws {AppwriteException}
@@ -4831,7 +5045,7 @@ class Appwrite {
 		createDocument: async <Document extends Models.Document>(
 			collectionId: string,
 			documentId: string,
-			data: object,
+			data: Omit<Document, keyof Models.Document>,
 			read?: string[],
 			write?: string[]
 		): Promise<Document> => {
@@ -4927,7 +5141,7 @@ class Appwrite {
 		 *
 		 * @param {string} collectionId
 		 * @param {string} documentId
-		 * @param {object} data
+		 * @param {Partial<Omit<Document, keyof Models.Document>>} data
 		 * @param {string[]} read
 		 * @param {string[]} write
 		 * @throws {AppwriteException}
@@ -4936,7 +5150,7 @@ class Appwrite {
 		updateDocument: async <Document extends Models.Document>(
 			collectionId: string,
 			documentId: string,
-			data: object,
+			data: Partial<Omit<Document, keyof Models.Document>>,
 			read?: string[],
 			write?: string[]
 		): Promise<Document> => {
@@ -5494,9 +5708,9 @@ class Appwrite {
 		},
 
 		/**
-		 * List the currently active function runtimes.
+		 * List runtimes
 		 *
-		 * Get a list of all runtimes that are currently active in your project.
+		 * Get a list of all runtimes that are currently active on your instance.
 		 *
 		 * @throws {AppwriteException}
 		 * @returns {Promise}
@@ -5647,6 +5861,341 @@ class Appwrite {
 		},
 
 		/**
+		 * List Deployments
+		 *
+		 * Get a list of all the project's code deployments. You can use the query
+		 * params to filter your results.
+		 *
+		 * @param {string} functionId
+		 * @param {string} search
+		 * @param {number} limit
+		 * @param {number} offset
+		 * @param {string} cursor
+		 * @param {string} cursorDirection
+		 * @param {string} orderType
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		listDeployments: async (
+			functionId: string,
+			search?: string,
+			limit?: number,
+			offset?: number,
+			cursor?: string,
+			cursorDirection?: string,
+			orderType?: string
+		): Promise<Models.DeploymentList> => {
+			if (typeof functionId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "functionId"');
+			}
+
+			let path = '/functions/{functionId}/deployments'.replace('{functionId}', functionId);
+			let payload: Payload = {};
+
+			if (typeof search !== 'undefined') {
+				payload['search'] = search;
+			}
+
+			if (typeof limit !== 'undefined') {
+				payload['limit'] = limit;
+			}
+
+			if (typeof offset !== 'undefined') {
+				payload['offset'] = offset;
+			}
+
+			if (typeof cursor !== 'undefined') {
+				payload['cursor'] = cursor;
+			}
+
+			if (typeof cursorDirection !== 'undefined') {
+				payload['cursorDirection'] = cursorDirection;
+			}
+
+			if (typeof orderType !== 'undefined') {
+				payload['orderType'] = orderType;
+			}
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'get',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
+		 * Create Deployment
+		 *
+		 * Create a new function code deployment. Use this endpoint to upload a new
+		 * version of your code function. To execute your newly uploaded code, you'll
+		 * need to update the function's deployment to use your new deployment UID.
+		 *
+		 * This endpoint accepts a tar.gz file compressed with your code. Make sure to
+		 * include any dependencies your code has within the compressed file. You can
+		 * learn more about code packaging in the [Appwrite Cloud Functions
+		 * tutorial](/docs/functions).
+		 *
+		 * Use the "command" param to set the entry point used to execute your code.
+		 *
+		 * @param {string} functionId
+		 * @param {string} entrypoint
+		 * @param {File} code
+		 * @param {boolean} activate
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		createDeployment: async (
+			functionId: string,
+			entrypoint: string,
+			code: File,
+			activate: boolean,
+			onProgress = (progress: UploadProgress) => {}
+		): Promise<Models.Deployment> => {
+			if (typeof functionId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "functionId"');
+			}
+
+			if (typeof entrypoint === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "entrypoint"');
+			}
+
+			if (typeof code === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "code"');
+			}
+
+			if (typeof activate === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "activate"');
+			}
+
+			let path = '/functions/{functionId}/deployments'.replace('{functionId}', functionId);
+			let payload: Payload = {};
+
+			if (typeof entrypoint !== 'undefined') {
+				payload['entrypoint'] = entrypoint;
+			}
+
+			if (typeof code !== 'undefined') {
+				payload['code'] = code;
+			}
+
+			if (typeof activate !== 'undefined') {
+				payload['activate'] = activate;
+			}
+
+			const uri = new URL(this.config.endpoint + path);
+			const size = code.size;
+
+			if (size <= Appwrite.CHUNK_SIZE) {
+				return await this.call(
+					'post',
+					uri,
+					{
+						'content-type': 'multipart/form-data'
+					},
+					payload
+				);
+			}
+			let id = undefined;
+			let response = undefined;
+
+			const headers: { [header: string]: string } = {
+				'content-type': 'multipart/form-data'
+			};
+
+			let counter = 0;
+			const totalCounters = Math.ceil(size / Appwrite.CHUNK_SIZE);
+
+			for (counter; counter < totalCounters; counter++) {
+				const start = counter * Appwrite.CHUNK_SIZE;
+				const end = Math.min(counter * Appwrite.CHUNK_SIZE + Appwrite.CHUNK_SIZE - 1, size);
+
+				headers['content-range'] = 'bytes ' + start + '-' + end + '/' + size;
+
+				if (id) {
+					headers['x-appwrite-id'] = id;
+				}
+
+				const stream = code.slice(start, end + 1);
+				payload['code'] = new File([stream], code.name);
+
+				response = await this.call('post', uri, headers, payload);
+
+				if (!id) {
+					id = response['$id'];
+				}
+
+				if (onProgress) {
+					onProgress({
+						$id: response.$id,
+						progress: (Math.min((counter + 1) * Appwrite.CHUNK_SIZE, size) / size) * 100,
+						sizeUploaded: end + 1,
+						chunksTotal: response.chunksTotal,
+						chunksUploaded: response.chunksUploaded
+					});
+				}
+			}
+
+			return response;
+		},
+
+		/**
+		 * Get Deployment
+		 *
+		 * Get a code deployment by its unique ID.
+		 *
+		 * @param {string} functionId
+		 * @param {string} deploymentId
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		getDeployment: async (
+			functionId: string,
+			deploymentId: string
+		): Promise<Models.DeploymentList> => {
+			if (typeof functionId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "functionId"');
+			}
+
+			if (typeof deploymentId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "deploymentId"');
+			}
+
+			let path = '/functions/{functionId}/deployments/{deploymentId}'
+				.replace('{functionId}', functionId)
+				.replace('{deploymentId}', deploymentId);
+			let payload: Payload = {};
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'get',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
+		 * Update Function Deployment
+		 *
+		 * Update the function code deployment ID using the unique function ID. Use
+		 * this endpoint to switch the code deployment that should be executed by the
+		 * execution endpoint.
+		 *
+		 * @param {string} functionId
+		 * @param {string} deploymentId
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		updateDeployment: async (
+			functionId: string,
+			deploymentId: string
+		): Promise<Models.Function> => {
+			if (typeof functionId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "functionId"');
+			}
+
+			if (typeof deploymentId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "deploymentId"');
+			}
+
+			let path = '/functions/{functionId}/deployments/{deploymentId}'
+				.replace('{functionId}', functionId)
+				.replace('{deploymentId}', deploymentId);
+			let payload: Payload = {};
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'patch',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
+		 * Delete Deployment
+		 *
+		 * Delete a code deployment by its unique ID.
+		 *
+		 * @param {string} functionId
+		 * @param {string} deploymentId
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		deleteDeployment: async (functionId: string, deploymentId: string): Promise<{}> => {
+			if (typeof functionId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "functionId"');
+			}
+
+			if (typeof deploymentId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "deploymentId"');
+			}
+
+			let path = '/functions/{functionId}/deployments/{deploymentId}'
+				.replace('{functionId}', functionId)
+				.replace('{deploymentId}', deploymentId);
+			let payload: Payload = {};
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'delete',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
+		 * Retry Build
+		 *
+		 *
+		 * @param {string} functionId
+		 * @param {string} deploymentId
+		 * @param {string} buildId
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		retryBuild: async (functionId: string, deploymentId: string, buildId: string): Promise<{}> => {
+			if (typeof functionId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "functionId"');
+			}
+
+			if (typeof deploymentId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "deploymentId"');
+			}
+
+			if (typeof buildId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "buildId"');
+			}
+
+			let path = '/functions/{functionId}/deployments/{deploymentId}/builds/{buildId}'
+				.replace('{functionId}', functionId)
+				.replace('{deploymentId}', deploymentId)
+				.replace('{buildId}', buildId);
+			let payload: Payload = {};
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'post',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
 		 * List Executions
 		 *
 		 * Get a list of all the current user function execution logs. You can use the
@@ -5719,10 +6268,15 @@ class Appwrite {
 		 *
 		 * @param {string} functionId
 		 * @param {string} data
+		 * @param {boolean} async
 		 * @throws {AppwriteException}
 		 * @returns {Promise}
 		 */
-		createExecution: async (functionId: string, data?: string): Promise<Models.Execution> => {
+		createExecution: async (
+			functionId: string,
+			data?: string,
+			async?: boolean
+		): Promise<Models.Execution> => {
 			if (typeof functionId === 'undefined') {
 				throw new AppwriteException('Missing required parameter: "functionId"');
 			}
@@ -5732,6 +6286,10 @@ class Appwrite {
 
 			if (typeof data !== 'undefined') {
 				payload['data'] = data;
+			}
+
+			if (typeof async !== 'undefined') {
+				payload['async'] = async;
 			}
 
 			const uri = new URL(this.config.endpoint + path);
@@ -5772,237 +6330,6 @@ class Appwrite {
 			const uri = new URL(this.config.endpoint + path);
 			return await this.call(
 				'get',
-				uri,
-				{
-					'content-type': 'application/json'
-				},
-				payload
-			);
-		},
-
-		/**
-		 * Update Function Tag
-		 *
-		 * Update the function code tag ID using the unique function ID. Use this
-		 * endpoint to switch the code tag that should be executed by the execution
-		 * endpoint.
-		 *
-		 * @param {string} functionId
-		 * @param {string} tag
-		 * @throws {AppwriteException}
-		 * @returns {Promise}
-		 */
-		updateTag: async (functionId: string, tag: string): Promise<Models.Function> => {
-			if (typeof functionId === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "functionId"');
-			}
-
-			if (typeof tag === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "tag"');
-			}
-
-			let path = '/functions/{functionId}/tag'.replace('{functionId}', functionId);
-			let payload: Payload = {};
-
-			if (typeof tag !== 'undefined') {
-				payload['tag'] = tag;
-			}
-
-			const uri = new URL(this.config.endpoint + path);
-			return await this.call(
-				'patch',
-				uri,
-				{
-					'content-type': 'application/json'
-				},
-				payload
-			);
-		},
-
-		/**
-		 * List Tags
-		 *
-		 * Get a list of all the project's code tags. You can use the query params to
-		 * filter your results.
-		 *
-		 * @param {string} functionId
-		 * @param {string} search
-		 * @param {number} limit
-		 * @param {number} offset
-		 * @param {string} cursor
-		 * @param {string} cursorDirection
-		 * @param {string} orderType
-		 * @throws {AppwriteException}
-		 * @returns {Promise}
-		 */
-		listTags: async (
-			functionId: string,
-			search?: string,
-			limit?: number,
-			offset?: number,
-			cursor?: string,
-			cursorDirection?: string,
-			orderType?: string
-		): Promise<Models.TagList> => {
-			if (typeof functionId === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "functionId"');
-			}
-
-			let path = '/functions/{functionId}/tags'.replace('{functionId}', functionId);
-			let payload: Payload = {};
-
-			if (typeof search !== 'undefined') {
-				payload['search'] = search;
-			}
-
-			if (typeof limit !== 'undefined') {
-				payload['limit'] = limit;
-			}
-
-			if (typeof offset !== 'undefined') {
-				payload['offset'] = offset;
-			}
-
-			if (typeof cursor !== 'undefined') {
-				payload['cursor'] = cursor;
-			}
-
-			if (typeof cursorDirection !== 'undefined') {
-				payload['cursorDirection'] = cursorDirection;
-			}
-
-			if (typeof orderType !== 'undefined') {
-				payload['orderType'] = orderType;
-			}
-
-			const uri = new URL(this.config.endpoint + path);
-			return await this.call(
-				'get',
-				uri,
-				{
-					'content-type': 'application/json'
-				},
-				payload
-			);
-		},
-
-		/**
-		 * Create Tag
-		 *
-		 * Create a new function code tag. Use this endpoint to upload a new version
-		 * of your code function. To execute your newly uploaded code, you'll need to
-		 * update the function's tag to use your new tag UID.
-		 *
-		 * This endpoint accepts a tar.gz file compressed with your code. Make sure to
-		 * include any dependencies your code has within the compressed file. You can
-		 * learn more about code packaging in the [Appwrite Cloud Functions
-		 * tutorial](/docs/functions).
-		 *
-		 * Use the "command" param to set the entry point used to execute your code.
-		 *
-		 * @param {string} functionId
-		 * @param {string} command
-		 * @param {File} code
-		 * @throws {AppwriteException}
-		 * @returns {Promise}
-		 */
-		createTag: async (functionId: string, command: string, code: File): Promise<Models.Tag> => {
-			if (typeof functionId === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "functionId"');
-			}
-
-			if (typeof command === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "command"');
-			}
-
-			if (typeof code === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "code"');
-			}
-
-			let path = '/functions/{functionId}/tags'.replace('{functionId}', functionId);
-			let payload: Payload = {};
-
-			if (typeof command !== 'undefined') {
-				payload['command'] = command;
-			}
-
-			if (typeof code !== 'undefined') {
-				payload['code'] = code;
-			}
-
-			const uri = new URL(this.config.endpoint + path);
-			return await this.call(
-				'post',
-				uri,
-				{
-					'content-type': 'multipart/form-data'
-				},
-				payload
-			);
-		},
-
-		/**
-		 * Get Tag
-		 *
-		 * Get a code tag by its unique ID.
-		 *
-		 * @param {string} functionId
-		 * @param {string} tagId
-		 * @throws {AppwriteException}
-		 * @returns {Promise}
-		 */
-		getTag: async (functionId: string, tagId: string): Promise<Models.Tag> => {
-			if (typeof functionId === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "functionId"');
-			}
-
-			if (typeof tagId === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "tagId"');
-			}
-
-			let path = '/functions/{functionId}/tags/{tagId}'
-				.replace('{functionId}', functionId)
-				.replace('{tagId}', tagId);
-			let payload: Payload = {};
-
-			const uri = new URL(this.config.endpoint + path);
-			return await this.call(
-				'get',
-				uri,
-				{
-					'content-type': 'application/json'
-				},
-				payload
-			);
-		},
-
-		/**
-		 * Delete Tag
-		 *
-		 * Delete a code tag by its unique ID.
-		 *
-		 * @param {string} functionId
-		 * @param {string} tagId
-		 * @throws {AppwriteException}
-		 * @returns {Promise}
-		 */
-		deleteTag: async (functionId: string, tagId: string): Promise<{}> => {
-			if (typeof functionId === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "functionId"');
-			}
-
-			if (typeof tagId === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "tagId"');
-			}
-
-			let path = '/functions/{functionId}/tags/{tagId}'
-				.replace('{functionId}', functionId)
-				.replace('{tagId}', tagId);
-			let payload: Payload = {};
-
-			const uri = new URL(this.config.endpoint + path);
-			return await this.call(
-				'delete',
 				uri,
 				{
 					'content-type': 'application/json'
@@ -7883,11 +8210,10 @@ class Appwrite {
 
 	storage = {
 		/**
-		 * List Files
+		 * List buckets
 		 *
-		 * Get a list of all the user files. You can use the query params to filter
-		 * your results. On admin mode, this endpoint will return a list of all of the
-		 * project's files. [Learn more about different API modes](/docs/admin).
+		 * Get a list of all the storage buckets. You can use the query params to
+		 * filter your results.
 		 *
 		 * @param {string} search
 		 * @param {number} limit
@@ -7898,7 +8224,316 @@ class Appwrite {
 		 * @throws {AppwriteException}
 		 * @returns {Promise}
 		 */
+		listBuckets: async (
+			search?: string,
+			limit?: number,
+			offset?: number,
+			cursor?: string,
+			cursorDirection?: string,
+			orderType?: string
+		): Promise<Models.BucketList> => {
+			let path = '/storage/buckets';
+			let payload: Payload = {};
+
+			if (typeof search !== 'undefined') {
+				payload['search'] = search;
+			}
+
+			if (typeof limit !== 'undefined') {
+				payload['limit'] = limit;
+			}
+
+			if (typeof offset !== 'undefined') {
+				payload['offset'] = offset;
+			}
+
+			if (typeof cursor !== 'undefined') {
+				payload['cursor'] = cursor;
+			}
+
+			if (typeof cursorDirection !== 'undefined') {
+				payload['cursorDirection'] = cursorDirection;
+			}
+
+			if (typeof orderType !== 'undefined') {
+				payload['orderType'] = orderType;
+			}
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'get',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
+		 * Create bucket
+		 *
+		 * Create a new storage bucket.
+		 *
+		 * @param {string} bucketId
+		 * @param {string} name
+		 * @param {string} permission
+		 * @param {string[]} read
+		 * @param {string[]} write
+		 * @param {boolean} enabled
+		 * @param {number} maximumFileSize
+		 * @param {string[]} allowedFileExtensions
+		 * @param {boolean} encryption
+		 * @param {boolean} antivirus
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		createBucket: async (
+			bucketId: string,
+			name: string,
+			permission: string,
+			read?: string[],
+			write?: string[],
+			enabled?: boolean,
+			maximumFileSize?: number,
+			allowedFileExtensions?: string[],
+			encryption?: boolean,
+			antivirus?: boolean
+		): Promise<Models.Bucket> => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
+			if (typeof name === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "name"');
+			}
+
+			if (typeof permission === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "permission"');
+			}
+
+			let path = '/storage/buckets';
+			let payload: Payload = {};
+
+			if (typeof bucketId !== 'undefined') {
+				payload['bucketId'] = bucketId;
+			}
+
+			if (typeof name !== 'undefined') {
+				payload['name'] = name;
+			}
+
+			if (typeof permission !== 'undefined') {
+				payload['permission'] = permission;
+			}
+
+			if (typeof read !== 'undefined') {
+				payload['read'] = read;
+			}
+
+			if (typeof write !== 'undefined') {
+				payload['write'] = write;
+			}
+
+			if (typeof enabled !== 'undefined') {
+				payload['enabled'] = enabled;
+			}
+
+			if (typeof maximumFileSize !== 'undefined') {
+				payload['maximumFileSize'] = maximumFileSize;
+			}
+
+			if (typeof allowedFileExtensions !== 'undefined') {
+				payload['allowedFileExtensions'] = allowedFileExtensions;
+			}
+
+			if (typeof encryption !== 'undefined') {
+				payload['encryption'] = encryption;
+			}
+
+			if (typeof antivirus !== 'undefined') {
+				payload['antivirus'] = antivirus;
+			}
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'post',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
+		 * Get Bucket
+		 *
+		 * Get a storage bucket by its unique ID. This endpoint response returns a
+		 * JSON object with the storage bucket metadata.
+		 *
+		 * @param {string} bucketId
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		getBucket: async (bucketId: string): Promise<Models.Bucket> => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
+			let path = '/storage/buckets/{bucketId}'.replace('{bucketId}', bucketId);
+			let payload: Payload = {};
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'get',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
+		 * Update Bucket
+		 *
+		 * Update a storage bucket by its unique ID.
+		 *
+		 * @param {string} bucketId
+		 * @param {string} name
+		 * @param {string} permission
+		 * @param {string[]} read
+		 * @param {string[]} write
+		 * @param {boolean} enabled
+		 * @param {number} maximumFileSize
+		 * @param {string[]} allowedFileExtensions
+		 * @param {boolean} encryption
+		 * @param {boolean} antivirus
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		updateBucket: async (
+			bucketId: string,
+			name: string,
+			permission: string,
+			read?: string[],
+			write?: string[],
+			enabled?: boolean,
+			maximumFileSize?: number,
+			allowedFileExtensions?: string[],
+			encryption?: boolean,
+			antivirus?: boolean
+		): Promise<Models.Bucket> => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
+			if (typeof name === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "name"');
+			}
+
+			if (typeof permission === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "permission"');
+			}
+
+			let path = '/storage/buckets/{bucketId}'.replace('{bucketId}', bucketId);
+			let payload: Payload = {};
+
+			if (typeof name !== 'undefined') {
+				payload['name'] = name;
+			}
+
+			if (typeof permission !== 'undefined') {
+				payload['permission'] = permission;
+			}
+
+			if (typeof read !== 'undefined') {
+				payload['read'] = read;
+			}
+
+			if (typeof write !== 'undefined') {
+				payload['write'] = write;
+			}
+
+			if (typeof enabled !== 'undefined') {
+				payload['enabled'] = enabled;
+			}
+
+			if (typeof maximumFileSize !== 'undefined') {
+				payload['maximumFileSize'] = maximumFileSize;
+			}
+
+			if (typeof allowedFileExtensions !== 'undefined') {
+				payload['allowedFileExtensions'] = allowedFileExtensions;
+			}
+
+			if (typeof encryption !== 'undefined') {
+				payload['encryption'] = encryption;
+			}
+
+			if (typeof antivirus !== 'undefined') {
+				payload['antivirus'] = antivirus;
+			}
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'put',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
+		 * Delete Bucket
+		 *
+		 * Delete a storage bucket by its unique ID.
+		 *
+		 * @param {string} bucketId
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
+		deleteBucket: async (bucketId: string): Promise<{}> => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
+			let path = '/storage/buckets/{bucketId}'.replace('{bucketId}', bucketId);
+			let payload: Payload = {};
+
+			const uri = new URL(this.config.endpoint + path);
+			return await this.call(
+				'delete',
+				uri,
+				{
+					'content-type': 'application/json'
+				},
+				payload
+			);
+		},
+
+		/**
+		 * List Files
+		 *
+		 * Get a list of all the user files. You can use the query params to filter
+		 * your results. On admin mode, this endpoint will return a list of all of the
+		 * project's files. [Learn more about different API modes](/docs/admin).
+		 *
+		 * @param {string} bucketId
+		 * @param {string} search
+		 * @param {number} limit
+		 * @param {number} offset
+		 * @param {string} cursor
+		 * @param {string} cursorDirection
+		 * @param {string} orderType
+		 * @throws {AppwriteException}
+		 * @returns {Promise}
+		 */
 		listFiles: async (
+			bucketId: string,
 			search?: string,
 			limit?: number,
 			offset?: number,
@@ -7906,7 +8541,11 @@ class Appwrite {
 			cursorDirection?: string,
 			orderType?: string
 		): Promise<Models.FileList> => {
-			let path = '/storage/files';
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
+			let path = '/storage/buckets/{bucketId}/files'.replace('{bucketId}', bucketId);
 			let payload: Payload = {};
 
 			if (typeof search !== 'undefined') {
@@ -7947,10 +8586,26 @@ class Appwrite {
 		/**
 		 * Create File
 		 *
-		 * Create a new file. The user who creates the file will automatically be
-		 * assigned to read and write access unless he has passed custom values for
-		 * read and write arguments.
+		 * Create a new file. Before using this route, you should create a new bucket
+		 * resource using either a [server
+		 * integration](/docs/server/database#storageCreateBucket) API or directly
+		 * from your Appwrite console.
 		 *
+		 * Larger files should be uploaded using multiple requests with the
+		 * [content-range](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Range)
+		 * header to send a partial request with a maximum supported chunk of `5MB`.
+		 * The `content-range` header values should always be in bytes.
+		 *
+		 * When the first request is sent, the server will return the **File** object,
+		 * and the subsequent part request must include the file's **id** in
+		 * `x-appwrite-id` header to allow the server to know that the partial upload
+		 * is for the existing file and not for a new one.
+		 *
+		 * If you're creating a new file using one of the Appwrite SDKs, all the
+		 * chunking logic will be managed by the SDK internally.
+		 *
+		 *
+		 * @param {string} bucketId
 		 * @param {string} fileId
 		 * @param {File} file
 		 * @param {string[]} read
@@ -7959,11 +8614,17 @@ class Appwrite {
 		 * @returns {Promise}
 		 */
 		createFile: async (
+			bucketId: string,
 			fileId: string,
 			file: File,
 			read?: string[],
-			write?: string[]
+			write?: string[],
+			onProgress = (progress: UploadProgress) => {}
 		): Promise<Models.File> => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
 			if (typeof fileId === 'undefined') {
 				throw new AppwriteException('Missing required parameter: "fileId"');
 			}
@@ -7972,7 +8633,7 @@ class Appwrite {
 				throw new AppwriteException('Missing required parameter: "file"');
 			}
 
-			let path = '/storage/files';
+			let path = '/storage/buckets/{bucketId}/files'.replace('{bucketId}', bucketId);
 			let payload: Payload = {};
 
 			if (typeof fileId !== 'undefined') {
@@ -7992,14 +8653,69 @@ class Appwrite {
 			}
 
 			const uri = new URL(this.config.endpoint + path);
-			return await this.call(
-				'post',
-				uri,
-				{
-					'content-type': 'multipart/form-data'
-				},
-				payload
-			);
+			const size = file.size;
+
+			if (size <= Appwrite.CHUNK_SIZE) {
+				return await this.call(
+					'post',
+					uri,
+					{
+						'content-type': 'multipart/form-data'
+					},
+					payload
+				);
+			}
+			let id = undefined;
+			let response = undefined;
+
+			const headers: { [header: string]: string } = {
+				'content-type': 'multipart/form-data'
+			};
+
+			let counter = 0;
+			const totalCounters = Math.ceil(size / Appwrite.CHUNK_SIZE);
+			if (fileId != 'unique()') {
+				try {
+					response = await this.call(
+						'GET',
+						new URL(this.config.endpoint + path + '/' + fileId),
+						headers
+					);
+					counter = response.chunksUploaded;
+				} catch (e) {}
+			}
+
+			for (counter; counter < totalCounters; counter++) {
+				const start = counter * Appwrite.CHUNK_SIZE;
+				const end = Math.min(counter * Appwrite.CHUNK_SIZE + Appwrite.CHUNK_SIZE - 1, size);
+
+				headers['content-range'] = 'bytes ' + start + '-' + end + '/' + size;
+
+				if (id) {
+					headers['x-appwrite-id'] = id;
+				}
+
+				const stream = file.slice(start, end + 1);
+				payload['file'] = new File([stream], file.name);
+
+				response = await this.call('post', uri, headers, payload);
+
+				if (!id) {
+					id = response['$id'];
+				}
+
+				if (onProgress) {
+					onProgress({
+						$id: response.$id,
+						progress: (Math.min((counter + 1) * Appwrite.CHUNK_SIZE, size) / size) * 100,
+						sizeUploaded: end + 1,
+						chunksTotal: response.chunksTotal,
+						chunksUploaded: response.chunksUploaded
+					});
+				}
+			}
+
+			return response;
 		},
 
 		/**
@@ -8008,16 +8724,23 @@ class Appwrite {
 		 * Get a file by its unique ID. This endpoint response returns a JSON object
 		 * with the file metadata.
 		 *
+		 * @param {string} bucketId
 		 * @param {string} fileId
 		 * @throws {AppwriteException}
 		 * @returns {Promise}
 		 */
-		getFile: async (fileId: string): Promise<Models.File> => {
+		getFile: async (bucketId: string, fileId: string): Promise<Models.File> => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
 			if (typeof fileId === 'undefined') {
 				throw new AppwriteException('Missing required parameter: "fileId"');
 			}
 
-			let path = '/storage/files/{fileId}'.replace('{fileId}', fileId);
+			let path = '/storage/buckets/{bucketId}/files/{fileId}'
+				.replace('{bucketId}', bucketId)
+				.replace('{fileId}', fileId);
 			let payload: Payload = {};
 
 			const uri = new URL(this.config.endpoint + path);
@@ -8037,26 +8760,30 @@ class Appwrite {
 		 * Update a file by its unique ID. Only users with write permissions have
 		 * access to update this resource.
 		 *
+		 * @param {string} bucketId
 		 * @param {string} fileId
 		 * @param {string[]} read
 		 * @param {string[]} write
 		 * @throws {AppwriteException}
 		 * @returns {Promise}
 		 */
-		updateFile: async (fileId: string, read: string[], write: string[]): Promise<Models.File> => {
+		updateFile: async (
+			bucketId: string,
+			fileId: string,
+			read?: string[],
+			write?: string[]
+		): Promise<Models.File> => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
 			if (typeof fileId === 'undefined') {
 				throw new AppwriteException('Missing required parameter: "fileId"');
 			}
 
-			if (typeof read === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "read"');
-			}
-
-			if (typeof write === 'undefined') {
-				throw new AppwriteException('Missing required parameter: "write"');
-			}
-
-			let path = '/storage/files/{fileId}'.replace('{fileId}', fileId);
+			let path = '/storage/buckets/{bucketId}/files/{fileId}'
+				.replace('{bucketId}', bucketId)
+				.replace('{fileId}', fileId);
 			let payload: Payload = {};
 
 			if (typeof read !== 'undefined') {
@@ -8084,16 +8811,23 @@ class Appwrite {
 		 * Delete a file by its unique ID. Only users with write permissions have
 		 * access to delete this resource.
 		 *
+		 * @param {string} bucketId
 		 * @param {string} fileId
 		 * @throws {AppwriteException}
 		 * @returns {Promise}
 		 */
-		deleteFile: async (fileId: string): Promise<{}> => {
+		deleteFile: async (bucketId: string, fileId: string): Promise<{}> => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
 			if (typeof fileId === 'undefined') {
 				throw new AppwriteException('Missing required parameter: "fileId"');
 			}
 
-			let path = '/storage/files/{fileId}'.replace('{fileId}', fileId);
+			let path = '/storage/buckets/{bucketId}/files/{fileId}'
+				.replace('{bucketId}', bucketId)
+				.replace('{fileId}', fileId);
 			let payload: Payload = {};
 
 			const uri = new URL(this.config.endpoint + path);
@@ -8114,16 +8848,23 @@ class Appwrite {
 		 * 'Content-Disposition: attachment' header that tells the browser to start
 		 * downloading the file to user downloads directory.
 		 *
+		 * @param {string} bucketId
 		 * @param {string} fileId
 		 * @throws {AppwriteException}
 		 * @returns {URL}
 		 */
-		getFileDownload: (fileId: string): URL => {
+		getFileDownload: (bucketId: string, fileId: string): URL => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
 			if (typeof fileId === 'undefined') {
 				throw new AppwriteException('Missing required parameter: "fileId"');
 			}
 
-			let path = '/storage/files/{fileId}/download'.replace('{fileId}', fileId);
+			let path = '/storage/buckets/{bucketId}/files/{fileId}/download'
+				.replace('{bucketId}', bucketId)
+				.replace('{fileId}', fileId);
 			let payload: Payload = {};
 
 			const uri = new URL(this.config.endpoint + path);
@@ -8141,8 +8882,10 @@ class Appwrite {
 		 * Get a file preview image. Currently, this method supports preview for image
 		 * files (jpg, png, and gif), other supported formats, like pdf, docs, slides,
 		 * and spreadsheets, will return the file icon image. You can also pass query
-		 * string arguments for cutting and resizing your preview image.
+		 * string arguments for cutting and resizing your preview image. Preview is
+		 * supported only for image files smaller than 10MB.
 		 *
+		 * @param {string} bucketId
 		 * @param {string} fileId
 		 * @param {number} width
 		 * @param {number} height
@@ -8159,6 +8902,7 @@ class Appwrite {
 		 * @returns {URL}
 		 */
 		getFilePreview: (
+			bucketId: string,
 			fileId: string,
 			width?: number,
 			height?: number,
@@ -8172,11 +8916,17 @@ class Appwrite {
 			background?: string,
 			output?: string
 		): URL => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
 			if (typeof fileId === 'undefined') {
 				throw new AppwriteException('Missing required parameter: "fileId"');
 			}
 
-			let path = '/storage/files/{fileId}/preview'.replace('{fileId}', fileId);
+			let path = '/storage/buckets/{bucketId}/files/{fileId}/preview'
+				.replace('{bucketId}', bucketId)
+				.replace('{fileId}', fileId);
 			let payload: Payload = {};
 
 			if (typeof width !== 'undefined') {
@@ -8239,16 +8989,23 @@ class Appwrite {
 		 * download method but returns with no  'Content-Disposition: attachment'
 		 * header.
 		 *
+		 * @param {string} bucketId
 		 * @param {string} fileId
 		 * @throws {AppwriteException}
 		 * @returns {URL}
 		 */
-		getFileView: (fileId: string): URL => {
+		getFileView: (bucketId: string, fileId: string): URL => {
+			if (typeof bucketId === 'undefined') {
+				throw new AppwriteException('Missing required parameter: "bucketId"');
+			}
+
 			if (typeof fileId === 'undefined') {
 				throw new AppwriteException('Missing required parameter: "fileId"');
 			}
 
-			let path = '/storage/files/{fileId}/view'.replace('{fileId}', fileId);
+			let path = '/storage/buckets/{bucketId}/files/{fileId}/view'
+				.replace('{bucketId}', bucketId)
+				.replace('{fileId}', fileId);
 			let payload: Payload = {};
 
 			const uri = new URL(this.config.endpoint + path);
@@ -8805,6 +9562,10 @@ class Appwrite {
 		 * after being redirected back to your app from the invitation email received
 		 * by the user.
 		 *
+		 * If the request is successful, a session for the user is automatically
+		 * created.
+		 *
+		 *
 		 * @param {string} teamId
 		 * @param {string} membershipId
 		 * @param {string} userId
@@ -9262,8 +10023,9 @@ class Appwrite {
 		/**
 		 * Update User Preferences
 		 *
-		 * Update the user preferences by its unique ID. You can pass only the
-		 * specific settings you wish to update.
+		 * Update the user preferences by its unique ID. The object you pass is stored
+		 * as is, and replaces any previous value. The maximum allowed prefs size is
+		 * 64kB and throws error if exceeded.
 		 *
 		 * @param {string} userId
 		 * @param {object} prefs
@@ -9473,5 +10235,42 @@ class Appwrite {
 	};
 }
 
-export { Appwrite };
-export type { AppwriteException, Models };
+type QueryTypesSingle = string | number | boolean;
+type QueryTypesList = string[] | number[] | boolean[];
+type QueryTypes = QueryTypesSingle | QueryTypesList;
+
+class Query {
+	static equal = (attribute: string, value: QueryTypes): string =>
+		Query.addQuery(attribute, 'equal', value);
+
+	static notEqual = (attribute: string, value: QueryTypes): string =>
+		Query.addQuery(attribute, 'notEqual', value);
+
+	static lesser = (attribute: string, value: QueryTypes): string =>
+		Query.addQuery(attribute, 'lesser', value);
+
+	static lesserEqual = (attribute: string, value: QueryTypes): string =>
+		Query.addQuery(attribute, 'lesserEqual', value);
+
+	static greater = (attribute: string, value: QueryTypes): string =>
+		Query.addQuery(attribute, 'greater', value);
+
+	static greaterEqual = (attribute: string, value: QueryTypes): string =>
+		Query.addQuery(attribute, 'greaterEqual', value);
+
+	static search = (attribute: string, value: string): string =>
+		Query.addQuery(attribute, 'search', value);
+
+	private static addQuery = (attribute: string, oper: string, value: QueryTypes): string =>
+		value instanceof Array
+			? `${attribute}.${oper}(${value
+					.map((v: QueryTypesSingle) => Query.parseValues(v))
+					.join(',')})`
+			: `${attribute}.${oper}(${Query.parseValues(value)})`;
+
+	private static parseValues = (value: QueryTypes): string =>
+		typeof value === 'string' || value instanceof String ? `"${value}"` : `${value}`;
+}
+
+export { Appwrite, Query };
+export type { AppwriteException, Models, QueryTypes, QueryTypesList };

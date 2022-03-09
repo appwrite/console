@@ -38,19 +38,19 @@
 	{:then usage}
 		<div class="grid">
 			<div>
-				<h2>{getLast(usage.users).value}</h2>
+				<h2>{getLast(usage.users)}</h2>
 				<small>Users</small>
 			</div>
 			<div>
-				<h2>{getLast(usage.documents).value}</h2>
+				<h2>{getLast(usage.documents)}</h2>
 				<small>Documents</small>
 			</div>
 			<div>
-				<h2>{getLast(usage.functions).value}</h2>
+				<h2>{getLast(usage.functions)}</h2>
 				<small>Executions</small>
 			</div>
 			<div>
-				<h2>{getLast(usage.storage).value}</h2>
+				<h2>{getLast(usage.storage)}</h2>
 				<small>Storage</small>
 			</div>
 		</div>
