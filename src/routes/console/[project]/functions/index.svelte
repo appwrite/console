@@ -24,11 +24,11 @@
 {#await request}
 	<div aria-busy="true" />
 {:then response}
-	{#each response.functions as func}
-		<Tiles>
+	<Tiles>
+		{#each response.functions as func}
 			<Tile href={`/console/${project}/functions/function/${func.$id}`} title={func.name} />
-		</Tiles>
-	{/each}
+		{/each}
+	</Tiles>
 
 	<Pagination {limit} bind:offset sum={response.total} />
 {/await}

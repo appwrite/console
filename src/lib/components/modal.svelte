@@ -20,12 +20,13 @@
 
 {#if show}
 	<div class="modal-curtain" data-curtain on:click={handleBLur}>
-		<section class="modal" open>
+		<section class="modal">
 			<header class="modal-header">
 				<h4 class="modal-title">
 					<slot name="header" />
 				</h4>
 				<button
+					type="button"
 					class="x-button"
 					aria-label="Close Modal"
 					title="Close Modal"

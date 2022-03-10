@@ -5,10 +5,11 @@
 	export let label: string;
 	export let tags: string[] = [];
 	export let placeholder = '';
+	export let helper = '';
 	export let autofocus = false;
 
+	let value = '';
 	let element: HTMLInputElement;
-	let value: string;
 
 	onMount(() => {
 		if (element && autofocus) {
@@ -17,6 +18,12 @@
 	});
 
 	const handleInput = (e: KeyboardEvent) => {
+		/**
+		 * Allow form submit
+		 */
+		if (e.key === 'Enter' && value === '') {
+			return;
+		}
 		if (['Enter', 'Tab', ' '].includes(e.key)) {
 			e.preventDefault();
 			addValue();
@@ -55,6 +62,7 @@
 						<div class="tag">
 							<span class="tag-text">{tag}</span>
 							<button
+								type="button"
 								class="x-button"
 								aria-label={`delete ${tag} tag`}
 								on:click={() => removeValue(tag)}
@@ -78,3 +86,6 @@
 		/>
 	</div>
 </div>
+{#if helper}
+	<p class="helper u-margin-block-start-12">{helper}</p>
+{/if}
