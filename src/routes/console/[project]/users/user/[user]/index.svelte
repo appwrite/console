@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { Card } from '$lib/components';
+	import { Card, Copy } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { user } from './store';
@@ -20,6 +20,7 @@
 
 <h1>Overview</h1>
 <Card>
+	<Copy value={$user.$id} />
 	<p><img src={getAvatar($user.name)} alt={$user.name} class="avatar" /></p>
 	<p>{$user.$id}</p>
 	<p>Member since {$user.registration}</p>

@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Table, TableRow, TableBody, TableHeader, TableCell } from '$lib/elements/table';
-	import { Button } from '$lib/elements/forms';
+	import { Button, InputSearch } from '$lib/elements/forms';
 	import { Card, Pagination } from '$lib/components';
 	import Create from './_create.svelte';
 	import type { Models } from 'src/sdk';
@@ -20,11 +20,12 @@
 	};
 
 	$: request = sdkForProject.storage.listBuckets(search, limit, offset);
+	$: if (search) offset = 0;
 </script>
 
 <h1>Buckets</h1>
 <Card>
-	<input type="search" bind:value={search} />
+	<InputSearch bind:value={search} />
 </Card>
 
 <Card>

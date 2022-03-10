@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Card, Pagination } from '$lib/components';
-	import { Button } from '$lib/elements/forms';
+	import { Button, InputSearch } from '$lib/elements/forms';
 	import { Table, TableHeader, TableBody, TableRow, TableCell } from '$lib/elements/table';
 	import Create from './_create.svelte';
 	import type { Models } from 'src/sdk';
@@ -19,11 +19,12 @@
 		await goto(`/console/${project}/users/user/${event.detail.$id}`);
 	};
 	$: request = sdkForProject.users.list(search, limit, offset, undefined, undefined, 'DESC');
+	$: if (search) offset = 0;
 </script>
 
 <h1>Users</h1>
 <Card>
-	<input type="search" bind:value={search} />
+	<InputSearch bind:value={search} />
 </Card>
 <Card>
 	{#await request}

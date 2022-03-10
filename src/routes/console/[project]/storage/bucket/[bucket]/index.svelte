@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Button } from '$lib/elements/forms';
+	import { Button, InputSearch } from '$lib/elements/forms';
 	import { Card, Pagination } from '$lib/components';
 	import { Table, TableHeader, TableCell, TableBody, TableRow } from '$lib/elements/table';
 	import Create from './_create.svelte';
@@ -9,20 +9,18 @@
 	let search = '';
 	let showCreate = false;
 	let offset = 0;
-	const limit = 25;
 
+	const limit = 25;
 	const project = $page.params.project;
 	const bucket = $page.params.bucket;
-	const doSearch = () => {
-		offset = 0;
-	};
 
 	$: request = sdkForProject.storage.listFiles(bucket, search, limit, offset);
+	$: if (search) offset = 0;
 </script>
 
-<form on:submit|preventDefault={doSearch}>
-	<input type="search" bind:value={search} />
-</form>
+<Card>
+	<InputSearch bind:value={search} />
+</Card>
 
 <Card>
 	{#await request}

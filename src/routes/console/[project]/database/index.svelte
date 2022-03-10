@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Table, TableRow, TableBody, TableHeader, TableCell } from '$lib/elements/table';
-	import { Button } from '$lib/elements/forms';
+	import { Button, InputSearch } from '$lib/elements/forms';
 	import { Card, Pagination } from '$lib/components';
 	import Create from './_create.svelte';
 	import { goto } from '$app/navigation';
@@ -11,23 +11,20 @@
 	let search = '';
 	let showCreate = false;
 	let offset = 0;
+
 	const limit = 25;
 	const project = $page.params.project;
-	const doSearch = () => {
-		offset = 0;
-	};
 	const collectionCreated = async (event: CustomEvent<Models.Collection>) => {
 		await goto(`/console/${project}/database/collection/${event.detail.$id}`);
 	};
 
 	$: request = sdkForProject.database.listCollections(search, limit, offset);
+	$: if (search) offset = 0;
 </script>
 
 <h1>Collections</h1>
 <Card>
-	<form on:submit|preventDefault={doSearch}>
-		<input type="search" bind:value={search} />
-	</form>
+	<InputSearch bind:value={search} />
 </Card>
 
 <Card>
