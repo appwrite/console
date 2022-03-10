@@ -61,8 +61,8 @@
 			</div>
 		{/await}
 	</Card>
+	<h1>Platforms</h1>
 	<Card>
-		<h2>Platforms</h2>
 		<article>
 			{#each $project.platforms as platform}
 				<div class="grid">

@@ -14,22 +14,24 @@
 
 <div class="console-header">
 	<div class="start">
-		<div class="select">
-			<select on:change={onChange}>
-				{#await sdkForConsole.projects.list() then { projects }}
-					{#each projects as project}
-						<option value={project.$id} selected={currentProject === project.$id}>
-							{project.name}
-						</option>
-					{/each}
-				{/await}
-			</select>
-			<span class="icon-down-open" aria-hidden="true" />
-		</div>
+		{#if currentProject}
+			<div class="select">
+				<select on:change={onChange}>
+					{#await sdkForConsole.projects.list() then { projects }}
+						{#each projects as project}
+							<option value={project.$id} selected={currentProject === project.$id}>
+								{project.name}
+							</option>
+						{/each}
+					{/await}
+				</select>
+				<span class="icon-down-open" aria-hidden="true" />
+			</div>
 
-		<button class="button is-only-icon" aria-label="Create Project">
-			<span class="icon-plus" aria-hidden="true" />
-		</button>
+			<button class="button is-only-icon" aria-label="Create Project">
+				<span class="icon-plus" aria-hidden="true" />
+			</button>
+		{/if}
 	</div>
 	<div class="end">
 		{#if $user}

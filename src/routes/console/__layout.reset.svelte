@@ -9,6 +9,7 @@
 	import Notifications from '$lib/layout/notifications.svelte';
 	import { browser } from '$app/env';
 	import { app } from '$lib/stores/app';
+	import Footer from '$lib/layout/footer.svelte';
 
 	onMount(async () => {
 		try {
@@ -36,4 +37,5 @@
 		<SideNavigation />
 	</svelte:fragment>
 	<slot />
+	<Footer />
 </Shell>
