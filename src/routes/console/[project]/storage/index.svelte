@@ -2,9 +2,8 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Table, TableRow, TableBody, TableHeader, TableCell } from '$lib/elements/table';
 	import { Button, InputSearch } from '$lib/elements/forms';
-	import { Card, Pagination } from '$lib/components';
+	import { Card, Pagination, Tile, Tiles } from '$lib/components';
 	import Create from './_create.svelte';
 	import type { Models } from 'src/sdk';
 
@@ -28,29 +27,17 @@
 	<InputSearch bind:value={search} />
 </Card>
 
-<Card>
-	{#await request}
-		<div aria-busy="true" />
-	{:then response}
-		<Table>
-			<TableHeader>
-				<TableCell>#</TableCell>
-				<TableCell>Name</TableCell>
-			</TableHeader>
-			<TableBody>
-				{#each response.buckets as bucket}
-					<TableRow>
-						<TableCell>
-							<a href={`/console/${project}/storage/bucket/${bucket.$id}`}>{bucket.$id}</a>
-						</TableCell>
-						<TableCell>{bucket.name}</TableCell>
-					</TableRow>
-				{/each}
-			</TableBody>
-		</Table>
-		<Pagination {limit} bind:offset sum={response.total} />
-	{/await}
-</Card>
+{#await request}
+	<div aria-busy="true" />
+{:then response}
+	<Tiles>
+		{#each response.buckets as bucket}
+			<Tile href={`/console/${project}/storage/bucket/${bucket.$id}`} title={bucket.name} />
+		{/each}
+	</Tiles>
+
+	<Pagination {limit} bind:offset sum={response.total} />
+{/await}
 
 <Button on:click={() => (showCreate = true)}>Create Bucket</Button>
 <Create bind:showCreate on:created={bucketCreated} />

@@ -24,19 +24,13 @@ test('shows button - submit', () => {
 test('shows button - outline', () => {
 	const { getByRole } = render(Button, { outline: true });
 
-	expect(getByRole('button')).toHaveClass('outline');
-});
-
-test('shows button - contrast', () => {
-	const { getByRole } = render(Button, { contrast: true });
-
-	expect(getByRole('button')).toHaveClass('contrast');
+	expect(getByRole('button')).toHaveClass('is-outline');
 });
 
 test('shows button - secondary', () => {
 	const { getByRole } = render(Button, { secondary: true });
 
-	expect(getByRole('button')).toHaveClass('secondary');
+	expect(getByRole('button')).toHaveClass('is-secondary');
 });
 
 test('shows button - on:click', async () => {

@@ -21,7 +21,7 @@ export const addNotification = (notification: Omit<Notification, 'id'>) => {
 		id: counter++,
 		type: 'info',
 		dismissible: true,
-		timeout: 3000
+		timeout: 6000
 	};
 
 	const n = { ...defaults, ...notification };

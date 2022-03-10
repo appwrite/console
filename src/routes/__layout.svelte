@@ -33,7 +33,7 @@
 
 <style>
 	main {
-		max-width: 48rem;
+		max-width: 64rem;
 		margin: 0 auto;
 	}
 	:global(:root) {
@@ -78,9 +78,5 @@
 
 		/* transparent */
 		--transparent: 0 0 0 / 0;
-	}
-
-	:global(body) {
-		background-color: #eceff1;
 	}
 </style>

@@ -15,9 +15,9 @@
 
 	const create = async () => {
 		try {
-			await sdkForConsole.projects.create(id, name, teamId);
+			const project = await sdkForConsole.projects.create(id, name, teamId);
 			id = name = null;
-			dispatch('created');
+			dispatch('created', project);
 		} catch (error) {
 			addNotification({
 				type: 'error',
@@ -29,12 +29,12 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show>
-		<span slot="header">Create Project</span>
+		<svelte:fragment slot="header">Create Project</svelte:fragment>
 		<InputCustomId id="id" label="ID" bind:value={id} required />
 		<InputText id="name" label="Name" bind:value={name} required />
-		<footer>
+		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => (show = false)}>Cancel</Button>
 			<Button submit>Create</Button>
-		</footer>
+		</svelte:fragment>
 	</Modal>
 </form>

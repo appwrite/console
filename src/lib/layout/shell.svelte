@@ -33,8 +33,11 @@
 	}
 
 	.main-content {
-		max-width: 48rem;
+		max-width: 64rem;
 		width: 100%;
 		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 </style>

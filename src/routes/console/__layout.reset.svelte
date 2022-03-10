@@ -7,6 +7,8 @@
 	import { onMount } from 'svelte';
 	import Header from '$lib/layout/header.svelte';
 	import Notifications from '$lib/layout/notifications.svelte';
+	import { browser } from '$app/env';
+	import { app } from '$lib/stores/app';
 
 	onMount(async () => {
 		try {
@@ -17,6 +19,12 @@
 			await goto('/login');
 		}
 	});
+
+	$: {
+		if (browser) {
+			document.body.setAttribute('class', `theme-${$app.theme}`);
+		}
+	}
 </script>
 
 <Notifications />

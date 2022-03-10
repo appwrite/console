@@ -24,10 +24,6 @@
 	<Button {disabled} secondary on:click={eventCallback}>{title}</Button>
 </Variant>
 
-<Variant name="Contrast" description="The contrast button.">
-	<Button {disabled} contrast on:click={eventCallback}>{title}</Button>
-</Variant>
-
 <Variant name="Outline" description="The outline button.">
 	<Button {disabled} outline on:click={eventCallback}>{title}</Button>
 </Variant>

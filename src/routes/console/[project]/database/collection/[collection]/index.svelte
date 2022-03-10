@@ -6,9 +6,11 @@
 	import { collection } from './store';
 
 	let offset = 0;
+
 	const limit = 25;
 	const project = $page.params.project;
-	const columns = [
+
+	$: columns = [
 		{ key: '$id', title: '#' },
 		...$collection.attributes.map((attribute) => ({
 			key: attribute.key,

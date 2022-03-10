@@ -10,7 +10,7 @@
 
 	const handleBLur = (event: MouseEvent) => {
 		const target: Partial<HTMLElement> = event.target;
-		if (target.tagName === 'DIALOG') {
+		if (target.hasAttribute('data-curtain')) {
 			show = false;
 		}
 	};
@@ -19,20 +19,29 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if show}
-	<dialog open on:click={handleBLur}>
-		<article>
-			<header>
-				<span on:click={() => (show = false)} aria-label="Close" title="Close" class="close" />
-				<slot name="header" />
+	<div class="modal-curtain" data-curtain on:click={handleBLur}>
+		<section class="modal" open>
+			<header class="modal-header">
+				<h4 class="modal-title">
+					<slot name="header" />
+				</h4>
+				<button
+					class="x-button"
+					aria-label="Close Modal"
+					title="Close Modal"
+					on:click={() => (show = false)}
+				>
+					<span class="icon-cancel" aria-hidden="true" />
+				</button>
 			</header>
-
-			<slot />
-		</article>
-	</dialog>
+			<div class="modal-content">
+				<slot />
+			</div>
+			<div class="modal-footer">
+				<div class="u-flex u-gap-10">
+					<slot name="footer" />
+				</div>
+			</div>
+		</section>
+	</div>
 {/if}
-
-<style>
-	span.close {
-		cursor: pointer;
-	}
-</style>

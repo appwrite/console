@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Table, TableRow, TableBody, TableHeader, TableCell } from '$lib/elements/table';
 	import { Button, InputSearch } from '$lib/elements/forms';
-	import { Card, Pagination } from '$lib/components';
+	import { Card, Pagination, Tile, Tiles } from '$lib/components';
 	import Create from './_create.svelte';
 
 	let search = '';
@@ -22,29 +21,17 @@
 	<InputSearch bind:value={search} />
 </Card>
 
-<Card>
-	{#await request}
-		<div aria-busy="true" />
-	{:then response}
-		<Table>
-			<TableHeader>
-				<TableCell>#</TableCell>
-				<TableCell>Name</TableCell>
-			</TableHeader>
-			<TableBody>
-				{#each response.functions as func}
-					<TableRow>
-						<TableCell>
-							<a href={`/console/${project}/functions/function/${func.$id}`}>{func.$id}</a>
-						</TableCell>
-						<TableCell>{func.name}</TableCell>
-					</TableRow>
-				{/each}
-			</TableBody>
-		</Table>
-		<Pagination {limit} bind:offset sum={response.total} />
-	{/await}
-</Card>
+{#await request}
+	<div aria-busy="true" />
+{:then response}
+	{#each response.functions as func}
+		<Tiles>
+			<Tile href={`/console/${project}/functions/function/${func.$id}`} title={func.name} />
+		</Tiles>
+	{/each}
+
+	<Pagination {limit} bind:offset sum={response.total} />
+{/await}
 
 <Button on:click={() => (showCreate = true)}>Create Function</Button>
 <Create bind:showCreate />

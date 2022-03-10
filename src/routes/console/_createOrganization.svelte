@@ -27,11 +27,11 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show>
-		<span slot="header">Create Project</span>
+		<svelte:fragment slot="header">Create Project</svelte:fragment>
 		<InputText id="name" label="Name" bind:value={name} required />
-		<footer>
+		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => (show = false)}>Cancel</Button>
 			<Button submit>Create</Button>
-		</footer>
+		</svelte:fragment>
 	</Modal>
 </form>

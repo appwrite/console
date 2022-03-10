@@ -28,11 +28,11 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
-		<span slot="header">Create Team</span>
+		<svelte:fragment slot="header">Create Team</svelte:fragment>
 		<InputText id="name" label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
-		<footer>
+		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Create</Button>
-		</footer>
+		</svelte:fragment>
 	</Modal>
 </form>

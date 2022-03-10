@@ -33,13 +33,13 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
-		<span slot="header">Upload File</span>
+		<svelte:fragment slot="header">Upload File</svelte:fragment>
 		<InputFile id="file" label="File" bind:files required />
 		<InputTags id="read" label="Read" bind:tags={read} />
 		<InputTags id="write" label="Write" bind:tags={write} />
-		<footer>
+		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Upload</Button>
-		</footer>
+		</svelte:fragment>
 	</Modal>
 </form>

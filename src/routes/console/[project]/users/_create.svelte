@@ -28,7 +28,7 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
-		<span slot="header">Create User</span>
+		<svelte:fragment slot="header">Create User</svelte:fragment>
 		<InputText id="name" label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
 		<InputEmail
 			id="email"
@@ -44,9 +44,9 @@
 			required={true}
 			bind:value={pass}
 		/>
-		<footer>
+		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Create</Button>
-		</footer>
+		</svelte:fragment>
 	</Modal>
 </form>

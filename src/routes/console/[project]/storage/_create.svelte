@@ -29,11 +29,11 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
-		<span slot="header">Upload File</span>
+		<svelte:fragment slot="header">Upload File</svelte:fragment>
 		<InputText id="name" label="Name" bind:value={name} required />
-		<footer>
+		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Upload</Button>
-		</footer>
+		</svelte:fragment>
 	</Modal>
 </form>

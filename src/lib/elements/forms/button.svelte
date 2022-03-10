@@ -1,7 +1,6 @@
 <script lang="ts">
 	export let submit = false;
 	export let secondary = false;
-	export let contrast = false;
 	export let outline = false;
 	export let disabled = false;
 </script>
@@ -10,9 +9,8 @@
 	on:click
 	{disabled}
 	class="button"
-	class:secondary
-	class:contrast
-	class:outline
+	class:is-secondary={secondary}
+	class:is-outline={outline}
 	type={submit ? 'submit' : 'button'}
 >
 	<slot />

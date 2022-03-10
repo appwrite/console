@@ -34,4 +34,4 @@
 	<p>Create: {file.dateCreated}</p>
 {/await}
 
-<Button contrast on:click={deleteFile}>Delete File</Button>
+<Button secondary on:click={deleteFile}>Delete File</Button>

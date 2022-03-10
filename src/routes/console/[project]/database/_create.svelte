@@ -36,12 +36,12 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
-		<span slot="header">Create Collection</span>
+		<svelte:fragment slot="header">Create Collection</svelte:fragment>
 		<InputCustomId label="ID" id="id" bind:value={id} />
 		<InputText label="Name" id="name" bind:value={name} />
-		<footer>
+		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Create</Button>
-		</footer>
+		</svelte:fragment>
 	</Modal>
 </form>

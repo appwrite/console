@@ -36,11 +36,11 @@
 </script>
 
 <Modal bind:show>
-	<span slot="header">
+	<svelte:fragment slot="header">
 		{#if selected}
 			Create {selected.name} Attribute
 		{/if}
-	</span>
+	</svelte:fragment>
 
 	<label>
 		<span>Type</span>

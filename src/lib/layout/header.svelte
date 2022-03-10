@@ -18,9 +18,9 @@
 			<select on:change={onChange}>
 				{#await sdkForConsole.projects.list() then { projects }}
 					{#each projects as project}
-						<option value={project.$id} selected={currentProject === project.$id}
-							>{project.name}</option
-						>
+						<option value={project.$id} selected={currentProject === project.$id}>
+							{project.name}
+						</option>
 					{/each}
 				{/await}
 			</select>

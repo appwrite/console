@@ -21,7 +21,7 @@ test('close modal by click', async () => {
 	});
 
 	expect(queryByText('Content')).toBeInTheDocument();
-	await fireEvent.click(getByTitle('Close'));
+	await fireEvent.click(getByTitle('Close Modal'));
 
 	expect(queryByText('Content')).not.toBeInTheDocument();
 	expect(component.show).toStrictEqual(false);

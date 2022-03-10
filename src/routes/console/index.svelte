@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Card } from '$lib/components';
+	import { goto } from '$app/navigation';
+	import { Tiles, Tile } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import type { Models } from 'src/sdk';
@@ -30,32 +31,31 @@
 		currentOrganization = teamId;
 		addProject = true;
 	};
+	const projectCreated = async (event: CustomEvent<Models.Project>) => {
+		await goto(`/console/${event.detail.$id}`);
+	};
 </script>
 
 <h1>Your Organizations</h1>
+<Button on:click={() => (addOrganization = true)}>Add Organization</Button>
 
 {#await request}
 	<div aria-busy="true" />
 {:then organizations}
 	{#each organizations as organization}
 		<h1>{organization.name}</h1>
-		<Card>
+		<Tiles>
 			{#each organization.projects as project}
-				<a href={`/console/${project.$id}`}><article>{project.name}</article></a>
+				<Tile href={`/console/${project.$id}`} title={project.name} />
 			{/each}
-			<article class="new-project" on:click={() => createProject(organization.$id)}>
-				New Project
-			</article>
-		</Card>
+		</Tiles>
+		<Button on:click={() => createProject(organization.$id)}>Create Project</Button>
 	{/each}
-	<Button on:click={() => (addOrganization = true)}>Add Organization</Button>
 {/await}
 
 <CreateOrganization bind:show={addOrganization} />
-<CreateProject bind:show={addProject} bind:teamId={currentOrganization} />
-
-<style>
-	article.new-project {
-		cursor: pointer;
-	}
-</style>
+<CreateProject
+	bind:show={addProject}
+	bind:teamId={currentOrganization}
+	on:created={projectCreated}
+/>

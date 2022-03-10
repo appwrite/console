@@ -34,12 +34,12 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show>
-		<span slot="header">Add Platform</span>
+		<svelte:fragment slot="header">Add Platform</svelte:fragment>
 		<InputText id="name" label="Name" bind:value={name} required />
 		<InputText id="host" label="Hostname" bind:value={hostname} required />
-		<footer>
+		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => (show = false)}>Cancel</Button>
 			<Button submit>Register</Button>
-		</footer>
+		</svelte:fragment>
 	</Modal>
 </form>
