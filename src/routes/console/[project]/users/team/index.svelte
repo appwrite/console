@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Table, TableHeader, TableCell, TableBody, TableRow } from '$lib/elements/table';
+	import {
+		Table,
+		TableHeader,
+		TableBody,
+		TableRow,
+		TableCellHead,
+		TableCellLink,
+		TableCellText
+	} from '$lib/elements/table';
 	import { Button, InputSearch } from '$lib/elements/forms';
 	import { Card, Pagination } from '$lib/components';
 	import Create from './_create.svelte';
@@ -32,20 +40,18 @@
 	{:then response}
 		<Table>
 			<TableHeader>
-				<TableCell>#</TableCell>
-				<TableCell>Name</TableCell>
-				<TableCell>Members</TableCell>
+				<TableCellHead>#</TableCellHead>
+				<TableCellHead>Name</TableCellHead>
+				<TableCellHead>Members</TableCellHead>
 			</TableHeader>
 			<TableBody>
 				{#each response.teams as team}
 					<TableRow>
-						<TableCell>
-							<a href={`/console/${project}/users/team/${team.$id}`}>
-								{team.$id}
-							</a>
-						</TableCell>
-						<TableCell>{team.name}</TableCell>
-						<TableCell>{team.total}</TableCell>
+						<TableCellLink title="ID" href={`/console/${project}/users/team/${team.$id}`}>
+							{team.$id}
+						</TableCellLink>
+						<TableCellText title="Name">{team.name}</TableCellText>
+						<TableCellText title="Members">{team.total}</TableCellText>
 					</TableRow>
 				{/each}
 			</TableBody>

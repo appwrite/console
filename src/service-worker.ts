@@ -2,11 +2,11 @@ import { version, build } from '$service-worker';
 
 const name = `cache-${version}`;
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', (event: ExtendableEvent) => {
 	event.waitUntil(caches.open(name).then((cache) => cache.addAll(build)));
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', (event: ExtendableEvent) => {
 	event.waitUntil(
 		caches.keys().then(async (keys) => {
 			for (const key of keys) {
@@ -16,7 +16,7 @@ self.addEventListener('activate', (event) => {
 	);
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', (event: FetchEvent) => {
 	const { request } = event;
 
 	if (request.method !== 'GET' || request.headers.has('range')) return;
