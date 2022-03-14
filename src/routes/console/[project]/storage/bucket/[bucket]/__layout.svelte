@@ -15,6 +15,9 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Appwrite - Bucket</title>
+</svelte:head>
 <Back href={`/console/${project}/storage`}>Storage</Back>
 {#if $bucket}
 	<h1>{$bucket.name}</h1>

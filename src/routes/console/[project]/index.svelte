@@ -33,6 +33,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Appwrite - Console</title>
+</svelte:head>
+
 {#if $project}
 	<h1>{$project.name}</h1>
 	<Card>

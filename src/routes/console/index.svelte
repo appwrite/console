@@ -36,6 +36,9 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Appwrite - Console</title>
+</svelte:head>
 <h1>Your Organizations</h1>
 <Button on:click={() => (addOrganization = true)}>Add Organization</Button>
 

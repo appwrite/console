@@ -15,6 +15,9 @@
 	const request = sdkForConsole.projects.listKeys(projectId);
 </script>
 
+<svelte:head>
+	<title>Appwrite - API Keys</title>
+</svelte:head>
 <Back href={`/console/${projectId}`}>Home</Back>
 <h1>API Keys</h1>
 <Card>

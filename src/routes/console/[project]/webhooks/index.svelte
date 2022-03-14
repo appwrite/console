@@ -15,6 +15,9 @@
 	const request = sdkForConsole.projects.listWebhooks(projectId);
 </script>
 
+<svelte:head>
+	<title>Appwrite - Webhooks</title>
+</svelte:head>
 <Back href={`/console/${projectId}`}>Home</Back>
 <h1>Webhooks</h1>
 <Card>

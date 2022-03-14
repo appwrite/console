@@ -16,6 +16,9 @@
 	const request = sdkForConsole.projects.listDomains(projectId);
 </script>
 
+<svelte:head>
+	<title>Appwrite - Domains</title>
+</svelte:head>
 <Back href={`/console/${projectId}`}>Home</Back>
 <h1>API Keys</h1>
 <Card>

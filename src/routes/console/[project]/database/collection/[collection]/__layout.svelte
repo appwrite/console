@@ -15,6 +15,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Appwrite - {$collection?.name ?? 'Collection'}</title>
+</svelte:head>
+
 <Back href={`/console/${project}/database`}>Database</Back>
 
 {#if $collection}

@@ -15,6 +15,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Appwrite - Document</title>
+</svelte:head>
+
 <h1>Overview</h1>
 <Card>
 	{#if $document}

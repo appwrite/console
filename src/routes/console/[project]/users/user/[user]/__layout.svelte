@@ -15,6 +15,9 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Appwrite - User</title>
+</svelte:head>
 <Back href={`/console/${project}/users`}>Users</Back>
 {#if $user}
 	<h1>{$user.name}</h1>

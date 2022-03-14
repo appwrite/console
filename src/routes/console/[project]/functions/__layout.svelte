@@ -6,6 +6,9 @@
 	const project = $page.params.project;
 </script>
 
+<svelte:head>
+	<title>Appwrite - Functions</title>
+</svelte:head>
 {#if $page.url.pathname === `/console/${project}/functions/`}
 	<Back href={`/console/${project}`}>Home</Back>
 	<h1>Functions</h1>
