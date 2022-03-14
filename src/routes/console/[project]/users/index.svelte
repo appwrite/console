@@ -3,10 +3,21 @@
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Card, Pagination } from '$lib/components';
 	import { Button, InputSearch } from '$lib/elements/forms';
-	import { Table, TableHeader, TableBody, TableRow, TableCell } from '$lib/elements/table';
+	import {
+		Table,
+		TableHeader,
+		TableBody,
+		TableRow,
+		TableCell,
+		TableCellHead,
+		TableCellLink,
+		TableCellText
+	} from '$lib/elements/table';
 	import Create from './_create.svelte';
 	import type { Models } from 'src/sdk';
 	import { goto } from '$app/navigation';
+	import { Pill } from '$lib/elements';
+	import { toLocaleDate } from '$lib/helpers/date';
 
 	let search = '';
 	let showCreate = false;
@@ -32,26 +43,36 @@
 	{:then response}
 		<Table>
 			<TableHeader>
-				<TableCell width={80} />
-				<TableCell>Name</TableCell>
-				<TableCell>E-Mail</TableCell>
-				<TableCell>Status</TableCell>
-				<TableCell>Joined</TableCell>
+				<TableCellHead width={30} />
+				<TableCellHead>Name</TableCellHead>
+				<TableCellHead>E-Mail</TableCellHead>
+				<TableCellHead>Status</TableCellHead>
+				<TableCellHead>Joined</TableCellHead>
 			</TableHeader>
 			<TableBody>
 				{#each response.users as user}
 					<TableRow>
-						<TableCell>
-							<img src={getAvatar(user.name)} alt={user.name} />
+						<TableCell width={30} onlyDesktop>
+							<div class="image">
+								<img
+									class="avatar"
+									width="30"
+									height="30"
+									src={getAvatar(user.name)}
+									alt={user.name}
+								/>
+							</div>
 						</TableCell>
-						<TableCell>
-							<a href={`/console/${project}/users/user/${user.$id}`}>
-								{user.name}
-							</a>
-						</TableCell>
-						<TableCell>{user.email}</TableCell>
-						<TableCell>{user.emailVerification}</TableCell>
-						<TableCell>{user.registration}</TableCell>
+						<TableCellLink href={`/console/${project}/users/user/${user.$id}`} title="Name">
+							{user.name}
+						</TableCellLink>
+						<TableCellText title="E-Mail">{user.email}</TableCellText>
+						<TableCellText title="Status"
+							><Pill success={user.emailVerification}
+								>{user.emailVerification ? 'Verified' : 'Unverified'}</Pill
+							></TableCellText
+						>
+						<TableCellText title="Joined">{toLocaleDate(user.registration)}</TableCellText>
 					</TableRow>
 				{/each}
 			</TableBody>
