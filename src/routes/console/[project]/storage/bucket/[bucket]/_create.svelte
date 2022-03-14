@@ -17,7 +17,6 @@
 
 	const create = async () => {
 		try {
-			console.log(read, write);
 			await sdkForProject.storage.createFile(bucket, 'unique()', files[0], read, write);
 			files = null;
 			showCreate = false;

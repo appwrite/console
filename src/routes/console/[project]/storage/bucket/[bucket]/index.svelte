@@ -26,7 +26,6 @@
 	const limit = 25;
 	const bucket = $page.params.bucket;
 	const openFile = (file: Models.File) => {
-		console.log(file);
 		currentFile = file;
 		showUpdate = true;
 	};
