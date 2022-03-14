@@ -6,3 +6,5 @@ export { default as Tiles } from './tiles.svelte';
 export { default as Back } from './back.svelte';
 export { default as Copy } from './copy.svelte';
 export { default as UploadBox } from './uploadBox.svelte';
+export { default as List } from './list.svelte';
+export { default as ListItem } from './listItem.svelte';

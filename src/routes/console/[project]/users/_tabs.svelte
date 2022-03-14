@@ -26,19 +26,19 @@
 	<li class="tabs-item">
 		<a
 			class="tabs-button"
-			href={`/console/${project}/users/settings/`}
-			class:is-selected={$page.url.pathname === `/console/${project}/users/settings/`}
+			href={`/console/${project}/users/usage/`}
+			class:is-selected={$page.url.pathname === `/console/${project}/users/usage/`}
 		>
-			<span class="text">Settings</span>
+			<span class="text">Usage</span>
 		</a>
 	</li>
 	<li class="tabs-item">
 		<a
 			class="tabs-button"
-			href={`/console/${project}/users/usage/`}
-			class:is-selected={$page.url.pathname === `/console/${project}/users/usage/`}
+			href={`/console/${project}/users/settings/`}
+			class:is-selected={$page.url.pathname === `/console/${project}/users/settings/`}
 		>
-			<span class="text">Usage</span>
+			<span class="text">Settings</span>
 		</a>
 	</li>
 </ul>

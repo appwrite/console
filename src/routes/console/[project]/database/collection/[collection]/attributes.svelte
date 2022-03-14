@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { Button } from '$lib/elements/forms';
-	import { Table, TableCell, TableHeader, TableBody, TableRow } from '$lib/elements/table';
+	import {
+		Table,
+		TableHeader,
+		TableBody,
+		TableRow,
+		TableCellHead,
+		TableCellText
+	} from '$lib/elements/table';
 	import Create from './attributes/_create.svelte';
 	import { collection } from './store';
 
@@ -11,16 +18,16 @@
 
 <Table>
 	<TableHeader>
-		<TableCell>Status</TableCell>
-		<TableCell>Key</TableCell>
-		<TableCell>Type</TableCell>
+		<TableCellHead>Status</TableCellHead>
+		<TableCellHead>Key</TableCellHead>
+		<TableCellHead>Type</TableCellHead>
 	</TableHeader>
 	<TableBody>
 		{#each $collection.attributes as attribute}
 			<TableRow>
-				<TableCell>{attribute.status}</TableCell>
-				<TableCell>{attribute.key}</TableCell>
-				<TableCell>{attribute.type}</TableCell>
+				<TableCellText title="Status">{attribute.status}</TableCellText>
+				<TableCellText title="Key">{attribute.key}</TableCellText>
+				<TableCellText title="Type">{attribute.type}</TableCellText>
 			</TableRow>
 		{/each}
 	</TableBody>

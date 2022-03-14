@@ -1,13 +1,7 @@
 <script lang="ts">
-	import {
-		Table,
-		TableBody,
-		TableCellHead,
-		TableCellText,
-		TableHeader,
-		TableRow
-	} from '$lib/elements/table';
-
+	import { List, ListItem } from '$lib/components';
+	import { Pill } from '$lib/elements';
+	import { Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { project } from '../store';
 
@@ -19,23 +13,32 @@
 	<div aria-busy="true" />
 {:then response}
 	{#if response}
-		<Table>
-			<TableHeader>
-				<TableCellHead>Name</TableCellHead>
-				<TableCellHead>Email</TableCellHead>
-			</TableHeader>
-			<TableBody>
-				{#each response.memberships as membership}
-					<TableRow>
-						<TableCellText title="Name">
-							{membership.name}
-						</TableCellText>
-						<TableCellText title="Email">
-							{membership.email}
-						</TableCellText>
-					</TableRow>
-				{/each}
-			</TableBody>
-		</Table>
+		<List>
+			{#each response.memberships as membership}
+				<ListItem avatar={sdkForConsole.avatars.getInitials(membership.name, 64, 64).toString()}>
+					<svelte:fragment slot="header">
+						<h2 class="sessions-item-title">
+							<span class="text">
+								{membership.name}
+							</span>
+						</h2>
+						{#each membership.roles as role}
+							<Pill>{role}</Pill>
+						{/each}
+						{#if !membership.confirm}
+							<Pill failed>Pending Approval</Pill>
+						{/if}
+					</svelte:fragment>
+					<svelte:fragment slot="info">
+						{membership.email}
+					</svelte:fragment>
+					<svelte:fragment slot="action">
+						<Button danger>Remove</Button>
+					</svelte:fragment>
+				</ListItem>
+			{:else}
+				<p>No sessions available.</p>
+			{/each}
+		</List>
 	{/if}
 {/await}

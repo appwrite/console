@@ -51,7 +51,7 @@
 		<TableBody>
 			{#each response.users as user}
 				<TableRow>
-					<TableCell width={30} onlyDesktop>
+					<TableCell onlyDesktop>
 						<div class="image">
 							<img
 								class="avatar"
