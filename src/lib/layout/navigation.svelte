@@ -20,7 +20,7 @@
 		<div class="side-nav-main">
 			<a
 				class="side-nav-link"
-				class:is-selected={$page.url.pathname === `/console/${project}`}
+				class:is-selected={$page.url.pathname === `/console/${project}/`}
 				href={`/console/${project}`}
 			>
 				<span class="icon-home" aria-hidden="true" />
