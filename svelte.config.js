@@ -10,11 +10,6 @@ const config = {
 		adapter: adapter(),
 		prerender: {
 			default: true
-		},
-		vite: {
-			define: {
-				__APP_VERSION__: JSON.stringify(process.env.npm_package_version)
-			}
 		}
 	}
 };

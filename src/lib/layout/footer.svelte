@@ -25,7 +25,6 @@
 		<a class="link" href="https://appwrite.io/docs" target="_blank" rel="noopener">Docs</a>
 	</li>
 	<li>API:0.13.2</li>
-	<li>UI:{typeof window !== 'undefined' ? window.__APP_VERSION__ : ''}</li>
 </ul>
 
 <style lang="scss">
