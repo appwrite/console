@@ -6,7 +6,7 @@
 	import type { Models } from 'src/sdk';
 	import CreatePlatform from './_createPlatform.svelte';
 	import { addNotification } from '$lib/stores/notifications';
-	import { Card } from '$lib/components';
+	import { Card, List, ListItem } from '$lib/components';
 
 	let range: '24h' | '30d' | '90d' = '30d';
 	let addPlatform = false;
@@ -40,70 +40,35 @@
 {#if $project}
 	<h1>{$project.name}</h1>
 	<Card>
-		<button on:click={() => (range = '30d')}>30d</button>
-		<button on:click={() => (range = '90d')}>90d</button>
-		{#await requestUsage}
-			<div aria-busy="true" />
-		{:then usage}
-			<div class="grid">
-				<div>
-					<h2>{getLast(usage.users)}</h2>
-					<small>Users</small>
-				</div>
-				<div>
-					<h2>{getLast(usage.documents)}</h2>
-					<small>Documents</small>
-				</div>
-				<div>
-					<h2>{getLast(usage.functions)}</h2>
-					<small>Executions</small>
-				</div>
-				<div>
-					<h2>{getLast(usage.storage)}</h2>
-					<small>Storage</small>
-				</div>
-			</div>
-		{/await}
+		<p>imagine here are some cool stats</p>
 	</Card>
 	<h1>Platforms</h1>
-	<Card>
-		<article>
-			{#each $project.platforms as platform}
-				<div class="grid">
-					<div>
-						{platform.type}
-					</div>
-					<div>
-						<p>
+	<List>
+		{#each $project.platforms as platform}
+			<ListItem avatar={sdkForConsole.avatars.getInitials(platform.type, 60, 60).toString()}>
+				<svelte:fragment slot="header">
+					<h2 class="sessions-item-title">
+						<span class="text">
 							{platform.name}
-							<br />
-							<small>{platform.hostname}</small>
-						</p>
-					</div>
-					<div />
-					<div>
-						<Button secondary>Update</Button>
-					</div>
-					<div>
-						<Button on:click={() => deletePlatform(platform.$id)}>Delete</Button>
-					</div>
+						</span>
+					</h2>
+				</svelte:fragment>
+				<svelte:fragment slot="info">
+					{platform.hostname}
+				</svelte:fragment>
+				<svelte:fragment slot="action">
+					<Button danger on:click={() => deletePlatform(platform.$id)}>Delete</Button>
+				</svelte:fragment>
+			</ListItem>
+		{:else}
+			<div class="grid">
+				<div>
+					<h4>No Platforms Added to Your Project</h4>
+					<p>Add your first platform and build your new application.</p>
 				</div>
-			{:else}
-				<div class="grid">
-					<div>
-						<h4>No Platforms Added to Your Project</h4>
-						<p>Add your first platform and build your new application.</p>
-					</div>
-				</div>
-			{/each}
-		</article>
+			</div>
+		{/each}
 		<Button on:click={() => (addPlatform = true)}>Add Platform</Button>
 		<CreatePlatform bind:show={addPlatform} />
-	</Card>
+	</List>
 {/if}
-
-<style>
-	h2 {
-		margin-bottom: 0;
-	}
-</style>

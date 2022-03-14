@@ -15,7 +15,7 @@
 <div class="console-header">
 	<div class="start">
 		{#if currentProject}
-			<div class="select">
+			<div class="select is-only-desktop">
 				<select on:change={onChange}>
 					{#await sdkForConsole.projects.list() then { projects }}
 						{#each projects as project}
@@ -38,7 +38,7 @@
 			<button class="transparent-button" on:click={() => goto('/console/@me')}>
 				<span class="link is-only-desktop">{$user.name}</span>
 				<img
-					class="avatar user-image"
+					class="user-image"
 					src={sdkForConsole.avatars.getInitials($user.name, 40, 40).toString()}
 					alt=""
 				/>
@@ -46,9 +46,3 @@
 		{/if}
 	</div>
 </div>
-
-<style>
-	.avatar {
-		border-radius: 50%;
-	}
-</style>
