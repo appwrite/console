@@ -19,9 +19,9 @@
 
 	const handleInput = (e: KeyboardEvent) => {
 		/**
-		 * Allow form submit
+		 * Allow form submit and tab input switch
 		 */
-		if (e.key === 'Enter' && value === '') {
+		if (value === '' && ['Enter', 'Tab'].includes(e.key)) {
 			return;
 		}
 		if (['Enter', 'Tab', ' '].includes(e.key)) {
@@ -33,10 +33,6 @@
 				removeValue(tags[tags.length - 1]);
 			}
 		}
-	};
-
-	const handleBlur = () => {
-		addValue();
 	};
 
 	const addValue = () => {
@@ -80,7 +76,7 @@
 			{id}
 			{placeholder}
 			on:keydown={handleInput}
-			on:blur={handleBlur}
+			on:blur={addValue}
 			bind:value
 			bind:this={element}
 		/>
