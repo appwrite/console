@@ -99,7 +99,11 @@
 		</div>
 
 		<div class="side-nav-bottom">
-			<a class="side-nav-link" href={`/console/${project}/settings`}>
+			<a
+				class="side-nav-link"
+				href={`/console/${project}/settings`}
+				class:is-selected={$page.url.pathname.startsWith(`/console/${project}/settings`)}
+			>
 				<span class="icon-cog" aria-hidden="true" />
 				<span class="text">Settings</span>
 			</a>
