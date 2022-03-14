@@ -8,11 +8,7 @@
 
 <ul class="tabs">
 	<li class="tabs-item">
-		<a
-			class="tabs-button is-selected"
-			href={path}
-			class:is-selected={$page.url.pathname === `${path}/`}
-		>
+		<a class="tabs-button is-selected" href={path} class:is-selected={$page.url.pathname === path}>
 			<span class="text">Files</span>
 		</a>
 	</li>
@@ -20,7 +16,7 @@
 		<a
 			class="tabs-button"
 			href={`${path}/monitors`}
-			class:is-selected={$page.url.pathname === `${path}/monitors/`}
+			class:is-selected={$page.url.pathname === `${path}/monitors`}
 		>
 			<span class="text">Monitors</span>
 		</a>
@@ -29,7 +25,7 @@
 		<a
 			class="tabs-button"
 			href={`${path}/logs`}
-			class:is-selected={$page.url.pathname === `${path}/logs/`}
+			class:is-selected={$page.url.pathname === `${path}/logs`}
 		>
 			<span class="text">Logs</span>
 		</a>
@@ -38,7 +34,7 @@
 		<a
 			class="tabs-button"
 			href={`${path}/settings`}
-			class:is-selected={$page.url.pathname === `${path}/settings/`}
+			class:is-selected={$page.url.pathname === `${path}/settings`}
 		>
 			<span class="text">Settings</span>
 		</a>

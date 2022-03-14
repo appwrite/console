@@ -1,7 +1,10 @@
 <script>
 	import { page } from '$app/stores';
 
-	$: path = `/console/${$page.params.project}/users/user/${$page.params.user}`;
+	$: project = $page.params.project;
+	$: collectionId = $page.params.collection;
+	$: documentId = $page.params.document;
+	$: path = `/console/${project}/database/collection/${collectionId}/document/${documentId}`;
 </script>
 
 <ul class="tabs">
@@ -13,17 +16,8 @@
 	<li class="tabs-item">
 		<a
 			class="tabs-button"
-			href={`${path}/sessions`}
-			class:is-selected={$page.url.pathname === `${path}/sessions`}
-		>
-			<span class="text">Sessions</span>
-		</a>
-	</li>
-	<li class="tabs-item">
-		<a
-			class="tabs-button"
 			href={`${path}/activity`}
-			class:is-selected={$page.url.pathname === `${path}/activity`}
+			class:is-selected={$page.url.pathname.startsWith(`${path}/activity`)}
 		>
 			<span class="text">Activity</span>
 		</a>

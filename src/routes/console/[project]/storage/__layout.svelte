@@ -9,7 +9,7 @@
 <svelte:head>
 	<title>Appwrite - Storage</title>
 </svelte:head>
-{#if $page.url.pathname === `/console/${project}/storage/` || $page.url.pathname === `/console/${project}/storage/usage/`}
+{#if !$page.url.pathname.startsWith(`/console/${project}/storage/bucket`)}
 	<Back href={`/console/${project}`}>Home</Back>
 	<h1>Storage</h1>
 	<Tabs />

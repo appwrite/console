@@ -8,7 +8,7 @@
 
 <ul class="tabs">
 	<li class="tabs-item">
-		<a class="tabs-button" href={path} class:is-selected={$page.url.pathname === `${path}/`}>
+		<a class="tabs-button" href={path} class:is-selected={$page.url.pathname === path}>
 			<span class="text">Documents</span>
 		</a>
 	</li>

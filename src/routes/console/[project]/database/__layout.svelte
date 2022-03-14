@@ -9,7 +9,8 @@
 <svelte:head>
 	<title>Appwrite - Database</title>
 </svelte:head>
-{#if $page.url.pathname === `/console/${project}/database/` || $page.url.pathname === `/console/${project}/database/usage/`}
+
+{#if !$page.url.pathname.startsWith(`/console/${project}/database/collection`)}
 	<Back href={`/console/${project}`}>Home</Back>
 	<h1>Database</h1>
 	<Tabs />

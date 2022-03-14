@@ -9,7 +9,7 @@
 <svelte:head>
 	<title>Appwrite - Functions</title>
 </svelte:head>
-{#if $page.url.pathname === `/console/${project}/functions/`}
+{#if !$page.url.pathname.startsWith(`/console/${project}/functions/function`)}
 	<Back href={`/console/${project}`}>Home</Back>
 	<h1>Functions</h1>
 	<Tabs />

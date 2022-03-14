@@ -11,7 +11,6 @@ const config = {
 		prerender: {
 			default: true
 		},
-		trailingSlash: 'always',
 		vite: {
 			define: {
 				__APP_VERSION__: JSON.stringify(process.env.npm_package_version)

@@ -2,6 +2,6 @@
 	import { Card } from '$lib/components';
 </script>
 
-<h1>Usage</h1>
+<h1>Activity</h1>
 
 <Card />

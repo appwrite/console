@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 
 	$: project = $page.params.project;
+	$: path = `/console/${project}`;
 </script>
 
 <div class="side-nav">
@@ -20,7 +21,7 @@
 		<div class="side-nav-main">
 			<a
 				class="side-nav-link"
-				class:is-selected={$page.url.pathname === `/console/${project}/`}
+				class:is-selected={$page.url.pathname === path}
 				href={`/console/${project}`}
 			>
 				<span class="icon-home" aria-hidden="true" />
@@ -32,8 +33,8 @@
 					<li class="side-nav-item">
 						<a
 							class="side-nav-link"
-							class:is-selected={$page.url.pathname.startsWith(`/console/${project}/database`)}
-							href={`/console/${project}/database`}
+							class:is-selected={$page.url.pathname.startsWith(`${path}/database`)}
+							href={`${path}/database`}
 						>
 							<span class="icon-database" aria-hidden="true" />
 							<span class="text">Database</span>
@@ -42,8 +43,8 @@
 					<li class="side-nav-item">
 						<a
 							class="side-nav-link"
-							class:is-selected={$page.url.pathname.startsWith(`/console/${project}/storage`)}
-							href={`/console/${project}/storage`}
+							class:is-selected={$page.url.pathname.startsWith(`${path}/storage`)}
+							href={`${path}/storage`}
 						>
 							<span class="icon-folder" aria-hidden="true" />
 							<span class="text">Storage</span>
@@ -52,8 +53,8 @@
 					<li class="side-nav-item">
 						<a
 							class="side-nav-link"
-							class:is-selected={$page.url.pathname.startsWith(`/console/${project}/users`)}
-							href={`/console/${project}/users`}
+							class:is-selected={$page.url.pathname.startsWith(`${path}/users`)}
+							href={`${path}/users`}
 						>
 							<span class="icon-users" aria-hidden="true" />
 							<span class="text">Users</span>
@@ -62,8 +63,8 @@
 					<li class="side-nav-item">
 						<a
 							class="side-nav-link"
-							class:is-selected={$page.url.pathname.startsWith(`/console/${project}/functions`)}
-							href={`/console/${project}/functions`}
+							class:is-selected={$page.url.pathname.startsWith(`${path}/functions`)}
+							href={`${path}/functions`}
 						>
 							<span class="icon-lightning" aria-hidden="true" />
 							<span class="text">Functions</span>
@@ -77,8 +78,8 @@
 					<li class="side-nav-item">
 						<a
 							class="side-nav-link"
-							class:is-selected={$page.url.pathname.startsWith(`/console/${project}/webhooks`)}
-							href={`/console/${project}/webhooks`}
+							class:is-selected={$page.url.pathname.startsWith(`${path}/webhooks`)}
+							href={`${path}/webhooks`}
 						>
 							<span class="icon-link" aria-hidden="true" />
 							<span class="text">Webhooks</span>
@@ -87,8 +88,8 @@
 					<li class="side-nav-item">
 						<a
 							class="side-nav-link"
-							class:is-selected={$page.url.pathname.startsWith(`/console/${project}/keys`)}
-							href={`/console/${project}/keys`}
+							class:is-selected={$page.url.pathname.startsWith(`${path}/keys`)}
+							href={`${path}/keys`}
 						>
 							<span class="icon-key-inv" aria-hidden="true" />
 							<span class="text">API Keys</span>
@@ -101,8 +102,8 @@
 		<div class="side-nav-bottom">
 			<a
 				class="side-nav-link"
-				href={`/console/${project}/settings`}
-				class:is-selected={$page.url.pathname.startsWith(`/console/${project}/settings`)}
+				href={`${path}/settings`}
+				class:is-selected={$page.url.pathname.startsWith(`${path}/settings`)}
 			>
 				<span class="icon-cog" aria-hidden="true" />
 				<span class="text">Settings</span>

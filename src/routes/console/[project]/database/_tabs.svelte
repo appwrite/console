@@ -9,7 +9,7 @@
 		<a
 			class="tabs-button is-selected"
 			href={`/console/${project}/database`}
-			class:is-selected={$page.url.pathname === `/console/${project}/database/`}
+			class:is-selected={$page.url.pathname === `/console/${project}/database`}
 		>
 			<span class="text">Collections</span>
 		</a>
@@ -18,7 +18,7 @@
 		<a
 			class="tabs-button is-selected"
 			href={`/console/${project}/database/usage`}
-			class:is-selected={$page.url.pathname === `/console/${project}/database/usage/`}
+			class:is-selected={$page.url.pathname === `/console/${project}/database/usage`}
 		>
 			<span class="text">Usage</span>
 		</a>

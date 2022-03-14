@@ -8,8 +8,8 @@
 	<li class="tabs-item">
 		<a
 			class="tabs-button is-selected"
-			href={`/console/${project}/storage`}
-			class:is-selected={$page.url.pathname === `/console/${project}/functions/`}
+			href={`/console/${project}/functions`}
+			class:is-selected={$page.url.pathname === `/console/${project}/functions`}
 		>
 			<span class="text">Functions</span>
 		</a>

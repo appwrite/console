@@ -19,11 +19,12 @@
 	<title>Appwrite - {$collection?.name ?? 'Collection'}</title>
 </svelte:head>
 
-<Back href={`/console/${project}/database`}>Database</Back>
-
 {#if $collection}
-	<h1>{$collection.name}</h1>
-	<Tabs />
+	{#if !$page.url.pathname.startsWith(`/console/${project}/database/collection/${collectionId}/document`)}
+		<Back href={`/console/${project}/database`}>Database</Back>
+		<h1>{$collection.name}</h1>
+		<Tabs />
+	{/if}
 	<slot />
 {:else}
 	<div aria-busy="true" />
