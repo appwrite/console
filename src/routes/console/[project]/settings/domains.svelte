@@ -35,7 +35,7 @@
 				<TableRow>
 					<TableCellText title="Scopes">
 						<Pill failed={!domain.verification} success={domain.verification}>
-							{domain.verification ? 'Unverified' : 'Verified'}
+							{domain.verification ? 'Verified' : 'Unverified'}
 						</Pill>
 					</TableCellText>
 					<TableCellText title="Domain">
