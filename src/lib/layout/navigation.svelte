@@ -106,3 +106,9 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.side-nav {
+		z-index: 9999;
+	}
+</style>

@@ -36,6 +36,7 @@
 		max-width: 64rem;
 		margin: 0 auto;
 	}
+
 	:global(:root) {
 		--main-color-hue: 343;
 		--color-primary: var(--main-color-hue) 87% 56%; /*#f02e65*/

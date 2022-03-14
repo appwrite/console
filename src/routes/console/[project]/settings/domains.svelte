@@ -26,7 +26,7 @@
 {:then response}
 	<Table>
 		<TableHeader>
-			<TableCellHead width={80} />
+			<TableCellHead width={96} />
 			<TableCellHead>Domain</TableCellHead>
 			<TableCellHead>TLS</TableCellHead>
 		</TableHeader>
