@@ -40,8 +40,8 @@
 		<InputCustomId label="ID" id="id" bind:value={id} />
 		<InputText label="Name" id="name" bind:value={name} />
 		<svelte:fragment slot="footer">
-			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Create</Button>
+			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
 </form>

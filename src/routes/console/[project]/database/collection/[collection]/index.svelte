@@ -37,7 +37,9 @@
 					<TableRow>
 						{#each columns as column}
 							<TableCell>
-								<a href={`/console/${project}/database/${$collection.$id}/${document.$id}`}>
+								<a
+									href={`/console/${project}/database/collection/${$collection.$id}/document/${document.$id}`}
+								>
 									{document[column.key] ?? 'n/a'}
 								</a>
 							</TableCell>

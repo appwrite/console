@@ -38,8 +38,8 @@
 		<InputText id="name" label="Name" bind:value={name} required />
 		<InputText id="host" label="Hostname" bind:value={hostname} required />
 		<svelte:fragment slot="footer">
-			<Button secondary on:click={() => (show = false)}>Cancel</Button>
 			<Button submit>Register</Button>
+			<Button secondary on:click={() => (show = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
 </form>

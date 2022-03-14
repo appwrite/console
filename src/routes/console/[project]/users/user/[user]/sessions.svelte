@@ -2,10 +2,12 @@
 	import { page } from '$app/stores';
 	import { Card, Pagination } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
-	import { Table, TableCell, TableHeader, TableBody, TableRow } from '$lib/elements/table';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 
+	let offset = 0;
+
+	const limit = 25;
 	const deleteSession = async (id: string) => {
 		try {
 			await sdkForProject.users.deleteSession($page.params.user, id);
@@ -29,46 +31,48 @@
 		}
 	};
 
-	let offset = 0;
-	const limit = 25;
-
 	$: request = sdkForProject.users.getSessions($page.params.user);
 </script>
 
 <h1>Sessions</h1>
-<Card>
-	{#await request}
-		<div aria-busy="true" />
-	{:then response}
-		<Table>
-			<TableHeader>
-				<TableCell>Browser</TableCell>
-				<TableCell>Country</TableCell>
-				<TableCell>OS</TableCell>
-				<TableCell>IP</TableCell>
-				<TableCell />
-			</TableHeader>
-			<TableBody>
-				{#each response.sessions as session}
-					<TableRow>
-						<TableCell
-							><img
-								src={sdkForProject.avatars.getBrowser(session.clientCode, 32, 32).toString()}
-								alt={session.clientName}
-							/></TableCell
-						>
-						<TableCell>{session.countryName}</TableCell>
-						<TableCell>{session.osName}</TableCell>
-						<TableCell>{session.ip}</TableCell>
-						<TableCell
-							><Button on:click={() => deleteSession(session.$id)}>Logout</Button></TableCell
-						>
-					</TableRow>
-				{/each}
-			</TableBody>
-		</Table>
-
+{#await request}
+	<div aria-busy="true" />
+{:then response}
+	<Card>
+		<ul class="sessions">
+			{#each response.sessions as session}
+				<li class="sessions-item">
+					<article class="card">
+						<img
+							class="sessions-item-image"
+							src={sdkForProject.avatars.getBrowser(session.clientCode, 64, 64).toString()}
+							alt={session.clientName}
+						/>
+						<header class="sessions-item-header">
+							<h2 class="sessions-item-title">
+								<span class="text">
+									<span class="browser-name">{session.clientName}</span>
+									<span class="browser-version">{session.clientVersion}</span>
+									<span>on</span>
+									<span class="browser-os">{session.osName}</span>
+									<span class="browser-os-version">{session.osVersion}</span>
+								</span>
+							</h2>
+							{#if session.current}
+								<span class="pill is-success">Current Session</span>
+							{/if}
+						</header>
+						<p class="sessions-item-info">{session.ip} / {session.countryName}</p>
+						<Button danger on:click={() => deleteSession(session.$id)}>Logout</Button>
+					</article>
+				</li>
+			{:else}
+				<p>No sessions available.</p>
+			{/each}
+		</ul>
 		<Pagination {limit} bind:offset sum={response.total} />
-		<Button on:click={deleteAllSessions}>Logout from all sessions</Button>
-	{/await}
-</Card>
+	</Card>
+	{#if response.total}
+		<Button danger on:click={deleteAllSessions}>Logout from all sessions</Button>
+	{/if}
+{/await}

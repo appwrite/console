@@ -38,8 +38,8 @@
 		<InputTags id="read" label="Read" bind:tags={read} />
 		<InputTags id="write" label="Write" bind:tags={write} />
 		<svelte:fragment slot="footer">
-			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 			<Button submit>Upload</Button>
+			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
 </form>

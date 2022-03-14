@@ -8,6 +8,7 @@
 	export let required = false;
 	export let disabled = false;
 	export let autofocus = false;
+	export let maxlength: number = null;
 
 	let element: HTMLInputElement;
 
@@ -25,6 +26,7 @@
 		{placeholder}
 		{disabled}
 		{required}
+		{maxlength}
 		type="text"
 		class="input-text"
 		bind:value

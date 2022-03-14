@@ -32,8 +32,8 @@
 		<svelte:fragment slot="header">Create Function</svelte:fragment>
 		<InputText id="name" label="Name" bind:value={name} required />
 		<svelte:fragment slot="footer">
+			<Button submit>Create</Button>
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-			<Button submit>Upload</Button>
 		</svelte:fragment>
 	</Modal>
 </form>

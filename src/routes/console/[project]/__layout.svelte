@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { sdkForConsole, setProject } from '$lib/stores/sdk';
 	import { collection } from './database/collection/[collection]/store';
+	import { UploadBox } from '$lib/components';
 	import { project } from './store';
 	import type { Models } from 'src/sdk';
 
@@ -43,3 +44,4 @@
 </script>
 
 <slot />
+<UploadBox />

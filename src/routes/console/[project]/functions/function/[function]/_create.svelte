@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { InputTags, Button, InputFile } from '$lib/elements/forms';
+	import { InputBoolean, Button, InputFile, InputText } from '$lib/elements/forms';
 	import { Modal } from '$lib/components';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
@@ -8,18 +8,18 @@
 
 	export let showCreate = false;
 
-	const bucket = $page.params.bucket;
-	const dispatch = createEventDispatcher();
+	let showCli = true;
+	let entrypoint: string;
+	let code: FileList;
+	let active: boolean;
 
-	let files: FileList;
-	let read: string[] = [];
-	let write: string[] = [];
+	const functionId = $page.params.function;
+	const dispatch = createEventDispatcher();
 
 	const create = async () => {
 		try {
-			console.log(read, write);
-			await sdkForProject.storage.createFile(bucket, 'unique()', files[0], read, write);
-			files = null;
+			await sdkForProject.functions.createDeployment(functionId, entrypoint, code[0], active);
+			code = entrypoint = active = null;
 			showCreate = false;
 			dispatch('created');
 		} catch (error) {
@@ -33,13 +33,31 @@
 
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
-		<svelte:fragment slot="header">Upload File</svelte:fragment>
-		<InputFile id="file" label="File" bind:files required />
-		<InputTags id="read" label="Read" bind:tags={read} />
-		<InputTags id="write" label="Write" bind:tags={write} />
+		<svelte:fragment slot="header">Create Deployment</svelte:fragment>
+		<ul class="tabs">
+			<li class="tabs-item">
+				<span class="tabs-button" on:click={() => (showCli = true)} class:is-selected={showCli}>
+					<span class="text">Files</span>
+				</span>
+			</li>
+			<li class="tabs-item">
+				<span class="tabs-button" on:click={() => (showCli = false)} class:is-selected={!showCli}>
+					<span class="text">Usage</span>
+				</span>
+			</li>
+		</ul>
+		{#if showCli}
+			<p>Unix</p>
+			<p>Powershell</p>
+			<p>Learn more about creating deployments, installing and using the Appwrite CLI.</p>
+		{:else}
+			<InputText id="entrypoint" label="Entrypoint" bind:value={entrypoint} required />
+			<InputFile id="file" label="File" bind:files={code} required />
+			<InputBoolean id="active" label="Activate Deployment after build" bind:value={active} />
+		{/if}
 		<svelte:fragment slot="footer">
+			<Button submit>Create</Button>
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-			<Button submit>Upload</Button>
 		</svelte:fragment>
 	</Modal>
 </form>

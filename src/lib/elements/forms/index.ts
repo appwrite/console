@@ -9,3 +9,4 @@ export { default as InputFile } from './inputFile.svelte';
 export { default as InputCustomId } from './inputCustomId.svelte';
 export { default as InputSearch } from './inputSearch.svelte';
 export { default as InputRadio } from './inputRadio.svelte';
+export { default as InputSelect } from './inputSelect.svelte';

@@ -30,8 +30,8 @@
 		<svelte:fragment slot="header">Create Project</svelte:fragment>
 		<InputText id="name" label="Name" bind:value={name} required />
 		<svelte:fragment slot="footer">
-			<Button secondary on:click={() => (show = false)}>Cancel</Button>
 			<Button submit>Create</Button>
+			<Button secondary on:click={() => (show = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
 </form>
