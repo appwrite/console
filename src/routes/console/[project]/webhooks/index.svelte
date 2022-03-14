@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Back } from '$lib/components';
+	import { Back, Empty } from '$lib/components';
 	import {
 		Table,
 		TableBody,
@@ -23,20 +23,27 @@
 {#await request}
 	<div aria-busy="true" />
 {:then response}
-	<Table>
-		<TableHeader>
-			<TableCellHead width={80}>Name</TableCellHead>
-			<TableCellHead>URL</TableCellHead>
-			<TableCellHead width={80}>Events</TableCellHead>
-		</TableHeader>
-		<TableBody>
-			{#each response.webhooks as webhook}
-				<TableCellLink href={`/console/${projectId}/webhooks/${webhook.$id}`} title="Name">
-					{webhook.name}
-				</TableCellLink>
-				<TableCellText title="URL">{webhook.url}</TableCellText>
-				<TableCellText title="Scopes">{webhook.events.length}</TableCellText>
-			{/each}
-		</TableBody>
-	</Table>
+	{#if response.total}
+		<Table>
+			<TableHeader>
+				<TableCellHead width={80}>Name</TableCellHead>
+				<TableCellHead>URL</TableCellHead>
+				<TableCellHead width={80}>Events</TableCellHead>
+			</TableHeader>
+			<TableBody>
+				{#each response.webhooks as webhook}
+					<TableCellLink href={`/console/${projectId}/webhooks/${webhook.$id}`} title="Name">
+						{webhook.name}
+					</TableCellLink>
+					<TableCellText title="URL">{webhook.url}</TableCellText>
+					<TableCellText title="Scopes">{webhook.events.length}</TableCellText>
+				{/each}
+			</TableBody>
+		</Table>
+	{:else}
+		<Empty>
+			<svelte:fragment slot="header">No Webhooks Found</svelte:fragment>
+			You haven't created any webhooks for your project yet.
+		</Empty>
+	{/if}
 {/await}

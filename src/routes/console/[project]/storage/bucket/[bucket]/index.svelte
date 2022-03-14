@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Button, InputSearch } from '$lib/elements/forms';
-	import { Card, Pagination } from '$lib/components';
+	import { Card, Empty, Pagination } from '$lib/components';
 	import type { Models } from 'src/sdk';
 	import Create from './_create.svelte';
 	import Update from './_update.svelte';
@@ -43,32 +43,43 @@
 {#await request}
 	<div aria-busy="true" />
 {:then response}
-	<Table>
-		<TableHeader>
-			<TableCellHead width={30} />
-			<TableCellHead>Name</TableCellHead>
-			<TableCellHead>Type</TableCellHead>
-			<TableCellHead>Size</TableCellHead>
-			<TableCellHead>Date Created</TableCellHead>
-		</TableHeader>
-		<TableBody>
-			{#each response.files as file}
-				<TableRow>
-					<TableCellAvatar src={getPreview(file.$id)} alt={file.name} onlyDesktop />
-					<TableCellText title="Name">
-						<span class="link" on:click={() => openFile(file)}>
-							{file.name}
-						</span>
-					</TableCellText>
-					<TableCellText title="Type">{file.mimeType}</TableCellText>
-					<TableCellText title="Size">{file.sizeOriginal}</TableCellText>
-					<TableCellText title="Date Created">{toLocaleDate(file.dateCreated)}</TableCellText>
-				</TableRow>
-			{/each}
-		</TableBody>
-	</Table>
+	{#if response.total}
+		<Table>
+			<TableHeader>
+				<TableCellHead width={30} />
+				<TableCellHead>Name</TableCellHead>
+				<TableCellHead>Type</TableCellHead>
+				<TableCellHead>Size</TableCellHead>
+				<TableCellHead>Date Created</TableCellHead>
+			</TableHeader>
+			<TableBody>
+				{#each response.files as file}
+					<TableRow>
+						<TableCellAvatar src={getPreview(file.$id)} alt={file.name} onlyDesktop />
+						<TableCellText title="Name">
+							<span class="link" on:click={() => openFile(file)}>
+								{file.name}
+							</span>
+						</TableCellText>
+						<TableCellText title="Type">{file.mimeType}</TableCellText>
+						<TableCellText title="Size">{file.sizeOriginal}</TableCellText>
+						<TableCellText title="Date Created">{toLocaleDate(file.dateCreated)}</TableCellText>
+					</TableRow>
+				{/each}
+			</TableBody>
+		</Table>
 
-	<Pagination {limit} bind:offset sum={response.total} />
+		<Pagination {limit} bind:offset sum={response.total} />
+	{:else if search}
+		<Empty>
+			<svelte:fragment slot="header">No results found for <b>{search}</b></svelte:fragment>
+		</Empty>
+	{:else}
+		<Empty>
+			<svelte:fragment slot="header">No Files Found</svelte:fragment>
+			Upload your first file to get started.
+		</Empty>
+	{/if}
 {/await}
 
 <Button on:click={() => (showCreate = true)}>Upload</Button>

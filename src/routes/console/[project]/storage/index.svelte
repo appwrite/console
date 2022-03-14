@@ -3,9 +3,9 @@
 	import { goto } from '$app/navigation';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Button, InputSearch } from '$lib/elements/forms';
-	import { Card, Pagination, Tile, Tiles } from '$lib/components';
-	import Create from './_create.svelte';
+	import { Card, Empty, Pagination, Tile, Tiles } from '$lib/components';
 	import type { Models } from 'src/sdk';
+	import Create from './_create.svelte';
 
 	let search = '';
 	let showCreate = false;
@@ -30,13 +30,24 @@
 {#await request}
 	<div aria-busy="true" />
 {:then response}
-	<Tiles>
-		{#each response.buckets as bucket}
-			<Tile href={`/console/${project}/storage/bucket/${bucket.$id}`} title={bucket.name} />
-		{/each}
-	</Tiles>
+	{#if response.total}
+		<Tiles>
+			{#each response.buckets as bucket}
+				<Tile href={`/console/${project}/storage/bucket/${bucket.$id}`} title={bucket.name} />
+			{/each}
+		</Tiles>
 
-	<Pagination {limit} bind:offset sum={response.total} />
+		<Pagination {limit} bind:offset sum={response.total} />
+	{:else if search}
+		<Empty>
+			<svelte:fragment slot="header">No results found for <b>{search}</b></svelte:fragment>
+		</Empty>
+	{:else}
+		<Empty>
+			<svelte:fragment slot="header">No Buckets Found</svelte:fragment>
+			You haven't created any buckets for your project yet.
+		</Empty>
+	{/if}
 {/await}
 
 <Button on:click={() => (showCreate = true)}>Create Bucket</Button>

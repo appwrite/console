@@ -30,7 +30,7 @@
 <form on:submit|preventDefault={create}>
 	<Modal bind:show={showCreate}>
 		<svelte:fragment slot="header">Upload File</svelte:fragment>
-		<InputText id="name" label="Name" bind:value={name} required />
+		<InputText id="name" label="Name" bind:value={name} autofocus required />
 		<svelte:fragment slot="footer">
 			<Button submit>Create</Button>
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

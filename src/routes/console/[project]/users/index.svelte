@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { sdkForProject } from '$lib/stores/sdk';
-	import { Card, Pagination } from '$lib/components';
+	import { Card, Empty, Pagination } from '$lib/components';
 	import { Button, InputSearch } from '$lib/elements/forms';
 	import {
 		Table,
@@ -40,43 +40,54 @@
 {#await request}
 	<div aria-busy="true" />
 {:then response}
-	<Table>
-		<TableHeader>
-			<TableCellHead width={30} />
-			<TableCellHead>Name</TableCellHead>
-			<TableCellHead>E-Mail</TableCellHead>
-			<TableCellHead>Status</TableCellHead>
-			<TableCellHead>Joined</TableCellHead>
-		</TableHeader>
-		<TableBody>
-			{#each response.users as user}
-				<TableRow>
-					<TableCell onlyDesktop>
-						<div class="image">
-							<img
-								class="avatar"
-								width="30"
-								height="30"
-								src={getAvatar(user.name)}
-								alt={user.name}
-							/>
-						</div>
-					</TableCell>
-					<TableCellLink href={`/console/${project}/users/user/${user.$id}`} title="Name">
-						{user.name}
-					</TableCellLink>
-					<TableCellText title="E-Mail">{user.email}</TableCellText>
-					<TableCellText title="Status"
-						><Pill success={user.emailVerification}
-							>{user.emailVerification ? 'Verified' : 'Unverified'}</Pill
-						></TableCellText
-					>
-					<TableCellText title="Joined">{toLocaleDate(user.registration)}</TableCellText>
-				</TableRow>
-			{/each}
-		</TableBody>
-	</Table>
-	<Pagination {limit} bind:offset sum={response.total} />
+	{#if response.total}
+		<Table>
+			<TableHeader>
+				<TableCellHead width={30} />
+				<TableCellHead>Name</TableCellHead>
+				<TableCellHead>E-Mail</TableCellHead>
+				<TableCellHead>Status</TableCellHead>
+				<TableCellHead>Joined</TableCellHead>
+			</TableHeader>
+			<TableBody>
+				{#each response.users as user}
+					<TableRow>
+						<TableCell onlyDesktop>
+							<div class="image">
+								<img
+									class="avatar"
+									width="30"
+									height="30"
+									src={getAvatar(user.name)}
+									alt={user.name}
+								/>
+							</div>
+						</TableCell>
+						<TableCellLink href={`/console/${project}/users/user/${user.$id}`} title="Name">
+							{user.name}
+						</TableCellLink>
+						<TableCellText title="E-Mail">{user.email}</TableCellText>
+						<TableCellText title="Status"
+							><Pill success={user.emailVerification}
+								>{user.emailVerification ? 'Verified' : 'Unverified'}</Pill
+							></TableCellText
+						>
+						<TableCellText title="Joined">{toLocaleDate(user.registration)}</TableCellText>
+					</TableRow>
+				{/each}
+			</TableBody>
+		</Table>
+		<Pagination {limit} bind:offset sum={response.total} />
+	{:else if search}
+		<Empty>
+			<svelte:fragment slot="header">No results found for <b>{search}</b></svelte:fragment>
+		</Empty>
+	{:else}
+		<Empty>
+			<svelte:fragment slot="header">No Users Found</svelte:fragment>
+			Create your first user to get started.
+		</Empty>
+	{/if}
 {/await}
 
 <Button on:click={() => (showCreate = true)}>Create User</Button>
