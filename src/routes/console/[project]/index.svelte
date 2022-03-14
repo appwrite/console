@@ -61,12 +61,10 @@
 				</svelte:fragment>
 			</ListItem>
 		{:else}
-			<div class="grid">
-				<div>
-					<h4>No Platforms Added to Your Project</h4>
-					<p>Add your first platform and build your new application.</p>
-				</div>
-			</div>
+			<Card>
+				<b>No Platforms Added to Your Project</b>
+				<p>Add your first platform and build your new application.</p>
+			</Card>
 		{/each}
 		<Button on:click={() => (addPlatform = true)}>Add Platform</Button>
 		<CreatePlatform bind:show={addPlatform} />
