@@ -9,7 +9,7 @@
 		TableCellHead,
 		TableCellLink
 	} from '$lib/elements/table';
-	import { Card, Pagination } from '$lib/components';
+	import { Pagination } from '$lib/components';
 	import { collection } from './store';
 
 	let offset = 0;
@@ -29,32 +29,30 @@
 </script>
 
 <h1>Documents</h1>
-<Card>
-	{#await request}
-		<div aria-busy="true" />
-	{:then response}
-		<Table>
-			<TableHeader>
-				{#each columns as column}
-					<TableCellHead>{column.title}</TableCellHead>
-				{/each}
-			</TableHeader>
-			<TableBody>
-				{#each response.documents as document}
-					<TableRow>
-						{#each columns as column}
-							<TableCellLink
-								href={`/console/${project}/database/collection/${$collection.$id}/document/${document.$id}`}
-								title={column.title}
-							>
-								{document[column.key] ?? 'n/a'}
-							</TableCellLink>
-						{/each}
-					</TableRow>
-				{/each}
-			</TableBody>
-		</Table>
+{#await request}
+	<div aria-busy="true" />
+{:then response}
+	<Table>
+		<TableHeader>
+			{#each columns as column}
+				<TableCellHead>{column.title}</TableCellHead>
+			{/each}
+		</TableHeader>
+		<TableBody>
+			{#each response.documents as document}
+				<TableRow>
+					{#each columns as column}
+						<TableCellLink
+							href={`/console/${project}/database/collection/${$collection.$id}/document/${document.$id}`}
+							title={column.title}
+						>
+							{document[column.key] ?? 'n/a'}
+						</TableCellLink>
+					{/each}
+				</TableRow>
+			{/each}
+		</TableBody>
+	</Table>
 
-		<Pagination {limit} bind:offset sum={response.total} />
-	{/await}
-</Card>
+	<Pagination {limit} bind:offset sum={response.total} />
+{/await}

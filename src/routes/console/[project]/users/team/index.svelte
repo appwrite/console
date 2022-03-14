@@ -34,32 +34,30 @@
 	<InputSearch bind:value={search} />
 </Card>
 
-<Card>
-	{#await request}
-		<div aria-busy="true" />
-	{:then response}
-		<Table>
-			<TableHeader>
-				<TableCellHead>#</TableCellHead>
-				<TableCellHead>Name</TableCellHead>
-				<TableCellHead>Members</TableCellHead>
-			</TableHeader>
-			<TableBody>
-				{#each response.teams as team}
-					<TableRow>
-						<TableCellLink title="ID" href={`/console/${project}/users/team/${team.$id}`}>
-							{team.$id}
-						</TableCellLink>
-						<TableCellText title="Name">{team.name}</TableCellText>
-						<TableCellText title="Members">{team.total}</TableCellText>
-					</TableRow>
-				{/each}
-			</TableBody>
-		</Table>
+{#await request}
+	<div aria-busy="true" />
+{:then response}
+	<Table>
+		<TableHeader>
+			<TableCellHead>#</TableCellHead>
+			<TableCellHead>Name</TableCellHead>
+			<TableCellHead>Members</TableCellHead>
+		</TableHeader>
+		<TableBody>
+			{#each response.teams as team}
+				<TableRow>
+					<TableCellLink title="ID" href={`/console/${project}/users/team/${team.$id}`}>
+						{team.$id}
+					</TableCellLink>
+					<TableCellText title="Name">{team.name}</TableCellText>
+					<TableCellText title="Members">{team.total}</TableCellText>
+				</TableRow>
+			{/each}
+		</TableBody>
+	</Table>
 
-		<Pagination {limit} bind:offset sum={response.total} />
-	{/await}
-</Card>
+	<Pagination {limit} bind:offset sum={response.total} />
+{/await}
 
 <Button>Create Team</Button>
 <Create bind:showCreate on:created={teamCreated} />

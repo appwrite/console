@@ -2,7 +2,7 @@
 	import { Button, InputText } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForConsole } from '$lib/stores/sdk';
-	import { project } from './store';
+	import { project } from '../store';
 
 	const update = async () => {
 		try {
@@ -17,8 +17,8 @@
 	};
 </script>
 
+<h1>Overview</h1>
 {#if $project}
-	<h2>Overview</h2>
 	<article>
 		<form on:submit|preventDefault={update}>
 			<InputText id="name" label="Name" bind:value={$project.name} required />
@@ -26,9 +26,3 @@
 		</form>
 	</article>
 {/if}
-
-<style>
-	h2 {
-		margin-bottom: 0;
-	}
-</style>

@@ -94,16 +94,6 @@
 							<span class="text">API Keys</span>
 						</a>
 					</li>
-					<li class="side-nav-item">
-						<a
-							class="side-nav-link"
-							class:is-selected={$page.url.pathname.startsWith(`/console/${project}/domains`)}
-							href={`/console/${project}/domains`}
-						>
-							<span class="icon-info-circled" aria-hidden="true" />
-							<span class="text">Domains</span>
-						</a>
-					</li>
 				</ul>
 			</section>
 		</div>

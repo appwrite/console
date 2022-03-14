@@ -34,32 +34,30 @@
 	<InputSearch bind:value={search} />
 </Card>
 
-<Card>
-	{#await request}
-		<div aria-busy="true" />
-	{:then response}
-		<Table>
-			<TableHeader>
-				<TableCell>#</TableCell>
-				<TableCell>Active</TableCell>
-			</TableHeader>
-			<TableBody>
-				{#each response.deployments as deployment}
-					<TableRow>
-						<TableCell>
-							<a href={`/console/${project}/storage/bucket/${functionId}/${deployment.$id}`}>
-								{deployment.$id}
-							</a>
-						</TableCell>
-						<TableCell>{deployment.activate}</TableCell>
-					</TableRow>
-				{/each}
-			</TableBody>
-		</Table>
+{#await request}
+	<div aria-busy="true" />
+{:then response}
+	<Table>
+		<TableHeader>
+			<TableCell>#</TableCell>
+			<TableCell>Active</TableCell>
+		</TableHeader>
+		<TableBody>
+			{#each response.deployments as deployment}
+				<TableRow>
+					<TableCell>
+						<a href={`/console/${project}/storage/bucket/${functionId}/${deployment.$id}`}>
+							{deployment.$id}
+						</a>
+					</TableCell>
+					<TableCell>{deployment.activate}</TableCell>
+				</TableRow>
+			{/each}
+		</TableBody>
+	</Table>
 
-		<Pagination {limit} bind:offset sum={response.total} />
-	{/await}
-</Card>
+	<Pagination {limit} bind:offset sum={response.total} />
+{/await}
 
 <Button on:click={() => (showCreate = true)}>Upload</Button>
 <Create bind:showCreate />
