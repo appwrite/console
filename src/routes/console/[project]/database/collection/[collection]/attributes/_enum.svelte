@@ -57,7 +57,7 @@
 			bind:tags={elements}
 			placeholder="Add elements here"
 		/>
-		<InputSelect id="elements" label="Elements" bind:options bind:value={def} />
+		<InputSelect id="default" label="Default" bind:options bind:value={def} />
 		<InputBoolean id="required" label="Required" bind:value={required} />
 		<InputBoolean id="required" label="Array" bind:value={array} />
 

@@ -34,8 +34,20 @@
 	<Modal bind:show={showCreate}>
 		<svelte:fragment slot="header">Upload File</svelte:fragment>
 		<InputFile id="file" label="File" bind:files required />
-		<InputTags id="read" label="Read" bind:tags={read} />
-		<InputTags id="write" label="Write" bind:tags={write} />
+		<InputTags
+			id="read"
+			label="Read"
+			bind:tags={read}
+			helper="Add 'role:all' for wildcard access"
+			placeholder="User ID, Team ID or Role"
+		/>
+		<InputTags
+			id="write"
+			label="Write"
+			bind:tags={write}
+			helper="Add 'role:all' for wildcard access"
+			placeholder="User ID, Team ID or Role"
+		/>
 		<svelte:fragment slot="footer">
 			<Button submit>Upload</Button>
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

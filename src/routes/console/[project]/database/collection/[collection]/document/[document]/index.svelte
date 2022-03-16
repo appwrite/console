@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Card } from '$lib/components';
+	import { Card, Copy } from '$lib/components';
 	import { Button, Form, InputTags } from '$lib/elements/forms';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { onMount } from 'svelte';
@@ -47,6 +47,7 @@
 <Card>
 	{#if $doc}
 		<Form on:submit={updateDocument}>
+			<Copy value={$doc.$id} />
 			{#each $collection.attributes.filter((a) => a.status === 'available') as attribute}
 				{#if attribute.array}
 					{#each $doc[attribute.key] as _v, index}
@@ -71,8 +72,20 @@
 				{/if}
 			{/each}
 			<h1>Permissions</h1>
-			<InputTags id="read" label="Read Permissions" bind:tags={$doc.$read} />
-			<InputTags id="write" label="Write Permissions" bind:tags={$doc.$write} />
+			<InputTags
+				id="read"
+				label="Read Permissions"
+				bind:tags={$doc.$read}
+				helper="Add 'role:all' for wildcard access"
+				placeholder="User ID, Team ID or Role"
+			/>
+			<InputTags
+				id="write"
+				label="Write Permissions"
+				bind:tags={$doc.$write}
+				helper="Add 'role:all' for wildcard access"
+				placeholder="User ID, Team ID or Role"
+			/>
 			<Button submit>Update</Button>
 		</Form>
 	{:else}

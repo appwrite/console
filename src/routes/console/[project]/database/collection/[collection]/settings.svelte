@@ -61,12 +61,14 @@
 				label="Read Access"
 				id="read"
 				helper="Add 'role:all' for wildcard access"
+				placeholder="User ID, Team ID or Role"
 			/>
 			<InputTags
 				bind:tags={$collection.$write}
 				label="Write Access"
 				id="read"
 				helper="Add 'role:all' for wildcard access"
+				placeholder="User ID, Team ID or Role"
 			/>
 		{/if}
 		<InputRadio
