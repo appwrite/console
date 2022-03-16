@@ -3,7 +3,15 @@
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { Button, InputSearch } from '$lib/elements/forms';
 	import { Card, Pagination } from '$lib/components';
-	import { Table, TableHeader, TableCell, TableBody, TableRow } from '$lib/elements/table';
+	import {
+		Table,
+		TableHeader,
+		TableBody,
+		TableRow,
+		TableCellHead,
+		TableCellLink,
+		TableCellText
+	} from '$lib/elements/table';
 	import Create from './_create.svelte';
 	import { func } from './store';
 
@@ -39,18 +47,19 @@
 {:then response}
 	<Table>
 		<TableHeader>
-			<TableCell>#</TableCell>
-			<TableCell>Active</TableCell>
+			<TableCellHead>ID</TableCellHead>
+			<TableCellHead>Active</TableCellHead>
 		</TableHeader>
 		<TableBody>
 			{#each response.deployments as deployment}
 				<TableRow>
-					<TableCell>
-						<a href={`/console/${project}/storage/bucket/${functionId}/${deployment.$id}`}>
-							{deployment.$id}
-						</a>
-					</TableCell>
-					<TableCell>{deployment.activate}</TableCell>
+					<TableCellLink
+						title="ID"
+						href={`/console/${project}/storage/bucket/${functionId}/${deployment.$id}`}
+					>
+						{deployment.$id}
+					</TableCellLink>
+					<TableCellText title="Active">{deployment.activate}</TableCellText>
 				</TableRow>
 			{/each}
 		</TableBody>

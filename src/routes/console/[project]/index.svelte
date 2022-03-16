@@ -1,19 +1,13 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { project } from './store';
-	import type { Models } from 'src/sdk';
 	import CreatePlatform from './_createPlatform.svelte';
 	import { addNotification } from '$lib/stores/notifications';
 	import { Card, List, ListItem } from '$lib/components';
 
-	let range: '24h' | '30d' | '90d' = '30d';
 	let addPlatform = false;
 
-	$: requestUsage = sdkForConsole.projects.getUsage($page.params.project, range);
-
-	const getLast = (list: Models.MetricList[]) => list[list.length - 1];
 	const deletePlatform = async (id: string) => {
 		if (confirm('You sure you wanna delete this?')) {
 			try {

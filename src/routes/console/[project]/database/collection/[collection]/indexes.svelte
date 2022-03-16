@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { Empty } from '$lib/components';
-
 	import { Pill } from '$lib/elements';
-	import { Button } from '$lib/elements/forms';
 	import {
 		Table,
 		TableHeader,
@@ -12,8 +10,6 @@
 		TableCellText
 	} from '$lib/elements/table';
 	import { collection } from './store';
-
-	let showCreate = false;
 </script>
 
 <h1>Indexes</h1>

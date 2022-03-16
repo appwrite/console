@@ -20,7 +20,7 @@
 		"vitebook:preview": "vitebook preview"
 	},
 	"dependencies": {
-		"aw-labs-ui": "^0.0.3"
+		"aw-labs-ui": "^0.0.4"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "1.0.0-next.31",

@@ -1,26 +1,43 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+	import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
+
 	export let show = false;
+
+	const dispatch = createEventDispatcher();
+	const transitionFly: FlyParams = {
+		duration: 150,
+		y: 50
+	};
+	const transitionFade: FadeParams = {
+		duration: 150
+	};
 
 	const handleKeydown = (event: KeyboardEvent) => {
 		if (event.key === 'Escape') {
 			event.preventDefault();
-			show = false;
+			closeModal();
 		}
 	};
 
 	const handleBLur = (event: MouseEvent) => {
 		const target: Partial<HTMLElement> = event.target;
 		if (target.hasAttribute('data-curtain')) {
-			show = false;
+			closeModal();
 		}
+	};
+
+	const closeModal = () => {
+		show = false;
+		dispatch('close');
 	};
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
 {#if show}
-	<div class="modal-curtain" data-curtain on:click={handleBLur}>
-		<section class="modal">
+	<div class="modal-curtain" data-curtain on:click={handleBLur} transition:fade={transitionFade}>
+		<section class="modal" transition:fly={transitionFly}>
 			<header class="modal-header">
 				<h4 class="modal-title">
 					<slot name="header" />

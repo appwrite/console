@@ -32,7 +32,7 @@
 			</TableHeader>
 			<TableBody>
 				{#each response.webhooks as webhook}
-					<TableCellLink href={`/console/${projectId}/webhooks/${webhook.$id}`} title="Name">
+					<TableCellLink title="Name" href={`/console/${projectId}/webhooks/${webhook.$id}`}>
 						{webhook.name}
 					</TableCellLink>
 					<TableCellText title="URL">{webhook.url}</TableCellText>

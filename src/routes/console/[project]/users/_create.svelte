@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Modal } from '$lib/components';
-	import { Button, InputPassword, InputEmail, InputText } from '$lib/elements/forms';
+	import { Button, InputPassword, InputEmail, InputText, Form } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
@@ -26,7 +26,7 @@
 	};
 </script>
 
-<form on:submit|preventDefault={create}>
+<Form on:submit={create}>
 	<Modal bind:show={showCreate}>
 		<svelte:fragment slot="header">Create User</svelte:fragment>
 		<InputText id="name" label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
@@ -49,4 +49,4 @@
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
-</form>
+</Form>

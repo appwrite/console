@@ -40,4 +40,8 @@
 		flex-direction: column;
 		gap: 1rem;
 	}
+
+	.main-side {
+		z-index: 25;
+	}
 </style>

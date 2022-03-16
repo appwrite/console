@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { InputBoolean, Button, InputFile, InputText } from '$lib/elements/forms';
+	import { InputBoolean, Button, InputFile, InputText, Form } from '$lib/elements/forms';
 	import { Modal } from '$lib/components';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
@@ -31,7 +31,7 @@
 	};
 </script>
 
-<form on:submit|preventDefault={create}>
+<Form on:submit={create}>
 	<Modal bind:show={showCreate}>
 		<svelte:fragment slot="header">Create Deployment</svelte:fragment>
 		<ul class="tabs">
@@ -60,4 +60,4 @@
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
-</form>
+</Form>

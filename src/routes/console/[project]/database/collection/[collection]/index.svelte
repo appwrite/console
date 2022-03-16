@@ -18,7 +18,7 @@
 	const project = $page.params.project;
 
 	$: columns = [
-		{ key: '$id', title: '#' },
+		{ key: '$id', title: 'ID' },
 		...$collection.attributes.map((attribute) => ({
 			key: attribute.key,
 			title: attribute.key

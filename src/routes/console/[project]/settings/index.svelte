@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Card } from '$lib/components';
-	import { Button, InputText } from '$lib/elements/forms';
+	import { Button, Form, FormItem, InputText } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { project } from '../store';
@@ -21,9 +21,11 @@
 <h1>Overview</h1>
 {#if $project}
 	<Card>
-		<form on:submit|preventDefault={update}>
+		<Form on:submit={update}>
 			<InputText id="name" label="Name" bind:value={$project.name} required />
-			<Button submit>Update</Button>
-		</form>
+			<FormItem>
+				<Button submit>Update</Button>
+			</FormItem>
+		</Form>
 	</Card>
 {/if}

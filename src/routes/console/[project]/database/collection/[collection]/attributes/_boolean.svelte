@@ -1,11 +1,14 @@
 <script lang="ts">
-	import { Button, InputText, InputBoolean } from '$lib/elements/forms';
+	import { Modal } from '$lib/components';
+	import { Button, InputText, InputBoolean, Form } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 
 	import { sdkForProject } from '$lib/stores/sdk';
+	import { createEventDispatcher } from 'svelte';
 	import { collection } from '../store';
 
-	export let show: boolean;
+	const dispatch = createEventDispatcher();
+
 	let key: string,
 		def: boolean,
 		required = false,
@@ -20,7 +23,7 @@
 				def ? def : undefined,
 				array
 			);
-			show = false;
+			dispatch('close');
 		} catch (error) {
 			addNotification({
 				type: 'error',
@@ -30,15 +33,18 @@
 	};
 </script>
 
-<form on:submit|preventDefault={submit}>
-	<InputText id="key" label="Key" bind:value={key} required autofocus />
+<Form on:submit={submit}>
+	<Modal on:close={() => dispatch('close')} show>
+		<svelte:fragment slot="header">Create Boolean Attribute</svelte:fragment>
 
-	<InputBoolean id="required" label="Required" bind:value={required} />
-	<InputBoolean id="array" label="Array" bind:value={array} />
-	<InputBoolean id="default" label="Default" bind:value={def} />
+		<InputText id="key" label="Key" bind:value={key} required autofocus />
+		<InputBoolean id="required" label="Required" bind:value={required} />
+		<InputBoolean id="array" label="Array" bind:value={array} />
+		<InputBoolean id="default" label="Default" bind:value={def} />
 
-	<footer>
-		<Button secondary on:click={() => (show = false)}>Cancel</Button>
-		<Button submit>Create</Button>
-	</footer>
-</form>
+		<svelte:fragment slot="footer">
+			<Button secondary on:click={() => dispatch('close')}>Cancel</Button>
+			<Button submit>Create</Button>
+		</svelte:fragment>
+	</Modal>
+</Form>

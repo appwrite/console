@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { InputTags, Button, InputFile } from '$lib/elements/forms';
+	import { InputTags, Button, InputFile, Form } from '$lib/elements/forms';
 	import { Modal } from '$lib/components';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
@@ -30,7 +30,7 @@
 	};
 </script>
 
-<form on:submit|preventDefault={create}>
+<Form on:submit={create}>
 	<Modal bind:show={showCreate}>
 		<svelte:fragment slot="header">Upload File</svelte:fragment>
 		<InputFile id="file" label="File" bind:files required />
@@ -41,4 +41,4 @@
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
-</form>
+</Form>

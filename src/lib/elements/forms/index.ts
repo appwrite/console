@@ -1,3 +1,5 @@
+export { default as Form } from './form.svelte';
+export { default as FormItem } from './formItem.svelte';
 export { default as Button } from './button.svelte';
 export { default as InputEmail } from './inputEmail.svelte';
 export { default as InputPassword } from './inputPassword.svelte';

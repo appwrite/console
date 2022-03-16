@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { FormItem } from '.';
 
 	export let id: string;
 	export let label: string;
@@ -48,40 +49,42 @@
 	};
 </script>
 
-<label class="label" for={id}>{label}</label>
-<div class="input-text-wrapper">
-	<div class="tags-input">
-		<div class="tags">
-			<ul class="tags-list">
-				{#each tags as tag}
-					<li class="tags-item">
-						<div class="tag">
-							<span class="tag-text">{tag}</span>
-							<button
-								type="button"
-								class="x-button"
-								aria-label={`delete ${tag} tag`}
-								on:click={() => removeValue(tag)}
-							>
-								<span class="icon-cancel" aria-hidden="true" />
-							</button>
-						</div>
-					</li>
-				{/each}
-			</ul>
+<FormItem>
+	<label class="label" for={id}>{label}</label>
+	<div class="input-text-wrapper">
+		<div class="tags-input">
+			<div class="tags">
+				<ul class="tags-list">
+					{#each tags as tag}
+						<li class="tags-item">
+							<div class="tag">
+								<span class="tag-text">{tag}</span>
+								<button
+									type="button"
+									class="x-button"
+									aria-label={`delete ${tag} tag`}
+									on:click={() => removeValue(tag)}
+								>
+									<span class="icon-cancel" aria-hidden="true" />
+								</button>
+							</div>
+						</li>
+					{/each}
+				</ul>
+			</div>
+			<input
+				type="text"
+				class="tags-input-text"
+				{id}
+				{placeholder}
+				on:keydown={handleInput}
+				on:blur={addValue}
+				bind:value
+				bind:this={element}
+			/>
 		</div>
-		<input
-			type="text"
-			class="tags-input-text"
-			{id}
-			{placeholder}
-			on:keydown={handleInput}
-			on:blur={addValue}
-			bind:value
-			bind:this={element}
-		/>
 	</div>
-</div>
-{#if helper}
-	<p class="helper u-margin-block-start-12">{helper}</p>
-{/if}
+	{#if helper}
+		<p class="helper u-margin-block-start-12">{helper}</p>
+	{/if}
+</FormItem>

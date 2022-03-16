@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Button, InputEmail, InputPassword, InputText } from '$lib/elements/forms';
+	import {
+		Button,
+		Form,
+		FormItem,
+		InputEmail,
+		InputPassword,
+		InputText
+	} from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForConsole } from '$lib/stores/sdk';
 
@@ -26,7 +33,7 @@
 
 <h1>Register</h1>
 
-<form on:submit|preventDefault={register}>
+<Form on:submit={register}>
 	<InputText id="name" label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
 	<InputEmail
 		id="email"
@@ -43,7 +50,7 @@
 		bind:value={pass}
 	/>
 
-	<Button submit>Register</Button>
-</form>
+	<FormItem><Button submit>Register</Button></FormItem>
+</Form>
 
 <a href="/login">Login</a>

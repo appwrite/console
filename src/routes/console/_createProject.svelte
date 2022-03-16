@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Modal } from '$lib/components';
-	import { InputText, Button, InputCustomId } from '$lib/elements/forms';
+	import { InputText, Button, InputCustomId, Form } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
@@ -27,7 +27,7 @@
 	};
 </script>
 
-<form on:submit|preventDefault={create}>
+<Form on:submit={create}>
 	<Modal bind:show>
 		<svelte:fragment slot="header">Create Project</svelte:fragment>
 		<InputCustomId id="id" label="ID" bind:value={id} required />
@@ -37,4 +37,4 @@
 			<Button secondary on:click={() => (show = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
-</form>
+</Form>

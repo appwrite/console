@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { FormItem } from '.';
 
 	export let id: string;
 	export let label: string;
@@ -29,23 +30,25 @@
 	});
 </script>
 
-<label class="label" for={id}>{label}</label>
-<div class="input-text-wrapper is-with-end-button">
-	<input
-		{placeholder}
-		{disabled}
-		{required}
-		type="text"
-		class="input-text"
-		bind:value
-		bind:this={element}
-	/>
-	<button
-		class="input-button"
-		aria-label="Switch"
-		on:click={() => (unique = !unique)}
-		type="button"
-	>
-		<span class:icon-edit={unique} class:icon-shuffle={!unique} aria-hidden="true" />
-	</button>
-</div>
+<FormItem>
+	<label class="label" for={id}>{label}</label>
+	<div class="input-text-wrapper is-with-end-button">
+		<input
+			{placeholder}
+			{disabled}
+			{required}
+			type="text"
+			class="input-text"
+			bind:value
+			bind:this={element}
+		/>
+		<button
+			class="input-button"
+			aria-label="Switch"
+			on:click={() => (unique = !unique)}
+			type="button"
+		>
+			<span class:icon-edit={unique} class:icon-shuffle={!unique} aria-hidden="true" />
+		</button>
+	</div>
+</FormItem>

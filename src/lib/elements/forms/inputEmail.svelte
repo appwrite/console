@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { FormItem } from '.';
 
 	export let label: string;
 	export let id: string;
@@ -18,16 +19,18 @@
 	});
 </script>
 
-<label class="label" for={id}>{label}</label>
-<div class="input-text-wrapper">
-	<input
-		{id}
-		{placeholder}
-		{disabled}
-		{required}
-		type="email"
-		class="input-text"
-		bind:value
-		bind:this={element}
-	/>
-</div>
+<FormItem>
+	<label class="label" for={id}>{label}</label>
+	<div class="input-text-wrapper">
+		<input
+			{id}
+			{placeholder}
+			{disabled}
+			{required}
+			type="email"
+			class="input-text"
+			bind:value
+			bind:this={element}
+		/>
+	</div>
+</FormItem>

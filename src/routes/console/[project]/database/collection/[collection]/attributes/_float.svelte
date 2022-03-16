@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Modal } from '$lib/components';
-
 	import { Button, InputNumber, InputText, InputBoolean, Form } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
@@ -18,7 +17,7 @@
 
 	const submit = async () => {
 		try {
-			await sdkForProject.database.createIntegerAttribute(
+			await sdkForProject.database.createFloatAttribute(
 				$collection.$id,
 				key,
 				required,
@@ -39,7 +38,7 @@
 
 <Form on:submit={submit}>
 	<Modal on:close={() => dispatch('close')} show>
-		<svelte:fragment slot="header">Create Integer Attribute</svelte:fragment>
+		<svelte:fragment slot="header">Create Float Attribute</svelte:fragment>
 		<InputText id="key" label="Key" bind:value={key} required autofocus />
 		<InputNumber id="min" label="Min" bind:value={min} />
 		<InputNumber id="max" label="Max" bind:value={max} />

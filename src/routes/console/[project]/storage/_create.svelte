@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Modal } from '$lib/components';
-	import { Button, InputText } from '$lib/elements/forms';
+	import { Button, Form, InputText } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 
 	import { sdkForProject } from '$lib/stores/sdk';
@@ -27,7 +27,7 @@
 	};
 </script>
 
-<form on:submit|preventDefault={create}>
+<Form on:submit={create}>
 	<Modal bind:show={showCreate}>
 		<svelte:fragment slot="header">Upload File</svelte:fragment>
 		<InputText id="name" label="Name" bind:value={name} autofocus required />
@@ -36,4 +36,4 @@
 			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
-</form>
+</Form>

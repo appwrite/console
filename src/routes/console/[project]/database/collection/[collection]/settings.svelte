@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { Card } from '$lib/components';
-	import { Button, InputBoolean, InputRadio, InputTags, InputText } from '$lib/elements/forms';
+	import {
+		Button,
+		Form,
+		FormItem,
+		InputBoolean,
+		InputRadio,
+		InputTags,
+		InputText
+	} from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { collection } from './store';
@@ -29,7 +37,7 @@
 </script>
 
 <h1>Settings</h1>
-<form on:submit|preventDefault={updateCollection}>
+<Form on:submit={updateCollection}>
 	<Card>
 		<InputText bind:value={$collection.name} label="Name" id="name" />
 		<InputBoolean bind:value={$collection.enabled} label="Enabled" id="enabled" />
@@ -76,6 +84,8 @@
 			In this permission level, document permissions take precedence and collection permissions are
 			ignored.
 		</p>
-		<Button submit>Update</Button>
+		<FormItem>
+			<Button submit>Update</Button>
+		</FormItem>
 	</Card>
-</form>
+</Form>

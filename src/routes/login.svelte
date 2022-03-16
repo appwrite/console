@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Button, InputEmail, InputPassword } from '$lib/elements/forms';
+	import { Button, Form, FormItem, InputEmail, InputPassword } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForConsole } from '$lib/stores/sdk';
 
@@ -29,7 +29,7 @@
 
 <h1>Login</h1>
 
-<form on:submit|preventDefault={login}>
+<Form on:submit={login}>
 	<InputEmail
 		id="email"
 		label="E-Mail"
@@ -46,8 +46,9 @@
 		required={true}
 		bind:value={pass}
 	/>
-
-	<Button submit>Login</Button>
-</form>
+	<FormItem>
+		<Button submit>Login</Button>
+	</FormItem>
+</Form>
 
 <a href="/register">Create an Account</a>

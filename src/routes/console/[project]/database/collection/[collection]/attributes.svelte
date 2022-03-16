@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { Empty } from '$lib/components';
-
-	import { Button } from '$lib/elements/forms';
 	import {
 		Table,
 		TableHeader,
@@ -10,10 +7,12 @@
 		TableCellHead,
 		TableCellText
 	} from '$lib/elements/table';
-	import Create from './attributes/_create.svelte';
+	import { Button } from '$lib/elements/forms';
+	import { DropList, DropListItem, Empty } from '$lib/components';
+	import { option, options } from './attributes/store';
 	import { collection } from './store';
 
-	let showCreate = false;
+	let showCreateDropdown = false;
 </script>
 
 <h1>Attributes</h1>
@@ -30,6 +29,9 @@
 				<TableRow>
 					<TableCellText title="Status">{attribute.status}</TableCellText>
 					<TableCellText title="Key">{attribute.key}</TableCellText>
+					<TableCellText title="Type">
+						{'format' in attribute ? attribute.format : attribute.type}
+					</TableCellText>
 					<TableCellText title="Type">{attribute.type}</TableCellText>
 				</TableRow>
 			{/each}
@@ -42,5 +44,17 @@
 	</Empty>
 {/if}
 
-<Button on:click={() => (showCreate = true)}>Create Attribute</Button>
-<Create bind:show={showCreate} />
+<DropList bind:show={showCreateDropdown}>
+	<Button on:click={() => (showCreateDropdown = !showCreateDropdown)}>Create Attribute</Button>
+	<svelte:fragment slot="list">
+		{#each options as o}
+			<DropListItem icon={o.icon} on:click={() => ($option = o)}>
+				New {o.name} Attribute
+			</DropListItem>
+		{/each}
+	</svelte:fragment>
+</DropList>
+
+{#if $option}
+	<svelte:component this={$option.component} on:close={() => ($option = null)} />
+{/if}

@@ -1,16 +1,18 @@
 <script lang="ts">
-	import { Button, InputNumber, InputText, InputBoolean } from '$lib/elements/forms';
+	import { Modal } from '$lib/components';
+	import { Button, InputNumber, InputText, InputBoolean, Form } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
+	import { createEventDispatcher } from 'svelte';
 	import { collection } from '../store';
 
-	export let show: boolean;
 	let key: string,
 		def: string,
 		size = 255,
 		required = false,
 		array = false;
 
+	const dispatch = createEventDispatcher();
 	const submit = async () => {
 		try {
 			await sdkForProject.database.createStringAttribute(
@@ -21,7 +23,7 @@
 				def ? def : undefined,
 				array
 			);
-			show = false;
+			dispatch('close');
 		} catch (error) {
 			addNotification({
 				type: 'error',
@@ -31,15 +33,19 @@
 	};
 </script>
 
-<form on:submit|preventDefault={submit}>
-	<InputText id="key" label="Key" bind:value={key} required autofocus />
-	<InputNumber id="size" label="Size" bind:value={size} required />
-	<InputBoolean id="required" label="Required" bind:value={required} />
-	<InputBoolean id="required" label="Array" bind:value={array} />
-	<InputText id="default" label="Default" bind:value={def} />
+<Form on:submit={submit}>
+	<Modal on:close={() => dispatch('close')} show>
+		<svelte:fragment slot="header">Create String Attribute</svelte:fragment>
 
-	<footer>
-		<Button secondary on:click={() => (show = false)}>Cancel</Button>
-		<Button submit>Create</Button>
-	</footer>
-</form>
+		<InputText id="key" label="Key" bind:value={key} required autofocus />
+		<InputNumber id="size" label="Size" bind:value={size} required />
+		<InputBoolean id="required" label="Required" bind:value={required} />
+		<InputBoolean id="required" label="Array" bind:value={array} />
+		<InputText id="default" label="Default" bind:value={def} />
+
+		<svelte:fragment slot="footer">
+			<Button secondary on:click={() => dispatch('close')}>Cancel</Button>
+			<Button submit>Create</Button>
+		</svelte:fragment>
+	</Modal>
+</Form>

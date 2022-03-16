@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { FormItem } from '.';
+
 	export let label: string;
 	export let id: string;
 	export let value = false;
@@ -6,15 +8,17 @@
 	export let disabled = false;
 </script>
 
-<label class="label" for={id}>{label}</label>
-<div class="input-text-wrapper">
-	<input
-		{id}
-		{disabled}
-		{required}
-		type="checkbox"
-		class="switch"
-		role="switch"
-		bind:checked={value}
-	/>
-</div>
+<FormItem>
+	<label class="label" for={id}>{label}</label>
+	<div class="input-text-wrapper">
+		<input
+			{id}
+			{disabled}
+			{required}
+			type="checkbox"
+			class="switch"
+			role="switch"
+			bind:checked={value}
+		/>
+	</div>
+</FormItem>
