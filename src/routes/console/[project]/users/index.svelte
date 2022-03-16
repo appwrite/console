@@ -18,6 +18,7 @@
 	import { goto } from '$app/navigation';
 	import { Pill } from '$lib/elements';
 	import { toLocaleDate } from '$lib/helpers/date';
+	import { user } from '$lib/stores/projects';
 
 	let search = '';
 	let showCreate = false;
@@ -64,14 +65,14 @@
 							</div>
 						</TableCell>
 						<TableCellLink href={`/console/${project}/users/user/${user.$id}`} title="Name">
-							{user.name}
+							{user.name ? user.name : 'n/a'}
 						</TableCellLink>
 						<TableCellText title="E-Mail">{user.email}</TableCellText>
-						<TableCellText title="Status"
-							><Pill success={user.emailVerification}
-								>{user.emailVerification ? 'Verified' : 'Unverified'}</Pill
-							></TableCellText
-						>
+						<TableCellText title="Status">
+							<Pill success={user.emailVerification}>
+								{user.emailVerification ? 'Verified' : 'Unverified'}
+							</Pill>
+						</TableCellText>
 						<TableCellText title="Joined">{toLocaleDate(user.registration)}</TableCellText>
 					</TableRow>
 				{/each}

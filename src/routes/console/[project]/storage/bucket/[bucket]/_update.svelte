@@ -34,12 +34,14 @@
 			label="Read Access"
 			id="read"
 			helper="Add 'role:all' for wildcard access"
+			placeholder="User ID, Team ID or Role"
 		/>
 		<InputTags
 			bind:tags={file.$write}
 			label="Read Access"
 			id="write"
 			helper="Add 'role:all' for wildcard access"
+			placeholder="User ID, Team ID or Role"
 		/>
 		<svelte:fragment slot="footer">
 			<Button submit>Update</Button>
