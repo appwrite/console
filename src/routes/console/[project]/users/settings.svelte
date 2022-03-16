@@ -1,5 +1,5 @@
 <script>
-	import Card from '$lib/components/card.svelte';
+	import { Card } from '$lib/components';
 </script>
 
 <h1>Settings</h1>

@@ -11,3 +11,4 @@ export { default as ListItem } from './listItem.svelte';
 export { default as Empty } from './empty.svelte';
 export { default as DropList } from './dropList.svelte';
 export { default as DropListItem } from './dropListItem.svelte';
+export { default as DropListLink } from './dropListLink.svelte';

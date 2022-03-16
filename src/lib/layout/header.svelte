@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import DropList from '$lib/components/dropList.svelte';
-	import DropListItem from '$lib/components/dropListItem.svelte';
-	import DropListLink from '$lib/components/dropListLink.svelte';
+	import { DropList, DropListItem, DropListLink } from '$lib/components';
 	import { app } from '$lib/stores/app';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { user } from '$lib/stores/user';
