@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
 	import { collection } from '../../store';
-	import { document } from './store';
+	import { doc } from './store';
 	import Tabs from './_tabs.svelte';
 
 	const project = $page.params.project;
@@ -12,7 +12,7 @@
 
 	$: {
 		if (browser) {
-			document.load(collectionId, documentId);
+			doc.load(collectionId, documentId);
 		}
 	}
 </script>
@@ -21,11 +21,11 @@
 	<title>Appwrite - Database Document</title>
 </svelte:head>
 
-{#if $document && $collection}
+{#if $doc && $collection}
 	<Back href={`/console/${project}/database/collection/${collectionId}`}>
 		Collection - {$collection.name}
 	</Back>
-	<h1>{$document.$id}</h1>
+	<h1>{$doc.$id}</h1>
 	<Tabs />
 	<slot />
 {:else}

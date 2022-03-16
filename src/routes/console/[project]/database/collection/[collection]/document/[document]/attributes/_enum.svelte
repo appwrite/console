@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { InputSelect } from '$lib/elements/forms';
-	import { document } from '../store';
 	import type { Models } from 'src/sdk';
 
 	export let id: string;
 	export let label: string;
-	export let key: string;
+	export let value: string;
 	export let attribute: Models.AttributeEnum;
 
 	$: options = attribute.elements.map((element) => {
@@ -16,4 +15,4 @@
 	});
 </script>
 
-<InputSelect bind:value={$document[key]} {options} {id} {label} />
+<InputSelect bind:value {options} {id} {label} />

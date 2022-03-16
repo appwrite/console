@@ -7,24 +7,6 @@
 	import { Card, List, ListItem } from '$lib/components';
 
 	let addPlatform = false;
-
-	const deletePlatform = async (id: string) => {
-		if (confirm('You sure you wanna delete this?')) {
-			try {
-				await sdkForConsole.projects.deletePlatform($project.$id, id);
-				await project.load($project.$id);
-				addNotification({
-					message: 'Platform was deleted.',
-					type: 'success'
-				});
-			} catch (error) {
-				addNotification({
-					message: error.message,
-					type: 'error'
-				});
-			}
-		}
-	};
 </script>
 
 <svelte:head>
@@ -51,7 +33,7 @@
 					{platform.hostname}
 				</svelte:fragment>
 				<svelte:fragment slot="action">
-					<Button danger on:click={() => deletePlatform(platform.$id)}>Delete</Button>
+					<Button>Manage</Button>
 				</svelte:fragment>
 			</ListItem>
 		{:else}

@@ -1,18 +1,42 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { Card } from '$lib/components';
-	import { Form, InputTags } from '$lib/elements/forms';
+	import { Button, Form, InputTags } from '$lib/elements/forms';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { onMount } from 'svelte';
 	import { collection } from '../../store';
+	import { doc } from './store';
+	import { addNotification } from '$lib/stores/notifications';
 	import Attribute from './_attribute.svelte';
-	import { document } from './store';
 
 	$: documentId = $page.params.document;
 
 	onMount(async () => {
-		document.set(await sdkForProject.database.getDocument($collection.$id, documentId));
+		$doc = await sdkForProject.database.getDocument($collection.$id, documentId);
 	});
+
+	const updateDocument = async () => {
+		try {
+			$doc = await sdkForProject.database.updateDocument(
+				$collection.$id,
+				documentId,
+				$doc,
+				$doc.$read,
+				$doc.$write
+			);
+			addNotification({
+				message: 'Document was updated!',
+				type: 'success'
+			});
+		} catch (error) {
+			addNotification({
+				message: error.message,
+				type: 'error'
+			});
+		}
+	};
+
+	$: console.log($doc);
 </script>
 
 <svelte:head>
@@ -21,27 +45,35 @@
 
 <h1>Overview</h1>
 <Card>
-	{#if $document}
-		<Form>
+	{#if $doc}
+		<Form on:submit={updateDocument}>
 			{#each $collection.attributes.filter((a) => a.status === 'available') as attribute}
-				{@const value = $document[attribute.key]}
 				{#if attribute.array}
-					{#each value as _v, index}
+					{#each $doc[attribute.key] as _v, index}
 						<Attribute
-							{index}
+							{attribute}
 							id={`${attribute.key}-${index}`}
 							label={index === 0 ? attribute.key : ''}
-							key={attribute.key}
-							{attribute}
+							bind:value={$doc[attribute.key][index]}
 						/>
+						<Button on:click={() => doc.removeAttribute(attribute.key, index)}>X</Button>
+					{:else}
+						<p>{attribute.key}</p>
 					{/each}
+					<Button on:click={() => doc.addAttribute(attribute.key)}>Add Attribute</Button>
 				{:else}
-					<Attribute id={attribute.key} label={attribute.key} key={attribute.key} {attribute} />
+					<Attribute
+						{attribute}
+						id={attribute.key}
+						label={attribute.key}
+						bind:value={$doc[attribute.key]}
+					/>
 				{/if}
 			{/each}
 			<h1>Permissions</h1>
-			<InputTags id="read" label="Read Permissions" tags={$document.$read} />
-			<InputTags id="write" label="Write Permissions" tags={$document.$write} />
+			<InputTags id="read" label="Read Permissions" bind:tags={$doc.$read} />
+			<InputTags id="write" label="Write Permissions" bind:tags={$doc.$write} />
+			<Button submit>Update</Button>
 		</Form>
 	{:else}
 		loading

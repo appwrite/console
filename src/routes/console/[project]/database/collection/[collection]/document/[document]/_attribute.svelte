@@ -7,7 +7,7 @@
 
 	export let id: string;
 	export let label: string;
-	export let key: string;
+	export let value: string | number | boolean;
 	export let index: number = null;
 	export let attribute:
 		| Models.AttributeBoolean
@@ -39,19 +39,19 @@
 		<svelte:component
 			this={attributesFormatMap[attribute.format]}
 			{id}
-			{key}
 			{label}
 			{attribute}
 			{index}
+			bind:value
 		/>
 	{:else}
 		<svelte:component
 			this={attributesTypeMap[attribute.type]}
 			{id}
-			{key}
 			{label}
 			{attribute}
 			{index}
+			bind:value
 		/>
 	{/if}
 {/if}
