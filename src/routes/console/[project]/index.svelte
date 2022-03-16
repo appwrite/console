@@ -2,9 +2,8 @@
 	import { Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import { project } from './store';
-	import CreatePlatform from './_createPlatform.svelte';
-	import { addNotification } from '$lib/stores/notifications';
 	import { Card, List, ListItem } from '$lib/components';
+	import CreatePlatform from './_createPlatform.svelte';
 
 	let addPlatform = false;
 </script>
