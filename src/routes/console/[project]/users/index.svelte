@@ -18,7 +18,6 @@
 	import { goto } from '$app/navigation';
 	import { Pill } from '$lib/elements';
 	import { toLocaleDate } from '$lib/helpers/date';
-	import { user } from '$lib/stores/projects';
 
 	let search = '';
 	let showCreate = false;
