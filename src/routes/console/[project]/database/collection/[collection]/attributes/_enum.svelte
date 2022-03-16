@@ -14,7 +14,7 @@
 	import { collection } from '../store';
 
 	let key: string,
-		def: string = '',
+		def = '',
 		elements: string[],
 		required = false,
 		array = false;
