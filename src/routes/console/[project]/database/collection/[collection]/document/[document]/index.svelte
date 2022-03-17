@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Card, Copy } from '$lib/components';
+	import { Card, Collapsible, Copy } from '$lib/components';
 	import { Button, Form, InputTags } from '$lib/elements/forms';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { onMount } from 'svelte';
@@ -71,21 +71,23 @@
 					/>
 				{/if}
 			{/each}
-			<h1>Permissions</h1>
-			<InputTags
-				id="read"
-				label="Read Permissions"
-				bind:tags={$doc.$read}
-				helper="Add 'role:all' for wildcard access"
-				placeholder="User ID, Team ID or Role"
-			/>
-			<InputTags
-				id="write"
-				label="Write Permissions"
-				bind:tags={$doc.$write}
-				helper="Add 'role:all' for wildcard access"
-				placeholder="User ID, Team ID or Role"
-			/>
+			<Collapsible>
+				<svelte:fragment slot="header">Permissions</svelte:fragment>
+				<InputTags
+					id="read"
+					label="Read Permissions"
+					bind:tags={$doc.$read}
+					helper="Add 'role:all' for wildcard access"
+					placeholder="User ID, Team ID or Role"
+				/>
+				<InputTags
+					id="write"
+					label="Write Permissions"
+					bind:tags={$doc.$write}
+					helper="Add 'role:all' for wildcard access"
+					placeholder="User ID, Team ID or Role"
+				/>
+			</Collapsible>
 			<Button submit>Update</Button>
 		</Form>
 	{:else}

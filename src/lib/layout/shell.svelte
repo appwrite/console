@@ -23,22 +23,15 @@
 		<slot name="side" />
 	</nav>
 	<section class="main-content">
-		<slot />
+		<div class="container">
+			<slot />
+		</div>
 	</section>
 </main>
 
 <style>
 	.grid-with-side {
 		min-height: 100vh;
-	}
-
-	.main-content {
-		max-width: 64rem;
-		width: 100%;
-		margin: 0 auto;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
 	}
 
 	.main-side {

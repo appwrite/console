@@ -14,9 +14,10 @@
 
 	let offset = 0;
 
-	const limit = 25;
+	const limit = 12;
 	const project = $page.params.project;
 
+	$: request = sdkForProject.database.listDocuments($collection.$id, [], limit, offset);
 	$: columns = [
 		{ key: '$id', title: 'ID' },
 		...$collection.attributes.map((attribute) => ({
@@ -24,8 +25,6 @@
 			title: attribute.key
 		}))
 	];
-
-	$: request = sdkForProject.database.listDocuments($collection.$id, [], limit, offset);
 </script>
 
 <h1>Documents</h1>

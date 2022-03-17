@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
-	import { Button } from '$lib/elements/forms';
-
 	export let limit: number;
 	export let offset: number;
 	export let sum: number;
@@ -26,11 +24,33 @@
 		}
 		dispatch('change');
 	};
+
+	$: noPrev = offset === 0;
+	$: noNext = sum - limit < offset;
+	$: currentPage = offset / limit + 1;
+	$: totalPages = Math.ceil(sum / limit);
 </script>
 
 {#if sum >= limit}
-	<div class="grid">
-		<Button on:click={prev} disabled={offset === 0} outline>{'<'}</Button>
-		<Button on:click={next} disabled={sum - limit < offset} outline>{'>'}</Button>
-	</div>
+	<nav class="pagination">
+		<span
+			on:click={prev}
+			disabled={noPrev}
+			class:is-disabled={noPrev}
+			class="button is-only-icon"
+			aria-label="previous page"
+		>
+			<span class="icon-left-open" aria-hidden="true" />
+		</span>
+		<span class="pagination-info">{currentPage} / {totalPages}</span>
+		<span
+			on:click={next}
+			disabled={noNext}
+			class:is-disabled={noNext}
+			class="button is-only-icon"
+			aria-label="next page"
+		>
+			<span class="icon-right-open" aria-hidden="true" />
+		</span>
+	</nav>
 {/if}
