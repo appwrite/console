@@ -2,6 +2,7 @@
 	import { browser } from '$app/env';
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
+	import { Cover } from '$lib/layout';
 	import { user } from './store';
 	import Tabs from './_tabs.svelte';
 
@@ -18,10 +19,14 @@
 <svelte:head>
 	<title>Appwrite - User</title>
 </svelte:head>
-<Back href={`/console/${project}/users`}>Users</Back>
-{#if $user}
-	<h1>{$user.name}</h1>
-	<Tabs />
 
+{#if $user}
+	<Cover>
+		<svelte:fragment slot="breadcrumbs">
+			<Back href={`/console/${project}/users`}>Users</Back>
+		</svelte:fragment>
+		<svelte:fragment slot="title">{$user.name}</svelte:fragment>
+		<Tabs />
+	</Cover>
 	<slot />
 {/if}

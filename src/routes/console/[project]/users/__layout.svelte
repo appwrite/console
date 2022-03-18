@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
+	import { Cover } from '$lib/layout';
 	import Tabs from './_tabs.svelte';
 
 	const project = $page.params.project;
@@ -9,10 +10,14 @@
 <svelte:head>
 	<title>Appwrite - Users</title>
 </svelte:head>
-{#if $page.url.pathname.endsWith(`/users`) || $page.url.pathname.endsWith(`/users/team`) || $page.url.pathname.endsWith(`/users/usage`) || $page.url.pathname.endsWith(`/users/settings`)}
-	<Back href={`/console/${project}`}>Home</Back>
-	<h1>Users</h1>
-	<Tabs />
+{#if $page.url.pathname.endsWith(`/users`) || $page.url.pathname.endsWith(`/users/teams`) || $page.url.pathname.endsWith(`/users/usage`) || $page.url.pathname.endsWith(`/users/settings`)}
+	<Cover>
+		<svelte:fragment slot="breadcrumbs">
+			<Back href={`/console/${project}`}>Home</Back>
+		</svelte:fragment>
+		<svelte:fragment slot="title">Users</svelte:fragment>
+		<Tabs />
+	</Cover>
 {/if}
 
 <slot />

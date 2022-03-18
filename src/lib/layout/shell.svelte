@@ -23,9 +23,7 @@
 		<slot name="side" />
 	</nav>
 	<section class="main-content">
-		<div class="container">
-			<slot />
-		</div>
+		<slot />
 	</section>
 </main>
 

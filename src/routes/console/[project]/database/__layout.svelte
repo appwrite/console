@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
+	import { Cover } from '$lib/layout';
 	import Tabs from './_tabs.svelte';
 
 	const project = $page.params.project;
@@ -11,9 +12,12 @@
 </svelte:head>
 
 {#if !$page.url.pathname.startsWith(`/console/${project}/database/collection`)}
-	<Back href={`/console/${project}`}>Home</Back>
-	<h1>Database</h1>
-	<Tabs />
+	<Cover>
+		<svelte:fragment slot="breadcrumbs">
+			<Back href={`/console/${project}`}>Home</Back>
+		</svelte:fragment>
+		<svelte:fragment slot="title">Database</svelte:fragment>
+		<Tabs />
+	</Cover>
 {/if}
-
 <slot />

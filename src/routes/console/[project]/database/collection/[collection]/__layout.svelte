@@ -2,6 +2,7 @@
 	import { browser } from '$app/env';
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
+	import { Cover } from '$lib/layout';
 	import { collection } from './store';
 	import Tabs from './_tabs.svelte';
 
@@ -21,9 +22,13 @@
 
 {#if $collection}
 	{#if !$page.url.pathname.startsWith(`/console/${project}/database/collection/${collectionId}/document`)}
-		<Back href={`/console/${project}/database`}>Database</Back>
-		<h1>{$collection.name}</h1>
-		<Tabs />
+		<Cover>
+			<svelte:fragment slot="breadcrumbs">
+				<Back href={`/console/${project}/database`}>Database</Back>
+			</svelte:fragment>
+			<svelte:fragment slot="title">{$collection.name}</svelte:fragment>
+			<Tabs />
+		</Cover>
 	{/if}
 	<slot />
 {:else}

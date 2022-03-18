@@ -16,6 +16,7 @@
 		TableCellAvatar
 	} from '$lib/elements/table';
 	import { toLocaleDate } from '$lib/helpers/date';
+	import { Container } from '$lib/layout';
 
 	let search = '';
 	let showCreate = false;
@@ -36,52 +37,56 @@
 	$: if (search) offset = 0;
 </script>
 
-<Card>
-	<InputSearch bind:value={search} />
-</Card>
+<Container>
+	<h1>Files</h1>
+	<Card>
+		<InputSearch bind:value={search} />
+	</Card>
 
-{#await request}
-	<div aria-busy="true" />
-{:then response}
-	{#if response.total}
-		<Table>
-			<TableHeader>
-				<TableCellHead width={30} />
-				<TableCellHead>Name</TableCellHead>
-				<TableCellHead>Type</TableCellHead>
-				<TableCellHead>Size</TableCellHead>
-				<TableCellHead>Date Created</TableCellHead>
-			</TableHeader>
-			<TableBody>
-				{#each response.files as file}
-					<TableRow>
-						<TableCellAvatar src={getPreview(file.$id)} alt={file.name} onlyDesktop />
-						<TableCellText title="Name">
-							<span class="link" on:click={() => openFile(file)}>
-								{file.name}
-							</span>
-						</TableCellText>
-						<TableCellText title="Type">{file.mimeType}</TableCellText>
-						<TableCellText title="Size">{file.sizeOriginal}</TableCellText>
-						<TableCellText title="Date Created">{toLocaleDate(file.dateCreated)}</TableCellText>
-					</TableRow>
-				{/each}
-			</TableBody>
-		</Table>
+	{#await request}
+		<div aria-busy="true" />
+	{:then response}
+		{#if response.total}
+			<Table>
+				<TableHeader>
+					<TableCellHead width={30} />
+					<TableCellHead>Name</TableCellHead>
+					<TableCellHead>Type</TableCellHead>
+					<TableCellHead>Size</TableCellHead>
+					<TableCellHead>Date Created</TableCellHead>
+				</TableHeader>
+				<TableBody>
+					{#each response.files as file}
+						<TableRow>
+							<TableCellAvatar src={getPreview(file.$id)} alt={file.name} onlyDesktop />
+							<TableCellText title="Name">
+								<span class="link" on:click={() => openFile(file)}>
+									{file.name}
+								</span>
+							</TableCellText>
+							<TableCellText title="Type">{file.mimeType}</TableCellText>
+							<TableCellText title="Size">{file.sizeOriginal}</TableCellText>
+							<TableCellText title="Date Created">{toLocaleDate(file.dateCreated)}</TableCellText>
+						</TableRow>
+					{/each}
+				</TableBody>
+			</Table>
 
-		<Pagination {limit} bind:offset sum={response.total} />
-	{:else if search}
-		<Empty>
-			<svelte:fragment slot="header">No results found for <b>{search}</b></svelte:fragment>
-		</Empty>
-	{:else}
-		<Empty>
-			<svelte:fragment slot="header">No Files Found</svelte:fragment>
-			Upload your first file to get started.
-		</Empty>
-	{/if}
-{/await}
+			<Pagination {limit} bind:offset sum={response.total} />
+		{:else if search}
+			<Empty>
+				<svelte:fragment slot="header">No results found for <b>{search}</b></svelte:fragment>
+			</Empty>
+		{:else}
+			<Empty>
+				<svelte:fragment slot="header">No Files Found</svelte:fragment>
+				Upload your first file to get started.
+			</Empty>
+		{/if}
+	{/await}
 
-<Button on:click={() => (showCreate = true)}>Upload</Button>
+	<Button on:click={() => (showCreate = true)}>Upload</Button>
+</Container>
+
 <Create bind:showCreate />
 <Update bind:showUpdate bind:file={currentFile} />

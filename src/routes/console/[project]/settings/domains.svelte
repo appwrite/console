@@ -10,6 +10,7 @@
 		TableHeader,
 		TableRow
 	} from '$lib/elements/table';
+	import { Container } from '$lib/layout';
 	import { sdkForConsole } from '$lib/stores/sdk';
 	import CreateDomain from './_createDomain.svelte';
 
@@ -20,41 +21,44 @@
 	let addDomain = false;
 </script>
 
-<h1>Custom Domains</h1>
-{#await request}
-	<div aria-busy="true" />
-{:then response}
-	<Table>
-		<TableHeader>
-			<TableCellHead width={96} />
-			<TableCellHead>Domain</TableCellHead>
-			<TableCellHead>TLS</TableCellHead>
-		</TableHeader>
-		<TableBody>
-			{#each response.domains as domain}
-				<TableRow>
-					<TableCellText title="Scopes">
-						<Pill failed={!domain.verification} success={domain.verification}>
-							{domain.verification ? 'Verified' : 'Unverified'}
-						</Pill>
-					</TableCellText>
-					<TableCellText title="Domain">
-						{domain.domain}
-					</TableCellText>
-					<TableCellText title="TLS">
-						{#if domain.certificateId}
-							Verified
-						{:else if domain.verification}
-							In Progress
-						{:else}
-							Pending Verification
-						{/if}
-					</TableCellText>
-				</TableRow>
-			{/each}
-		</TableBody>
-	</Table>
-{/await}
+<Container>
+	<h1>Custom Domains</h1>
+	{#await request}
+		<div aria-busy="true" />
+	{:then response}
+		<Table>
+			<TableHeader>
+				<TableCellHead width={96} />
+				<TableCellHead>Domain</TableCellHead>
+				<TableCellHead>TLS</TableCellHead>
+			</TableHeader>
+			<TableBody>
+				{#each response.domains as domain}
+					<TableRow>
+						<TableCellText title="Scopes">
+							<Pill failed={!domain.verification} success={domain.verification}>
+								{domain.verification ? 'Verified' : 'Unverified'}
+							</Pill>
+						</TableCellText>
+						<TableCellText title="Domain">
+							{domain.domain}
+						</TableCellText>
+						<TableCellText title="TLS">
+							{#if domain.certificateId}
+								Verified
+							{:else if domain.verification}
+								In Progress
+							{:else}
+								Pending Verification
+							{/if}
+						</TableCellText>
+					</TableRow>
+				{/each}
+			</TableBody>
+		</Table>
+	{/await}
 
-<Button on:click={() => (addDomain = true)}>Add Domain</Button>
+	<Button on:click={() => (addDomain = true)}>Add Domain</Button>
+</Container>
+
 <CreateDomain bind:show={addDomain} on:created={() => (request = listDomains())} />

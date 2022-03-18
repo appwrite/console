@@ -2,6 +2,7 @@
 	import { browser } from '$app/env';
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
+	import { Cover } from '$lib/layout';
 	import { func } from './store';
 	import Tabs from './_tabs.svelte';
 
@@ -15,10 +16,14 @@
 	}
 </script>
 
-<Back href={`/console/${project}/functions`}>Functions</Back>
 {#if $func}
-	<h1>{$func.name}</h1>
-	<Tabs />
+	<Cover>
+		<svelte:fragment slot="breadcrumbs">
+			<Back href={`/console/${project}/functions`}>Functions</Back>
+		</svelte:fragment>
+		<svelte:fragment slot="title">{$func.name}</svelte:fragment>
+		<Tabs />
+	</Cover>
 
 	<slot />
 {/if}

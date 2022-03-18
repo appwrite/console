@@ -7,7 +7,7 @@
 <ul class="tabs">
 	<li class="tabs-item">
 		<a
-			class="tabs-button is-selected"
+			class="tabs-button"
 			href={`/console/${project}/functions`}
 			class:is-selected={$page.url.pathname === `/console/${project}/functions`}
 		>

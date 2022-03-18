@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
+	import { Cover } from '$lib/layout';
 	import Tabs from './_tabs.svelte';
 
 	const project = $page.params.project;
@@ -10,8 +11,12 @@
 	<title>Appwrite - Functions</title>
 </svelte:head>
 {#if !$page.url.pathname.startsWith(`/console/${project}/functions/function`)}
-	<Back href={`/console/${project}`}>Home</Back>
-	<h1>Functions</h1>
-	<Tabs />
+	<Cover>
+		<svelte:fragment slot="breadcrumbs">
+			<Back href={`/console/${project}`}>Home</Back>
+		</svelte:fragment>
+		<svelte:fragment slot="title">Functions</svelte:fragment>
+		<Tabs />
+	</Cover>
 {/if}
 <slot />

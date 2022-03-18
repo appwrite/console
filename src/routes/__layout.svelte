@@ -1,5 +1,5 @@
 <script context="module">
-	import 'aw-labs-ui/src/_index.scss';
+	import 'ui/src/_index.scss';
 </script>
 
 <script lang="ts">
@@ -27,16 +27,9 @@
 
 <Notifications />
 
-<main>
-	<slot />
-</main>
+<slot />
 
 <style>
-	main {
-		max-width: 64rem;
-		margin: 0 auto;
-	}
-
 	:global(:root) {
 		--main-color-hue: 343;
 		--color-primary: var(--main-color-hue) 87% 56%; /*#f02e65*/

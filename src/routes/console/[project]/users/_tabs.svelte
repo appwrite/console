@@ -17,8 +17,8 @@
 	<li class="tabs-item">
 		<a
 			class="tabs-button"
-			href={`/console/${project}/users/team`}
-			class:is-selected={$page.url.pathname === `/console/${project}/users/team`}
+			href={`/console/${project}/users/teams`}
+			class:is-selected={$page.url.pathname === `/console/${project}/users/teams`}
 		>
 			<span class="text">Teams</span>
 		</a>

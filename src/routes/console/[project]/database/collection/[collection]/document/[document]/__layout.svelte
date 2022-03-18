@@ -2,6 +2,7 @@
 	import { browser } from '$app/env';
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
+	import { Container, Cover } from '$lib/layout';
 	import { collection } from '../../store';
 	import { doc } from './store';
 	import Tabs from './_tabs.svelte';
@@ -22,12 +23,17 @@
 </svelte:head>
 
 {#if $doc && $collection}
-	<Back href={`/console/${project}/database/collection/${collectionId}`}>
-		Collection - {$collection.name}
-	</Back>
-	<h1>{$doc.$id}</h1>
-	<Tabs />
-	<slot />
+	<Cover>
+		<Back href={`/console/${project}/database/collection/${collectionId}`}>
+			Collection - {$collection.name}
+		</Back>
+		<h1>{$doc.$id}</h1>
+		<Tabs />
+	</Cover>
+
+	<Container>
+		<slot />
+	</Container>
 {:else}
 	<div aria-busy="true" />
 {/if}

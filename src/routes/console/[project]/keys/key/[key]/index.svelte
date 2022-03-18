@@ -4,6 +4,7 @@
 </script>
 
 <Container>
-	<h1>Services</h1>
-	<Card />
+	<Card>
+		<p>TBD</p>
+	</Card>
 </Container>
