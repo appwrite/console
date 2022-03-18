@@ -32,7 +32,7 @@
 </script>
 
 {#if sum >= limit}
-	<nav class="pagination">
+	<nav class="pagination is-center">
 		<span
 			on:click={prev}
 			disabled={noPrev}
