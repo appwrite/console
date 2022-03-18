@@ -1,3 +1,3 @@
-<ul class="tiles">
+<ul class="grid-box">
 	<slot />
 </ul>
