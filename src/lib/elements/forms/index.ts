@@ -12,3 +12,4 @@ export { default as InputCustomId } from './inputCustomId.svelte';
 export { default as InputSearch } from './inputSearch.svelte';
 export { default as InputRadio } from './inputRadio.svelte';
 export { default as InputSelect } from './inputSelect.svelte';
+export { default as InputCheckbox } from './inputCheckbox.svelte';
