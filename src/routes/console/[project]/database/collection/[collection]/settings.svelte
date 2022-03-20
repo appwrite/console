@@ -4,7 +4,7 @@
 		Button,
 		Form,
 		FormItem,
-		InputBoolean,
+		InputSwitch,
 		InputRadio,
 		InputTags,
 		InputText
@@ -42,7 +42,7 @@
 	<Form on:submit={updateCollection}>
 		<Card>
 			<InputText bind:value={$collection.name} label="Name" id="name" />
-			<InputBoolean bind:value={$collection.enabled} label="Enabled" id="enabled" />
+			<InputSwitch bind:value={$collection.enabled} label="Enabled" id="enabled" />
 			<h2>Permissions</h2>
 			<p>Choose the permissions model for this collection.</p>
 			<InputRadio

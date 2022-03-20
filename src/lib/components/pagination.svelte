@@ -33,7 +33,7 @@
 
 {#if sum >= limit}
 	<nav class="pagination is-center">
-		<span
+		<button
 			on:click={prev}
 			disabled={noPrev}
 			class:is-disabled={noPrev}
@@ -41,9 +41,9 @@
 			aria-label="previous page"
 		>
 			<span class="icon-left-open" aria-hidden="true" />
-		</span>
+		</button>
 		<span class="pagination-info">{currentPage} / {totalPages}</span>
-		<span
+		<button
 			on:click={next}
 			disabled={noNext}
 			class:is-disabled={noNext}
@@ -51,6 +51,6 @@
 			aria-label="next page"
 		>
 			<span class="icon-right-open" aria-hidden="true" />
-		</span>
+		</button>
 	</nav>
 {/if}

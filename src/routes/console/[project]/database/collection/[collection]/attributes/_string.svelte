@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Modal } from '$lib/components';
-	import { Button, InputNumber, InputText, InputBoolean, Form } from '$lib/elements/forms';
+	import { Button, InputNumber, InputText, InputSwitch, Form } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
@@ -39,8 +39,8 @@
 
 		<InputText id="key" label="Key" bind:value={key} required autofocus />
 		<InputNumber id="size" label="Size" bind:value={size} required />
-		<InputBoolean id="required" label="Required" bind:value={required} />
-		<InputBoolean id="required" label="Array" bind:value={array} />
+		<InputSwitch id="required" label="Required" bind:value={required} />
+		<InputSwitch id="required" label="Array" bind:value={array} />
 		<InputText id="default" label="Default" bind:value={def} />
 
 		<svelte:fragment slot="footer">

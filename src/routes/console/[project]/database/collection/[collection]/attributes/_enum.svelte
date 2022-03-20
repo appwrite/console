@@ -3,7 +3,7 @@
 	import {
 		Button,
 		InputText,
-		InputBoolean,
+		InputSwitch,
 		InputSelect,
 		Form,
 		InputTags
@@ -58,8 +58,8 @@
 			placeholder="Add elements here"
 		/>
 		<InputSelect id="default" label="Default" bind:options bind:value={def} />
-		<InputBoolean id="required" label="Required" bind:value={required} />
-		<InputBoolean id="required" label="Array" bind:value={array} />
+		<InputSwitch id="required" label="Required" bind:value={required} />
+		<InputSwitch id="required" label="Array" bind:value={array} />
 
 		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => dispatch('close')}>Cancel</Button>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Modal } from '$lib/components';
 
-	import { Button, InputText, InputBoolean, Form } from '$lib/elements/forms';
+	import { Button, InputText, InputSwitch, Form } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
@@ -37,8 +37,8 @@
 		<svelte:fragment slot="header">Create IP Attribute</svelte:fragment>
 
 		<InputText id="key" label="Key" bind:value={key} required autofocus />
-		<InputBoolean id="required" label="Required" bind:value={required} />
-		<InputBoolean id="required" label="Array" bind:value={array} />
+		<InputSwitch id="required" label="Required" bind:value={required} />
+		<InputSwitch id="required" label="Array" bind:value={array} />
 		<InputText id="default" label="Default" bind:value={def} />
 
 		<svelte:fragment slot="footer">

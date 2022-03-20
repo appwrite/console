@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { InputBoolean, Button, InputFile, InputText, Form } from '$lib/elements/forms';
+	import { InputSwitch, Button, InputFile, InputText, Form } from '$lib/elements/forms';
 	import { Modal } from '$lib/components';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { createEventDispatcher } from 'svelte';
@@ -53,7 +53,7 @@
 		{:else}
 			<InputText id="entrypoint" label="Entrypoint" bind:value={entrypoint} required />
 			<InputFile id="file" label="File" bind:files={code} required />
-			<InputBoolean id="active" label="Activate Deployment after build" bind:value={active} />
+			<InputSwitch id="active" label="Activate Deployment after build" bind:value={active} />
 		{/if}
 		<svelte:fragment slot="footer">
 			<Button submit>Create</Button>

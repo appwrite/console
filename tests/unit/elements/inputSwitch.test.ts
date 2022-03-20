@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom';
 import { render, fireEvent } from '@testing-library/svelte';
-import { InputBoolean } from '../../../src/lib/elements/forms';
+import { InputSwitch } from '../../../src/lib/elements/forms';
 
 test('shows boolean input', () => {
-	const { getByText, getByRole } = render(InputBoolean, { id: 'input', label: 'Bool' });
+	const { getByText, getByRole } = render(InputSwitch, { id: 'input', label: 'Bool' });
 	const checkbox = getByRole('switch');
 
 	expect(getByText('Bool')).toBeInTheDocument();
@@ -12,19 +12,19 @@ test('shows boolean input', () => {
 });
 
 test('shows boolean input - required', () => {
-	const { getByRole } = render(InputBoolean, { id: 'input', label: 'Bool', required: true });
+	const { getByRole } = render(InputSwitch, { id: 'input', label: 'Bool', required: true });
 
 	expect(getByRole('switch')).toBeRequired();
 });
 
 test('shows boolean input - disabled', () => {
-	const { getByRole } = render(InputBoolean, { id: 'input', label: 'Bool', disabled: true });
+	const { getByRole } = render(InputSwitch, { id: 'input', label: 'Bool', disabled: true });
 
 	expect(getByRole('switch')).toBeDisabled();
 });
 
 test('state', async () => {
-	const { getByRole, component } = render(InputBoolean, { id: 'input', label: 'Bool' });
+	const { getByRole, component } = render(InputSwitch, { id: 'input', label: 'Bool' });
 	const checkbox = getByRole('switch');
 
 	expect(checkbox).not.toBeChecked();

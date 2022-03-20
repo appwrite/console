@@ -3,47 +3,46 @@ import { render, fireEvent } from '@testing-library/svelte';
 import { Pagination } from '../../../src/lib/components';
 
 test('shows controls', () => {
-	const { getByText } = render(Pagination, {
+	const { getByLabelText } = render(Pagination, {
 		limit: 0,
 		offset: 0,
 		sum: 100
 	});
-
-	expect(getByText('<')).toBeInTheDocument();
-	expect(getByText('>')).toBeInTheDocument();
+	expect(getByLabelText('previous page')).toBeInTheDocument();
+	expect(getByLabelText('next page')).toBeInTheDocument();
 });
 
 test('pagination - first page', () => {
-	const { getByText } = render(Pagination, {
+	const { getByLabelText } = render(Pagination, {
 		limit: 25,
 		offset: 0,
 		sum: 100
 	});
 
-	expect(getByText('<')).toBeDisabled();
-	expect(getByText('>')).not.toBeDisabled();
+	expect(getByLabelText('previous page')).toBeDisabled();
+	expect(getByLabelText('next page')).not.toBeDisabled();
 });
 
 test('pagination - last page', () => {
-	const { getByText } = render(Pagination, {
+	const { getByLabelText } = render(Pagination, {
 		limit: 25,
 		offset: 25,
 		sum: 30
 	});
 
-	expect(getByText('<')).not.toBeDisabled();
-	expect(getByText('>')).toBeDisabled();
+	expect(getByLabelText('previous page')).not.toBeDisabled();
+	expect(getByLabelText('next page')).toBeDisabled();
 });
 
 test('pagination - forward', async () => {
-	const { getByText, component } = render(Pagination, {
+	const { getByLabelText, component } = render(Pagination, {
 		limit: 25,
 		offset: 0,
 		sum: 60
 	});
 
-	const back = getByText('<');
-	const forth = getByText('>');
+	const back = getByLabelText('previous page');
+	const forth = getByLabelText('next page');
 	expect(back).toBeDisabled();
 
 	await fireEvent.click(forth);
@@ -58,14 +57,14 @@ test('pagination - forward', async () => {
 });
 
 test('pagination - backwards', async () => {
-	const { getByText, component } = render(Pagination, {
+	const { getByLabelText, component } = render(Pagination, {
 		limit: 25,
 		offset: 55,
 		sum: 60
 	});
 
-	const back = getByText('<');
-	const forth = getByText('>');
+	const back = getByLabelText('previous page');
+	const forth = getByLabelText('next page');
 	expect(forth).toBeDisabled();
 
 	await fireEvent.click(back);
@@ -80,12 +79,12 @@ test('pagination - backwards', async () => {
 });
 
 test('shows no controls', () => {
-	const { queryByText } = render(Pagination, {
+	const { queryByLabelText } = render(Pagination, {
 		limit: 25,
 		offset: 0,
 		sum: 10
 	});
 
-	expect(queryByText('<')).not.toBeInTheDocument();
-	expect(queryByText('>')).not.toBeInTheDocument();
+	expect(queryByLabelText('previous page')).not.toBeInTheDocument();
+	expect(queryByLabelText('next page')).not.toBeInTheDocument();
 });

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Modal } from '$lib/components';
-	import { Button, InputText, InputBoolean, Form } from '$lib/elements/forms';
+	import { Button, InputText, InputSwitch, Form } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 
 	import { sdkForProject } from '$lib/stores/sdk';
@@ -38,9 +38,9 @@
 		<svelte:fragment slot="header">Create Boolean Attribute</svelte:fragment>
 
 		<InputText id="key" label="Key" bind:value={key} required autofocus />
-		<InputBoolean id="required" label="Required" bind:value={required} />
-		<InputBoolean id="array" label="Array" bind:value={array} />
-		<InputBoolean id="default" label="Default" bind:value={def} />
+		<InputSwitch id="required" label="Required" bind:value={required} />
+		<InputSwitch id="array" label="Array" bind:value={array} />
+		<InputSwitch id="default" label="Default" bind:value={def} />
 
 		<svelte:fragment slot="footer">
 			<Button secondary on:click={() => dispatch('close')}>Cancel</Button>

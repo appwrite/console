@@ -5,7 +5,7 @@ export { default as InputEmail } from './inputEmail.svelte';
 export { default as InputPassword } from './inputPassword.svelte';
 export { default as InputText } from './inputText.svelte';
 export { default as InputNumber } from './inputNumber.svelte';
-export { default as InputBoolean } from './inputBoolean.svelte';
+export { default as InputSwitch } from './inputSwitch.svelte';
 export { default as InputTags } from './inputTags.svelte';
 export { default as InputFile } from './inputFile.svelte';
 export { default as InputCustomId } from './inputCustomId.svelte';

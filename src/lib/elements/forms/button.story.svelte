@@ -10,7 +10,7 @@
 <script>
 	import { Variant } from '@vitebook/client';
 	import { ControlsAddon, EventsAddon, eventCallback } from '@vitebook/client/addons';
-	import { InputText, InputBoolean, Button } from '.';
+	import { InputText, InputSwitch, Button } from '.';
 
 	let title = 'Click Me';
 	let disabled = false;
@@ -30,7 +30,7 @@
 
 <ControlsAddon>
 	<InputText id="title" label="Title" bind:value={title} />
-	<InputBoolean id="disabled" label="Disabled" bind:value={disabled} />
+	<InputSwitch id="disabled" label="Disabled" bind:value={disabled} />
 </ControlsAddon>
 
 <EventsAddon />
