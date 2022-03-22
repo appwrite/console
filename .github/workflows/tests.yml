@@ -29,4 +29,5 @@ jobs:
       - name: Unit Tests
         run: npm test
       - name: E2E Tests
+        uses: microsoft/playwright-github-action@v1
         run: npm run e2e
