@@ -2,6 +2,7 @@
 	import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 	import { collection } from './store';
 
+	// svelte-ignore unused-export-let
 	export let queries: string[] = [];
 
 	let selectedOption: string;

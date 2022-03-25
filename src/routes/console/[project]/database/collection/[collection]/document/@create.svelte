@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Back, Card, Copy } from '$lib/components';
+	import { Back, Card } from '$lib/components';
 	import { Button, Form } from '$lib/elements/forms';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import { onMount } from 'svelte';
