@@ -5,6 +5,7 @@
 	import { Card, List, ListItem } from '$lib/components';
 	import { Cover, Container } from '$lib/layout';
 	import CreatePlatform from './_createPlatform.svelte';
+	import { Line } from '$lib/charts';
 
 	let addPlatform = false;
 </script>
@@ -39,6 +40,7 @@
 	</Cover>
 	<Container>
 		<Card>
+			<Line />
 			<p>imagine here are some cool stats</p>
 		</Card>
 		<h1>Platforms</h1>
