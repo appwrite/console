@@ -43,5 +43,9 @@
 	}
 </script>
 
-<slot />
+{#if $project}
+	<slot />
+{:else}
+	loading
+{/if}
 <UploadBox />

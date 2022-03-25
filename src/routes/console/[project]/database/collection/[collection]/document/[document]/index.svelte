@@ -35,8 +35,6 @@
 			});
 		}
 	};
-
-	$: console.log($doc);
 </script>
 
 <svelte:head>

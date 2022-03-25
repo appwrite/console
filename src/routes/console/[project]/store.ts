@@ -9,9 +9,7 @@ function createProject() {
 		subscribe,
 		set,
 		load: async (projectId: string) => {
-			console.log('loasd');
 			const project = await sdkForConsole.projects.get(projectId);
-			console.log(project);
 			set(project);
 		}
 	};

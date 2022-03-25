@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Copy, Modal } from '$lib/components';
-	import { Button, InputTags } from '$lib/elements/forms';
+	import { Button, Form, InputTags } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForProject } from '$lib/stores/sdk';
 	import type { Models } from 'src/sdk';
@@ -25,7 +25,7 @@
 	};
 </script>
 
-<form on:submit|preventDefault={updateFile}>
+<Form on:submit={updateFile}>
 	<Modal bind:show={showUpdate}>
 		<svelte:fragment slot="header">Update File</svelte:fragment>
 		<Copy value={file.$id} />
@@ -48,4 +48,4 @@
 			<Button secondary on:click={() => (showUpdate = false)}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>
-</form>
+</Form>
