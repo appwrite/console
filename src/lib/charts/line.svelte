@@ -1,29 +1,46 @@
 <script lang="ts">
 	import 'chart.js/auto';
-	import { Chart, type ChartConfiguration } from 'chart.js';
+	import { Chart, type ChartConfiguration, type ChartDataset } from 'chart.js';
 	import { onMount } from 'svelte';
 	let element: HTMLCanvasElement;
 
-	const labels = ['January', 'February', 'March', 'April', 'May', 'June'];
-	const data = {
-		labels: labels,
-		datasets: [
-			{
-				label: 'My First dataset',
-				backgroundColor: 'rgb(255, 99, 132)',
-				borderColor: 'rgb(255, 99, 132)',
-				data: [0, 10, 5, 2, 20, 30, 45]
-			}
-		]
-	};
-	const config: ChartConfiguration = {
-		type: 'line',
-		data: data
-	};
+	export let labels: string[];
+	export let datasets: ChartDataset<'line'>[];
 
 	onMount(() => {
-		new Chart(element, config);
+		console.log(labels);
+		console.log(datasets);
+		new Chart(element, {
+			type: 'line',
+			data: {
+				datasets,
+				labels
+			},
+			options: {
+				scales: {
+					x: {
+						display: false
+					},
+					y: {
+						min: 0
+					}
+				},
+				plugins: {
+					tooltip: {
+						mode: 'index',
+						intersect: false,
+						caretPadding: 0
+					}
+				}
+			}
+		});
 	});
 </script>
 
 <canvas bind:this={element} />
+
+<style>
+	canvas {
+		max-height: 12rem;
+	}
+</style>

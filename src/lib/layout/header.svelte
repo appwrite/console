@@ -46,6 +46,8 @@
 				<button class="transparent-button" on:click={() => (showDropdown = !showDropdown)}>
 					<span class="is-only-desktop">{$user.name}</span>
 					<img
+						width="40"
+						height="40"
 						class="user-image"
 						src={sdkForConsole.avatars.getInitials($user.name, 40, 40).toString()}
 						alt=""

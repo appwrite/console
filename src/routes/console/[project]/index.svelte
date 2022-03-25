@@ -6,8 +6,13 @@
 	import { Cover, Container } from '$lib/layout';
 	import CreatePlatform from './_createPlatform.svelte';
 	import { Line } from '$lib/charts';
+	import { page } from '$app/stores';
+	import { toLocaleDate } from '$lib/helpers/date';
 
 	let addPlatform = false;
+	let range: '24h' | '30d' | '90d' = '30d';
+
+	$: requestUsage = sdkForConsole.projects.getUsage($page.params.project, range);
 </script>
 
 <svelte:head>
@@ -15,7 +20,7 @@
 </svelte:head>
 
 {#if $project}
-	<Cover>
+	<Cover adjustContentToCover>
 		<svelte:fragment slot="title">{$project.name}</svelte:fragment>
 		<ul class="links-nav">
 			<li class="links-nav-item">
@@ -40,8 +45,31 @@
 	</Cover>
 	<Container>
 		<Card>
-			<Line />
-			<p>imagine here are some cool stats</p>
+			{#await requestUsage then usage}
+				<Line
+					labels={usage.requests.map((t) => toLocaleDate(t.date))}
+					datasets={[
+						{
+							label: 'Requests',
+							data: usage.requests.map((v) => v.value),
+							fill: true,
+							borderWidth: 2
+						},
+						{
+							label: 'Users',
+							data: usage.users.map((v) => v.value),
+							fill: true,
+							borderWidth: 2
+						},
+						{
+							label: 'Documents',
+							data: usage.documents.map((v) => v.value),
+							fill: true,
+							borderWidth: 2
+						}
+					]}
+				/>
+			{/await}
 		</Card>
 		<h1>Platforms</h1>
 		<List>
