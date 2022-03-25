@@ -35,11 +35,29 @@
 			});
 		}
 	};
+
+	const selectAll = () => {
+		for (const scope in activeScopes) {
+			activeScopes[scope] = true;
+		}
+	};
+
+	const unselectAll = () => {
+		for (const scope in activeScopes) {
+			activeScopes[scope] = false;
+		}
+	};
 </script>
 
 <Form on:submit={create}>
 	<Modal bind:show>
 		<svelte:fragment slot="header">Add API Key</svelte:fragment>
+		<p>
+			<span class="link" on:click={selectAll}>Select All</span><span
+				class="link"
+				on:click={unselectAll}>Unselect All</span
+			>
+		</p>
 		<InputText id="name" label="Name" bind:value={name} required />
 		{#each scopes as scope}
 			<InputCheckbox id={scope} label={scope} bind:value={activeScopes[scope]} />

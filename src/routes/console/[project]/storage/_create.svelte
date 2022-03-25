@@ -29,7 +29,7 @@
 
 <Form on:submit={create}>
 	<Modal bind:show={showCreate}>
-		<svelte:fragment slot="header">Upload File</svelte:fragment>
+		<svelte:fragment slot="header">Create Bucket</svelte:fragment>
 		<InputText id="name" label="Name" bind:value={name} autofocus required />
 		<svelte:fragment slot="footer">
 			<Button submit>Create</Button>
