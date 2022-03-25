@@ -12,6 +12,7 @@
 	import { Empty, Pagination } from '$lib/components';
 	import { collection } from './store';
 	import { Container } from '$lib/layout';
+	import { Button } from '$lib/elements/forms';
 
 	let offset = 0;
 
@@ -63,5 +64,8 @@
 				Add your first document to get started.
 			</Empty>
 		{/if}
+		<Button href={`/console/${project}/database/collection/${$collection.$id}/document/@create`}
+			>Create Document</Button
+		>
 	{/await}
 </Container>

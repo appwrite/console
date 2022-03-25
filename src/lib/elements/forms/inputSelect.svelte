@@ -15,7 +15,7 @@
 <FormItem>
 	<label class="label" for={id}>{label}</label>
 	<div class="select">
-		<select {value} {required} {disabled}>
+		<select bind:value {required} {disabled}>
 			{#each options as option}
 				<option value={option.value} selected={option.value === value}>
 					{option.label}

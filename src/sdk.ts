@@ -2231,31 +2231,31 @@ namespace Models {
 		/**
 		 * Aggregated stats for number of requests.
 		 */
-		requests: MetricList[];
+		requests: any[];
 		/**
 		 * Aggregated stats for consumed bandwidth.
 		 */
-		network: MetricList[];
+		network: any[];
 		/**
 		 * Aggregated stats for function executions.
 		 */
-		functions: MetricList[];
+		functions: any[];
 		/**
 		 * Aggregated stats for number of documents.
 		 */
-		documents: MetricList[];
+		documents: any[];
 		/**
 		 * Aggregated stats for number of collections.
 		 */
-		collections: MetricList[];
+		collections: any[];
 		/**
 		 * Aggregated stats for number of users.
 		 */
-		users: MetricList[];
+		users: any[];
 		/**
 		 * Aggregated stats for the occupied storage size (in bytes).
 		 */
-		storage: MetricList[];
+		storage: any[];
 	};
 }
 

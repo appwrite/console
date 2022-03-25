@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { FormItem } from '.';
 
 	export let id: string;
@@ -7,23 +7,26 @@
 	export let value = '';
 	export let placeholder = '';
 	export let required = false;
-	export let disabled = false;
 	export let autofocus = false;
 
 	let element: HTMLInputElement;
 	let unique = true;
+	let bench = '';
 
-	$: {
+	const toggle = async () => {
+		unique = !unique;
 		if (unique) {
+			bench = value;
 			value = 'unique()';
-			disabled = true;
 		} else {
-			value = '';
-			disabled = false;
+			value = bench;
+			await tick();
+			element.focus();
 		}
-	}
+	};
 
 	onMount(() => {
+		value = 'unique()';
 		if (element && autofocus) {
 			element.focus();
 		}
@@ -35,19 +38,14 @@
 	<div class="input-text-wrapper is-with-end-button">
 		<input
 			{placeholder}
-			{disabled}
 			{required}
 			type="text"
 			class="input-text"
+			disabled={unique}
 			bind:value
 			bind:this={element}
 		/>
-		<button
-			class="input-button"
-			aria-label="Switch"
-			on:click={() => (unique = !unique)}
-			type="button"
-		>
+		<button class="input-button" aria-label="Switch" on:click={toggle} type="button">
 			<span class:icon-edit={unique} class:icon-shuffle={!unique} aria-hidden="true" />
 		</button>
 	</div>

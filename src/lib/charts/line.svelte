@@ -1,6 +1,6 @@
 <script lang="ts">
 	import 'chart.js/auto';
-	import { Chart, type ChartConfiguration, type ChartDataset } from 'chart.js';
+	import { Chart, type ChartDataset } from 'chart.js';
 	import { onMount } from 'svelte';
 	let element: HTMLCanvasElement;
 
@@ -8,8 +8,6 @@
 	export let datasets: ChartDataset<'line'>[];
 
 	onMount(() => {
-		console.log(labels);
-		console.log(datasets);
 		new Chart(element, {
 			type: 'line',
 			data: {

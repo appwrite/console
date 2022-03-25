@@ -12,6 +12,7 @@
 	import { option, options } from './attributes/store';
 	import { collection } from './store';
 	import { Container } from '$lib/layout';
+	import { Pill } from '$lib/elements';
 
 	let showCreateDropdown = false;
 </script>
@@ -29,7 +30,15 @@
 			<TableBody>
 				{#each $collection.attributes as attribute}
 					<TableRow>
-						<TableCellText title="Status">{attribute.status}</TableCellText>
+						<TableCellText title="Status">
+							<Pill
+								success={attribute.status === 'available'}
+								pending={attribute.status === 'processing'}
+								failed={['deleting', 'stuck', 'failed'].includes(attribute.status)}
+							>
+								{attribute.status}
+							</Pill>
+						</TableCellText>
 						<TableCellText title="Key">{attribute.key}</TableCellText>
 						<TableCellText title="Type">
 							{'format' in attribute ? attribute.format : attribute.type}
