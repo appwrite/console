@@ -26,7 +26,7 @@
 		"chart.js": "^3.7.1"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.20.1",
+		"@playwright/test": "1.20.0",
 		"@sveltejs/adapter-auto": "1.0.0-next.33",
 		"@sveltejs/kit": "1.0.0-next.303",
 		"@sveltejs/vite-plugin-svelte": "^1.0.0-next.40",
