@@ -1,12 +1,12 @@
 <script>
-	import { Card } from '.';
+    import { Card } from '.';
 </script>
 
 <Card>
-	<b>
-		<slot name="header" />
-	</b>
-	<p>
-		<slot />
-	</p>
+    <b>
+        <slot name="header" />
+    </b>
+    <p>
+        <slot />
+    </p>
 </Card>

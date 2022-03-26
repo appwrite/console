@@ -3,44 +3,44 @@ import type { Models } from 'src/sdk';
 import { writable } from 'svelte/store';
 
 type Attributes =
-	| Models.AttributeBoolean
-	| Models.AttributeEmail
-	| Models.AttributeEnum
-	| Models.AttributeFloat
-	| Models.AttributeInteger
-	| Models.AttributeIp
-	| Models.AttributeString
-	| Models.AttributeUrl;
+    | Models.AttributeBoolean
+    | Models.AttributeEmail
+    | Models.AttributeEnum
+    | Models.AttributeFloat
+    | Models.AttributeInteger
+    | Models.AttributeIp
+    | Models.AttributeString
+    | Models.AttributeUrl;
 
 function createCollection() {
-	const { subscribe, set, update } = writable<Models.Collection>();
+    const { subscribe, set, update } = writable<Models.Collection>();
 
-	return {
-		subscribe,
-		set,
-		load: async (collectionId: string) => {
-			set(await sdkForProject.database.getCollection(collectionId));
-		},
-		addAttribute: (attribute: Attributes) =>
-			update((n) => {
-				n.attributes.push(attribute);
+    return {
+        subscribe,
+        set,
+        load: async (collectionId: string) => {
+            set(await sdkForProject.database.getCollection(collectionId));
+        },
+        addAttribute: (attribute: Attributes) =>
+            update((n) => {
+                n.attributes.push(attribute);
 
-				return n;
-			}),
-		updateAttribute: (attribute: Attributes) =>
-			update((n) => {
-				const index = n.attributes.findIndex((a) => a.key === attribute.key);
-				n.attributes[index] = attribute;
+                return n;
+            }),
+        updateAttribute: (attribute: Attributes) =>
+            update((n) => {
+                const index = n.attributes.findIndex((a) => a.key === attribute.key);
+                n.attributes[index] = attribute;
 
-				return n;
-			}),
-		removeAttribute: (attribute: Attributes) =>
-			update((n) => {
-				n.attributes = n.attributes.filter((a) => a.key !== attribute.key);
+                return n;
+            }),
+        removeAttribute: (attribute: Attributes) =>
+            update((n) => {
+                n.attributes = n.attributes.filter((a) => a.key !== attribute.key);
 
-				return n;
-			})
-	};
+                return n;
+            })
+    };
 }
 
 export const collection = createCollection();

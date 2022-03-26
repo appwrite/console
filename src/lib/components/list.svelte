@@ -1,3 +1,3 @@
 <ul class="sessions">
-	<slot />
+    <slot />
 </ul>

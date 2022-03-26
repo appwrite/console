@@ -1,9 +1,9 @@
 <script>
-	import { Modal } from '../../../src/lib/components';
+    import { Modal } from '../../../src/lib/components';
 
-	export let show = false;
+    export let show = false;
 </script>
 
 <Modal bind:show>
-	<span>Content</span>
+    <span>Content</span>
 </Modal>

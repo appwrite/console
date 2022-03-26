@@ -1,3 +1,3 @@
 <article class="card">
-	<slot />
+    <slot />
 </article>

@@ -1,88 +1,88 @@
 {
-	"name": "@appwrite/console",
-	"version": "0.0.1",
-	"engines": {
-		"node": ">=14"
-	},
-	"scripts": {
-		"dev": "svelte-kit dev",
-		"build": "svelte-kit build",
-		"package": "svelte-kit package",
-		"preview": "svelte-kit preview",
-		"prepare": "svelte-kit sync",
-		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint .",
-		"format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
-		"test": "jest tests/unit",
-		"test:watch": "npm run test -- --watch",
-		"e2e": "playwright test tests/e2e",
-		"vitebook:dev": "vitebook dev",
-		"vitebook:build": "vitebook build",
-		"vitebook:preview": "vitebook preview"
-	},
-	"dependencies": {
-		"aw-labs-ui": "^0.0.8",
-		"chart.js": "^3.7.1"
-	},
-	"devDependencies": {
-		"@playwright/test": "1.20.0",
-		"@sveltejs/adapter-auto": "1.0.0-next.33",
-		"@sveltejs/kit": "1.0.0-next.303",
-		"@sveltejs/vite-plugin-svelte": "^1.0.0-next.40",
-		"@testing-library/dom": "^8.11.4",
-		"@testing-library/jest-dom": "^5.16.3",
-		"@testing-library/svelte": "^3.1.0",
-		"@testing-library/user-event": "^13.5.0",
-		"@typescript-eslint/eslint-plugin": "^5.16.0",
-		"@typescript-eslint/parser": "^5.16.0",
-		"eslint": "^8.11.0",
-		"eslint-config-prettier": "^8.5.0",
-		"eslint-plugin-svelte3": "^3.4.1",
-		"jest": "^27.5.1",
-		"pre-commit": "^1.2.2",
-		"prettier": "^2.6.1",
-		"prettier-plugin-svelte": "^2.6.0",
-		"sass": "^1.49.9",
-		"svelte": "^3.46.4",
-		"svelte-check": "^2.4.6",
-		"svelte-jester": "^2.3.2",
-		"svelte-preprocess": "^4.10.4",
-		"ts-jest": "^27.1.4",
-		"tslib": "^2.3.1",
-		"typescript": "^4.6.3",
-		"vite": "^2.8.6"
-	},
-	"optionalDependencies": {
-		"@vitebook/client": "^0.23.4",
-		"@vitebook/core": "^0.23.4",
-		"@vitebook/theme-default": "^0.23.4"
-	},
-	"type": "module",
-	"jest": {
-		"testEnvironment": "jsdom",
-		"setupFilesAfterEnv": [
-			"@testing-library/jest-dom/extend-expect"
-		],
-		"transform": {
-			"^.+\\.svelte$": [
-				"svelte-jester",
-				{
-					"preprocess": true
-				}
-			],
-			"^.+\\.ts$": "ts-jest"
-		},
-		"moduleNameMapper": {
-			"^\\$lib(.*)$": "<rootDir>/src/lib/$1"
-		},
-		"moduleFileExtensions": [
-			"js",
-			"ts",
-			"svelte"
-		]
-	},
-	"pre-commit": [
-		"lint"
-	]
+    "name": "@appwrite/console",
+    "version": "0.0.1",
+    "engines": {
+        "node": ">=14"
+    },
+    "scripts": {
+        "dev": "svelte-kit dev",
+        "build": "svelte-kit build",
+        "package": "svelte-kit package",
+        "preview": "svelte-kit preview",
+        "prepare": "svelte-kit sync",
+        "check": "svelte-check --tsconfig ./tsconfig.json",
+        "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
+        "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint .",
+        "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
+        "test": "jest tests/unit",
+        "test:watch": "npm run test -- --watch",
+        "e2e": "playwright test tests/e2e",
+        "vitebook:dev": "vitebook dev",
+        "vitebook:build": "vitebook build",
+        "vitebook:preview": "vitebook preview"
+    },
+    "dependencies": {
+        "aw-labs-ui": "^0.0.8",
+        "chart.js": "^3.7.1"
+    },
+    "devDependencies": {
+        "@playwright/test": "1.20.0",
+        "@sveltejs/adapter-auto": "1.0.0-next.33",
+        "@sveltejs/kit": "1.0.0-next.303",
+        "@sveltejs/vite-plugin-svelte": "^1.0.0-next.40",
+        "@testing-library/dom": "^8.11.4",
+        "@testing-library/jest-dom": "^5.16.3",
+        "@testing-library/svelte": "^3.1.0",
+        "@testing-library/user-event": "^13.5.0",
+        "@typescript-eslint/eslint-plugin": "^5.16.0",
+        "@typescript-eslint/parser": "^5.16.0",
+        "eslint": "^8.11.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-svelte3": "^3.4.1",
+        "jest": "^27.5.1",
+        "pre-commit": "^1.2.2",
+        "prettier": "^2.6.1",
+        "prettier-plugin-svelte": "^2.6.0",
+        "sass": "^1.49.9",
+        "svelte": "^3.46.4",
+        "svelte-check": "^2.4.6",
+        "svelte-jester": "^2.3.2",
+        "svelte-preprocess": "^4.10.4",
+        "ts-jest": "^27.1.4",
+        "tslib": "^2.3.1",
+        "typescript": "^4.6.3",
+        "vite": "^2.8.6"
+    },
+    "optionalDependencies": {
+        "@vitebook/client": "^0.23.4",
+        "@vitebook/core": "^0.23.4",
+        "@vitebook/theme-default": "^0.23.4"
+    },
+    "type": "module",
+    "jest": {
+        "testEnvironment": "jsdom",
+        "setupFilesAfterEnv": [
+            "@testing-library/jest-dom/extend-expect"
+        ],
+        "transform": {
+            "^.+\\.svelte$": [
+                "svelte-jester",
+                {
+                    "preprocess": true
+                }
+            ],
+            "^.+\\.ts$": "ts-jest"
+        },
+        "moduleNameMapper": {
+            "^\\$lib(.*)$": "<rootDir>/src/lib/$1"
+        },
+        "moduleFileExtensions": [
+            "js",
+            "ts",
+            "svelte"
+        ]
+    },
+    "pre-commit": [
+        "lint"
+    ]
 }

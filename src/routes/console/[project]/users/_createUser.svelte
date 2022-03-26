@@ -1,52 +1,55 @@
 <script lang="ts">
-	import { Modal } from '$lib/components';
-	import { Button, InputPassword, InputEmail, InputText, Form } from '$lib/elements/forms';
-	import { addNotification } from '$lib/stores/notifications';
-	import { sdkForProject } from '$lib/stores/sdk';
-	import { createEventDispatcher } from 'svelte';
+    import { Modal } from '$lib/components';
+    import { Button, InputPassword, InputEmail, InputText, Form } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { createEventDispatcher } from 'svelte';
 
-	export let showCreate = false;
+    export let showCreate = false;
 
-	const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher();
 
-	let name: string, mail: string, pass: string;
+    let name: string, mail: string, pass: string;
 
-	const create = async () => {
-		try {
-			const user = await sdkForProject.users.create('unique()', mail, pass, name);
-			mail = pass = name = '';
-			showCreate = false;
-			dispatch('created', user);
-		} catch (error) {
-			addNotification({
-				type: 'error',
-				message: error.message
-			});
-		}
-	};
+    const create = async () => {
+        try {
+            const user = await sdkForProject.users.create('unique()', mail, pass, name);
+            mail = pass = name = '';
+            showCreate = false;
+            dispatch('created', user);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    };
 </script>
 
 <Form on:submit={create}>
-	<Modal bind:show={showCreate}>
-		<svelte:fragment slot="header">Create User</svelte:fragment>
-		<InputText id="name" label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
-		<InputEmail
-			id="email"
-			label="E-Mail"
-			placeholder="test@example.com"
-			required={true}
-			bind:value={mail}
-		/>
-		<InputPassword
-			id="password"
-			label="Password"
-			placeholder="*****"
-			required={true}
-			bind:value={pass}
-		/>
-		<svelte:fragment slot="footer">
-			<Button submit>Create</Button>
-			<Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-		</svelte:fragment>
-	</Modal>
+    <Modal bind:show={showCreate}>
+        <svelte:fragment slot="header">Create User</svelte:fragment>
+        <InputText
+            id="name"
+            label="Name"
+            placeholder="John Doe"
+            autofocus={true}
+            bind:value={name} />
+        <InputEmail
+            id="email"
+            label="E-Mail"
+            placeholder="test@example.com"
+            required={true}
+            bind:value={mail} />
+        <InputPassword
+            id="password"
+            label="Password"
+            placeholder="*****"
+            required={true}
+            bind:value={pass} />
+        <svelte:fragment slot="footer">
+            <Button submit>Create</Button>
+            <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
+        </svelte:fragment>
+    </Modal>
 </Form>

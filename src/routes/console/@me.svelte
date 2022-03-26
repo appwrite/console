@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
-	import { Button } from '$lib/elements/forms';
-	import { app } from '$lib/stores/app';
-	import { sdkForConsole } from '$lib/stores/sdk';
+    import { Button } from '$lib/elements/forms';
+    import { app } from '$lib/stores/app';
+    import { sdkForConsole } from '$lib/stores/sdk';
 
-	const logout = async () => {
-		await sdkForConsole.account.deleteSession('current');
-		await goto(`${base}/login`);
-	};
-	const toggleTheme = () => {
-		$app.theme = $app.theme === 'light' ? 'dark' : 'light';
-	};
+    const logout = async () => {
+        await sdkForConsole.account.deleteSession('current');
+        await goto(`${base}/login`);
+    };
+    const toggleTheme = () => {
+        $app.theme = $app.theme === 'light' ? 'dark' : 'light';
+    };
 </script>
 
 <h1>hey</h1>

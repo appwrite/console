@@ -1,3 +1,3 @@
 <table class="table is-vertical">
-	<slot />
+    <slot />
 </table>

@@ -1,3 +1,3 @@
 <li class="form-item">
-	<slot />
+    <slot />
 </li>

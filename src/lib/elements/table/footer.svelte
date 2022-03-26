@@ -1,5 +1,5 @@
 <tfoot>
-	<tr>
-		<slot />
-	</tr>
+    <tr>
+        <slot />
+    </tr>
 </tfoot>

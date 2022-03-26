@@ -1,3 +1,3 @@
 <tbody class="table-tbody">
-	<slot />
+    <slot />
 </tbody>

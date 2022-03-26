@@ -6,21 +6,21 @@ This is the base project for the new dashboard for Appwrite.
 
 Built with:
 
-- [Svelte](https://svelte.dev/)
-- [Svelte Kit](https://kit.svelte.dev/)
-- [@appwrite/ui](https://github.com/appwrite/ui)
+-   [Svelte](https://svelte.dev/)
+-   [Svelte Kit](https://kit.svelte.dev/)
+-   [@appwrite/ui](https://github.com/appwrite/ui)
 
 Table of Contents:
 
-- [Development](#development)
-  - [Build](#build)
-  - [Tests](#tests)
-  - [Format](#format)
-  - [Linter](#linter)
-  - [Diagnostics](#diagnostics)
-- [Contributing](#contributing)
-  - [Guidelines](#guidelines)
-  - [Structure](#structure)
+-   [Development](#development)
+    -   [Build](#build)
+    -   [Tests](#tests)
+    -   [Format](#format)
+    -   [Linter](#linter)
+    -   [Diagnostics](#diagnostics)
+-   [Contributing](#contributing)
+    -   [Guidelines](#guidelines)
+    -   [Structure](#structure)
 
 # Development
 
@@ -64,9 +64,9 @@ npm run lint
 
 Diagnostic tool that checks for following:
 
-- Unused CSS
-- Svelte A11y hints
-- TypeScript compiler errors
+-   Unused CSS
+-   Svelte A11y hints
+-   TypeScript compiler errors
 
 ```bash
 npm run check
@@ -80,12 +80,12 @@ npm run check
 
 Before commiting always make sure to run all available tools to improve the codebase:
 
-- Formatter
-  - `npm run format`
-- Tests
-  - `npm test`
-- Diagnostics
-  - `npm run check`
+-   Formatter
+    -   `npm run format`
+-   Tests
+    -   `npm test`
+-   Diagnostics
+    -   `npm run check`
 
 ### Performance
 
@@ -93,9 +93,9 @@ Page load times are a key consideration for users of all browsers and device typ
 
 There are some general things we can do in front-end development:
 
-- Minimise HTTP requests
-- Minimise blocking – content should be readable before client side processing
-- Lazy load 'supplementary' content (especially images)
+-   Minimise HTTP requests
+-   Minimise blocking – content should be readable before client side processing
+-   Lazy load 'supplementary' content (especially images)
 
 ### Don't Repeat Yourself (DRY)
 
@@ -107,12 +107,12 @@ If you stick to this principle, you will ensure that you will only ever need to 
 
 Separate _structure_ from _presentation_ from _behaviour_ to aid maintainability and understanding.
 
-- Keep CSS (presentation), JS (behaviour) and HTML (structure) in the same respective Svelte component
-- Avoid writing inline CSS or Javascript in HTML
-- Avoid writing CSS or HTML in Javascript
-- Don't choose HTML elements to imply style
-- Where appropriate, use CSS or Svelte rather than Javascript for animations and transitions
-- Try to use templates when defining markup in Javascript
+-   Keep CSS (presentation), JS (behaviour) and HTML (structure) in the same respective Svelte component
+-   Avoid writing inline CSS or Javascript in HTML
+-   Avoid writing CSS or HTML in Javascript
+-   Don't choose HTML elements to imply style
+-   Where appropriate, use CSS or Svelte rather than Javascript for animations and transitions
+-   Try to use templates when defining markup in Javascript
 
 ### Write code to be read
 

@@ -1,11 +1,11 @@
 <script context="module">
-	import 'aw-labs-ui/src/_index.scss';
+    import 'aw-labs-ui/src/_index.scss';
 </script>
 
 <script lang="ts">
-	import type { SvelteComponent } from 'svelte';
+    import type { SvelteComponent } from 'svelte';
 
-	export let component: typeof SvelteComponent;
+    export let component: typeof SvelteComponent;
 </script>
 
 <svelte:component this={component} />

@@ -1,3 +1,3 @@
 <ul class="grid-box">
-	<slot />
+    <slot />
 </ul>
