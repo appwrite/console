@@ -1,9 +1,11 @@
 <script>
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 
 	$: project = $page.params.project;
 	$: functionId = $page.params.function;
-	$: path = `/console/${project}/functions/function/${functionId}`;
+	$: path = `${base}/console/${project}/functions/function/${functionId}`;
 </script>
 
 <ul class="tabs">

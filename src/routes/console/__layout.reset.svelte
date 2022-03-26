@@ -10,6 +10,7 @@
 	import { browser } from '$app/env';
 	import { app } from '$lib/stores/app';
 	import Footer from '$lib/layout/footer.svelte';
+	import { base } from '$app/paths';
 
 	onMount(async () => {
 		try {
@@ -17,7 +18,7 @@
 				user.set(await sdkForConsole.account.get());
 			}
 		} catch (error) {
-			await goto('/login');
+			await goto(`${base}/login`);
 		}
 	});
 

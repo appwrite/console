@@ -1,15 +1,17 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 
 	$: project = $page.params.project;
-	$: path = `/console/${project}`;
+	$: path = `${base}/console/${project}`;
 </script>
 
 <div class="side-nav">
 	<div class="side-nav-top">
-		<a class="side-nav-logo" href="/console">
+		<a class="side-nav-logo" href={`${base}/console`}>
 			<img
-				src="/appwrite-nav.svg"
+				src={`${base}/appwrite-nav.svg`}
 				loading="lazy"
 				alt="Appwrite Logo"
 				class="side-nav-logo-image"
@@ -19,11 +21,7 @@
 	</div>
 	{#if project}
 		<div class="side-nav-main">
-			<a
-				class="side-nav-link"
-				class:is-selected={$page.url.pathname === path}
-				href={`/console/${project}`}
-			>
+			<a class="side-nav-link" class:is-selected={$page.url.pathname === path} href={path}>
 				<span class="icon-home" aria-hidden="true" />
 				<span class="text">Home</span>
 			</a>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 	import { Empty } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
@@ -34,7 +36,7 @@
 				<TableBody>
 					{#each $project.keys as key}
 						<TableRow>
-							<TableCellLink href={`/console/${projectId}/keys/key/${key.$id}`} title="Name">
+							<TableCellLink href={`${base}/console/${projectId}/keys/key/${key.$id}`} title="Name">
 								{key.name}
 							</TableCellLink>
 							<TableCellText title="Scopes">{key.scopes.length}</TableCellText>

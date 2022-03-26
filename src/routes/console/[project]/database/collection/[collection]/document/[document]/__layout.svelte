@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/env';
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
 	import { Container, Cover } from '$lib/layout';
@@ -24,7 +25,7 @@
 
 {#if $doc && $collection}
 	<Cover>
-		<Back href={`/console/${project}/database/collection/${collectionId}`}>
+		<Back href={`${base}/console/${project}/database/collection/${collectionId}`}>
 			Collection - {$collection.name}
 		</Back>
 		<h1>{$doc.$id}</h1>

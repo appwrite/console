@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	import { Button } from '$lib/elements/forms';
 	import { app } from '$lib/stores/app';
@@ -7,7 +8,7 @@
 
 	const logout = async () => {
 		await sdkForConsole.account.deleteSession('current');
-		await goto('/login');
+		await goto(`${base}/login`);
 	};
 	const toggleTheme = () => {
 		$app.theme = $app.theme === 'light' ? 'dark' : 'light';

@@ -1,4 +1,6 @@
 <script>
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
 	import { Cover } from '$lib/layout';
@@ -11,10 +13,10 @@
 	<title>Appwrite - Database</title>
 </svelte:head>
 
-{#if !$page.url.pathname.startsWith(`/console/${project}/database/collection`)}
+{#if !$page.url.pathname.startsWith(`${base}/console/${project}/database/collection`)}
 	<Cover>
 		<svelte:fragment slot="breadcrumbs">
-			<Back href={`/console/${project}`}>Home</Back>
+			<Back href={`${base}/console/${project}`}>Home</Back>
 		</svelte:fragment>
 		<svelte:fragment slot="title">Database</svelte:fragment>
 		<Tabs />

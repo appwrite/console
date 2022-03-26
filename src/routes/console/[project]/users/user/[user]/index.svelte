@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import { Card, Copy } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
@@ -12,7 +13,7 @@
 		try {
 			if (!confirm('Are you sure you want to delete that user?')) return;
 			await sdkForProject.users.delete(id);
-			await goto(`/console/${$page.params.project}/users`);
+			await goto(`${base}/console/${$page.params.project}/users`);
 		} catch (error) {
 			console.error(error);
 		}

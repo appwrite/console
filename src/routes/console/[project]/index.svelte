@@ -8,6 +8,7 @@
 	import { Line } from '$lib/charts';
 	import { page } from '$app/stores';
 	import { toLocaleDate } from '$lib/helpers/date';
+	import { base } from '$app/paths';
 
 	let addPlatform = false;
 	let range: '24h' | '30d' | '90d' = '30d';
@@ -24,19 +25,19 @@
 		<svelte:fragment slot="title">{$project.name}</svelte:fragment>
 		<ul class="links-nav">
 			<li class="links-nav-item">
-				<a class="link" href={`/console/${$project.$id}/settings`}>
+				<a class="link" href={`${base}/console/${$project.$id}/settings`}>
 					<span class="icon-search" aria-hidden="true" />
 					<span class="text">Settings</span>
 				</a>
 			</li>
 			<li class="links-nav-item">
-				<a class="link" href={`/console/${$project.$id}/keys`}>
+				<a class="link" href={`${base}/console/${$project.$id}/keys`}>
 					<span class="icon-search" aria-hidden="true" />
 					<span class="text">API Keys</span>
 				</a>
 			</li>
 			<li class="links-nav-item">
-				<a class="link" href={`/console/${$project.$id}/webhooks`}>
+				<a class="link" href={`${base}/console/${$project.$id}/webhooks`}>
 					<span class="icon-search" aria-hidden="true" />
 					<span class="text">Webhooks</span>
 				</a>

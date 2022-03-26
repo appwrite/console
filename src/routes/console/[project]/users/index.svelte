@@ -19,6 +19,7 @@
 	import { Pill } from '$lib/elements';
 	import { toLocaleDate } from '$lib/helpers/date';
 	import { Container } from '$lib/layout';
+	import { base } from '$app/paths';
 
 	let search = '';
 	let showCreate = false;
@@ -28,7 +29,7 @@
 	const project = $page.params.project;
 	const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
 	const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
-		await goto(`/console/${project}/users/user/${event.detail.$id}`);
+		await goto(`${base}/console/${project}/users/user/${event.detail.$id}`);
 	};
 	$: request = sdkForProject.users.list(search, limit, offset, undefined, undefined, 'DESC');
 	$: if (search) offset = 0;
@@ -65,7 +66,10 @@
 									/>
 								</div>
 							</TableCell>
-							<TableCellLink href={`/console/${project}/users/user/${user.$id}`} title="Name">
+							<TableCellLink
+								href={`${base}/console/${project}/users/user/${user.$id}`}
+								title="Name"
+							>
 								{user.name ? user.name : 'n/a'}
 							</TableCellLink>
 							<TableCellText title="E-Mail">{user.email}</TableCellText>

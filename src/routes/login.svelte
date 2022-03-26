@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { Button, Form, FormItem, InputEmail, InputPassword } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { sdkForConsole } from '$lib/stores/sdk';
@@ -13,7 +14,7 @@
 				type: 'success',
 				message: 'Successfully logged in.'
 			});
-			await goto('/console');
+			await goto(`${base}/console`);
 		} catch (error) {
 			addNotification({
 				type: 'error',
@@ -51,4 +52,4 @@
 	</FormItem>
 </Form>
 
-<a href="/register">Create an Account</a>
+<a href={`${base}/register`}>Create an Account</a>

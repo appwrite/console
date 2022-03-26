@@ -18,6 +18,7 @@
 	import type { Models } from 'src/sdk';
 	import { toLocaleDate } from '$lib/helpers/date';
 	import { Container } from '$lib/layout';
+	import { base } from '$app/paths';
 
 	let search = '';
 	let showCreate = false;
@@ -27,7 +28,7 @@
 	const project = $page.params.project;
 	const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
 	const teamCreated = async (event: CustomEvent<Models.Team>) => {
-		await goto(`/console/${project}/users/team/${event.detail.$id}`);
+		await goto(`${base}/console/${project}/users/team/${event.detail.$id}`);
 	};
 	$: request = sdkForProject.teams.list(search, limit, offset);
 	$: if (search) offset = 0;
@@ -64,7 +65,10 @@
 									/>
 								</div>
 							</TableCell>
-							<TableCellLink title="ID" href={`/console/${project}/users/teams/team/${team.$id}`}>
+							<TableCellLink
+								title="ID"
+								href={`${base}/console/${project}/users/teams/team/${team.$id}`}
+							>
 								{team.name}
 							</TableCellLink>
 							<TableCellText title="Members">{team.total}</TableCellText>

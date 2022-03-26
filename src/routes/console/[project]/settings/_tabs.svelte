@@ -1,7 +1,9 @@
 <script>
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 
-	$: path = `/console/${$page.params.project}/settings`;
+	$: path = `${base}/console/${$page.params.project}/settings`;
 </script>
 
 <ul class="tabs">

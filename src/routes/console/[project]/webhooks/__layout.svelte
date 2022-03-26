@@ -1,4 +1,6 @@
 <script>
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
 	import { Cover } from '$lib/layout';
@@ -7,7 +9,7 @@
 
 <Cover>
 	<svelte:fragment slot="breadcrumbs">
-		<Back href={`/console/${projectId}`}>Home</Back>
+		<Back href={`${base}/console/${projectId}`}>Home</Back>
 	</svelte:fragment>
 	<svelte:fragment slot="title">Webhooks</svelte:fragment>
 </Cover>

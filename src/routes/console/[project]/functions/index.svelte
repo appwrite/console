@@ -5,6 +5,7 @@
 	import { Card, Empty, Pagination, Tile, Tiles } from '$lib/components';
 	import Create from './_create.svelte';
 	import { Container } from '$lib/layout';
+	import { base } from '$app/paths';
 
 	let search = '';
 	let showCreate = false;
@@ -29,7 +30,10 @@
 		{#if response.total}
 			<Tiles>
 				{#each response.functions as func}
-					<Tile href={`/console/${project}/functions/function/${func.$id}`} title={func.name} />
+					<Tile
+						href={`${base}/console/${project}/functions/function/${func.$id}`}
+						title={func.name}
+					/>
 				{/each}
 			</Tiles>
 

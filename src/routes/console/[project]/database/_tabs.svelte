@@ -1,4 +1,6 @@
 <script>
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 
 	$: project = $page.params.project;
@@ -8,7 +10,7 @@
 	<li class="tabs-item">
 		<a
 			class="tabs-button is-selected"
-			href={`/console/${project}/database`}
+			href={`${base}/console/${project}/database`}
 			class:is-selected={$page.url.pathname === `/console/${project}/database`}
 		>
 			<span class="text">Collections</span>
@@ -17,7 +19,7 @@
 	<li class="tabs-item">
 		<a
 			class="tabs-button is-selected"
-			href={`/console/${project}/database/usage`}
+			href={`${base}/console/${project}/database/usage`}
 			class:is-selected={$page.url.pathname === `/console/${project}/database/usage`}
 		>
 			<span class="text">Usage</span>

@@ -7,6 +7,7 @@
 	import { Button } from '$lib/elements/forms';
 	import { addNotification } from '$lib/stores/notifications';
 	import { project } from '../../../store';
+	import { base } from '$app/paths';
 
 	const projectId = $page.params.project;
 	const keyId = $page.params.key;
@@ -18,7 +19,7 @@
 			type: 'success'
 		});
 		project.load(projectId);
-		await goto(`/console/${projectId}/keys`);
+		await goto(`${base}/console/${projectId}/keys`);
 	};
 </script>
 

@@ -9,6 +9,7 @@
 	import { user } from '$lib/stores/user';
 	import { onMount } from 'svelte';
 	import Notifications from '$lib/layout/notifications.svelte';
+	import { base } from '$app/paths';
 
 	onMount(async () => {
 		try {
@@ -17,7 +18,7 @@
 			}
 
 			if (!$page.url.pathname.startsWith('/console')) {
-				await goto('/console');
+				await goto(`${base}/console`);
 			}
 		} catch (error) {
 			console.error(error);

@@ -15,6 +15,7 @@
 	import { func } from './store';
 	import { Container } from '$lib/layout';
 	import Create from './_create.svelte';
+	import { base } from '$app/paths';
 
 	let search = '';
 	let showCreate = false;
@@ -57,7 +58,7 @@
 					<TableRow>
 						<TableCellLink
 							title="ID"
-							href={`/console/${project}/storage/bucket/${functionId}/${deployment.$id}`}
+							href={`${base}/console/${project}/storage/bucket/${functionId}/${deployment.$id}`}
 						>
 							{deployment.$id}
 						</TableCellLink>

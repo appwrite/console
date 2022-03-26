@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/env';
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
 	import { Cover } from '$lib/layout';
@@ -23,7 +24,7 @@
 {#if $user}
 	<Cover>
 		<svelte:fragment slot="breadcrumbs">
-			<Back href={`/console/${project}/users`}>Users</Back>
+			<Back href={`${base}/console/${project}/users`}>Users</Back>
 		</svelte:fragment>
 		<svelte:fragment slot="title">{$user.name}</svelte:fragment>
 		<Tabs />

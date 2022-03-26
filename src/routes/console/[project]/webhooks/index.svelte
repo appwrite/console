@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 	import { Empty } from '$lib/components';
 	import {
@@ -34,7 +36,7 @@
 					{#each response.webhooks as webhook}
 						<TableCellLink
 							title="Name"
-							href={`/console/${projectId}/webhooks/webhook/${webhook.$id}`}
+							href={`${base}/console/${projectId}/webhooks/webhook/${webhook.$id}`}
 						>
 							{webhook.name}
 						</TableCellLink>

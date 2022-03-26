@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import { DropList, DropListItem, DropListLink } from '$lib/components';
 	import { app } from '$lib/stores/app';
@@ -10,7 +11,7 @@
 
 	const onChange = async (event: Event) => {
 		const target = event.target as HTMLSelectElement;
-		await goto(`/console/${target.value}`);
+		await goto(`${base}/console/${target.value}`);
 	};
 	const toggleTheme = () => {
 		$app.theme = $app.theme === 'light' ? 'dark' : 'light';

@@ -7,6 +7,7 @@
 	import type { Models } from 'src/sdk';
 	import Create from './_create.svelte';
 	import { Container } from '$lib/layout';
+	import { base } from '$app/paths';
 
 	let search = '';
 	let showCreate = false;
@@ -16,7 +17,7 @@
 	const project = $page.params.project;
 	const bucketCreated = async (event: CustomEvent<Models.Bucket>) => {
 		showCreate = false;
-		await goto(`/console/${project}/storage/bucket/${event.detail.$id}`);
+		await goto(`${base}/console/${project}/storage/bucket/${event.detail.$id}`);
 	};
 
 	$: request = sdkForProject.storage.listBuckets(search, limit, offset);
@@ -35,7 +36,10 @@
 		{#if response.total}
 			<Tiles>
 				{#each response.buckets as bucket}
-					<Tile href={`/console/${project}/storage/bucket/${bucket.$id}`} title={bucket.name} />
+					<Tile
+						href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}
+						title={bucket.name}
+					/>
 				{/each}
 			</Tiles>
 

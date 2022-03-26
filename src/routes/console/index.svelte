@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { Tiles, Tile } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
 	import { sdkForConsole } from '$lib/stores/sdk';
@@ -32,7 +33,7 @@
 		addProject = true;
 	};
 	const projectCreated = async (event: CustomEvent<Models.Project>) => {
-		await goto(`/console/${event.detail.$id}`);
+		await goto(`${base}/console/${event.detail.$id}`);
 	};
 </script>
 
@@ -49,7 +50,7 @@
 		<h1>{organization.name}</h1>
 		<Tiles>
 			{#each organization.projects as project}
-				<Tile href={`/console/${project.$id}`} title={project.name} />
+				<Tile href={`${base}/console/${project.$id}`} title={project.name} />
 			{/each}
 		</Tiles>
 		<Button on:click={() => createProject(organization.$id)}>Create Project</Button>

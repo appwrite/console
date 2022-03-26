@@ -1,9 +1,11 @@
 <script>
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 
 	$: project = $page.params.project;
 	$: collectionId = $page.params.collection;
-	$: path = `/console/${project}/database/collection/${collectionId}`;
+	$: path = `${base}/console/${project}/database/collection/${collectionId}`;
 </script>
 
 <ul class="tabs">

@@ -11,6 +11,7 @@
 	import { goto } from '$app/navigation';
 	import InputCustomId from '$lib/elements/forms/inputCustomId.svelte';
 	import { Container, Cover } from '$lib/layout';
+	import { base } from '$app/paths';
 
 	$: projectId = $page.params.project;
 
@@ -40,7 +41,7 @@
 				type: 'success'
 			});
 			await goto(
-				`/console/${projectId}/database/collection/${created.$collection}/document/${created.$id}`
+				`${base}/console/${projectId}/database/collection/${created.$collection}/document/${created.$id}`
 			);
 		} catch (error) {
 			addNotification({
@@ -56,7 +57,7 @@
 </svelte:head>
 {#if $doc && $collection}
 	<Cover>
-		<Back href={`/console/${projectId}/database/collection/${$collection.$id}`}>
+		<Back href={`${base}/console/${projectId}/database/collection/${$collection.$id}`}>
 			Collection - {$collection.name}
 		</Back>
 		<h1>Create Document</h1>

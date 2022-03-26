@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import { Card } from '$lib/components';
 	import { Button } from '$lib/elements/forms';
@@ -14,7 +15,7 @@
 		try {
 			if (!confirm('Are you sure you want to delete that team?')) return;
 			await sdkForProject.teams.delete(id);
-			await goto(`/console/${$page.params.project}/teams`);
+			await goto(`${base}/console/${$page.params.project}/teams`);
 		} catch (error) {
 			console.error(error);
 		}

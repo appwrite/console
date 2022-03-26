@@ -1,9 +1,11 @@
 <script>
+	import { base } from '$app/paths';
+
 	import { page } from '$app/stores';
 
 	$: project = $page.params.project;
 	$: bucketId = $page.params.bucket;
-	$: path = `/console/${project}/storage/bucket/${bucketId}`;
+	$: path = `${base}/console/${project}/storage/bucket/${bucketId}`;
 </script>
 
 <ul class="tabs">

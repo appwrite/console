@@ -13,6 +13,7 @@
 	import { collection } from './store';
 	import { Container } from '$lib/layout';
 	import { Button } from '$lib/elements/forms';
+	import { base } from '$app/paths';
 
 	let offset = 0;
 
@@ -46,7 +47,7 @@
 						<TableRow>
 							{#each columns as column}
 								<TableCellLink
-									href={`/console/${project}/database/collection/${$collection.$id}/document/${document.$id}`}
+									href={`${base}/console/${project}/database/collection/${$collection.$id}/document/${document.$id}`}
 									title={column.title}
 								>
 									{document[column.key] ?? 'n/a'}
@@ -64,8 +65,10 @@
 				Add your first document to get started.
 			</Empty>
 		{/if}
-		<Button href={`/console/${project}/database/collection/${$collection.$id}/document/@create`}
-			>Create Document</Button
+		<Button
+			href={`${base}/console/${project}/database/collection/${$collection.$id}/document/@create`}
 		>
+			Create Document
+		</Button>
 	{/await}
 </Container>

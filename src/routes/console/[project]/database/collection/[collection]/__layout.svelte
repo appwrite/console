@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/env';
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import { Back } from '$lib/components';
 	import { Cover } from '$lib/layout';
@@ -24,7 +25,7 @@
 	{#if !$page.url.pathname.startsWith(`/console/${project}/database/collection/${collectionId}/document`)}
 		<Cover>
 			<svelte:fragment slot="breadcrumbs">
-				<Back href={`/console/${project}/database`}>Database</Back>
+				<Back href={`${base}/console/${project}/database`}>Database</Back>
 			</svelte:fragment>
 			<svelte:fragment slot="title">{$collection.name}</svelte:fragment>
 			<Tabs />

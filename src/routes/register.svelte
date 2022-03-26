@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import {
 		Button,
 		Form,
@@ -17,7 +18,7 @@
 		try {
 			await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
 			await sdkForConsole.account.createSession(mail, pass);
-			await goto('/console');
+			await goto(`${base}/console`);
 		} catch (error) {
 			addNotification({
 				type: 'error',
@@ -53,4 +54,4 @@
 	<FormItem><Button submit>Register</Button></FormItem>
 </Form>
 
-<a href="/login">Login</a>
+<a href={`${base}/login`}>Login</a>

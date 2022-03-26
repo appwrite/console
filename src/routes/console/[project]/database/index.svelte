@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import type { Models } from 'src/sdk';
 	import { Container } from '$lib/layout';
+	import { base } from '$app/paths';
 
 	let search = '';
 	let showCreate = false;
@@ -15,7 +16,7 @@
 	const limit = 25;
 	const project = $page.params.project;
 	const collectionCreated = async (event: CustomEvent<Models.Collection>) => {
-		await goto(`/console/${project}/database/collection/${event.detail.$id}`);
+		await goto(`${base}/console/${project}/database/collection/${event.detail.$id}`);
 	};
 
 	$: request = sdkForProject.database.listCollections(search, limit, offset);
@@ -35,7 +36,7 @@
 			<Tiles>
 				{#each response.collections as collection}
 					<Tile
-						href={`/console/${project}/database/collection/${collection.$id}`}
+						href={`${base}/console/${project}/database/collection/${collection.$id}`}
 						title={collection.name}
 					/>
 				{/each}
