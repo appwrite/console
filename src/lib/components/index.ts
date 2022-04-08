@@ -13,3 +13,4 @@ export { default as DropList } from './dropList.svelte';
 export { default as DropListItem } from './dropListItem.svelte';
 export { default as DropListLink } from './dropListLink.svelte';
 export { default as Collapsible } from './collapsible.svelte';
+export { default as Avatar } from './avatar.svelte';

@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { DropList, DropListItem, DropListLink } from '$lib/components';
+    import { DropList, DropListItem, DropListLink, Avatar } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
@@ -46,12 +46,9 @@
             <DropList bind:show={showDropdown} position="bottom" horizontal="left">
                 <button class="transparent-button" on:click={() => (showDropdown = !showDropdown)}>
                     <span class="is-only-desktop">{$user.name}</span>
-                    <img
-                        width="40"
-                        height="40"
-                        class="user-image"
-                        src={sdkForConsole.avatars.getInitials($user.name, 40, 40).toString()}
-                        alt="" />
+                    <Avatar
+                        size="50"
+                        src={sdkForConsole.avatars.getInitials($user.name, 50, 50).toString()} />
                 </button>
                 <svelte:fragment slot="list">
                     <DropListLink href="/console/@me" icon="user">Your Account</DropListLink>
