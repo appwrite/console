@@ -17,7 +17,7 @@
         }
     });
 
-    const valueChange = (event: FormEventHandler<HTMLInputElement>) => {
+    const valueChange = (event: Event) => {
         clearTimeout(timer);
         timer = setTimeout(() => {
             const target = event.target as HTMLInputElement;
@@ -32,5 +32,5 @@
     {required}
     type="search"
     class="input-text"
-    on:change={valueChange}
+    on:input={valueChange}
     bind:this={element} />
