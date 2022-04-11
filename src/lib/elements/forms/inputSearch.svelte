@@ -17,7 +17,7 @@
         }
     });
 
-    const onKeyUp = (event: KeyboardEvent) => {
+    const onKeyUp = (event: FormEventHandler<HTMLInputElement>) => {
         clearTimeout(timer);
         timer = setTimeout(() => {
             const target = event.target as HTMLInputElement;
@@ -32,5 +32,5 @@
     {required}
     type="search"
     class="input-text"
-    on:keyup={onKeyUp}
+    on:change={onKeyUp}
     bind:this={element} />
