@@ -15,3 +15,4 @@ export { default as DropListLink } from './dropListLink.svelte';
 export { default as Collapsible } from './collapsible.svelte';
 export { default as Avatar } from './avatar.svelte';
 export { default as SwitchBox } from './switchBox.svelte';
+export { default as SwitchBoxes } from './switchBoxes.svelte';
