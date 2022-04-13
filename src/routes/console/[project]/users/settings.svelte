@@ -13,15 +13,13 @@
     let provider;
     let authLimit = $project.authLimit;
 
-    console.log($project);
     const authUpdate = async (event) => {
         try {
-            const upup = await sdkForConsole.projects.updateAuthStatus(
+            await sdkForConsole.projects.updateAuthStatus(
                 projectId,
                 event.detail.id,
                 event.detail.value
             );
-            console.log(upup);
             addNotification({
                 type: 'success',
                 message: 'Updated project auth status successfully'
