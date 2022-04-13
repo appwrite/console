@@ -1,16 +1,19 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { SwitchBoxes } from '$lib/components';
     import { Container } from '$lib/layout';
     import Toggle from './_toggleOAuth.svelte';
+    import SetUserLimit from './_setUserLimit.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
 
     let showModal = false;
-    const projectId = $page.params.project;
+    let showUserLimitModal = false;
+    const projectId = $project.$id;
     let provider;
+    let authLimit = $project.authLimit;
 
+    console.log($project);
     const authUpdate = async (event) => {
         try {
             const upup = await sdkForConsole.projects.updateAuthStatus(
@@ -96,11 +99,20 @@
         }
     ];
 
-    //@todo move authBoxes and providersBoxes to a store
-    //@todo if operation not successful revert switchbox value
+    //TODO: move authBoxes and providersBoxes to a store
+    //TODO: if operation not successful revert switchbox value
 </script>
 
 <Container>
+    <p>
+        {authLimit ? `${authLimit} Users allowed` : 'Unlimited Users '}
+        <button
+            on:click={() => {
+                showUserLimitModal = true;
+            }}
+            class=" is-text link"
+            ><span class="text">{authLimit ? 'Change Limit' : 'Set Limit'}</span></button>
+    </p>
     <h2>Settings</h2>
     <p>Choose auth methods you wish to use.</p>
     <SwitchBoxes boxes={authBoxes} on:updated={authUpdate} />
@@ -111,3 +123,5 @@
 {#if provider && showModal}
     <Toggle {provider} bind:showModal />
 {/if}
+
+<SetUserLimit bind:authLimit bind:showUserLimitModal />
