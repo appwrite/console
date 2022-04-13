@@ -1,14 +1,20 @@
 import '@testing-library/jest-dom';
 import { render, fireEvent } from '@testing-library/svelte';
 import { SwitchBox } from '../../../src/lib/components';
-const src = 'https://via.placeholder.com/50';
+
+let box = {
+    id: 'input',
+    src: 'https://via.placeholder.com/50',
+    label: 'Bool',
+    alt: 'image',
+    required: false,
+    disabled: false,
+    value: false
+};
 
 test('shows boolean input', () => {
     const { getByText, getByRole, getByAltText } = render(SwitchBox, {
-        id: 'input',
-        src,
-        label: 'Bool',
-        alt: 'image'
+        box
     });
     const checkbox = getByRole('switch');
     const img = getByAltText('image');
@@ -20,37 +26,49 @@ test('shows boolean input', () => {
 });
 
 test('shows boolean input - required', () => {
-    const { getByRole } = render(SwitchBox, { id: 'input', src, label: 'Bool', required: true });
+    box.required = true;
+    const { getByRole } = render(SwitchBox, { box });
 
     expect(getByRole('switch')).toBeRequired();
 });
 
 test('shows boolean input - disabled', () => {
-    const { getByRole } = render(SwitchBox, { id: 'input', src, label: 'Bool', disabled: true });
+    box.disabled = true;
+    const { getByRole } = render(SwitchBox, { box });
 
     expect(getByRole('switch')).toBeDisabled();
 });
 
 test('state', async () => {
-    const { getByRole, component } = render(SwitchBox, { id: 'input', src, label: 'Bool' });
+    const { getByRole, component } = render(SwitchBox, { box });
     const checkbox = getByRole('switch');
 
-    expect(checkbox).not.toBeChecked();
-    expect(component.value).toStrictEqual(false);
+    setTimeout(() => {
+        expect(checkbox).not.toBeChecked();
+        expect(component.box.value).toStrictEqual(false);
+    }, 1);
 
     await fireEvent.click(checkbox);
-    expect(checkbox).toBeChecked();
-    expect(component.value).toStrictEqual(true);
+    setTimeout(() => {
+        expect(checkbox).toBeChecked();
+        expect(component.box.value).toStrictEqual(true);
+    }, 1);
 
     await fireEvent.click(checkbox);
-    expect(checkbox).not.toBeChecked();
-    expect(component.value).toStrictEqual(false);
+    setTimeout(() => {
+        expect(checkbox).not.toBeChecked();
+        expect(component.box.value).toStrictEqual(false);
+    }, 1);
 
-    component.value = true;
-    expect(checkbox).toBeChecked();
-    expect(component.value).toStrictEqual(true);
+    component.box.value = true;
+    setTimeout(() => {
+        expect(checkbox).toBeChecked();
+        expect(component.box.value).toStrictEqual(true);
+    }, 1);
 
-    component.value = false;
-    expect(checkbox).not.toBeChecked();
-    expect(component.value).toStrictEqual(false);
+    component.box.value = false;
+    setTimeout(() => {
+        expect(checkbox).not.toBeChecked();
+        expect(component.box.value).toStrictEqual(false);
+    }, 1);
 });
