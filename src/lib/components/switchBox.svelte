@@ -20,7 +20,7 @@
 
     const dispatch = createEventDispatcher();
 
-    //@todo move SwitchBox type outside  component
+    //TODO: move SwitchBox type outside  component
 </script>
 
 <li class="card">
