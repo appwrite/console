@@ -12,7 +12,7 @@
         TableCell
     } from '$lib/elements/table';
     import { Button, InputSearch } from '$lib/elements/forms';
-    import { Card, Empty, Pagination } from '$lib/components';
+    import { Card, Empty, Pagination, ElementCount } from '$lib/components';
     import Create from './_createTeam.svelte';
     import { goto } from '$app/navigation';
     import type { Models } from 'src/sdk';
@@ -44,6 +44,8 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
+            <ElementCount count={response.total}>teams</ElementCount>
+
             <Table>
                 <TableHeader>
                     <TableCellHead width={30} />

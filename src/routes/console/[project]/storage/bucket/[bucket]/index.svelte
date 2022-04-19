@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button, InputSearch } from '$lib/elements/forms';
-    import { Card, Empty, Pagination } from '$lib/components';
+    import { Card, Empty, Pagination, ElementCount } from '$lib/components';
     import type { Models } from 'src/sdk';
     import Create from './_create.svelte';
     import Update from './_update.svelte';
@@ -47,6 +47,8 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
+            <ElementCount count={response.total}>files</ElementCount>
+
             <Table>
                 <TableHeader>
                     <TableCellHead width={30} />

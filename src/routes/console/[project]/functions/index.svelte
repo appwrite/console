@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button, InputSearch } from '$lib/elements/forms';
-    import { Card, Empty, Pagination, Tile, Tiles } from '$lib/components';
+    import { Card, Empty, Pagination, Tile, Tiles, ElementCount } from '$lib/components';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -28,6 +28,7 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
+            <ElementCount count={response.total}>functions</ElementCount>
             <Tiles>
                 {#each response.functions as func}
                     <Tile
