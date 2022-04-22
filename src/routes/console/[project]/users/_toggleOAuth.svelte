@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Modal, Copy } from '$lib/components';
+    import { Modal, Copy, InfoSection } from '$lib/components';
     import { Button, InputPassword, InputText, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -42,11 +42,12 @@
             autocomplete={false}
             bind:value={appId} />
         <InputPassword id="secret" label="App Secret" meter={false} bind:value={secret} />
-        <i class="icon-info-circled" />
-        <p>
-            To complete set up, add this OAuth2 redirect URI to your {provider} app configuration.
-        </p>
-        <Copy bind:value={redirectURI} />
+        <InfoSection>
+            <p>
+                To complete set up, add this OAuth2 redirect URI to your {provider} app configuration.
+            </p>
+            <Copy bind:value={redirectURI} />
+        </InfoSection>
         <svelte:fragment slot="footer">
             <Button submit>Update</Button>
             <Button secondary on:click={() => (showModal = false)}>Cancel</Button>

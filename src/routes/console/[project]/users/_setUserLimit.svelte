@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
+    import { Modal, InfoSection } from '$lib/components';
     import { Button, InputNumber, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -33,14 +33,14 @@
     <Modal bind:show={showUserLimitModal}>
         <svelte:fragment slot="header">Max Allowed Users</svelte:fragment>
         <InputNumber id="userLimit" label="User Limit" autofocus={true} bind:value={userLimit} />
-        <!-- TODO: create infoCardSection component -->
-        <i class="icon-info-circled" />
-        <p>
-            This limit will prevent new users from signing up for your project, no matter what auth
-            method has been used. You will still be able to create users and team memberships from
-            your Appwrite console. For an unlimited amount of users, set the limit to 0. Max limit
-            is 10,000.
-        </p>
+        <InfoSection>
+            <p>
+                This limit will prevent new users from signing up for your project, no matter what
+                auth method has been used. You will still be able to create users and team
+                memberships from your Appwrite console. For an unlimited amount of users, set the
+                limit to 0. Max limit is 10,000.
+            </p>
+        </InfoSection>
         <svelte:fragment slot="footer">
             <Button submit>Update</Button>
             <Button secondary on:click={() => (showUserLimitModal = false)}>Cancel</Button>
