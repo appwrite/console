@@ -65,7 +65,7 @@
             </Empty>
         {/if}
         <Button
-            href={`${base}/console/${project}/database/collection/${$collection.$id}/document/@create`}>
+            href={`${base}/console/${project}/database/collection/${$collection.$id}/document/$create`}>
             Create Document
         </Button>
     {/await}
