@@ -10,7 +10,7 @@
     let showModal = false;
     let showUserLimitModal = false;
     const projectId = $project.$id;
-    let provider;
+    let provider: string;
     let authLimit = $project.authLimit;
 
     const authUpdate = async (event) => {

@@ -8,7 +8,7 @@
     const projectId = $project.$id;
     let userLimit: number = $project.authLimit;
     export let showUserLimitModal = false;
-    export let authLimit;
+    export let authLimit: number;
 
     const update = async () => {
         try {
