@@ -51,7 +51,7 @@
                         src={sdkForConsole.avatars.getInitials($user.name, 50, 50).toString()} />
                 </button>
                 <svelte:fragment slot="list">
-                    <DropListLink href="/console/@me" icon="user">Your Account</DropListLink>
+                    <DropListLink href="/console/$me" icon="user">Your Account</DropListLink>
                     <DropListItem
                         on:click={toggleTheme}
                         icon={$app.theme === 'light' ? 'sun-inv' : 'moon-inv'}>
