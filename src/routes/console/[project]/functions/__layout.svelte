@@ -1,9 +1,8 @@
 <script>
     import { base } from '$app/paths';
-
     import { page } from '$app/stores';
     import { Back } from '$lib/components';
-    import { Cover } from '$lib/layout';
+    import { Cover, PageTransition } from '$lib/layout';
     import Tabs from './_tabs.svelte';
 
     const project = $page.params.project;
@@ -21,4 +20,6 @@
         <Tabs />
     </Cover>
 {/if}
-<slot />
+<PageTransition>
+    <slot />
+</PageTransition>
