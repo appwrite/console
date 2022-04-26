@@ -6,4 +6,3 @@ export { default as Navigation } from './navigation.svelte';
 export { default as Notification } from './notification.svelte';
 export { default as Notifications } from './notifications.svelte';
 export { default as Shell } from './shell.svelte';
-export { default as PageTransition } from './pageTransition.svelte';

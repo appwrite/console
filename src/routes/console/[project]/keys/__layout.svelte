@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Back } from '$lib/components';
-    import { Cover, PageTransition } from '$lib/layout';
+    import { Cover } from '$lib/layout';
     const projectId = $page.params.project;
 </script>
 
@@ -12,6 +12,4 @@
     </svelte:fragment>
     <svelte:fragment slot="title">API Keys</svelte:fragment>
 </Cover>
-<PageTransition>
-    <slot />
-</PageTransition>
+<slot />
