@@ -9,7 +9,7 @@
         TableCellHead,
         TableCellLink
     } from '$lib/elements/table';
-    import { Empty, Pagination, ElementCount } from '$lib/components';
+    import { Empty, Pagination } from '$lib/components';
     import { collection } from './store';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
@@ -36,7 +36,7 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
-            <ElementCount count={response.total}>documents</ElementCount>
+            <p>{response.total} documents found</p>
             <Table>
                 <TableHeader>
                     {#each columns as column}

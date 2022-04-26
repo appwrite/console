@@ -16,5 +16,4 @@ export { default as Collapsible } from './collapsible.svelte';
 export { default as Avatar } from './avatar.svelte';
 export { default as SwitchBox } from './switchBox.svelte';
 export { default as SwitchBoxes } from './switchBoxes.svelte';
-export { default as ElementCount } from './elementCount.svelte';
 export { default as InfoSection } from './infoSection.svelte';

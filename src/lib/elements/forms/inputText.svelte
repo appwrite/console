@@ -30,7 +30,7 @@
             {disabled}
             {required}
             {maxlength}
-            {autocomplete}
+            autocomplete={autocomplete ? 'on' : 'off'}
             type="text"
             class="input-text"
             bind:value

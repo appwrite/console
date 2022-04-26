@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Card, Empty, Pagination, ElementCount } from '$lib/components';
+    import { Card, Empty, Pagination } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import {
         Table,
@@ -44,8 +44,7 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
-            <ElementCount count={response.total}>users</ElementCount>
-
+            <p>{response.total} users found</p>
             <Table>
                 <TableHeader>
                     <TableCellHead width={30} />

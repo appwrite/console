@@ -48,6 +48,7 @@
                     <span class="is-only-desktop">{$user.name}</span>
                     <Avatar
                         size={50}
+                        name={$user.name}
                         src={sdkForConsole.avatars.getInitials($user.name, 50, 50).toString()} />
                 </button>
                 <svelte:fragment slot="list">
