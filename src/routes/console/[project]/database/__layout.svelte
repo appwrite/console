@@ -1,7 +1,5 @@
 <script>
     import { base } from '$app/paths';
-    import { fade } from 'svelte/transition';
-
     import { page } from '$app/stores';
     import { Back } from '$lib/components';
     import { Cover } from '$lib/layout';
@@ -23,8 +21,5 @@
         <Tabs />
     </Cover>
 {/if}
-{#key $page.url.pathname}
-    <section in:fade>
-        <slot />
-    </section>
-{/key}
+
+<slot />
