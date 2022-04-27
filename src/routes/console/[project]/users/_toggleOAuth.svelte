@@ -9,7 +9,7 @@
     export let provider: string;
     let appId: string, secret: string;
     const projectId = $page.params.project;
-    let redirectURI: string = `${
+    let redirectURI = `${
         sdkForConsole.config.endpoint
     }/account/session/oauth2/callback/${provider.toLocaleLowerCase()}/${projectId}`;
 

@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, fireEvent } from '@testing-library/svelte';
 import { SwitchBox } from '../../../src/lib/components';
 
-let box = {
+const box = {
     id: 'input',
     src: 'https://via.placeholder.com/50',
     label: 'Bool',
