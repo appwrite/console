@@ -5,10 +5,11 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
 
-    const projectId = $project.$id;
-    let userLimit: number = $project.authLimit;
     export let showUserLimitModal = false;
     export let authLimit: number;
+
+    const projectId = $project.$id;
+    let userLimit: number = $project.authLimit;
 
     const update = async () => {
         try {
