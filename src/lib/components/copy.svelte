@@ -6,8 +6,12 @@
     const copy = async () => {
         try {
             if (navigator.clipboard === undefined) {
-                //TODO: add fallback to old methods
-                throw new Error('Clipboard API only available to SSL');
+                fallbackCopyTextToClipboard(value);
+                addNotification({
+                    message: 'Copied to clipboard.',
+                    type: 'success'
+                });
+                return;
             }
             await navigator.clipboard.writeText(value);
             addNotification({
@@ -21,6 +25,30 @@
             });
         }
     };
+
+    function fallbackCopyTextToClipboard(text) {
+        let textArea = document.createElement('textarea');
+        textArea.value = text;
+
+        // Avoid scrolling to bottom
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.position = 'fixed';
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            let successful = document.execCommand('copy');
+            let msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Fallback: Copying text command was ' + msg);
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+        }
+
+        document.body.removeChild(textArea);
+    }
 </script>
 
 <div class="input-text-wrapper is-with-end-button">
