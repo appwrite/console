@@ -2,9 +2,12 @@
     "extends": "./.svelte-kit/tsconfig.json",
     "compilerOptions": {
         "lib": ["webworker"],
+        "module": "ESNext",
+        "moduleResolution": "Node",
         "importsNotUsedAsValues": "error",
         "noUncheckedIndexedAccess": true,
         "noUnusedLocals": true,
-        "noUnusedParameters": true
+        "noUnusedParameters": true,
+        "esModuleInterop": true
     }
 }
