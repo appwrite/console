@@ -22,10 +22,10 @@ test('shows select input', () => {
     expect(select).toBeInTheDocument();
 });
 
-test('shows tags', () => {
+test('shows options', () => {
     const { getByText } = render(InputSelect, {
-        id: 'input',
-        label: 'Tags',
+        id: 'select',
+        label: 'select',
         options
     });
 
