@@ -34,3 +34,11 @@ test('hide drop list on wrapper click', async () => {
     await fireEvent.click(wrapper);
     expect(dropList).not.toBeInTheDocument();
 });
+
+test('drop list visible on list click', async () => {
+    render(DropList, { ...data });
+    const dropList = document.querySelector('ul');
+
+    await fireEvent.click(dropList);
+    expect(dropList).toBeInTheDocument();
+});
