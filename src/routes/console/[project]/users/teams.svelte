@@ -44,6 +44,7 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
+            <p>{response.total} teams found</p>
             <Table>
                 <TableHeader>
                     <TableCellHead width={30} />

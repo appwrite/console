@@ -1,6 +1,5 @@
 <script>
     import { base } from '$app/paths';
-
     import { page } from '$app/stores';
     import { Back } from '$lib/components';
     import { Cover } from '$lib/layout';
@@ -22,4 +21,5 @@
         <Tabs />
     </Cover>
 {/if}
+
 <slot />
