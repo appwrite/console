@@ -1,8 +1,6 @@
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/svelte';
+import { render, fireEvent } from '@testing-library/svelte';
 import { Copy } from '../../../src/lib/components';
-
-//TODO: test after button click value is copied to clipboard
 
 const value = 'This is a test';
 
@@ -15,4 +13,28 @@ test('shows copy component', () => {
     expect(button).toBeInTheDocument();
     expect(input).toHaveAttribute('type', 'text');
     expect(input).toBeDisabled();
+});
+
+test('copy to clipboard fallback function called on click', async () => {
+    const { getByRole } = render(Copy, { value });
+    const button = getByRole('button');
+    document.execCommand = jest.fn();
+
+    await fireEvent.click(button);
+    expect(document.execCommand).toHaveBeenCalledWith('copy');
+});
+
+test('copy to clipboard function called on click', async () => {
+    const { getByRole } = render(Copy, { value });
+
+    Object.assign(window.navigator, {
+        clipboard: {
+            writeText: jest.fn().mockImplementation(() => Promise.resolve())
+        }
+    });
+
+    const button = getByRole('button');
+    await fireEvent.click(button);
+
+    expect(window.navigator.clipboard.writeText).toHaveBeenCalledWith('This is a test');
 });
