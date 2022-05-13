@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/svelte';
+import { render, fireEvent } from '@testing-library/svelte';
 import { InputRadio } from '../../../src/lib/elements/forms';
+import radioGroup from './radioGroup.test.svelte';
 
 const data = {
     id: 'radio',
@@ -28,4 +29,25 @@ test('shows boolean input - disabled', () => {
     expect(getByRole('radio')).toBeDisabled();
 });
 
-//TODO: create group of radio inputs and test state
+test('state', async () => {
+    const { getByLabelText } = render(radioGroup);
+
+    const one = getByLabelText('one');
+    const two = getByLabelText('two');
+    const three = getByLabelText('three');
+
+    await fireEvent.click(one);
+    expect(one).toBeChecked();
+    expect(two).not.toBeChecked();
+    expect(three).not.toBeChecked();
+
+    await fireEvent.click(two);
+    expect(one).not.toBeChecked();
+    expect(two).toBeChecked();
+    expect(three).not.toBeChecked();
+
+    await fireEvent.click(three);
+    expect(one).not.toBeChecked();
+    expect(two).not.toBeChecked();
+    expect(three).toBeChecked();
+});
