@@ -15,15 +15,6 @@ test('shows copy component', () => {
     expect(input).toBeDisabled();
 });
 
-test('copy to clipboard fallback function called on click', async () => {
-    const { getByRole } = render(Copy, { value });
-    const button = getByRole('button');
-    document.execCommand = jest.fn();
-
-    await fireEvent.click(button);
-    expect(document.execCommand).toHaveBeenCalledWith('copy');
-});
-
 test('copy to clipboard function called on click', async () => {
     const { getByRole } = render(Copy, { value });
 
