@@ -5,10 +5,6 @@
 
     const copy = async () => {
         try {
-            if (navigator.clipboard === undefined) {
-                //TODO: add fallback to old methods
-                throw new Error('Clipboard API only available to SSL');
-            }
             await navigator.clipboard.writeText(value);
             addNotification({
                 message: 'Copied to clipboard.',

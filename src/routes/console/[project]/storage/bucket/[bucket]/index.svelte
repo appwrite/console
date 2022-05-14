@@ -47,6 +47,7 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
+            <p>{response.total} files found</p>
             <Table>
                 <TableHeader>
                     <TableCellHead width={30} />
