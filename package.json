@@ -19,7 +19,7 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
-        "@dittmann/ui": "^0.0.2"
+        "@dittmann/ui": "^0.0.3"
     },
     "devDependencies": {
         "@playwright/test": "^1.22.0",
