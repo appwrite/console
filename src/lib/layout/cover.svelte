@@ -4,10 +4,21 @@
 
 <div class="top-cover" class:is-adjust-content-to-cover={adjustContentToCover}>
     <div class="container">
-        <slot name="breadcrumbs" />
-        <h1 class="main-title">
+        <h1 class="heading-level-1">
             <slot name="title" />
         </h1>
         <slot />
     </div>
 </div>
+
+<style lang="scss">
+    .top-cover {
+        .container {
+            padding-bottom: 0;
+        }
+
+        .heading-level-1 {
+            margin-bottom: 2rem;
+        }
+    }
+</style>

@@ -14,7 +14,7 @@
             class="icon-button is-no-desktop"
             aria-label="Open Menu"
             on:click={() => (isOpen = !isOpen)}>
-            <span class="icon-dot-3" aria-hidden="true" />
+            <span class={isOpen ? 'icon-x' : 'icon-menu'} aria-hidden="true" />
         </button>
         <slot name="header" />
     </header>
@@ -33,5 +33,10 @@
 
     .main-side {
         z-index: 25;
+    }
+    @media (max-width: 550.99px), (min-width: 551px) and (max-width: 1198.99px) {
+        .main-side {
+            top: 4.5rem;
+        }
     }
 </style>

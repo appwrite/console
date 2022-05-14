@@ -4,16 +4,15 @@
     import { project } from './store';
     import { Card, List, ListItem } from '$lib/components';
     import { Cover, Container } from '$lib/layout';
-    import CreatePlatform from './_createPlatform.svelte';
     import { Line } from '$lib/charts';
-    import { page } from '$app/stores';
-    import { toLocaleDate } from '$lib/helpers/date';
+    // import { page } from '$app/stores';
     import { base } from '$app/paths';
+    import CreatePlatform from './_createPlatform.svelte';
 
     let addPlatform = false;
-    let range: '24h' | '30d' | '90d' = '30d';
+    // let range: '24h' | '30d' | '90d' = '30d';
 
-    $: requestUsage = sdkForConsole.projects.getUsage($page.params.project, range);
+    // $: requestUsage = sdkForConsole.projects.getUsage($page.params.project, range);
 </script>
 
 <svelte:head>
@@ -46,30 +45,7 @@
     </Cover>
     <Container>
         <Card>
-            {#await requestUsage then usage}
-                <Line
-                    labels={usage.requests.map((t) => toLocaleDate(t.date))}
-                    datasets={[
-                        {
-                            label: 'Requests',
-                            data: usage.requests.map((v) => v.value),
-                            fill: true,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Users',
-                            data: usage.users.map((v) => v.value),
-                            fill: true,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Documents',
-                            data: usage.documents.map((v) => v.value),
-                            fill: true,
-                            borderWidth: 2
-                        }
-                    ]} />
-            {/await}
+            <Line />
         </Card>
         <h1>Platforms</h1>
         <List>

@@ -44,7 +44,7 @@
                             class="drop-button"
                             class:is-selected={$page.url.pathname.startsWith(`${path}/users`)}
                             href={`${path}/users`}>
-                            <span class="icon-users" aria-hidden="true" />
+                            <span class="icon-user-group" aria-hidden="true" />
                             <span class="text">Users</span>
                         </a>
                     </li>

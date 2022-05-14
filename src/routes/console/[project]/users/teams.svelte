@@ -35,7 +35,6 @@
 </script>
 
 <Container>
-    <h1>Teams</h1>
     <Card>
         <InputSearch bind:value={search} />
     </Card>

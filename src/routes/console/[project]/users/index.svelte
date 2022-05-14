@@ -36,7 +36,6 @@
 </script>
 
 <Container>
-    <h1>Users</h1>
     <Card>
         <InputSearch bind:value={search} />
     </Card>
@@ -44,7 +43,6 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
-            <p>{response.total} users found</p>
             <Table>
                 <TableHeader>
                     <TableCellHead width={30} />

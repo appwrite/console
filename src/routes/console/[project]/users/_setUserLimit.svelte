@@ -9,13 +9,10 @@
     export let authLimit: number;
 
     const projectId = $project.$id;
-    let userLimit: number = $project.authLimit;
 
     const update = async () => {
         try {
-            const oauth = await sdkForConsole.projects.updateAuthLimit(projectId, userLimit);
-            console.log(oauth);
-            authLimit = userLimit;
+            project.set(await sdkForConsole.projects.updateAuthLimit(projectId, authLimit));
             showUserLimitModal = false;
             addNotification({
                 type: 'success',
@@ -33,7 +30,7 @@
 <Form on:submit={update}>
     <Modal bind:show={showUserLimitModal}>
         <svelte:fragment slot="header">Max Allowed Users</svelte:fragment>
-        <InputNumber id="userLimit" label="User Limit" autofocus={true} bind:value={userLimit} />
+        <InputNumber id="userLimit" label="User Limit" autofocus={true} bind:value={authLimit} />
         <InfoSection>
             <p>
                 This limit will prevent new users from signing up for your project, no matter what

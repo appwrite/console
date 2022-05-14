@@ -1,12 +1,9 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { Avatar, DropList, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
-
-    $: currentProject = $page.params.project;
 
     const toggleTheme = () => {
         $app.theme = $app.theme === 'light' ? 'dark' : 'light';
@@ -15,18 +12,14 @@
     let showDropdown = false;
 </script>
 
-<button class="icon-button is-no-desktop" aria-label="Open Menu">
-    <span class="icon-menu" aria-hidden="true" />
-</button>
 <a class="logo" href={`${base}/console`}>
     <img src={`${base}/appwrite-nav.svg`} width="132" height="34" alt="Appwrite" />
 </a>
 <nav class="breadcrumbs is-only-desktop" aria-label="breadcrumb">
     <ol class="breadcrumbs-list">
         <li class="breadcrumbs-item">
-            <a href={`${base}/console/${currentProject}`}>Home</a>
+            <a href="#/">Home</a>
         </li>
-        <!-- <li class="breadcrumbs-item"><a href="#" aria-level="2">News</a></li> -->
     </ol>
 </nav>
 
