@@ -47,11 +47,6 @@
                 <svelte:fragment slot="list">
                     <DropListItem icon="plus">New organisation</DropListItem>
                     <DropListLink href="/console/$me">Your Account</DropListLink>
-                    <DropListItem
-                        on:click={toggleTheme}
-                        icon={$app.theme === 'light' ? 'sun-inv' : 'moon-inv'}>
-                        Toggle Theme
-                    </DropListItem>
                 </svelte:fragment>
                 <svelte:fragment slot="other">
                     <section class="drop-section">
