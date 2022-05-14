@@ -2,10 +2,10 @@ import { browser } from '$app/env';
 import { writable } from 'svelte/store';
 
 export type AppStore = {
-    theme: 'light' | 'dark';
+    theme: 'light' | 'dark' | 'auto';
 };
 export const app = writable<AppStore>({
-    theme: 'light'
+    theme: 'auto'
 });
 
 if (browser) {

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { slide } from 'svelte/transition';
+
     export let show = false;
     export let position: 'top' | 'bottom' = 'top';
     export let horizontal: 'left' | 'right' = 'right';
@@ -24,12 +26,14 @@
             class="drop"
             class:is-no-arrow={!arrow}
             class:is-block-end={position === 'bottom'}
-            class:is-inline-end={horizontal === 'left'}>
+            class:is-inline-end={horizontal === 'left'}
+            transition:slide={{ duration: 100 }}>
             <section class="drop-section">
                 <ul class="drop-list">
                     <slot name="list" />
                 </ul>
             </section>
+            <slot name="other" />
         </div>
     {/if}
 </div>

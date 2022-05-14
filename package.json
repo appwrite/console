@@ -19,8 +19,7 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
-        "@dittmann/ui": "^0.0.4",
-        "@dittmann/icons": "^0.0.4"
+        "@dittmann/ui": "^0.0.4"
     },
     "devDependencies": {
         "@playwright/test": "^1.22.0",
