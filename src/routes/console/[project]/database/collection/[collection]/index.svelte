@@ -36,6 +36,7 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
+            <p>{response.total} documents found</p>
             <Table>
                 <TableHeader>
                     {#each columns as column}

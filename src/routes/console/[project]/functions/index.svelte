@@ -28,6 +28,7 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
+            <p>{response.total} functions found</p>
             <Tiles>
                 {#each response.functions as func}
                     <Tile

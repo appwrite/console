@@ -4,7 +4,7 @@
             <li class="inline-links-item">
                 <a class="link" href="https://github.com/appwrite/appwrite" target="_blank">
                     <span class="icon-github-circled" aria-hidden="true" />
-                    <span class="text">GitHun</span>
+                    <span class="text">GitHub</span>
                 </a>
             </li>
             <li class="inline-links-item">

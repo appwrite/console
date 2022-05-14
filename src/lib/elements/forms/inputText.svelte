@@ -9,6 +9,7 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
+    export let autocomplete = true;
     export let maxlength: number = null;
 
     let element: HTMLInputElement;
@@ -29,6 +30,7 @@
             {disabled}
             {required}
             {maxlength}
+            autocomplete={autocomplete ? 'on' : 'off'}
             type="text"
             class="input-text"
             bind:value
