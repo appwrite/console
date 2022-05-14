@@ -1,18 +1,13 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { DropList, DropListItem, DropListLink, Avatar } from '$lib/components';
+    import { Avatar, DropList, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
 
     $: currentProject = $page.params.project;
 
-    const onChange = async (event: Event) => {
-        const target = event.target as HTMLSelectElement;
-        await goto(`${base}/console/${target.value}`);
-    };
     const toggleTheme = () => {
         $app.theme = $app.theme === 'light' ? 'dark' : 'light';
     };
@@ -20,39 +15,43 @@
     let showDropdown = false;
 </script>
 
-<div class="console-header">
-    <div class="start">
-        {#if currentProject}
-            <div class="select is-only-desktop">
-                <select on:change={onChange}>
-                    {#await sdkForConsole.projects.list() then { projects }}
-                        {#each projects as project}
-                            <option value={project.$id} selected={currentProject === project.$id}>
-                                {project.name}
-                            </option>
-                        {/each}
-                    {/await}
-                </select>
-                <span class="icon-down-open" aria-hidden="true" />
-            </div>
+<button class="icon-button is-no-desktop" aria-label="Open Menu">
+    <span class="icon-menu" aria-hidden="true" />
+</button>
+<a class="logo" href={`${base}/`}>
+    <img src={`${base}/appwrite-nav.svg`} width="132" height="34" alt="Appwrite" />
+</a>
+<nav class="breadcrumbs is-only-desktop" aria-label="breadcrumb">
+    <ol class="breadcrumbs-list">
+        <li class="breadcrumbs-item">
+            <a href={`${base}/console/${currentProject}`}>Home</a>
+        </li>
+        <!-- <li class="breadcrumbs-item"><a href="#" aria-level="2">News</a></li> -->
+    </ol>
+</nav>
 
-            <button class="button is-only-icon" aria-label="Create Project">
-                <span class="icon-plus" aria-hidden="true" />
-            </button>
-        {/if}
-    </div>
-    <div class="end">
+<div class="main-header-end">
+    <nav class="u-flex is-only-desktop" />
+    <nav class="user-profile">
         {#if $user}
-            <DropList bind:show={showDropdown} position="bottom" horizontal="left">
-                <button class="transparent-button" on:click={() => (showDropdown = !showDropdown)}>
-                    <span class="is-only-desktop">{$user.name}</span>
+            <DropList bind:show={showDropdown} position="bottom" horizontal="left" arrow={false}>
+                <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
                     <Avatar
                         size={50}
                         name={$user.name}
                         src={sdkForConsole.avatars.getInitials($user.name, 50, 50).toString()} />
+                    <span class="user-profile-info is-only-desktop">
+                        <span class="name">{$user.name}</span>
+                        <span class="title">{$user.name}</span>
+                    </span>
+                    <span
+                        class="is-only-desktop"
+                        aria-hidden="true"
+                        class:icon-cheveron-down={!showDropdown} />
                 </button>
                 <svelte:fragment slot="list">
-                    <DropListLink href="/console/$me" icon="user">Your Account</DropListLink>
+                    <DropListItem icon="plus">New organisation</DropListItem>
+                    <DropListLink href="/console/$me">Your Account</DropListLink>
                     <DropListItem
                         on:click={toggleTheme}
                         icon={$app.theme === 'light' ? 'sun-inv' : 'moon-inv'}>
@@ -61,5 +60,5 @@
                 </svelte:fragment>
             </DropList>
         {/if}
-    </div>
+    </nav>
 </div>

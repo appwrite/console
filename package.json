@@ -19,6 +19,7 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
+        "@dittmann/ui": "^0.0.2",
         "aw-labs-ui": "^0.0.8",
         "chart.js": "^3.7.1"
     },

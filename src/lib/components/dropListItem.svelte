@@ -3,10 +3,10 @@
 </script>
 
 <li class="drop-list-item">
-    <button class="drop-list-button" on:click>
+    <button class="drop-button" on:click>
+        <span class="text"><slot /></span>
         {#if icon}
             <span class={`icon-${icon}`} aria-hidden="true" />
         {/if}
-        <span class="text"><slot /></span>
     </button>
 </li>
