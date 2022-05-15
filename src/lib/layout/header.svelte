@@ -6,10 +6,6 @@
     import { user } from '$lib/stores/user';
     import { project } from '../../routes/console/[project]/store';
 
-    const toggleTheme = () => {
-        $app.theme = $app.theme === 'light' ? 'dark' : 'light';
-    };
-
     let showDropdown = false;
 </script>
 

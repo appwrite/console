@@ -8,7 +8,7 @@
     <title>Appwrite - Users</title>
 </svelte:head>
 
-{#if $page.url.pathname.endsWith(`/users`) || $page.url.pathname.endsWith(`/users/teams`) || $page.url.pathname.endsWith(`/users/usage`) || $page.url.pathname.endsWith(`/users/settings`)}
+{#if $page.url.pathname.endsWith(`/users`) || $page.url.pathname.endsWith(`/users/teams`) || $page.url.pathname.endsWith(`/users/usage`) || $page.url.pathname.endsWith(`/users/authentication`) || $page.url.pathname.endsWith(`/users/security`)}
     <Cover>
         <svelte:fragment slot="title">Users</svelte:fragment>
         <Tabs />

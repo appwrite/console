@@ -17,7 +17,7 @@
                             class="drop-button"
                             class:is-selected={$page.url.pathname === path}
                             href={path}>
-                            <span class="icon-home" aria-hidden="true" />
+                            <span class="icon-chart-bar" aria-hidden="true" />
                             <span class="text">Home</span>
                         </a>
                     </li>
