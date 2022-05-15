@@ -51,7 +51,8 @@
             <a
                 class="tabs-button"
                 href={`${base}/console/${project}/users/security`}
-                class:is-selected={$page.url.pathname === `${base}/console/${project}/users/security`}>
+                class:is-selected={$page.url.pathname ===
+                    `${base}/console/${project}/users/security`}>
                 <span class="text">Security</span>
             </a>
         </li>
