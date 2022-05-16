@@ -1,9 +1,8 @@
 <script>
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Back } from '$lib/components';
+    import { Back, Tabs, TabsItem } from '$lib/components';
     import { Cover } from '$lib/layout';
-    import Tabs from './_tabs.svelte';
 
     const project = $page.params.project;
 </script>
@@ -17,7 +16,9 @@
             <Back href={`${base}/console/${project}`}>Home</Back>
         </svelte:fragment>
         <svelte:fragment slot="title">Functions</svelte:fragment>
-        <Tabs />
+        <Tabs>
+            <TabsItem href={`/console/${project}/functions`}>Functions</TabsItem>
+        </Tabs>
     </Cover>
 {/if}
 <slot />
