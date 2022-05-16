@@ -2,10 +2,9 @@
     import { browser } from '$app/env';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Back } from '$lib/components';
+    import { Back, Tabs, TabsItem } from '$lib/components';
     import { Cover } from '$lib/layout';
     import { collection } from './store';
-    import Tabs from './_tabs.svelte';
 
     const project = $page.params.project;
     const collectionId = $page.params.collection;
@@ -28,7 +27,17 @@
                 <Back href={`${base}/console/${project}/database`}>Database</Back>
             </svelte:fragment>
             <svelte:fragment slot="title">{$collection.name}</svelte:fragment>
-            <Tabs />
+            <Tabs>
+                <TabsItem href={`/console/${project}/database/collection/${collectionId}`}
+                    >Documents</TabsItem>
+                <TabsItem
+                    href={`/console/${project}/database/collection/${collectionId}/attributes`}
+                    >Attributes</TabsItem>
+                <TabsItem href={`/console/${project}/database/collection/${collectionId}/indexes`}
+                    >Indexes</TabsItem>
+                <TabsItem href={`/console/${project}/database/collection/${collectionId}/settings`}
+                    >Settings</TabsItem>
+            </Tabs>
         </Cover>
     {/if}
     <slot />

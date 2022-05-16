@@ -2,11 +2,10 @@
     import { browser } from '$app/env';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Back } from '$lib/components';
+    import { Back, Tabs, TabsItem } from '$lib/components';
     import { Container, Cover } from '$lib/layout';
     import { collection } from '../../store';
     import { doc } from './store';
-    import Tabs from './_tabs.svelte';
 
     const project = $page.params.project;
     const collectionId = $page.params.collection;
@@ -29,7 +28,14 @@
             Collection - {$collection.name}
         </Back>
         <h1>{$doc.$id}</h1>
-        <Tabs />
+        <Tabs>
+            <TabsItem
+                href={`/console/${project}/database/collection/${collectionId}/document/${documentId}`}
+                >Overview</TabsItem>
+            <TabsItem
+                href={`/console/${project}/database/collection/${collectionId}/document/${documentId}/activity`}
+                >Activity</TabsItem>
+        </Tabs>
     </Cover>
 
     <Container>

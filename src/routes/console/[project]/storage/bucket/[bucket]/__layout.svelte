@@ -2,10 +2,9 @@
     import { browser } from '$app/env';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Back } from '$lib/components';
+    import { Back, Tabs, TabsItem } from '$lib/components';
     import { Cover } from '$lib/layout';
     import { bucket } from './store';
-    import Tabs from './_tabs.svelte';
 
     const project = $page.params.project;
     const bucketId = $page.params.bucket;
@@ -26,7 +25,12 @@
             <Back href={`${base}/console/${project}/storage`}>Storage</Back>
         </svelte:fragment>
         <svelte:fragment slot="title">{$bucket.name}</svelte:fragment>
-        <Tabs />
+        <Tabs>
+            <TabsItem href={`/console/${project}/storage/bucket/${bucketId}`}>Files</TabsItem>
+            <TabsItem href={`/console/${project}/storage/bucket/${bucketId}/usage`}>Usage</TabsItem>
+            <TabsItem href={`/console/${project}/storage/bucket/${bucketId}/settings`}
+                >Settings</TabsItem>
+        </Tabs>
     </Cover>
     <slot />
 {/if}
