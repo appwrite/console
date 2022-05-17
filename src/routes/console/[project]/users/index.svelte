@@ -36,7 +36,7 @@
 </script>
 
 <Container>
-    <div class="u-flex">
+    <div class="u-flex u-space-between">
         <InputSearch bind:value={search} />
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
