@@ -21,7 +21,11 @@
 </nav>
 
 <div class="main-header-end">
-    <nav class="u-flex is-only-desktop" />
+    <nav class="u-flex is-only-desktop">
+        <button class="button is-small is-text"><span class="text">Feedback</span></button>
+        <button class="button is-small is-text"><span class="text">Support</span></button>
+        <button class="button is-small is-secondary"><span class="text">Upgrade</span></button>
+    </nav>
     <nav class="user-profile">
         {#if $user && $project}
             <DropList bind:show={showDropdown} position="bottom" horizontal="left" arrow={false}>
