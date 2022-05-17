@@ -2,7 +2,8 @@
     import { base } from '$app/paths';
 
     import { page } from '$app/stores';
-    import { Back, Tabs, TabsItem } from '$lib/components';
+    import { Back } from '$lib/components';
+    import { Tabs, TabsItem } from '$lib/layout';
     import { Cover } from '$lib/layout';
 
     const project = $page.params.project;

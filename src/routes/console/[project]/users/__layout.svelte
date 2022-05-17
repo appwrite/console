@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Cover } from '$lib/layout';
-    import { Tabs, TabsItem } from '$lib/components';
+    import { Tabs, TabsItem } from '$lib/layout';
 
     const project = $page.params.project;
 </script>

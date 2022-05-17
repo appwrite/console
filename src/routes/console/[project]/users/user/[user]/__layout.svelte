@@ -1,7 +1,7 @@
 <script lang="ts">
     import { browser } from '$app/env';
     import { page } from '$app/stores';
-    import { Tabs, TabsItem } from '$lib/components';
+    import { Tabs, TabsItem } from '$lib/layout';
     import { Cover } from '$lib/layout';
     import { user } from './store';
 
