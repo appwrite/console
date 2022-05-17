@@ -6034,7 +6034,7 @@ class Appwrite {
             entrypoint: string,
             code: File,
             activate: boolean,
-            onProgress = (progress: UploadProgress) => {}
+            onProgress = (_progress: UploadProgress) => {}
         ): Promise<Models.Deployment> => {
             if (typeof functionId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "functionId"');
@@ -8688,7 +8688,7 @@ class Appwrite {
             file: File,
             read?: string[],
             write?: string[],
-            onProgress = (progress: UploadProgress) => {}
+            onProgress = (_progress: UploadProgress) => {}
         ): Promise<Models.File> => {
             if (typeof bucketId === 'undefined') {
                 throw new AppwriteException('Missing required parameter: "bucketId"');
