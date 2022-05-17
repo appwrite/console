@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Card, Empty, Pagination } from '$lib/components';
+    import { Empty, Pagination } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import {
         Table,
@@ -36,9 +36,12 @@
 </script>
 
 <Container>
-    <Card>
+    <div class="u-flex">
         <InputSearch bind:value={search} />
-    </Card>
+        <Button on:click={() => (showCreate = true)}>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
+        </Button>
+    </div>
     {#await request}
         <div aria-busy="true" />
     {:then response}
@@ -94,8 +97,6 @@
             </Empty>
         {/if}
     {/await}
-
-    <Button on:click={() => (showCreate = true)}>Create User</Button>
 </Container>
 
 <Create bind:showCreate on:created={userCreated} />
