@@ -26,18 +26,22 @@
     }
     if (browser) {
         sdkForConsole.subscribe<Attributes | Models.Index>('console', (message) => {
-            switch (message.event) {
-                case 'database.attributes.create':
-                    collection.addAttribute(<Attributes>message.payload);
-                    break;
+            if (message.events.includes('collections.*.attributes.*.create')) {
+                collection.addAttribute(<Attributes>message.payload);
 
-                case 'database.attributes.update':
-                    collection.updateAttribute(<Attributes>message.payload);
-                    break;
+                return;
+            }
 
-                case 'database.attributes.delete':
-                    collection.removeAttribute(<Attributes>message.payload);
-                    break;
+            if (message.events.includes('collections.*.attributes.*.update')) {
+                collection.updateAttribute(<Attributes>message.payload);
+
+                return;
+            }
+
+            if (message.events.includes('collections.*.attributes.*.delete')) {
+                collection.removeAttribute(<Attributes>message.payload);
+
+                return;
             }
         });
     }
