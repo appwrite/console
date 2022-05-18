@@ -13,8 +13,10 @@
         }
     }
 
-    if ($user) {
-        $title = $user.name;
+    $: {
+        if ($user) {
+            $title = $user.name;
+        }
     }
 
     $tabs = [
