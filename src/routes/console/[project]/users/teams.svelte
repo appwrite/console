@@ -35,15 +35,17 @@
 </script>
 
 <Container>
-    <Card>
+    <div class="u-flex u-space-between common-section">
         <InputSearch bind:value={search} />
-    </Card>
+        <Button on:click={() => (showCreate = true)}>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Team</span>
+        </Button>
+    </div>
 
     {#await request}
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
-            <p>{response.total} teams found</p>
             <Table>
                 <TableHeader>
                     <TableCellHead width={30} />
@@ -90,8 +92,6 @@
             </Empty>
         {/if}
     {/await}
-
-    <Button on:click={() => (showCreate = true)}>Create Team</Button>
 </Container>
 
 <Create bind:showCreate on:created={teamCreated} />
