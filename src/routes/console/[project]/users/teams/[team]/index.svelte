@@ -44,8 +44,8 @@
     <Card>
         {#each members.memberships as membership}
             <p>
-                {membership.name}
-                {membership.email}
+                {membership.userName}
+                {membership.userEmail}
                 <Button on:click={() => deleteMembership(membership.$id)}>Remove</Button>
             </p>
             <p>
