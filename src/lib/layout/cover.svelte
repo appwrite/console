@@ -10,15 +10,3 @@
         <slot />
     </div>
 </div>
-
-<style lang="scss">
-    .top-cover {
-        .container {
-            padding-bottom: 0;
-        }
-
-        .heading-level-1 {
-            margin-bottom: 2rem;
-        }
-    }
-</style>
