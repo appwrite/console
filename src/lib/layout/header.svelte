@@ -23,7 +23,7 @@
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop" />
     <nav class="user-profile">
-        {#if $user && $project}
+        {#if $user}
             <DropList bind:show={showDropdown} position="bottom" horizontal="left" arrow={false}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
                     <Avatar
@@ -32,7 +32,9 @@
                         src={sdkForConsole.avatars.getInitials($user.name, 50, 50).toString()} />
                     <span class="user-profile-info is-only-desktop">
                         <span class="name">{$user.name}</span>
-                        <span class="title">{$project.name}</span>
+                        {#if $project}
+                            <span class="title">{$project.name}</span>
+                        {/if}
                     </span>
                     <span
                         class="is-only-desktop"
