@@ -3,7 +3,7 @@ import type { Models } from 'src/sdk';
 import { writable } from 'svelte/store';
 
 function createTeamStore() {
-    const { subscribe, set } = writable<Models.Team<Record<string, unknown>>>();
+    const { subscribe, set } = writable<Models.Team>();
 
     return {
         subscribe,
