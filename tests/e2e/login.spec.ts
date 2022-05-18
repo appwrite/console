@@ -23,6 +23,7 @@ test('login page has inputs and button', async ({ page }) => {
 
 test('login page has a working sign up link', async ({ page }) => {
     await page.goto('/login');
+    await page.waitForTimeout(100);
     const signup = page.locator('a[href="/register"]');
     expect(await signup.isVisible());
     await signup.click();
