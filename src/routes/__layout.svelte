@@ -29,7 +29,16 @@
 
     $: {
         if (browser) {
-            document.body.setAttribute('class', `theme-${$app.theme}`);
+            if ($app.theme === 'auto') {
+                const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
+                if (darkThemeMq.matches) {
+                    document.body.setAttribute('class', `theme-dark`);
+                } else {
+                    document.body.setAttribute('class', `theme-light`);
+                }
+            } else {
+                document.body.setAttribute('class', `theme-${$app.theme}`);
+            }
         }
     }
 </script>
