@@ -29,26 +29,31 @@
     <section class="main-content">
         <Cover>
             <svelte:fragment slot="title">{$title}</svelte:fragment>
-            <div class="tabs">
-                <button class="tabs-button-scroll is-start" aria-label="Show items in start side">
-                    <span class="icon-cheveron-left" aria-hidden="true" />
-                </button>
-                <button class="tabs-button-scroll is-end" aria-label="Show items in end side">
-                    <span class="icon-cheveron-right" aria-hidden="true" />
-                </button>
-                <ul class="tabs-list scroll-shadow-horizontal">
-                    {#each $tabs as tab}
-                        <li class="tabs-item">
-                            <a
-                                class="tabs-button"
-                                href={`${base}/${tab.href}`}
-                                class:is-selected={$page.url.pathname === `${base}/${tab.href}`}>
-                                <span class="text">{tab.title}</span>
-                            </a>
-                        </li>
-                    {/each}
-                </ul>
-            </div>
+            {#if $tabs.length}
+                <div class="tabs">
+                    <button
+                        class="tabs-button-scroll is-start"
+                        aria-label="Show items in start side">
+                        <span class="icon-cheveron-left" aria-hidden="true" />
+                    </button>
+                    <button class="tabs-button-scroll is-end" aria-label="Show items in end side">
+                        <span class="icon-cheveron-right" aria-hidden="true" />
+                    </button>
+                    <ul class="tabs-list scroll-shadow-horizontal">
+                        {#each $tabs as tab}
+                            <li class="tabs-item">
+                                <a
+                                    class="tabs-button"
+                                    href={`${base}/${tab.href}`}
+                                    class:is-selected={$page.url.pathname ===
+                                        `${base}/${tab.href}`}>
+                                    <span class="text">{tab.title}</span>
+                                </a>
+                            </li>
+                        {/each}
+                    </ul>
+                </div>
+            {/if}
         </Cover>
         {#key $page.routeId}
             <div in:fade>

@@ -1,22 +1,30 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-
+    import { browser } from '$app/env';
     import { page } from '$app/stores';
+    import { tabs, title } from '$lib/stores/layout';
+    import { team } from './store';
 
-    import { Back } from '$lib/components';
-    import { Cover } from '$lib/layout';
+    const teamId = $page.params.team;
+    // const path = `users/teams/${projectId}`;
 
-    const project = $page.params.project;
+    $: {
+        if (browser) {
+            team.load(teamId);
+        }
+    }
+
+    $: {
+        if ($team) {
+            title.set($team.name);
+        }
+    }
+    // title.set('Teams');
+
+    tabs.set([]);
 </script>
 
 <svelte:head>
     <title>Appwrite - Team</title>
 </svelte:head>
-<Cover>
-    <svelte:fragment slot="breadcrumbs">
-        <Back href={`${base}/console/${project}/users`}>Users</Back>
-    </svelte:fragment>
-    <svelte:fragment slot="title" />
-</Cover>
 
 <slot />

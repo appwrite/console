@@ -1,22 +1,30 @@
 <script>
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { Back } from '$lib/components';
-    import { Cover } from '$lib/layout';
-    import Tabs from './_tabs.svelte';
+    import { tabs, title } from '$lib/stores/layout';
 
-    const project = $page.params.project;
+    const path = 'settings';
+    title.set('Settings');
+    tabs.set([
+        {
+            href: path,
+            title: 'Overview'
+        },
+        {
+            href: `${path}/services`,
+            title: 'Services'
+        },
+        {
+            href: `${path}/domains`,
+            title: 'Custom Domains'
+        },
+        {
+            href: `${path}/members`,
+            title: 'Members'
+        }
+    ]);
 </script>
 
 <svelte:head>
     <title>Appwrite - Settings</title>
 </svelte:head>
 
-<Cover>
-    <svelte:fragment slot="breadcrumbs">
-        <Back href={`${base}/console/${project}`}>Home</Back>
-    </svelte:fragment>
-    <svelte:fragment slot="title">Settings</svelte:fragment>
-    <Tabs />
-</Cover>
 <slot />
