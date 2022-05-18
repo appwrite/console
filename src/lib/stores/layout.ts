@@ -6,3 +6,10 @@ export type Breadcrumb = {
 };
 
 export const breadcrumbs = writable<Breadcrumb[]>([]);
+export const title = writable<string>('');
+export const tabs = writable<
+    {
+        href: string;
+        title: string;
+    }[]
+>([]);
