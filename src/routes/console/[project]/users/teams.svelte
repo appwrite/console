@@ -66,7 +66,7 @@
                             </TableCell>
                             <TableCellLink
                                 title="ID"
-                                href={`${base}/console/${project}/users/teams/team/${team.$id}`}>
+                                href={`${base}/console/${project}/users/teams/${team.$id}`}>
                                 {team.name}
                             </TableCellLink>
                             <TableCellText title="Members">{team.total}</TableCellText>
