@@ -15,11 +15,11 @@
 
     $: {
         if ($user) {
-            $title = $user.name;
+            title.set($user.name);
         }
     }
 
-    $tabs = [
+    tabs.set([
         {
             href: path,
             title: 'Overview'
@@ -32,7 +32,7 @@
             href: `${path}/activity`,
             title: 'Activity'
         }
-    ];
+    ]);
 </script>
 
 <svelte:head>

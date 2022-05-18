@@ -1,10 +1,12 @@
 <script lang="ts">
     import { navigating, page } from '$app/stores';
     import { tabs, title } from '$lib/stores/layout';
-    import { blur } from 'svelte/transition';
+    import { fade } from 'svelte/transition';
     import { Cover } from '.';
 
     export let isOpen = false;
+
+    $: base = `/console/${$page.params.project}`;
 
     navigating.subscribe(() => {
         if (isOpen) isOpen = false;
@@ -39,9 +41,8 @@
                         <li class="tabs-item">
                             <a
                                 class="tabs-button"
-                                href={`/console/${$page.params.project}/${tab.href}`}
-                                class:is-selected={$page.url.pathname ===
-                                    `/console/${$page.params.project}/${tab.href}`}>
+                                href={`${base}/${tab.href}`}
+                                class:is-selected={$page.url.pathname === `${base}/${tab.href}`}>
                                 <span class="text">{tab.title}</span>
                             </a>
                         </li>
@@ -50,7 +51,7 @@
             </div>
         </Cover>
         {#key $page.routeId}
-            <div in:blur>
+            <div in:fade>
                 <slot />
             </div>
         {/key}

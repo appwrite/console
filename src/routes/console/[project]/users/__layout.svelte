@@ -2,8 +2,8 @@
     import { tabs, title } from '$lib/stores/layout';
 
     const path = 'users';
-    $title = 'Users';
-    $tabs = [
+    title.set('Users');
+    tabs.set([
         {
             href: path,
             title: 'Users'
@@ -24,7 +24,7 @@
             href: `${path}/security`,
             title: 'Security'
         }
-    ];
+    ]);
 </script>
 
 <svelte:head>
