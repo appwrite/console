@@ -44,4 +44,6 @@
     <title>Appwrite - {$collection?.name ?? 'Collection'}</title>
 </svelte:head>
 
-<slot />
+{#if $collection}
+    <slot />
+{/if}
