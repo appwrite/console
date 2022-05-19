@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { tabs, title } from '$lib/stores/layout';
     import { Button } from '$lib/elements/forms';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from './store';
@@ -8,6 +9,9 @@
     // import { page } from '$app/stores';
     import { base } from '$app/paths';
     import CreatePlatform from './_createPlatform.svelte';
+
+    title.set($project.name);
+    tabs.set([]);
 
     let addPlatform = false;
     // let range: '24h' | '30d' | '90d' = '30d';
@@ -21,23 +25,22 @@
 
 {#if $project}
     <Cover adjustContentToCover>
-        <svelte:fragment slot="title">{$project.name}</svelte:fragment>
         <ul class="links-nav">
             <li class="links-nav-item">
                 <a class="link" href={`${base}/console/${$project.$id}/settings`}>
-                    <span class="icon-search" aria-hidden="true" />
+                    <span class="icon-cog" aria-hidden="true" />
                     <span class="text">Settings</span>
                 </a>
             </li>
             <li class="links-nav-item">
                 <a class="link" href={`${base}/console/${$project.$id}/keys`}>
-                    <span class="icon-search" aria-hidden="true" />
+                    <span class="icon-key" aria-hidden="true" />
                     <span class="text">API Keys</span>
                 </a>
             </li>
             <li class="links-nav-item">
                 <a class="link" href={`${base}/console/${$project.$id}/webhooks`}>
-                    <span class="icon-search" aria-hidden="true" />
+                    <span class="icon-link" aria-hidden="true" />
                     <span class="text">Webhooks</span>
                 </a>
             </li>
