@@ -7,10 +7,26 @@
     export let isOpen = false;
 
     $: base = `/console/${$page.params.project}`;
+    let tabsList: HTMLUListElement;
 
     navigating.subscribe(() => {
         if (isOpen) isOpen = false;
     });
+
+    function slide(direction: string) {
+        let scrollCompleted = 0;
+        let slideVar = setInterval(function () {
+            if (direction == 'left') {
+                tabsList.scrollLeft -= 10;
+            } else {
+                tabsList.scrollLeft += 10;
+            }
+            scrollCompleted += 10;
+            if (scrollCompleted >= 100) {
+                clearInterval(slideVar);
+            }
+        }, 10);
+    }
 </script>
 
 <main class="grid-with-side" class:is-open={isOpen}>
@@ -33,13 +49,17 @@
                 <div class="tabs">
                     <button
                         class="tabs-button-scroll is-start"
-                        aria-label="Show items in start side">
+                        aria-label="Show items in start side"
+                        on:click={() => slide('left')}>
                         <span class="icon-cheveron-left" aria-hidden="true" />
                     </button>
-                    <button class="tabs-button-scroll is-end" aria-label="Show items in end side">
+                    <button
+                        class="tabs-button-scroll is-end"
+                        aria-label="Show items in end side"
+                        on:click={() => slide('right')}>
                         <span class="icon-cheveron-right" aria-hidden="true" />
                     </button>
-                    <ul class="tabs-list scroll-shadow-horizontal">
+                    <ul class="tabs-list scroll-shadow-horizontal" bind:this={tabsList}>
                         {#each $tabs as tab}
                             <li class="tabs-item">
                                 <a
