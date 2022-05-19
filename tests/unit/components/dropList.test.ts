@@ -23,6 +23,7 @@ test('hide drop list on body click', async () => {
     const dropList = document.querySelector('ul');
 
     await fireEvent.click(body);
+    await new Promise((r) => setTimeout(r, 200));
     expect(dropList).not.toBeInTheDocument();
 });
 
@@ -32,6 +33,7 @@ test('hide drop list on wrapper click', async () => {
     const dropList = document.querySelector('ul');
 
     await fireEvent.click(wrapper);
+    await new Promise((r) => setTimeout(r, 200));
     expect(dropList).not.toBeInTheDocument();
 });
 
@@ -40,5 +42,6 @@ test('drop list visible on list click', async () => {
     const dropList = document.querySelector('ul');
 
     await fireEvent.click(dropList);
+    await new Promise((r) => setTimeout(r, 200));
     expect(dropList).toBeInTheDocument();
 });

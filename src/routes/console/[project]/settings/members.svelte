@@ -19,12 +19,12 @@
                 {#each response.memberships as membership}
                     <ListItem
                         avatar={sdkForConsole.avatars
-                            .getInitials(membership.name, 64, 64)
+                            .getInitials(membership.userName, 64, 64)
                             .toString()}>
                         <svelte:fragment slot="header">
                             <h2 class="sessions-item-title">
                                 <span class="text">
-                                    {membership.name}
+                                    {membership.userName}
                                 </span>
                             </h2>
                             {#each membership.roles as role}
@@ -35,7 +35,7 @@
                             {/if}
                         </svelte:fragment>
                         <svelte:fragment slot="info">
-                            {membership.email}
+                            {membership.userEmail}
                         </svelte:fragment>
                         <svelte:fragment slot="action">
                             <Button danger>Remove</Button>
