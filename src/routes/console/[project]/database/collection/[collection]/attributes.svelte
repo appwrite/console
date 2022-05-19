@@ -33,8 +33,8 @@
                         <TableCellText title="Status">
                             <Pill
                                 success={attribute.status === 'available'}
-                                pending={attribute.status === 'processing'}
-                                failed={['deleting', 'stuck', 'failed'].includes(attribute.status)}>
+                                warning={attribute.status === 'processing'}
+                                danger={['deleting', 'stuck', 'failed'].includes(attribute.status)}>
                                 {attribute.status}
                             </Pill>
                         </TableCellText>
