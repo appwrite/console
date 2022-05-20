@@ -43,14 +43,10 @@
             <Pagination {limit} bind:offset sum={response.total} />
         {:else if search}
             <Empty>
-                <svelte:fragment slot="header"
-                    >No results found for <b>{search}</b></svelte:fragment>
+                No results found for <b>{search}</b>
             </Empty>
         {:else}
-            <Empty>
-                <svelte:fragment slot="header">No Collections Found</svelte:fragment>
-                You haven't created any collections for your project yet.
-            </Empty>
+            <Empty>You haven't created any collections for your project yet.</Empty>
         {/if}
     {/await}
 

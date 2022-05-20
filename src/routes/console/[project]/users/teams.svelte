@@ -38,7 +38,7 @@
         //TODO: refactor this into something maintainable without the use of goto
         if (offset !== null) {
             $page.url.searchParams.set('offset', offset.toString());
-            goto(`?${$page.url.searchParams.toString()}`);
+            goto(`?${$page.url.searchParams.toString()}`, { replaceState: true, keepfocus: true });
         }
     }
 
@@ -98,12 +98,29 @@
         </div>
     {:else if search}
         <Empty>
-            <svelte:fragment slot="header">No results found for <b>{search}</b></svelte:fragment>
+            <div class="common-section">
+                <b>Sorry, we couldn’t find ‘{search}’</b>
+            </div>
+            <div class="common-section">
+                <p>There are no teams that match your search.</p>
+            </div>
+            <div class="common-section">
+                <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+            </div>
         </Empty>
     {:else}
-        <Empty>
-            <svelte:fragment slot="header">No Teams Found</svelte:fragment>
-            Create your first team to get started.
+        <Empty dashed centered>
+            <div class="common-section">
+                <Button secondary round on:click={() => (showCreate = true)}>
+                    <i class="icon-plus" />
+                </Button>
+            </div>
+            <div class="common-section">
+                <p>Add Your First Team To Get Started</p>
+            </div>
+            <div class="common-section">
+                <Button secondary href="#">Documentation</Button>
+            </div>
         </Empty>
     {/if}
 </Container>
