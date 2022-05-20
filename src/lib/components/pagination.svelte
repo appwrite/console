@@ -7,17 +7,15 @@
 
     const totalPages = Math.ceil(totalItems / pageSize);
     let currentPage = Math.floor(offset / pageSize + 1);
-    console.log(currentPage);
 
-    function handleOptionClick(page) {
+    function handleOptionClick(page: number) {
         if (currentPage !== page) {
             offset = pageSize * (page - 1);
-            console.log(offset);
             currentPage = page;
             dispatch('change');
         }
     }
-    function handleButtonPage(direction) {
+    function handleButtonPage(direction: string) {
         if (direction === 'next' && currentPage < totalPages) {
             currentPage += 1;
             offset = pageSize * (currentPage - 1);
@@ -31,7 +29,7 @@
 
     let pages = pagination(currentPage, totalPages);
 
-    function pagination(current, total) {
+    function pagination(current: number, total: number) {
         let delta = 2,
             left = current - delta,
             right = current + delta + 1,
@@ -56,28 +54,28 @@
             rangeWithDots.push(i);
             l = i;
         }
-
         return rangeWithDots;
     }
 </script>
 
 <nav class="pagination">
+    <span
+        on:click={() => handleButtonPage('prev')}
+        class:is-disabled={currentPage <= 1}
+        class="button is-text "
+        aria-label="prev page">
+        <span class="icon-cheveron-left" aria-hidden="true" />
+        <span class="text">Prev</span>
+    </span>
     <ol class="pagination-list is-only-desktop">
-        <span
-            on:click={() => handleButtonPage('prev')}
-            class:is-disabled={currentPage <= 1}
-            class="button is-text "
-            aria-label="prev page">
-            <span class="icon-cheveron-left" aria-hidden="true" />
-            <span class="text">Prev</span>
-        </span>
         {#each pages as page}
             {#if typeof page === 'number'}
                 <li class="pagination-item">
                     <button
-                        class="button is-text"
+                        class="button"
                         on:click={() => handleOptionClick(page)}
                         class:is-disabled={currentPage === page}
+                        class:is-text={currentPage !== page}
                         aria-label="page">
                         <span class="text">{page}</span>
                     </button>
@@ -88,13 +86,13 @@
                 </li>
             {/if}
         {/each}
-        <span
-            on:click={() => handleButtonPage('next')}
-            class:is-disabled={currentPage === totalPages}
-            class="button is-text"
-            aria-label="next page">
-            <span class="text">Next</span>
-            <span class="icon-cheveron-right" aria-hidden="true" />
-        </span>
     </ol>
+    <span
+        on:click={() => handleButtonPage('next')}
+        class:is-disabled={currentPage === totalPages}
+        class="button is-text"
+        aria-label="next page">
+        <span class="text">Next</span>
+        <span class="icon-cheveron-right" aria-hidden="true" />
+    </span>
 </nav>
