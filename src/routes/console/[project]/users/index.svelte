@@ -24,7 +24,7 @@
     let search = '';
     let showCreate = false;
     let offset = 0;
-    const limit = 1;
+    const limit = 5;
 
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();

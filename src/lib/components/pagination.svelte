@@ -6,11 +6,13 @@
     export let offset: number;
 
     const totalPages = Math.ceil(totalItems / pageSize);
-    let currentPage = offset / pageSize + 1;
+    let currentPage = Math.floor(offset / pageSize + 1);
+    console.log(currentPage);
 
     function handleOptionClick(page) {
         if (currentPage !== page) {
-            offset = pageSize * page - 1;
+            offset = pageSize * (page - 1);
+            console.log(offset);
             currentPage = page;
             dispatch('change');
         }
@@ -18,11 +20,11 @@
     function handleButtonPage(direction) {
         if (direction === 'next' && currentPage < totalPages) {
             currentPage += 1;
-            offset = pageSize * currentPage - 1;
+            offset = pageSize * (currentPage - 1);
             dispatch('change');
         } else if (direction === 'prev' && currentPage > 1) {
             currentPage -= 1;
-            offset = pageSize * currentPage - 1;
+            offset = pageSize * (currentPage - 1);
             dispatch('change');
         }
     }
