@@ -35,8 +35,7 @@
             left = current - delta,
             right = current + delta + 1,
             range = [],
-            rangeWithDots = [],
-            l;
+            rangeWithDots = [];
 
         for (let i = 1; i <= total; i++) {
             if (i == 1 || i == total || (i >= left && i < right)) {
@@ -44,17 +43,13 @@
             }
         }
 
-        for (let i of range) {
-            if (l) {
-                if (i - l === 2) {
-                    rangeWithDots.push(l + 1);
-                } else if (i - l !== 1) {
-                    rangeWithDots.push('...');
-                }
+        rangeWithDots = range.reduce((prev, current, index) => {
+            if (current - prev[index - 1] > delta) {
+                prev.push('...');
             }
-            rangeWithDots.push(i);
-            l = i;
-        }
+            prev.push(current);
+            return prev;
+        }, []);
         return rangeWithDots;
     }
 </script>
