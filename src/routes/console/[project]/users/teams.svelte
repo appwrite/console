@@ -15,7 +15,7 @@
     import { Empty, Pagination } from '$lib/components';
     import Create from './_createTeam.svelte';
     import { goto } from '$app/navigation';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { teamsList } from './store';
@@ -85,14 +85,17 @@
                             {team.name}
                         </TableCellLink>
                         <TableCellText title="Members">{team.total}</TableCellText>
-                        <TableCellText title="Members"
-                            >{toLocaleDate(team.dateCreated)}</TableCellText>
+                        <TableCellText title="Members">
+                            {toLocaleDateTime(team.dateCreated)}
+                        </TableCellText>
                     </TableRow>
                 {/each}
             </TableBody>
         </Table>
-
-        <Pagination {limit} bind:offset sum={$teamsList.response.total} />
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {$teamsList.response.total}</p>
+            <Pagination {limit} bind:offset sum={$teamsList.response.total} />
+        </div>
     {:else if search}
         <Empty>
             <svelte:fragment slot="header">No results found for <b>{search}</b></svelte:fragment>
