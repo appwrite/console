@@ -36,8 +36,12 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section">
-        <InputSearch bind:value={search} />
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
+            <input type="search" class="input-text" bind:value={search} />
+            <span class="icon-search" aria-hidden="true" />
+        </div>
+
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
         </Button>
