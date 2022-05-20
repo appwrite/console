@@ -8,12 +8,14 @@
 
     $: base = `/console/${$page.params.project}`;
     let tabsList: HTMLUListElement;
+    let showLeft = false;
+    let showRight = false;
 
     navigating.subscribe(() => {
         if (isOpen) isOpen = false;
     });
 
-    function slide(direction: string) {
+    const slide = (direction: string) => {
         let scrollCompleted = 0;
         let slideVar = setInterval(function () {
             if (direction == 'left') {
@@ -26,8 +28,30 @@
                 clearInterval(slideVar);
             }
         }, 10);
-    }
+    };
+
+    const onScroll = () => {
+        const { offsetWidth, scrollLeft, scrollWidth } = tabsList;
+        showLeft = scrollLeft > 10;
+        showRight = scrollLeft < scrollWidth - offsetWidth - 10;
+    };
+
+    //TODO: implement thisdirectly into onScroll
+    const throttle = (fn: () => void, delay: number) => {
+        let timeout = false;
+        return (...rest: any) => {
+            if (!timeout) {
+                timeout = true;
+                fn.apply(this, rest);
+                setTimeout(() => {
+                    timeout = false;
+                }, delay);
+            }
+        };
+    };
 </script>
+
+<svelte:window on:resize={throttle(onScroll, 25)} />
 
 <main class="grid-with-side" class:is-open={isOpen}>
     <header class="main-header">
@@ -47,19 +71,26 @@
             <svelte:fragment slot="title">{$title}</svelte:fragment>
             {#if $tabs.length}
                 <div class="tabs">
-                    <button
-                        class="tabs-button-scroll is-start"
-                        aria-label="Show items in start side"
-                        on:click={() => slide('left')}>
-                        <span class="icon-cheveron-left" aria-hidden="true" />
-                    </button>
-                    <button
-                        class="tabs-button-scroll is-end"
-                        aria-label="Show items in end side"
-                        on:click={() => slide('right')}>
-                        <span class="icon-cheveron-right" aria-hidden="true" />
-                    </button>
-                    <ul class="tabs-list scroll-shadow-horizontal" bind:this={tabsList}>
+                    {#if showLeft}
+                        <button
+                            class="tabs-button-scroll is-start"
+                            aria-label="Show items in start side"
+                            on:click={() => slide('left')}>
+                            <span class="icon-cheveron-left" aria-hidden="true" />
+                        </button>
+                    {/if}
+                    {#if showRight}
+                        <button
+                            class="tabs-button-scroll is-end"
+                            aria-label="Show items in end side"
+                            on:click={() => slide('right')}>
+                            <span class="icon-cheveron-right" aria-hidden="true" />
+                        </button>
+                    {/if}
+                    <ul
+                        class="tabs-list scroll-shadow-horizontal"
+                        bind:this={tabsList}
+                        on:scroll={throttle(onScroll, 25)}>
                         {#each $tabs as tab}
                             <li class="tabs-item">
                                 <a
