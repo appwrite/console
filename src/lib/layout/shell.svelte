@@ -39,10 +39,10 @@
     //TODO: implement thisdirectly into onScroll
     const throttle = (fn: () => void, delay: number) => {
         let timeout = false;
-        return (...rest: any) => {
+        return () => {
             if (!timeout) {
                 timeout = true;
-                fn.apply(this, rest);
+                fn.apply(this);
                 setTimeout(() => {
                     timeout = false;
                 }, delay);
