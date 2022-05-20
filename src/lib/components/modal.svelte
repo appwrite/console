@@ -48,7 +48,7 @@
                     aria-label="Close Modal"
                     title="Close Modal"
                     on:click={closeModal}>
-                    <span class="icon-cancel" aria-hidden="true" />
+                    <span class="icon-x" aria-hidden="true" />
                 </button>
             </header>
             <div class="modal-content">

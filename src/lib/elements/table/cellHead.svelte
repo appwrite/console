@@ -7,3 +7,9 @@
         <slot />
     </span>
 </th>
+
+<style>
+    th {
+        text-transform: uppercase;
+    }
+</style>

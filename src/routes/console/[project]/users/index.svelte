@@ -17,7 +17,7 @@
     import type { Models } from 'src/sdk';
     import { goto } from '$app/navigation';
     import { Pill } from '$lib/elements';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { usersList } from './store';
@@ -26,13 +26,14 @@
     let showCreate = false;
     let search = '';
     let offset: number = null;
-    const limit = 5;
 
+    const limit = 5;
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
         await goto(`${base}/console/${project}/users/user/${event.detail.$id}`);
     };
+
     $: usersList.load(search, limit, offset);
     $: if (search) offset = 0;
     $: {
@@ -65,7 +66,8 @@
                 <TableCellHead width={30} />
                 <TableCellHead>Name</TableCellHead>
                 <TableCellHead>E-Mail</TableCellHead>
-                <TableCellHead>Status</TableCellHead>
+                <TableCellHead width={100}>Status</TableCellHead>
+                <TableCellHead width={100}>ID</TableCellHead>
                 <TableCellHead>Joined</TableCellHead>
             </TableHeader>
             <TableBody>
@@ -88,12 +90,19 @@
                         </TableCellLink>
                         <TableCellText title="E-Mail">{user.email}</TableCellText>
                         <TableCellText title="Status">
-                            <Pill success={user.emailVerification}>
-                                {user.emailVerification ? 'Verified' : 'Unverified'}
-                            </Pill>
+                            {#if user.status}
+                                <Pill success={user.emailVerification}>
+                                    {user.emailVerification ? 'Verified' : 'Unverified'}
+                                </Pill>
+                            {:else}
+                                <Pill danger>Blocked</Pill>
+                            {/if}
+                        </TableCellText>
+                        <TableCellText title="ID">
+                            <Pill>User ID <i class="icon-duplicate" /></Pill>
                         </TableCellText>
                         <TableCellText title="Joined">
-                            {toLocaleDate(user.registration)}
+                            {toLocaleDateTime(user.registration)}
                         </TableCellText>
                     </TableRow>
                 {/each}
