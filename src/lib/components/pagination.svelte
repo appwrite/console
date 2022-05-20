@@ -56,14 +56,14 @@
 
 {#if totalPages > 1}
     <nav class="pagination">
-        <span
+        <button
             on:click={() => handleButtonPage('prev')}
             class:is-disabled={currentPage <= 1}
             class="button is-text"
             aria-label="prev page">
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
-        </span>
+        </button>
         <ol class="pagination-list is-only-desktop">
             {#each pages as page}
                 {#if typeof page === 'number'}
@@ -84,13 +84,13 @@
                 {/if}
             {/each}
         </ol>
-        <span
+        <button
             on:click={() => handleButtonPage('next')}
             class:is-disabled={currentPage === totalPages}
             class="button is-text"
             aria-label="next page">
             <span class="text">Next</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
-        </span>
+        </button>
     </nav>
 {/if}
