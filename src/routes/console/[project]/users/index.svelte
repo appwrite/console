@@ -24,7 +24,7 @@
     let search = '';
     let showCreate = false;
     let offset = 0;
-    const limit = 25;
+    const limit = 5;
 
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
@@ -90,7 +90,7 @@
             </Table>
             <div class="u-flex common-section u-main-space-between">
                 <p class="text">Total results: {response.total}</p>
-                <Pagination {limit} bind:offset sum={response.total} />
+                <Pagination bind:offset {limit} sum={response.total} />
             </div>
         {:else if search}
             <Empty>
