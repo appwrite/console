@@ -26,11 +26,14 @@
     };
 </script>
 
-<input
-    {placeholder}
-    {disabled}
-    {required}
-    type="search"
-    class="input-text"
-    on:input={valueChange}
-    bind:this={element} />
+<div class="input-text-wrapper">
+    <input
+        {placeholder}
+        {disabled}
+        {required}
+        type="search"
+        class="input-text"
+        on:input={valueChange}
+        bind:this={element} />
+    <span class="icon-search" aria-hidden="true" />
+</div>
