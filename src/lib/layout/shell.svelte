@@ -7,6 +7,7 @@
     export let isOpen = false;
 
     $: base = `/console/${$page.params.project}`;
+
     let tabsList: HTMLUListElement;
     let showLeft = false;
     let showRight = false;
@@ -15,9 +16,9 @@
         if (isOpen) isOpen = false;
     });
 
-    const slide = (direction: string) => {
+    const slide = (direction: 'left' | 'right') => {
         let scrollCompleted = 0;
-        let slideVar = setInterval(function () {
+        let slideVar = setInterval(() => {
             if (direction == 'left') {
                 tabsList.scrollLeft -= 10;
             } else {
