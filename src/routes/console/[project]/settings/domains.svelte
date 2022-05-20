@@ -36,7 +36,7 @@
                 {#each response.domains as domain}
                     <TableRow>
                         <TableCellText title="Scopes">
-                            <Pill failed={!domain.verification} success={domain.verification}>
+                            <Pill danger={!domain.verification} success={domain.verification}>
                                 {domain.verification ? 'Verified' : 'Unverified'}
                             </Pill>
                         </TableCellText>

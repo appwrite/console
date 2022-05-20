@@ -31,7 +31,7 @@
                                 <Pill>{role}</Pill>
                             {/each}
                             {#if !membership.confirm}
-                                <Pill failed>Pending Approval</Pill>
+                                <Pill danger>Pending Approval</Pill>
                             {/if}
                         </svelte:fragment>
                         <svelte:fragment slot="info">

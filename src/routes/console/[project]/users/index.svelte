@@ -1,8 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Card, Empty, Pagination } from '$lib/components';
-    import { Button, InputSearch } from '$lib/elements/forms';
+    import { Empty, Pagination } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableHeader,
@@ -36,9 +36,16 @@
 </script>
 
 <Container>
-    <Card>
-        <InputSearch bind:value={search} />
-    </Card>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
+            <input type="search" class="input-text" bind:value={search} />
+            <span class="icon-search" aria-hidden="true" />
+        </div>
+
+        <Button on:click={() => (showCreate = true)}>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
+        </Button>
+    </div>
     {#await request}
         <div aria-busy="true" />
     {:then response}
@@ -81,7 +88,10 @@
                     {/each}
                 </TableBody>
             </Table>
-            <Pagination {limit} bind:offset sum={response.total} />
+            <div class="u-flex common-section u-main-space-between">
+                <p class="text">Total results: {response.total}</p>
+                <Pagination {limit} bind:offset sum={response.total} />
+            </div>
         {:else if search}
             <Empty>
                 <svelte:fragment slot="header"
@@ -94,8 +104,6 @@
             </Empty>
         {/if}
     {/await}
-
-    <Button on:click={() => (showCreate = true)}>Create User</Button>
 </Container>
 
 <Create bind:showCreate on:created={userCreated} />
