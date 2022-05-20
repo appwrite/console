@@ -36,7 +36,7 @@
                                 <Pill>{attribute} ({index.orders[i]})</Pill>
                             {/each}
                         </TableCellText>
-                        <TableCellText title="Action"><Pill failed>Delete</Pill></TableCellText>
+                        <TableCellText title="Action"><Pill danger>Delete</Pill></TableCellText>
                     </TableRow>
                 {/each}
             </TableBody>
