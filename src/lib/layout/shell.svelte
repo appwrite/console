@@ -37,7 +37,7 @@
         showRight = scrollLeft < scrollWidth - offsetWidth - 10;
     };
 
-    //TODO: implement thisdirectly into onScroll
+    //TODO: implement this directly into onScroll
     const throttle = (fn: () => void, delay: number) => {
         let timeout = false;
         return () => {

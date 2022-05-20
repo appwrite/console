@@ -20,19 +20,32 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
+    import { usersList } from './store';
+    import { onMount } from 'svelte';
 
-    let search = '';
     let showCreate = false;
-    let offset = 0;
-    const limit = 25;
+    let search = '';
+    let offset: number = null;
+    const limit = 5;
 
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
         await goto(`${base}/console/${project}/users/user/${event.detail.$id}`);
     };
-    $: request = sdkForProject.users.list(search, limit, offset, undefined, undefined, 'DESC');
+    $: usersList.load(search, limit, offset);
     $: if (search) offset = 0;
+    $: {
+        //TODO: refactor this into something maintainable without the use of goto
+        if (offset !== null) {
+            $page.url.searchParams.set('offset', offset.toString());
+            goto(`?${$page.url.searchParams.toString()}`);
+        }
+    }
+
+    onMount(() => {
+        offset = +$page.url.searchParams.get('offset') ?? 0;
+    });
 </script>
 
 <Container>
@@ -46,64 +59,60 @@
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
         </Button>
     </div>
-    {#await request}
-        <div aria-busy="true" />
-    {:then response}
-        {#if response.total}
-            <Table>
-                <TableHeader>
-                    <TableCellHead width={30} />
-                    <TableCellHead>Name</TableCellHead>
-                    <TableCellHead>E-Mail</TableCellHead>
-                    <TableCellHead>Status</TableCellHead>
-                    <TableCellHead>Joined</TableCellHead>
-                </TableHeader>
-                <TableBody>
-                    {#each response.users as user}
-                        <TableRow>
-                            <TableCell onlyDesktop>
-                                <div class="image">
-                                    <img
-                                        class="avatar"
-                                        width="30"
-                                        height="30"
-                                        src={getAvatar(user.name)}
-                                        alt={user.name} />
-                                </div>
-                            </TableCell>
-                            <TableCellLink
-                                href={`${base}/console/${project}/users/user/${user.$id}`}
-                                title="Name">
-                                {user.name ? user.name : 'n/a'}
-                            </TableCellLink>
-                            <TableCellText title="E-Mail">{user.email}</TableCellText>
-                            <TableCellText title="Status">
-                                <Pill success={user.emailVerification}>
-                                    {user.emailVerification ? 'Verified' : 'Unverified'}
-                                </Pill>
-                            </TableCellText>
-                            <TableCellText title="Joined"
-                                >{toLocaleDate(user.registration)}</TableCellText>
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </Table>
-            <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {response.total}</p>
-                <Pagination {limit} bind:offset sum={response.total} />
-            </div>
-        {:else if search}
-            <Empty>
-                <svelte:fragment slot="header"
-                    >No results found for <b>{search}</b></svelte:fragment>
-            </Empty>
-        {:else}
-            <Empty>
-                <svelte:fragment slot="header">No Users Found</svelte:fragment>
-                Create your first user to get started.
-            </Empty>
-        {/if}
-    {/await}
+    {#if $usersList?.response?.total}
+        <Table>
+            <TableHeader>
+                <TableCellHead width={30} />
+                <TableCellHead>Name</TableCellHead>
+                <TableCellHead>E-Mail</TableCellHead>
+                <TableCellHead>Status</TableCellHead>
+                <TableCellHead>Joined</TableCellHead>
+            </TableHeader>
+            <TableBody>
+                {#each $usersList.response.users as user}
+                    <TableRow>
+                        <TableCell onlyDesktop>
+                            <div class="image">
+                                <img
+                                    class="avatar"
+                                    width="30"
+                                    height="30"
+                                    src={getAvatar(user.name)}
+                                    alt={user.name} />
+                            </div>
+                        </TableCell>
+                        <TableCellLink
+                            href={`${base}/console/${project}/users/user/${user.$id}`}
+                            title="Name">
+                            {user.name ? user.name : 'n/a'}
+                        </TableCellLink>
+                        <TableCellText title="E-Mail">{user.email}</TableCellText>
+                        <TableCellText title="Status">
+                            <Pill success={user.emailVerification}>
+                                {user.emailVerification ? 'Verified' : 'Unverified'}
+                            </Pill>
+                        </TableCellText>
+                        <TableCellText title="Joined">
+                            {toLocaleDate(user.registration)}
+                        </TableCellText>
+                    </TableRow>
+                {/each}
+            </TableBody>
+        </Table>
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {$usersList.response.total}</p>
+            <Pagination {limit} bind:offset sum={$usersList.response.total} />
+        </div>
+    {:else if search}
+        <Empty>
+            <svelte:fragment slot="header">No results found for <b>{search}</b></svelte:fragment>
+        </Empty>
+    {:else}
+        <Empty>
+            <svelte:fragment slot="header">No Users Found</svelte:fragment>
+            Create your first user to get started.
+        </Empty>
+    {/if}
 </Container>
 
 <Create bind:showCreate on:created={userCreated} />
