@@ -81,7 +81,7 @@
                     </button>
                 </li>
             {:else}
-                <li class="li is-text /*u-hide*/" aria-label="show prev 5 pages">
+                <li class="li is-text">
                     <span class="icon">...</span>
                 </li>
             {/if}
