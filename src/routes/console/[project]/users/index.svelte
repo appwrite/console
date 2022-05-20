@@ -34,7 +34,7 @@
         await goto(`${base}/console/${project}/users/user/${event.detail.$id}`);
     };
 
-    $: usersList.load(search, limit, offset);
+    $: usersList.load(search, limit, offset ?? 0);
     $: if (search) offset = 0;
     $: {
         //TODO: refactor this into something maintainable without the use of goto
@@ -45,7 +45,10 @@
     }
 
     onMount(() => {
-        offset = +$page.url.searchParams.get('offset') ?? 0;
+        const queryOffset = +$page.url.searchParams.get('offset') ?? 0;
+        if (offset && offset !== queryOffset) {
+            offset = queryOffset;
+        }
     });
 </script>
 

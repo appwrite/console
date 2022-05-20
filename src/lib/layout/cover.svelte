@@ -4,7 +4,7 @@
 
 <div class="top-cover" class:is-adjust-content-to-cover={adjustContentToCover}>
     <div class="container">
-        <h1 class="heading-level-1">
+        <h1 class="heading-level-2">
             <slot name="title" />
         </h1>
         <slot />
