@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Empty, Pagination } from '$lib/components';
-    import { Button, InputSearch } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableHeader,
@@ -88,7 +88,10 @@
                     {/each}
                 </TableBody>
             </Table>
-            <Pagination {limit} bind:offset sum={response.total} />
+            <div class="u-flex common-section u-main-space-between">
+                <p class="text">Total results: {response.total}</p>
+                <Pagination {limit} bind:offset sum={response.total} />
+            </div>
         {:else if search}
             <Empty>
                 <svelte:fragment slot="header"
