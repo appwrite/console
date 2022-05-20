@@ -90,7 +90,7 @@
             </Table>
             <div class="u-flex common-section u-main-space-between">
                 <p class="text">Total results: {response.total}</p>
-                <Pagination bind:offset pageSize={limit} totalItems={response.total} />
+                <Pagination bind:offset {limit} sum={response.total} />
             </div>
         {:else if search}
             <Empty>
