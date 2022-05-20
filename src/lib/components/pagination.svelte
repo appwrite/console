@@ -1,54 +1,98 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-
-    export let limit: number;
-    export let offset: number;
-    export let sum: number;
-
     const dispatch = createEventDispatcher();
+    export let totalItems: number;
+    export let pageSize: number;
+    export let offset: number;
 
-    const next = () => {
-        if (offset + limit > sum) {
-            offset = sum;
-        } else {
-            offset += limit;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    let currentPage = offset / pageSize + 1;
+
+    function handleOptionClick(page) {
+        if (currentPage !== page) {
+            offset = pageSize * page - 1;
+            currentPage = page;
+            dispatch('change');
         }
-        dispatch('change');
-    };
-
-    const prev = () => {
-        if (offset - limit < 0) {
-            offset = 0;
-        } else {
-            offset -= limit;
+    }
+    function handleButtonPage(direction) {
+        if (direction === 'next' && currentPage < totalPages) {
+            currentPage += 1;
+            offset = pageSize * currentPage - 1;
+            dispatch('change');
+        } else if (direction === 'prev' && currentPage > 1) {
+            currentPage -= 1;
+            offset = pageSize * currentPage - 1;
+            dispatch('change');
         }
-        dispatch('change');
-    };
+    }
 
-    $: noPrev = offset === 0;
-    $: noNext = sum - limit < offset;
-    $: currentPage = offset / limit + 1;
-    $: totalPages = Math.ceil(sum / limit);
+    let pages = pagination(currentPage, totalPages);
+
+    function pagination(current, total) {
+        let delta = 2,
+            left = current - delta,
+            right = current + delta + 1,
+            range = [],
+            rangeWithDots = [],
+            l;
+
+        for (let i = 1; i <= total; i++) {
+            if (i == 1 || i == total || (i >= left && i < right)) {
+                range.push(i);
+            }
+        }
+
+        for (let i of range) {
+            if (l) {
+                if (i - l === 2) {
+                    rangeWithDots.push(l + 1);
+                } else if (i - l !== 1) {
+                    rangeWithDots.push('...');
+                }
+            }
+            rangeWithDots.push(i);
+            l = i;
+        }
+
+        return rangeWithDots;
+    }
 </script>
 
-{#if sum >= limit}
-    <nav class="pagination is-center">
-        <button
-            on:click={prev}
-            disabled={noPrev}
-            class:is-disabled={noPrev}
-            class="button is-only-icon"
-            aria-label="previous page">
-            <span class="icon-left-open" aria-hidden="true" />
-        </button>
-        <span class="pagination-info">{currentPage} / {totalPages}</span>
-        <button
-            on:click={next}
-            disabled={noNext}
-            class:is-disabled={noNext}
-            class="button is-only-icon"
+<nav class="pagination">
+    <ol class="pagination-list is-only-desktop">
+        <span
+            on:click={() => handleButtonPage('prev')}
+            class:is-disabled={currentPage <= 1}
+            class="button is-text "
+            aria-label="prev page">
+            <span class="icon-cheveron-left" aria-hidden="true" />
+            <span class="text">Prev</span>
+        </span>
+        {#each pages as page}
+            {#if typeof page === 'number'}
+                <li class="pagination-item">
+                    <button
+                        class="button is-text"
+                        on:click={() => handleOptionClick(page)}
+                        class:is-disabled={currentPage === page}
+                        aria-label="page">
+                        <span class="text">{page}</span>
+                    </button>
+                </li>
+            {:else}
+                <li class="li is-text /*u-hide*/" aria-label="show prev 5 pages">
+                    <span class="icon">...</span>
+                </li>
+            {/if}
+        {/each}
+        <span
+            on:click={() => handleButtonPage('next')}
+            class:is-disabled={currentPage === totalPages}
+            class="button is-text"
             aria-label="next page">
-            <span class="icon-right-open" aria-hidden="true" />
-        </button>
-    </nav>
-{/if}
+            <span class="text">Next</span>
+            <span class="icon-cheveron-right" aria-hidden="true" />
+        </span>
+    </ol>
+</nav>

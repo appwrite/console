@@ -24,7 +24,7 @@
     let search = '';
     let showCreate = false;
     let offset = 0;
-    const limit = 25;
+    const limit = 1;
 
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
@@ -81,7 +81,7 @@
                     {/each}
                 </TableBody>
             </Table>
-            <Pagination {limit} bind:offset sum={response.total} />
+            <Pagination bind:offset pageSize={limit} totalItems={response.total} />
         {:else if search}
             <Empty>
                 <svelte:fragment slot="header"
