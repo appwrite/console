@@ -59,7 +59,7 @@
         <span
             on:click={() => handleButtonPage('prev')}
             class:is-disabled={currentPage <= 1}
-            class="button is-text "
+            class="button is-text"
             aria-label="prev page">
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
