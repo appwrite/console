@@ -13,6 +13,7 @@
             offset = limit * (page - 1);
             currentPage = page;
             dispatch('change');
+            pages = pagination(currentPage, totalPages);
         }
     }
 
@@ -21,36 +22,32 @@
             currentPage += 1;
             offset = limit * (currentPage - 1);
             dispatch('change');
+            pages = pagination(currentPage, totalPages);
         } else if (direction === 'prev' && currentPage > 1) {
             currentPage -= 1;
             offset = limit * (currentPage - 1);
             dispatch('change');
+            pages = pagination(currentPage, totalPages);
         }
     }
 
     let pages = pagination(currentPage, totalPages);
 
-    function pagination(current: number, total: number) {
-        let delta = 2,
-            left = current - delta,
-            right = current + delta + 1,
-            range = [],
-            rangeWithDots = [];
-
-        for (let i = 1; i <= total; i++) {
-            if (i == 1 || i == total || (i >= left && i < right)) {
-                range.push(i);
-            }
-        }
-
-        rangeWithDots = range.reduce((prev, current, index) => {
-            if (current - prev[index - 1] > delta) {
-                prev.push('...');
-            }
-            prev.push(current);
-            return prev;
-        }, []);
-        return rangeWithDots;
+    function pagination(page: number, total: number) {
+        const pagesShown = 5;
+        const start = Math.max(
+            1,
+            Math.min(page - Math.floor((pagesShown - 3) / 2), total - pagesShown + 2)
+        );
+        const end = Math.min(
+            total,
+            Math.max(page + Math.floor((pagesShown - 2) / 2), pagesShown - 1)
+        );
+        return [
+            ...(start > 2 ? [1, '...'] : start > 1 ? [1] : []),
+            ...Array.from({ length: end + 1 - start }, (_, i) => i + start),
+            ...(end < total - 1 ? ['...', total] : end < total ? [total] : [])
+        ];
     }
 </script>
 
