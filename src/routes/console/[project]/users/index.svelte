@@ -121,7 +121,7 @@
         </div>
     {:else if search}
         <Empty>
-            <div class="u-flex u-flex-vertical u-cross-center">
+            <div class="u-flex u-flex-vertical">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
                 <div class="common-section">
                     <p>There are no users that match your search.</p>
