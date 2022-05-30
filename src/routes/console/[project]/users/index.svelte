@@ -55,7 +55,11 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <div class="input-text-wrapper u-stretch" style="max-width: 500px">
-            <input type="search" class="input-text" bind:value={search} />
+            <input
+                type="search"
+                placeholder="Search Name, Email, or ID"
+                class="input-text"
+                bind:value={search} />
             <span class="icon-search" aria-hidden="true" />
         </div>
 
@@ -117,30 +121,40 @@
         </div>
     {:else if search}
         <Empty>
-            <div class="common-section">
+            <div class="u-flex">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
-            </div>
-            <div class="common-section">
-                <p>There are no users that match your search.</p>
-            </div>
-            <div class="common-section">
-                <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+                <div class="common-section">
+                    <p>There are no users that match your search.</p>
+                </div>
+                <div class="common-section">
+                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+                </div>
             </div>
         </Empty>
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {$usersList.response.total}</p>
+            <Pagination {limit} bind:offset sum={$usersList.response.total} />
+        </div>
     {:else}
         <Empty dashed centered>
-            <div class="common-section">
-                <Button secondary round on:click={() => (showCreate = true)}>
-                    <i class="icon-plus" />
-                </Button>
-            </div>
-            <div class="common-section">
-                <p>Add Your First User To Get Started</p>
-            </div>
-            <div class="common-section">
-                <Button secondary href="#">Documentation</Button>
+            <div class="u-flex">
+                <div class="common-section">
+                    <Button secondary round on:click={() => (showCreate = true)}>
+                        <i class="icon-plus" />
+                    </Button>
+                </div>
+                <div class="common-section">
+                    <p>Add Your First User To Get Started</p>
+                </div>
+                <div class="common-section">
+                    <Button secondary href="#">Documentation</Button>
+                </div>
             </div>
         </Empty>
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {$usersList.response.total}</p>
+            <Pagination {limit} bind:offset sum={$usersList.response.total} />
+        </div>
     {/if}
 </Container>
 
