@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button, InputPassword, InputEmail, InputText, Form } from '$lib/elements/forms';
+    import { Pill } from '$lib/elements';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -47,6 +48,7 @@
             placeholder="*****"
             required={true}
             bind:value={pass} />
+        <Pill>User ID <i class="icon-duplicate" /></Pill>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showCreate = false)}>Cancel</Button>
             <Button submit>Create</Button>
