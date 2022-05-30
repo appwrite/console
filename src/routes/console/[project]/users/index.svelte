@@ -121,7 +121,7 @@
         </div>
     {:else if search}
         <Empty>
-            <div class="u-flex">
+            <div class="u-flex u-flex-vertical u-cross-center">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
                 <div class="common-section">
                     <p>There are no users that match your search.</p>
@@ -137,7 +137,7 @@
         </div>
     {:else}
         <Empty dashed centered>
-            <div class="u-flex">
+            <div class="u-flex u-flex-vertical u-cross-center">
                 <div class="common-section">
                     <Button secondary round on:click={() => (showCreate = true)}>
                         <i class="icon-plus" />
