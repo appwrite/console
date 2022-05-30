@@ -90,4 +90,22 @@
             <span class="icon-cheveron-right" aria-hidden="true" />
         </button>
     </nav>
+{:else}
+    <nav class="pagination">
+        <button class="button is-text is-disabled" aria-label="prev page">
+            <span class="icon-cheveron-left" aria-hidden="true" />
+            <span class="text">Prev</span>
+        </button>
+        <ol class="pagination-list is-only-desktop">
+            <li class="pagination-item">
+                <button class="button is-disabled" aria-label="page">
+                    <span class="text">1</span>
+                </button>
+            </li>
+        </ol>
+        <button class="button is-text is-disabled" aria-label="next page">
+            <span class="text">Next</span>
+            <span class="icon-cheveron-right" aria-hidden="true" />
+        </button>
+    </nav>
 {/if}
