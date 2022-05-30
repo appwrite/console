@@ -48,8 +48,8 @@
             required={true}
             bind:value={pass} />
         <svelte:fragment slot="footer">
+            <Button text on:click={() => (showCreate = false)}>Cancel</Button>
             <Button submit>Create</Button>
-            <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
         </svelte:fragment>
     </Modal>
 </Form>
