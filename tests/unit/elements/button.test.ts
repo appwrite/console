@@ -32,6 +32,11 @@ test('shows button - secondary', () => {
 
     expect(getByRole('button')).toHaveClass('is-secondary');
 });
+test('shows button - text', () => {
+    const { getByRole } = render(Button, { text: true });
+
+    expect(getByRole('button')).toHaveClass('is-text');
+});
 
 test('shows button - on:click', async () => {
     const { getByRole, component } = render(Button);
