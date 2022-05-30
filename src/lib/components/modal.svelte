@@ -39,7 +39,7 @@
     <div class="modal-curtain" data-curtain on:click={handleBLur} transition:fade={transitionFade}>
         <section class="modal" transition:fly={transitionFly}>
             <header class="modal-header">
-                <h4 class="modal-title">
+                <h4 class="heading-level-5">
                     <slot name="header" />
                 </h4>
                 <button
