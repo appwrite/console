@@ -1,7 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Avatar, Card } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -9,8 +6,11 @@
     import { Container } from '$lib/layout';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import DeleteUser from './_deleteUser.svelte';
+
     import { user } from './store';
 
+    let showDelete = false;
     let userName = null;
     let userEmail = null;
     let oldPw = null;
@@ -18,16 +18,6 @@
 
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
-
-    const deleteUser = async (id: string) => {
-        try {
-            if (!confirm('Are you sure you want to delete that user?')) return;
-            await sdkForProject.users.delete(id);
-            await goto(`${base}/console/${$page.params.project}/users`);
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     async function updateVerification() {
         try {
@@ -233,7 +223,9 @@
         </div>
         <div class="u-flex u-main-space-end common-section">
             <!-- <Button secondary on:click={() => deleteUser($user.$id)}>Delete</Button> -->
-            <Button secondary on:click={() => console.log('open modal')}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
         </div>
     </Card>
 </Container>
+
+<DeleteUser bind:showDelete />
