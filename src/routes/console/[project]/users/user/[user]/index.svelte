@@ -5,11 +5,16 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Avatar, Card } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputText, InputEmail, InputPassword } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
     import { user } from './store';
+
+    let userName = null;
+    let userEmail = null;
+    let oldPw = null;
+    let newPw = null;
 
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
@@ -23,16 +28,59 @@
             console.error(error);
         }
     };
+
+    async function updateName() {
+        try {
+            await sdkForProject.users.updateName($user.$id, userName);
+            $user.name = userName;
+            addNotification({
+                message: 'Name has been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
+    async function updateEmail() {
+        try {
+            await sdkForProject.users.updateEmail($user.$id, userEmail);
+            $user.email = userEmail;
+            addNotification({
+                message: 'Email has been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
+    async function updatePassword() {
+        try {
+            await sdkForProject.users.updatePassword($user.$id, newPw);
+            $user.email = userEmail;
+            addNotification({
+                message: 'Password has been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
 </script>
 
 <Container>
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <div class="user-profile-button">
-                <Avatar
-                    size={50}
-                    name={$user.name}
-                    src={sdkForConsole.avatars.getInitials($user.name, 50, 50).toString()} />
+                <Avatar size={64} name={$user.name} src={getAvatar($user.name)} />
                 <span class="user-profile-info">
                     <h6 class="heading-level-6">{$user.name}</h6>
                     <span class="title">{$user.email}</span>
@@ -46,6 +94,61 @@
         <div class="u-flex u-main-space-end u-gap-12 common-section">
             <Button text>Block Account</Button>
             <Button secondary>Verify Account</Button>
+        </div>
+    </Card>
+    <Card>
+        <div class="u-flex u-main-space-between u-gap-12 common-section">
+            <h6 class="heading-level-6">Update Name</h6>
+            <ul>
+                <InputText id="name" label="Name" placeholder={$user.name} bind:value={userName} />
+            </ul>
+        </div>
+        <div class="u-flex u-main-space-end common-section">
+            <Button
+                disabled={!userName}
+                secondary
+                on:click={() => {
+                    updateName();
+                }}>Update</Button>
+        </div>
+    </Card>
+    <Card>
+        <div class="u-flex u-main-space-between u-gap-12 common-section">
+            <h6 class="heading-level-6">Update Email</h6>
+            <InputEmail id="email" label="Email" placeholder={$user.email} bind:value={userEmail} />
+        </div>
+        <div class="u-flex u-main-space-end common-section">
+            <Button
+                disabled={!userEmail}
+                secondary
+                on:click={() => {
+                    updateEmail();
+                }}>Update</Button>
+        </div>
+    </Card>
+    <Card>
+        <div class="u-flex u-main-space-between u-gap-12 common-section">
+            <h6 class="heading-level-6">Update Password</h6>
+            <div class="">
+                <InputPassword
+                    id="oldpw"
+                    label="Old Password"
+                    placeholder="Enter old password"
+                    bind:value={oldPw} />
+                <InputPassword
+                    id="newpw"
+                    label="New Password"
+                    placeholder="Enter new password"
+                    bind:value={newPw} />
+            </div>
+        </div>
+        <div class="u-flex u-main-space-end common-section">
+            <Button
+                disabled={!oldPw || !newPw}
+                secondary
+                on:click={() => {
+                    updatePassword();
+                }}>Update</Button>
         </div>
     </Card>
     <Card>
@@ -69,6 +172,7 @@
             <Button secondary>Update</Button>
         </div>
     </Card>
+
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <div>
@@ -80,10 +184,7 @@
             </div>
             <div>
                 <div class="user-profile-button">
-                    <Avatar
-                        size={50}
-                        name={$user.name}
-                        src={sdkForConsole.avatars.getInitials($user.name, 50, 50).toString()} />
+                    <Avatar size={64} name={$user.name} src={getAvatar($user.name)} />
                     <span class="user-profile-info">
                         <h6 class="heading-level-6">{$user.name}</h6>
                         <span class="title">{$user.email}</span>
