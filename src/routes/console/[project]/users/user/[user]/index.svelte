@@ -29,6 +29,36 @@
         }
     };
 
+    async function updateVerification() {
+        try {
+            await sdkForProject.users.updateVerification($user.$id, true);
+            $user.emailVerification = true;
+            addNotification({
+                message: 'The account has been verified',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
+    async function updateStatus() {
+        try {
+            await sdkForProject.users.updateStatus($user.$id, !$user.status);
+            $user.status = !$user.status;
+            addNotification({
+                message: `The account has been ${$user.status ? 'unlocked' : 'blocked'}`,
+                type: `${$user.status ? 'success' : 'error'}`
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
     async function updateName() {
         try {
             await sdkForProject.users.updateName($user.$id, userName);
@@ -74,6 +104,7 @@
             });
         }
     }
+    console.log($user);
 </script>
 
 <Container>
@@ -87,13 +118,22 @@
                 </span>
             </div>
             <div>
-                <Pill>{$user.emailVerification ? 'Verified' : 'Unverified'}</Pill>
+                {#if !$user.status}
+                    <Pill danger>Blocked</Pill>
+                {/if}
+
+                <Pill success={$user.emailVerification}
+                    >{$user.emailVerification ? 'Verified' : 'Unverified'}</Pill>
                 <p>Joined on {toLocaleDate($user.registration)}</p>
             </div>
         </div>
         <div class="u-flex u-main-space-end u-gap-12 common-section">
-            <Button text>Block Account</Button>
-            <Button secondary>Verify Account</Button>
+            <Button text on:click={() => updateStatus()}
+                >{$user.status ? 'Block Account' : 'Unlock Accout'}</Button>
+            <Button
+                secondary
+                disabled={$user.emailVerification}
+                on:click={() => updateVerification()}>Verify Account</Button>
         </div>
     </Card>
     <Card>
