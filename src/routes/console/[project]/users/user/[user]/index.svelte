@@ -104,7 +104,6 @@
             });
         }
     }
-    console.log($user);
 </script>
 
 <Container>
