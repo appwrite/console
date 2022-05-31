@@ -2,7 +2,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Avatar, Card } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button, InputText, InputEmail, InputPassword } from '$lib/elements/forms';
+    import { Button, InputText, InputEmail, InputPassword, Helper } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,21 +11,35 @@
     import { user } from './store';
 
     let showDelete = false;
+    let showError: false | 'name' | 'email' | 'password' = false;
+    let errorMessage = 'Something went wrong';
+    let errorType: 'error' | 'warning' | 'success' = 'error';
     let userName = null;
     let userEmail = null;
-    let oldPw = null;
-    let newPw = null;
+    let repeatPassword = null;
+    let newPassword = null;
 
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
 
+    function addError(location: false | 'name' | 'email' | 'password', message: string, type) {
+        showError = location;
+        errorMessage = message;
+        errorType = type;
+        setTimeout(() => {
+            showError = false;
+        }, 6000);
+    }
+
     async function updateVerification() {
         try {
-            await sdkForProject.users.updateVerification($user.$id, true);
-            $user.emailVerification = true;
+            await sdkForProject.users.updateVerification($user.$id, !$user.emailVerification);
+            $user.emailVerification = !$user.emailVerification;
             addNotification({
-                message: 'The account has been verified',
-                type: 'success'
+                message: `The account has been ${
+                    $user.emailVerification ? 'verified' : 'unverified'
+                }`,
+                type: $user.emailVerification ? 'success' : 'info'
             });
         } catch (error) {
             addNotification({
@@ -39,7 +53,7 @@
             await sdkForProject.users.updateStatus($user.$id, !$user.status);
             $user.status = !$user.status;
             addNotification({
-                message: `The account has been ${$user.status ? 'unlocked' : 'blocked'}`,
+                message: `The account has been ${$user.status ? 'unblocked' : 'blocked'}`,
                 type: `${$user.status ? 'success' : 'error'}`
             });
         } catch (error) {
@@ -58,10 +72,7 @@
                 type: 'success'
             });
         } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
+            addError('name', error.message, 'error');
         }
     }
     async function updateEmail() {
@@ -73,26 +84,22 @@
                 type: 'success'
             });
         } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
+            addError('email', error.message, 'error');
         }
     }
     async function updatePassword() {
-        try {
-            await sdkForProject.users.updatePassword($user.$id, newPw);
-            $user.email = userEmail;
-            addNotification({
-                message: 'Password has been updated',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
+        if (newPassword === repeatPassword)
+            try {
+                await sdkForProject.users.updatePassword($user.$id, newPassword);
+                $user.email = userEmail;
+                addNotification({
+                    message: 'Password has been updated',
+                    type: 'success'
+                });
+            } catch (error) {
+                addError('password', error.message, 'error');
+            }
+        else addError('password', "Passwords don't match", 'error');
     }
 </script>
 
@@ -110,7 +117,6 @@
                 {#if !$user.status}
                     <Pill danger>Blocked</Pill>
                 {/if}
-
                 <Pill success={$user.emailVerification}
                     >{$user.emailVerification ? 'Verified' : 'Unverified'}</Pill>
                 <p>Joined on {toLocaleDate($user.registration)}</p>
@@ -118,11 +124,9 @@
         </div>
         <div class="u-flex u-main-space-end u-gap-12 common-section">
             <Button text on:click={() => updateStatus()}
-                >{$user.status ? 'Block Account' : 'Unlock Accout'}</Button>
-            <Button
-                secondary
-                disabled={$user.emailVerification}
-                on:click={() => updateVerification()}>Verify Account</Button>
+                >{$user.status ? 'Block Account' : 'Unblock Accout'}</Button>
+            <Button secondary on:click={() => updateVerification()}
+                >{$user.emailVerification ? 'Unverify' : 'Verify'} Account</Button>
         </div>
     </Card>
     <Card>
@@ -130,12 +134,14 @@
             <h6 class="heading-level-6">Update Name</h6>
             <ul>
                 <InputText id="name" label="Name" placeholder={$user.name} bind:value={userName} />
+                {#if showError === 'name'}
+                    <Helper type={errorType}>{errorMessage}</Helper>
+                {/if}
             </ul>
         </div>
         <div class="u-flex u-main-space-end common-section">
             <Button
                 disabled={!userName}
-                secondary
                 on:click={() => {
                     updateName();
                 }}>Update</Button>
@@ -144,12 +150,20 @@
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <h6 class="heading-level-6">Update Email</h6>
-            <InputEmail id="email" label="Email" placeholder={$user.email} bind:value={userEmail} />
+            <ul>
+                <InputEmail
+                    id="email"
+                    label="Email"
+                    placeholder={$user.email}
+                    bind:value={userEmail} />
+                {#if showError === 'email'}
+                    <Helper type={errorType}>{errorMessage}</Helper>
+                {/if}
+            </ul>
         </div>
         <div class="u-flex u-main-space-end common-section">
             <Button
                 disabled={!userEmail}
-                secondary
                 on:click={() => {
                     updateEmail();
                 }}>Update</Button>
@@ -158,23 +172,27 @@
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <h6 class="heading-level-6">Update Password</h6>
-            <div class="">
+            <ul>
                 <InputPassword
-                    id="oldpw"
-                    label="Old Password"
-                    placeholder="Enter old password"
-                    bind:value={oldPw} />
-                <InputPassword
-                    id="newpw"
+                    id="newPassword"
                     label="New Password"
                     placeholder="Enter new password"
-                    bind:value={newPw} />
-            </div>
+                    meter={false}
+                    bind:value={newPassword} />
+                <InputPassword
+                    id="repeatPassword"
+                    label="Repeat Password"
+                    placeholder="Enter password again"
+                    meter={false}
+                    bind:value={repeatPassword} />
+                {#if showError === 'password'}
+                    <Helper type={errorType}>{errorMessage}</Helper>
+                {/if}
+            </ul>
         </div>
         <div class="u-flex u-main-space-end common-section">
             <Button
-                disabled={!oldPw || !newPw}
-                secondary
+                disabled={!repeatPassword || !newPassword}
                 on:click={() => {
                     updatePassword();
                 }}>Update</Button>
@@ -198,7 +216,7 @@
             </div>
         </div>
         <div class="u-flex u-main-space-end common-section">
-            <Button secondary>Update</Button>
+            <Button>Update</Button>
         </div>
     </Card>
 
@@ -222,7 +240,6 @@
             </div>
         </div>
         <div class="u-flex u-main-space-end common-section">
-            <!-- <Button secondary on:click={() => deleteUser($user.$id)}>Delete</Button> -->
             <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
         </div>
     </Card>
