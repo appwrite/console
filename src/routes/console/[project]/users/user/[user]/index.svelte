@@ -168,7 +168,6 @@
         </div>
     </Card>
     <Card>
-        newKey = null; newValue = null;
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <h6 class="heading-level-6">Update Name</h6>
             <ul>
