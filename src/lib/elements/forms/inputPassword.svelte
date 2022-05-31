@@ -19,7 +19,7 @@
         }
     });
 
-    $: strength = value.length * 10;
+    $: strength = value ? value.length * 10 : 0;
 </script>
 
 <FormItem>
