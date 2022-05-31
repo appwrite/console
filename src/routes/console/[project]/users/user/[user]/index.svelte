@@ -18,6 +18,9 @@
     let userEmail = null;
     let repeatPassword = null;
     let newPassword = null;
+    let newPref = false;
+    let newKey = null;
+    let newValue = null;
 
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
@@ -101,6 +104,38 @@
             }
         else addError('password', "Passwords don't match", 'error');
     }
+
+    async function updatePrefs() {
+        try {
+            let tmp = $user.prefs;
+            tmp[newKey] = newValue;
+            await sdkForProject.users.updatePrefs($user.$id, tmp);
+            $user.prefs = tmp;
+            newKey = null;
+            newValue = null;
+            addNotification({
+                message: 'Preferences have been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addError('password', error.message, 'error');
+        }
+    }
+
+    async function deletePref(selectedKey: string) {
+        try {
+            let tmp = $user.prefs;
+            delete tmp[selectedKey];
+            await sdkForProject.users.updatePrefs($user.$id, tmp);
+            $user.prefs = tmp;
+            addNotification({
+                message: 'Preferences have been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addError('password', error.message, 'error');
+        }
+    }
 </script>
 
 <Container>
@@ -116,20 +151,24 @@
             <div>
                 {#if !$user.status}
                     <Pill danger>Blocked</Pill>
+                {:else}
+                    <Pill success={$user.emailVerification}
+                        >{$user.emailVerification ? 'Verified' : 'Unverified'}</Pill>
                 {/if}
-                <Pill success={$user.emailVerification}
-                    >{$user.emailVerification ? 'Verified' : 'Unverified'}</Pill>
                 <p>Joined on {toLocaleDate($user.registration)}</p>
             </div>
         </div>
         <div class="u-flex u-main-space-end u-gap-12 common-section">
             <Button text on:click={() => updateStatus()}
                 >{$user.status ? 'Block Account' : 'Unblock Accout'}</Button>
-            <Button secondary on:click={() => updateVerification()}
-                >{$user.emailVerification ? 'Unverify' : 'Verify'} Account</Button>
+            {#if $user.status}
+                <Button secondary on:click={() => updateVerification()}
+                    >{$user.emailVerification ? 'Unverify' : 'Verify'} Account</Button>
+            {/if}
         </div>
     </Card>
     <Card>
+        newKey = null; newValue = null;
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <h6 class="heading-level-6">Update Name</h6>
             <ul>
@@ -209,14 +248,54 @@
             </div>
             <div>
                 {#each Object.entries($user.prefs) as [key, value]}
-                    <p>{key}: {value}</p>
+                    <ul class="u-flex u-gap-12">
+                        <InputText id="key" label="Key" bind:value={key} />
+                        <InputText id="value" label="Value" bind:value />
+                        <Button text on:click={() => deletePref(key)}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </Button>
+                    </ul>
                 {:else}
-                    No user preferences found.
+                    <ul class="u-flex u-gap-12">
+                        <InputText
+                            id="key"
+                            label="Key"
+                            placeholder="Enter Key"
+                            bind:value={newKey} />
+                        <InputText
+                            id="value"
+                            label="Value"
+                            placeholder="Enter Value"
+                            bind:value={newValue} />
+                        <Button text disabled>
+                            <span class="icon-x" aria-hidden="true" />
+                        </Button>
+                    </ul>
                 {/each}
+                {#if newPref}
+                    <ul class="u-flex u-gap-12">
+                        <InputText
+                            id="key"
+                            label="Key"
+                            placeholder="Enter Key"
+                            bind:value={newKey} />
+                        <InputText
+                            id="value"
+                            label="Value"
+                            placeholder="Enter Value"
+                            bind:value={newValue} />
+                        <Button text on:click={() => (newPref = false)}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </Button>
+                    </ul>
+                {/if}
+                <Button text on:click={() => (newPref = true)}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text"> Add Preferences </span></Button>
             </div>
         </div>
         <div class="u-flex u-main-space-end common-section">
-            <Button>Update</Button>
+            <Button disabled={!newKey || !newValue} on:click={() => updatePrefs()}>Update</Button>
         </div>
     </Card>
 
