@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Empty, Pagination } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -19,7 +20,6 @@
 </script>
 
 <Container>
-    <h1>Activity</h1>
     {#await request}
         <div aria-busy="true" />
     {:then response}
@@ -60,7 +60,20 @@
             </Table>
             <Pagination {limit} bind:offset sum={response.total} />
         {:else}
-            <Empty>No activities available.</Empty>
+            <Empty centered>
+                <div class="u-flex u-flex-vertical u-cross-center">
+                    <div class="common-section">
+                        <p>No logs available</p>
+                    </div>
+                    <div class="common-section">
+                        <Button secondary href="#">Documentation</Button>
+                    </div>
+                </div>
+            </Empty>
         {/if}
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {response.total}</p>
+            <Pagination {limit} bind:offset sum={response.total} />
+        </div>
     {/await}
 </Container>
