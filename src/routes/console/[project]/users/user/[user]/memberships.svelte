@@ -58,8 +58,6 @@
                         {/each}
                     </TableBody>
                 </Table>
-
-                <Pagination {limit} bind:offset sum={response.total} />
             </Card>
         {:else}
             <Empty centered>
@@ -72,10 +70,10 @@
                     </div>
                 </div>
             </Empty>
-            <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {response.total}</p>
-                <Pagination {limit} bind:offset sum={response.total} />
-            </div>
         {/if}
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {response.total}</p>
+            <Pagination {limit} bind:offset sum={response.total} />
+        </div>
     {/await}
 </Container>
