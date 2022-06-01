@@ -151,10 +151,6 @@
                 </div>
             </div>
         </Empty>
-        <div class="u-flex common-section u-main-space-between">
-            <p class="text">Total results: {$usersList?.response?.total || 0}</p>
-            <Pagination {limit} bind:offset sum={$usersList?.response?.total || 0} />
-        </div>
     {/if}
 </Container>
 
