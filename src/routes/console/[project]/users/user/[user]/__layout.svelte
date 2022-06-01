@@ -25,6 +25,10 @@
             title: 'Overview'
         },
         {
+            href: `${path}/memberships`,
+            title: 'Memberships'
+        },
+        {
             href: `${path}/sessions`,
             title: 'Sessions'
         },
