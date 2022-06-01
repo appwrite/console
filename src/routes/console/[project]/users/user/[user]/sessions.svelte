@@ -76,7 +76,7 @@
             <Empty centered>
                 <div class="u-flex u-flex-vertical u-cross-center">
                     <div class="common-section">
-                        <p>No Session Available</p>
+                        <p>No session available</p>
                     </div>
                     <div class="common-section">
                         <Button secondary href="#">Documentation</Button>

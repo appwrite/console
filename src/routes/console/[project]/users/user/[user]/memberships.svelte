@@ -63,7 +63,7 @@
             <Empty centered>
                 <div class="u-flex u-flex-vertical u-cross-center">
                     <div class="common-section">
-                        <p>No Memberships Available</p>
+                        <p>No memberships available</p>
                     </div>
                     <div class="common-section">
                         <Button secondary href="#">Documentation</Button>
