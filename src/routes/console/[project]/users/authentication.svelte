@@ -1,22 +1,16 @@
 <script lang="ts">
-    import { SwitchBoxes } from '$lib/components';
+    import { Card } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
-    import SetUserLimit from './_setUserLimit.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
 
-    $: authLimit = $project.authLimit;
     $: projectId = $project.$id;
-    let showUserLimitModal = false;
 
-    const authUpdate = async (event: CustomEvent) => {
+    const authUpdate = async (id: string, value: boolean) => {
         try {
-            await sdkForConsole.projects.updateAuthStatus(
-                projectId,
-                event.detail.id,
-                event.detail.value
-            );
+            await sdkForConsole.projects.updateAuthStatus(projectId, id, value);
             addNotification({
                 type: 'success',
                 message: 'Updated project auth status successfully'
@@ -33,53 +27,75 @@
         {
             label: 'Password',
             id: 'email-password',
-            href: 'https://appwrite.io/docs/client/account?sdk=web-default#accountCreateSession',
             value: $project.authEmailPassword
         },
         {
             label: 'Magic URL',
             id: 'magic-url',
-            href: 'https://appwrite.io/docs/client/account?sdk=web-default#accountCreateMagicURLSession',
             value: $project.authUsersAuthMagicURL
         },
         {
             label: 'Anonymous',
             id: 'anonymous',
-            href: 'https://appwrite.io/docs/client/account?sdk=web-default#accountCreateAnonymousSession',
             value: $project.authAnonymous
         },
         {
             label: 'Invites',
             id: 'invites',
-            href: 'https://appwrite.io/docs/client/teams?sdk=web-default#teamsCreateMembership',
             value: $project.authInvites
         },
         {
             label: 'JWT',
             id: 'jwt',
-            href: 'https://appwrite.io/docs/client/account?sdk=web-default#accountCreateJWT',
             value: $project.authJWT
-        },
-        {
-            label: 'Phone (soon)',
-            id: 'phone',
-            value: false,
-            wip: true
         }
     ];
+
+    console.log($project);
     //TODO: move authBoxes and providersBoxes to a store
     //TODO: if operation not successful revert switchbox value
 </script>
 
 <Container>
-    <p>
-        {authLimit ? `${authLimit} Users allowed` : 'Unlimited Users'}
-        <button on:click={() => (showUserLimitModal = true)} class=" is-text link">
-            <span class="text">{authLimit ? 'Change Limit' : 'Set Limit'}</span>
-        </button>
-    </p>
-    <p>Choose auth methods you wish to use.</p>
-    <SwitchBoxes boxes={authBoxes} on:updated={authUpdate} />
+    <Card>
+        <div>
+            <h2 class="heading-level-6">Auth Methods</h2>
+            <p>Enable the auth methods you wish to use.</p>
+        </div>
+        <ul class="">
+            {#each authBoxes as box}
+                <li class="form-item">
+                    <label class="label" for={box.id}>{box.label}</label>
+                    <div class="input-text-wrapper">
+                        <input
+                            label={box.label}
+                            id={box.id}
+                            type="checkbox"
+                            class="switch"
+                            role="switch"
+                            bind:checked={box.value}
+                            on:change={() => {
+                                authUpdate(box.id, box.value);
+                            }} />
+                    </div>
+                </li>
+            {/each}
+        </ul>
+    </Card>
+    <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
+    <ul class="grid-box ">
+        {#each authBoxes as provider}
+            <button class="card u-flex u-flex-vertical u-cross-center">
+                <div class="card-image">
+                    <img
+                        height="50"
+                        width="50"
+                        src={provider?.src || 'https://via.placeholder.com/50'}
+                        alt={provider?.name} />
+                </div>
+                <p>{provider?.name}</p>
+                <Pill>Inactive</Pill>
+            </button>
+        {/each}
+    </ul>
 </Container>
-
-<SetUserLimit {authLimit} bind:showUserLimitModal />
