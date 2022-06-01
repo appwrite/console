@@ -21,6 +21,8 @@
 </script>
 
 <li class={`helper u-${type}`}>
-    <span class={`icon-${icon}`} aria-hidden="true" />
+    {#if icon !== ''}
+        <span class={`icon-${icon}`} aria-hidden="true" />
+    {/if}
     <slot />
 </li>
