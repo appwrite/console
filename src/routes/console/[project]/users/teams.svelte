@@ -50,7 +50,11 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <div class="input-text-wrapper u-stretch" style="max-width: 500px">
-            <input type="search" class="input-text" bind:value={search} />
+            <input
+                type="search"
+                placeholder="Search by Name"
+                class="input-text"
+                bind:value={search} />
             <span class="icon-search" aria-hidden="true" />
         </div>
 
@@ -98,7 +102,7 @@
         </div>
     {:else if search}
         <Empty>
-            <div class="common-section">
+            <div class="common-section ">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
             </div>
             <div class="common-section">
@@ -108,6 +112,10 @@
                 <Button secondary on:click={() => (search = '')}>Clear Search</Button>
             </div>
         </Empty>
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {$teamsList.response.total}</p>
+            <Pagination {limit} bind:offset sum={$teamsList.response.total} />
+        </div>
     {:else}
         <Empty dashed centered>
             <div class="common-section">
