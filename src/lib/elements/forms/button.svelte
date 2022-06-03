@@ -7,6 +7,7 @@
     export let disabled = false;
     export let round = false;
     export let href: string = null;
+    export let external = false;
     //TODO: add option to add aria-label to buttons that are only icons
 </script>
 
@@ -14,6 +15,8 @@
     <a
         {disabled}
         {href}
+        target={external ? '_blank' : '_self'}
+        rel={external ? 'noopener noreferrer' : ''}
         class="button"
         class:is-only-icon={round}
         class:is-secondary={secondary}
