@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { derived } from 'svelte/store';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Avatar, Card } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -16,11 +17,11 @@
     let errorType: 'error' | 'warning' | 'success' = 'error';
     let userName = null;
     let userEmail = null;
-    let repeatPassword = null;
     let newPassword = null;
     let newPref = false;
     let newKey = null;
     let newValue = null;
+    $: prefsDisabled = !newKey || !newValue;
 
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
@@ -91,18 +92,16 @@
         }
     }
     async function updatePassword() {
-        if (newPassword === repeatPassword)
-            try {
-                await sdkForProject.users.updatePassword($user.$id, newPassword);
-                $user.email = userEmail;
-                addNotification({
-                    message: 'Password has been updated',
-                    type: 'success'
-                });
-            } catch (error) {
-                addError('password', error.message, 'error');
-            }
-        else addError('password', "Passwords don't match", 'error');
+        try {
+            await sdkForProject.users.updatePassword($user.$id, newPassword);
+            $user.email = userEmail;
+            addNotification({
+                message: 'Password has been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addError('password', error.message, 'error');
+        }
     }
 
     async function updatePrefs() {
@@ -136,25 +135,32 @@
             addError('password', error.message, 'error');
         }
     }
+
+    //TODO: make keys updatable too
+    const prefs = derived(user, ($user) => $user.prefs);
+    prefs.subscribe(async (data) => {
+        console.log(data);
+        prefsDisabled = false;
+    });
 </script>
 
 <Container>
     <Card>
-        <div class="u-flex u-main-space-between u-gap-12 common-section">
+        <div class="u-flex  u-gap-12 common-section">
             <div class="user-profile-button">
                 <Avatar size={64} name={$user.name} src={getAvatar($user.name)} />
                 <span class="user-profile-info">
                     <h6 class="heading-level-6">{$user.name}</h6>
-                    <span class="title">{$user.email}</span>
                 </span>
-            </div>
-            <div>
                 {#if !$user.status}
                     <Pill danger>Blocked</Pill>
                 {:else}
                     <Pill success={$user.emailVerification}
                         >{$user.emailVerification ? 'Verified' : 'Unverified'}</Pill>
                 {/if}
+            </div>
+            <div>
+                <span class="title">{$user.email}</span>
                 <p>Joined on {toLocaleDate($user.registration)}</p>
             </div>
         </div>
@@ -209,7 +215,13 @@
     </Card>
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
-            <h6 class="heading-level-6">Update Password</h6>
+            <div>
+                <h6 class="heading-level-6">Update Password</h6>
+                <p>
+                    Enter a new password. A password must contain <b> at least 8 characters.</b>
+                </p>
+            </div>
+
             <ul>
                 <InputPassword
                     id="newPassword"
@@ -217,12 +229,6 @@
                     placeholder="Enter new password"
                     meter={false}
                     bind:value={newPassword} />
-                <InputPassword
-                    id="repeatPassword"
-                    label="Repeat Password"
-                    placeholder="Enter password again"
-                    meter={false}
-                    bind:value={repeatPassword} />
                 {#if showError === 'password'}
                     <Helper type={errorType}>{errorMessage}</Helper>
                 {/if}
@@ -230,7 +236,7 @@
         </div>
         <div class="u-flex u-main-space-end common-section">
             <Button
-                disabled={!repeatPassword || !newPassword}
+                disabled={!newPassword}
                 on:click={() => {
                     updatePassword();
                 }}>Update</Button>
@@ -249,29 +255,13 @@
                 {#each Object.entries($user.prefs) as [key, value]}
                     <ul class="u-flex u-gap-12">
                         <InputText id="key" label="Key" bind:value={key} />
-                        <InputText id="value" label="Value" bind:value />
+                        <InputText id="value" label="Value" bind:value={$user.prefs[key]} />
                         <Button text on:click={() => deletePref(key)}>
                             <span class="icon-x" aria-hidden="true" />
                         </Button>
                     </ul>
-                {:else}
-                    <ul class="u-flex u-gap-12">
-                        <InputText
-                            id="key"
-                            label="Key"
-                            placeholder="Enter Key"
-                            bind:value={newKey} />
-                        <InputText
-                            id="value"
-                            label="Value"
-                            placeholder="Enter Value"
-                            bind:value={newValue} />
-                        <Button text disabled>
-                            <span class="icon-x" aria-hidden="true" />
-                        </Button>
-                    </ul>
                 {/each}
-                {#if newPref}
+                {#if !Object.entries($user.prefs).length || newPref}
                     <ul class="u-flex u-gap-12">
                         <InputText
                             id="key"
@@ -283,7 +273,10 @@
                             label="Value"
                             placeholder="Enter Value"
                             bind:value={newValue} />
-                        <Button text on:click={() => (newPref = false)}>
+                        <Button
+                            text
+                            disabled={!Object.entries($user.prefs).length}
+                            on:click={() => (newPref = false)}>
                             <span class="icon-x" aria-hidden="true" />
                         </Button>
                     </ul>
@@ -294,7 +287,7 @@
             </div>
         </div>
         <div class="u-flex u-main-space-end common-section">
-            <Button disabled={!newKey || !newValue} on:click={() => updatePrefs()}>Update</Button>
+            <Button disabled={prefsDisabled} on:click={() => updatePrefs()}>Update</Button>
         </div>
     </Card>
 
