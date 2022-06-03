@@ -79,7 +79,10 @@
                         <p>No session available</p>
                     </div>
                     <div class="common-section">
-                        <Button secondary href="#">Documentation</Button>
+                        <Button
+                            secondary
+                            href="https://appwrite.io/docs/server/users?sdk=nodejs-default#usersGetSessions"
+                            >Documentation</Button>
                     </div>
                 </div>
             </Empty>
