@@ -165,7 +165,7 @@
             </div>
         </div>
         <div class="u-flex u-main-space-end u-gap-12 common-section">
-            <Button text on:click={() => updateStatus()}
+            <Button text={$user.status} secondary={!$user.status} on:click={() => updateStatus()}
                 >{$user.status ? 'Block Account' : 'Unblock Accout'}</Button>
             {#if $user.status}
                 <Button secondary on:click={() => updateVerification()}
