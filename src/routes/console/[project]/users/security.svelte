@@ -1,6 +1,6 @@
 <script>
     import { Card } from '$lib/components';
-    import { Button, InputNumber } from '$lib/elements/forms';
+    import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { project } from '../store';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,6 +11,12 @@
     let newLimit = $project.authLimit === 0 ? 100 : $project.authLimit;
     let btnActive = false;
     let first = true;
+
+    let options = [
+        { label: 'years', value: 'years' },
+        { label: 'months', value: 'months' },
+        { label: 'days', value: 'days' }
+    ];
 
     $: {
         if (isLimited) {
@@ -31,6 +37,21 @@
                 )
             );
             btnActive = false;
+
+            addNotification({
+                type: 'success',
+                message: 'Updated project users limit successfully'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+    async function updateSessionLength() {
+        try {
+            //Some SDK call
 
             addNotification({
                 type: 'success',
@@ -99,7 +120,28 @@
         </div>
     </Card>
 
-    <Card />
-    <h7 class="heading-level-7">Session length</h7>
-    <Card />
+    <Card>
+        <div class="u-flex u-main-space-between u-gap-12 common-section">
+            <div class="u-flex u-main-space-between u-gap-12 common-section">
+                <div>
+                    <h2 class="heading-level-6">Session Length</h2>
+                    <p>
+                        If you reduce the limit, users who are currently logged in will be logged
+                        out of the application.
+                    </p>
+                </div>
+            </div>
+            <ul class="u-flex u-gap-12">
+                <InputNumber id="length" label="Length" value="1" />
+                <InputSelect id="period" {options} label="Time Period" />
+            </ul>
+        </div>
+        <div class="u-flex u-main-space-end common-section">
+            <Button
+                disabled={true}
+                on:click={() => {
+                    updateSessionLength();
+                }}>Update</Button>
+        </div>
+    </Card>
 </Container>
