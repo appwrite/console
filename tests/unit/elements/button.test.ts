@@ -21,10 +21,10 @@ test('shows button - submit', () => {
     expect(getByRole('button')).toHaveAttribute('type', 'submit');
 });
 
-test('shows button - outline', () => {
-    const { getByRole } = render(Button, { outline: true });
+test('shows button - tertiary', () => {
+    const { getByRole } = render(Button, { tertiary: true });
 
-    expect(getByRole('button')).toHaveClass('is-outline');
+    expect(getByRole('button')).toHaveClass('is-tertiary');
 });
 
 test('shows button - secondary', () => {
