@@ -37,12 +37,18 @@
     <Modal bind:show={showModal}>
         <svelte:fragment slot="header">{provider} OAuth2 Settings</svelte:fragment>
         <InputText
-            id="appId"
-            label="App Id"
+            id="appID"
+            label="App ID"
             autofocus={true}
             autocomplete={false}
+            placeholder="Enter ID"
             bind:value={appId} />
-        <InputPassword id="secret" label="App Secret" meter={false} bind:value={secret} />
+        <InputPassword
+            id="secret"
+            label="App Secret"
+            placeholder="Enter App Secret"
+            meter={false}
+            bind:value={secret} />
         <InfoSection>
             <p>
                 To complete set up, add this OAuth2 redirect URI to your {provider} app configuration.
@@ -50,8 +56,8 @@
             <Copy bind:value={redirectURI} />
         </InfoSection>
         <svelte:fragment slot="footer">
-            <Button submit>Update</Button>
             <Button secondary on:click={() => (showModal = false)}>Cancel</Button>
+            <Button submit>Update</Button>
         </svelte:fragment>
     </Modal>
 </Form>
