@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button, InputPassword, InputEmail, InputText, Form } from '$lib/elements/forms';
-    import { Pill } from '$lib/elements';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -10,11 +9,12 @@
 
     const dispatch = createEventDispatcher();
 
-    let name: string, mail: string, pass: string;
+    let idModal = false;
+    let name: string, mail: string, pass: string, id: string;
 
     const create = async () => {
         try {
-            const user = await sdkForProject.users.create('unique()', mail, pass, name);
+            const user = await sdkForProject.users.create(id ? id : 'unique()', mail, pass, name);
             mail = pass = name = '';
             showCreate = false;
             dispatch('created', user);
@@ -48,7 +48,17 @@
             placeholder="*****"
             required={true}
             bind:value={pass} />
-        <Pill>User ID <i class="icon-duplicate" /></Pill>
+        <div class="tag common-section " on:click={() => (idModal = !idModal)}>
+            User ID<i class="icon-pencil" />
+        </div>
+
+        {#if idModal}
+            <div class="common-section">
+                <p>Enter a custom user ID. Leave blank for a randomly generated user ID.</p>
+                <InputText id="id" label="" placeholder="" bind:value={id} />
+            </div>
+        {/if}
+
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showCreate = false)}>Cancel</Button>
             <Button submit>Create</Button>
