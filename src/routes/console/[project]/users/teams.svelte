@@ -88,7 +88,7 @@
                             href={`${base}/console/${project}/users/teams/${team.$id}`}>
                             {team.name}
                         </TableCellLink>
-                        <TableCellText title="Members">{team.total}</TableCellText>
+                        <TableCellText title="Members">{team.total} members</TableCellText>
                         <TableCellText title="Members">
                             {toLocaleDateTime(team.dateCreated)}
                         </TableCellText>
