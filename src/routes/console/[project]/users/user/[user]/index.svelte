@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { derived } from 'svelte/store';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Avatar, Card } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -21,7 +20,15 @@
     let newPref = false;
     let newKey = null;
     let newValue = null;
-    $: prefsDisabled = !newKey || !newValue;
+    let prefs = Object.entries($user.prefs);
+    let arePrefsDisabled = true;
+    $: if (newKey && newValue) {
+        arePrefsDisabled = false;
+    } else if (prefs) {
+        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
+            arePrefsDisabled = false;
+        }
+    }
 
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
@@ -106,42 +113,46 @@
 
     async function updatePrefs() {
         try {
-            let tmp = $user.prefs;
-            tmp[newKey] = newValue;
-            await sdkForProject.users.updatePrefs($user.$id, tmp);
-            $user.prefs = tmp;
-            newKey = null;
-            newValue = null;
+            let updatedPrefs = Object.fromEntries(prefs);
+            if (newKey && newValue) {
+                updatedPrefs[newKey] = newValue;
+                prefs = Object.entries(updatedPrefs);
+                newKey = null;
+                newValue = null;
+            }
+            newPref = null;
+            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
+            $user.prefs = updatedPrefs;
             addNotification({
                 message: 'Preferences have been updated',
                 type: 'success'
             });
         } catch (error) {
-            addError('password', error.message, 'error');
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
         }
     }
 
     async function deletePref(selectedKey: string) {
         try {
-            let tmp = $user.prefs;
-            delete tmp[selectedKey];
-            await sdkForProject.users.updatePrefs($user.$id, tmp);
-            $user.prefs = tmp;
+            let updatedPrefs = Object.fromEntries(prefs);
+            delete updatedPrefs[selectedKey];
+            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
+            prefs = Object.entries(updatedPrefs);
+            $user.prefs = updatedPrefs;
             addNotification({
                 message: 'Preferences have been updated',
                 type: 'success'
             });
         } catch (error) {
-            addError('password', error.message, 'error');
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
         }
     }
-
-    //TODO: make keys updatable too
-    const prefs = derived(user, ($user) => $user.prefs);
-    prefs.subscribe(async (data) => {
-        console.log(data);
-        prefsDisabled = false;
-    });
 </script>
 
 <Container>
@@ -252,16 +263,16 @@
                 </p>
             </div>
             <div>
-                {#each Object.entries($user.prefs) as [key, value]}
+                {#each prefs as [key, value]}
                     <ul class="u-flex u-gap-12">
                         <InputText id="key" label="Key" bind:value={key} />
-                        <InputText id="value" label="Value" bind:value={$user.prefs[key]} />
+                        <InputText id="value" label="Value" bind:value />
                         <Button text on:click={() => deletePref(key)}>
                             <span class="icon-x" aria-hidden="true" />
                         </Button>
                     </ul>
                 {/each}
-                {#if !Object.entries($user.prefs).length || newPref}
+                {#if prefs.length === 0 || newPref}
                     <ul class="u-flex u-gap-12">
                         <InputText
                             id="key"
@@ -273,10 +284,7 @@
                             label="Value"
                             placeholder="Enter Value"
                             bind:value={newValue} />
-                        <Button
-                            text
-                            disabled={!Object.entries($user.prefs).length}
-                            on:click={() => (newPref = false)}>
+                        <Button text disabled={!prefs.length} on:click={() => (newPref = false)}>
                             <span class="icon-x" aria-hidden="true" />
                         </Button>
                     </ul>
@@ -287,7 +295,7 @@
             </div>
         </div>
         <div class="u-flex u-main-space-end common-section">
-            <Button disabled={prefsDisabled} on:click={() => updatePrefs()}>Update</Button>
+            <Button disabled={arePrefsDisabled} on:click={() => updatePrefs()}>Update</Button>
         </div>
     </Card>
 
