@@ -67,6 +67,7 @@
                     </div>
                     <div class="common-section">
                         <Button
+                            external
                             secondary
                             href="https://appwrite.io/docs/server/users?sdk=nodejs-default#usersGetMemberships"
                             >Documentation</Button>
