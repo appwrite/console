@@ -18,6 +18,7 @@
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
 
     let offset = 0;
+    let showDeleteAll = false;
 
     const limit = 25;
 
@@ -29,6 +30,12 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
+            <div class="u-flex u-main-space-end  common-section">
+                <Button secondary on:click={() => (showDeleteAll = true)}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Delete All</span>
+                </Button>
+            </div>
             <Card>
                 <Table>
                     <TableHeader>

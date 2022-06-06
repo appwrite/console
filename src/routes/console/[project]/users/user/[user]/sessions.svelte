@@ -7,6 +7,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
 
     let offset = 0;
+    let showDeleteAll = false;
 
     const limit = 25;
     const deleteSession = async (id: string) => {
@@ -40,6 +41,12 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
+            <div class="u-flex u-main-space-end  common-section">
+                <Button secondary on:click={() => (showDeleteAll = true)}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Delete All</span>
+                </Button>
+            </div>
             <Card>
                 <List>
                     {#each response.sessions as session}
