@@ -33,7 +33,7 @@
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
 
-    function addError(location: false | 'name' | 'email' | 'password', message: string, type) {
+    function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
         errorMessage = message;
         errorType = type;
