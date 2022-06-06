@@ -265,8 +265,8 @@
             <div>
                 {#each prefs as [key, value]}
                     <ul class="u-flex u-gap-12">
-                        <InputText id="key" label="Key" bind:value={key} />
-                        <InputText id="value" label="Value" bind:value />
+                        <InputText id={`key-${key}`} label="Key" bind:value={key} />
+                        <InputText id={`value-${value}`} label="Value" bind:value />
                         <Button text on:click={() => deletePref(key)}>
                             <span class="icon-x" aria-hidden="true" />
                         </Button>
