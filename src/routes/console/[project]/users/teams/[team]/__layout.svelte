@@ -5,7 +5,7 @@
     import { team } from './store';
 
     const teamId = $page.params.team;
-    // const path = `users/teams/${projectId}`;
+    const path = `users/teams/${teamId}`;
 
     $: {
         if (browser) {
@@ -21,10 +21,26 @@
     // title.set('Teams');
 
     tabs.set([]);
+    tabs.set([
+        {
+            href: path,
+            title: 'Overview'
+        },
+        {
+            href: `${path}/members`,
+            title: 'Members'
+        },
+        {
+            href: `${path}/activity`,
+            title: 'Activity'
+        }
+    ]);
 </script>
 
 <svelte:head>
     <title>Appwrite - Team</title>
 </svelte:head>
 
-<slot />
+{#if $team}
+    <slot />
+{/if}
