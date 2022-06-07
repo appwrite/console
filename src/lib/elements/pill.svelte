@@ -5,22 +5,46 @@
     export let danger = false;
     export let info = false;
     export let button = false;
+    export let submit = false;
+    export let external = false;
+    export let href: string = null;
 </script>
 
-<div
-    class="tag"
-    class:is-disabled={disabled}
-    class:is-success={success}
-    class:is-warning={warning}
-    class:is-danger={danger}
-    class:is-info={info}
-    class:pill-is-button={button}
-    on:click>
-    <slot />
-</div>
-
-<style>
-    .pill-is-button {
-        cursor: pointer;
-    }
-</style>
+{#if href}
+    <a
+        {disabled}
+        {href}
+        target={external ? '_blank' : '_self'}
+        rel={external ? 'noopener noreferrer' : ''}
+        class="tag"
+        class:is-disabled={disabled}
+        class:is-success={success}
+        class:is-warning={warning}
+        class:is-danger={danger}
+        class:is-info={info}>
+        <slot />
+    </a>
+{:else if button}
+    <button
+        on:click
+        {disabled}
+        type={submit ? 'submit' : 'button'}
+        class="tag"
+        class:is-disabled={disabled}
+        class:is-success={success}
+        class:is-warning={warning}
+        class:is-danger={danger}
+        class:is-info={info}>
+        <slot />
+    </button>
+{:else}
+    <div
+        class="tag"
+        class:is-disabled={disabled}
+        class:is-success={success}
+        class:is-warning={warning}
+        class:is-danger={danger}
+        class:is-info={info}>
+        <slot />
+    </div>
+{/if}
