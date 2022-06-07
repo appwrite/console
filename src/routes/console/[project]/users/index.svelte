@@ -9,7 +9,6 @@
         TableHeader,
         TableBody,
         TableRow,
-        TableCell,
         TableCellHead,
         TableCellLink,
         TableCellText
@@ -30,7 +29,7 @@
 
     const limit = 5;
     const project = $page.params.project;
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
         await goto(`${base}/console/${project}/users/user/${event.detail.$id}`);
     };
@@ -86,7 +85,6 @@
     {#if $usersList?.response?.total}
         <Table>
             <TableHeader>
-                <TableCellHead width={30} />
                 <TableCellHead>Name</TableCellHead>
                 <TableCellHead>E-Mail</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
@@ -96,20 +94,18 @@
             <TableBody>
                 {#each $usersList.response.users as user}
                     <TableRow>
-                        <TableCell onlyDesktop>
-                            <div class="image">
-                                <img
-                                    class="avatar"
-                                    width="30"
-                                    height="30"
-                                    src={getAvatar(user.name)}
-                                    alt={user.name} />
-                            </div>
-                        </TableCell>
                         <TableCellLink
                             href={`${base}/console/${project}/users/user/${user.$id}`}
                             title="Name">
-                            {user.name ? user.name : 'n/a'}
+                            <div class="u-flex u-gap-12">
+                                <img
+                                    class="avatar"
+                                    width="40"
+                                    height="40"
+                                    src={getAvatar(user.name)}
+                                    alt={user.name} />
+                                <span>{user.name ? user.name : 'n/a'}</span>
+                            </div>
                         </TableCellLink>
                         <TableCellText title="E-Mail">{user.email}</TableCellText>
                         <TableCellText title="Status">

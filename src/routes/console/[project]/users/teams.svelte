@@ -8,8 +8,7 @@
         TableRow,
         TableCellHead,
         TableCellLink,
-        TableCellText,
-        TableCell
+        TableCellText
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination } from '$lib/components';
@@ -28,7 +27,7 @@
 
     const limit = 25;
     const project = $page.params.project;
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
         await goto(`${base}/console/${project}/users/team/${event.detail.$id}`);
     };
@@ -65,7 +64,6 @@
     {#if $teamsList?.response?.total}
         <Table>
             <TableHeader>
-                <TableCellHead width={30} />
                 <TableCellHead>Name</TableCellHead>
                 <TableCellHead>Members</TableCellHead>
                 <TableCellHead>Created</TableCellHead>
@@ -73,20 +71,18 @@
             <TableBody>
                 {#each $teamsList.response.teams as team}
                     <TableRow>
-                        <TableCell onlyDesktop>
-                            <div class="image">
-                                <img
-                                    class="avatar"
-                                    width="30"
-                                    height="30"
-                                    src={getAvatar(team.name)}
-                                    alt={team.name} />
-                            </div>
-                        </TableCell>
                         <TableCellLink
                             title="ID"
                             href={`${base}/console/${project}/users/teams/${team.$id}`}>
-                            {team.name}
+                            <div class="u-flex u-gap-12">
+                                <img
+                                    class="avatar"
+                                    width="40"
+                                    height="40"
+                                    src={getAvatar(team.name)}
+                                    alt={team.name} />
+                                <span>{team.name}</span>
+                            </div>
                         </TableCellLink>
                         <TableCellText title="Members">{team.total} members</TableCellText>
                         <TableCellText title="Members">
