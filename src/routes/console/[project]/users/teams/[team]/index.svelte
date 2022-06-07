@@ -2,59 +2,108 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Card } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Card, Avatar } from '$lib/components';
+    import { Container } from '$lib/layout';
+    import { Button, InputText, Helper } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { addNotification } from '$lib/stores/notifications';
+    import { team } from './store';
 
-    const request = Promise.all([
-        sdkForProject.teams.get($page.params.team),
-        sdkForProject.teams.getMemberships($page.params.team)
-    ]);
+    const getAvatar = (name: string) =>
+        sdkForProject.avatars.getInitials(name, 128, 128).toString();
 
-    const deleteTeam = async (id: string) => {
+    let showDelete = false;
+    let showError: false | 'name' | 'email' | 'password' = false;
+    let errorMessage = 'Something went wrong';
+    let errorType: 'error' | 'warning' | 'success' = 'error';
+    let teamName = null;
+
+    function addError(location: typeof showError, message: string, type: typeof errorType) {
+        showError = location;
+        errorMessage = message;
+        errorType = type;
+        setTimeout(() => {
+            showError = false;
+        }, 6000);
+    }
+
+    async function updateName() {
         try {
-            if (!confirm('Are you sure you want to delete that team?')) return;
-            await sdkForProject.teams.delete(id);
-            await goto(`${base}/console/${$page.params.project}/teams`);
+            await sdkForProject.teams.update($page.params.team, teamName);
+            $team.name = teamName;
+            teamName = null;
+            addNotification({
+                message: 'Name has been updated',
+                type: 'success'
+            });
         } catch (error) {
-            console.error(error);
+            addError('name', error.message, 'error');
         }
-    };
-
-    const deleteMembership = async (id: string) => {
-        try {
-            if (!confirm('Are you sure you want to delete that membership?')) return;
-            await sdkForProject.teams.deleteMembership($page.params.team, id);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    }
 </script>
 
-{#await request}
-    <div aria-busy="true" />
-{:then [team, members]}
-    <h1>Overview</h1>
-    <Card>
-        <p>{team.$id}</p>
-        <p>Created {team.dateCreated}</p>
-    </Card>
+{#if $team}
+    <Container>
+        <Card>
+            <div class="u-flex u-main-space-between u-gap-12 common-section">
+                <div class="user-profile-button">
+                    <Avatar size={64} name={$team.name} src={getAvatar($team.name)} />
+                    <span class="user-profile-info">
+                        <h6 class="heading-level-6">{$team.name}</h6>
+                        <span class="title">{$team.total} Members</span>
+                    </span>
+                </div>
+                <div>
+                    <p>Created on {toLocaleDate($team.dateCreated)}</p>
+                </div>
+            </div>
+        </Card>
+        <Card>
+            <div class="u-flex u-main-space-between u-gap-12 common-section">
+                <h6 class="heading-level-6">Update Name</h6>
+                <ul>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        placeholder={$team.name}
+                        bind:value={teamName} />
+                    {#if showError === 'name'}
+                        <Helper type={errorType}>{errorMessage}</Helper>
+                    {/if}
+                </ul>
+            </div>
+            <div class="u-flex u-main-space-end common-section">
+                <Button
+                    disabled={!teamName}
+                    on:click={() => {
+                        updateName();
+                    }}>Update</Button>
+            </div>
+        </Card>
 
-    <h1>Members</h1>
-    <Card>
-        {#each members.memberships as membership}
-            <p>
-                {membership.userName}
-                {membership.userEmail}
-                <Button on:click={() => deleteMembership(membership.$id)}>Remove</Button>
-            </p>
-            <p>
-                Roles: {membership.roles.join(', ')}
-            </p>
-        {:else}
-            No members found.
-        {/each}
-    </Card>
-
-    <Button on:click={() => deleteTeam(team.$id)}>Delete Team</Button>
-{/await}
+        <Card>
+            <div class="u-flex u-main-space-between u-gap-12 common-section">
+                <div>
+                    <h6 class="heading-level-6">Danger Zone</h6>
+                    <p>
+                        The team will be permanently deleted, including all data associated with
+                        this team. This action is irreversible.
+                    </p>
+                </div>
+                <div>
+                    <div class="user-profile-button">
+                        <Avatar size={64} name={$team.name} src={getAvatar($team.name)} />
+                        <span class="user-profile-info">
+                            <h6 class="heading-level-6">{$team.name}</h6>
+                            <span class="title">{$team.total} Members</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="u-flex u-main-space-end common-section">
+                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            </div>
+        </Card>
+    </Container>
+{/if}
