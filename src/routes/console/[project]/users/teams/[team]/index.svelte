@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Card, Avatar } from '$lib/components';
     import { Container } from '$lib/layout';
