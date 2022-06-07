@@ -140,7 +140,7 @@
         },
         {
             name: 'Bitbucket',
-            icon: 'bitbucket',
+            icon: 'bitBucket',
             active: false,
             id: $project.providerBitbucketAppid,
             secret: $project.providerBitbucketSecret
@@ -238,7 +238,7 @@
         },
         {
             name: 'Yammer',
-            icon: 'yammer',
+            icon: 'ms_yammer',
             active: false,
             id: $project.providerYammerAppid,
             secret: $project.providerYammerSecret
@@ -310,7 +310,7 @@
                     <img
                         height="50"
                         width="50"
-                        src={'https://via.placeholder.com/50'}
+                        src={`/icons/color/${provider.icon}.svg`}
                         alt={provider.name} />
                     <span class={`icon-${provider.icon}`} aria-hidden="true" />
                 </div>
