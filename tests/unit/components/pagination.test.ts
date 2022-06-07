@@ -109,13 +109,13 @@ test('pagination - number button click', async () => {
     expect(button3).not.toHaveClass('is-disabled');
 });
 
-test('shows no controls', () => {
+test('shows no active controls', () => {
     const { queryByLabelText } = render(Pagination, {
         limit: 25,
         offset: 0,
         sum: 10
     });
 
-    expect(queryByLabelText('prev page')).not.toBeInTheDocument();
-    expect(queryByLabelText('next page')).not.toBeInTheDocument();
+    expect(queryByLabelText('prev page')).toHaveClass('is-disabled');
+    expect(queryByLabelText('next page')).toHaveClass('is-disabled');
 });
