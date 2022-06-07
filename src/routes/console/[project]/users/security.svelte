@@ -92,7 +92,7 @@
                             bind:group={isLimited}
                             value="unlimited" />
                         <label class="label" for="unlimited"
-                            >Unlimited <Pill>reccomended</Pill></label>
+                            >Unlimited <Pill>recommended</Pill></label>
                     </div>
                     <div class="input-text-wrapper">
                         <input
