@@ -3,6 +3,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { Empty, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
     import {
         Table,
         TableHeader,
@@ -50,6 +51,21 @@
             offset = queryOffset;
         }
     });
+
+    const copy = async (value) => {
+        try {
+            await navigator.clipboard.writeText(value);
+            addNotification({
+                message: 'Copied to clipboard.',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    };
 </script>
 
 <Container>
@@ -106,7 +122,8 @@
                             {/if}
                         </TableCellText>
                         <TableCellText title="ID">
-                            <Pill>User ID <i class="icon-duplicate" /></Pill>
+                            <Pill button on:click={() => copy(user.$id)}
+                                >User ID <i class="icon-duplicate" /></Pill>
                         </TableCellText>
                         <TableCellText title="Joined">
                             {toLocaleDateTime(user.registration)}
