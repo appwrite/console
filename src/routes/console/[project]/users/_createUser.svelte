@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
+    import { Pill } from '$lib/elements/';
     import { Button, InputPassword, InputEmail, InputText, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -48,9 +49,8 @@
             placeholder="*****"
             required={true}
             bind:value={pass} />
-        <div class="tag common-section " on:click={() => (idModal = !idModal)}>
-            User ID<i class="icon-pencil" />
-        </div>
+
+        <Pill button on:click={() => (idModal = !idModal)}>User ID <i class="icon-pencil" /></Pill>
 
         {#if idModal}
             <div class="common-section">
