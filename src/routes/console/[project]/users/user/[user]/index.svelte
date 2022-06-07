@@ -78,6 +78,7 @@
         try {
             await sdkForProject.users.updateName($user.$id, userName);
             $user.name = userName;
+            userName = null;
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -90,6 +91,7 @@
         try {
             await sdkForProject.users.updateEmail($user.$id, userEmail);
             $user.email = userEmail;
+            userEmail = null;
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'
@@ -101,7 +103,7 @@
     async function updatePassword() {
         try {
             await sdkForProject.users.updatePassword($user.$id, newPassword);
-            $user.email = userEmail;
+            newPassword = null;
             addNotification({
                 message: 'Password has been updated',
                 type: 'success'
