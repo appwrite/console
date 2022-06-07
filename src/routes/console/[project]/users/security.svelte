@@ -1,5 +1,6 @@
 <script>
     import { Card } from '$lib/components';
+    import { Pill } from '$lib/elements/';
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { project } from '../store';
@@ -90,7 +91,8 @@
                             checked={isLimited === 'unlimited'}
                             bind:group={isLimited}
                             value="unlimited" />
-                        <label class="label" for="unlimited">Unlimited</label>
+                        <label class="label" for="unlimited"
+                            >Unlimited <Pill>reccomended</Pill></label>
                     </div>
                     <div class="input-text-wrapper">
                         <input
