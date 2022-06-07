@@ -19,7 +19,8 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
-        "@aw-labs/ui": "*"
+        "@aw-labs/ui": "^0.0.0-4",
+        "@aw-labs/icons": "^0.0.0-4"
     },
     "devDependencies": {
         "@playwright/test": "^1.22.1",

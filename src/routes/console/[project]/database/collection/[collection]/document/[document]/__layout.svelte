@@ -1,40 +1,39 @@
 <script lang="ts">
-    import { browser } from '$app/env';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Back } from '$lib/components';
-    import { Container, Cover } from '$lib/layout';
-    import { collection } from '../../store';
+    import { browser } from '$app/env';
+    import { tabs, title } from '$lib/stores/layout';
     import { doc } from './store';
-    import Tabs from './_tabs.svelte';
 
-    const project = $page.params.project;
     const collectionId = $page.params.collection;
     const documentId = $page.params.document;
+    const path = `database/collection/${collectionId}/document/${documentId}`;
 
     $: {
         if (browser) {
             doc.load(collectionId, documentId);
         }
     }
+
+    $: {
+        if ($doc) {
+            title.set(`Document - ${$doc.$id}`);
+        }
+    }
+
+    tabs.set([
+        {
+            href: path,
+            title: 'Overview'
+        },
+        {
+            href: `${path}/activity`,
+            title: 'Activity'
+        }
+    ]);
 </script>
 
 <svelte:head>
     <title>Appwrite - Database Document</title>
 </svelte:head>
 
-{#if $doc && $collection}
-    <Cover>
-        <Back href={`${base}/console/${project}/database/collection/${collectionId}`}>
-            Collection - {$collection.name}
-        </Back>
-        <h1>{$doc.$id}</h1>
-        <Tabs />
-    </Cover>
-
-    <Container>
-        <slot />
-    </Container>
-{:else}
-    <div aria-busy="true" />
-{/if}
+<slot />

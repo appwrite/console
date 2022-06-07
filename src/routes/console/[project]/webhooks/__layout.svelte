@@ -1,16 +1,8 @@
 <script>
-    import { base } from '$app/paths';
+    import { tabs, title } from '$lib/stores/layout';
 
-    import { page } from '$app/stores';
-    import { Back } from '$lib/components';
-    import { Cover } from '$lib/layout';
-    const projectId = $page.params.project;
+    title.set('Webhooks');
+    tabs.set([]);
 </script>
 
-<Cover>
-    <svelte:fragment slot="breadcrumbs">
-        <Back href={`${base}/console/${projectId}`}>Home</Back>
-    </svelte:fragment>
-    <svelte:fragment slot="title">Webhooks</svelte:fragment>
-</Cover>
 <slot />

@@ -48,14 +48,14 @@
                     aria-label="Close Modal"
                     title="Close Modal"
                     on:click={closeModal}>
-                    <span class="icon-cancel" aria-hidden="true" />
+                    <span class="icon-x" aria-hidden="true" />
                 </button>
             </header>
             <div class="modal-content">
                 <slot />
             </div>
             <div class="modal-footer">
-                <div class="u-flex u-gap-10">
+                <div class="u-flex u-main-space-end u-gap-12">
                     <slot name="footer" />
                 </div>
             </div>

@@ -4,6 +4,7 @@
     export let outline = false;
     export let danger = false;
     export let disabled = false;
+    export let round = false;
     export let href: string = null;
 </script>
 
@@ -12,6 +13,7 @@
         {disabled}
         {href}
         class="button"
+        class:is-only-icon={round}
         class:is-secondary={secondary}
         class:is-outline={outline}
         class:is-danger={danger}>
@@ -22,6 +24,7 @@
         on:click
         {disabled}
         class="button"
+        class:is-only-icon={round}
         class:is-secondary={secondary}
         class:is-outline={outline}
         class:is-danger={danger}

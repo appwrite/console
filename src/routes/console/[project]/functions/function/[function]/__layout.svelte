@@ -1,30 +1,44 @@
 <script lang="ts">
     import { browser } from '$app/env';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Back } from '$lib/components';
-    import { Cover } from '$lib/layout';
+    import { tabs, title } from '$lib/stores/layout';
     import { func } from './store';
-    import Tabs from './_tabs.svelte';
 
-    const project = $page.params.project;
     const functionId = $page.params.function;
+    const path = `functions/function/${functionId}`;
 
     $: {
         if (browser) {
             func.load(functionId);
         }
     }
+
+    $: {
+        if ($func) {
+            title.set($func.name);
+        }
+    }
+
+    tabs.set([
+        {
+            href: path,
+            title: 'Overview'
+        },
+        {
+            href: `${path}/monitors`,
+            title: 'Monitors'
+        },
+        {
+            href: `${path}/logs`,
+            title: 'Logs'
+        },
+        {
+            href: `${path}/settings`,
+            title: 'Settings'
+        }
+    ]);
 </script>
 
 {#if $func}
-    <Cover>
-        <svelte:fragment slot="breadcrumbs">
-            <Back href={`${base}/console/${project}/functions`}>Functions</Back>
-        </svelte:fragment>
-        <svelte:fragment slot="title">{$func.name}</svelte:fragment>
-        <Tabs />
-    </Cover>
-
     <slot />
 {/if}

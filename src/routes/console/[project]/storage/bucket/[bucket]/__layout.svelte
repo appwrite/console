@@ -1,32 +1,42 @@
 <script lang="ts">
     import { browser } from '$app/env';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Back } from '$lib/components';
-    import { Cover } from '$lib/layout';
+    import { tabs, title } from '$lib/stores/layout';
     import { bucket } from './store';
-    import Tabs from './_tabs.svelte';
 
-    const project = $page.params.project;
     const bucketId = $page.params.bucket;
+    const path = `storage/bucket/${bucketId}`;
 
     $: {
         if (browser) {
             bucket.load(bucketId);
         }
     }
+
+    $: {
+        if ($bucket) {
+            title.set($bucket.name);
+        }
+    }
+
+    tabs.set([
+        {
+            href: path,
+            title: 'Files'
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage'
+        },
+        {
+            href: `${path}/settings`,
+            title: 'Settings'
+        }
+    ]);
 </script>
 
 <svelte:head>
     <title>Appwrite - Bucket</title>
 </svelte:head>
-{#if $bucket}
-    <Cover>
-        <svelte:fragment slot="breadcrumbs">
-            <Back href={`${base}/console/${project}/storage`}>Storage</Back>
-        </svelte:fragment>
-        <svelte:fragment slot="title">{$bucket.name}</svelte:fragment>
-        <Tabs />
-    </Cover>
-    <slot />
-{/if}
+
+<slot />

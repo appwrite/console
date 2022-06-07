@@ -1,17 +1,34 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { Cover } from '$lib/layout';
-    import Tabs from './_tabs.svelte';
+    import { tabs, title } from '$lib/stores/layout';
+
+    const path = 'users';
+    title.set('Users');
+    tabs.set([
+        {
+            href: path,
+            title: 'Users'
+        },
+        {
+            href: `${path}/teams`,
+            title: 'Teams'
+        },
+        {
+            href: `${path}/authentication`,
+            title: 'Authentication'
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage'
+        },
+        {
+            href: `${path}/security`,
+            title: 'Security'
+        }
+    ]);
 </script>
 
 <svelte:head>
     <title>Appwrite - Users</title>
 </svelte:head>
 
-{#if $page.url.pathname.endsWith(`/users`) || $page.url.pathname.endsWith(`/users/teams`) || $page.url.pathname.endsWith(`/users/usage`) || $page.url.pathname.endsWith(`/users/authentication`) || $page.url.pathname.endsWith(`/users/security`)}
-    <Cover>
-        <svelte:fragment slot="title">Users</svelte:fragment>
-        <Tabs />
-    </Cover>
-{/if}
 <slot />
