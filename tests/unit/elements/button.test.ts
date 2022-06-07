@@ -21,12 +21,6 @@ test('shows button - submit', () => {
     expect(getByRole('button')).toHaveAttribute('type', 'submit');
 });
 
-test('shows button - tertiary', () => {
-    const { getByRole } = render(Button, { tertiary: true });
-
-    expect(getByRole('button')).toHaveClass('is-tertiary');
-});
-
 test('shows button - secondary', () => {
     const { getByRole } = render(Button, { secondary: true });
 

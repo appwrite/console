@@ -1,7 +1,6 @@
 <script lang="ts">
     export let submit = false;
     export let secondary = false;
-    export let tertiary = false;
     export let text = false;
     export let danger = false;
     export let disabled = false;
@@ -20,7 +19,6 @@
         class="button"
         class:is-only-icon={round}
         class:is-secondary={secondary}
-        class:is-tertiary={tertiary}
         class:is-text={text}
         class:is-danger={danger}>
         <slot />
@@ -32,7 +30,6 @@
         class="button"
         class:is-only-icon={round}
         class:is-secondary={secondary}
-        class:is-tertiary={tertiary}
         class:is-danger={danger}
         class:is-text={text}
         type={submit ? 'submit' : 'button'}>
