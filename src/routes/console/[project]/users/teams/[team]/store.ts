@@ -13,5 +13,27 @@ function createTeamStore() {
         }
     };
 }
+function createMembershipStore() {
+    const { subscribe, set } = writable<Models.MembershipList>();
 
+    return {
+        subscribe,
+        set,
+        load: async (teamId: string, search: string, limit: number, offset: number) => {
+            set(
+                await sdkForProject.teams.getMemberships(
+                    teamId,
+                    search,
+                    limit,
+                    offset,
+                    undefined,
+                    undefined,
+                    'DESC'
+                )
+            );
+        }
+    };
+}
+
+export const memberships = createMembershipStore();
 export const team = createTeamStore();
