@@ -119,7 +119,8 @@
                         </TableCellText>
                         <TableCellText title="ID">
                             <Pill button on:click={() => copy(user.$id)}
-                                >User ID <i class="icon-duplicate" /></Pill>
+                                ><i class="icon-duplicate" />User ID
+                            </Pill>
                         </TableCellText>
                         <TableCellText title="Joined">
                             {toLocaleDateTime(user.registration)}
