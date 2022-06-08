@@ -11,6 +11,7 @@
         TableCellText
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
 
     let offset = 0;
@@ -26,22 +27,30 @@
         {#if response.total}
             <Table>
                 <TableHeader>
-                    <TableCellHead>Date</TableCellHead>
-                    <TableCellHead>Event</TableCellHead>
                     <TableCellHead>Client</TableCellHead>
+                    <TableCellHead>Event</TableCellHead>
                     <TableCellHead>Location</TableCellHead>
                     <TableCellHead>IP</TableCellHead>
+                    <TableCellHead>Date</TableCellHead>
                 </TableHeader>
                 <TableBody>
                     {#each response.logs as log}
                         <TableRow>
-                            <TableCellText title="Date">{log.time}</TableCellText>
-                            <TableCellText title="Event">{log.event}</TableCellText>
                             <TableCellText title="Client">
-                                {log.clientName}
-                                {log.clientVersion} on {log.osName}
+                                <img
+                                    height="50"
+                                    width="50"
+                                    src={`/icons/color/${log?.clientName.toLocaleLowerCase()}.svg`}
+                                    alt={log.clientName} />
+                                <p>
+                                    {log.clientName}
+                                    {log.clientVersion}
+                                </p>
+                                on {log.osName}
                                 {log.osVersion}
                             </TableCellText>
+                            <TableCellText title="Event">{log.event}</TableCellText>
+
                             <TableCellText title="Location">
                                 {#if log.countryCode !== '--'}
                                     <img
@@ -54,11 +63,11 @@
                                 {/if}
                             </TableCellText>
                             <TableCellText title="IP">{log.ip}</TableCellText>
+                            <TableCellText title="Date">{toLocaleDateTime(log.time)}</TableCellText>
                         </TableRow>
                     {/each}
                 </TableBody>
             </Table>
-            <Pagination {limit} bind:offset sum={response.total} />
         {:else}
             <Empty centered>
                 <div class="u-flex u-flex-vertical u-cross-center">
