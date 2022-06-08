@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Avatar, Card } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -7,9 +8,16 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import DeleteUser from './_deleteUser.svelte';
-
     import { user } from './store';
 
+    $: user.load($page.params.user);
+    $: if (newKey && newValue) {
+        arePrefsDisabled = false;
+    } else if (prefs) {
+        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
+            arePrefsDisabled = false;
+        }
+    }
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
@@ -22,13 +30,6 @@
     let newValue = null;
     let prefs = Object.entries($user.prefs);
     let arePrefsDisabled = true;
-    $: if (newKey && newValue) {
-        arePrefsDisabled = false;
-    } else if (prefs) {
-        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
-            arePrefsDisabled = false;
-        }
-    }
 
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
