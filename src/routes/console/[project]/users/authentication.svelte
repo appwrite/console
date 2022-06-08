@@ -167,13 +167,6 @@
             secret: $project.providerDropboxSecret
         },
         {
-            name: 'Mock',
-            icon: 'mock',
-            active: false,
-            id: $project.providerMockAppid,
-            secret: $project.providerMockSecret
-        },
-        {
             name: 'Notion',
             icon: 'notion',
             active: false,
@@ -312,7 +305,6 @@
                         width="50"
                         src={`/icons/color/${provider.icon}.svg`}
                         alt={provider.name} />
-                    <span class={`icon-${provider.icon}`} aria-hidden="true" />
                 </div>
                 <p>{provider.name}</p>
                 <Pill success={provider.active}>{provider.active ? 'Active' : 'Inactive'}</Pill>
