@@ -15,6 +15,7 @@
 
     const create = async () => {
         try {
+            //TODO update url to correct one?
             const user = await sdkForProject.teams.createMembership(
                 teamId,
                 email,
