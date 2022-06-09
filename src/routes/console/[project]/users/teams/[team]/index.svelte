@@ -46,7 +46,7 @@
         <Card>
             <div class="u-flex u-main-space-between u-gap-12 common-section">
                 <div class="user-profile-button">
-                    <Avatar size={64} name={$team.name} src={getAvatar($team.name)} />
+                    <Avatar size={40} name={$team.name} src={getAvatar($team.name)} />
                     <span class="user-profile-info">
                         <h6 class="heading-level-6">{$team.name}</h6>
                         <span class="title">{$team.total} Members</span>

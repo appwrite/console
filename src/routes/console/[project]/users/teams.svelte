@@ -11,7 +11,7 @@
         TableCellText
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination } from '$lib/components';
+    import { Empty, Pagination, Avatar } from '$lib/components';
     import Create from './_createTeam.svelte';
     import { goto } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -75,12 +75,7 @@
                             title="ID"
                             href={`${base}/console/${project}/users/teams/${team.$id}`}>
                             <div class="u-flex u-gap-12">
-                                <img
-                                    class="avatar"
-                                    width="40"
-                                    height="40"
-                                    src={getAvatar(team.name)}
-                                    alt={team.name} />
+                                <Avatar size={40} name={team.name} src={getAvatar(team.name)} />
                                 <span>{team.name}</span>
                             </div>
                         </TableCellLink>
