@@ -1,4 +1,4 @@
 <div>
-    <i class="icon-info-circled" />
+    <i class="icon-info" />
     <slot />
 </div>
