@@ -5,7 +5,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
-    import Auth from './_toggleOAuth.svelte';
+    import Auth from './_mainOAuth.svelte';
 
     $: projectId = $project.$id;
     let showModal = false;
@@ -259,7 +259,7 @@
         }
     ];
 
-    let selectedProvider;
+    let selectedProvider: typeof providers[0];
 
     //TODO: move authBoxes and providers to a store
     //TODO: if operation not successful revert switchbox value
