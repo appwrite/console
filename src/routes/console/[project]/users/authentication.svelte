@@ -5,7 +5,11 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
-    import Auth from './_mainOAuth.svelte';
+    import MainAuth from './_mainOAuth.svelte';
+    import Apple from './_appleOAuth.svelte';
+    import Microsoft from './_microsoftOAuth.svelte';
+    import Okta from './_oktaOAuth.svelte';
+    import Auth0 from './_auth0OAuth.svelte';
 
     $: projectId = $project.$id;
     let showModal = false;
@@ -80,7 +84,8 @@
             icon: 'apple',
             active: false,
             id: $project.providerAppleAppid,
-            secret: $project.providerAppleSecret
+            secret: $project.providerAppleSecret,
+            component: Apple
         },
         {
             name: 'Discord',
@@ -94,7 +99,8 @@
             icon: 'microsoft',
             active: false,
             id: $project.providerMicrosoftAppid,
-            secret: $project.providerMicrosoftSecret
+            secret: $project.providerMicrosoftSecret,
+            component: Microsoft
         },
         {
             name: 'Github',
@@ -136,7 +142,8 @@
             icon: 'auth0',
             active: false,
             id: $project.providerAuth0Appid,
-            secret: $project.providerAuth0Secret
+            secret: $project.providerAuth0Secret,
+            component: Auth0
         },
         {
             name: 'Bitbucket',
@@ -178,7 +185,8 @@
             icon: 'okta',
             active: false,
             id: $project.providerOktaAppid,
-            secret: $project.providerOktaSecret
+            secret: $project.providerOktaSecret,
+            component: Okta
         },
         {
             name: 'Paypal',
@@ -221,6 +229,13 @@
             active: false,
             id: $project.providerTradeshiftAppid,
             secret: $project.providerTradeshiftSecret
+        },
+        {
+            name: 'Tradeshift(sandbox)',
+            icon: 'tradeshift',
+            active: false,
+            id: $project.providerTradeshiftBoxAppid,
+            secret: $project.providerTradeshiftBoxSecret
         },
         {
             name: 'Wordpress',
@@ -321,5 +336,12 @@
 </Container>
 
 {#if selectedProvider}
-    <Auth provider={selectedProvider} bind:showModal />
+    {#if !selectedProvider?.component}
+        <MainAuth provider={selectedProvider} bind:showModal />
+    {:else}
+        <svelte:component
+            this={selectedProvider.component}
+            provider={selectedProvider}
+            bind:showModal />
+    {/if}
 {/if}
