@@ -188,6 +188,13 @@
             secret: $project.providerPaypalSecret
         },
         {
+            name: 'Paypal (sandbox)',
+            icon: 'paypal',
+            active: false,
+            id: $project.providerPaypalSandboxAppid,
+            secret: $project.providerPaypalSandboxSecret
+        },
+        {
             name: 'Salesforce',
             icon: 'salesforce',
             active: false,
