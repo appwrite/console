@@ -45,7 +45,7 @@
         <InputPassword
             id="secret"
             label="Client Secret"
-            placeholder="Enter App Secret"
+            placeholder="Enter Client Secret"
             meter={false}
             bind:value={provider.secret} />
         <InputText
