@@ -22,12 +22,12 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName = null;
-    let userEmail = null;
-    let newPassword = null;
-    let newPref = false;
-    let newKey = null;
-    let newValue = null;
+    let userName = null,
+        userEmail = null,
+        newPassword = null,
+        newPref = false,
+        newKey = null,
+        newValue = null;
     let prefs = Object.entries($user.prefs);
     let arePrefsDisabled = true;
 
@@ -38,9 +38,6 @@
         showError = location;
         errorMessage = message;
         errorType = type;
-        setTimeout(() => {
-            showError = false;
-        }, 6000);
     }
 
     async function updateVerification() {
@@ -80,6 +77,7 @@
             await sdkForProject.users.updateName($user.$id, userName);
             $user.name = userName;
             userName = null;
+            showError = false;
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -93,6 +91,7 @@
             await sdkForProject.users.updateEmail($user.$id, userEmail);
             $user.email = userEmail;
             userEmail = null;
+            showError = false;
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'
@@ -105,6 +104,7 @@
         try {
             await sdkForProject.users.updatePassword($user.$id, newPassword);
             newPassword = null;
+            showError = false;
             addNotification({
                 message: 'Password has been updated',
                 type: 'success'
