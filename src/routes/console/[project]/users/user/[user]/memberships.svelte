@@ -14,11 +14,16 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { sdkForProject } from '$lib/stores/sdk';
+    import DeleteMembership from './_deleteMembership.svelte';
+    import DeleteAllMemberships from './_deleteAllMemberships.svelte';
+    import type { Models } from 'src/sdk';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
     const project = $page.params.project;
 
     let offset = 0;
+    let selectedMembership: Models.Membership;
+    let showDelete = false;
     let showDeleteAll = false;
 
     const limit = 25;
@@ -62,7 +67,11 @@
                             <TableCellText title="">
                                 <button
                                     class="button is-only-icon is-text"
-                                    aria-label="Delete item">
+                                    aria-label="Delete item"
+                                    on:click={() => {
+                                        selectedMembership = membership;
+                                        showDelete = true;
+                                    }}>
                                     <span class="icon-trash" aria-hidden="true" />
                                 </button>
                             </TableCellText>
@@ -92,3 +101,6 @@
         </div>
     {/await}
 </Container>
+
+<DeleteMembership {selectedMembership} bind:showDelete />
+<DeleteAllMemberships bind:showDeleteAll />
