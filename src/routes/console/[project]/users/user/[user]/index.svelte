@@ -175,7 +175,7 @@
             </div>
             <div>
                 <span class="title">{$user.email}</span>
-                <p>Joined on {toLocaleDate($user.registration)}</p>
+                <p>Joined: {toLocaleDate($user.registration)}</p>
             </div>
         </div>
         <div class="u-flex u-main-space-end u-gap-12 common-section">
