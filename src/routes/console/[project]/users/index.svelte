@@ -51,7 +51,7 @@
         }
     });
 
-    const copy = async (value) => {
+    const copy = async (value: string) => {
         try {
             await navigator.clipboard.writeText(value);
             addNotification({
