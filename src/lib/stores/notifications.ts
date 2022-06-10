@@ -6,6 +6,7 @@ export type Notification = {
     dismissible?: boolean;
     timeout?: number;
     message: string;
+    title?: string;
 };
 
 let counter = 0;

@@ -9,6 +9,7 @@
             {#each $notifications as notification (notification.id)}
                 <Notification
                     type={notification.type}
+                    title={notification.title}
                     on:dismiss={() => dismissNotification(notification.id)}>
                     {notification.message}
                 </Notification>
@@ -20,10 +21,8 @@
 <style lang="scss">
     section {
         position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        top: calc(var(--main-header-height) + 24px);
+        right: 24px;
         z-index: 1000;
-        margin-bottom: 0.5rem;
     }
 </style>
