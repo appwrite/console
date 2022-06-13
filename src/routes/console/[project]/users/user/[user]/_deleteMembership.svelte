@@ -14,7 +14,7 @@
     const deleteUser = async () => {
         try {
             await sdkForProject.teams.deleteMembership(
-                selectedMembership.$id,
+                selectedMembership.teamId,
                 selectedMembership.userId
             );
             showDelete = false;
