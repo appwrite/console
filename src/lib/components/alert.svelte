@@ -30,7 +30,7 @@
     const dispatch = createEventDispatcher();
 </script>
 
-<section class="alert is-info">
+<section class="alert is-info common-section">
     <div class="alert-grid">
         {#if dismissible}
             <button
