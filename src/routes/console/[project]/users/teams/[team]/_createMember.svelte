@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Modal } from '$lib/components';
+    import { Modal, Alert } from '$lib/components';
     import { Button, InputEmail, InputText, InputTags, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -51,10 +51,10 @@
             autofocus={true}
             bind:value={email} />
         <InputText id="name" label="Name(optional)" placeholder="John Doe" bind:value={name} />
-        <div class="u-flex">
-            <span class="icon-info" aria-hidden="true" />
+        <Alert type="info">
             <p>Roles are used to manage access permissions. You can create any role you want.</p>
-        </div>
+        </Alert>
+
         <InputTags id="tags" label="Roles" placeholder="Add roles" bind:tags={roles} />
 
         <svelte:fragment slot="footer">
