@@ -19,13 +19,16 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { memberships } from './store';
     import CreateMember from './_createMember.svelte';
+    import DeleteMembership from './_deleteMembership.svelte';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
     const project = $page.params.project;
 
     let showCreate = false;
+    let showDelete = false;
     let search = '';
     let offset: number = null;
+    let selectedMembership: Models.Membership;
 
     const limit = 5;
 
@@ -59,6 +62,7 @@
                 <TableCellHead>Name</TableCellHead>
                 <TableCellHead>Role</TableCellHead>
                 <TableCellHead>Joined</TableCellHead>
+                <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
                 {#each $memberships.memberships as membership}
@@ -79,6 +83,17 @@
                         <TableCellText title="Role">{membership.roles}</TableCellText>
                         <TableCellText title="Joined"
                             >{toLocaleDateTime(membership.joined)}</TableCellText>
+                        <TableCellText title="">
+                            <button
+                                class="button is-only-icon is-text"
+                                aria-label="Delete item"
+                                on:click={() => {
+                                    selectedMembership = membership;
+                                    showDelete = true;
+                                }}>
+                                <span class="icon-trash" aria-hidden="true" />
+                            </button>
+                        </TableCellText>
                     </TableRow>
                 {/each}
             </TableBody>
@@ -123,3 +138,4 @@
 </Container>
 
 <CreateMember teamId={$page.params.team} bind:showCreate on:created={memberCreated} />
+<DeleteMembership {selectedMembership} bind:showDelete />
