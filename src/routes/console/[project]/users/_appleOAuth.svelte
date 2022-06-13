@@ -32,13 +32,10 @@
     <Modal bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
         <p>
-            To use Apple authentication in your application, first fill in this form. For more info
-            you can
-            <a
-                class="link"
-                href="https://developer.apple.com/"
-                target="_blank"
-                rel="noopener noreferrer">visit the docs.</a>
+            To use {provider.name} authentication in your application, first fill in this form. For more
+            info you can
+            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
+                >visit the docs.</a>
         </p>
         <InputSwitch
             id="state"
@@ -54,25 +51,16 @@
         <InputText
             id="keyID"
             label="key ID"
-            autofocus={true}
             autocomplete={false}
             placeholder="SHAB13ROFN"
             bind:value={provider.keyId} />
         <InputText
             id="teamID"
             label="team ID"
-            autofocus={true}
             autocomplete={false}
             placeholder="ELA2CD3AED"
             bind:value={provider.teamId} />
-
-        <InputTextarea
-            id="p8"
-            label="P8 File"
-            autofocus={true}
-            placeholder=""
-            bind:value={provider.p8} />
-
+        <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={provider.p8} />
         <Alert type="info">
             <p>
                 To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.

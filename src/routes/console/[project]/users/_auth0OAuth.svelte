@@ -31,6 +31,12 @@
 <Form on:submit={update}>
     <Modal bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
+        <p>
+            To use {provider.name} authentication in your application, first fill in this form. For more
+            info you can
+            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
+                >visit the docs.</a>
+        </p>
         <InputSwitch
             id="state"
             bind:value={provider.active}
@@ -51,7 +57,6 @@
         <InputText
             id="domain"
             label="Auth0 Domain"
-            autofocus={true}
             autocomplete={false}
             placeholder="Your Auth0 domain"
             bind:value={provider.domain} />

@@ -59,25 +59,12 @@
 
     let providers = [
         {
-            name: 'Google',
-            icon: 'google',
+            name: 'Amazon',
+            icon: 'amazon',
             active: false,
-            id: $project.providerGoogleAppid,
-            secret: $project.providerGoogleSecret
-        },
-        {
-            name: 'Facebook',
-            icon: 'facebook',
-            active: false,
-            id: $project.providerFacebookAppid,
-            secret: $project.providerFacebookSecret
-        },
-        {
-            name: 'Linkedin',
-            icon: 'linkedin',
-            active: false,
-            id: $project.providerLinkedinAppid,
-            secret: $project.providerLinkedinSecret
+            id: $project.providerAmazonAppid,
+            secret: $project.providerAmazonSecret,
+            docs: 'https://developer.amazon.com/apps-and-games/services-and-apis'
         },
         {
             name: 'Apple',
@@ -85,57 +72,8 @@
             active: false,
             id: $project.providerAppleAppid,
             secret: $project.providerAppleSecret,
+            docs: 'https://developer.apple.com/',
             component: Apple
-        },
-        {
-            name: 'Discord',
-            icon: 'discord',
-            active: false,
-            id: $project.providerDiscordAppid,
-            secret: $project.providerDiscordSecret
-        },
-        {
-            name: 'Microsoft',
-            icon: 'microsoft',
-            active: false,
-            id: $project.providerMicrosoftAppid,
-            secret: $project.providerMicrosoftSecret,
-            component: Microsoft
-        },
-        {
-            name: 'Github',
-            icon: 'github',
-            active: false,
-            id: $project.providerGithubAppid,
-            secret: $project.providerGithubSecret
-        },
-        {
-            name: 'Gitlab',
-            icon: 'gitlab',
-            active: false,
-            id: $project.providerGitlabAppid,
-            secret: $project.providerGitlabSecret
-        },
-        {
-            name: 'Slack',
-            icon: 'slack',
-            active: false,
-            id: $project.providerSlackAppid,
-            secret: $project.providerSlackSecret
-        },
-        {
-            name: 'Twitch',
-            icon: 'twitch',
-            active: false,
-            id: $project.providerTwitchAppid,
-            secret: $project.providerTwitchSecret
-        },
-        {
-            name: 'Amazon',
-            icon: 'amazon',
-            active: false,
-            id: $project.providerAmazonAppid,
-            secret: $project.providerAmazonSecret
         },
         {
             name: 'Auth0',
@@ -143,6 +81,7 @@
             active: false,
             id: $project.providerAuth0Appid,
             secret: $project.providerAuth0Secret,
+            docs: 'https://auth0.com/developers',
             component: Auth0
         },
         {
@@ -150,35 +89,97 @@
             icon: 'bitBucket',
             active: false,
             id: $project.providerBitbucketAppid,
-            secret: $project.providerBitbucketSecret
+            secret: $project.providerBitbucketSecret,
+            docs: 'https://developer.atlassian.com/bitbucket'
         },
         {
             name: 'Bitly',
             icon: 'bitly',
             active: false,
             id: $project.providerBitlyAppid,
-            secret: $project.providerBitlySecret
+            secret: $project.providerBitlySecret,
+            docs: 'https://dev.bitly.com/v4_documentation.html'
         },
         {
             name: 'Box',
             icon: 'box',
             active: false,
             id: $project.providerBoxAppid,
-            secret: $project.providerBoxSecret
+            secret: $project.providerBoxSecret,
+            docs: 'https://developer.box.com/reference/'
+        },
+        {
+            name: 'Discord',
+            icon: 'discord',
+            active: false,
+            id: $project.providerDiscordAppid,
+            secret: $project.providerDiscordSecret,
+            docs: 'https://discordapp.com/developers/docs/topics/oauth2'
         },
         {
             name: 'Dropbox',
             icon: 'dropbox',
             active: false,
             id: $project.providerDropboxAppid,
-            secret: $project.providerDropboxSecret
+            secret: $project.providerDropboxSecret,
+            docs: 'https://www.dropbox.com/developers/documentation'
+        },
+        {
+            name: 'Facebook',
+            icon: 'facebook',
+            active: false,
+            id: $project.providerFacebookAppid,
+            secret: $project.providerFacebookSecret,
+            docs: 'https://developers.facebook.com/'
+        },
+        {
+            name: 'Github',
+            icon: 'github',
+            active: false,
+            id: $project.providerGithubAppid,
+            secret: $project.providerGithubSecret,
+            docs: 'https://developer.github.com/'
+        },
+        {
+            name: 'Gitlab',
+            icon: 'gitlab',
+            active: false,
+            id: $project.providerGitlabAppid,
+            secret: $project.providerGitlabSecret,
+            docs: 'https://docs.gitlab.com/ee/api/'
+        },
+        {
+            name: 'Google',
+            icon: 'google',
+            active: false,
+            id: $project.providerGoogleAppid,
+            secret: $project.providerGoogleSecret,
+            docs: 'https://support.google.com/googleapi/answer/6158849'
+        },
+        {
+            name: 'Linkedin',
+            icon: 'linkedin',
+            active: false,
+            id: $project.providerLinkedinAppid,
+            secret: $project.providerLinkedinSecret,
+            docs: 'https://developer.linkedin.com/'
+        },
+        {
+            name: 'Microsoft',
+            icon: 'microsoft',
+            active: false,
+            id: $project.providerMicrosoftAppid,
+            secret: $project.providerMicrosoftSecret,
+            docs: 'https://developer.microsoft.com/en-us/',
+            component: Microsoft
         },
         {
             name: 'Notion',
             icon: 'notion',
             active: false,
             id: $project.providerNotionAppid,
-            secret: $project.providerNotionSecret
+            secret: $project.providerNotionSecret,
+            docs: 'https://developers.notion.com/docs'
         },
         {
             name: 'Okta',
@@ -186,6 +187,7 @@
             active: false,
             id: $project.providerOktaAppid,
             secret: $project.providerOktaSecret,
+            docs: 'https://developer.okta.com/',
             component: Okta
         },
         {
@@ -193,84 +195,113 @@
             icon: 'paypal',
             active: false,
             id: $project.providerPaypalAppid,
-            secret: $project.providerPaypalSecret
+            secret: $project.providerPaypalSecret,
+            docs: 'https://developer.paypal.com/docs/api/overview/'
         },
         {
             name: 'Paypal (sandbox)',
             icon: 'paypal',
             active: false,
             id: $project.providerPaypalSandboxAppid,
-            secret: $project.providerPaypalSandboxSecret
+            secret: $project.providerPaypalSandboxSecret,
+            docs: 'https://developer.paypal.com/docs/api/overview/'
         },
         {
             name: 'Salesforce',
             icon: 'salesforce',
             active: false,
             id: $project.providerSalesforceAppid,
-            secret: $project.providerSalesforceSecret
+            secret: $project.providerSalesforceSecret,
+            docs: 'https://developer.salesforce.com/docs/'
+        },
+        {
+            name: 'Slack',
+            icon: 'slack',
+            active: false,
+            id: $project.providerSlackAppid,
+            secret: $project.providerSlackSecret,
+            docs: 'https://api.slack.com/'
         },
         {
             name: 'Spotify',
             icon: 'spotify',
             active: false,
             id: $project.providerSpotifyAppid,
-            secret: $project.providerSpotifySecret
+            secret: $project.providerSpotifySecret,
+            docs: 'https://developer.spotify.com/documentation/general/guides/authorization-guide/'
         },
         {
             name: 'Stripe',
             icon: 'stripe',
             active: false,
             id: $project.providerStripeAppid,
-            secret: $project.providerStripeSecret
+            secret: $project.providerStripeSecret,
+            docs: 'https://stripe.com/docs/api'
         },
         {
             name: 'Tradeshift',
             icon: 'tradeshift',
             active: false,
             id: $project.providerTradeshiftAppid,
-            secret: $project.providerTradeshiftSecret
+            secret: $project.providerTradeshiftSecret,
+            docs: 'https://developers.tradeshift.com/docs/api'
         },
         {
             name: 'Tradeshift(sandbox)',
             icon: 'tradeshift',
             active: false,
             id: $project.providerTradeshiftBoxAppid,
-            secret: $project.providerTradeshiftBoxSecret
+            secret: $project.providerTradeshiftBoxSecret,
+            docs: 'https://developers.tradeshift.com/docs/api'
         },
+        {
+            name: 'Twitch',
+            icon: 'twitch',
+            active: false,
+            id: $project.providerTwitchAppid,
+            secret: $project.providerTwitchSecret,
+            docs: 'https://dev.twitch.tv/docs/authentication'
+        },
+
         {
             name: 'Wordpress',
             icon: 'wordpress',
             active: false,
             id: $project.providerWordpressAppid,
-            secret: $project.providerWordpressSecret
+            secret: $project.providerWordpressSecret,
+            docs: 'https://developer.wordpress.com/docs/oauth2/'
         },
         {
             name: 'Yahoo',
             icon: 'yahoo',
             active: false,
             id: $project.providerYahooAppid,
-            secret: $project.providerYahooSecret
+            secret: $project.providerYahooSecret,
+            docs: 'https://developer.yahoo.com/oauth2/guide/flows_authcode/'
         },
         {
             name: 'Yammer',
             icon: 'ms_yammer',
             active: false,
             id: $project.providerYammerAppid,
-            secret: $project.providerYammerSecret
+            secret: $project.providerYammerSecret,
+            docs: 'https://developer.yammer.com/docs/oauth-2'
         },
         {
             name: 'Yandex',
             icon: 'yandex',
             active: false,
             id: $project.providerYandexAppid,
-            secret: $project.providerYandexSecret
+            secret: $project.providerYandexSecret,
+            docs: 'https://tech.yandex.com/oauth/'
         },
         {
             name: 'Zoom',
             icon: 'zoom',
             active: false,
             id: $project.providerZoomAppid,
-            secret: $project.providerZoomSecret
+            secret: $project.providerZoomSecret,
+            docs: 'https://marketplace.zoom.us/docs/guides/auth/oauth/'
         }
     ];
 

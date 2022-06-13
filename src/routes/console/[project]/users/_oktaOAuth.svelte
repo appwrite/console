@@ -31,6 +31,12 @@
 <Form on:submit={update}>
     <Modal bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
+        <p>
+            To use {provider.name} authentication in your application, first fill in this form. For more
+            info you can
+            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
+                >visit the docs.</a>
+        </p>
         <InputSwitch
             id="state"
             bind:value={provider.active}
@@ -51,14 +57,12 @@
         <InputText
             id="domain"
             label="Okta Domain"
-            autofocus={true}
             autocomplete={false}
             placeholder="dev-1337.okta.com"
             bind:value={provider.domain} />
         <InputText
             id="serverID"
             label="Authorization Server ID"
-            autofocus={true}
             autocomplete={false}
             placeholder="default"
             bind:value={provider.server} />
