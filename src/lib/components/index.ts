@@ -19,4 +19,4 @@ export { default as Tooltip } from './tooltip.svelte';
 export { default as Avatar } from './avatar.svelte';
 export { default as SwitchBox } from './switchBox.svelte';
 export { default as SwitchBoxes } from './switchBoxes.svelte';
-export { default as InfoSection } from './infoSection.svelte';
+export { default as Alert } from './alert.svelte';
