@@ -15,7 +15,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
 
     let offset = 0;
-    const limit = 25;
+    const limit = 5;
 
     $: request = sdkForProject.teams.listLogs($page.params.team, limit, offset);
 </script>
@@ -38,26 +38,26 @@
                         <TableRow>
                             <TableCellText title="Client">
                                 <img
-                                    height="50"
-                                    width="50"
+                                    height="32"
+                                    width="32"
                                     src={`/icons/color/${log?.clientName.toLocaleLowerCase()}.svg`}
                                     alt={log.clientName} />
-                                <p>
-                                    {log.clientName}
-                                    {log.clientVersion}
-                                </p>
-                                on {log.osName}
-                                {log.osVersion}
+                                <span class="">
+                                    <p>
+                                        {log.clientName}
+                                        {log.clientVersion}
+                                    </p>
+                                    <span class="u-small">
+                                        on {log.osName}
+                                        {log.osVersion}
+                                    </span>
+                                </span>
                             </TableCellText>
                             <TableCellText title="Event">{log.event}</TableCellText>
 
                             <TableCellText title="Location">
                                 {#if log.countryCode !== '--'}
-                                    <img
-                                        src={sdkForProject.avatars
-                                            .getFlag(log.countryCode, 32, 32)
-                                            .toString()}
-                                        alt={log.countryName} />{log.countryName}
+                                    {log.countryName}
                                 {:else}
                                     Unknown
                                 {/if}
