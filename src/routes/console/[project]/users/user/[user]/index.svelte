@@ -126,6 +126,8 @@
             newPref = null;
             await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
             $user.prefs = updatedPrefs;
+            arePrefsDisabled = true;
+
             addNotification({
                 message: 'Preferences have been updated',
                 type: 'success'
