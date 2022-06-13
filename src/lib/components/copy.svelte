@@ -22,6 +22,6 @@
 <div class="input-text-wrapper is-with-end-button">
     <input {value} type="text" class="input-text" disabled />
     <button type="button" class="input-button" aria-label="Click to copy." on:click={copy}>
-        <span class="icon-docs" aria-hidden="true" />
+        <span class="icon-duplicate" aria-hidden="true" />
     </button>
 </div>
