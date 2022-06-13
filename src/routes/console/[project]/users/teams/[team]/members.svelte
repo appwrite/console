@@ -53,7 +53,7 @@
         </div>
 
         <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Member</span>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add Member</span>
         </Button>
     </div>
     {#if $memberships?.total}
@@ -127,7 +127,7 @@
                     </Button>
                 </div>
                 <div class="common-section">
-                    <p>Create your first member to get started</p>
+                    <p>Add your first member to get started</p>
                 </div>
                 <div class="common-section">
                     <Button external secondary href="#">Documentation</Button>
