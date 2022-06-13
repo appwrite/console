@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Modal, Copy, InfoSection } from '$lib/components';
+    import { Modal, Copy, Alert } from '$lib/components';
     import { Button, InputText, InputTextarea, InputSwitch, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -31,6 +31,15 @@
 <Form on:submit={update}>
     <Modal bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
+        <p>
+            To use Apple authentication in your application, first fill in this form. For more info
+            you can
+            <a
+                class="link"
+                href="https://developer.apple.com/"
+                target="_blank"
+                rel="noopener noreferrer">visit the docs.</a>
+        </p>
         <InputSwitch
             id="state"
             bind:value={provider.active}
@@ -64,15 +73,16 @@
             placeholder=""
             bind:value={provider.p8} />
 
-        <InfoSection>
+        <Alert type="info">
             <p>
                 To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
             </p>
-            <Copy
-                value={`${
-                    sdkForConsole.config.endpoint
-                }/account/session/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
-        </InfoSection>
+        </Alert>
+        <p>URI</p>
+        <Copy
+            value={`${
+                sdkForConsole.config.endpoint
+            }/account/session/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showModal = false)}>Cancel</Button>
             <Button submit>Update</Button>
