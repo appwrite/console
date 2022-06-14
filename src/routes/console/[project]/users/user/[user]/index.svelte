@@ -9,8 +9,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import DeleteUser from './_deleteUser.svelte';
     import { user } from './store';
+    import { onMount } from 'svelte';
 
-    $: user.load($page.params.user);
     $: if (newKey && newValue) {
         arePrefsDisabled = false;
     } else if (prefs) {
@@ -28,8 +28,13 @@
         newPref = false,
         newKey = null,
         newValue = null;
-    let prefs = Object.entries($user.prefs);
+    let prefs = null;
     let arePrefsDisabled = true;
+
+    onMount(async () => {
+        await user.load($page.params.user);
+        prefs = Object.entries($user.prefs);
+    });
 
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
@@ -268,32 +273,38 @@
                 </p>
             </div>
             <div>
-                {#each prefs as [key, value]}
-                    <ul class="u-flex u-gap-12">
-                        <InputText id={`key-${key}`} label="Key" bind:value={key} />
-                        <InputText id={`value-${value}`} label="Value" bind:value />
-                        <Button text on:click={() => deletePref(key)}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </Button>
-                    </ul>
-                {/each}
-                {#if prefs.length === 0 || newPref}
-                    <ul class="u-flex u-gap-12">
-                        <InputText
-                            id="key"
-                            label="Key"
-                            placeholder="Enter Key"
-                            bind:value={newKey} />
-                        <InputText
-                            id="value"
-                            label="Value"
-                            placeholder="Enter Value"
-                            bind:value={newValue} />
-                        <Button text disabled={!prefs.length} on:click={() => (newPref = false)}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </Button>
-                    </ul>
+                {#if prefs}
+                    {#each prefs as [key, value]}
+                        <ul class="u-flex u-gap-12">
+                            <InputText id={`key-${key}`} label="Key" bind:value={key} />
+                            <InputText id={`value-${value}`} label="Value" bind:value />
+                            <Button text on:click={() => deletePref(key)}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </Button>
+                        </ul>
+                    {/each}
+                    {#if prefs.length === 0 || newPref}
+                        <ul class="u-flex u-gap-12">
+                            <InputText
+                                id="key"
+                                label="Key"
+                                placeholder="Enter Key"
+                                bind:value={newKey} />
+                            <InputText
+                                id="value"
+                                label="Value"
+                                placeholder="Enter Value"
+                                bind:value={newValue} />
+                            <Button
+                                text
+                                disabled={!prefs.length}
+                                on:click={() => (newPref = false)}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </Button>
+                        </ul>
+                    {/if}
                 {/if}
+
                 <Button text on:click={() => (newPref = true)}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text"> Add Preferences </span></Button>
