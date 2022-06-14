@@ -64,7 +64,7 @@
                                     class="x-button"
                                     aria-label={`delete ${tag} tag`}
                                     on:click={() => removeValue(tag)}>
-                                    <span class="icon-cancel" aria-hidden="true" />
+                                    <span class="icon-x" aria-hidden="true" />
                                 </button>
                             </div>
                         </li>
