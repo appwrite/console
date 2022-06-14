@@ -28,6 +28,7 @@
                 message: `${name ? name : email} created successfully`
             });
             email = name = '';
+            roles = [];
             showCreate = false;
             dispatch('created', user);
         } catch (error) {
