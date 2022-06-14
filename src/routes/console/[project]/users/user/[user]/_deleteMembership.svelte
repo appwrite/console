@@ -15,11 +15,11 @@
         try {
             await sdkForProject.teams.deleteMembership(
                 selectedMembership.teamId,
-                selectedMembership.userId
+                selectedMembership.$id
             );
             showDelete = false;
             await goto(
-                `${base}/console/${$page.params.project}/users/${selectedMembership.userId}/membeships`
+                `${base}/console/${$page.params.project}/users/user/${selectedMembership.userId}/membeships`
             );
         } catch (error) {
             addNotification({
@@ -33,7 +33,6 @@
 <Form on:submit={deleteUser}>
     <Modal bind:show={showDelete}>
         <svelte:fragment slot="header">Delete member</svelte:fragment>
-
         <p>
             Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
         </p>

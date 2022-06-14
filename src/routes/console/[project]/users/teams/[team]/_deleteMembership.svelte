@@ -15,11 +15,11 @@
         try {
             await sdkForProject.teams.deleteMembership(
                 selectedMembership.teamId,
-                selectedMembership.userId
+                selectedMembership.$id
             );
             showDelete = false;
             await goto(
-                `${base}/console/${$page.params.project}/users/${selectedMembership.userId}/membeships`
+                `${base}/console/${$page.params.project}/users/teams/${selectedMembership.teamId}/members`
             );
         } catch (error) {
             addNotification({
