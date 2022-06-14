@@ -29,7 +29,7 @@
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
-        await goto(`${base}/console/${project}/users/team/${event.detail.$id}`);
+        await goto(`${base}/console/${project}/users/teams/${event.detail.$id}`);
     };
     $: teamsList.load(search, limit, offset);
     $: if (search) offset = 0;
