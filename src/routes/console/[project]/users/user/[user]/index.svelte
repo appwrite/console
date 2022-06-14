@@ -48,7 +48,7 @@
                 message: `The account has been ${
                     $user.emailVerification ? 'verified' : 'unverified'
                 }`,
-                type: $user.emailVerification ? 'success' : 'info'
+                type: 'success'
             });
         } catch (error) {
             addNotification({
@@ -63,7 +63,7 @@
             $user.status = !$user.status;
             addNotification({
                 message: `The account has been ${$user.status ? 'unblocked' : 'blocked'}`,
-                type: `${$user.status ? 'success' : 'error'}`
+                type: 'success'
             });
         } catch (error) {
             addNotification({
