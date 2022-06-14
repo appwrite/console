@@ -7,6 +7,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { team } from './store';
+    import DeleteTeam from './_deleteTeam.svelte';
 
     const getAvatar = (name: string) =>
         sdkForProject.avatars.getInitials(name, 128, 128).toString();
@@ -104,4 +105,5 @@
             </div>
         </Card>
     </Container>
+    <DeleteTeam team={$team} bind:showDelete />
 {/if}
