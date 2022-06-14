@@ -18,7 +18,7 @@
                             class:is-selected={$page.url.pathname === path}
                             href={path}>
                             <span class="icon-chart-bar" aria-hidden="true" />
-                            <span class="text">Home</span>
+                            <span class="text">Overview</span>
                         </a>
                     </li>
                     <li class="drop-list-item">
