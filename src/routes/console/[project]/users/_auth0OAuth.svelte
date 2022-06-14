@@ -8,16 +8,18 @@
     export let showModal = false;
     export let provider;
 
+    let { clientSecret, auth0Domain } = JSON.parse(provider.secret);
+
     const projectId = $page.params.project;
     const update = async () => {
         try {
-            const oauth = await sdkForConsole.projects.updateOAuth2(
+            const secret = JSON.stringify({ clientSecret, auth0Domain });
+            await sdkForConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
                 provider.id,
-                provider.secret
+                secret
             );
-            console.log(oauth);
             showModal = false;
         } catch (error) {
             addNotification({
@@ -53,13 +55,13 @@
             label="Client Secret"
             placeholder="Enter Client Secret"
             meter={false}
-            bind:value={provider.secret} />
+            bind:value={clientSecret} />
         <InputText
             id="domain"
             label="Auth0 Domain"
             autocomplete={false}
             placeholder="Your Auth0 domain"
-            bind:value={provider.domain} />
+            bind:value={auth0Domain} />
         <Alert type="info">
             <p>
                 To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.

@@ -8,16 +8,19 @@
     export let showModal = false;
     export let provider;
 
+    let { clientSecret, oktaDomain, authorizationServerId } = JSON.parse(provider.secret);
+
     const projectId = $page.params.project;
     const update = async () => {
         try {
-            const oauth = await sdkForConsole.projects.updateOAuth2(
+            const secret = JSON.stringify({ clientSecret, oktaDomain, authorizationServerId });
+            await sdkForConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
                 provider.id,
-                provider.secret
+                secret
             );
-            console.log(oauth);
+
             showModal = false;
         } catch (error) {
             addNotification({
@@ -53,19 +56,20 @@
             label="Client Secret"
             placeholder="Enter Client Secret"
             meter={false}
-            bind:value={provider.secret} />
+            bind:value={clientSecret} />
         <InputText
             id="domain"
             label="Okta Domain"
             autocomplete={false}
             placeholder="dev-1337.okta.com"
-            bind:value={provider.domain} />
+            bind:value={oktaDomain} />
         <InputText
             id="serverID"
             label="Authorization Server ID"
             autocomplete={false}
             placeholder="default"
-            bind:value={provider.server} />
+            bind:value={authorizationServerId} />
+
         <Alert type="info">
             <p>
                 To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.

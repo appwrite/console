@@ -8,16 +8,18 @@
     export let showModal = false;
     export let provider;
 
+    let { keyID, teamID, p8 } = JSON.parse(provider.secret);
+
     const projectId = $page.params.project;
     const update = async () => {
         try {
-            const oauth = await sdkForConsole.projects.updateOAuth2(
+            const secret = JSON.stringify({ keyID, teamID, p8 });
+            await sdkForConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
                 provider.id,
-                provider.secret
+                secret
             );
-            console.log(oauth);
             showModal = false;
         } catch (error) {
             addNotification({
@@ -47,20 +49,20 @@
             autofocus={true}
             autocomplete={false}
             placeholder="com.company.appname"
-            bind:value={provider.bundleId} />
+            bind:value={provider.id} />
         <InputText
             id="keyID"
             label="key ID"
             autocomplete={false}
             placeholder="SHAB13ROFN"
-            bind:value={provider.keyId} />
+            bind:value={keyID} />
         <InputText
             id="teamID"
             label="team ID"
             autocomplete={false}
             placeholder="ELA2CD3AED"
-            bind:value={provider.teamId} />
-        <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={provider.p8} />
+            bind:value={teamID} />
+        <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={p8} />
         <Alert type="info">
             <p>
                 To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.

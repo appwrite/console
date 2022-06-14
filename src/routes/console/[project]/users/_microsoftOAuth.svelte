@@ -8,16 +8,19 @@
     export let showModal = false;
     export let provider;
 
+    let { clientSecret, tenantID } = JSON.parse(provider.secret);
+
     const projectId = $page.params.project;
     const update = async () => {
         try {
-            const oauth = await sdkForConsole.projects.updateOAuth2(
+            const secret = JSON.stringify({ clientSecret, tenantID });
+            await sdkForConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
                 provider.id,
-                provider.secret
+                secret
             );
-            console.log(oauth);
+
             showModal = false;
         } catch (error) {
             addNotification({
@@ -53,13 +56,13 @@
             label="Client Secret"
             placeholder="Enter Client Secret"
             meter={false}
-            bind:value={provider.secret} />
+            bind:value={clientSecret} />
         <InputText
             id="tenant"
             label="Target Tenant"
             autocomplete={false}
             placeholder="'common','organizations','consumers' or your TenantID"
-            bind:value={provider.id} />
+            bind:value={tenantID} />
         <Alert type="info">
             <p>
                 To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
