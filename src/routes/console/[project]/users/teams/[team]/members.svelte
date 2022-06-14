@@ -22,6 +22,8 @@
     import DeleteMembership from './_deleteMembership.svelte';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
+    const deleted = () => memberships.load($page.params.team, search, limit, offset ?? 0);
+
     const project = $page.params.project;
 
     let showCreate = false;
@@ -138,4 +140,4 @@
 </Container>
 
 <CreateMember teamId={$page.params.team} bind:showCreate on:created={memberCreated} />
-<DeleteMembership {selectedMembership} bind:showDelete />
+<DeleteMembership {selectedMembership} bind:showDelete on:deleted={() => deleted()} />

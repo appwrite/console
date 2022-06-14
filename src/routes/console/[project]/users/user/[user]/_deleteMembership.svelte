@@ -7,6 +7,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from 'src/sdk';
+    import { createEventDispatcher } from 'svelte';
+
+    const dispatch = createEventDispatcher();
 
     export let showDelete = false;
     export let selectedMembership: Models.Membership;
@@ -18,8 +21,9 @@
                 selectedMembership.$id
             );
             showDelete = false;
+            dispatch('deleted');
             await goto(
-                `${base}/console/${$page.params.project}/users/user/${selectedMembership.userId}/membeships`
+                `${base}/console/${$page.params.project}/users/user/${selectedMembership.userId}/memberships`
             );
         } catch (error) {
             addNotification({

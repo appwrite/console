@@ -19,6 +19,7 @@
     import type { Models } from 'src/sdk';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
+    const deleted = () => (request = sdkForProject.users.getMemberships($page.params.user));
     const project = $page.params.project;
 
     let offset = 0;
@@ -102,5 +103,5 @@
     {/await}
 </Container>
 
-<DeleteMembership {selectedMembership} bind:showDelete />
+<DeleteMembership {selectedMembership} bind:showDelete on:deleted={() => deleted()} />
 <DeleteAllMemberships bind:showDeleteAll />
