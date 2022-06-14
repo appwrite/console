@@ -1,6 +1,7 @@
 <script lang="ts">
     import { navigating, page } from '$app/stores';
-    import { tabs, title } from '$lib/stores/layout';
+    import { Back } from '$lib/components';
+    import { tabs, title, backButton } from '$lib/stores/layout';
     import { fade } from 'svelte/transition';
     import { Cover } from '.';
 
@@ -69,7 +70,15 @@
     </nav>
     <section class="main-content">
         <Cover>
-            <svelte:fragment slot="title">{$title}</svelte:fragment>
+            <svelte:fragment slot="title">
+                {#if $backButton}
+                    <Back href={$backButton}>
+                        {$title}
+                    </Back>
+                {:else}
+                    {$title}
+                {/if}
+            </svelte:fragment>
             {#if $tabs.length}
                 <div class="tabs">
                     {#if showLeft}

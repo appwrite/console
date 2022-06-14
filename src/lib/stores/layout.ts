@@ -6,4 +6,5 @@ export type Tab = {
 };
 
 export const title = writable<string>('');
+export const backButton = writable<string>('');
 export const tabs = writable<Tab[]>([]);
