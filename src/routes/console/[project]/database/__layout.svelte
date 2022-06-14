@@ -1,8 +1,10 @@
 <script>
-    import { tabs, title } from '$lib/stores/layout';
+    import { tabs, title, backButton } from '$lib/stores/layout';
 
     const path = 'database';
     title.set('Database');
+    backButton.set('');
+
     tabs.set([
         {
             href: path,

@@ -1,7 +1,8 @@
 <script lang="ts">
     import { browser } from '$app/env';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tabs, title } from '$lib/stores/layout';
+    import { tabs, title, backButton } from '$lib/stores/layout';
     import { user } from './store';
 
     const userId = $page.params.user;
@@ -18,6 +19,8 @@
             title.set($user.name);
         }
     }
+
+    backButton.set(`${base}/console/${$page.params.project}/users`);
 
     tabs.set([
         {

@@ -1,7 +1,8 @@
 <script lang="ts">
     import { browser } from '$app/env';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tabs, title } from '$lib/stores/layout';
+    import { tabs, title, backButton } from '$lib/stores/layout';
     import { collection } from './store';
 
     const collectionId = $page.params.collection;
@@ -19,6 +20,8 @@
             title.set($collection.name);
         }
     }
+
+    backButton.set(`${base}/console/${$page.params.project}/database`);
 
     tabs.set([
         {

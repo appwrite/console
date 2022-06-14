@@ -1,7 +1,7 @@
 <script lang="ts">
     import { browser } from '$app/env';
     import { page } from '$app/stores';
-    import { tabs, title } from '$lib/stores/layout';
+    import { tabs, title, backButton } from '$lib/stores/layout';
     import { bucket } from './store';
 
     const bucketId = $page.params.bucket;
@@ -18,6 +18,8 @@
             title.set($bucket.name);
         }
     }
+
+    backButton.set('');
 
     tabs.set([
         {

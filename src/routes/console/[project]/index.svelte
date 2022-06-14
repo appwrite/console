@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { tabs, title } from '$lib/stores/layout';
+    import { tabs, title, backButton } from '$lib/stores/layout';
     import { Button } from '$lib/elements/forms';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from './store';
@@ -12,6 +12,7 @@
 
     title.set($project.name);
     tabs.set([]);
+    backButton.set('');
 
     let addPlatform = false;
     // let range: '24h' | '30d' | '90d' = '30d';

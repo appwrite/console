@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { tabs, title } from '$lib/stores/layout';
+    import { tabs, title, backButton } from '$lib/stores/layout';
 
     const path = 'users';
     title.set('Users');
+    backButton.set('');
     tabs.set([
         {
             href: path,

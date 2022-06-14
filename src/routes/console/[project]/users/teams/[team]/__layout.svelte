@@ -1,7 +1,8 @@
 <script lang="ts">
     import { browser } from '$app/env';
     import { page } from '$app/stores';
-    import { tabs, title } from '$lib/stores/layout';
+    import { base } from '$app/paths';
+    import { tabs, title, backButton } from '$lib/stores/layout';
     import { team } from './store';
 
     const teamId = $page.params.team;
@@ -18,9 +19,9 @@
             title.set($team.name);
         }
     }
-    // title.set('Teams');
 
-    tabs.set([]);
+    backButton.set(`${base}/console/${$page.params.project}/users/teams`);
+
     tabs.set([
         {
             href: path,

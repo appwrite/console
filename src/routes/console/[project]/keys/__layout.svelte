@@ -1,7 +1,8 @@
 <script>
-    import { tabs, title } from '$lib/stores/layout';
+    import { tabs, title, backButton } from '$lib/stores/layout';
 
     title.set('API Keys');
+    backButton.set('');
     tabs.set([]);
 </script>
 
