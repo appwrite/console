@@ -4,9 +4,10 @@
     import { Button, InputPassword, InputText, InputSwitch, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import type { Provider } from './auth';
 
     export let showModal = false;
-    export let provider;
+    export let provider: Provider;
 
     let { clientSecret, auth0Domain } = JSON.parse(provider.secret);
 
