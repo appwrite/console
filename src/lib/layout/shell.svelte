@@ -1,9 +1,11 @@
 <script lang="ts">
     import { navigating, page } from '$app/stores';
     import { Back } from '$lib/components';
-    import { tabs, title, backButton } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { fade } from 'svelte/transition';
     import { Cover } from '.';
+    import { Pill } from '$lib/elements';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let isOpen = false;
 
@@ -51,6 +53,21 @@
             }
         };
     };
+
+    const copy = async (value: string) => {
+        try {
+            await navigator.clipboard.writeText(value);
+            addNotification({
+                message: 'Copied to clipboard.',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    };
 </script>
 
 <svelte:window on:resize={throttle(onScroll, 25)} />
@@ -72,13 +89,17 @@
         <Cover>
             <svelte:fragment slot="title">
                 {#if $backButton}
-                    <Back href={$backButton}>
-                        {$title}
-                    </Back>
+                    <Back href={$backButton} />
+                    {$title}
                 {:else}
                     {$title}
                 {/if}
             </svelte:fragment>
+            {#if $copyData?.value}
+                <Pill button on:click={() => copy($copyData.value)}
+                    ><i class="icon-duplicate" />{$copyData.text}
+                </Pill>
+            {/if}
             {#if $tabs.length}
                 <div class="tabs">
                     {#if showLeft}
