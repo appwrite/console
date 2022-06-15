@@ -1,7 +1,7 @@
 <script lang="ts">
     import { browser } from '$app/env';
     import { page } from '$app/stores';
-    import { tabs, title, backButton } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { func } from './store';
 
     const functionId = $page.params.function;
@@ -19,6 +19,11 @@
         }
     }
     backButton.set('');
+
+    copyData.set({
+        text: '',
+        value: ''
+    });
 
     tabs.set([
         {

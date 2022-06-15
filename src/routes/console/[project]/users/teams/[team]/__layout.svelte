@@ -2,7 +2,7 @@
     import { browser } from '$app/env';
     import { page } from '$app/stores';
     import { base } from '$app/paths';
-    import { tabs, title, backButton } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { team } from './store';
 
     const teamId = $page.params.team;
@@ -21,6 +21,11 @@
     }
 
     backButton.set(`${base}/console/${$page.params.project}/users/teams`);
+
+    copyData.set({
+        text: 'Team ID',
+        value: teamId
+    });
 
     tabs.set([
         {

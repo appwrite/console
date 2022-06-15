@@ -2,7 +2,7 @@
     import { browser } from '$app/env';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tabs, title, backButton } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { collection } from './store';
 
     const collectionId = $page.params.collection;
@@ -22,6 +22,11 @@
     }
 
     backButton.set(`${base}/console/${$page.params.project}/database`);
+
+    copyData.set({
+        text: '',
+        value: ''
+    });
 
     tabs.set([
         {

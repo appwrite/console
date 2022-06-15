@@ -1,9 +1,14 @@
 <script>
-    import { tabs, title, backButton } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
 
     const path = 'database';
     title.set('Database');
     backButton.set('');
+
+    copyData.set({
+        text: '',
+        value: ''
+    });
 
     tabs.set([
         {

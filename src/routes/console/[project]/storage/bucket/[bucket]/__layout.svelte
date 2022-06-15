@@ -1,7 +1,7 @@
 <script lang="ts">
     import { browser } from '$app/env';
     import { page } from '$app/stores';
-    import { tabs, title, backButton } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { bucket } from './store';
 
     const bucketId = $page.params.bucket;
@@ -21,6 +21,10 @@
 
     backButton.set('');
 
+    copyData.set({
+        text: '',
+        value: ''
+    });
     tabs.set([
         {
             href: path,
