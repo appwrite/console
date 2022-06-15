@@ -12,6 +12,10 @@
         try {
             await sdkForProject.users.deleteSession($page.params.user, selectedSessionId);
             showDelete = false;
+            addNotification({
+                type: 'success',
+                message: 'Session has been deleted'
+            });
         } catch (error) {
             addNotification({
                 type: 'error',

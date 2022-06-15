@@ -12,6 +12,10 @@
         try {
             await sdkForProject.users.deleteSessions($page.params.user);
             showDeleteAll = false;
+            addNotification({
+                type: 'success',
+                message: 'All sessions have been deleted'
+            });
         } catch (error) {
             addNotification({
                 type: 'error',
