@@ -198,7 +198,12 @@
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <h6 class="heading-level-6">Update Name</h6>
             <ul>
-                <InputText id="name" label="Name" placeholder={$user.name} bind:value={userName} />
+                <InputText
+                    id="name"
+                    label="Name"
+                    placeholder={$user.name}
+                    autocomplete={false}
+                    bind:value={userName} />
                 {#if showError === 'name'}
                     <Helper type={errorType}>{errorMessage}</Helper>
                 {/if}
@@ -220,6 +225,7 @@
                     id="email"
                     label="Email"
                     placeholder={$user.email}
+                    autocomplete={false}
                     bind:value={userEmail} />
                 {#if showError === 'email'}
                     <Helper type={errorType}>{errorMessage}</Helper>
@@ -248,6 +254,7 @@
                     id="newPassword"
                     label="New Password"
                     placeholder="Enter new password"
+                    autocomplete={false}
                     meter={false}
                     bind:value={newPassword} />
                 {#if showError === 'password'}

@@ -10,6 +10,7 @@
     export let disabled = false;
     export let autofocus = false;
     export let meter = true;
+    export let autocomplete = true;
 
     let element: HTMLInputElement;
 
@@ -30,6 +31,7 @@
             {placeholder}
             {disabled}
             {required}
+            autocomplete={autocomplete ? 'on' : 'off'}
             type="password"
             class="input-text"
             bind:value

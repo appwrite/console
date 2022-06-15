@@ -66,6 +66,7 @@
                         id="name"
                         label="Name"
                         placeholder={$team.name}
+                        autocomplete={false}
                         bind:value={teamName} />
                     {#if showError === 'name'}
                         <Helper type={errorType}>{errorMessage}</Helper>

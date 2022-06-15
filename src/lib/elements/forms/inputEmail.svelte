@@ -9,6 +9,7 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
+    export let autocomplete = true;
 
     let element: HTMLInputElement;
 
@@ -27,6 +28,7 @@
             {placeholder}
             {disabled}
             {required}
+            autocomplete={autocomplete ? 'on' : 'off'}
             type="email"
             class="input-text"
             bind:value
