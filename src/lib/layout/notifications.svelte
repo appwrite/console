@@ -10,7 +10,8 @@
                 <Notification
                     type={notification.type}
                     title={notification.title}
-                    on:dismiss={() => dismissNotification(notification.id)}>
+                    on:dismiss={() => dismissNotification(notification.id)}
+                    func={notification?.func}>
                     {notification.message}
                 </Notification>
             {/each}

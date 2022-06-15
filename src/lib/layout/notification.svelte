@@ -4,6 +4,7 @@
 
     export let type: Notification['type'] = 'info';
     export let title: Notification['title'];
+    export let func: Notification['func'];
 
     let icon: string;
     switch (type) {
@@ -43,14 +44,13 @@
         {/if}
         <p><slot /></p>
     </div>
-    <!-- 
-    <div class="buttons u-flex">
-        <button class="button is-text is-small">
-            <span class="text">Action 1</span>
-        </button>
-        <button class="button is-text is-small">
-            <span class="text">Action 2</span>
-        </button>
-    </div>
--->
+    {#if func}
+        <div class="buttons u-flex">
+            {#each func as f}
+                <button class="button is-text is-small" on:click={f.method}>
+                    <span class="text">{f.name}</span>
+                </button>
+            {/each}
+        </div>
+    {/if}
 </li>
