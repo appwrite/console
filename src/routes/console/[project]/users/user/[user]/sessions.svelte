@@ -24,6 +24,8 @@
     const limit = 5;
 
     $: request = sdkForProject.users.getSessions($page.params.user);
+
+    //TODO: replace session.expire with "last activity"
 </script>
 
 <Container>
@@ -58,7 +60,7 @@
                                         {session.clientName}
                                     </p>
                                     <span class="u-small">
-                                        Last activity: {toLocaleDateTime(session.lastActivity)}
+                                        Last activity: {toLocaleDateTime(session?.expire)}
                                     </span>
                                 </span>
                             </TableCellText>
