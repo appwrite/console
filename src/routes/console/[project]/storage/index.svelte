@@ -66,7 +66,7 @@
                         </div>
                         <h3 class="tiles-title">{bucket.name}</h3>
                         <Pill button on:click={() => copy(bucket.$id)}
-                            ><i class="icon-duplicate" />User ID
+                            ><i class="icon-duplicate" />Bucket ID
                         </Pill>
                         <span class="icon-lock-closed" aria-hidden="true" />
                         <span class="icon-shield-check" aria-hidden="true" />
