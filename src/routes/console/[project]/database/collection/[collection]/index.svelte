@@ -16,6 +16,7 @@
     import { base } from '$app/paths';
 
     let offset = 0;
+    let search = '';
 
     const limit = 12;
     const project = $page.params.project;
@@ -31,12 +32,24 @@
 </script>
 
 <Container>
-    <h1>Documents</h1>
     {#await request}
         <div aria-busy="true" />
     {:then response}
+        <div class="u-flex u-gap-12 common-section u-main-space-between">
+            <div class="input-text-wrapper u-stretch" style="max-width: 500px">
+                <input
+                    type="search"
+                    placeholder="Search by ID"
+                    class="input-text"
+                    bind:value={search} />
+                <span class="icon-search" aria-hidden="true" />
+            </div>
+            <Button on:click={() => console.log('showCreate = true')}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create Document</span>
+            </Button>
+        </div>
         {#if response.total}
-            <p>{response.total} documents found</p>
             <Table>
                 <TableHeader>
                     {#each columns as column}
@@ -58,16 +71,26 @@
                 </TableBody>
             </Table>
 
-            <Pagination {limit} bind:offset sum={response.total} />
+            <div class="u-flex common-section u-main-space-between">
+                <p class="text">Total results: {response.total}</p>
+                <Pagination {limit} bind:offset sum={response.total} />
+            </div>
         {:else}
-            <Empty>
-                <svelte:fragment slot="header">No Documents Found</svelte:fragment>
-                Add your first document to get started.
+            <Empty dashed centered>
+                <div class="u-flex u-flex-vertical u-cross-center">
+                    <div class="common-section">
+                        <Button secondary round on:click={() => console.log('showCreate = true')}>
+                            <i class="icon-plus" />
+                        </Button>
+                    </div>
+                    <div class="common-section">
+                        <p>Crate your first document to get started</p>
+                    </div>
+                    <div class="common-section">
+                        <Button secondary href="#">Documentation</Button>
+                    </div>
+                </div>
             </Empty>
         {/if}
-        <Button
-            href={`${base}/console/${project}/database/collection/${$collection.$id}/document/$create`}>
-            Create Document
-        </Button>
     {/await}
 </Container>
