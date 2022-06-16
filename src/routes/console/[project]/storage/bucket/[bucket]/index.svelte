@@ -1,8 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Button, InputSearch } from '$lib/elements/forms';
-    import { Card, Empty, Pagination } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { Empty, Pagination } from '$lib/components';
     import type { Models } from 'src/sdk';
     import Create from './_create.svelte';
     import Update from './_update.svelte';
@@ -12,8 +12,7 @@
         TableBody,
         TableRow,
         TableCellHead,
-        TableCellText,
-        TableCellAvatar
+        TableCellText
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';

@@ -22,8 +22,8 @@
     backButton.set('');
 
     copyData.set({
-        text: $bucket.$id,
-        value: $bucket.$id
+        text: bucketId,
+        value: bucketId
     });
     tabs.set([
         {
