@@ -4,7 +4,7 @@
 
     export let dismissible = false;
     export let type: '' | 'info' | 'success' | 'warning' | 'danger' = 'info';
-    export let func: Func[];
+    export let func: Func[] = [];
 
     const dispatch = createEventDispatcher();
 </script>
@@ -25,7 +25,7 @@
                 <slot name="title" />
             </h6>
             <p class="message"><slot /></p>
-            {#if func}
+            {#if func?.length}
                 <div class="buttons u-flex">
                     {#each func as f}
                         <button class="button is-text" on:click={f.method}>
