@@ -38,35 +38,47 @@
 </script>
 
 <Container>
-    <h1>Files</h1>
-    <Card>
-        <InputSearch bind:value={search} />
-    </Card>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
+            <input
+                type="search"
+                placeholder="Search by Filename"
+                class="input-text"
+                bind:value={search} />
+            <span class="icon-search" aria-hidden="true" />
+        </div>
 
+        <Button on:click={() => (showCreate = true)}>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add File</span>
+        </Button>
+    </div>
     {#await request}
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
-            <p>{response.total} files found</p>
             <Table>
                 <TableHeader>
-                    <TableCellHead width={30} />
-                    <TableCellHead>Name</TableCellHead>
+                    <TableCellHead>Filename</TableCellHead>
                     <TableCellHead>Type</TableCellHead>
                     <TableCellHead>Size</TableCellHead>
                     <TableCellHead>Date Created</TableCellHead>
+                    <TableCellHead width={30} />
                 </TableHeader>
                 <TableBody>
                     {#each response.files as file}
                         <TableRow>
-                            <TableCellAvatar
-                                src={getPreview(file.$id)}
-                                alt={file.name}
-                                onlyDesktop />
                             <TableCellText title="Name">
-                                <span class="link" on:click={() => openFile(file)}>
-                                    {file.name}
-                                </span>
+                                <div class="u-flex u-gap-12">
+                                    <span class="link" on:click={() => openFile(file)}>
+                                        <img
+                                            class="avatar"
+                                            width="40"
+                                            height="40"
+                                            src={getPreview(file.$id)}
+                                            alt={file.name} />
+                                        {file.name}
+                                    </span>
+                                </div>
                             </TableCellText>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size">{file.sizeOriginal}</TableCellText>
@@ -76,22 +88,44 @@
                     {/each}
                 </TableBody>
             </Table>
-
-            <Pagination {limit} bind:offset sum={response.total} />
+            <div class="u-flex common-section u-main-space-between">
+                <p class="text">Total results: {response.total}</p>
+                <Pagination {limit} bind:offset sum={response.total} />
+            </div>
         {:else if search}
             <Empty>
-                <svelte:fragment slot="header"
-                    >No results found for <b>{search}</b></svelte:fragment>
+                <div class="u-flex u-flex-vertical">
+                    <b>Sorry, we couldn’t find ‘{search}’</b>
+                    <div class="common-section">
+                        <p>There are no files that match your search.</p>
+                    </div>
+                    <div class="common-section">
+                        <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+                    </div>
+                </div>
             </Empty>
+            <div class="u-flex common-section u-main-space-between">
+                <p class="text">Total results: {response.total}</p>
+                <Pagination {limit} bind:offset sum={response.total} />
+            </div>
         {:else}
-            <Empty>
-                <svelte:fragment slot="header">No Files Found</svelte:fragment>
-                Upload your first file to get started.
+            <Empty dashed centered>
+                <div class="u-flex u-flex-vertical u-cross-center">
+                    <div class="common-section">
+                        <Button secondary round on:click={() => (showCreate = true)}>
+                            <i class="icon-plus" />
+                        </Button>
+                    </div>
+                    <div class="common-section">
+                        <p>Upload spme files to get started</p>
+                    </div>
+                    <div class="common-section">
+                        <Button secondary href="#">Documentation</Button>
+                    </div>
+                </div>
             </Empty>
         {/if}
     {/await}
-
-    <Button on:click={() => (showCreate = true)}>Upload</Button>
 </Container>
 
 <Create bind:showCreate />
