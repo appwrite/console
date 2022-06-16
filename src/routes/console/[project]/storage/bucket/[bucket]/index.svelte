@@ -116,7 +116,7 @@
                         </Button>
                     </div>
                     <div class="common-section">
-                        <p>Upload spme files to get started</p>
+                        <p>Upload some files to get started</p>
                     </div>
                     <div class="common-section">
                         <Button secondary href="#">Documentation</Button>
