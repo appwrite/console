@@ -1,8 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Button, InputSearch } from '$lib/elements/forms';
-    import { Card, Empty, Pagination, Tile, Tiles } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { Empty, Pagination, Tile, Tiles } from '$lib/components';
     import Create from './_create.svelte';
     import { goto } from '$app/navigation';
     import type { Models } from 'src/sdk';
@@ -24,11 +24,14 @@
 </script>
 
 <Container>
-    <h1>Collections</h1>
-    <Card>
-        <InputSearch bind:value={search} />
-    </Card>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <h2 class="heading-level-5">Collections</h2>
 
+        <Button on:click={() => (showCreate = true)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create Collection</span>
+        </Button>
+    </div>
     {#await request}
         <div aria-busy="true" />
     {:then response}
@@ -40,7 +43,10 @@
                         title={collection.name} />
                 {/each}
             </Tiles>
-            <Pagination {limit} bind:offset sum={response.total} />
+            <div class="u-flex common-section u-main-space-between">
+                <p class="text">Total results: {response.total}</p>
+                <Pagination {limit} bind:offset sum={response.total} />
+            </div>
         {:else if search}
             <Empty>
                 No results found for <b>{search}</b>
@@ -49,7 +55,5 @@
             <Empty>You haven't created any collections for your project yet.</Empty>
         {/if}
     {/await}
-
-    <Button on:click={() => (showCreate = true)}>Create Collection</Button>
 </Container>
 <Create bind:showCreate on:created={collectionCreated} />

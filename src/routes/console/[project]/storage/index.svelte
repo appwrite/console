@@ -65,11 +65,15 @@
                             {/if}
                         </div>
                         <h3 class="tiles-title">{bucket.name}</h3>
-                        <Pill button on:click={() => copy(bucket.$id)}
-                            ><i class="icon-duplicate" />Bucket ID
-                        </Pill>
-                        <span class="icon-lock-closed" aria-hidden="true" />
-                        <span class="icon-shield-check" aria-hidden="true" />
+                        <div class="u-flex u-main-space-between">
+                            <Pill button on:click={() => copy(bucket.$id)}
+                                ><i class="icon-duplicate" />Bucket ID
+                            </Pill>
+                            <div class="">
+                                <span class="icon-lock-closed" aria-hidden="true" />
+                                <span class="icon-shield-check" aria-hidden="true" />
+                            </div>
+                        </div>
                     </a>
                 {/each}
             </Tiles>

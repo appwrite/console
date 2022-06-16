@@ -47,8 +47,8 @@
             helper="Add 'role:all' for wildcard access"
             placeholder="User ID, Team ID or Role" />
         <svelte:fragment slot="footer">
-            <Button submit>Update</Button>
             <Button secondary on:click={() => (showUpdate = false)}>Cancel</Button>
+            <Button submit>Update</Button>
         </svelte:fragment>
     </Modal>
 </Form>
