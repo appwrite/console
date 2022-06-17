@@ -412,5 +412,6 @@
                     }}>Update</Button>
             </div>
         </Card>
+        <!-- TODO: Delete bucket  -->
     {/if}
 </Container>
