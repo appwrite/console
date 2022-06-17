@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { Card } from '$lib/components';
     import { Pill } from '$lib/elements/';
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
@@ -134,8 +134,8 @@
                 </div>
             </div>
             <ul class="u-flex u-gap-12">
-                <InputNumber id="length" label="Length" value="1" />
-                <InputSelect id="period" {options} label="Time Period" />
+                <InputNumber id="length" label="Length" value={1} />
+                <InputSelect id="period" {options} label="Time Period" value={options[0].value} />
             </ul>
         </div>
         <div class="u-flex u-main-space-end common-section">
