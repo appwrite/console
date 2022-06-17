@@ -171,7 +171,7 @@
             <div class="user-profile-button">
                 <Avatar size={64} name={$user.name} src={getAvatar($user.name)} />
                 <span class="user-profile-info">
-                    <h6 class="heading-level-6">{$user.name}</h6>
+                    <h6 class="heading-level-7">{$user.name}</h6>
                 </span>
                 {#if !$user.status}
                     <Pill danger>Blocked</Pill>
@@ -196,7 +196,7 @@
     </Card>
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
-            <h6 class="heading-level-6">Update Name</h6>
+            <h6 class="heading-level-7">Update Name</h6>
             <ul>
                 <InputText
                     id="name"
@@ -219,7 +219,7 @@
     </Card>
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
-            <h6 class="heading-level-6">Update Email</h6>
+            <h6 class="heading-level-7">Update Email</h6>
             <ul>
                 <InputEmail
                     id="email"
@@ -243,7 +243,7 @@
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <div>
-                <h6 class="heading-level-6">Update Password</h6>
+                <h6 class="heading-level-7">Update Password</h6>
                 <p>
                     Enter a new password. A password must contain <b> at least 8 characters.</b>
                 </p>
@@ -273,7 +273,7 @@
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <div>
-                <h6 class="heading-level-6">User Preferences</h6>
+                <h6 class="heading-level-7">User Preferences</h6>
                 <p>
                     You can update your user preferences by storing information on the user's
                     objects so they can easily be shared across devices and sessions.
@@ -325,7 +325,7 @@
     <Card>
         <div class="u-flex u-main-space-between u-gap-12 common-section">
             <div>
-                <h6 class="heading-level-6">Danger Zone</h6>
+                <h6 class="heading-level-7">Danger Zone</h6>
                 <p>
                     The user will be permanently deleted, including all data associated with this
                     user. This action is irreversible.
@@ -335,7 +335,7 @@
                 <div class="user-profile-button">
                     <Avatar size={64} name={$user.name} src={getAvatar($user.name)} />
                     <span class="user-profile-info">
-                        <h6 class="heading-level-6">{$user.name}</h6>
+                        <h6 class="heading-level-7">{$user.name}</h6>
                         <span class="title">{$user.email}</span>
                     </span>
                 </div>

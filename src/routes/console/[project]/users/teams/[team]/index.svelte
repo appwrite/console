@@ -49,7 +49,7 @@
                 <div class="user-profile-button">
                     <Avatar size={40} name={$team.name} src={getAvatar($team.name)} />
                     <span class="user-profile-info">
-                        <h6 class="heading-level-6">{$team.name}</h6>
+                        <h6 class="heading-level-7">{$team.name}</h6>
                         <span class="title">{$team.total} Members</span>
                     </span>
                 </div>
@@ -60,7 +60,7 @@
         </Card>
         <Card>
             <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <h6 class="heading-level-6">Update Name</h6>
+                <h6 class="heading-level-7">Update Name</h6>
                 <ul>
                     <InputText
                         id="name"
@@ -85,7 +85,7 @@
         <Card>
             <div class="u-flex u-main-space-between u-gap-12 common-section">
                 <div>
-                    <h6 class="heading-level-6">Danger Zone</h6>
+                    <h6 class="heading-level-7">Danger Zone</h6>
                     <p>
                         The team will be permanently deleted, including all data associated with
                         this team. This action is irreversible.
@@ -95,7 +95,7 @@
                     <div class="user-profile-button">
                         <Avatar size={64} name={$team.name} src={getAvatar($team.name)} />
                         <span class="user-profile-info">
-                            <h6 class="heading-level-6">{$team.name}</h6>
+                            <h6 class="heading-level-7">{$team.name}</h6>
                             <span class="title">{$team.total} Members</span>
                         </span>
                     </div>

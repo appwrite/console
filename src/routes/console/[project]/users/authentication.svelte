@@ -37,7 +37,7 @@
 <Container>
     <Card>
         <div>
-            <h2 class="heading-level-6">Auth Methods</h2>
+            <h2 class="heading-level-7">Auth Methods</h2>
             <p>Enable the auth methods you wish to use.</p>
         </div>
         <ul class="">
