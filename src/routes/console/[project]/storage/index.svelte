@@ -3,7 +3,7 @@
     import { goto } from '$app/navigation';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Tiles } from '$lib/components';
+    import { Empty, Pagination, Tiles, Tooltip } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from 'src/sdk';
     import Create from './_create.svelte';
@@ -70,8 +70,18 @@
                                 ><i class="icon-duplicate" />Bucket ID
                             </Pill>
                             <div class="">
-                                <span class="icon-lock-closed" aria-hidden="true" />
-                                <span class="icon-shield-check" aria-hidden="true" />
+                                <Tooltip icon="lock-closed" aria="encryption">
+                                    <span
+                                        >{bucket.encryption
+                                            ? 'Encryption enabled'
+                                            : 'Encryption disabled'}</span>
+                                </Tooltip>
+                                <Tooltip icon="shield-check" aria="antivirus">
+                                    <span
+                                        >{bucket.antivirus
+                                            ? 'Antivirus enabled'
+                                            : 'Antivirus disabled'}</span>
+                                </Tooltip>
                             </div>
                         </div>
                     </a>
