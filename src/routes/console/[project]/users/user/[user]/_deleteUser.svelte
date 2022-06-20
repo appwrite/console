@@ -13,7 +13,7 @@
 
     const deleteUser = async () => {
         try {
-            await sdkForProject.users.delete($user.$id);
+            await sdkForProject.users.delete($user.response.$id);
             showDelete = false;
             await goto(`${base}/console/${$page.params.project}/users`);
         } catch (error) {
@@ -28,7 +28,7 @@
 <Form on:submit={deleteUser}>
     <Modal bind:show={showDelete}>
         <svelte:fragment slot="header">Delete user</svelte:fragment>
-        <p>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
+        <p>Are you sure you want to delete <b>{$user.response.name}</b> from '{$project.name}'?</p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
             <Button secondary submit>Delete</Button>
