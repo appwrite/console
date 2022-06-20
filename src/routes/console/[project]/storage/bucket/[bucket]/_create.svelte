@@ -1,6 +1,6 @@
 <script lang="ts">
     import { InputTags, Button, InputFile, Form } from '$lib/elements/forms';
-    import { Modal } from '$lib/components';
+    import { Modal, Alert } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -28,23 +28,29 @@
             });
         }
     };
+
+    //TODO: add correct max file size
 </script>
 
 <Form on:submit={create}>
     <Modal bind:show={showCreate}>
         <svelte:fragment slot="header">Upload File</svelte:fragment>
         <InputFile id="file" label="File" bind:files required />
-        <InputTags
-            id="read"
-            label="Read"
-            bind:tags={read}
-            helper="Add 'role:all' for wildcard access"
-            placeholder="User ID, Team ID or Role" />
+        <p>Max file size: 10MB</p>
+
+        <p class="heading-level-7">Permissions</p>
+        <Alert type="info">
+            <p>
+                Tip: Add role:all for wildcard access. Check out our documentation for more on <a
+                    href="/#">
+                    Permissions</a>
+            </p>
+        </Alert>
+        <InputTags id="read" label="Read" bind:tags={read} placeholder="User ID, Team ID or Role" />
         <InputTags
             id="write"
             label="Write"
             bind:tags={write}
-            helper="Add 'role:all' for wildcard access"
             placeholder="User ID, Team ID or Role" />
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
