@@ -14,7 +14,10 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import Delete from './_deleteBucket.svelte';
+    import { bind } from 'svelte/internal';
 
+    let showDelete = false;
     let showError: false | 'name' | 'size' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
@@ -412,6 +415,29 @@
                     }}>Update</Button>
             </div>
         </Card>
-        <!-- TODO: Delete bucket  -->
+        <Card>
+            <div class="u-flex u-main-space-between u-gap-12 common-section">
+                <div>
+                    <h6 class="heading-level-7">Danger Zone</h6>
+                    <p>
+                        The user will be permanently deleted, including all data associated with
+                        this user. This action is irreversible.
+                    </p>
+                </div>
+                <div>
+                    <div class="user-profile-button">
+                        <span class="user-profile-info">
+                            <h6 class="heading-level-7">{$bucket.name}</h6>
+                            <p>Last Updated: {toLocaleDate($bucket.dateUpdated)}</p>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="u-flex u-main-space-end common-section">
+                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            </div>
+        </Card>
     {/if}
 </Container>
+
+<Delete bind:showDelete />
