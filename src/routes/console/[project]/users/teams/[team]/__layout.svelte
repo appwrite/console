@@ -15,8 +15,8 @@
     }
 
     $: {
-        if ($team) {
-            title.set($team.name);
+        if ($team.response) {
+            title.set($team.response.name);
         }
     }
 
@@ -47,6 +47,6 @@
     <title>Appwrite - Team</title>
 </svelte:head>
 
-{#if $team}
+{#if $team.response}
     <slot />
 {/if}
