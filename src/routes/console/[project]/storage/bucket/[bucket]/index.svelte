@@ -16,6 +16,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
+    import { files } from './store';
 
     let search = '';
     let showCreate = false;
@@ -28,8 +29,15 @@
     const getPreview = (fileId: string) =>
         sdkForProject.storage.getFilePreview(bucket, fileId, 40, 40).toString() + '&mode=admin';
 
-    $: request = sdkForProject.storage.listFiles(bucket, search, limit, offset);
+    const fileCreated = () => {
+        showCreate = false;
+        files.load(bucket, search, limit, offset);
+    };
+
+    $: files.load(bucket, search, limit, offset);
     $: if (search) offset = 0;
+
+    console.log($files);
 </script>
 
 <Container>
@@ -47,80 +55,76 @@
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Add File</span>
         </Button>
     </div>
-    {#await request}
-        <div aria-busy="true" />
-    {:then response}
-        {#if response.total}
-            <Table>
-                <TableHeader>
-                    <TableCellHead>Filename</TableCellHead>
-                    <TableCellHead>Type</TableCellHead>
-                    <TableCellHead>Size</TableCellHead>
-                    <TableCellHead>Date Created</TableCellHead>
-                    <TableCellHead width={30} />
-                </TableHeader>
-                <TableBody>
-                    {#each response.files as file}
-                        <TableRow>
-                            <TableCellLink
-                                title="Name"
-                                href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
-                                <div class="u-flex u-gap-12">
-                                    <img
-                                        class="avatar"
-                                        width="40"
-                                        height="40"
-                                        src={getPreview(file.$id)}
-                                        alt={file.name} />
-                                    {file.name}
-                                </div>
-                            </TableCellLink>
-                            <TableCellText title="Type">{file.mimeType}</TableCellText>
-                            <TableCellText title="Size">{file.sizeOriginal}</TableCellText>
-                            <TableCellText title="Date Created"
-                                >{toLocaleDate(file.dateCreated)}</TableCellText>
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </Table>
-            <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {response.total}</p>
-                <Pagination {limit} bind:offset sum={response.total} />
-            </div>
-        {:else if search}
-            <Empty>
-                <div class="u-flex u-flex-vertical">
-                    <b>Sorry, we couldn’t find ‘{search}’</b>
-                    <div class="common-section">
-                        <p>There are no files that match your search.</p>
-                    </div>
-                    <div class="common-section">
-                        <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-                    </div>
+    {#if $files?.response?.total}
+        <Table>
+            <TableHeader>
+                <TableCellHead>Filename</TableCellHead>
+                <TableCellHead>Type</TableCellHead>
+                <TableCellHead>Size</TableCellHead>
+                <TableCellHead>Date Created</TableCellHead>
+                <TableCellHead width={30} />
+            </TableHeader>
+            <TableBody>
+                {#each $files.response.files as file}
+                    <TableRow>
+                        <TableCellLink
+                            title="Name"
+                            href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
+                            <div class="u-flex u-gap-12">
+                                <img
+                                    class="avatar"
+                                    width="40"
+                                    height="40"
+                                    src={getPreview(file.$id)}
+                                    alt={file.name} />
+                                {file.name}
+                            </div>
+                        </TableCellLink>
+                        <TableCellText title="Type">{file.mimeType}</TableCellText>
+                        <TableCellText title="Size">{file.sizeOriginal}</TableCellText>
+                        <TableCellText title="Date Created"
+                            >{toLocaleDate(file.dateCreated)}</TableCellText>
+                    </TableRow>
+                {/each}
+            </TableBody>
+        </Table>
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {$files.response.total}</p>
+            <Pagination {limit} bind:offset sum={$files.response.total} />
+        </div>
+    {:else if search}
+        <Empty>
+            <div class="u-flex u-flex-vertical">
+                <b>Sorry, we couldn’t find ‘{search}’</b>
+                <div class="common-section">
+                    <p>There are no files that match your search.</p>
                 </div>
-            </Empty>
-            <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {response.total}</p>
-                <Pagination {limit} bind:offset sum={response.total} />
-            </div>
-        {:else}
-            <Empty dashed centered>
-                <div class="u-flex u-flex-vertical u-cross-center">
-                    <div class="common-section">
-                        <Button secondary round on:click={() => (showCreate = true)}>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Upload some files to get started</p>
-                    </div>
-                    <div class="common-section">
-                        <Button secondary href="#">Documentation</Button>
-                    </div>
+                <div class="common-section">
+                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
                 </div>
-            </Empty>
-        {/if}
-    {/await}
+            </div>
+        </Empty>
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {$files.response.total}</p>
+            <Pagination {limit} bind:offset sum={$files.response.total} />
+        </div>
+    {:else}
+        <Empty dashed centered>
+            <div class="u-flex u-flex-vertical u-cross-center">
+                <div class="common-section">
+                    <Button secondary round on:click={() => (showCreate = true)}>
+                        <i class="icon-plus" />
+                    </Button>
+                </div>
+                <div class="common-section">
+                    <p>Upload some files to get started</p>
+                </div>
+                <div class="common-section">
+                    <Button secondary href="#">Documentation</Button>
+                </div>
+            </div>
+        </Empty>
+    {/if}
 </Container>
 
-<Create bind:showCreate />
+<Create bind:showCreate on:created={fileCreated} />
