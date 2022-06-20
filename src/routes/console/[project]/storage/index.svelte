@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination, Tiles, Tooltip } from '$lib/components';
     import { Pill } from '$lib/elements';
