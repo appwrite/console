@@ -3,9 +3,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination } from '$lib/components';
-    import type { Models } from 'src/sdk';
     import Create from './_create.svelte';
-    import Update from './_update.svelte';
     import {
         Table,
         TableHeader,
@@ -21,9 +19,7 @@
 
     let search = '';
     let showCreate = false;
-    let showUpdate = false;
     let offset = 0;
-    let currentFile: Models.File;
 
     const limit = 5;
     const project = $page.params.project;
@@ -128,4 +124,3 @@
 </Container>
 
 <Create bind:showCreate />
-<Update bind:showUpdate bind:file={currentFile} />
