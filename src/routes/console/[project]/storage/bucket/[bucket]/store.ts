@@ -7,15 +7,30 @@ export type FilesList = {
     loading: boolean;
     response?: Models.FileList;
 };
+export type SelectedBucket = {
+    loading: boolean;
+    response?: Models.Bucket;
+};
 
 function createBucketStore() {
-    const { subscribe, set } = writable<Models.Bucket>();
+    const { subscribe, set } = writable<SelectedBucket>({
+        loading: true,
+        response: browser ? JSON.parse(sessionStorage.getItem('bucket')) : null
+    });
 
     return {
         subscribe,
         set,
         load: async (bucketId: string) => {
-            set(await sdkForProject.storage.getBucket(bucketId));
+            try {
+                const response = await sdkForProject.storage.getBucket(bucketId);
+                set({
+                    loading: false,
+                    response
+                });
+            } catch (error) {
+                //TODO: take care what happens here
+            }
         }
     };
 }
@@ -23,7 +38,7 @@ function createBucketStore() {
 function createFilesStore() {
     const { subscribe, set } = writable<FilesList>({
         loading: true,
-        response: browser ? JSON.parse(sessionStorage.getItem('users')) : null
+        response: browser ? JSON.parse(sessionStorage.getItem('files')) : null
     });
 
     return {
@@ -52,5 +67,6 @@ export const bucket = createBucketStore();
 export const files = createFilesStore();
 
 if (browser) {
+    bucket.subscribe((n) => sessionStorage?.setItem('bucket', JSON.stringify(n.response ?? '')));
     files.subscribe((n) => sessionStorage?.setItem('files', JSON.stringify(n.response ?? '')));
 }
