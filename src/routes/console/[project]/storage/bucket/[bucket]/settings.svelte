@@ -402,7 +402,7 @@
                         <InputTags
                             id="read"
                             label="Allowed file extensions"
-                            placeholder="JPG, PNG, SVG, GIF, HTML, PDF, MP4"
+                            placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
                             bind:tags={extensions} />
                     </ul>
                 </div>
