@@ -36,8 +36,6 @@
 
     $: files.load(bucket, search, limit, offset);
     $: if (search) offset = 0;
-
-    console.log($files);
 </script>
 
 <Container>
