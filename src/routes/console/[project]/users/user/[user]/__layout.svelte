@@ -15,8 +15,8 @@
     }
 
     $: {
-        if ($user) {
-            title.set($user.name);
+        if ($user.response) {
+            title.set($user.response.name);
         }
     }
 
