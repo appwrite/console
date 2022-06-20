@@ -12,10 +12,12 @@
         TableBody,
         TableRow,
         TableCellHead,
-        TableCellText
+        TableCellText,
+        TableCellLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
+    import { base } from '$app/paths';
 
     let search = '';
     let showCreate = false;
@@ -23,14 +25,12 @@
     let offset = 0;
     let currentFile: Models.File;
 
-    const limit = 25;
+    const limit = 5;
+    const project = $page.params.project;
     const bucket = $page.params.bucket;
-    const openFile = (file: Models.File) => {
-        currentFile = file;
-        showUpdate = true;
-    };
+
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview(bucket, fileId, 30, 30).toString() + '&mode=admin';
+        sdkForProject.storage.getFilePreview(bucket, fileId, 40, 40).toString() + '&mode=admin';
 
     $: request = sdkForProject.storage.listFiles(bucket, search, limit, offset);
     $: if (search) offset = 0;
@@ -66,19 +66,19 @@
                 <TableBody>
                     {#each response.files as file}
                         <TableRow>
-                            <TableCellText title="Name">
+                            <TableCellLink
+                                title="Name"
+                                href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
                                 <div class="u-flex u-gap-12">
-                                    <span class="link" on:click={() => openFile(file)}>
-                                        <img
-                                            class="avatar"
-                                            width="40"
-                                            height="40"
-                                            src={getPreview(file.$id)}
-                                            alt={file.name} />
-                                        {file.name}
-                                    </span>
+                                    <img
+                                        class="avatar"
+                                        width="40"
+                                        height="40"
+                                        src={getPreview(file.$id)}
+                                        alt={file.name} />
+                                    {file.name}
                                 </div>
-                            </TableCellText>
+                            </TableCellLink>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size">{file.sizeOriginal}</TableCellText>
                             <TableCellText title="Date Created"
