@@ -418,10 +418,10 @@
         <Card>
             <div class="u-flex u-main-space-between u-gap-12 common-section">
                 <div>
-                    <h6 class="heading-level-7">Danger Zone</h6>
+                    <h6 class="heading-level-7">Delete Bucket</h6>
                     <p>
-                        The user will be permanently deleted, including all data associated with
-                        this user. This action is irreversible.
+                        The bucket will be permanently deleted, including all the files within it.
+                        This action is irreversible.
                     </p>
                 </div>
                 <div>
