@@ -10,23 +10,24 @@
     import Delete from './_deleteFile.svelte';
 
     let showDelete = false;
-    let fileRead = $file?.$read;
-    let fileWrite = $file?.$write;
+    let fileRead = $file.response?.$read;
+    let fileWrite = $file.response?.$write;
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
+        sdkForProject.storage.getFilePreview($file.response.bucketId, fileId, 205, 125).toString() +
         '&mode=admin';
     const getView = (fileId: string) =>
-        sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
+        sdkForProject.storage.getFileView($file.response.bucketId, fileId).toString() +
+        '&mode=admin';
 
     $: if (fileRead || fileWrite) {
         if (fileRead) {
-            if (JSON.stringify(fileRead) !== JSON.stringify($file.$read)) {
+            if (JSON.stringify(fileRead) !== JSON.stringify($file.response.$read)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         } else if (fileWrite) {
-            if (JSON.stringify(fileWrite) !== JSON.stringify($file.$write)) {
+            if (JSON.stringify(fileWrite) !== JSON.stringify($file.response.$write)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
@@ -34,16 +35,22 @@
 
     function downloadFile() {
         return (
-            sdkForProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
-            '&mode=admin'
+            sdkForProject.storage
+                .getFileDownload($file.response.bucketId, $file.response.$id)
+                .toString() + '&mode=admin'
         );
     }
 
     async function updatePermissions() {
         try {
-            await sdkForProject.storage.updateFile($file.bucketId, $file.$id, fileRead, fileWrite);
-            $file.$read = fileRead;
-            $file.$write = fileWrite;
+            await sdkForProject.storage.updateFile(
+                $file.response.bucketId,
+                $file.response.$id,
+                fileRead,
+                fileWrite
+            );
+            $file.response.$read = fileRead;
+            $file.response.$write = fileWrite;
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -74,23 +81,27 @@
 </script>
 
 <Container>
-    {#if $file}
+    {#if $file.response}
         <Card>
             <div class="u-flex u-main-space-between u-gap-12 common-section">
                 <div class="u-flex u-gap-12">
-                    <img width="205" height="125" src={getPreview($file.$id)} alt={$file.name} />
+                    <img
+                        width="205"
+                        height="125"
+                        src={getPreview($file.response.$id)}
+                        alt={$file.response.name} />
                     <div>
-                        <h2 class="heading-level-7">{$file.name}</h2>
-                        <Pill button on:click={() => copy(getView($file.$id))}
+                        <h2 class="heading-level-7">{$file.response.name}</h2>
+                        <Pill button on:click={() => copy(getView($file.response.$id))}
                             ><i class="icon-duplicate" />File URL
                         </Pill>
                     </div>
                 </div>
                 <div>
-                    <p>MIME Type: {$file.mimeType}</p>
-                    <p>Size: {$file.sizeOriginal}</p>
-                    <p>Created: {toLocaleDate($file.dateCreated)}</p>
-                    <p>Last Updated (to implement): {toLocaleDate($file.dateCreated)}</p>
+                    <p>MIME Type: {$file.response.mimeType}</p>
+                    <p>Size: {$file.response.sizeOriginal}</p>
+                    <p>Created: {toLocaleDate($file.response.dateCreated)}</p>
+                    <p>Last Updated (to implement): {toLocaleDate($file.response.dateCreated)}</p>
                 </div>
             </div>
 
@@ -156,8 +167,12 @@
                 <div>
                     <div class="user-profile-button">
                         <span class="user-profile-info">
-                            <h6 class="heading-level-7">{$file.name}</h6>
-                            <p>Last Updated (to implement): {toLocaleDate($file.dateCreated)}</p>
+                            <h6 class="heading-level-7">{$file.response.name}</h6>
+                            <p>
+                                Last Updated (to implement): {toLocaleDate(
+                                    $file.response.dateCreated
+                                )}
+                            </p>
                         </span>
                     </div>
                 </div>
