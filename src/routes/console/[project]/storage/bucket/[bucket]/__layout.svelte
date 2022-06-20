@@ -14,7 +14,7 @@
     }
 
     $: {
-        if ($bucket) {
+        if ($bucket.response) {
             title.set($bucket.response.name);
         }
     }
