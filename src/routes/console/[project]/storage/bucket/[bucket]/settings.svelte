@@ -15,7 +15,6 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import Delete from './_deleteBucket.svelte';
-    import { bind } from 'svelte/internal';
 
     let showDelete = false;
     let showError: false | 'name' | 'size' = false;
