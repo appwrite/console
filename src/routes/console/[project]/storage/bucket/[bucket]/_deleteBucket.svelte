@@ -12,7 +12,7 @@
 
     const deleteUser = async () => {
         try {
-            await sdkForProject.storage.deleteBucket($bucket.$id);
+            await sdkForProject.storage.deleteBucket($bucket.response.$id);
             showDelete = false;
             await goto(`${base}/console/${$page.params.project}/storage`);
         } catch (error) {
@@ -27,7 +27,7 @@
 <Form on:submit={deleteUser}>
     <Modal bind:show={showDelete}>
         <svelte:fragment slot="header">Delete Bucket</svelte:fragment>
-        <p>Are you sure you want to delete <b>{$bucket.name}</b>?</p>
+        <p>Are you sure you want to delete <b>{$bucket.response.name}</b>?</p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
             <Button secondary submit>Delete</Button>

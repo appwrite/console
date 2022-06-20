@@ -16,18 +16,20 @@
     import { addNotification } from '$lib/stores/notifications';
     import Delete from './_deleteBucket.svelte';
 
+    $: response = $bucket.response;
+
     let showDelete = false;
     let showError: false | 'name' | 'size' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let enabled = $bucket.enabled;
+    let enabled = response.enabled;
     let bucketName = '';
-    let bucketPermissions = $bucket.permission;
-    let bucketRead = $bucket.$read;
-    let bucketWrite = $bucket.$write;
+    let bucketPermissions = response.permission;
+    let bucketRead = response.$read;
+    let bucketWrite = response.$write;
     let arePermsDisabled = true;
-    let encryption = $bucket.encryption;
-    let antivirus = $bucket.antivirus;
+    let encryption = response.encryption;
+    let antivirus = response.antivirus;
     let maxSize: number;
     let options = [
         { label: 'Bytes', value: 'b' },
@@ -35,24 +37,24 @@
         { label: 'Megabytes', value: 'mb' },
         { label: 'Gigabytes', value: 'gb' }
     ];
-    let extensions = $bucket.allowedFileExtensions;
+    let extensions = response.allowedFileExtensions;
     let isExtensionsDisabled = true;
 
     $: if (bucketPermissions || bucketRead || bucketWrite) {
-        if (bucketPermissions !== $bucket.permission) {
+        if (bucketPermissions !== response.permission) {
             arePermsDisabled = false;
         } else if (bucketRead) {
-            if (JSON.stringify(bucketRead) !== JSON.stringify($bucket.$read)) {
+            if (JSON.stringify(bucketRead) !== JSON.stringify(response.$read)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         } else if (bucketWrite) {
-            if (JSON.stringify(bucketWrite) !== JSON.stringify($bucket.$write)) {
+            if (JSON.stringify(bucketWrite) !== JSON.stringify(response.$write)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
     }
     $: if (extensions) {
-        if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
+        if (JSON.stringify(extensions) !== JSON.stringify(response.allowedFileExtensions)) {
             isExtensionsDisabled = false;
         } else isExtensionsDisabled = true;
     }
@@ -66,16 +68,16 @@
     async function toggleBucket() {
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                $bucket.permission,
-                $bucket.$read,
-                $bucket.$write,
+                response.$id,
+                response.name,
+                response.permission,
+                response.$read,
+                response.$write,
                 enabled
             );
-            $bucket.enabled = enabled;
+            response.enabled = enabled;
             addNotification({
-                message: `${$bucket.name} has been updatede`,
+                message: `${response.name} has been updatede`,
                 type: 'success'
             });
         } catch (error) {
@@ -87,8 +89,12 @@
     }
     async function updateName() {
         try {
-            await sdkForProject.storage.updateBucket($bucket.$id, $bucket.name, $bucket.permission);
-            $bucket.name = bucketName;
+            await sdkForProject.storage.updateBucket(
+                response.$id,
+                response.name,
+                response.permission
+            );
+            response.name = bucketName;
             bucketName = null;
             showError = false;
             addNotification({
@@ -102,15 +108,15 @@
     async function updatePermissions() {
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
+                response.$id,
+                response.name,
                 bucketPermissions,
-                bucketPermissions === 'bucket' ? bucketRead : $bucket.$read,
-                bucketPermissions === 'bucket' ? bucketWrite : $bucket.$write
+                bucketPermissions === 'bucket' ? bucketRead : response.$read,
+                bucketPermissions === 'bucket' ? bucketWrite : response.$write
             );
-            $bucket.permission = bucketPermissions;
-            $bucket.$read = bucketRead;
-            $bucket.$write = bucketWrite;
+            response.permission = bucketPermissions;
+            response.$read = bucketRead;
+            response.$write = bucketWrite;
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -127,21 +133,21 @@
     async function updateSecurity() {
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                $bucket.permission,
-                $bucket.$read,
-                $bucket.$write,
-                $bucket.enabled,
-                $bucket.maximumFileSize,
-                $bucket.allowedFileExtensions,
+                response.$id,
+                response.name,
+                response.permission,
+                response.$read,
+                response.$write,
+                response.enabled,
+                response.maximumFileSize,
+                response.allowedFileExtensions,
                 encryption,
                 antivirus
             );
-            $bucket.encryption = encryption;
-            $bucket.antivirus = antivirus;
+            response.encryption = encryption;
+            response.antivirus = antivirus;
             addNotification({
-                message: `${$bucket.name} has been updatede`,
+                message: `${response.name} has been updatede`,
                 type: 'success'
             });
         } catch (error) {
@@ -154,17 +160,17 @@
     async function updateMaxSize() {
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                $bucket.permission,
-                $bucket.$read,
-                $bucket.$write,
-                $bucket.enabled,
+                response.$id,
+                response.name,
+                response.permission,
+                response.$read,
+                response.$write,
+                response.enabled,
                 maxSize
             );
-            $bucket.maximumFileSize = maxSize;
+            response.maximumFileSize = maxSize;
             addNotification({
-                message: `${$bucket.name} has been updatede`,
+                message: `${response.name} has been updatede`,
                 type: 'success'
             });
         } catch (error) {
@@ -178,18 +184,18 @@
     async function updateAllowedExtensions() {
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                $bucket.permission,
-                $bucket.$read,
-                $bucket.$write,
-                $bucket.enabled,
-                $bucket.maximumFileSize,
+                response.$id,
+                response.name,
+                response.permission,
+                response.$read,
+                response.$write,
+                response.enabled,
+                response.maximumFileSize,
                 extensions
             );
-            $bucket.allowedFileExtensions = extensions;
+            response.allowedFileExtensions = extensions;
             addNotification({
-                message: `${$bucket.name} has been updatede`,
+                message: `${response.name} has been updatede`,
                 type: 'success'
             });
         } catch (error) {
@@ -202,13 +208,13 @@
 </script>
 
 <Container>
-    {#if $bucket}
+    {#if response}
         <Card>
             <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <h2 class="heading-level-7">{$bucket.name}</h2>
+                <h2 class="heading-level-7">{response.name}</h2>
                 <div>
-                    <p>Created: {toLocaleDate($bucket.dateCreated)}</p>
-                    <p>Last Updated: {toLocaleDate($bucket.dateUpdated)}</p>
+                    <p>Created: {toLocaleDate(response.dateCreated)}</p>
+                    <p>Last Updated: {toLocaleDate(response.dateUpdated)}</p>
                 </div>
                 <div class="u-flex u-main-space-end u-gap-12 common-section">
                     <ul>
@@ -222,7 +228,7 @@
 
             <div class="u-flex u-main-space-end common-section">
                 <Button
-                    disabled={enabled === $bucket.enabled}
+                    disabled={enabled === response.enabled}
                     on:click={() => {
                         toggleBucket();
                     }}>Update</Button>
@@ -238,7 +244,7 @@
                     <InputText
                         id="name"
                         label="Name"
-                        placeholder={$bucket.name}
+                        placeholder={response.name}
                         autocomplete={false}
                         bind:value={bucketName} />
                     {#if showError === 'name'}
@@ -348,7 +354,8 @@
             </div>
             <div class="u-flex u-main-space-end common-section">
                 <Button
-                    disabled={encryption === $bucket.encryption && antivirus === $bucket.antivirus}
+                    disabled={encryption === response.encryption &&
+                        antivirus === response.antivirus}
                     on:click={() => {
                         updateSecurity();
                     }}>Update</Button>
@@ -368,7 +375,7 @@
                     <InputNumber
                         id="size"
                         label="Size"
-                        placeholder={$bucket.maximumFileSize + ''}
+                        placeholder={response.maximumFileSize + ''}
                         bind:value={maxSize} />
                     <InputSelect id="bytes" label="Bytes" {options} value={options[0].value} />
                 </ul>
@@ -426,8 +433,8 @@
                 <div>
                     <div class="user-profile-button">
                         <span class="user-profile-info">
-                            <h6 class="heading-level-7">{$bucket.name}</h6>
-                            <p>Last Updated: {toLocaleDate($bucket.dateUpdated)}</p>
+                            <h6 class="heading-level-7">{response.name}</h6>
+                            <p>Last Updated: {toLocaleDate(response.dateUpdated)}</p>
                         </span>
                     </div>
                 </div>
