@@ -90,7 +90,7 @@
                     <p>MIME Type: {$file.mimeType}</p>
                     <p>Size: {$file.sizeOriginal}</p>
                     <p>Created: {toLocaleDate($file.dateCreated)}</p>
-                    <p>Last Updated: {toLocaleDate($file?.dateUpdated)}</p>
+                    <p>Last Updated (to implement): {toLocaleDate($file.dateCreated)}</p>
                 </div>
             </div>
 
@@ -157,7 +157,7 @@
                     <div class="user-profile-button">
                         <span class="user-profile-info">
                             <h6 class="heading-level-7">{$file.name}</h6>
-                            <p>Last Updated: {toLocaleDate($file?.dateUpdated)}</p>
+                            <p>Last Updated (to implement): {toLocaleDate($file.dateCreated)}</p>
                         </span>
                     </div>
                 </div>
