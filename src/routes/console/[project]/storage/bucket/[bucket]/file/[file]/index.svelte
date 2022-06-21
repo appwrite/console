@@ -7,6 +7,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import { bytesToSize } from '$lib/helpers/sizeConvertion';
     import Delete from './_deleteFile.svelte';
 
     let showDelete = false;
@@ -99,7 +100,7 @@
                 </div>
                 <div>
                     <p>MIME Type: {$file.response.mimeType}</p>
-                    <p>Size: {$file.response.sizeOriginal}</p>
+                    <p>Size: {bytesToSize($file.response.sizeOriginal)}</p>
                     <p>Created: {toLocaleDate($file.response.dateCreated)}</p>
                     <p>Last Updated (to implement): {toLocaleDate($file.response.dateCreated)}</p>
                 </div>

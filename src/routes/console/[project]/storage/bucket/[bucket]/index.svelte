@@ -14,6 +14,7 @@
         TableCellLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { bytesToSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { files } from './store';
@@ -79,7 +80,7 @@
                             </div>
                         </TableCellLink>
                         <TableCellText title="Type">{file.mimeType}</TableCellText>
-                        <TableCellText title="Size">{file.sizeOriginal}</TableCellText>
+                        <TableCellText title="Size">{bytesToSize(file.sizeOriginal)}</TableCellText>
                         <TableCellText title="Date Created"
                             >{toLocaleDate(file.dateCreated)}</TableCellText>
                     </TableRow>
