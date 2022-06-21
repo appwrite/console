@@ -30,7 +30,7 @@
     async function updateName() {
         try {
             await sdkForProject.teams.update($page.params.team, teamName);
-            $team.name = teamName;
+            $team.response.name = teamName;
             teamName = null;
             addNotification({
                 message: 'Name has been updated',
@@ -42,19 +42,22 @@
     }
 </script>
 
-{#if $team}
+{#if $team.response}
     <Container>
         <Card>
             <div class="u-flex u-main-space-between u-gap-12 common-section">
                 <div class="user-profile-button">
-                    <Avatar size={40} name={$team.name} src={getAvatar($team.name)} />
+                    <Avatar
+                        size={40}
+                        name={$team.response.name}
+                        src={getAvatar($team.response.name)} />
                     <span class="user-profile-info">
-                        <h6 class="heading-level-7">{$team.name}</h6>
-                        <span class="title">{$team.total} Members</span>
+                        <h6 class="heading-level-7">{$team.response.name}</h6>
+                        <span class="title">{$team.response.total} Members</span>
                     </span>
                 </div>
                 <div>
-                    <p>Created on {toLocaleDate($team.dateCreated)}</p>
+                    <p>Created on {toLocaleDate($team.response.dateCreated)}</p>
                 </div>
             </div>
         </Card>
@@ -65,7 +68,7 @@
                     <InputText
                         id="name"
                         label="Name"
-                        placeholder={$team.name}
+                        placeholder={$team.response.name}
                         autocomplete={false}
                         bind:value={teamName} />
                     {#if showError === 'name'}
@@ -93,10 +96,13 @@
                 </div>
                 <div>
                     <div class="user-profile-button">
-                        <Avatar size={64} name={$team.name} src={getAvatar($team.name)} />
+                        <Avatar
+                            size={64}
+                            name={$team.response.name}
+                            src={getAvatar($team.response.name)} />
                         <span class="user-profile-info">
-                            <h6 class="heading-level-7">{$team.name}</h6>
-                            <span class="title">{$team.total} Members</span>
+                            <h6 class="heading-level-7">{$team.response.name}</h6>
+                            <span class="title">{$team.response.total} Members</span>
                         </span>
                     </div>
                 </div>
@@ -106,5 +112,5 @@
             </div>
         </Card>
     </Container>
-    <DeleteTeam team={$team} bind:showDelete />
+    <DeleteTeam team={$team.response} bind:showDelete />
 {/if}

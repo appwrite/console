@@ -14,7 +14,7 @@
     $: if (newKey && newValue) {
         arePrefsDisabled = false;
     } else if (prefs) {
-        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
+        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.response.prefs))) {
             arePrefsDisabled = false;
         }
     }
@@ -33,7 +33,7 @@
 
     onMount(async () => {
         await user.load($page.params.user);
-        prefs = Object.entries($user.prefs);
+        prefs = Object.entries($user.response.prefs);
     });
 
     const getAvatar = (name: string) =>
@@ -47,11 +47,14 @@
 
     async function updateVerification() {
         try {
-            await sdkForProject.users.updateVerification($user.$id, !$user.emailVerification);
-            $user.emailVerification = !$user.emailVerification;
+            await sdkForProject.users.updateVerification(
+                $user.response.$id,
+                !$user.response.emailVerification
+            );
+            $user.response.emailVerification = !$user.response.emailVerification;
             addNotification({
                 message: `The account has been ${
-                    $user.emailVerification ? 'verified' : 'unverified'
+                    $user.response.emailVerification ? 'verified' : 'unverified'
                 }`,
                 type: 'success'
             });
@@ -64,10 +67,10 @@
     }
     async function updateStatus() {
         try {
-            await sdkForProject.users.updateStatus($user.$id, !$user.status);
-            $user.status = !$user.status;
+            await sdkForProject.users.updateStatus($user.response.$id, !$user.response.status);
+            $user.response.status = !$user.response.status;
             addNotification({
-                message: `The account has been ${$user.status ? 'unblocked' : 'blocked'}`,
+                message: `The account has been ${$user.response.status ? 'unblocked' : 'blocked'}`,
                 type: 'success'
             });
         } catch (error) {
@@ -79,8 +82,8 @@
     }
     async function updateName() {
         try {
-            await sdkForProject.users.updateName($user.$id, userName);
-            $user.name = userName;
+            await sdkForProject.users.updateName($user.response.$id, userName);
+            $user.response.name = userName;
             userName = null;
             showError = false;
             addNotification({
@@ -93,8 +96,8 @@
     }
     async function updateEmail() {
         try {
-            await sdkForProject.users.updateEmail($user.$id, userEmail);
-            $user.email = userEmail;
+            await sdkForProject.users.updateEmail($user.response.$id, userEmail);
+            $user.response.email = userEmail;
             userEmail = null;
             showError = false;
             addNotification({
@@ -107,7 +110,7 @@
     }
     async function updatePassword() {
         try {
-            await sdkForProject.users.updatePassword($user.$id, newPassword);
+            await sdkForProject.users.updatePassword($user.response.$id, newPassword);
             newPassword = null;
             showError = false;
             addNotification({
@@ -129,8 +132,8 @@
                 newValue = null;
             }
             newPref = null;
-            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
-            $user.prefs = updatedPrefs;
+            await sdkForProject.users.updatePrefs($user.response.$id, updatedPrefs);
+            $user.response.prefs = updatedPrefs;
             arePrefsDisabled = true;
 
             addNotification({
@@ -149,9 +152,9 @@
         try {
             let updatedPrefs = Object.fromEntries(prefs);
             delete updatedPrefs[selectedKey];
-            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
+            await sdkForProject.users.updatePrefs($user.response.$id, updatedPrefs);
             prefs = Object.entries(updatedPrefs);
-            $user.prefs = updatedPrefs;
+            $user.response.prefs = updatedPrefs;
             addNotification({
                 message: 'Preferences have been updated',
                 type: 'success'
@@ -169,28 +172,31 @@
     <Card>
         <div class="u-flex  u-gap-12 common-section">
             <div class="user-profile-button">
-                <Avatar size={64} name={$user.name} src={getAvatar($user.name)} />
+                <Avatar size={64} name={$user.response.name} src={getAvatar($user.response.name)} />
                 <span class="user-profile-info">
-                    <h6 class="heading-level-7">{$user.name}</h6>
+                    <h6 class="heading-level-7">{$user.response.name}</h6>
                 </span>
-                {#if !$user.status}
+                {#if !$user.response.status}
                     <Pill danger>Blocked</Pill>
                 {:else}
-                    <Pill success={$user.emailVerification}
-                        >{$user.emailVerification ? 'Verified' : 'Unverified'}</Pill>
+                    <Pill success={$user.response.emailVerification}
+                        >{$user.response.emailVerification ? 'Verified' : 'Unverified'}</Pill>
                 {/if}
             </div>
             <div>
-                <span class="title">{$user.email}</span>
-                <p>Joined: {toLocaleDate($user.registration)}</p>
+                <span class="title">{$user.response.email}</span>
+                <p>Joined: {toLocaleDate($user.response.registration)}</p>
             </div>
         </div>
         <div class="u-flex u-main-space-end u-gap-12 common-section">
-            <Button text={$user.status} secondary={!$user.status} on:click={() => updateStatus()}
-                >{$user.status ? 'Block Account' : 'Unblock Accout'}</Button>
-            {#if $user.status}
+            <Button
+                text={$user.response.status}
+                secondary={!$user.response.status}
+                on:click={() => updateStatus()}
+                >{$user.response.status ? 'Block Account' : 'Unblock Accout'}</Button>
+            {#if $user.response.status}
                 <Button secondary on:click={() => updateVerification()}
-                    >{$user.emailVerification ? 'Unverify' : 'Verify'} Account</Button>
+                    >{$user.response.emailVerification ? 'Unverify' : 'Verify'} Account</Button>
             {/if}
         </div>
     </Card>
@@ -201,7 +207,7 @@
                 <InputText
                     id="name"
                     label="Name"
-                    placeholder={$user.name}
+                    placeholder={$user.response.name}
                     autocomplete={false}
                     bind:value={userName} />
                 {#if showError === 'name'}
@@ -224,7 +230,7 @@
                 <InputEmail
                     id="email"
                     label="Email"
-                    placeholder={$user.email}
+                    placeholder={$user.response.email}
                     autocomplete={false}
                     bind:value={userEmail} />
                 {#if showError === 'email'}
@@ -333,10 +339,13 @@
             </div>
             <div>
                 <div class="user-profile-button">
-                    <Avatar size={64} name={$user.name} src={getAvatar($user.name)} />
+                    <Avatar
+                        size={64}
+                        name={$user.response.name}
+                        src={getAvatar($user.response.name)} />
                     <span class="user-profile-info">
-                        <h6 class="heading-level-7">{$user.name}</h6>
-                        <span class="title">{$user.email}</span>
+                        <h6 class="heading-level-7">{$user.response.name}</h6>
+                        <span class="title">{$user.response.email}</span>
                     </span>
                 </div>
             </div>

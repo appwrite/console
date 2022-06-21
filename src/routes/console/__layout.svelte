@@ -12,4 +12,5 @@
         <SideNavigation />
     </svelte:fragment>
     <slot />
+    <footer class="main-footer" />
 </Shell>

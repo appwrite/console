@@ -30,7 +30,7 @@
         <svelte:fragment slot="header">Delete All Sessions</svelte:fragment>
 
         <p>
-            Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
+            Are you sure you want to delete <b>all of {$user.response.name}'s sessions?</b>
         </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDeleteAll = false)}>Cancel</Button>
