@@ -15,8 +15,8 @@
     }
 
     $: {
-        if ($file) {
-            title.set($file.name);
+        if ($file.response) {
+            title.set($file.response.name);
         }
     }
 
