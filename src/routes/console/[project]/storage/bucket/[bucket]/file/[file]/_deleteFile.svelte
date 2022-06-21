@@ -12,9 +12,11 @@
 
     const deleteUser = async () => {
         try {
-            await sdkForProject.storage.deleteFile($file.bucketId, $file.$id);
+            await sdkForProject.storage.deleteFile($file.response.bucketId, $file.response.$id);
             showDelete = false;
-            await goto(`${base}/console/${$page.params.project}/storage/bucket/${$file.bucketId}`);
+            await goto(
+                `${base}/console/${$page.params.project}/storage/bucket/${$file.response.bucketId}`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -27,7 +29,7 @@
 <Form on:submit={deleteUser}>
     <Modal bind:show={showDelete}>
         <svelte:fragment slot="header">Delete File</svelte:fragment>
-        <p>Are you sure you want to delete <b>{$file.name}</b>?</p>
+        <p>Are you sure you want to delete <b>{$file.response.name}</b>?</p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
             <Button secondary submit>Delete</Button>
