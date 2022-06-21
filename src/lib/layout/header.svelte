@@ -35,9 +35,9 @@
             <DropList bind:show={showDropdown} position="bottom" horizontal="left" arrow={false}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
                     <Avatar
-                        size={50}
+                        size={40}
                         name={$user.name}
-                        src={sdkForConsole.avatars.getInitials($user.name, 50, 50).toString()} />
+                        src={sdkForConsole.avatars.getInitials($user.name, 40, 40).toString()} />
                     <span class="user-profile-info is-only-desktop">
                         <span class="name">{$user.name}</span>
                         {#if $project}
