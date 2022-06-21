@@ -50,7 +50,7 @@
         </Button>
     </div>
 
-    {#if $bucketList.response.total}
+    {#if $bucketList.response?.total}
         <Tiles>
             {#each $bucketList.response.buckets as bucket}
                 <a class="card" href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
@@ -101,8 +101,8 @@
             </div>
         </Empty>
         <div class="u-flex common-section u-main-space-between">
-            <p class="text">Total results: {$bucketList.response.total}</p>
-            <Pagination {limit} bind:offset sum={$bucketList.response.total} />
+            <p class="text">Total results: {$bucketList.response?.total}</p>
+            <Pagination {limit} bind:offset sum={$bucketList.response?.total} />
         </div>
     {:else}
         <Empty dashed centered>
