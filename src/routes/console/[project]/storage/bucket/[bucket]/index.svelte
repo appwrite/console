@@ -4,6 +4,7 @@
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination } from '$lib/components';
     import Create from './_create.svelte';
+    import Delete from './_deleteFile.svelte';
     import {
         Table,
         TableHeader,
@@ -18,9 +19,13 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { files } from './store';
+    import type { Models } from 'src/sdk';
 
     let search = '';
     let showCreate = false;
+    let showDropdown = false;
+    let showDelete = false;
+    let selectedFile: Models.File = null;
     let offset = 0;
 
     const limit = 5;
@@ -88,7 +93,7 @@
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
                                 on:click={() => {
-                                    console.log('test');
+                                    showDropdown = !showDropdown;
                                 }}>
                                 <span class="icon-dots-horizontal" aria-hidden="true" />
                             </button>
@@ -137,3 +142,6 @@
 </Container>
 
 <Create bind:showCreate on:created={fileCreated} />
+{#if selectedFile}
+    <Delete file={selectedFile} bind:showDelete />
+{/if}

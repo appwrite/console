@@ -6,17 +6,16 @@
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { file } from './store';
+    import type { Models } from 'src/sdk';
 
+    export let file: Models.File;
     export let showDelete = false;
 
     const deleteFile = async () => {
         try {
-            await sdkForProject.storage.deleteFile($file.response.bucketId, $file.response.$id);
+            await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             showDelete = false;
-            await goto(
-                `${base}/console/${$page.params.project}/storage/bucket/${$file.response.bucketId}`
-            );
+            await goto(`${base}/console/${$page.params.project}/storage/bucket/${file.bucketId}`);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -29,7 +28,7 @@
 <Form on:submit={deleteFile}>
     <Modal bind:show={showDelete}>
         <svelte:fragment slot="header">Delete File</svelte:fragment>
-        <p>Are you sure you want to delete <b>{$file.response.name}</b>?</p>
+        <p>Are you sure you want to delete <b>{file.name}</b>?</p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
             <Button secondary submit>Delete</Button>
