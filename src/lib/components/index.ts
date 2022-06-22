@@ -1,6 +1,7 @@
 export { default as Modal } from './modal.svelte';
 export { default as Pagination } from './pagination.svelte';
 export { default as Card } from './card.svelte';
+export { default as CardGrid } from './cardGrid.svelte';
 export { default as Tile } from './tile.svelte';
 export { default as Tiles } from './tiles.svelte';
 export { default as Back } from './back.svelte';
@@ -20,3 +21,4 @@ export { default as Avatar } from './avatar.svelte';
 export { default as SwitchBox } from './switchBox.svelte';
 export { default as SwitchBoxes } from './switchBoxes.svelte';
 export { default as Alert } from './alert.svelte';
+export { default as Box } from './box.svelte';
