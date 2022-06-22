@@ -10,7 +10,7 @@
 
     export let showDeleteAll = false;
 
-    const deleteUser = async () => {
+    const deleteAllMemberships = async () => {
         try {
             await sdkForProject.teams.deleteMembership('tmpstring', 'tmpstring2');
             showDeleteAll = false;
@@ -26,7 +26,7 @@
     };
 </script>
 
-<Form on:submit={deleteUser}>
+<Form on:submit={deleteAllMemberships}>
     <Modal bind:show={showDeleteAll}>
         <svelte:fragment slot="header">Delete all memberships</svelte:fragment>
 
