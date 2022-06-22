@@ -7,7 +7,6 @@
     import { project } from '../store';
     import { authMethods, OAuthProviders } from './auth';
     import type { Provider } from './auth';
-    import MainAuth from './_mainOAuth.svelte';
 
     $: projectId = $project.$id;
     $: authMethods.load($project);
@@ -36,66 +35,84 @@
 
 <Container>
     <Card>
-        <div>
-            <h2 class="heading-level-7">Auth Methods</h2>
-            <p>Enable the auth methods you wish to use.</p>
+        <div class="common-section grid-1-2">
+            <div class="grid-1-2-col-1">
+                <h2 class="heading-level-7">Auth Methods</h2>
+                <p>Enable the auth methods you wish to use.</p>
+            </div>
+            <div class="grid-1-2-col-2">
+                <form class="form">
+                    <ul class="form-list is-multiple">
+                        {#each $authMethods.list as box}
+                            <li class="form-item ">
+                                <label class="choice-item" for={box.method}>
+                                    <input
+                                        label={box.label}
+                                        id={box.method}
+                                        type="checkbox"
+                                        class="switch"
+                                        role="switch"
+                                        bind:checked={box.value}
+                                        on:change={() => {
+                                            authUpdate(box.method, box.value);
+                                        }} />
+                                    <div class="choice-item-content">
+                                        <div class="choice-item-title">{box.label}</div>
+                                    </div>
+                                </label>
+                            </li>
+                        {/each}
+                        <li class="form-item ">
+                            <label class="choice-item" for="phone">
+                                <input
+                                    label="Phone"
+                                    id="phone"
+                                    type="checkbox"
+                                    class="switch"
+                                    role="switch"
+                                    disabled />
+                                <div class="choice-item-content">
+                                    <div class="choice-item-title">Phone</div>
+                                    <span class="choice-item-paragraph">(soon)</span>
+                                </div>
+                            </label>
+                        </li>
+                    </ul>
+                </form>
+            </div>
         </div>
-        <ul class="">
-            {#each $authMethods.list as box}
-                <li class="form-item ">
-                    <label class="label" for={box.method}>{box.label}</label>
-                    <div class="input-text-wrapper">
-                        <input
-                            label={box.label}
-                            id={box.method}
-                            type="checkbox"
-                            class="switch"
-                            role="switch"
-                            bind:checked={box.value}
-                            on:change={() => {
-                                authUpdate(box.method, box.value);
-                            }} />
-                    </div>
-                </li>
-            {/each}
-            <li class="form-item ">
-                <label class="label" for="Phone">Phone</label>
-                <div class="input-text-wrapper">
-                    <span>(soon)</span>
-                </div>
-            </li>
-        </ul>
     </Card>
-    <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
-    <ul class="grid-box  common-section">
-        {#each $OAuthProviders.providers as provider}
-            <button
-                on:click={() => {
-                    selectedProvider = provider;
-                    showModal = true;
-                }}
-                class="card u-flex u-flex-vertical u-cross-center">
-                <div class="card-image">
-                    <img
-                        height="50"
-                        width="50"
-                        src={`/icons/color/${provider.icon}.svg`}
-                        alt={provider.name} />
-                </div>
-                <p>{provider.name}</p>
-                <Pill success={provider.active}>{provider.active ? 'Active' : 'Inactive'}</Pill>
-            </button>
-        {/each}
-    </ul>
+    <section class="common-section">
+        <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
+        <ul class="grid-box common-section">
+            {#each $OAuthProviders.providers as provider}
+                <button
+                    on:click={() => {
+                        selectedProvider = provider;
+                        showModal = true;
+                    }}
+                    class="card u-flex u-flex-vertical u-cross-center">
+                    <div class="image-item">
+                        <img
+                            height="20"
+                            width="20"
+                            src={`/icons/color/${provider.icon}.svg`}
+                            alt={provider.name} />
+                    </div>
+                    <p class="u-margin-block-start-8">{provider.name}</p>
+                    <div class="u-margin-block-start-24">
+                        <Pill success={provider.active}
+                            >{provider.active ? 'Active' : 'Inactive'}</Pill>
+                    </div>
+                </button>
+            {/each}
+        </ul>
+    </section>
 </Container>
 
 {#if selectedProvider}
-    {#if !selectedProvider?.component}
-        <MainAuth provider={selectedProvider} bind:showModal />
-    {:else}
-        <svelte:component
-            this={selectedProvider.component}
-            provider={selectedProvider}
-            bind:showModal />
-    {/if}
+    <svelte:component
+        this={selectedProvider.component}
+        provider={selectedProvider}
+        bind:showModal />
 {/if}
