@@ -168,200 +168,201 @@
     }
 </script>
 
-<Container>
-    <CardGrid>
-        <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-            <Avatar size={64} name={$user.response.name} src={getAvatar($user.response.name)} />
-            <h6 class="heading-level-7">{$user.response.name}</h6>
-            {#if !$user.response.status}
-                <Pill danger>Blocked</Pill>
-            {:else}
-                <Pill success={$user.response.emailVerification}
-                    >{$user.response.emailVerification ? 'Verified' : 'Unverified'}</Pill>
-            {/if}
-        </div>
-        <svelte:fragment slot="right">
-            <div>
-                <span class="title">{$user.response.email}</span>
-                <p>Joined: {toLocaleDate($user.response.registration)}</p>
+{#if $user.response}
+    <Container>
+        <CardGrid>
+            <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
+                <Avatar size={64} name={$user.response.name} src={getAvatar($user.response.name)} />
+                <h6 class="heading-level-7">{$user.response.name}</h6>
+                {#if !$user.response.status}
+                    <Pill danger>Blocked</Pill>
+                {:else}
+                    <Pill success={$user.response.emailVerification}
+                        >{$user.response.emailVerification ? 'Verified' : 'Unverified'}</Pill>
+                {/if}
             </div>
-        </svelte:fragment>
+            <svelte:fragment slot="right">
+                <div>
+                    <span class="title">{$user.response.email}</span>
+                    <p>Joined: {toLocaleDate($user.response.registration)}</p>
+                </div>
+            </svelte:fragment>
 
-        <svelte:fragment slot="actions">
-            <Button
-                text={$user.response.status}
-                secondary={!$user.response.status}
-                on:click={() => updateStatus()}
-                >{$user.response.status ? 'Block Account' : 'Unblock Accout'}</Button>
-            {#if $user.response.status}
-                <Button secondary on:click={() => updateVerification()}
-                    >{$user.response.emailVerification ? 'Unverify' : 'Verify'} Account</Button>
-            {/if}
-        </svelte:fragment>
-    </CardGrid>
-    <CardGrid>
-        <h6 class="heading-level-7">Update Name</h6>
-
-        <svelte:fragment slot="right">
-            <ul>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder={$user.response.name}
-                    autocomplete={false}
-                    bind:value={userName} />
-                {#if showError === 'name'}
-                    <Helper type={errorType}>{errorMessage}</Helper>
+            <svelte:fragment slot="actions">
+                <Button
+                    text={$user.response.status}
+                    secondary={!$user.response.status}
+                    on:click={() => updateStatus()}
+                    >{$user.response.status ? 'Block Account' : 'Unblock Accout'}</Button>
+                {#if $user.response.status}
+                    <Button secondary on:click={() => updateVerification()}
+                        >{$user.response.emailVerification ? 'Unverify' : 'Verify'} Account</Button>
                 {/if}
-            </ul>
-        </svelte:fragment>
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Name</h6>
 
-        <svelte:fragment slot="actions">
-            <Button
-                disabled={!userName}
-                on:click={() => {
-                    updateName();
-                }}>Update</Button>
-        </svelte:fragment>
-    </CardGrid>
-    <CardGrid>
-        <h6 class="heading-level-7">Update Email</h6>
-        <svelte:fragment slot="right">
-            <ul>
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder={$user.response.email}
-                    autocomplete={false}
-                    bind:value={userEmail} />
-                {#if showError === 'email'}
-                    <Helper type={errorType}>{errorMessage}</Helper>
-                {/if}
-            </ul>
-        </svelte:fragment>
-
-        <svelte:fragment slot="actions">
-            <Button
-                disabled={!userEmail}
-                on:click={() => {
-                    updateEmail();
-                }}>Update</Button>
-        </svelte:fragment>
-    </CardGrid>
-    <CardGrid>
-        <div>
-            <h6 class="heading-level-7">Update Password</h6>
-        </div>
-
-        <p>
-            Enter a new password. A password must contain <b> at least 8 characters.</b>
-        </p>
-        <svelte:fragment slot="right">
-            <ul>
-                <InputPassword
-                    id="newPassword"
-                    label="New Password"
-                    placeholder="Enter new password"
-                    autocomplete={false}
-                    meter={false}
-                    bind:value={newPassword} />
-                {#if showError === 'password'}
-                    <Helper type={errorType}>{errorMessage}</Helper>
-                {/if}
-            </ul>
-        </svelte:fragment>
-
-        <svelte:fragment slot="actions">
-            <Button
-                disabled={!newPassword}
-                on:click={() => {
-                    updatePassword();
-                }}>Update</Button>
-        </svelte:fragment>
-    </CardGrid>
-    <CardGrid>
-        <h6 class="heading-level-7">User Preferences</h6>
-        <p>
-            You can update your user preferences by storing information on the user's objects so
-            they can easily be shared across devices and sessions.
-        </p>
-        <svelte:fragment slot="right">
-            <form class="form u-grid u-gap-16">
-                <ul class="form-list">
-                    {#if prefs}
-                        {#each prefs as [key, value]}
-                            <li class="form-item is-multiple">
-                                <InputText id={`key-${key}`} label="Key" bind:value={key} />
-                                <InputText id={`value-${value}`} label="Value" bind:value />
-                                <div class="form-item-part u-cross-child-end">
-                                    <Button text on:click={() => deletePref(key)}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </div>
-                            </li>
-                        {/each}
-                        {#if prefs.length === 0 || newPref}
-                            <li class="form-item is-multiple">
-                                <InputText
-                                    id="key"
-                                    label="Key"
-                                    placeholder="Enter Key"
-                                    bind:value={newKey} />
-                                <InputText
-                                    id="value"
-                                    label="Value"
-                                    placeholder="Enter Value"
-                                    bind:value={newValue} />
-                                <div class="form-item-part u-cross-child-end">
-                                    <Button
-                                        text
-                                        disabled={!prefs.length}
-                                        on:click={() => (newPref = false)}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </div>
-                            </li>
-                        {/if}
+            <svelte:fragment slot="right">
+                <ul>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        placeholder={$user.response.name}
+                        autocomplete={false}
+                        bind:value={userName} />
+                    {#if showError === 'name'}
+                        <Helper type={errorType}>{errorMessage}</Helper>
                     {/if}
                 </ul>
-                <Button text on:click={() => (newPref = true)}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text"> Add Preferences </span></Button>
-            </form>
-        </svelte:fragment>
+            </svelte:fragment>
 
-        <svelte:fragment slot="actions">
-            <Button disabled={arePrefsDisabled} on:click={() => updatePrefs()}>Update</Button>
-        </svelte:fragment>
-    </CardGrid>
+            <svelte:fragment slot="actions">
+                <Button
+                    disabled={!userName}
+                    on:click={() => {
+                        updateName();
+                    }}>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Email</h6>
+            <svelte:fragment slot="right">
+                <ul>
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder={$user.response.email}
+                        autocomplete={false}
+                        bind:value={userEmail} />
+                    {#if showError === 'email'}
+                        <Helper type={errorType}>{errorMessage}</Helper>
+                    {/if}
+                </ul>
+            </svelte:fragment>
 
-    <CardGrid>
-        <div>
-            <h6 class="heading-level-7">Danger Zone</h6>
-        </div>
-        <p>
-            The user will be permanently deleted, including all data associated with this user. This
-            action is irreversible.
-        </p>
-        <svelte:fragment slot="right">
-            <Box>
-                <svelte:fragment slot="image">
-                    <Avatar
-                        size={64}
-                        name={$user.response.name}
-                        src={getAvatar($user.response.name)} />
-                </svelte:fragment>
-                <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$user.response.name}</h6>
-                </svelte:fragment>
-                <p>{$user.response.email}</p>
-            </Box>
-        </svelte:fragment>
+            <svelte:fragment slot="actions">
+                <Button
+                    disabled={!userEmail}
+                    on:click={() => {
+                        updateEmail();
+                    }}>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <div>
+                <h6 class="heading-level-7">Update Password</h6>
+            </div>
 
-        <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-        </svelte:fragment>
-    </CardGrid>
-</Container>
+            <p>
+                Enter a new password. A password must contain <b> at least 8 characters.</b>
+            </p>
+            <svelte:fragment slot="right">
+                <ul>
+                    <InputPassword
+                        id="newPassword"
+                        label="New Password"
+                        placeholder="Enter new password"
+                        autocomplete={false}
+                        meter={false}
+                        bind:value={newPassword} />
+                    {#if showError === 'password'}
+                        <Helper type={errorType}>{errorMessage}</Helper>
+                    {/if}
+                </ul>
+            </svelte:fragment>
 
+            <svelte:fragment slot="actions">
+                <Button
+                    disabled={!newPassword}
+                    on:click={() => {
+                        updatePassword();
+                    }}>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <h6 class="heading-level-7">User Preferences</h6>
+            <p>
+                You can update your user preferences by storing information on the user's objects so
+                they can easily be shared across devices and sessions.
+            </p>
+            <svelte:fragment slot="right">
+                <form class="form u-grid u-gap-16">
+                    <ul class="form-list">
+                        {#if prefs}
+                            {#each prefs as [key, value]}
+                                <li class="form-item is-multiple">
+                                    <InputText id={`key-${key}`} label="Key" bind:value={key} />
+                                    <InputText id={`value-${value}`} label="Value" bind:value />
+                                    <div class="form-item-part u-cross-child-end">
+                                        <Button text on:click={() => deletePref(key)}>
+                                            <span class="icon-x" aria-hidden="true" />
+                                        </Button>
+                                    </div>
+                                </li>
+                            {/each}
+                            {#if prefs.length === 0 || newPref}
+                                <li class="form-item is-multiple">
+                                    <InputText
+                                        id="key"
+                                        label="Key"
+                                        placeholder="Enter Key"
+                                        bind:value={newKey} />
+                                    <InputText
+                                        id="value"
+                                        label="Value"
+                                        placeholder="Enter Value"
+                                        bind:value={newValue} />
+                                    <div class="form-item-part u-cross-child-end">
+                                        <Button
+                                            text
+                                            disabled={!prefs.length}
+                                            on:click={() => (newPref = false)}>
+                                            <span class="icon-x" aria-hidden="true" />
+                                        </Button>
+                                    </div>
+                                </li>
+                            {/if}
+                        {/if}
+                    </ul>
+                    <Button text on:click={() => (newPref = true)}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text"> Add Preferences </span></Button>
+                </form>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={arePrefsDisabled} on:click={() => updatePrefs()}>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+
+        <CardGrid>
+            <div>
+                <h6 class="heading-level-7">Danger Zone</h6>
+            </div>
+            <p>
+                The user will be permanently deleted, including all data associated with this user.
+                This action is irreversible.
+            </p>
+            <svelte:fragment slot="right">
+                <Box>
+                    <svelte:fragment slot="image">
+                        <Avatar
+                            size={64}
+                            name={$user.response.name}
+                            src={getAvatar($user.response.name)} />
+                    </svelte:fragment>
+                    <svelte:fragment slot="title">
+                        <h6 class="u-bold">{$user.response.name}</h6>
+                    </svelte:fragment>
+                    <p>{$user.response.email}</p>
+                </Box>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Container>
+{/if}
 <DeleteUser bind:showDelete />
