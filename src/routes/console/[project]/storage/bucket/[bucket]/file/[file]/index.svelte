@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { Card, Alert } from '$lib/components';
+    import { Alert, CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputTags } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { file } from './store';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { bytesToSize } from '$lib/helpers/sizeConvertion';
@@ -83,105 +83,97 @@
 
 <Container>
     {#if $file.response}
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <div class="u-flex u-gap-12">
-                    <img
-                        width="205"
-                        height="125"
-                        src={getPreview($file.response.$id)}
-                        alt={$file.response.name} />
-                    <div>
-                        <h2 class="heading-level-7">{$file.response.name}</h2>
-                        <Pill button on:click={() => copy(getView($file.response.$id))}
-                            ><i class="icon-duplicate" />File URL
-                        </Pill>
-                    </div>
+        <CardGrid>
+            <div class="u-flex u-gap-16">
+                <img
+                    width="205"
+                    height="125"
+                    src={getPreview($file.response.$id)}
+                    alt={$file.response.name} />
+                <div>
+                    <h2 class="heading-level-7">{$file.response.name}</h2>
+                    <Pill button on:click={() => copy(getView($file.response.$id))}
+                        ><i class="icon-duplicate" />File URL
+                    </Pill>
                 </div>
+            </div>
+            <svelte:fragment slot="right">
                 <div>
                     <p>MIME Type: {$file.response.mimeType}</p>
                     <p>Size: {bytesToSize($file.response.sizeOriginal)}</p>
                     <p>Created: {toLocaleDate($file.response.dateCreated)}</p>
                     <p>Last Updated (to implement): {toLocaleDate($file.response.dateCreated)}</p>
                 </div>
-            </div>
+            </svelte:fragment>
 
-            <div class="u-flex u-main-space-end common-section">
+            <svelte:fragment slot="actions">
                 <Button secondary href={downloadFile()}>
                     <span class="icon-download" aria-hidden="true" />
                     <span class="text"> Download</span></Button>
-            </div>
-        </Card>
+            </svelte:fragment>
+        </CardGrid>
 
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <div>
-                    <h6 class="heading-level-7">Update Permissions</h6>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Permissions</h6>
+            <p>
+                Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
+                permissions are enabled, file permissions will be ignored.
+            </p>
+            <svelte:fragment slot="right">
+                <Alert type="info">
+                    <svelte:fragment slot="title">
+                        You have Bucket Level permissions enabled
+                    </svelte:fragment>
                     <p>
-                        Assign read or write permissions at the Bucket Level or File Level. If
-                        Bucket Level permissions are enabled, file permissions will be ignored.
+                        If you want to assign permissions specific to this file, you will need to
+                        update your <a class="link" href="#"> Bucket Settings</a> to enable File Level
+                        permissions.
                     </p>
-                </div>
-                <div>
-                    <Alert type="info">
-                        <svelte:fragment slot="title">
-                            You have Bucket Level permissions enabled
-                        </svelte:fragment>
-                        <p>
-                            If you want to assign permissions specific to this file, you will need
-                            to update your <a class="link" href="#"> Bucket Settings</a> to enable File
-                            Level permissions.
-                        </p>
-                    </Alert>
-                    <ul class="common-section">
-                        <InputTags
-                            id="read"
-                            label="Read Access"
-                            placeholder="User ID, Team ID, or Role"
-                            bind:tags={fileRead} />
-                        <InputTags
-                            id="write"
-                            label="Write Access"
-                            placeholder="User ID, Team ID, or Role"
-                            bind:tags={fileWrite} />
-                    </ul>
-                </div>
-            </div>
-            <div class="u-flex u-main-space-end common-section">
+                </Alert>
+                <ul class="common-section">
+                    <InputTags
+                        id="read"
+                        label="Read Access"
+                        placeholder="User ID, Team ID, or Role"
+                        bind:tags={fileRead} />
+                    <InputTags
+                        id="write"
+                        label="Write Access"
+                        placeholder="User ID, Team ID, or Role"
+                        bind:tags={fileWrite} />
+                </ul>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
                 <Button
                     disabled={arePermsDisabled}
                     on:click={() => {
                         updatePermissions();
                     }}>Update</Button>
-            </div>
-        </Card>
+            </svelte:fragment>
+        </CardGrid>
 
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <div>
-                    <h6 class="heading-level-7">Delete file</h6>
+        <CardGrid>
+            <h6 class="heading-level-7">Delete file</h6>
+            <p>
+                The file will be permanently deleted, including all the files within it. This action
+                is irreversible.
+            </p>
+            <svelte:fragment slot="right">
+                <Box>
+                    <svelte:fragment slot="title">
+                        <h6 class="u-bold">{$file.response.name}</h6>
+                    </svelte:fragment>
                     <p>
-                        The file will be permanently deleted, including all the files within it.
-                        This action is irreversible.
+                        Last Updated (to implement): {toLocaleDateTime($file.response.dateCreated)}
                     </p>
-                </div>
-                <div>
-                    <div class="user-profile-button">
-                        <span class="user-profile-info">
-                            <h6 class="heading-level-7">{$file.response.name}</h6>
-                            <p>
-                                Last Updated (to implement): {toLocaleDate(
-                                    $file.response.dateCreated
-                                )}
-                            </p>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="u-flex u-main-space-end common-section">
+                </Box>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
                 <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-            </div>
-        </Card>
+            </svelte:fragment>
+        </CardGrid>
     {/if}
 </Container>
 
