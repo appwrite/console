@@ -9,6 +9,16 @@
     import { addNotification } from '$lib/stores/notifications';
     import { bytesToSize } from '$lib/helpers/sizeConvertion';
     import Delete from './_deleteFile.svelte';
+    import { page } from '$app/stores';
+    import { onMount } from 'svelte';
+
+    onMount(async () => {
+        let bucketId = $page.params.bucket;
+        let fileId = $page.params.file;
+        await file.load(bucketId, fileId);
+        fileRead = $file.response?.$read;
+        fileWrite = $file.response?.$write;
+    });
 
     let showDelete = false;
     let fileRead = $file.response?.$read;
