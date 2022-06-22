@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Card, Alert } from '$lib/components';
+    import { Alert, CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
     import {
         Button,
@@ -11,7 +11,7 @@
         Helper
     } from '$lib/elements/forms';
     import { bucket } from './store';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import Delete from './_deleteBucket.svelte';
@@ -207,37 +207,33 @@
 
 <Container>
     {#if $bucket.response}
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <h2 class="heading-level-7">{$bucket.response.name}</h2>
-                <div>
-                    <p>Created: {toLocaleDate($bucket.response.dateCreated)}</p>
-                    <p>Last Updated: {toLocaleDate($bucket.response.dateUpdated)}</p>
-                </div>
-                <div class="u-flex u-main-space-end u-gap-12 common-section">
-                    <ul>
-                        <InputSwitch
-                            label={enabled ? 'Enabled' : 'Disabled'}
-                            id="toggle"
-                            bind:value={enabled} />
-                    </ul>
-                </div>
-            </div>
+        <CardGrid>
+            <h2 class="heading-level-7">{$bucket.response.name}</h2>
 
-            <div class="u-flex u-main-space-end common-section">
+            <svelte:fragment slot="right">
+                <ul>
+                    <InputSwitch
+                        label={enabled ? 'Enabled' : 'Disabled'}
+                        id="toggle"
+                        bind:value={enabled} />
+                </ul>
+                <p>Created: {toLocaleDateTime($bucket.response.dateCreated)}</p>
+                <p>Last Updated: {toLocaleDateTime($bucket.response.dateUpdated)}</p>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
                 <Button
                     disabled={enabled === $bucket.response.enabled}
                     on:click={() => {
                         toggleBucket();
                     }}>Update</Button>
-            </div>
-        </Card>
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <div>
-                    <h6 class="heading-level-7">Update Name</h6>
-                    <p>Update your bucket name.</p>
-                </div>
+            </svelte:fragment>
+        </CardGrid>
+
+        <CardGrid>
+            <h6 class="heading-level-7">Update Name</h6>
+
+            <svelte:fragment slot="right">
                 <ul>
                     <InputText
                         id="name"
@@ -249,90 +245,84 @@
                         <Helper type={errorType}>{errorMessage}</Helper>
                     {/if}
                 </ul>
-            </div>
-            <div class="u-flex u-main-space-end common-section">
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
                 <Button
                     disabled={!bucketName}
                     on:click={() => {
                         updateName();
                     }}>Update</Button>
-            </div>
-        </Card>
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <div>
-                    <h6 class="heading-level-7">Update Permissions</h6>
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Permissions</h6>
+            <p>
+                Assign read or write permissions at the <b>Bucket Level</b> or
+                <b>File Level</b>. If Bucket Level permissions are assigned, file permissions will
+                be ignored.
+            </p>
+            <svelte:fragment slot="right">
+                <ul class="u-flex u-gap-12 common-section">
+                    <li>
+                        <label class="label">
+                            <input
+                                type="radio"
+                                class="is-small"
+                                name="level"
+                                bind:group={bucketPermissions}
+                                value="bucket" />
+                            <span>Bucket Level</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="label">
+                            <input
+                                type="radio"
+                                class="is-small"
+                                name="level"
+                                bind:group={bucketPermissions}
+                                value="file" />
+                            <span>File Level</span>
+                        </label>
+                    </li>
+                </ul>
+                <Alert type="info">
                     <p>
-                        Assign read or write permissions at the <b>Bucket Level</b> or
-                        <b>File Level</b>. If Bucket Level permissions are assigned, file
-                        permissions will be ignored.
+                        Tip: Add <b>role:all</b> for wildcards access. Check out our documentation
+                        for more on <a href="/#">Permissions</a>
                     </p>
-                </div>
-                <div>
-                    <ul class="u-flex u-gap-12 common-section">
-                        <li>
-                            <label class="label">
-                                <input
-                                    type="radio"
-                                    class="is-small"
-                                    name="level"
-                                    bind:group={bucketPermissions}
-                                    value="bucket" />
-                                <span>Bucket Level</span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="label">
-                                <input
-                                    type="radio"
-                                    class="is-small"
-                                    name="level"
-                                    bind:group={bucketPermissions}
-                                    value="file" />
-                                <span>File Level</span>
-                            </label>
-                        </li>
+                </Alert>
+                {#if bucketPermissions === 'bucket'}
+                    <ul class="common-section">
+                        <InputTags
+                            id="read"
+                            label="Read Access"
+                            placeholder="User ID, Team ID, or Role"
+                            bind:tags={bucketRead} />
+                        <InputTags
+                            id="write"
+                            label="Write Access"
+                            placeholder="User ID, Team ID, or Role"
+                            bind:tags={bucketWrite} />
                     </ul>
-                    <Alert type="info">
-                        <p>
-                            Tip: Add <b>role:all</b> for wildcards access. Check out our
-                            documentation for more on <a href="/#">Permissions</a>
-                        </p>
-                    </Alert>
-                    {#if bucketPermissions === 'bucket'}
-                        <ul class="common-section">
-                            <InputTags
-                                id="read"
-                                label="Read Access"
-                                placeholder="User ID, Team ID, or Role"
-                                bind:tags={bucketRead} />
-                            <InputTags
-                                id="write"
-                                label="Write Access"
-                                placeholder="User ID, Team ID, or Role"
-                                bind:tags={bucketWrite} />
-                        </ul>
-                    {/if}
-                </div>
-            </div>
-            <div class="u-flex u-main-space-end common-section">
+                {/if}
+            </svelte:fragment>
+            <svelte:fragment slot="actions">
                 <Button
                     disabled={arePermsDisabled}
                     on:click={() => {
                         updatePermissions();
                     }}>Update</Button>
-            </div>
-        </Card>
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <div class="">
-                    <h2 class="heading-level-7">Update Security Settings</h2>
-                    <p>
-                        Enable or disable security services for the bucket including <b>
-                            Ecryption</b>
-                        and <b> Antivirus scanning.</b>
-                    </p>
-                </div>
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <h2 class="heading-level-7">Update Security Settings</h2>
+            <p>
+                Enable or disable security services for the bucket including <b> Ecryption</b>
+                and <b> Antivirus scanning.</b>
+            </p>
+            <svelte:fragment slot="right">
                 <div class="u-flex u-main-space-end u-gap-12 common-section">
                     <ul>
                         <InputSwitch label="Encryption" id="encryption" bind:value={encryption} />
@@ -349,26 +339,24 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-            <div class="u-flex u-main-space-end common-section">
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
                 <Button
                     disabled={encryption === $bucket.response.encryption &&
                         antivirus === $bucket.response.antivirus}
                     on:click={() => {
                         updateSecurity();
                     }}>Update</Button>
-            </div></Card>
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <div class="u-flex u-main-space-between u-gap-12 common-section">
-                    <div>
-                        <h2 class="heading-level-6">Session Length</h2>
-                        <p>
-                            If you reduce the limit, users who are currently logged in will be
-                            logged out of the application.
-                        </p>
-                    </div>
-                </div>
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <h2 class="heading-level-6">Session Length</h2>
+            <p>
+                If you reduce the limit, users who are currently logged in will be logged out of the
+                application.
+            </p>
+            <svelte:fragment slot="right">
                 <ul class="u-flex u-gap-12">
                     <InputNumber
                         id="size"
@@ -377,70 +365,63 @@
                         bind:value={maxSize} />
                     <InputSelect id="bytes" label="Bytes" {options} value={options[0].value} />
                 </ul>
-            </div>
-            <div class="u-flex u-main-space-end common-section">
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
                 <Button
                     disabled={!maxSize}
                     on:click={() => {
                         updateMaxSize();
                     }}>Update</Button>
-            </div>
-        </Card>
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <div>
-                    <h6 class="heading-level-7">Update Allowed File Extensions</h6>
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Allowed File Extensions</h6>
+            <p>
+                A maxiumum of 100 file extensions can be added. Leave blank to allow all file types.
+            </p>
+            <svelte:fragment slot="right">
+                <Alert type="info">
                     <p>
-                        A maxiumum of 100 file extensions can be added. Leave blank to allow all
-                        file types.
+                        Tip: Commonly added extensions include JPG, PNG, SVG, GIF, HTML, PDF, MP4.
                     </p>
-                </div>
-                <div>
-                    <Alert type="info">
-                        <p>
-                            Tip: Commonly added extensions include JPG, PNG, SVG, GIF, HTML, PDF,
-                            MP4.
-                        </p>
-                    </Alert>
-                    <ul class="common-section">
-                        <InputTags
-                            id="read"
-                            label="Allowed file extensions"
-                            placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
-                            bind:tags={extensions} />
-                    </ul>
-                </div>
-            </div>
-            <div class="u-flex u-main-space-end common-section">
+                </Alert>
+                <ul class="common-section">
+                    <InputTags
+                        id="read"
+                        label="Allowed file extensions"
+                        placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
+                        bind:tags={extensions} />
+                </ul>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
                 <Button
                     disabled={isExtensionsDisabled}
                     on:click={() => {
                         updateAllowedExtensions();
                     }}>Update</Button>
-            </div>
-        </Card>
-        <Card>
-            <div class="u-flex u-main-space-between u-gap-12 common-section">
-                <div>
-                    <h6 class="heading-level-7">Delete Bucket</h6>
-                    <p>
-                        The bucket will be permanently deleted, including all the files within it.
-                        This action is irreversible.
-                    </p>
-                </div>
-                <div>
-                    <div class="user-profile-button">
-                        <span class="user-profile-info">
-                            <h6 class="heading-level-7">{$bucket.response.name}</h6>
-                            <p>Last Updated: {toLocaleDate($bucket.response.dateUpdated)}</p>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="u-flex u-main-space-end common-section">
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <h6 class="heading-level-7">Delete Bucket</h6>
+            <p>
+                The bucket will be permanently deleted, including all the files within it. This
+                action is irreversible.
+            </p>
+            <svelte:fragment slot="right">
+                <Box>
+                    <svelte:fragment slot="title">
+                        <h6 class="u-bold">{$bucket.response.name}</h6>
+                    </svelte:fragment>
+                    <p>Last Updated: {toLocaleDateTime($bucket.response.dateUpdated)}</p>
+                </Box>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
                 <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-            </div>
-        </Card>
+            </svelte:fragment>
+        </CardGrid>
     {/if}
 </Container>
 
