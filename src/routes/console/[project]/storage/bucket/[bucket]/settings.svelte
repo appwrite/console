@@ -323,22 +323,20 @@
                 and <b> Antivirus scanning.</b>
             </p>
             <svelte:fragment slot="right">
-                <div class="u-flex u-main-space-end u-gap-12 common-section">
-                    <ul>
-                        <InputSwitch label="Encryption" id="encryption" bind:value={encryption} />
+                <ul>
+                    <InputSwitch label="Encryption" id="encryption" bind:value={encryption} />
 
-                        <li>
-                            This parameter allows you to configure whether or not the files inside
-                            the bucket will be encrypted. We don't encrypt files bigger than 20MB.
-                        </li>
-                        <InputSwitch label="Antivirus" id="antivirus" bind:value={antivirus} />
+                    <li>
+                        This parameter allows you to configure whether or not the files inside the
+                        bucket will be encrypted. We don't encrypt files bigger than 20MB.
+                    </li>
+                    <InputSwitch label="Antivirus" id="antivirus" bind:value={antivirus} />
 
-                        <li>
-                            This parameter allows you to configure whether or not the files inside
-                            the bucket should be scanned by the Appwrite Antivirus scanner.
-                        </li>
-                    </ul>
-                </div>
+                    <li>
+                        This parameter allows you to configure whether or not the files inside the
+                        bucket should be scanned by the Appwrite Antivirus scanner.
+                    </li>
+                </ul>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
