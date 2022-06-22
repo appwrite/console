@@ -83,6 +83,16 @@
                         <TableCellText title="Size">{bytesToSize(file.sizeOriginal)}</TableCellText>
                         <TableCellText title="Date Created"
                             >{toLocaleDate(file.dateCreated)}</TableCellText>
+                        <TableCellText title="">
+                            <button
+                                class="button is-only-icon is-text"
+                                aria-label="Delete item"
+                                on:click={() => {
+                                    console.log('test');
+                                }}>
+                                <span class="icon-dots-horizontal" aria-hidden="true" />
+                            </button>
+                        </TableCellText>
                     </TableRow>
                 {/each}
             </TableBody>
