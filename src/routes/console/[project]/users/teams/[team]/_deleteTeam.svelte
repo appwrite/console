@@ -11,7 +11,7 @@
     export let showDelete = false;
     export let team: Models.Team;
 
-    const deleteUser = async () => {
+    const deleteTeam = async () => {
         try {
             await sdkForProject.teams.delete(team.$id);
             showDelete = false;
@@ -25,7 +25,7 @@
     };
 </script>
 
-<Form on:submit={deleteUser}>
+<Form on:submit={deleteTeam}>
     <Modal bind:show={showDelete}>
         <svelte:fragment slot="header">Delete member</svelte:fragment>
 

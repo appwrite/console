@@ -8,7 +8,7 @@
 
     export let showDeleteAll = false;
 
-    const deleteUser = async () => {
+    const deleteAllSessions = async () => {
         try {
             await sdkForProject.users.deleteSessions($page.params.user);
             showDeleteAll = false;
@@ -25,7 +25,7 @@
     };
 </script>
 
-<Form on:submit={deleteUser}>
+<Form on:submit={deleteAllSessions}>
     <Modal bind:show={showDeleteAll}>
         <svelte:fragment slot="header">Delete All Sessions</svelte:fragment>
 

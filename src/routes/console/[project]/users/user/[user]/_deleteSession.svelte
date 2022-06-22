@@ -8,7 +8,7 @@
     export let showDelete = false;
     export let selectedSessionId: string;
 
-    const deleteUser = async () => {
+    const deleteSession = async () => {
         try {
             await sdkForProject.users.deleteSession($page.params.user, selectedSessionId);
             showDelete = false;
@@ -25,7 +25,7 @@
     };
 </script>
 
-<Form on:submit={deleteUser}>
+<Form on:submit={deleteSession}>
     <Modal bind:show={showDelete}>
         <svelte:fragment slot="header">Delete Sessions</svelte:fragment>
 
