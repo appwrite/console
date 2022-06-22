@@ -5,6 +5,7 @@ import Apple from './_appleOAuth.svelte';
 import Microsoft from './_microsoftOAuth.svelte';
 import Okta from './_oktaOAuth.svelte';
 import Auth0 from './_auth0OAuth.svelte';
+import Main from './_mainOAuth.svelte';
 
 export type AuthMethod = { label: string; method: string; value: boolean };
 export type Provider = {
@@ -96,7 +97,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.amazon.com/apps-and-games/services-and-apis'
+                docs: 'https://developer.amazon.com/apps-and-games/services-and-apis',
+                component: Main
             },
             {
                 name: 'Apple',
@@ -122,7 +124,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.atlassian.com/bitbucket'
+                docs: 'https://developer.atlassian.com/bitbucket',
+                component: Main
             },
             {
                 name: 'Bitly',
@@ -130,7 +133,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://dev.bitly.com/v4_documentation.html'
+                docs: 'https://dev.bitly.com/v4_documentation.html',
+                component: Main
             },
             {
                 name: 'Box',
@@ -138,7 +142,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.box.com/reference/'
+                docs: 'https://developer.box.com/reference/',
+                component: Main
             },
             {
                 name: 'Discord',
@@ -146,7 +151,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://discordapp.com/developers/docs/topics/oauth2'
+                docs: 'https://discordapp.com/developers/docs/topics/oauth2',
+                component: Main
             },
             {
                 name: 'Dropbox',
@@ -154,7 +160,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://www.dropbox.com/developers/documentation'
+                docs: 'https://www.dropbox.com/developers/documentation',
+                component: Main
             },
             {
                 name: 'Facebook',
@@ -162,7 +169,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developers.facebook.com/'
+                docs: 'https://developers.facebook.com/',
+                component: Main
             },
             {
                 name: 'Github',
@@ -170,7 +178,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.github.com/'
+                docs: 'https://developer.github.com/',
+                component: Main
             },
             {
                 name: 'Gitlab',
@@ -178,7 +187,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://docs.gitlab.com/ee/api/'
+                docs: 'https://docs.gitlab.com/ee/api/',
+                component: Main
             },
             {
                 name: 'Google',
@@ -186,7 +196,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://support.google.com/googleapi/answer/6158849'
+                docs: 'https://support.google.com/googleapi/answer/6158849',
+                component: Main
             },
             {
                 name: 'Linkedin',
@@ -194,7 +205,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.linkedin.com/'
+                docs: 'https://developer.linkedin.com/',
+                component: Main
             },
             {
                 name: 'Microsoft',
@@ -211,7 +223,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developers.notion.com/docs'
+                docs: 'https://developers.notion.com/docs',
+                component: Main
             },
             {
                 name: 'Okta',
@@ -228,7 +241,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.paypal.com/docs/api/overview/'
+                docs: 'https://developer.paypal.com/docs/api/overview/',
+                component: Main
             },
             {
                 name: 'Paypal (sandbox)',
@@ -236,7 +250,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.paypal.com/docs/api/overview/'
+                docs: 'https://developer.paypal.com/docs/api/overview/',
+                component: Main
             },
             {
                 name: 'Salesforce',
@@ -244,7 +259,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.salesforce.com/docs/'
+                docs: 'https://developer.salesforce.com/docs/',
+                component: Main
             },
             {
                 name: 'Slack',
@@ -252,7 +268,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://api.slack.com/'
+                docs: 'https://api.slack.com/',
+                component: Main
             },
             {
                 name: 'Spotify',
@@ -260,7 +277,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.spotify.com/documentation/general/guides/authorization-guide/'
+                docs: 'https://developer.spotify.com/documentation/general/guides/authorization-guide/',
+                component: Main
             },
             {
                 name: 'Stripe',
@@ -268,7 +286,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://stripe.com/docs/api'
+                docs: 'https://stripe.com/docs/api',
+                component: Main
             },
             {
                 name: 'Tradeshift',
@@ -276,7 +295,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developers.tradeshift.com/docs/api'
+                docs: 'https://developers.tradeshift.com/docs/api',
+                component: Main
             },
             {
                 name: 'Tradeshift(sandbox)',
@@ -284,7 +304,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developers.tradeshift.com/docs/api'
+                docs: 'https://developers.tradeshift.com/docs/api',
+                component: Main
             },
             {
                 name: 'Twitch',
@@ -292,7 +313,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://dev.twitch.tv/docs/authentication'
+                docs: 'https://dev.twitch.tv/docs/authentication',
+                component: Main
             },
 
             {
@@ -301,7 +323,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.wordpress.com/docs/oauth2/'
+                docs: 'https://developer.wordpress.com/docs/oauth2/',
+                component: Main
             },
             {
                 name: 'Yahoo',
@@ -309,7 +332,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.yahoo.com/oauth2/guide/flows_authcode/'
+                docs: 'https://developer.yahoo.com/oauth2/guide/flows_authcode/',
+                component: Main
             },
             {
                 name: 'Yammer',
@@ -317,7 +341,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://developer.yammer.com/docs/oauth-2'
+                docs: 'https://developer.yammer.com/docs/oauth-2',
+                component: Main
             },
             {
                 name: 'Yandex',
@@ -325,7 +350,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://tech.yandex.com/oauth/'
+                docs: 'https://tech.yandex.com/oauth/',
+                component: Main
             },
             {
                 name: 'Zoom',
@@ -333,7 +359,8 @@ function createOAuthProviders() {
                 active: false,
                 id: null,
                 secret: null,
-                docs: 'https://marketplace.zoom.us/docs/guides/auth/oauth/'
+                docs: 'https://marketplace.zoom.us/docs/guides/auth/oauth/',
+                component: Main
             }
         ]
     });
@@ -349,7 +376,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerAmazonAppid,
                     secret: project.providerAmazonSecret,
-                    docs: 'https://developer.amazon.com/apps-and-games/services-and-apis'
+                    docs: 'https://developer.amazon.com/apps-and-games/services-and-apis',
+                    component: Main
                 },
                 {
                     name: 'Apple',
@@ -375,7 +403,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerBitbucketAppid,
                     secret: project.providerBitbucketSecret,
-                    docs: 'https://developer.atlassian.com/bitbucket'
+                    docs: 'https://developer.atlassian.com/bitbucket',
+                    component: Main
                 },
                 {
                     name: 'Bitly',
@@ -383,7 +412,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerBitlyAppid,
                     secret: project.providerBitlySecret,
-                    docs: 'https://dev.bitly.com/v4_documentation.html'
+                    docs: 'https://dev.bitly.com/v4_documentation.html',
+                    component: Main
                 },
                 {
                     name: 'Box',
@@ -391,7 +421,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerBoxAppid,
                     secret: project.providerBoxSecret,
-                    docs: 'https://developer.box.com/reference/'
+                    docs: 'https://developer.box.com/reference/',
+                    component: Main
                 },
                 {
                     name: 'Discord',
@@ -399,7 +430,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerDiscordAppid,
                     secret: project.providerDiscordSecret,
-                    docs: 'https://discordapp.com/developers/docs/topics/oauth2'
+                    docs: 'https://discordapp.com/developers/docs/topics/oauth2',
+                    component: Main
                 },
                 {
                     name: 'Dropbox',
@@ -407,7 +439,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerDropboxAppid,
                     secret: project.providerDropboxSecret,
-                    docs: 'https://www.dropbox.com/developers/documentation'
+                    docs: 'https://www.dropbox.com/developers/documentation',
+                    component: Main
                 },
                 {
                     name: 'Facebook',
@@ -415,7 +448,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerFacebookAppid,
                     secret: project.providerFacebookSecret,
-                    docs: 'https://developers.facebook.com/'
+                    docs: 'https://developers.facebook.com/',
+                    component: Main
                 },
                 {
                     name: 'Github',
@@ -423,7 +457,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerGithubAppid,
                     secret: project.providerGithubSecret,
-                    docs: 'https://developer.github.com/'
+                    docs: 'https://developer.github.com/',
+                    component: Main
                 },
                 {
                     name: 'Gitlab',
@@ -431,7 +466,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerGitlabAppid,
                     secret: project.providerGitlabSecret,
-                    docs: 'https://docs.gitlab.com/ee/api/'
+                    docs: 'https://docs.gitlab.com/ee/api/',
+                    component: Main
                 },
                 {
                     name: 'Google',
@@ -439,7 +475,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerGoogleAppid,
                     secret: project.providerGoogleSecret,
-                    docs: 'https://support.google.com/googleapi/answer/6158849'
+                    docs: 'https://support.google.com/googleapi/answer/6158849',
+                    component: Main
                 },
                 {
                     name: 'Linkedin',
@@ -447,7 +484,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerLinkedinAppid,
                     secret: project.providerLinkedinSecret,
-                    docs: 'https://developer.linkedin.com/'
+                    docs: 'https://developer.linkedin.com/',
+                    component: Main
                 },
                 {
                     name: 'Microsoft',
@@ -464,7 +502,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerNotionAppid,
                     secret: project.providerNotionSecret,
-                    docs: 'https://developers.notion.com/docs'
+                    docs: 'https://developers.notion.com/docs',
+                    component: Main
                 },
                 {
                     name: 'Okta',
@@ -481,7 +520,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerPaypalAppid,
                     secret: project.providerPaypalSecret,
-                    docs: 'https://developer.paypal.com/docs/api/overview/'
+                    docs: 'https://developer.paypal.com/docs/api/overview/',
+                    component: Main
                 },
                 {
                     name: 'Paypal (sandbox)',
@@ -489,7 +529,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerPaypalSandboxAppid,
                     secret: project.providerPaypalSandboxSecret,
-                    docs: 'https://developer.paypal.com/docs/api/overview/'
+                    docs: 'https://developer.paypal.com/docs/api/overview/',
+                    component: Main
                 },
                 {
                     name: 'Salesforce',
@@ -497,7 +538,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerSalesforceAppid,
                     secret: project.providerSalesforceSecret,
-                    docs: 'https://developer.salesforce.com/docs/'
+                    docs: 'https://developer.salesforce.com/docs/',
+                    component: Main
                 },
                 {
                     name: 'Slack',
@@ -505,7 +547,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerSlackAppid,
                     secret: project.providerSlackSecret,
-                    docs: 'https://api.slack.com/'
+                    docs: 'https://api.slack.com/',
+                    component: Main
                 },
                 {
                     name: 'Spotify',
@@ -513,7 +556,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerSpotifyAppid,
                     secret: project.providerSpotifySecret,
-                    docs: 'https://developer.spotify.com/documentation/general/guides/authorization-guide/'
+                    docs: 'https://developer.spotify.com/documentation/general/guides/authorization-guide/',
+                    component: Main
                 },
                 {
                     name: 'Stripe',
@@ -521,7 +565,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerStripeAppid,
                     secret: project.providerStripeSecret,
-                    docs: 'https://stripe.com/docs/api'
+                    docs: 'https://stripe.com/docs/api',
+                    component: Main
                 },
                 {
                     name: 'Tradeshift',
@@ -529,7 +574,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerTradeshiftAppid,
                     secret: project.providerTradeshiftSecret,
-                    docs: 'https://developers.tradeshift.com/docs/api'
+                    docs: 'https://developers.tradeshift.com/docs/api',
+                    component: Main
                 },
                 {
                     name: 'Tradeshift(sandbox)',
@@ -537,7 +583,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerTradeshiftBoxAppid,
                     secret: project.providerTradeshiftBoxSecret,
-                    docs: 'https://developers.tradeshift.com/docs/api'
+                    docs: 'https://developers.tradeshift.com/docs/api',
+                    component: Main
                 },
                 {
                     name: 'Twitch',
@@ -545,7 +592,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerTwitchAppid,
                     secret: project.providerTwitchSecret,
-                    docs: 'https://dev.twitch.tv/docs/authentication'
+                    docs: 'https://dev.twitch.tv/docs/authentication',
+                    component: Main
                 },
 
                 {
@@ -554,7 +602,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerWordpressAppid,
                     secret: project.providerWordpressSecret,
-                    docs: 'https://developer.wordpress.com/docs/oauth2/'
+                    docs: 'https://developer.wordpress.com/docs/oauth2/',
+                    component: Main
                 },
                 {
                     name: 'Yahoo',
@@ -562,7 +611,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerYahooAppid,
                     secret: project.providerYahooSecret,
-                    docs: 'https://developer.yahoo.com/oauth2/guide/flows_authcode/'
+                    docs: 'https://developer.yahoo.com/oauth2/guide/flows_authcode/',
+                    component: Main
                 },
                 {
                     name: 'Yammer',
@@ -570,7 +620,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerYammerAppid,
                     secret: project.providerYammerSecret,
-                    docs: 'https://developer.yammer.com/docs/oauth-2'
+                    docs: 'https://developer.yammer.com/docs/oauth-2',
+                    component: Main
                 },
                 {
                     name: 'Yandex',
@@ -578,7 +629,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerYandexAppid,
                     secret: project.providerYandexSecret,
-                    docs: 'https://tech.yandex.com/oauth/'
+                    docs: 'https://tech.yandex.com/oauth/',
+                    component: Main
                 },
                 {
                     name: 'Zoom',
@@ -586,7 +638,8 @@ function createOAuthProviders() {
                     active: false,
                     id: project.providerZoomAppid,
                     secret: project.providerZoomSecret,
-                    docs: 'https://marketplace.zoom.us/docs/guides/auth/oauth/'
+                    docs: 'https://marketplace.zoom.us/docs/guides/auth/oauth/',
+                    component: Main
                 }
             ];
             set({ providers });
