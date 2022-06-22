@@ -5,7 +5,7 @@
 <Card>
     <div class="common-section grid-1-2">
         <div class="grid-1-2-col-1">
-            <slot name="left" />
+            <slot />
         </div>
         <div class="grid-1-2-col-2">
             <slot name="right" />

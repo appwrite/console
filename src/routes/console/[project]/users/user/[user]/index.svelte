@@ -170,18 +170,16 @@
 
 <Container>
     <CardGrid>
-        <svelte:fragment slot="left">
-            <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                <Avatar size={64} name={$user.response.name} src={getAvatar($user.response.name)} />
-                <h6 class="heading-level-7">{$user.response.name}</h6>
-                {#if !$user.response.status}
-                    <Pill danger>Blocked</Pill>
-                {:else}
-                    <Pill success={$user.response.emailVerification}
-                        >{$user.response.emailVerification ? 'Verified' : 'Unverified'}</Pill>
-                {/if}
-            </div>
-        </svelte:fragment>
+        <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
+            <Avatar size={64} name={$user.response.name} src={getAvatar($user.response.name)} />
+            <h6 class="heading-level-7">{$user.response.name}</h6>
+            {#if !$user.response.status}
+                <Pill danger>Blocked</Pill>
+            {:else}
+                <Pill success={$user.response.emailVerification}
+                    >{$user.response.emailVerification ? 'Verified' : 'Unverified'}</Pill>
+            {/if}
+        </div>
         <svelte:fragment slot="right">
             <div>
                 <span class="title">{$user.response.email}</span>
@@ -202,9 +200,7 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <svelte:fragment slot="left">
-            <h6 class="heading-level-7">Update Name</h6>
-        </svelte:fragment>
+        <h6 class="heading-level-7">Update Name</h6>
 
         <svelte:fragment slot="right">
             <ul>
@@ -229,9 +225,7 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <svelte:fragment slot="left">
-            <h6 class="heading-level-7">Update Email</h6>
-        </svelte:fragment>
+        <h6 class="heading-level-7">Update Email</h6>
         <svelte:fragment slot="right">
             <ul>
                 <InputEmail
@@ -255,15 +249,13 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <svelte:fragment slot="left">
-            <div>
-                <h6 class="heading-level-7">Update Password</h6>
-            </div>
+        <div>
+            <h6 class="heading-level-7">Update Password</h6>
+        </div>
 
-            <p>
-                Enter a new password. A password must contain <b> at least 8 characters.</b>
-            </p>
-        </svelte:fragment>
+        <p>
+            Enter a new password. A password must contain <b> at least 8 characters.</b>
+        </p>
         <svelte:fragment slot="right">
             <ul>
                 <InputPassword
@@ -288,13 +280,11 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <svelte:fragment slot="left">
-            <h6 class="heading-level-7">User Preferences</h6>
-            <p>
-                You can update your user preferences by storing information on the user's objects so
-                they can easily be shared across devices and sessions.
-            </p>
-        </svelte:fragment>
+        <h6 class="heading-level-7">User Preferences</h6>
+        <p>
+            You can update your user preferences by storing information on the user's objects so
+            they can easily be shared across devices and sessions.
+        </p>
         <svelte:fragment slot="right">
             <form class="form u-grid u-gap-16">
                 <ul class="form-list">
@@ -346,15 +336,13 @@
     </CardGrid>
 
     <CardGrid>
-        <svelte:fragment slot="left">
-            <div>
-                <h6 class="heading-level-7">Danger Zone</h6>
-            </div>
-            <p>
-                The user will be permanently deleted, including all data associated with this user.
-                This action is irreversible.
-            </p>
-        </svelte:fragment>
+        <div>
+            <h6 class="heading-level-7">Danger Zone</h6>
+        </div>
+        <p>
+            The user will be permanently deleted, including all data associated with this user. This
+            action is irreversible.
+        </p>
         <svelte:fragment slot="right">
             <Box>
                 <svelte:fragment slot="image">

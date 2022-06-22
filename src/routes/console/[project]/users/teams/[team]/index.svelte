@@ -65,9 +65,7 @@
         </Card>
 
         <CardGrid>
-            <svelte:fragment slot="left">
-                <h6 class="heading-level-7">Update Name</h6>
-            </svelte:fragment>
+            <h6 class="heading-level-7">Update Name</h6>
 
             <svelte:fragment slot="right">
                 <ul>
@@ -93,16 +91,14 @@
         </CardGrid>
 
         <CardGrid>
-            <svelte:fragment slot="left">
-                <div>
-                    <h6 class="heading-level-7">Danger Zone</h6>
-                </div>
+            <div>
+                <h6 class="heading-level-7">Danger Zone</h6>
+            </div>
 
-                <p>
-                    The team will be permanently deleted, including all data associated with this
-                    team. This action is irreversible.
-                </p>
-            </svelte:fragment>
+            <p>
+                The team will be permanently deleted, including all data associated with this team.
+                This action is irreversible.
+            </p>
             <svelte:fragment slot="right">
                 <Box>
                     <svelte:fragment slot="image">
