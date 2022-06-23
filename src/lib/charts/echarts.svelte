@@ -10,10 +10,7 @@
         TransformComponent,
         LegendComponent
     } from 'echarts/components';
-    // Features like Universal Transition and Label Layout
     import { LabelLayout, UniversalTransition } from 'echarts/features';
-    // Import the Canvas renderer
-    // Note that introducing the CanvasRenderer or SVGRenderer is a required step
     import { CanvasRenderer } from 'echarts/renderers';
     import { onDestroy, onMount } from 'svelte';
     import { app } from '$lib/stores/app';
