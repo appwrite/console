@@ -15,7 +15,7 @@
     // Import the Canvas renderer
     // Note that introducing the CanvasRenderer or SVGRenderer is a required step
     import { CanvasRenderer } from 'echarts/renderers';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { app } from '$lib/stores/app';
     import light from './echartLight.json';
     import dark from './echartDark.json';
@@ -32,42 +32,67 @@
         UniversalTransition,
         CanvasRenderer
     ]);
+    echarts.registerTheme('light', light);
+    echarts.registerTheme('dark', dark);
 
     export let series: LineSeriesOption[];
     export let title: string;
 
-    onMount(() => {
-        echarts.registerTheme('light', light);
-        echarts.registerTheme('dark', dark);
+    let myChart: echarts.ECharts;
+    $: option = {
+        animationDuration: 400,
+        title: {
+            text: ''
+        },
+        legend: {
+            orient: 'vertical',
+            right: 10,
+            top: 'center'
+        },
+        tooltip: { trigger: 'axis' },
+        xAxis: {
+            type: 'time',
+            show: true
+        },
+        yAxis: { type: 'value' },
+        series
+    };
+    let notMerge = false;
+    let lazyUpdate = false;
+    let timeoutId: any;
 
-        let myChart = echarts.init(document.getElementById(`echart-${title}`), $app.theme);
+    $: option && setOption();
+    $: if (myChart && $app.theme) {
+        makeChart();
+        setOption();
+    }
+
+    onMount(() => {
+        makeChart();
+    });
+
+    onDestroy(() => {
+        destroyChart();
+    });
+    const setOption = () => {
+        if (myChart && !myChart.isDisposed()) {
+            myChart.setOption(option, notMerge, lazyUpdate);
+        }
+    };
+
+    const destroyChart = () => {
+        if (myChart && !myChart.isDisposed()) {
+            myChart.dispose();
+        }
+    };
+
+    const makeChart = () => {
+        destroyChart();
+        myChart = echarts.init(document.getElementById(`echart-${title}`), $app.theme);
         series.forEach((s: LineSeriesOption, i: number) => {
             s.areaStyle = colorToGradient(myChart['_theme'].color[i]);
         });
-
-        myChart.setOption({
-            animationDuration: 400,
-            title: {
-                text: ''
-            },
-            legend: {
-                orient: 'vertical',
-                right: 10,
-                top: 'center'
-            },
-            tooltip: { trigger: 'axis' },
-            xAxis: {
-                type: 'time',
-                show: true
-            },
-            yAxis: { type: 'value' },
-            series
-        });
-
-        window.onresize = function () {
-            myChart.resize();
-        };
-    });
+    };
 
     function colorToGradient(color: string) {
         return {
@@ -84,6 +109,22 @@
             ])
         };
     }
+    window.onresize = () => {
+        if (myChart && !myChart.isDisposed()) {
+            handleResize();
+        }
+    };
+    const handleResize = () => {
+        console.log('test');
+        if (timeoutId == undefined) {
+            timeoutId = setTimeout(() => {
+                if (myChart && !myChart.isDisposed()) {
+                    myChart.resize();
+                }
+                timeoutId = undefined;
+            }, 500);
+        }
+    };
 </script>
 
 <div class="echart" id={`echart-${title}`} />

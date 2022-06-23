@@ -3,40 +3,41 @@
     import { Chart } from '$lib/charts';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Card } from '$lib/components';
+    import { usersUsage } from './store';
 
-    let currentTimeframe = '30d';
+    let currentRange = '30d';
 
-    const getUsage = async (timeFrame) => await sdkForProject.users.getUsage(timeFrame);
+    $: usersUsage.load(currentRange);
+    $: data = $usersUsage.response;
+
     //TODO: add types once they are fixed
 </script>
 
 <Container>
-    {#await getUsage(currentTimeframe)}
-        Loading...
-    {:then res}
-        <button on:click={() => console.log(res)}>sadasd</button>
+    {#if data}
+        <button on:click={() => console.log(data)}>sadasd</button>
         <ul class="drop-tabs">
             <li class="drop-tabs-item">
                 <button
                     class="drop-tabs-button"
-                    on:click={() => (currentTimeframe = '24h')}
-                    disabled={currentTimeframe === '24h'}>
+                    on:click={() => (currentRange = '24h')}
+                    disabled={currentRange === '24h'}>
                     <span class="text">24h</span>
                 </button>
             </li>
             <li class="drop-tabs-item">
                 <button
                     class="drop-tabs-button"
-                    on:click={() => (currentTimeframe = '30d')}
-                    disabled={currentTimeframe === '30d'}>
+                    on:click={() => (currentRange = '30d')}
+                    disabled={currentRange === '30d'}>
                     <span class="text">30d</span>
                 </button>
             </li>
             <li class="drop-tabs-item">
                 <button
                     class="drop-tabs-button"
-                    on:click={() => (currentTimeframe = '90d')}
-                    disabled={currentTimeframe === '90d'}>
+                    on:click={() => (currentRange = '90d')}
+                    disabled={currentRange === '90d'}>
                     <span class="text">90d</span>
                 </button>
             </li>
@@ -49,7 +50,7 @@
                 series={[
                     {
                         name: 'User',
-                        data: [...res.usersCount.map((e) => [e.date * 1000, e.value])],
+                        data: [...data.usersCount.map((e) => [e.date * 1000, e.value])],
                         type: 'line',
                         smooth: true,
                         areaStyle: {}
@@ -64,33 +65,33 @@
                 series={[
                     {
                         name: 'Create',
-                        data: [...res.usersCreate.map((e) => [e.date * 1000, e.value])],
+                        data: [...data.usersCreate.map((e) => [e.date * 1000, e.value])],
                         type: 'line',
                         smooth: true,
                         areaStyle: {}
                     },
                     {
                         name: 'Read',
-                        data: [...res.usersRead.map((e) => [e.date * 1000, e.value])],
+                        data: [...data.usersRead.map((e) => [e.date * 1000, e.value])],
                         type: 'line',
                         smooth: true,
                         areaStyle: {}
                     },
                     {
                         name: 'Update',
-                        data: [...res.usersUpdate.map((e) => [e.date * 1000, e.value])],
+                        data: [...data.usersUpdate.map((e) => [e.date * 1000, e.value])],
                         type: 'line',
                         smooth: true,
                         areaStyle: {}
                     },
                     {
                         name: 'Delete',
-                        data: [...res.usersDelete.map((e) => [e.date * 1000, e.value])],
+                        data: [...data.usersDelete.map((e) => [e.date * 1000, e.value])],
                         type: 'line',
                         smooth: true,
                         areaStyle: {}
                     }
                 ]} />
         </Card>
-    {/await}
+    {/if}
 </Container>
