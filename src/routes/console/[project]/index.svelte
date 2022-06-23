@@ -5,7 +5,7 @@
     import { project } from './store';
     import { Card, List, ListItem } from '$lib/components';
     import { Cover, Container } from '$lib/layout';
-    import { Line } from '$lib/charts';
+    // import { Line } from '$lib/charts';
     // import { page } from '$app/stores';
     import { base } from '$app/paths';
     import CreatePlatform from './_createPlatform.svelte';
@@ -54,7 +54,7 @@
     </Cover>
     <Container>
         <Card>
-            <Line />
+            <!-- <Line /> -->
         </Card>
         <h1>Platforms</h1>
         <List>

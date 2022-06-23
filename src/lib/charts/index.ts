@@ -1,1 +1,1 @@
-export { default as Line } from './line.svelte';
+export { default as Chart } from './echarts.svelte';

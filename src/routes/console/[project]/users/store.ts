@@ -72,11 +72,37 @@ function createTeamsListStore() {
         }
     };
 }
+function createUsersUsageStore() {
+    const { subscribe, set } = writable({
+        loading: true,
+        response: browser ? JSON.parse(sessionStorage.getItem('usersUsage')) : null
+    });
+
+    return {
+        subscribe,
+        set,
+        load: async (range: string) => {
+            try {
+                const response = await sdkForProject.users.getUsage(range);
+                set({
+                    loading: false,
+                    response
+                });
+            } catch (error) {
+                //TODO: take care what happens here
+            }
+        }
+    };
+}
 
 export const usersList = createUsersListStore();
 export const teamsList = createTeamsListStore();
+export const usersUsage = createUsersUsageStore();
 
 if (browser) {
     usersList.subscribe((n) => sessionStorage?.setItem('users', JSON.stringify(n.response ?? '')));
     teamsList.subscribe((n) => sessionStorage?.setItem('teams', JSON.stringify(n.response ?? '')));
+    usersUsage.subscribe((n) =>
+        sessionStorage?.setItem('usersUsage', JSON.stringify(n.response ?? ''))
+    );
 }
