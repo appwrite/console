@@ -15,7 +15,6 @@
 
 <Container>
     {#if data}
-        <button on:click={() => console.log(data)}>sadasd</button>
         <ul class="drop-tabs">
             <li class="drop-tabs-item">
                 <button
