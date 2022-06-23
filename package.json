@@ -19,8 +19,9 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
+        "@aw-labs/icons": "^0.0.0-15",
         "@aw-labs/ui": "^0.0.0-15",
-        "@aw-labs/icons": "^0.0.0-15"
+        "echarts": "^5.3.3"
     },
     "devDependencies": {
         "@playwright/test": "^1.22.2",
