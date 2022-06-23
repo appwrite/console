@@ -12,6 +12,7 @@
     } from '$lib/elements/forms';
     import { bucket } from './store';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import Delete from './_deleteBucket.svelte';
@@ -29,11 +30,12 @@
     let encryption = $bucket.response.encryption;
     let antivirus = $bucket.response.antivirus;
     let maxSize: number;
+    let byteUnit: 'Bytes' | 'KB' | 'MB' | 'GB' = 'Bytes';
     let options = [
-        { label: 'Bytes', value: 'b' },
-        { label: 'Kilobytes', value: 'kb' },
-        { label: 'Megabytes', value: 'mb' },
-        { label: 'Gigabytes', value: 'gb' }
+        { label: 'Bytes', value: 'Bytes' },
+        { label: 'Kilobytes', value: 'KB' },
+        { label: 'Megabytes', value: 'MB' },
+        { label: 'Gigabytes', value: 'GB' }
     ];
     let extensions = $bucket.response.allowedFileExtensions;
     let isExtensionsDisabled = true;
@@ -156,6 +158,8 @@
         }
     }
     async function updateMaxSize() {
+        let size = sizeToBytes(maxSize, byteUnit);
+        console.log(size);
         try {
             await sdkForProject.storage.updateBucket(
                 $bucket.response.$id,
@@ -164,7 +168,7 @@
                 $bucket.response.$read,
                 $bucket.response.$write,
                 $bucket.response.enabled,
-                maxSize
+                size
             );
             $bucket.response.maximumFileSize = maxSize;
             addNotification({
@@ -349,11 +353,8 @@
             </svelte:fragment>
         </CardGrid>
         <CardGrid>
-            <h2 class="heading-level-6">Session Length</h2>
-            <p>
-                If you reduce the limit, users who are currently logged in will be logged out of the
-                application.
-            </p>
+            <h2 class="heading-level-6">Update Maximum File Size</h2>
+            <p>Set the maximum file size allowed in the bucket.</p>
             <svelte:fragment slot="right">
                 <ul class="u-flex u-gap-12">
                     <InputNumber
@@ -361,7 +362,7 @@
                         label="Size"
                         placeholder={$bucket.response.maximumFileSize + ''}
                         bind:value={maxSize} />
-                    <InputSelect id="bytes" label="Bytes" {options} value={options[0].value} />
+                    <InputSelect id="bytes" label="Bytes" {options} bind:value={byteUnit} />
                 </ul>
             </svelte:fragment>
 
