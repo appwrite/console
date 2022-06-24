@@ -50,7 +50,9 @@
         }
     });
 
-    const copy = async (value: string) => {
+    const copy = async (event: Event, value: string) => {
+        event.preventDefault();
+        event.stopPropagation();
         try {
             await navigator.clipboard.writeText(value);
             addNotification({
@@ -115,7 +117,7 @@
                             {/if}
                         </TableCellText>
                         <TableCellText title="ID">
-                            <Pill button on:click={() => copy(user.$id)}
+                            <Pill button on:click={(e) => copy(e, user.$id)}
                                 ><i class="icon-duplicate" />User ID
                             </Pill>
                         </TableCellText>
