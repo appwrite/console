@@ -8,7 +8,6 @@
         Table,
         TableHeader,
         TableBody,
-        TableRow,
         TableCellHead,
         TableCellText,
         TableRowLink
