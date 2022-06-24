@@ -25,7 +25,9 @@
     $: bucketList.load(search, limit, offset ?? 0);
     $: if (search) offset = 0;
 
-    const copy = async (value: string) => {
+    const copy = async (event: Event, value: string) => {
+        event.preventDefault();
+        event.stopPropagation();
         try {
             await navigator.clipboard.writeText(value);
             addNotification({
@@ -62,7 +64,7 @@
                     </div>
                     <h3 class="tiles-title">{bucket.name}</h3>
                     <div class="u-flex u-main-space-between">
-                        <Pill button on:click={() => copy(bucket.$id)}
+                        <Pill button on:click={(e) => copy(e, bucket.$id)}
                             ><i class="icon-duplicate" />Bucket ID
                         </Pill>
                         <div class="">
