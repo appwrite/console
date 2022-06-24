@@ -48,7 +48,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
+        <div class="input-text-wrapper u-stretch">
             <input
                 type="search"
                 placeholder="Search by Name"
@@ -87,7 +87,9 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$teamsList.response.total}</p>
             <Pagination {limit} bind:offset sum={$teamsList.response.total} />
         </div>
@@ -103,7 +105,9 @@
                 <Button secondary on:click={() => (search = '')}>Clear Search</Button>
             </div>
         </Empty>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$teamsList.response.total}</p>
             <Pagination {limit} bind:offset sum={$teamsList.response.total} />
         </div>

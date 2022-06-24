@@ -36,7 +36,7 @@
         <div aria-busy="true" />
     {:then response}
         <div class="u-flex u-gap-12 common-section u-main-space-between">
-            <div class="input-text-wrapper u-stretch" style="max-width: 500px">
+            <div class="input-text-wrapper u-stretch">
                 <input
                     type="search"
                     placeholder="Search by ID"
