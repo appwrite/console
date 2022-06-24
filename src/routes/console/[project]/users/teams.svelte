@@ -87,7 +87,9 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$teamsList.response.total}</p>
             <Pagination {limit} bind:offset sum={$teamsList.response.total} />
         </div>
@@ -103,7 +105,9 @@
                 <Button secondary on:click={() => (search = '')}>Clear Search</Button>
             </div>
         </Empty>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$teamsList.response.total}</p>
             <Pagination {limit} bind:offset sum={$teamsList.response.total} />
         </div>
