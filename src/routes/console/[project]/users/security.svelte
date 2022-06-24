@@ -128,15 +128,13 @@
         </p>
         <svelte:fragment slot="right">
             <form class="form u-grid u-gap-16">
-                <ul class="form-list">
-                    <li class="form-item is-multiple">
-                        <InputNumber id="length" label="Length" value={1} />
-                        <InputSelect
-                            id="period"
-                            {options}
-                            label="Time Period"
-                            value={options[0].value} />
-                    </li>
+                <ul class="form-list is-multiple">
+                    <InputNumber id="length" label="Length" value={1} />
+                    <InputSelect
+                        id="period"
+                        {options}
+                        label="Time Period"
+                        value={options[0].value} />
                 </ul>
             </form>
         </svelte:fragment>
