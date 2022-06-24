@@ -50,11 +50,13 @@
                     {#each response.sessions as session}
                         <TableRow>
                             <TableCellText title="Client">
-                                <img
-                                    height="32"
-                                    width="32"
-                                    src={`/icons/color/${session?.clientName.toLocaleLowerCase()}.svg`}
-                                    alt={session.clientName} />
+                                <div class="image-item">
+                                    <img
+                                        height="20"
+                                        width="20"
+                                        src={`/icons/color/${session?.clientName.toLocaleLowerCase()}.svg`}
+                                        alt={session.clientName} />
+                                </div>
                                 <span class="">
                                     <p>
                                         {session.clientName}

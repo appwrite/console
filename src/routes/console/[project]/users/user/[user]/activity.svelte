@@ -37,11 +37,13 @@
                     {#each response.logs as log}
                         <TableRow>
                             <TableCellText title="Client">
-                                <img
-                                    height="50"
-                                    width="50"
-                                    src={`/icons/color/${log?.clientName.toLocaleLowerCase()}.svg`}
-                                    alt={log.clientName} />
+                                <div class="image-item">
+                                    <img
+                                        height="20"
+                                        width="20"
+                                        src={`/icons/color/${log?.clientName.toLocaleLowerCase()}.svg`}
+                                        alt={log.clientName} />
+                                </div>
                                 <p>
                                     {log.clientName}
                                     {log.clientVersion}
