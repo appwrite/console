@@ -15,7 +15,11 @@
     onMount(async () => {
         try {
             if (!$user) {
-                user.fetchUser();
+                //TODO: find out if it's the correct implementation
+                await user.fetchUser();
+                if (!$user) {
+                    throw 'No user found';
+                }
             }
 
             if (!$page.url.pathname.startsWith('/console')) {
