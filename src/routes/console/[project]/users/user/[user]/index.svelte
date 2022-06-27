@@ -36,8 +36,7 @@
         prefs = Object.entries($user.response.prefs);
     });
 
-    const getAvatar = (name: string) =>
-        sdkForProject.avatars.getInitials(name, 128, 128).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 64, 64).toString();
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
