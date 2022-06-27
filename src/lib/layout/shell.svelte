@@ -1,6 +1,5 @@
 <script lang="ts">
     import { navigating, page } from '$app/stores';
-    import { Back } from '$lib/components';
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { fade } from 'svelte/transition';
     import { Cover } from '.';
@@ -89,16 +88,20 @@
         <Cover>
             <svelte:fragment slot="title">
                 {#if $backButton}
-                    <Back href={$backButton} />
-                    {$title}
+                    <a class="back-button" href={$backButton} aria-label="page back">
+                        <span class="icon-cheveron-left" aria-hidden="true" />
+                    </a>
+                    <span class="text"> {$title}</span>
                 {:else}
-                    {$title}
+                    <span class="text"> {$title}</span>
                 {/if}
             </svelte:fragment>
             {#if $copyData?.value}
-                <Pill button on:click={() => copy($copyData.value)}
-                    ><i class="icon-duplicate" />{$copyData.text}
-                </Pill>
+                <div class="top-cover-option">
+                    <Pill button on:click={() => copy($copyData.value)}
+                        ><i class="icon-duplicate" />{$copyData.text}
+                    </Pill>
+                </div>
             {/if}
             {#if $tabs.length}
                 <div class="tabs">

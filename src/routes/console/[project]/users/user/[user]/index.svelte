@@ -292,8 +292,28 @@
                         {#if prefs}
                             {#each prefs as [key, value]}
                                 <li class="form-item is-multiple">
-                                    <InputText id={`key-${key}`} label="Key" bind:value={key} />
-                                    <InputText id={`value-${value}`} label="Value" bind:value />
+                                    <div class="form-item-part u-stretch">
+                                        <label class="label" for={`value-${key}`}>Key</label>
+                                        <div class="input-text-wrapper">
+                                            <input
+                                                id={`value-${key}`}
+                                                placeholder=""
+                                                type="text"
+                                                class="input-text"
+                                                bind:value={key} />
+                                        </div>
+                                    </div>
+                                    <div class="form-item-part u-stretch">
+                                        <label class="label" for={`value-${value}`}>Value</label>
+                                        <div class="input-text-wrapper">
+                                            <input
+                                                id={`value-${value}`}
+                                                placeholder=""
+                                                type="text"
+                                                class="input-text"
+                                                bind:value />
+                                        </div>
+                                    </div>
                                     <div class="form-item-part u-cross-child-end">
                                         <Button text on:click={() => deletePref(key)}>
                                             <span class="icon-x" aria-hidden="true" />
@@ -303,16 +323,28 @@
                             {/each}
                             {#if prefs.length === 0 || newPref}
                                 <li class="form-item is-multiple">
-                                    <InputText
-                                        id="key"
-                                        label="Key"
-                                        placeholder="Enter Key"
-                                        bind:value={newKey} />
-                                    <InputText
-                                        id="value"
-                                        label="Value"
-                                        placeholder="Enter Value"
-                                        bind:value={newValue} />
+                                    <div class="form-item-part u-stretch">
+                                        <label class="label" for={`value-${newKey}`}>Key</label>
+                                        <div class="input-text-wrapper">
+                                            <input
+                                                id={`value-${newKey}`}
+                                                placeholder="Enter Key"
+                                                type="text"
+                                                class="input-text"
+                                                bind:value={newKey} />
+                                        </div>
+                                    </div>
+                                    <div class="form-item-part u-stretch">
+                                        <label class="label" for={`value-${newValue}`}>Value</label>
+                                        <div class="input-text-wrapper">
+                                            <input
+                                                id={`value-${newValue}`}
+                                                placeholder="Enter Value"
+                                                type="text"
+                                                class="input-text"
+                                                bind:value={newValue} />
+                                        </div>
+                                    </div>
                                     <div class="form-item-part u-cross-child-end">
                                         <Button
                                             text
