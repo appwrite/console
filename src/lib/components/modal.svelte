@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { browser } from '$app/env';
     import { createEventDispatcher } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
 
@@ -32,10 +33,12 @@
         dispatch('close');
     };
 
-    $: if (show) {
-        document.body.classList.add('u-overflow-hidden');
-    } else {
-        document.body.classList.remove('u-overflow-hidden');
+    $: if (browser) {
+        if (show) {
+            document.body.classList.add('u-overflow-hidden');
+        } else {
+            document.body.classList.remove('u-overflow-hidden');
+        }
     }
 </script>
 
