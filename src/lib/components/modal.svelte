@@ -1,9 +1,14 @@
 <script lang="ts">
-    import { browser } from '$app/env';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
 
     export let show = false;
+
+    let browser = false;
+
+    onMount(() => {
+        browser = true;
+    });
 
     const dispatch = createEventDispatcher();
     const transitionFly: FlyParams = {
