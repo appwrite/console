@@ -265,6 +265,7 @@
                         placeholder="Enter new password"
                         autocomplete={false}
                         meter={false}
+                        showPasswordButton={true}
                         bind:value={newPassword} />
                     {#if showError === 'password'}
                         <Helper type={errorType}>{errorMessage}</Helper>
