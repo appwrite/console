@@ -31,6 +31,12 @@
         show = false;
         dispatch('close');
     };
+
+    $: if (show) {
+        document.body.classList.add('u-overflow-hidden');
+    } else {
+        document.body.classList.remove('u-overflow-hidden');
+    }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />

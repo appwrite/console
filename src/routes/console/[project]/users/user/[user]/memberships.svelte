@@ -18,7 +18,7 @@
     import DeleteAllMemberships from './_deleteAllMemberships.svelte';
     import type { Models } from 'src/sdk';
 
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
     const deleted = () => (request = sdkForProject.users.getMemberships($page.params.user));
     const project = $page.params.project;
 
