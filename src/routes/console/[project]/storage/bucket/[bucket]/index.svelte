@@ -102,7 +102,7 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex common-section u-main-space-between">
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$files.response.total}</p>
             <Pagination {limit} bind:offset sum={$files.response.total} />
         </div>
@@ -118,7 +118,7 @@
                 </div>
             </div>
         </Empty>
-        <div class="u-flex common-section u-main-space-between">
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$files.response?.total}</p>
             <Pagination {limit} bind:offset sum={$files.response?.total} />
         </div>
