@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 
 type UploaderFile = {
     $id: string;
+    bucketId: string;
     name: string;
     progress: number;
     completed: boolean;
@@ -12,12 +13,14 @@ type UploaderFile = {
 };
 export type Uploader = {
     isOpen: boolean;
+    isCollapsed: boolean;
     files: UploaderFile[];
 };
 
 const createUploader = () => {
     const { subscribe, set, update } = writable<Uploader>({
         isOpen: false,
+        isCollapsed: false,
         files: []
     });
 
@@ -35,17 +38,42 @@ const createUploader = () => {
 
     return {
         subscribe,
-        toggle: () =>
+
+        close: () =>
             update((n) => {
                 n.isOpen = !n.isOpen;
+
+                return n;
+            }),
+        toggle: () =>
+            update((n) => {
+                n.isCollapsed = !n.isCollapsed;
 
                 return n;
             }),
         reset: () =>
             set({
                 isOpen: false,
+                isCollapsed: false,
                 files: []
             }),
+        addFile: async (file: Models.File, isOpen: true, isCollapsed: false) => {
+            const newFile: UploaderFile = {
+                $id: file.$id,
+                bucketId: file.bucketId,
+                name: file.name,
+                progress: calculateProgress(file),
+                completed: false,
+                failed: false,
+                cancelled: false
+            };
+            return update((n) => {
+                n.isOpen = isOpen;
+                n.isCollapsed = isCollapsed;
+                n.files.push(newFile);
+                return n;
+            });
+        },
         removeFile: async (file: Models.File) => {
             if (file.chunksTotal === file.chunksUploaded) {
                 return update((n) => {
@@ -63,3 +91,8 @@ const createUploader = () => {
 };
 
 export const uploader = createUploader();
+
+function calculateProgress(file: Models.File) {
+    const progress = file.chunksUploaded / file.chunksTotal;
+    return Math.round(progress * 100);
+}
