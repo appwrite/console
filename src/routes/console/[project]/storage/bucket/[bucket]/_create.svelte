@@ -5,6 +5,7 @@
     import { createEventDispatcher } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
+    import { uploader } from '$lib/stores/uploader';
 
     export let showCreate = false;
 
@@ -17,9 +18,16 @@
 
     const create = async () => {
         try {
-            await sdkForProject.storage.createFile(bucket, 'unique()', files[0], read, write);
+            const file = await sdkForProject.storage.createFile(
+                bucket,
+                'unique()',
+                files[0],
+                read,
+                write
+            );
             files = null;
             showCreate = false;
+            uploader.addFile(file);
             dispatch('created');
         } catch (error) {
             addNotification({
