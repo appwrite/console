@@ -92,17 +92,21 @@
                         <span class="icon-cheveron-left" aria-hidden="true" />
                     </a>
                     <span class="text"> {$title}</span>
+                    {#if $copyData?.value}
+                        <Pill button on:click={() => copy($copyData.value)}
+                            ><i class="icon-duplicate" />{$copyData.text}
+                        </Pill>
+                    {/if}
                 {:else}
                     <span class="text"> {$title}</span>
+                    {#if $copyData?.value}
+                        <Pill button on:click={() => copy($copyData.value)}
+                            ><i class="icon-duplicate" />{$copyData.text}
+                        </Pill>
+                    {/if}
                 {/if}
             </svelte:fragment>
-            {#if $copyData?.value}
-                <div class="top-cover-option">
-                    <Pill button on:click={() => copy($copyData.value)}
-                        ><i class="icon-duplicate" />{$copyData.text}
-                    </Pill>
-                </div>
-            {/if}
+
             {#if $tabs.length}
                 <div class="tabs">
                     {#if showLeft}
