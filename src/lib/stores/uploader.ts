@@ -57,7 +57,7 @@ const createUploader = () => {
                 isCollapsed: false,
                 files: []
             }),
-        addFile: async (file: Models.File, isOpen: true, isCollapsed: false) => {
+        addFile: async (file: Models.File, isOpen = true, isCollapsed = false) => {
             const newFile: UploaderFile = {
                 $id: file.$id,
                 bucketId: file.bucketId,
