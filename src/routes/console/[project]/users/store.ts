@@ -23,22 +23,18 @@ function createUsersListStore() {
         subscribe,
         set,
         load: async (search: string, limit: number, offset: number) => {
-            try {
-                const response = await sdkForProject.users.list(
-                    search,
-                    limit,
-                    offset,
-                    undefined,
-                    undefined,
-                    'DESC'
-                );
-                set({
-                    loading: false,
-                    response
-                });
-            } catch (error) {
-                //TODO: take care what happens here
-            }
+            const response = await sdkForProject.users.list(
+                search,
+                limit,
+                offset,
+                undefined,
+                undefined,
+                'DESC'
+            );
+            set({
+                loading: false,
+                response
+            });
         }
     };
 }
@@ -53,22 +49,18 @@ function createTeamsListStore() {
         subscribe,
         set,
         load: async (search: string, limit: number, offset: number) => {
-            try {
-                const response = await sdkForProject.teams.list(
-                    search,
-                    limit,
-                    offset,
-                    undefined,
-                    undefined,
-                    'DESC'
-                );
-                set({
-                    loading: false,
-                    response
-                });
-            } catch (error) {
-                //TODO: take care what happens here
-            }
+            const response = await sdkForProject.teams.list(
+                search,
+                limit,
+                offset,
+                undefined,
+                undefined,
+                'DESC'
+            );
+            set({
+                loading: false,
+                response
+            });
         }
     };
 }
@@ -82,15 +74,11 @@ function createUsersUsageStore() {
         subscribe,
         set,
         load: async (range: string) => {
-            try {
-                const response = await sdkForProject.users.getUsage(range);
-                set({
-                    loading: false,
-                    response
-                });
-            } catch (error) {
-                //TODO: take care what happens here
-            }
+            const response = await sdkForProject.users.getUsage(range);
+            set({
+                loading: false,
+                response
+            });
         }
     };
 }

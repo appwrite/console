@@ -18,15 +18,11 @@ function createUserStore() {
         subscribe,
         set,
         load: async (userId: string) => {
-            try {
-                const response = await sdkForProject.users.get(userId);
-                set({
-                    loading: false,
-                    response
-                });
-            } catch (error) {
-                //TODO: take care what happens here
-            }
+            const response = await sdkForProject.users.get(userId);
+            set({
+                loading: false,
+                response
+            });
         }
     };
 }
