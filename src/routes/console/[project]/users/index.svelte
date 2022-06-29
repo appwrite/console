@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Empty, Pagination, Avatar, Copy } from '$lib/components';
+    import { Empty, Pagination, Avatar, Copy, Search } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -52,20 +52,11 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-flex-basis-50-percent">
-            <input
-                type="search"
-                placeholder="Search Name, Email, or ID"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-        </div>
-
+    <Search bind:search placeholder="Search Name, Email, or ID">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
         </Button>
-    </div>
+    </Search>
     {#if $usersList?.response?.total}
         <Table>
             <TableHeader>

@@ -11,7 +11,7 @@
         TableCellText
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Avatar } from '$lib/components';
+    import { Empty, Pagination, Avatar, Search } from '$lib/components';
     import Create from './_createTeam.svelte';
     import { goto } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -47,20 +47,11 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-flex-basis-50-percent">
-            <input
-                type="search"
-                placeholder="Search by Name"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-        </div>
-
+    <Search bind:search placeholder="Search by Name">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Team</span>
         </Button>
-    </div>
+    </Search>
     {#if $teamsList?.response?.total}
         <Table>
             <TableHeader>

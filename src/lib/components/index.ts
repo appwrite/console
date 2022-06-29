@@ -23,3 +23,4 @@ export { default as SwitchBox } from './switchBox.svelte';
 export { default as SwitchBoxes } from './switchBoxes.svelte';
 export { default as Alert } from './alert.svelte';
 export { default as Box } from './box.svelte';
+export { default as Search } from './search.svelte';

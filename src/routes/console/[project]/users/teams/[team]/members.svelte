@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Pagination, Empty, Avatar } from '$lib/components';
+    import { Pagination, Empty, Avatar, Search } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -44,20 +44,11 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-flex-basis-50-percent">
-            <input
-                type="search"
-                placeholder="Search by ID"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-        </div>
-
+    <Search bind:search placeholder="Search by ID">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Add Member</span>
         </Button>
-    </div>
+    </Search>
     {#if $memberships.response?.total}
         <Table>
             <TableHeader>
