@@ -12,7 +12,7 @@
             <slot />
         </div>
         <div class="grid-1-2-col-2">
-            <slot name="right" />
+            <slot name="aside" />
         </div>
     </div>
     {#if actions?.textContent}

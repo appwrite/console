@@ -66,7 +66,7 @@
         <CardGrid>
             <h6 class="heading-level-7">Update Name</h6>
 
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputText
                         id="name"
@@ -98,7 +98,7 @@
                 The team will be permanently deleted, including all data associated with this team.
                 This action is irreversible.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
                         <Avatar

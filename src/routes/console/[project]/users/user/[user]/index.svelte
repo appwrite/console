@@ -188,7 +188,7 @@
                         >{$user.response.emailVerification ? 'Verified' : 'Unverified'}</Pill>
                 {/if}
             </div>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <div>
                     <span class="title">{$user.response.email}</span>
                     <p>Joined: {toLocaleDate($user.response.registration)}</p>
@@ -239,7 +239,7 @@
         <CardGrid>
             <h6 class="heading-level-7">Update Name</h6>
 
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputText
                         id="name"
@@ -263,7 +263,7 @@
         </CardGrid>
         <CardGrid>
             <h6 class="heading-level-7">Update Email</h6>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputEmail
                         id="email"
@@ -293,7 +293,7 @@
             <p>
                 Enter a new password. A password must contain <b> at least 8 characters.</b>
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputPassword
                         id="newPassword"
@@ -323,7 +323,7 @@
                 You can update your user preferences by storing information on the user's objects so
                 they can easily be shared across devices and sessions.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <form class="form u-grid u-gap-16">
                     <ul class="form-list">
                         {#if prefs}
@@ -413,7 +413,7 @@
                 The user will be permanently deleted, including all data associated with this user.
                 This action is irreversible.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
                         <Avatar
