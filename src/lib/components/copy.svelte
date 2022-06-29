@@ -3,14 +3,14 @@
 
     export let value: string;
 
-    let showTooltip = 'none';
+    let showTooltip = false;
 
     const copy = async () => {
         try {
             await navigator.clipboard.writeText(value);
-            showTooltip = 'block';
+            showTooltip = true;
             setTimeout(() => {
-                showTooltip = 'none';
+                showTooltip = false;
             }, 1000);
         } catch (error) {
             addNotification({
@@ -26,9 +26,9 @@
     <button type="button" class="input-button tooltip" aria-label="Click to copy." on:click={copy}>
         <span class="icon-duplicate" aria-hidden="true" />
         <div class="tootip">
-            <span class="tooltip-popup" style={`display: ${showTooltip}`} role="tooltip">
-                Copied
-            </span>
+            {#if showTooltip}
+                <span class="tooltip-popup" style={`display: block`} role="tooltip"> Copied </span>
+            {/if}
         </div>
     </button>
 </div>
