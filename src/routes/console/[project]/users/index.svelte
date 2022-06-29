@@ -69,7 +69,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
+        <div class="input-text-wrapper u-flex-basis-50-percent">
             <input
                 type="search"
                 placeholder="Search Name, Email, or ID"
