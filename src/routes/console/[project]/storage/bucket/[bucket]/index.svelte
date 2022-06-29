@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination } from '$lib/components';
+    import { Empty, Pagination, Avatar } from '$lib/components';
     import Create from './_create.svelte';
     import Delete from './_deleteFile.svelte';
     import {
@@ -75,13 +75,8 @@
                             title="Name"
                             href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
                             <div class="u-flex u-gap-12">
-                                <img
-                                    class="avatar"
-                                    width="40"
-                                    height="40"
-                                    src={getPreview(file.$id)}
-                                    alt={file.name} />
-                                {file.name}
+                                <Avatar size={40} src={getPreview(file.$id)} name={file.name} />
+                                <span> {file.name}</span>
                             </div>
                         </TableCellLink>
                         <TableCellText title="Type">{file.mimeType}</TableCellText>
