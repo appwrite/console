@@ -5,7 +5,7 @@
     export let show = false;
 
     let browser = false;
-
+    //TODO: explore other solutions compatible with testing library
     onMount(() => {
         browser = true;
     });
