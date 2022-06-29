@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Pagination, Empty } from '$lib/components';
+    import { Pagination, Empty, Avatar } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -55,12 +55,10 @@
                                 href={`${base}/console/${project}/users/user/${membership.userId}`}
                                 title="Name">
                                 <div class="u-flex u-gap-12">
-                                    <img
-                                        class="avatar"
-                                        width="40"
-                                        height="40"
+                                    <Avatar
+                                        size={40}
                                         src={getAvatar(membership.userName)}
-                                        alt={membership.userName} />
+                                        name={membership.userName} />
                                     <span>{membership.userName ? membership.userName : 'n/a'}</span>
                                 </div>
                             </TableCellLink>

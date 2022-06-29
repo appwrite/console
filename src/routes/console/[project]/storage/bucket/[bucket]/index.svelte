@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination } from '$lib/components';
+    import { Empty, Pagination, Avatar } from '$lib/components';
     import type { Models } from 'src/sdk';
     import Create from './_create.svelte';
     import Update from './_update.svelte';
@@ -30,7 +30,7 @@
         showUpdate = true;
     };
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview(bucket, fileId, 30, 30).toString() + '&mode=admin';
+        sdkForProject.storage.getFilePreview(bucket, fileId, 40, 40).toString() + '&mode=admin';
 
     $: request = sdkForProject.storage.listFiles(bucket, search, limit, offset);
     $: if (search) offset = 0;
@@ -69,12 +69,10 @@
                             <TableCellText title="Name">
                                 <div class="u-flex u-gap-12">
                                     <span class="link" on:click={() => openFile(file)}>
-                                        <img
-                                            class="avatar"
-                                            width="40"
-                                            height="40"
+                                        <Avatar
+                                            size={40}
                                             src={getPreview(file.$id)}
-                                            alt={file.name} />
+                                            name={file.name} />
                                         {file.name}
                                     </span>
                                 </div>
