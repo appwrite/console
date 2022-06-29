@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { Avatar, CardGrid, Box, DropList, DropListItem, DropListLink } from '$lib/components';
+    import { Avatar, CardGrid, Box, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, InputEmail, InputPassword, Helper } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
