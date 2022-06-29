@@ -9,8 +9,7 @@
     import { team } from './store';
     import DeleteTeam from './_deleteTeam.svelte';
 
-    const getAvatar = (name: string) =>
-        sdkForProject.avatars.getInitials(name, 128, 128).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
@@ -49,7 +48,7 @@
                 <div class="grid-1-2-col-1">
                     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
                         <Avatar
-                            size={64}
+                            size={48}
                             name={$team.response.name}
                             src={getAvatar($team.response.name)} />
                         <div>
@@ -103,7 +102,7 @@
                 <Box>
                     <svelte:fragment slot="image">
                         <Avatar
-                            size={64}
+                            size={48}
                             name={$team.response.name}
                             src={getAvatar($team.response.name)} />
                     </svelte:fragment>

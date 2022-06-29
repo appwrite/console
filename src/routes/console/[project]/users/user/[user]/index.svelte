@@ -37,7 +37,7 @@
         prefs = Object.entries($user.response.prefs);
     });
 
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 64, 64).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
@@ -179,7 +179,7 @@
     <Container>
         <CardGrid>
             <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                <Avatar size={64} name={$user.response.name} src={getAvatar($user.response.name)} />
+                <Avatar size={48} name={$user.response.name} src={getAvatar($user.response.name)} />
                 <h6 class="heading-level-7">{$user.response.name}</h6>
                 {#if !$user.response.status}
                     <Pill danger>Blocked</Pill>
@@ -417,7 +417,7 @@
                 <Box>
                     <svelte:fragment slot="image">
                         <Avatar
-                            size={64}
+                            size={48}
                             name={$user.response.name}
                             src={getAvatar($user.response.name)} />
                     </svelte:fragment>
