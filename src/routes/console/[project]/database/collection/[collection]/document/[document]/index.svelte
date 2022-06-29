@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Card, Copy } from '$lib/components';
+    import { Card, CopyInput } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -45,7 +45,7 @@
 <Card>
     {#if $doc}
         <Form on:submit={updateDocument}>
-            <Copy value={$doc.$id} />
+            <CopyInput value={$doc.$id} />
             <Document />
             <Button submit>Update</Button>
         </Form>
