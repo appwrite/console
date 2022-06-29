@@ -102,7 +102,7 @@
                     <p class="u-margin-block-start-8">{provider.name}</p>
                     <div class="u-margin-block-start-24">
                         <Pill success={provider.active}
-                            >{provider.active ? 'Active' : 'Inactive'}</Pill>
+                            >{provider.active ? 'Enabled' : 'Disabled'}</Pill>
                     </div>
                 </button>
             {/each}

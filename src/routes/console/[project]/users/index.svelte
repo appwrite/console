@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Empty, Pagination } from '$lib/components';
+    import { Empty, Pagination, Avatar } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import {
@@ -69,7 +69,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
+        <div class="input-text-wrapper u-flex-basis-50-percent">
             <input
                 type="search"
                 placeholder="Search Name, Email, or ID"
@@ -98,12 +98,7 @@
                             href={`${base}/console/${project}/users/user/${user.$id}`}
                             title="Name">
                             <div class="u-flex u-gap-12">
-                                <img
-                                    class="avatar"
-                                    width="40"
-                                    height="40"
-                                    src={getAvatar(user.name)}
-                                    alt={user.name} />
+                                <Avatar size={40} src={getAvatar(user.name)} name={user.name} />
                                 <span>{user.name ? user.name : 'n/a'}</span>
                             </div>
                         </TableCellLink>

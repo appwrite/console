@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { Avatar, CardGrid, Box } from '$lib/components';
+    import { Avatar, CardGrid, Box, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, InputEmail, InputPassword, Helper } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -28,6 +28,7 @@
         newPref = false,
         newKey = null,
         newValue = null;
+    let showVerifcationDropdown = false;
     let prefs = null;
     let arePrefsDisabled = true;
 
@@ -36,7 +37,7 @@
         prefs = Object.entries($user.response.prefs);
     });
 
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 64, 64).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
@@ -44,11 +45,14 @@
         errorType = type;
     }
 
-    async function updateVerification() {
+    async function updateVerification(verificationMethod: 'phone' | 'email') {
         try {
             await sdkForProject.users.updateVerification(
                 $user.response.$id,
-                !$user.response.emailVerification
+                verificationMethod === 'email'
+                    ? !$user.response.emailVerification
+                    : $user.response.emailVerification
+                //verificationMethod === 'phone' ? !$user.response.phoneVerification : $user.response.phoneVerification
             );
             $user.response.emailVerification = !$user.response.emailVerification;
             addNotification({
@@ -165,13 +169,17 @@
             });
         }
     }
+
+    //TMP VARIABLE
+    let phone = false;
+    let phoneAuth = false;
 </script>
 
 {#if $user.response}
     <Container>
         <CardGrid>
             <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                <Avatar size={64} name={$user.response.name} src={getAvatar($user.response.name)} />
+                <Avatar size={48} name={$user.response.name} src={getAvatar($user.response.name)} />
                 <h6 class="heading-level-7">{$user.response.name}</h6>
                 {#if !$user.response.status}
                     <Pill danger>Blocked</Pill>
@@ -194,8 +202,37 @@
                     on:click={() => updateStatus()}
                     >{$user.response.status ? 'Block Account' : 'Unblock Accout'}</Button>
                 {#if $user.response.status}
-                    <Button secondary on:click={() => updateVerification()}
-                        >{$user.response.emailVerification ? 'Unverify' : 'Verify'} Account</Button>
+                    {#if phone && $user.response.email}
+                        <DropList
+                            bind:show={showVerifcationDropdown}
+                            position="top"
+                            horizontal="left"
+                            arrow={false}>
+                            <Button
+                                secondary
+                                on:click={() =>
+                                    (showVerifcationDropdown = !showVerifcationDropdown)}>
+                                {$user.response.emailVerification ? 'Unverify' : 'Verify'} Account
+                            </Button>
+                            <svelte:fragment slot="list">
+                                <DropListItem
+                                    icon="mail"
+                                    on:click={() => updateVerification('email')}
+                                    >{$user.response.emailVerification ? 'Unverify' : 'Verify'} email</DropListItem>
+                                <DropListItem
+                                    icon="phone"
+                                    on:click={() => updateVerification('phone')}
+                                    >{phoneAuth ? 'Unverify' : 'Verify'} phone</DropListItem>
+                            </svelte:fragment>
+                        </DropList>
+                    {:else if !phone}
+                        <Button secondary on:click={() => updateVerification('email')}>
+                            {$user.response.emailVerification ? 'Unverify' : 'Verify'} Account
+                        </Button>
+                    {:else if !$user.response.email}
+                        <Button secondary on:click={() => updateVerification('phone')}>
+                            {phoneAuth ? 'Unverify' : 'Verify'} Account
+                        </Button>{/if}
                 {/if}
             </svelte:fragment>
         </CardGrid>
@@ -380,7 +417,7 @@
                 <Box>
                     <svelte:fragment slot="image">
                         <Avatar
-                            size={64}
+                            size={48}
                             name={$user.response.name}
                             src={getAvatar($user.response.name)} />
                     </svelte:fragment>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Pagination, Empty } from '$lib/components';
+    import { Pagination, Empty, Avatar } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -45,7 +45,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
+        <div class="input-text-wrapper u-flex-basis-50-percent">
             <input
                 type="search"
                 placeholder="Search by ID"
@@ -73,12 +73,11 @@
                             href={`${base}/console/${project}/users/user/${membership.userId}`}
                             title="Name">
                             <div class="u-flex u-gap-12">
-                                <img
-                                    class="avatar"
-                                    width="40"
-                                    height="40"
+                                <Avatar
+                                    size={40}
                                     src={getAvatar(membership.userName)}
-                                    alt={membership.userName} />
+                                    name={membership.userName} />
+
                                 <span>{membership.userName ? membership.userName : 'n/a'}</span>
                             </div>
                         </TableCellLink>
