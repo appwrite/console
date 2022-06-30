@@ -15,7 +15,7 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let teamName = null;
+    let teamName: string = null;
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
