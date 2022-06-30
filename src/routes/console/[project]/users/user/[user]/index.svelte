@@ -22,14 +22,14 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName = null,
-        userEmail = null,
-        newPassword = null,
+    let userName: string = null,
+        userEmail: string = null,
+        newPassword: string = null,
         newPref = false,
-        newKey = null,
-        newValue = null;
+        newKey: string = null,
+        newValue: string = null;
     let showVerifcationDropdown = false;
-    let prefs = null;
+    let prefs = Object.entries($user.response.prefs);
     let arePrefsDisabled = true;
 
     onMount(async () => {
@@ -361,10 +361,10 @@
                             {#if prefs.length === 0 || newPref}
                                 <li class="form-item is-multiple">
                                     <div class="form-item-part u-stretch">
-                                        <label class="label" for={`value-${newKey}`}>Key</label>
+                                        <label class="label" for="newKey">Key</label>
                                         <div class="input-text-wrapper">
                                             <input
-                                                id={`value-${newKey}`}
+                                                id="newKey"
                                                 placeholder="Enter Key"
                                                 type="text"
                                                 class="input-text"
@@ -372,10 +372,10 @@
                                         </div>
                                     </div>
                                     <div class="form-item-part u-stretch">
-                                        <label class="label" for={`value-${newValue}`}>Value</label>
+                                        <label class="label" for="newValue">Value</label>
                                         <div class="input-text-wrapper">
                                             <input
-                                                id={`value-${newValue}`}
+                                                id="newValue"
                                                 placeholder="Enter Value"
                                                 type="text"
                                                 class="input-text"
