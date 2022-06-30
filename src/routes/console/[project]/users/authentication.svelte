@@ -1,6 +1,7 @@
 <script lang="ts">
     import { CardGrid } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -41,23 +42,13 @@
             <form class="form">
                 <ul class="form-list is-multiple">
                     {#each $authMethods.list as box}
-                        <li class="form-item ">
-                            <label class="choice-item" for={box.method}>
-                                <input
-                                    label={box.label}
-                                    id={box.method}
-                                    type="checkbox"
-                                    class="switch"
-                                    role="switch"
-                                    bind:checked={box.value}
-                                    on:change={() => {
-                                        authUpdate(box.method, box.value);
-                                    }} />
-                                <div class="choice-item-content">
-                                    <div class="choice-item-title">{box.label}</div>
-                                </div>
-                            </label>
-                        </li>
+                        <InputSwitch
+                            label={box.label}
+                            id={box.method}
+                            bind:value={box.value}
+                            on:change={() => {
+                                authUpdate(box.method, box.value);
+                            }} />
                     {/each}
                     <li class="form-item ">
                         <label class="choice-item" for="phone">
