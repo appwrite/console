@@ -11,7 +11,7 @@ export type SelectedUser = {
 function createUserStore() {
     const { subscribe, set } = writable<SelectedUser>({
         loading: true,
-        response: browser ? JSON.parse(sessionStorage.getItem('user')) : null
+        response: browser ? JSON.parse(sessionStorage.getItem('selectedUser')) : null
     });
 
     return {
@@ -30,5 +30,7 @@ function createUserStore() {
 export const user = createUserStore();
 
 if (browser) {
-    user.subscribe((n) => sessionStorage?.setItem('user', JSON.stringify(n.response ?? '')));
+    user.subscribe((n) =>
+        sessionStorage?.setItem('selectedUser', JSON.stringify(n.response ?? ''))
+    );
 }
