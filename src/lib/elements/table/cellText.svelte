@@ -2,6 +2,6 @@
     export let title: string;
 </script>
 
-<td class="table-col is-main" data-title={title}>
+<div class="table-col is-main" data-title={title} role="cell">
     <span class="text"><slot /></span>
-</td>
+</div>

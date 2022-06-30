@@ -3,6 +3,10 @@
     export let width: number = null;
 </script>
 
-<td width={width?.toString() ?? ''} class="table-col" class:is-only-desktop={onlyDesktop}>
+<div
+    width={width?.toString() ?? ''}
+    class="table-col"
+    class:is-only-desktop={onlyDesktop}
+    role="cell">
     <slot />
-</td>
+</div>

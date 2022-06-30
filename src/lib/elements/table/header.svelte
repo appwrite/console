@@ -1,5 +1,5 @@
-<thead class="table-thead">
-    <tr class="table-row">
+<div class="table-thead" role="rowheader">
+    <div class="table-row" role="row">
         <slot />
-    </tr>
-</thead>
+    </div>
+</div>

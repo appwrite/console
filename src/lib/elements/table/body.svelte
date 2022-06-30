@@ -1,3 +1,3 @@
-<tbody class="table-tbody">
+<div class="table-tbody" role="rowgroup">
     <slot />
-</tbody>
+</div>

@@ -7,10 +7,9 @@
         Table,
         TableHeader,
         TableBody,
-        TableRow,
         TableCellHead,
-        TableCellLink,
-        TableCellText
+        TableCellText,
+        TableRowLink
     } from '$lib/elements/table';
     import Create from './_createUser.svelte';
     import type { Models } from 'src/sdk';
@@ -68,15 +67,13 @@
             </TableHeader>
             <TableBody>
                 {#each $usersList.response.users as user}
-                    <TableRow>
-                        <TableCellLink
-                            href={`${base}/console/${project}/users/user/${user.$id}`}
-                            title="Name">
-                            <div class="u-flex u-gap-12">
+                    <TableRowLink href={`${base}/console/${project}/users/user/${user.$id}`}>
+                        <TableCellText title="Name">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar size={40} src={getAvatar(user.name)} name={user.name} />
-                                <span>{user.name ? user.name : 'n/a'}</span>
+                                <span class="text">{user.name ? user.name : 'n/a'}</span>
                             </div>
-                        </TableCellLink>
+                        </TableCellText>
                         <TableCellText title="E-Mail">{user.email}</TableCellText>
                         <TableCellText title="Status">
                             {#if user.status}
@@ -95,13 +92,11 @@
                         <TableCellText title="Joined">
                             {toLocaleDateTime(user.registration)}
                         </TableCellText>
-                    </TableRow>
+                    </TableRowLink>
                 {/each}
             </TableBody>
         </Table>
-        <div
-            class="u-flex u-margin-block-start-32
- u-main-space-between">
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$usersList.response.total}</p>
             <Pagination {limit} bind:offset sum={$usersList.response.total} />
         </div>
