@@ -15,15 +15,12 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let teamName = null;
+    let teamName: string = null;
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
         errorMessage = message;
         errorType = type;
-        setTimeout(() => {
-            showError = false;
-        }, 6000);
     }
 
     async function updateName() {
@@ -66,7 +63,7 @@
         <CardGrid>
             <h6 class="heading-level-7">Update Name</h6>
 
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputText
                         id="name"
@@ -98,7 +95,7 @@
                 The team will be permanently deleted, including all data associated with this team.
                 This action is irreversible.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
                         <Avatar

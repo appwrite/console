@@ -9,11 +9,7 @@ function createUserStore() {
         subscribe,
         set,
         fetchUser: async () => {
-            try {
-                set(await sdkForConsole.account.get());
-            } catch (error) {
-                //TODO: take care what happens here
-            }
+            set(await sdkForConsole.account.get());
         }
     };
 }

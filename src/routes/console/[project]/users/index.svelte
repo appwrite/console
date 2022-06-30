@@ -1,9 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Empty, Pagination, Avatar } from '$lib/components';
+    import { Empty, Pagination, Avatar, Copy, Search } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
     import {
         Table,
         TableHeader,
@@ -50,38 +49,14 @@
             offset = queryOffset;
         }
     });
-
-    const copy = async (value: string) => {
-        try {
-            await navigator.clipboard.writeText(value);
-            addNotification({
-                message: 'Copied to clipboard.',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    };
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-flex-basis-50-percent">
-            <input
-                type="search"
-                placeholder="Search Name, Email, or ID"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-        </div>
-
+    <Search bind:search placeholder="Search Name, Email, or ID">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
         </Button>
-    </div>
+    </Search>
     {#if $usersList?.response?.total}
         <Table>
             <TableHeader>
@@ -113,9 +88,9 @@
                             {/if}
                         </TableCellText>
                         <TableCellText title="ID">
-                            <Pill button on:click={() => copy(user.$id)}
-                                ><i class="icon-duplicate" />User ID
-                            </Pill>
+                            <Copy value={user.$id}>
+                                <Pill button><i class="icon-duplicate" />User ID</Pill>
+                            </Copy>
                         </TableCellText>
                         <TableCellText title="Joined">
                             {toLocaleDateTime(user.registration)}

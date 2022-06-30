@@ -22,15 +22,11 @@ function createTeamStore() {
         subscribe,
         set,
         load: async (teamId: string) => {
-            try {
-                const response = await sdkForProject.teams.get(teamId);
-                set({
-                    loading: false,
-                    response
-                });
-            } catch (error) {
-                //TODO: take care what happens here
-            }
+            const response = await sdkForProject.teams.get(teamId);
+            set({
+                loading: false,
+                response
+            });
         }
     };
 }
@@ -44,23 +40,19 @@ function createMembershipStore() {
         subscribe,
         set,
         load: async (teamId: string, search: string, limit: number, offset: number) => {
-            try {
-                const response = await sdkForProject.teams.getMemberships(
-                    teamId,
-                    search,
-                    limit,
-                    offset,
-                    undefined,
-                    undefined,
-                    'DESC'
-                );
-                set({
-                    loading: false,
-                    response
-                });
-            } catch (error) {
-                //TODO: take care what happens here
-            }
+            const response = await sdkForProject.teams.getMemberships(
+                teamId,
+                search,
+                limit,
+                offset,
+                undefined,
+                undefined,
+                'DESC'
+            );
+            set({
+                loading: false,
+                response
+            });
         }
     };
 }

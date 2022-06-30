@@ -22,14 +22,14 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName = null,
-        userEmail = null,
-        newPassword = null,
+    let userName: string = null,
+        userEmail: string = null,
+        newPassword: string = null,
         newPref = false,
-        newKey = null,
-        newValue = null;
+        newKey: string = null,
+        newValue: string = null;
     let showVerifcationDropdown = false;
-    let prefs = null;
+    let prefs = Object.entries($user.response.prefs);
     let arePrefsDisabled = true;
 
     onMount(async () => {
@@ -154,7 +154,12 @@
     async function deletePref(selectedKey: string) {
         try {
             let updatedPrefs = Object.fromEntries(prefs);
-            delete updatedPrefs[selectedKey];
+            updatedPrefs = Object.keys(updatedPrefs).reduce((acc, key) => {
+                if (key !== selectedKey) {
+                    acc[key] = updatedPrefs[key];
+                }
+                return acc;
+            }, {});
             await sdkForProject.users.updatePrefs($user.response.$id, updatedPrefs);
             prefs = Object.entries(updatedPrefs);
             $user.response.prefs = updatedPrefs;
@@ -188,7 +193,7 @@
                         >{$user.response.emailVerification ? 'Verified' : 'Unverified'}</Pill>
                 {/if}
             </div>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <div>
                     <span class="title">{$user.response.email}</span>
                     <p>Joined: {toLocaleDate($user.response.registration)}</p>
@@ -239,7 +244,7 @@
         <CardGrid>
             <h6 class="heading-level-7">Update Name</h6>
 
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputText
                         id="name"
@@ -263,7 +268,7 @@
         </CardGrid>
         <CardGrid>
             <h6 class="heading-level-7">Update Email</h6>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputEmail
                         id="email"
@@ -293,7 +298,7 @@
             <p>
                 Enter a new password. A password must contain <b> at least 8 characters.</b>
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputPassword
                         id="newPassword"
@@ -323,7 +328,7 @@
                 You can update your user preferences by storing information on the user's objects so
                 they can easily be shared across devices and sessions.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <form class="form u-grid u-gap-16">
                     <ul class="form-list">
                         {#if prefs}
@@ -361,10 +366,10 @@
                             {#if prefs.length === 0 || newPref}
                                 <li class="form-item is-multiple">
                                     <div class="form-item-part u-stretch">
-                                        <label class="label" for={`value-${newKey}`}>Key</label>
+                                        <label class="label" for="newKey">Key</label>
                                         <div class="input-text-wrapper">
                                             <input
-                                                id={`value-${newKey}`}
+                                                id="newKey"
                                                 placeholder="Enter Key"
                                                 type="text"
                                                 class="input-text"
@@ -372,10 +377,10 @@
                                         </div>
                                     </div>
                                     <div class="form-item-part u-stretch">
-                                        <label class="label" for={`value-${newValue}`}>Value</label>
+                                        <label class="label" for="newValue">Value</label>
                                         <div class="input-text-wrapper">
                                             <input
-                                                id={`value-${newValue}`}
+                                                id="newValue"
                                                 placeholder="Enter Value"
                                                 type="text"
                                                 class="input-text"
@@ -413,7 +418,7 @@
                 The user will be permanently deleted, including all data associated with this user.
                 This action is irreversible.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
                         <Avatar

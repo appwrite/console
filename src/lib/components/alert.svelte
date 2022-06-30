@@ -1,10 +1,10 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import type { Func } from '../stores/notifications';
+    import type { Buttons } from '../stores/notifications';
 
     export let dismissible = false;
     export let type: '' | 'info' | 'success' | 'warning' | 'danger' = 'info';
-    export let func: Func[] = [];
+    export let buttons: Buttons[] = [];
 
     const dispatch = createEventDispatcher();
 </script>
@@ -25,11 +25,11 @@
                 <slot name="title" />
             </h6>
             <p class="message"><slot /></p>
-            {#if func?.length}
+            {#if buttons?.length}
                 <div class="buttons u-flex">
-                    {#each func as f}
-                        <button class="button is-text" on:click={f.method}>
-                            <span class="text">{f.name}</span>
+                    {#each buttons as button}
+                        <button class="button is-text" on:click={button.method}>
+                            <span class="text">{button.name}</span>
                         </button>
                     {/each}
                 </div>

@@ -11,7 +11,7 @@
                     type={notification.type}
                     title={notification.title}
                     on:dismiss={() => dismissNotification(notification.id)}
-                    func={notification?.func}>
+                    buttons={notification?.buttons}>
                     {notification.message}
                 </Notification>
             {/each}

@@ -5,8 +5,8 @@
     export let danger = false;
     export let disabled = false;
     export let round = false;
-    export let href: string = null;
     export let external = false;
+    export let href: string = null;
     //TODO: add option to add aria-label to buttons that are only icons
 </script>
 

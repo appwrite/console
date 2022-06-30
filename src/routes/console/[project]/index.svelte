@@ -5,8 +5,6 @@
     import { project } from './store';
     import { Card, List, ListItem } from '$lib/components';
     import { Cover, Container } from '$lib/layout';
-    // import { Line } from '$lib/charts';
-    // import { page } from '$app/stores';
     import { base } from '$app/paths';
     import CreatePlatform from './_createPlatform.svelte';
 
@@ -20,9 +18,6 @@
     });
 
     let addPlatform = false;
-    // let range: '24h' | '30d' | '90d' = '30d';
-
-    // $: requestUsage = sdkForConsole.projects.getUsage($page.params.project, range);
 </script>
 
 <svelte:head>
@@ -53,9 +48,6 @@
         </ul>
     </Cover>
     <Container>
-        <Card>
-            <!-- <Line /> -->
-        </Card>
         <h1>Platforms</h1>
         <List>
             {#each $project.platforms as platform}

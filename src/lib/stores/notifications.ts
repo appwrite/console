@@ -7,11 +7,11 @@ export type Notification = {
     timeout?: number;
     message: string;
     title?: string;
-    func?: Func[];
+    buttons?: Buttons[];
 };
 
-export type Func = {
-    method: () => void; //TODO Check if promise is needed rather tha () => void
+export type Buttons = {
+    method: () => void | Promise<void>;
     name: string;
 };
 

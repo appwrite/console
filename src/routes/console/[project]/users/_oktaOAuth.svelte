@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Modal, Copy, Alert } from '$lib/components';
+    import { Modal, CopyInput, Alert } from '$lib/components';
     import {
         Button,
         InputPassword,
@@ -86,7 +86,7 @@
             </Alert>
             <div>
                 <p>URI</p>
-                <Copy
+                <CopyInput
                     value={`${
                         sdkForConsole.config.endpoint
                     }/account/session/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
