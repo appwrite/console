@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Avatar } from '$lib/components';
+    import { Empty, Pagination, Avatar, Search } from '$lib/components';
     import Create from './_create.svelte';
     import Delete from './_deleteFile.svelte';
     import {
@@ -45,20 +45,11 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
-            <input
-                type="search"
-                placeholder="Search by Filename"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-        </div>
-
+    <Search bind:search placeholder="Search by Filename">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Add File</span>
         </Button>
-    </div>
+    </Search>
     {#if $files?.response?.total}
         <Table>
             <TableHeader>

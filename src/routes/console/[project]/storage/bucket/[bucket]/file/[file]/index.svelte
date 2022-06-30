@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, CardGrid, Box } from '$lib/components';
+    import { Alert, CardGrid, Box, Copy } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputTags } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
@@ -74,21 +74,6 @@
             });
         }
     }
-
-    const copy = async (value: string) => {
-        try {
-            await navigator.clipboard.writeText(value);
-            addNotification({
-                message: 'Copied to clipboard.',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    };
 </script>
 
 <Container>
@@ -102,9 +87,9 @@
                     alt={$file.response.name} />
                 <div>
                     <h2 class="heading-level-7">{$file.response.name}</h2>
-                    <Pill button on:click={() => copy(getView($file.response.$id))}
-                        ><i class="icon-duplicate" />File URL
-                    </Pill>
+                    <Copy value={getView($file.response.$id)}>
+                        <Pill button><i class="icon-duplicate" />File URL</Pill>
+                    </Copy>
                 </div>
             </div>
             <svelte:fragment slot="right">
