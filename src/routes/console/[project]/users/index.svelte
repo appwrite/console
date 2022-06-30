@@ -27,7 +27,7 @@
 
     const limit = 5;
     const project = $page.params.project;
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
         await goto(`${base}/console/${project}/users/user/${event.detail.$id}`);
     };
@@ -70,7 +70,7 @@
                     <TableRowLink href={`${base}/console/${project}/users/user/${user.$id}`}>
                         <TableCellText title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <Avatar size={40} src={getAvatar(user.name)} name={user.name} />
+                                <Avatar size={32} src={getAvatar(user.name)} name={user.name} />
                                 <span class="text">{user.name ? user.name : 'n/a'}</span>
                             </div>
                         </TableCellText>

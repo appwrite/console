@@ -18,7 +18,7 @@
     import DeleteAllMemberships from './_deleteAllMemberships.svelte';
     import type { Models } from 'src/sdk';
 
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const deleted = () => (request = sdkForProject.users.getMemberships($page.params.user));
     const project = $page.params.project;
 
@@ -56,7 +56,7 @@
                                 title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar
-                                        size={40}
+                                        size={32}
                                         src={getAvatar(membership.userName)}
                                         name={membership.userName} />
                                     <span>{membership.userName ? membership.userName : 'n/a'}</span>
