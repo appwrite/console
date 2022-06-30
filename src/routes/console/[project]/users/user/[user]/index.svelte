@@ -154,7 +154,12 @@
     async function deletePref(selectedKey: string) {
         try {
             let updatedPrefs = Object.fromEntries(prefs);
-            delete updatedPrefs[selectedKey];
+            updatedPrefs = Object.keys(updatedPrefs).reduce((acc, key) => {
+                if (key !== selectedKey) {
+                    acc[key] = updatedPrefs[key];
+                }
+                return acc;
+            }, {});
             await sdkForProject.users.updatePrefs($user.response.$id, updatedPrefs);
             prefs = Object.entries(updatedPrefs);
             $user.response.prefs = updatedPrefs;
