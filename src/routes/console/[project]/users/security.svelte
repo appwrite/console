@@ -76,7 +76,7 @@
             method. You can still create users from your Appwrite console.
         </p>
 
-        <svelte:fragment slot="right">
+        <svelte:fragment slot="aside">
             <ul class="u-flex u-gap-12">
                 <li>
                     <div class="input-text-wrapper">
@@ -126,17 +126,15 @@
             If you reduce the limit, users who are currently logged in will be logged out of the
             application.
         </p>
-        <svelte:fragment slot="right">
+        <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
-                <ul class="form-list">
-                    <li class="form-item is-multiple">
-                        <InputNumber id="length" label="Length" value={1} />
-                        <InputSelect
-                            id="period"
-                            {options}
-                            label="Time Period"
-                            value={options[0].value} />
-                    </li>
+                <ul class="form-list is-multiple">
+                    <InputNumber id="length" label="Length" value={1} />
+                    <InputSelect
+                        id="period"
+                        {options}
+                        label="Time Period"
+                        value={options[0].value} />
                 </ul>
             </form>
         </svelte:fragment>

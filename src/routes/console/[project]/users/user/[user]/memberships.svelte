@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Pagination, Empty } from '$lib/components';
+    import { Pagination, Empty, Avatar } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -18,7 +18,7 @@
     import DeleteAllMemberships from './_deleteAllMemberships.svelte';
     import type { Models } from 'src/sdk';
 
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
     const deleted = () => (request = sdkForProject.users.getMemberships($page.params.user));
     const project = $page.params.project;
 
@@ -55,12 +55,10 @@
                                 href={`${base}/console/${project}/users/user/${membership.userId}`}
                                 title="Name">
                                 <div class="u-flex u-gap-12">
-                                    <img
-                                        class="avatar"
-                                        width="40"
-                                        height="40"
+                                    <Avatar
+                                        size={40}
                                         src={getAvatar(membership.userName)}
-                                        alt={membership.userName} />
+                                        name={membership.userName} />
                                     <span>{membership.userName ? membership.userName : 'n/a'}</span>
                                 </div>
                             </TableCellLink>
@@ -96,7 +94,9 @@
                 </div>
             </Empty>
         {/if}
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {response.total}</p>
             <Pagination {limit} bind:offset sum={response.total} />
         </div>

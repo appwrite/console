@@ -4,12 +4,14 @@
     import { Button, Form, FormItem, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
 
     let mail: string, pass: string;
 
     const login = async () => {
         try {
             await sdkForConsole.account.createSession(mail, pass);
+            user.fetchUser();
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'

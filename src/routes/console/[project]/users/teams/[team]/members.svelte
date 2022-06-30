@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Pagination, Empty } from '$lib/components';
+    import { Pagination, Empty, Avatar, Search } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -44,20 +44,11 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
-            <input
-                type="search"
-                placeholder="Search by ID"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-        </div>
-
+    <Search bind:search placeholder="Search by ID">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Add Member</span>
         </Button>
-    </div>
+    </Search>
     {#if $memberships.response?.total}
         <Table>
             <TableHeader>
@@ -73,12 +64,11 @@
                             href={`${base}/console/${project}/users/user/${membership.userId}`}
                             title="Name">
                             <div class="u-flex u-gap-12">
-                                <img
-                                    class="avatar"
-                                    width="40"
-                                    height="40"
+                                <Avatar
+                                    size={40}
                                     src={getAvatar(membership.userName)}
-                                    alt={membership.userName} />
+                                    name={membership.userName} />
+
                                 <span>{membership.userName ? membership.userName : 'n/a'}</span>
                             </div>
                         </TableCellLink>
@@ -100,7 +90,9 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$memberships.response.total}</p>
             <Pagination {limit} bind:offset sum={$memberships.response.total} />
         </div>
@@ -116,7 +108,9 @@
                 </div>
             </div>
         </Empty>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$memberships.response.total}</p>
             <Pagination {limit} bind:offset sum={$memberships.response.total} />
         </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { Card } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -34,54 +35,40 @@
 </script>
 
 <Container>
-    <Card>
-        <div class="common-section grid-1-2">
-            <div class="grid-1-2-col-1">
-                <h2 class="heading-level-7">Auth Methods</h2>
-                <p>Enable the auth methods you wish to use.</p>
-            </div>
-            <div class="grid-1-2-col-2">
-                <form class="form">
-                    <ul class="form-list is-multiple">
-                        {#each $authMethods.list as box}
-                            <li class="form-item ">
-                                <label class="choice-item" for={box.method}>
-                                    <input
-                                        label={box.label}
-                                        id={box.method}
-                                        type="checkbox"
-                                        class="switch"
-                                        role="switch"
-                                        bind:checked={box.value}
-                                        on:change={() => {
-                                            authUpdate(box.method, box.value);
-                                        }} />
-                                    <div class="choice-item-content">
-                                        <div class="choice-item-title">{box.label}</div>
-                                    </div>
-                                </label>
-                            </li>
-                        {/each}
-                        <li class="form-item ">
-                            <label class="choice-item" for="phone">
-                                <input
-                                    label="Phone"
-                                    id="phone"
-                                    type="checkbox"
-                                    class="switch"
-                                    role="switch"
-                                    disabled />
-                                <div class="choice-item-content">
-                                    <div class="choice-item-title">Phone</div>
-                                    <span class="choice-item-paragraph">(soon)</span>
-                                </div>
-                            </label>
-                        </li>
-                    </ul>
-                </form>
-            </div>
-        </div>
-    </Card>
+    <CardGrid>
+        <h2 class="heading-level-7">Auth Methods</h2>
+        <p>Enable the auth methods you wish to use.</p>
+        <svelte:fragment slot="aside">
+            <form class="form">
+                <ul class="form-list is-multiple">
+                    {#each $authMethods.list as box}
+                        <InputSwitch
+                            label={box.label}
+                            id={box.method}
+                            bind:value={box.value}
+                            on:change={() => {
+                                authUpdate(box.method, box.value);
+                            }} />
+                    {/each}
+                    <li class="form-item ">
+                        <label class="choice-item" for="phone">
+                            <input
+                                label="Phone"
+                                id="phone"
+                                type="checkbox"
+                                class="switch"
+                                role="switch"
+                                disabled />
+                            <div class="choice-item-content">
+                                <div class="choice-item-title">Phone</div>
+                                <span class="choice-item-paragraph">(soon)</span>
+                            </div>
+                        </label>
+                    </li>
+                </ul>
+            </form>
+        </svelte:fragment>
+    </CardGrid>
     <section class="common-section">
         <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
         <ul class="grid-box common-section">
@@ -102,7 +89,7 @@
                     <p class="u-margin-block-start-8">{provider.name}</p>
                     <div class="u-margin-block-start-24">
                         <Pill success={provider.active}
-                            >{provider.active ? 'Active' : 'Inactive'}</Pill>
+                            >{provider.active ? 'Enabled' : 'Disabled'}</Pill>
                     </div>
                 </button>
             {/each}

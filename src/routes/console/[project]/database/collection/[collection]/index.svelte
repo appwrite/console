@@ -9,7 +9,7 @@
         TableCellHead,
         TableCellLink
     } from '$lib/elements/table';
-    import { Empty, Pagination } from '$lib/components';
+    import { Empty, Pagination, Search } from '$lib/components';
     import { collection } from './store';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
@@ -35,20 +35,12 @@
     {#await request}
         <div aria-busy="true" />
     {:then response}
-        <div class="u-flex u-gap-12 common-section u-main-space-between">
-            <div class="input-text-wrapper u-stretch" style="max-width: 500px">
-                <input
-                    type="search"
-                    placeholder="Search by ID"
-                    class="input-text"
-                    bind:value={search} />
-                <span class="icon-search" aria-hidden="true" />
-            </div>
+        <Search bind:search placeholder="Search by ID">
             <Button on:click={() => console.log('showCreate = true')}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Create Document</span>
             </Button>
-        </div>
+        </Search>
         {#if response.total}
             <Table>
                 <TableHeader>

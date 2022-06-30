@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { Avatar, CardGrid, Box } from '$lib/components';
+    import { Avatar, CardGrid, Box, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, InputEmail, InputPassword, Helper } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -22,13 +22,14 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName = null,
-        userEmail = null,
-        newPassword = null,
+    let userName: string = null,
+        userEmail: string = null,
+        newPassword: string = null,
         newPref = false,
-        newKey = null,
-        newValue = null;
-    let prefs = null;
+        newKey: string = null,
+        newValue: string = null;
+    let showVerifcationDropdown = false;
+    let prefs = Object.entries($user.response.prefs);
     let arePrefsDisabled = true;
 
     onMount(async () => {
@@ -36,8 +37,7 @@
         prefs = Object.entries($user.response.prefs);
     });
 
-    const getAvatar = (name: string) =>
-        sdkForProject.avatars.getInitials(name, 128, 128).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
@@ -45,11 +45,14 @@
         errorType = type;
     }
 
-    async function updateVerification() {
+    async function updateVerification(verificationMethod: 'phone' | 'email') {
         try {
             await sdkForProject.users.updateVerification(
                 $user.response.$id,
-                !$user.response.emailVerification
+                verificationMethod === 'email'
+                    ? !$user.response.emailVerification
+                    : $user.response.emailVerification
+                //verificationMethod === 'phone' ? !$user.response.phoneVerification : $user.response.phoneVerification
             );
             $user.response.emailVerification = !$user.response.emailVerification;
             addNotification({
@@ -151,7 +154,12 @@
     async function deletePref(selectedKey: string) {
         try {
             let updatedPrefs = Object.fromEntries(prefs);
-            delete updatedPrefs[selectedKey];
+            updatedPrefs = Object.keys(updatedPrefs).reduce((acc, key) => {
+                if (key !== selectedKey) {
+                    acc[key] = updatedPrefs[key];
+                }
+                return acc;
+            }, {});
             await sdkForProject.users.updatePrefs($user.response.$id, updatedPrefs);
             prefs = Object.entries(updatedPrefs);
             $user.response.prefs = updatedPrefs;
@@ -166,13 +174,17 @@
             });
         }
     }
+
+    //TMP VARIABLE
+    let phone = false;
+    let phoneAuth = false;
 </script>
 
 {#if $user.response}
     <Container>
         <CardGrid>
             <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                <Avatar size={64} name={$user.response.name} src={getAvatar($user.response.name)} />
+                <Avatar size={48} name={$user.response.name} src={getAvatar($user.response.name)} />
                 <h6 class="heading-level-7">{$user.response.name}</h6>
                 {#if !$user.response.status}
                     <Pill danger>Blocked</Pill>
@@ -181,7 +193,7 @@
                         >{$user.response.emailVerification ? 'Verified' : 'Unverified'}</Pill>
                 {/if}
             </div>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <div>
                     <span class="title">{$user.response.email}</span>
                     <p>Joined: {toLocaleDate($user.response.registration)}</p>
@@ -195,15 +207,44 @@
                     on:click={() => updateStatus()}
                     >{$user.response.status ? 'Block Account' : 'Unblock Accout'}</Button>
                 {#if $user.response.status}
-                    <Button secondary on:click={() => updateVerification()}
-                        >{$user.response.emailVerification ? 'Unverify' : 'Verify'} Account</Button>
+                    {#if phone && $user.response.email}
+                        <DropList
+                            bind:show={showVerifcationDropdown}
+                            position="top"
+                            horizontal="left"
+                            arrow={false}>
+                            <Button
+                                secondary
+                                on:click={() =>
+                                    (showVerifcationDropdown = !showVerifcationDropdown)}>
+                                {$user.response.emailVerification ? 'Unverify' : 'Verify'} Account
+                            </Button>
+                            <svelte:fragment slot="list">
+                                <DropListItem
+                                    icon="mail"
+                                    on:click={() => updateVerification('email')}
+                                    >{$user.response.emailVerification ? 'Unverify' : 'Verify'} email</DropListItem>
+                                <DropListItem
+                                    icon="phone"
+                                    on:click={() => updateVerification('phone')}
+                                    >{phoneAuth ? 'Unverify' : 'Verify'} phone</DropListItem>
+                            </svelte:fragment>
+                        </DropList>
+                    {:else if !phone}
+                        <Button secondary on:click={() => updateVerification('email')}>
+                            {$user.response.emailVerification ? 'Unverify' : 'Verify'} Account
+                        </Button>
+                    {:else if !$user.response.email}
+                        <Button secondary on:click={() => updateVerification('phone')}>
+                            {phoneAuth ? 'Unverify' : 'Verify'} Account
+                        </Button>{/if}
                 {/if}
             </svelte:fragment>
         </CardGrid>
         <CardGrid>
             <h6 class="heading-level-7">Update Name</h6>
 
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputText
                         id="name"
@@ -227,7 +268,7 @@
         </CardGrid>
         <CardGrid>
             <h6 class="heading-level-7">Update Email</h6>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputEmail
                         id="email"
@@ -257,7 +298,7 @@
             <p>
                 Enter a new password. A password must contain <b> at least 8 characters.</b>
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputPassword
                         id="newPassword"
@@ -265,6 +306,7 @@
                         placeholder="Enter new password"
                         autocomplete={false}
                         meter={false}
+                        showPasswordButton={true}
                         bind:value={newPassword} />
                     {#if showError === 'password'}
                         <Helper type={errorType}>{errorMessage}</Helper>
@@ -286,14 +328,34 @@
                 You can update your user preferences by storing information on the user's objects so
                 they can easily be shared across devices and sessions.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <form class="form u-grid u-gap-16">
                     <ul class="form-list">
                         {#if prefs}
                             {#each prefs as [key, value]}
                                 <li class="form-item is-multiple">
-                                    <InputText id={`key-${key}`} label="Key" bind:value={key} />
-                                    <InputText id={`value-${value}`} label="Value" bind:value />
+                                    <div class="form-item-part u-stretch">
+                                        <label class="label" for={`value-${key}`}>Key</label>
+                                        <div class="input-text-wrapper">
+                                            <input
+                                                id={`value-${key}`}
+                                                placeholder=""
+                                                type="text"
+                                                class="input-text"
+                                                bind:value={key} />
+                                        </div>
+                                    </div>
+                                    <div class="form-item-part u-stretch">
+                                        <label class="label" for={`value-${value}`}>Value</label>
+                                        <div class="input-text-wrapper">
+                                            <input
+                                                id={`value-${value}`}
+                                                placeholder=""
+                                                type="text"
+                                                class="input-text"
+                                                bind:value />
+                                        </div>
+                                    </div>
                                     <div class="form-item-part u-cross-child-end">
                                         <Button text on:click={() => deletePref(key)}>
                                             <span class="icon-x" aria-hidden="true" />
@@ -303,16 +365,28 @@
                             {/each}
                             {#if prefs.length === 0 || newPref}
                                 <li class="form-item is-multiple">
-                                    <InputText
-                                        id="key"
-                                        label="Key"
-                                        placeholder="Enter Key"
-                                        bind:value={newKey} />
-                                    <InputText
-                                        id="value"
-                                        label="Value"
-                                        placeholder="Enter Value"
-                                        bind:value={newValue} />
+                                    <div class="form-item-part u-stretch">
+                                        <label class="label" for="newKey">Key</label>
+                                        <div class="input-text-wrapper">
+                                            <input
+                                                id="newKey"
+                                                placeholder="Enter Key"
+                                                type="text"
+                                                class="input-text"
+                                                bind:value={newKey} />
+                                        </div>
+                                    </div>
+                                    <div class="form-item-part u-stretch">
+                                        <label class="label" for="newValue">Value</label>
+                                        <div class="input-text-wrapper">
+                                            <input
+                                                id="newValue"
+                                                placeholder="Enter Value"
+                                                type="text"
+                                                class="input-text"
+                                                bind:value={newValue} />
+                                        </div>
+                                    </div>
                                     <div class="form-item-part u-cross-child-end">
                                         <Button
                                             text
@@ -344,11 +418,11 @@
                 The user will be permanently deleted, including all data associated with this user.
                 This action is irreversible.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
                         <Avatar
-                            size={64}
+                            size={48}
                             name={$user.response.name}
                             src={getAvatar($user.response.name)} />
                     </svelte:fragment>

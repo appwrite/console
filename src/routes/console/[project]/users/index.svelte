@@ -1,9 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Empty, Pagination } from '$lib/components';
+    import { Empty, Pagination, Avatar, Copy, Search } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
     import {
         Table,
         TableHeader,
@@ -49,40 +48,14 @@
             offset = queryOffset;
         }
     });
-
-    const copy = async (event: Event, value: string) => {
-        event.preventDefault();
-        event.stopPropagation();
-        try {
-            await navigator.clipboard.writeText(value);
-            addNotification({
-                message: 'Copied to clipboard.',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    };
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
-            <input
-                type="search"
-                placeholder="Search Name, Email, or ID"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-        </div>
-
+    <Search bind:search placeholder="Search Name, Email, or ID">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
         </Button>
-    </div>
+    </Search>
     {#if $usersList?.response?.total}
         <Table>
             <TableHeader>
@@ -97,12 +70,7 @@
                     <TableRowLink href={`${base}/console/${project}/users/user/${user.$id}`}>
                         <TableCellText title="Name">
                             <div class="u-flex u-gap-12">
-                                <img
-                                    class="avatar"
-                                    width="40"
-                                    height="40"
-                                    src={getAvatar(user.name)}
-                                    alt={user.name} />
+                                <Avatar size={40} src={getAvatar(user.name)} name={user.name} />
                                 <span>{user.name ? user.name : 'n/a'}</span>
                             </div>
                         </TableCellText>
@@ -117,9 +85,9 @@
                             {/if}
                         </TableCellText>
                         <TableCellText title="ID">
-                            <Pill button on:click={(e) => copy(e, user.$id)}
-                                ><i class="icon-duplicate" />User ID
-                            </Pill>
+                            <Copy value={user.$id}>
+                                <Pill button><i class="icon-duplicate" />User ID</Pill>
+                            </Copy>
                         </TableCellText>
                         <TableCellText title="Joined">
                             {toLocaleDateTime(user.registration)}
@@ -128,7 +96,9 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$usersList.response.total}</p>
             <Pagination {limit} bind:offset sum={$usersList.response.total} />
         </div>
@@ -144,7 +114,9 @@
                 </div>
             </div>
         </Empty>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$usersList.response.total}</p>
             <Pagination {limit} bind:offset sum={$usersList.response.total} />
         </div>

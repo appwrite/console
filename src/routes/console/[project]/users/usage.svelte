@@ -1,7 +1,6 @@
 <script>
     import { Container } from '$lib/layout';
     import { Chart } from '$lib/charts';
-    import { sdkForProject } from '$lib/stores/sdk';
     import { Card } from '$lib/components';
     import { usersUsage } from './store';
 

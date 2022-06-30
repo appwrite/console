@@ -50,12 +50,14 @@
                     {#each response.sessions as session}
                         <TableRow>
                             <TableCellText title="Client">
-                                <img
-                                    height="32"
-                                    width="32"
-                                    src={`/icons/color/${session?.clientName.toLocaleLowerCase()}.svg`}
-                                    alt={session.clientName} />
-                                <span class="">
+                                <div class="image-item">
+                                    <img
+                                        height="20"
+                                        width="20"
+                                        src={`/icons/color/${session?.clientName.toLocaleLowerCase()}.svg`}
+                                        alt={session.clientName} />
+                                </div>
+                                <span>
                                     <p>
                                         {session.clientName}
                                     </p>
@@ -97,7 +99,9 @@
                 </div>
             </Empty>
         {/if}
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {response.total}</p>
             <Pagination {limit} bind:offset sum={response.total} />
         </div>

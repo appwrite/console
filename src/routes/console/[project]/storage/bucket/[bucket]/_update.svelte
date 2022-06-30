@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Copy, Modal } from '$lib/components';
+    import { CopyInput, Modal } from '$lib/components';
     import { Button, Form, InputTags } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -33,7 +33,7 @@
 <Form on:submit={updateFile}>
     <Modal bind:show={showUpdate}>
         <svelte:fragment slot="header">Update File</svelte:fragment>
-        <Copy value={file.$id} />
+        <CopyInput value={file.$id} />
         <InputTags
             bind:tags={file.$read}
             label="Read Access"

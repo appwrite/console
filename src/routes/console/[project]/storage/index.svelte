@@ -3,13 +3,12 @@
     import { goto } from '$app/navigation';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Tiles, Tooltip } from '$lib/components';
+    import { Empty, Pagination, Tiles, Tooltip, Copy } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from 'src/sdk';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import { addNotification } from '$lib/stores/notifications';
 
     let showCreate = false;
     let search = '';
@@ -24,21 +23,6 @@
 
     $: request = sdkForProject.storage.listBuckets(search, limit, offset);
     $: if (search) offset = 0;
-
-    const copy = async (value: string) => {
-        try {
-            await navigator.clipboard.writeText(value);
-            addNotification({
-                message: 'Copied to clipboard.',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    };
 </script>
 
 <Container>
@@ -66,9 +50,9 @@
                         </div>
                         <h3 class="tiles-title">{bucket.name}</h3>
                         <div class="u-flex u-main-space-between">
-                            <Pill button on:click={() => copy(bucket.$id)}
-                                ><i class="icon-duplicate" />Bucket ID
-                            </Pill>
+                            <Copy value={bucket.$id}>
+                                <Pill button><i class="icon-duplicate" />Bucket ID</Pill>
+                            </Copy>
                             <div class="">
                                 <Tooltip icon="lock-closed" aria="encryption">
                                     <span

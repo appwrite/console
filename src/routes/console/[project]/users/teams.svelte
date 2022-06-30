@@ -11,7 +11,7 @@
         TableCellText
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Avatar } from '$lib/components';
+    import { Empty, Pagination, Avatar, Search } from '$lib/components';
     import Create from './_createTeam.svelte';
     import { goto } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -47,20 +47,11 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
-            <input
-                type="search"
-                placeholder="Search by Name"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-        </div>
-
+    <Search bind:search placeholder="Search by Name">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Team</span>
         </Button>
-    </div>
+    </Search>
     {#if $teamsList?.response?.total}
         <Table>
             <TableHeader>
@@ -87,7 +78,9 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$teamsList.response.total}</p>
             <Pagination {limit} bind:offset sum={$teamsList.response.total} />
         </div>
@@ -103,7 +96,9 @@
                 <Button secondary on:click={() => (search = '')}>Clear Search</Button>
             </div>
         </Empty>
-        <div class="u-flex common-section u-main-space-between">
+        <div
+            class="u-flex u-margin-block-start-32
+ u-main-space-between">
             <p class="text">Total results: {$teamsList.response.total}</p>
             <Pagination {limit} bind:offset sum={$teamsList.response.total} />
         </div>

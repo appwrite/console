@@ -1,8 +1,14 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
 
     export let show = false;
+
+    let browser = false;
+    //TODO: explore other solutions compatible with testing library
+    onMount(() => {
+        browser = true;
+    });
 
     const dispatch = createEventDispatcher();
     const transitionFly: FlyParams = {
@@ -31,6 +37,14 @@
         show = false;
         dispatch('close');
     };
+
+    $: if (browser) {
+        if (show) {
+            document.body.classList.add('u-overflow-hidden');
+        } else {
+            document.body.classList.remove('u-overflow-hidden');
+        }
+    }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />

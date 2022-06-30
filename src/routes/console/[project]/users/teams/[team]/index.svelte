@@ -9,22 +9,18 @@
     import { team } from './store';
     import DeleteTeam from './_deleteTeam.svelte';
 
-    const getAvatar = (name: string) =>
-        sdkForProject.avatars.getInitials(name, 128, 128).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let teamName = null;
+    let teamName: string = null;
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
         errorMessage = message;
         errorType = type;
-        setTimeout(() => {
-            showError = false;
-        }, 6000);
     }
 
     async function updateName() {
@@ -49,7 +45,7 @@
                 <div class="grid-1-2-col-1">
                     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
                         <Avatar
-                            size={64}
+                            size={48}
                             name={$team.response.name}
                             src={getAvatar($team.response.name)} />
                         <div>
@@ -67,7 +63,7 @@
         <CardGrid>
             <h6 class="heading-level-7">Update Name</h6>
 
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputText
                         id="name"
@@ -99,11 +95,11 @@
                 The team will be permanently deleted, including all data associated with this team.
                 This action is irreversible.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
                         <Avatar
-                            size={64}
+                            size={48}
                             name={$team.response.name}
                             src={getAvatar($team.response.name)} />
                     </svelte:fragment>
