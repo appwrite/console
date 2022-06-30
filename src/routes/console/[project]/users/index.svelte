@@ -69,9 +69,9 @@
                 {#each $usersList.response.users as user}
                     <TableRowLink href={`${base}/console/${project}/users/user/${user.$id}`}>
                         <TableCellText title="Name">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar size={40} src={getAvatar(user.name)} name={user.name} />
-                                <span>{user.name ? user.name : 'n/a'}</span>
+                                <span class="text">{user.name ? user.name : 'n/a'}</span>
                             </div>
                         </TableCellText>
                         <TableCellText title="E-Mail">{user.email}</TableCellText>
