@@ -57,7 +57,7 @@
                                         src={`/icons/color/${session?.clientName.toLocaleLowerCase()}.svg`}
                                         alt={session.clientName} />
                                 </div>
-                                <span class="">
+                                <span>
                                     <p>
                                         {session.clientName}
                                     </p>
