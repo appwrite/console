@@ -5,9 +5,8 @@
         Table,
         TableHeader,
         TableBody,
-        TableRow,
+        TableRowLink,
         TableCellHead,
-        TableCellLink,
         TableCellText
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
@@ -59,10 +58,9 @@
             </TableHeader>
             <TableBody>
                 {#each $memberships.response.memberships as membership}
-                    <TableRow>
-                        <TableCellLink
-                            href={`${base}/console/${project}/users/user/${membership.userId}`}
-                            title="Name">
+                    <TableRowLink
+                        href={`${base}/console/${project}/users/user/${membership.userId}`}>
+                        <TableCellText title="Name">
                             <div class="u-flex u-gap-12">
                                 <Avatar
                                     size={32}
@@ -71,7 +69,7 @@
 
                                 <span>{membership.userName ? membership.userName : 'n/a'}</span>
                             </div>
-                        </TableCellLink>
+                        </TableCellText>
                         <TableCellText title="Role">{membership.roles}</TableCellText>
                         <TableCellText title="Joined"
                             >{toLocaleDateTime(membership.joined)}</TableCellText>
@@ -79,14 +77,14 @@
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
-                                on:click={() => {
+                                on:click|preventDefault={() => {
                                     selectedMembership = membership;
                                     showDelete = true;
                                 }}>
                                 <span class="icon-trash" aria-hidden="true" />
                             </button>
                         </TableCellText>
-                    </TableRow>
+                    </TableRowLink>
                 {/each}
             </TableBody>
         </Table>

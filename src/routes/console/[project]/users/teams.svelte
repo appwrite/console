@@ -5,9 +5,8 @@
         Table,
         TableHeader,
         TableBody,
-        TableRow,
+        TableRowLink,
         TableCellHead,
-        TableCellLink,
         TableCellText
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
@@ -61,20 +60,18 @@
             </TableHeader>
             <TableBody>
                 {#each $teamsList.response.teams as team}
-                    <TableRow>
-                        <TableCellLink
-                            title="ID"
-                            href={`${base}/console/${project}/users/teams/${team.$id}`}>
+                    <TableRowLink href={`${base}/console/${project}/users/teams/${team.$id}`}>
+                        <TableCellText title="ID">
                             <div class="u-flex u-gap-12">
                                 <Avatar size={32} name={team.name} src={getAvatar(team.name)} />
                                 <span>{team.name}</span>
                             </div>
-                        </TableCellLink>
+                        </TableCellText>
                         <TableCellText title="Members">{team.total} members</TableCellText>
                         <TableCellText title="Members">
                             {toLocaleDateTime(team.dateCreated)}
                         </TableCellText>
-                    </TableRow>
+                    </TableRowLink>
                 {/each}
             </TableBody>
         </Table>
