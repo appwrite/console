@@ -21,9 +21,6 @@
         showError = location;
         errorMessage = message;
         errorType = type;
-        setTimeout(() => {
-            showError = false;
-        }, 6000);
     }
 
     async function updateName() {
