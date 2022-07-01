@@ -37,23 +37,25 @@
                     {#each response.logs as log}
                         <TableRow>
                             <TableCellText title="Client">
-                                <div class="image-item">
-                                    <img
-                                        height="20"
-                                        width="20"
-                                        src={`/icons/color/${log?.clientName.toLocaleLowerCase()}.svg`}
-                                        alt={log.clientName} />
-                                </div>
-                                <span class="">
-                                    <p>
-                                        {log.clientName}
-                                        {log.clientVersion}
-                                    </p>
-                                    <span class="u-small">
-                                        on {log.osName}
-                                        {log.osVersion}
+                                <div class="u-flex u-cross-center u-gap-12">
+                                    <div class="image-item">
+                                        <img
+                                            height="20"
+                                            width="20"
+                                            src={`/icons/color/${log?.clientName.toLocaleLowerCase()}.svg`}
+                                            alt={log.clientName} />
+                                    </div>
+                                    <span class="u-line-height-1-5">
+                                        <p>
+                                            {log.clientName}
+                                            {log.clientVersion}
+                                        </p>
+                                        <span class="u-small">
+                                            on {log.osName}
+                                            {log.osVersion}
+                                        </span>
                                     </span>
-                                </span>
+                                </div>
                             </TableCellText>
                             <TableCellText title="Event">{log.event}</TableCellText>
 

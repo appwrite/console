@@ -9,7 +9,7 @@
     const dispatch = createEventDispatcher();
 </script>
 
-<section class={`alert is-${type} common-section`}>
+<section class={`alert is-${type} `}>
     <div class="alert-grid">
         {#if dismissible}
             <button

@@ -3,7 +3,8 @@
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
 
     export let show = false;
-
+    export let size: 'small' | 'big' = null;
+    export let warning = false;
     let browser = false;
     //TODO: explore other solutions compatible with testing library
     onMount(() => {
@@ -51,9 +52,18 @@
 
 {#if show}
     <div class="modal-curtain" data-curtain on:click={handleBLur} transition:fade={transitionFade}>
-        <section class="modal" transition:fly={transitionFly}>
+        <section
+            class:is-small={size === 'small'}
+            class:is-big={size === 'big'}
+            class="modal"
+            transition:fly={transitionFly}>
             <header class="modal-header">
-                <h4 class="modal-title">
+                {#if warning}
+                    <div class="avatar is-color-orange is-medium">
+                        <span class="icon-exclamation" aria-hidden="true" />
+                    </div>
+                {/if}
+                <h4 class="heading-level-5">
                     <slot name="header" />
                 </h4>
                 <button

@@ -26,8 +26,8 @@
 </script>
 
 <Form on:submit={deleteTeam}>
-    <Modal bind:show={showDelete}>
-        <svelte:fragment slot="header">Delete member</svelte:fragment>
+    <Modal warning={true} bind:show={showDelete}>
+        <svelte:fragment slot="header">Delete Team</svelte:fragment>
 
         <p>
             Are you sure you want to delete <b>{team.name}</b>?
