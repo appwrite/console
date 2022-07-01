@@ -56,7 +56,7 @@
     };
     let notMerge = false;
     let lazyUpdate = false;
-    let timeoutId: any;
+    let timeoutId: unknown;
 
     $: option && setOption();
     $: if (myChart && $app.theme) {
@@ -112,7 +112,6 @@
         }
     };
     const handleResize = () => {
-        console.log('test');
         if (timeoutId == undefined) {
             timeoutId = setTimeout(() => {
                 if (myChart && !myChart.isDisposed()) {

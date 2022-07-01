@@ -35,8 +35,8 @@
     <Card>
         <p><b>Function ID:</b> {$func.$id}</p>
         <p><b>Runtime:</b> {$func.runtime}</p>
-        <p><b>Last Updated:</b> {$func.dateUpdated}</p>
-        <p><b>Created:</b> {$func.dateCreated}</p>
+        <p><b>Last Updated:</b> {$func.$updatedAt}</p>
+        <p><b>Created:</b> {$func.$createdAt}</p>
     </Card>
 
     <h1>Deployments</h1>

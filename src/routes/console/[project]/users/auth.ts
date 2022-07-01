@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Models } from 'src/sdk';
+import type { Models } from '@aw-labs/appwrite-console';
 import type { SvelteComponent } from 'svelte';
 import Apple from './_appleOAuth.svelte';
 import Microsoft from './_microsoftOAuth.svelte';

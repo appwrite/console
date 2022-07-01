@@ -55,7 +55,7 @@
                     </div>
                 </div>
                 <div class="grid-1-2-col-2">
-                    <p>Created on {toLocaleDate($team.response.dateCreated)}</p>
+                    <p>Created on {toLocaleDate($team.response.$createdAt)}</p>
                 </div>
             </div>
         </Card>

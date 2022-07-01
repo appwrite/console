@@ -18,13 +18,12 @@
     const projectId = $page.params.project;
     const update = async () => {
         try {
-            const oauth = await sdkForConsole.projects.updateOAuth2(
+            await sdkForConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
                 provider.id,
                 provider.secret
             );
-            console.log(oauth);
             showModal = false;
         } catch (error) {
             addNotification({
@@ -71,7 +70,7 @@
                 <p>URI</p>
                 <CopyInput
                     value={`${
-                        sdkForConsole.config.endpoint
+                        sdkForConsole.client.config.endpoint
                     }/account/session/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
             </div>
         </FormList>

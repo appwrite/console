@@ -18,7 +18,7 @@
     import { base } from '$app/paths';
     import { teamsList } from './store';
     import { onMount } from 'svelte';
-    import type { Models } from 'src/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let search = '';
     let showCreate = false;
@@ -69,7 +69,7 @@
                         </TableCellText>
                         <TableCellText title="Members">{team.total} members</TableCellText>
                         <TableCellText title="Members">
-                            {toLocaleDateTime(team.dateCreated)}
+                            {toLocaleDateTime(team.$createdAt)}
                         </TableCellText>
                     </TableRowLink>
                 {/each}

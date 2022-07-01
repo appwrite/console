@@ -19,6 +19,7 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
+        "@aw-labs/appwrite-console": "^1.0.0-0",
         "@aw-labs/icons": "^0.0.0-22",
         "@aw-labs/ui": "^0.0.0-22",
         "echarts": "^5.3.3"

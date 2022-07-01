@@ -11,8 +11,16 @@ const config = {
         paths: {
             base: ''
         },
+        vite: {
+            optimizeDeps: {
+                include: ['echarts']
+            },
+            ssr: {
+                noExternal: ['echarts']
+            }
+        },
         prerender: {
-            default: true
+            default: false
         }
     }
 };

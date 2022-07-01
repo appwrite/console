@@ -1,14 +1,22 @@
 <script>
+    import { afterNavigate } from '$app/navigation';
+
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { onMount } from 'svelte';
 
-    title.set('API Keys');
-    backButton.set('');
-    tabs.set([]);
+    onMount(handle);
+    afterNavigate(handle);
 
-    copyData.set({
-        text: '',
-        value: ''
-    });
+    function handle() {
+        title.set('API Keys');
+        backButton.set('');
+        tabs.set([]);
+
+        copyData.set({
+            text: '',
+            value: ''
+        });
+    }
 </script>
 
 <slot />
