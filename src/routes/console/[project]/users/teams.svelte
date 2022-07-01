@@ -5,9 +5,8 @@
         Table,
         TableHeader,
         TableBody,
-        TableRow,
+        TableRowLink,
         TableCellHead,
-        TableCellLink,
         TableCellText
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
@@ -27,7 +26,7 @@
 
     const limit = 25;
     const project = $page.params.project;
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
         await goto(`${base}/console/${project}/users/teams/${event.detail.$id}`);
     };
@@ -61,26 +60,22 @@
             </TableHeader>
             <TableBody>
                 {#each $teamsList.response.teams as team}
-                    <TableRow>
-                        <TableCellLink
-                            title="ID"
-                            href={`${base}/console/${project}/users/teams/${team.$id}`}>
+                    <TableRowLink href={`${base}/console/${project}/users/teams/${team.$id}`}>
+                        <TableCellText title="ID">
                             <div class="u-flex u-gap-12">
-                                <Avatar size={40} name={team.name} src={getAvatar(team.name)} />
+                                <Avatar size={32} name={team.name} src={getAvatar(team.name)} />
                                 <span>{team.name}</span>
                             </div>
-                        </TableCellLink>
+                        </TableCellText>
                         <TableCellText title="Members">{team.total} members</TableCellText>
                         <TableCellText title="Members">
                             {toLocaleDateTime(team.dateCreated)}
                         </TableCellText>
-                    </TableRow>
+                    </TableRowLink>
                 {/each}
             </TableBody>
         </Table>
-        <div
-            class="u-flex u-margin-block-start-32
- u-main-space-between">
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$teamsList.response.total}</p>
             <Pagination {limit} bind:offset sum={$teamsList.response.total} />
         </div>

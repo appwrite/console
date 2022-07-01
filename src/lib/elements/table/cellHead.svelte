@@ -2,14 +2,8 @@
     export let width: number = null;
 </script>
 
-<th width={width?.toString() ?? ''} class="table-thead-col">
-    <span class="text">
+<div style={`width: ${width?.toString() + 'px' ?? ''}`} class="table-thead-col" role="columnheader">
+    <span class="eyebrow-heading-3">
         <slot />
     </span>
-</th>
-
-<style>
-    th {
-        text-transform: uppercase;
-    }
-</style>
+</div>

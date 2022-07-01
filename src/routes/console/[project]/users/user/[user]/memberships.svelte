@@ -5,9 +5,8 @@
         Table,
         TableHeader,
         TableBody,
-        TableRow,
+        TableRowLink,
         TableCellHead,
-        TableCellLink,
         TableCellText
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
@@ -18,7 +17,7 @@
     import DeleteAllMemberships from './_deleteAllMemberships.svelte';
     import type { Models } from 'src/sdk';
 
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 40, 40).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const deleted = () => (request = sdkForProject.users.getMemberships($page.params.user));
     const project = $page.params.project;
 
@@ -50,31 +49,30 @@
                 </TableHeader>
                 <TableBody>
                     {#each response.memberships as membership}
-                        <TableRow>
-                            <TableCellLink
-                                href={`${base}/console/${project}/users/user/${membership.userId}`}
-                                title="Name">
+                        <TableRowLink
+                            href={`${base}/console/${project}/users/user/${membership.userId}`}>
+                            <TableCellText title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar
-                                        size={40}
+                                        size={32}
                                         src={getAvatar(membership.userName)}
                                         name={membership.userName} />
                                     <span>{membership.userName ? membership.userName : 'n/a'}</span>
                                 </div>
-                            </TableCellLink>
+                            </TableCellText>
                             <TableCellText title="Role">{membership.roles}</TableCellText>
                             <TableCellText title="">
                                 <button
                                     class="button is-only-icon is-text"
                                     aria-label="Delete item"
-                                    on:click={() => {
+                                    on:click|preventDefault={() => {
                                         selectedMembership = membership;
                                         showDelete = true;
                                     }}>
                                     <span class="icon-trash" aria-hidden="true" />
                                 </button>
                             </TableCellText>
-                        </TableRow>
+                        </TableRowLink>
                     {/each}
                 </TableBody>
             </Table>

@@ -29,7 +29,8 @@
         newKey: string = null,
         newValue: string = null;
     let showVerifcationDropdown = false;
-    let prefs = Object.entries($user.response.prefs);
+    //TODO: check correct type
+    let prefs: [string, unknown][] = null;
     let arePrefsDisabled = true;
 
     onMount(async () => {

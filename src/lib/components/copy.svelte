@@ -19,6 +19,6 @@
     };
 </script>
 
-<span on:click={copy}>
+<span on:click|preventDefault={copy}>
     <slot />
 </span>

@@ -1,3 +1,3 @@
-<tr class="table-row">
+<div class="table-row" role="row">
     <slot />
-</tr>
+</div>
