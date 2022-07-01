@@ -4,7 +4,7 @@
     import { Tiles, Tile } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import type { Models } from 'src/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
     import CreateOrganization from './_createOrganization.svelte';
     import CreateProject from './_createProject.svelte';
 

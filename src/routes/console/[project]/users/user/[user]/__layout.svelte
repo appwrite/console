@@ -9,7 +9,7 @@
     const path = `users/user/${userId}`;
 
     $: {
-        if (browser) {
+        if (browser && $user?.response.$id !== userId) {
             user.load(userId);
         }
     }

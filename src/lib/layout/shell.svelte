@@ -1,7 +1,6 @@
 <script lang="ts">
     import { navigating, page } from '$app/stores';
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
-    import { fade } from 'svelte/transition';
     import { Cover } from '.';
     import { Copy } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -129,11 +128,7 @@
                 </div>
             {/if}
         </Cover>
-        {#key $page.routeId}
-            <div in:fade>
-                <slot />
-            </div>
-        {/key}
+        <slot />
     </section>
 </main>
 

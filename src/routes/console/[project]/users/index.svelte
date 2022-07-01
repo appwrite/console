@@ -12,7 +12,7 @@
         TableRowLink
     } from '$lib/elements/table';
     import Create from './_createUser.svelte';
-    import type { Models } from 'src/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
     import { goto } from '$app/navigation';
     import { Pill } from '$lib/elements';
     import { toLocaleDateTime } from '$lib/helpers/date';

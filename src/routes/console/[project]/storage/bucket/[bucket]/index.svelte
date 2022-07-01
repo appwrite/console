@@ -3,7 +3,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination, Avatar } from '$lib/components';
-    import type { Models } from 'src/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import Update from './_update.svelte';
     import {
@@ -80,7 +80,7 @@
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size">{file.sizeOriginal}</TableCellText>
                             <TableCellText title="Date Created"
-                                >{toLocaleDate(file.dateCreated)}</TableCellText>
+                                >{toLocaleDate(file.$createdAt)}</TableCellText>
                         </TableRow>
                     {/each}
                 </TableBody>

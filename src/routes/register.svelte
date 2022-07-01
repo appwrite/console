@@ -17,7 +17,7 @@
     const register = async () => {
         try {
             await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
-            await sdkForConsole.account.createSession(mail, pass);
+            await sdkForConsole.account.createEmailSession(mail, pass);
             await goto(`${base}/console`);
         } catch (error) {
             addNotification({

@@ -46,14 +46,31 @@
         errorType = type;
     }
 
-    async function updateVerification(verificationMethod: 'phone' | 'email') {
+    async function updateVerificationEmail() {
         try {
-            await sdkForProject.users.updateVerification(
+            await sdkForProject.users.updateEmailVerification(
                 $user.response.$id,
-                verificationMethod === 'email'
-                    ? !$user.response.emailVerification
-                    : $user.response.emailVerification
-                //verificationMethod === 'phone' ? !$user.response.phoneVerification : $user.response.phoneVerification
+                !$user.response.emailVerification
+            );
+            $user.response.emailVerification = !$user.response.emailVerification;
+            addNotification({
+                message: `The account has been ${
+                    $user.response.emailVerification ? 'verified' : 'unverified'
+                }`,
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
+    async function updateVerificationPhone() {
+        try {
+            await sdkForProject.users.updatePhoneVerification(
+                $user.response.$id,
+                !$user.response.phoneVerification
             );
             $user.response.emailVerification = !$user.response.emailVerification;
             addNotification({
@@ -175,10 +192,6 @@
             });
         }
     }
-
-    //TMP VARIABLE
-    let phone = false;
-    let phoneAuth = false;
 </script>
 
 {#if $user.response}
@@ -190,8 +203,9 @@
                 {#if !$user.response.status}
                     <Pill danger>Blocked</Pill>
                 {:else}
-                    <Pill success={$user.response.emailVerification}
-                        >{$user.response.emailVerification ? 'Verified' : 'Unverified'}</Pill>
+                    <Pill success={$user.response.emailVerification}>
+                        {$user.response.emailVerification ? 'Verified' : 'Unverified'}
+                    </Pill>
                 {/if}
             </div>
             <svelte:fragment slot="aside">
@@ -208,7 +222,7 @@
                     on:click={() => updateStatus()}
                     >{$user.response.status ? 'Block Account' : 'Unblock Accout'}</Button>
                 {#if $user.response.status}
-                    {#if phone && $user.response.email}
+                    {#if $user.response.phone && $user.response.email}
                         <DropList
                             bind:show={showVerifcationDropdown}
                             position="top"
@@ -221,23 +235,21 @@
                                 {$user.response.emailVerification ? 'Unverify' : 'Verify'} Account
                             </Button>
                             <svelte:fragment slot="list">
-                                <DropListItem
-                                    icon="mail"
-                                    on:click={() => updateVerification('email')}
+                                <DropListItem icon="mail" on:click={() => updateVerificationEmail()}
                                     >{$user.response.emailVerification ? 'Unverify' : 'Verify'} email</DropListItem>
                                 <DropListItem
                                     icon="phone"
-                                    on:click={() => updateVerification('phone')}
-                                    >{phoneAuth ? 'Unverify' : 'Verify'} phone</DropListItem>
+                                    on:click={() => updateVerificationPhone()}>
+                                    {$user.response.phoneVerification ? 'Unverify' : 'Verify'} phone</DropListItem>
                             </svelte:fragment>
                         </DropList>
-                    {:else if !phone}
-                        <Button secondary on:click={() => updateVerification('email')}>
+                    {:else if !$user.response.phone}
+                        <Button secondary on:click={() => updateVerificationEmail()}>
                             {$user.response.emailVerification ? 'Unverify' : 'Verify'} Account
                         </Button>
                     {:else if !$user.response.email}
-                        <Button secondary on:click={() => updateVerification('phone')}>
-                            {phoneAuth ? 'Unverify' : 'Verify'} Account
+                        <Button secondary on:click={() => updateVerificationPhone()}>
+                            {$user.response.phoneVerification ? 'Unverify' : 'Verify'} Account
                         </Button>{/if}
                 {/if}
             </svelte:fragment>
