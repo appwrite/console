@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Modal, Card } from '$lib/components';
+    import { Modal, CardDrop } from '$lib/components';
     import { Pill } from '$lib/elements/';
     import {
         Button,
@@ -64,24 +64,12 @@
                         >User ID <i class="icon-pencil" /></Pill>
                 </div>
             {:else}
-                <Card>
-                    <header class="modal-header">
-                        <h4 class="modal-title">User ID</h4>
-                        <button
-                            type="button"
-                            class="x-button"
-                            aria-label="Close Modal"
-                            title="Close Modal"
-                            on:click={() => (showDropdown = false)}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
-                    </header>
-                    <div class="modal-content">
-                        <p>Enter a custom user ID. Leave blank for a randomly generated user ID.</p>
-                    </div>
-                    <div class="modal-footer">
+                <CardDrop bind:show={showDropdown}>
+                    <svelte:fragment slot="header">User ID</svelte:fragment>
+                    <p>Enter a custom user ID. Leave blank for a randomly generated user ID.</p>
+                    <svelte:fragment slot="footer">
                         <input
-                            class="input-text"
+                            class="input-text "
                             type="text"
                             name="id"
                             id="id"
@@ -89,13 +77,13 @@
                             bind:value={id} />
                         <div class="u-flex u-gap-12">
                             <div class="icon-info u-block" />
-                            <p>
+                            <p class="u-small">
                                 Allowed characters: alphanumeric, hyphen, non-leading underscore,
                                 period
                             </p>
                         </div>
-                    </div>
-                </Card>
+                    </svelte:fragment>
+                </CardDrop>
             {/if}
         </FormList>
         <svelte:fragment slot="footer">

@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
+    import { Modal, CardDrop } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { InputText, Button, Form, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -9,11 +10,12 @@
 
     const dispatch = createEventDispatcher();
 
-    let name: string;
+    let name: string, id: string;
+    let showDropdown = false;
 
     const create = async () => {
         try {
-            const team = await sdkForProject.teams.create('unique()', name);
+            const team = await sdkForProject.teams.create(id ? id : 'unique()', name);
             name = '';
             showCreate = false;
             dispatch('created', team);
@@ -36,6 +38,33 @@
                 placeholder="John Doe"
                 autofocus={true}
                 bind:value={name} />
+            {#if !showDropdown}
+                <div>
+                    <Pill button on:click={() => (showDropdown = !showDropdown)}
+                        >Team ID <i class="icon-pencil" /></Pill>
+                </div>
+            {:else}
+                <CardDrop bind:show={showDropdown}>
+                    <svelte:fragment slot="header">Team ID</svelte:fragment>
+                    <p>Enter a custom user ID. Leave blank for a randomly generated user ID.</p>
+                    <svelte:fragment slot="footer">
+                        <input
+                            class="input-text "
+                            type="text"
+                            name="id"
+                            id="id"
+                            placeholder="Enter ID"
+                            bind:value={id} />
+                        <div class="u-flex u-gap-12">
+                            <div class="icon-info u-block" />
+                            <p class="u-small">
+                                Allowed characters: alphanumeric, hyphen, non-leading underscore,
+                                period
+                            </p>
+                        </div>
+                    </svelte:fragment>
+                </CardDrop>
+            {/if}
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
