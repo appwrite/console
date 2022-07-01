@@ -92,7 +92,7 @@
                     </Copy>
                 </div>
             </div>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <div>
                     <p>MIME Type: {$file.response.mimeType}</p>
                     <p>Size: {bytesToSize($file.response.sizeOriginal)}</p>
@@ -114,7 +114,7 @@
                 Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
                 permissions are enabled, file permissions will be ignored.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         You have Bucket Level permissions enabled
@@ -154,7 +154,7 @@
                 The file will be permanently deleted, including all the files within it. This action
                 is irreversible.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold">{$file.response.name}</h6>

@@ -214,7 +214,7 @@
         <CardGrid>
             <h2 class="heading-level-7">{$bucket.response.name}</h2>
 
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputSwitch
                         label={enabled ? 'Enabled' : 'Disabled'}
@@ -237,7 +237,7 @@
         <CardGrid>
             <h6 class="heading-level-7">Update Name</h6>
 
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputText
                         id="name"
@@ -266,7 +266,7 @@
                 <b>File Level</b>. If Bucket Level permissions are assigned, file permissions will
                 be ignored.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul class="u-flex u-gap-12 common-section">
                     <li>
                         <label class="label">
@@ -326,7 +326,7 @@
                 Enable or disable security services for the bucket including <b> Ecryption</b>
                 and <b> Antivirus scanning.</b>
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul>
                     <InputSwitch label="Encryption" id="encryption" bind:value={encryption} />
 
@@ -355,7 +355,7 @@
         <CardGrid>
             <h2 class="heading-level-6">Update Maximum File Size</h2>
             <p>Set the maximum file size allowed in the bucket.</p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <ul class="u-flex u-gap-12">
                     <InputNumber
                         id="size"
@@ -379,7 +379,7 @@
             <p>
                 A maxiumum of 100 file extensions can be added. Leave blank to allow all file types.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Alert type="info">
                     <p>
                         Tip: Commonly added extensions include JPG, PNG, SVG, GIF, HTML, PDF, MP4.
@@ -408,7 +408,7 @@
                 The bucket will be permanently deleted, including all the files within it. This
                 action is irreversible.
             </p>
-            <svelte:fragment slot="right">
+            <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold">{$bucket.response.name}</h6>

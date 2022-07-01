@@ -9,10 +9,9 @@
         Table,
         TableHeader,
         TableBody,
-        TableRow,
+        TableRowLink,
         TableCellHead,
-        TableCellText,
-        TableCellLink
+        TableCellText
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { bytesToSize } from '$lib/helpers/sizeConvertion';
@@ -61,15 +60,14 @@
             </TableHeader>
             <TableBody>
                 {#each $files.response.files as file}
-                    <TableRow>
-                        <TableCellLink
-                            title="Name"
-                            href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
+                    <TableRowLink
+                        href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
+                        <TableCellText title="Name">
                             <div class="u-flex u-gap-12">
                                 <Avatar size={40} src={getPreview(file.$id)} name={file.name} />
                                 <span> {file.name}</span>
                             </div>
-                        </TableCellLink>
+                        </TableCellText>
                         <TableCellText title="Type">{file.mimeType}</TableCellText>
                         <TableCellText title="Size">{bytesToSize(file.sizeOriginal)}</TableCellText>
                         <TableCellText title="Date Created"
@@ -78,13 +76,13 @@
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
-                                on:click={() => {
+                                on:click|preventDefault={() => {
                                     showDropdown = !showDropdown;
                                 }}>
                                 <span class="icon-dots-horizontal" aria-hidden="true" />
                             </button>
                         </TableCellText>
-                    </TableRow>
+                    </TableRowLink>
                 {/each}
             </TableBody>
         </Table>
