@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { browser } from '$app/env';
+    import { afterNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { onMount } from 'svelte';
     import { collection } from './store';
 
     const databaseId = $page.params.database;
@@ -10,43 +11,43 @@
 
     const path = `databases/database/${databaseId}/collection/${collectionId}`;
 
-    $: {
-        if (browser) {
-            collection.load(collectionId);
-        }
-    }
+    onMount(handle);
+    afterNavigate(handle);
 
-    $: {
-        if ($collection) {
+    async function handle() {
+        if ($collection?.$id !== collectionId) {
+            await collection.load(collectionId);
+            title.set($collection.name);
+        } else if ($collection) {
             title.set($collection.name);
         }
+
+        backButton.set(`${base}/console/${$page.params.project}/database`);
+
+        copyData.set({
+            text: '',
+            value: ''
+        });
+
+        tabs.set([
+            {
+                href: path,
+                title: 'Documents'
+            },
+            {
+                href: `${path}/attributes`,
+                title: 'Attributes'
+            },
+            {
+                href: `${path}/indexes`,
+                title: 'Indexes'
+            },
+            {
+                href: `${path}/settings`,
+                title: 'Settings'
+            }
+        ]);
     }
-
-    backButton.set(`${base}/console/${$page.params.project}/database`);
-
-    copyData.set({
-        text: '',
-        value: ''
-    });
-
-    tabs.set([
-        {
-            href: path,
-            title: 'Documents'
-        },
-        {
-            href: `${path}/attributes`,
-            title: 'Attributes'
-        },
-        {
-            href: `${path}/indexes`,
-            title: 'Indexes'
-        },
-        {
-            href: `${path}/settings`,
-            title: 'Settings'
-        }
-    ]);
 </script>
 
 <svelte:head>

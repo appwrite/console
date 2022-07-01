@@ -112,7 +112,6 @@
         }
     };
     const handleResize = () => {
-        console.log('test');
         if (timeoutId == undefined) {
             timeoutId = setTimeout(() => {
                 if (myChart && !myChart.isDisposed()) {

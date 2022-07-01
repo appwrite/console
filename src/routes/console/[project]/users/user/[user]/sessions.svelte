@@ -22,7 +22,6 @@
     let selectedSessionId: string = null;
 
     const limit = 5;
-    console.log('asd');
     const request = sdkForProject.users.getSessions($page.params.user);
 
     //TODO: replace session.expire with "last activity"

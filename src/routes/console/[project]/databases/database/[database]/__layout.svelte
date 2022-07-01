@@ -1,41 +1,45 @@
 <script>
     import { browser } from '$app/env';
+    import { afterNavigate } from '$app/navigation';
 
     import { page } from '$app/stores';
 
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
-    import { setDatabase } from '$lib/stores/sdk';
+    import { sdkForProject, setDatabase } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
     import { database } from './store';
 
     const databaseId = $page.params.database;
     const path = `databases/database/${databaseId}`;
 
-    backButton.set('');
+    onMount(handle);
+    afterNavigate(handle);
 
-    copyData.set({
-        text: '',
-        value: ''
-    });
-
-    tabs.set([
-        {
-            href: path,
-            title: 'Collections'
-        },
-        {
-            href: `${path}/usage`,
-            title: 'Usage'
-        }
-    ]);
-
-    $: {
-        if (browser) {
+    async function handle() {
+        if ($database?.$id !== databaseId) {
             setDatabase($page.params.database);
-            database.load();
+            await database.load();
+            title.set(`Database - ${$database.name}`);
+        } else if ($database) {
+            title.set(`Database - ${$database.name}`);
         }
-    }
-    $: if ($database) {
-        title.set(`Database - ${$database.name}`);
+        backButton.set('');
+
+        copyData.set({
+            text: '',
+            value: ''
+        });
+
+        tabs.set([
+            {
+                href: path,
+                title: 'Collections'
+            },
+            {
+                href: `${path}/usage`,
+                title: 'Usage'
+            }
+        ]);
     }
 </script>
 
@@ -43,4 +47,6 @@
     <title>Appwrite - Database</title>
 </svelte:head>
 
-<slot />
+{#if $database}
+    <slot />
+{/if}
