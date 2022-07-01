@@ -56,7 +56,7 @@
     };
     let notMerge = false;
     let lazyUpdate = false;
-    let timeoutId: any;
+    let timeoutId: unknown;
 
     $: option && setOption();
     $: if (myChart && $app.theme) {

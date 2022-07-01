@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { browser } from '$app/env';
     import { afterNavigate } from '$app/navigation';
     import { page } from '$app/stores';
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
