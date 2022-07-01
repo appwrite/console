@@ -27,7 +27,7 @@
 </script>
 
 <Form on:submit={create}>
-    <Modal bind:show={showCreate}>
+    <Modal size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Team</svelte:fragment>
         <FormList>
             <InputText
