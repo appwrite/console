@@ -50,21 +50,20 @@
                     {#each response.sessions as session}
                         <TableRow>
                             <TableCellText title="Client">
-                                <div class="image-item">
-                                    <img
-                                        height="20"
-                                        width="20"
-                                        src={`/icons/color/${session?.clientName.toLocaleLowerCase()}.svg`}
-                                        alt={session.clientName} />
+                                <div class="u-flex u-cross-center u-gap-12">
+                                    <div class="image-item">
+                                        <img
+                                            height="20"
+                                            width="20"
+                                            src={`/icons/color/${session?.clientName.toLocaleLowerCase()}.svg`}
+                                            alt={session.clientName} />
+                                    </div>
+                                    <span class="u-line-height-1-5">
+                                        <p>{session.clientName}</p>
+                                        <span class="u-small">
+                                            Last activity: {toLocaleDateTime(session?.expire)}
+                                        </span></span>
                                 </div>
-                                <span>
-                                    <p>
-                                        {session.clientName}
-                                    </p>
-                                    <span class="u-small">
-                                        Last activity: {toLocaleDateTime(session?.expire)}
-                                    </span>
-                                </span>
                             </TableCellText>
 
                             <TableCellText title="IP">{session.ip}</TableCellText>
