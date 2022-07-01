@@ -28,7 +28,7 @@
 
 <Form on:submit={deleteAllMemberships}>
     <Modal warning={true} bind:show={showDeleteAll}>
-        <svelte:fragment slot="header">Delete all memberships</svelte:fragment>
+        <svelte:fragment slot="header">Delete All Memberships</svelte:fragment>
 
         <p>
             Are you sure you want to delete <b>{$user.response.name}'s</b> all memberships?
