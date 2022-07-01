@@ -4,7 +4,7 @@
 
     export let show = false;
     export let size: 'small' | 'big' = null;
-    export let icon = false;
+    export let warning = false;
     let browser = false;
     //TODO: explore other solutions compatible with testing library
     onMount(() => {
@@ -58,12 +58,12 @@
             class="modal"
             transition:fly={transitionFly}>
             <header class="modal-header">
-                {#if icon}
+                {#if warning}
                     <div class="avatar is-color-orange is-medium">
                         <span class="icon-exclamation" aria-hidden="true" />
                     </div>
                 {/if}
-                <h4 class="modal-title">
+                <h4 class="heading-level-5">
                     <slot name="header" />
                 </h4>
                 <button

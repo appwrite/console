@@ -35,7 +35,7 @@
 </script>
 
 <Form on:submit={deleteMembership}>
-    <Modal bind:show={showDelete}>
+    <Modal warning={true} bind:show={showDelete}>
         <svelte:fragment slot="header">Delete member</svelte:fragment>
         <p>
             Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?

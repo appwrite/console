@@ -26,7 +26,7 @@
 </script>
 
 <Form on:submit={deleteUser}>
-    <Modal bind:show={showDelete}>
+    <Modal warning={true} bind:show={showDelete}>
         <svelte:fragment slot="header">Delete user</svelte:fragment>
         <p>Are you sure you want to delete <b>{$user.response.name}</b> from '{$project.name}'?</p>
         <svelte:fragment slot="footer">

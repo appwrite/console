@@ -27,7 +27,7 @@
 </script>
 
 <Form on:submit={deleteAllMemberships}>
-    <Modal bind:show={showDeleteAll}>
+    <Modal warning={true} bind:show={showDeleteAll}>
         <svelte:fragment slot="header">Delete all memberships</svelte:fragment>
 
         <p>

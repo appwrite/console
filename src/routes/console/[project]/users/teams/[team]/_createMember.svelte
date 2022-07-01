@@ -42,7 +42,7 @@
 </script>
 
 <Form on:submit={create}>
-    <Modal bind:show={showCreate}>
+    <Modal warning={true} bind:show={showCreate}>
         <svelte:fragment slot="header">Create User</svelte:fragment>
         <FormList>
             <InputEmail
