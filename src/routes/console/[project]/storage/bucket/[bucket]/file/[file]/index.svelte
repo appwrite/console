@@ -97,7 +97,7 @@
                     <p>MIME Type: {$file.response.mimeType}</p>
                     <p>Size: {bytesToSize($file.response.sizeOriginal)}</p>
                     <p>Created: {toLocaleDate($file.response.$createdAt)}</p>
-                    <p>Last Updated (to implement): {toLocaleDate($file.response.$createdAt)}</p>
+                    <p>Last Updated: {toLocaleDate($file.response.$updatedAt)}</p>
                 </div>
             </svelte:fragment>
 
@@ -160,7 +160,7 @@
                         <h6 class="u-bold">{$file.response.name}</h6>
                     </svelte:fragment>
                     <p>
-                        Last Updated (to implement): {toLocaleDateTime($file.response.$createdAt)}
+                        Last Updated: {toLocaleDateTime($file.response.$updatedAt)}
                     </p>
                 </Box>
             </svelte:fragment>
