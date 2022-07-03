@@ -24,10 +24,10 @@
                     <li class="drop-list-item">
                         <a
                             class="drop-button"
-                            class:is-selected={$page.url.pathname.startsWith(`${path}/database`)}
-                            href={`${path}/database`}>
+                            class:is-selected={$page.url.pathname.startsWith(`${path}/databases`)}
+                            href={`${path}/databases`}>
                             <span class="icon-database" aria-hidden="true" />
-                            <span class="text">Database</span>
+                            <span class="text">Databases</span>
                         </a>
                     </li>
                     <li class="drop-list-item">

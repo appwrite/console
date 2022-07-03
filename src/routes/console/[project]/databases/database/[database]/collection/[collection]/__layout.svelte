@@ -1,0 +1,59 @@
+<script lang="ts">
+    import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { onMount } from 'svelte';
+    import { collection } from './store';
+
+    const databaseId = $page.params.database;
+    const collectionId = $page.params.collection;
+
+    const path = `databases/database/${databaseId}/collection/${collectionId}`;
+
+    onMount(handle);
+    afterNavigate(handle);
+
+    async function handle() {
+        if ($collection?.$id !== collectionId) {
+            await collection.load(collectionId);
+            title.set($collection.name);
+        } else if ($collection) {
+            title.set($collection.name);
+        }
+
+        backButton.set(`${base}/console/${$page.params.project}/database`);
+
+        copyData.set({
+            text: '',
+            value: ''
+        });
+
+        tabs.set([
+            {
+                href: path,
+                title: 'Documents'
+            },
+            {
+                href: `${path}/attributes`,
+                title: 'Attributes'
+            },
+            {
+                href: `${path}/indexes`,
+                title: 'Indexes'
+            },
+            {
+                href: `${path}/settings`,
+                title: 'Settings'
+            }
+        ]);
+    }
+</script>
+
+<svelte:head>
+    <title>Appwrite - {$collection?.name ?? 'Collection'}</title>
+</svelte:head>
+
+{#if $collection}
+    <slot />
+{/if}

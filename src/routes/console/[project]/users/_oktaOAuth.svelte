@@ -88,7 +88,7 @@
                 <p>URI</p>
                 <CopyInput
                     value={`${
-                        sdkForConsole.config.endpoint
+                        sdkForConsole.client.config.endpoint
                     }/account/session/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
             </div>
         </FormList>

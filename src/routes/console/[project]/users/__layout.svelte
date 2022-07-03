@@ -1,36 +1,44 @@
 <script lang="ts">
+    import { afterNavigate } from '$app/navigation';
+
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { onMount } from 'svelte';
 
     const path = 'users';
-    title.set('Users');
-    backButton.set('');
+    onMount(handle);
+    afterNavigate(handle);
 
-    copyData.set({
-        text: '',
-        value: ''
-    });
-    tabs.set([
-        {
-            href: path,
-            title: 'Users'
-        },
-        {
-            href: `${path}/teams`,
-            title: 'Teams'
-        },
-        {
-            href: `${path}/authentication`,
-            title: 'Authentication'
-        },
-        {
-            href: `${path}/usage`,
-            title: 'Usage'
-        },
-        {
-            href: `${path}/security`,
-            title: 'Security'
-        }
-    ]);
+    function handle() {
+        title.set('Users');
+        backButton.set('');
+
+        copyData.set({
+            text: '',
+            value: ''
+        });
+        tabs.set([
+            {
+                href: path,
+                title: 'Users'
+            },
+            {
+                href: `${path}/teams`,
+                title: 'Teams'
+            },
+            {
+                href: `${path}/authentication`,
+                title: 'Authentication'
+            },
+            {
+                href: `${path}/usage`,
+                title: 'Usage'
+            },
+            {
+                href: `${path}/security`,
+                title: 'Security'
+            }
+        ]);
+    }
 </script>
 
 <svelte:head>

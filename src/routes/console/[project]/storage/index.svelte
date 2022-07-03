@@ -4,7 +4,7 @@
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination, Tiles, Tooltip } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import type { Models } from 'src/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';

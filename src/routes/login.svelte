@@ -10,7 +10,7 @@
 
     const login = async () => {
         try {
-            await sdkForConsole.account.createSession(mail, pass);
+            await sdkForConsole.account.createEmailSession(mail, pass);
             user.fetchUser();
             addNotification({
                 type: 'success',

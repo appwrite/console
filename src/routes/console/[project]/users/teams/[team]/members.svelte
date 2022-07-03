@@ -11,7 +11,7 @@
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import type { Models } from 'src/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { sdkForProject } from '$lib/stores/sdk';

@@ -9,16 +9,17 @@
         Table,
         TableHeader,
         TableBody,
-        TableRowLink,
+        TableRow,
         TableCellHead,
-        TableCellText
+        TableCellText,
+        TableCellLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { bytesToSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { files } from './store';
-    import type { Models } from 'src/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let search = '';
     let showCreate = false;
@@ -60,29 +61,30 @@
             </TableHeader>
             <TableBody>
                 {#each $files.response.files as file}
-                    <TableRowLink
-                        href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
-                        <TableCellText title="Name">
+                    <TableRow>
+                        <TableCellLink
+                            title="Name"
+                            href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
                             <div class="u-flex u-gap-12">
                                 <Avatar size={40} src={getPreview(file.$id)} name={file.name} />
                                 <span> {file.name}</span>
                             </div>
-                        </TableCellText>
+                        </TableCellLink>
                         <TableCellText title="Type">{file.mimeType}</TableCellText>
                         <TableCellText title="Size">{bytesToSize(file.sizeOriginal)}</TableCellText>
                         <TableCellText title="Date Created"
-                            >{toLocaleDate(file.dateCreated)}</TableCellText>
+                            >{toLocaleDate(file.$createdAt)}</TableCellText>
                         <TableCellText title="">
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
-                                on:click|preventDefault={() => {
+                                on:click={() => {
                                     showDropdown = !showDropdown;
                                 }}>
                                 <span class="icon-dots-horizontal" aria-hidden="true" />
                             </button>
                         </TableCellText>
-                    </TableRowLink>
+                    </TableRow>
                 {/each}
             </TableBody>
         </Table>

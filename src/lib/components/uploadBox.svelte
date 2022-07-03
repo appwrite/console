@@ -1,10 +1,10 @@
 <script lang="ts">
     import { uploader } from '$lib/stores/uploader';
     import { Pill } from '$lib/elements';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
 
     async function removeFile($id: string, bucketId: string) {
-        const file = await sdkForConsole.storage.getFile(bucketId, $id);
+        const file = await sdkForProject.storage.getFile(bucketId, $id);
         console.log(file);
         uploader.removeFile(file);
     }
