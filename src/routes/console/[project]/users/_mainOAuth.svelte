@@ -11,7 +11,7 @@
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import type { Provider } from './auth';
+    import type { Provider } from '$lib/stores/oauth-providers';
 
     export let showModal = false;
     export let provider: Provider;

@@ -6,8 +6,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
-    import { authMethods, OAuthProviders } from './auth';
-    import type { Provider } from './auth';
+    import { authMethods } from '$lib/stores/auth-methods';
+    import { OAuthProviders } from '$lib/stores/oauth-providers';
+    import type { Provider } from '$lib/stores/oauth-providers';
 
     $: projectId = $project.$id;
     $: authMethods.load($project);

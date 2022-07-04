@@ -46,7 +46,7 @@
             {:else}
                 <CardDrop bind:show={showDropdown}>
                     <svelte:fragment slot="header">Team ID</svelte:fragment>
-                    <p>Enter a custom user ID. Leave blank for a randomly generated user ID.</p>
+                    <p>Enter a custom team ID. Leave blank for a randomly generated team ID.</p>
                     <svelte:fragment slot="footer">
                         <input
                             class="input-text "
