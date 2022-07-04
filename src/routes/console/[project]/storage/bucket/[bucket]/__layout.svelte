@@ -1,5 +1,6 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { onMount } from 'svelte';
@@ -19,7 +20,7 @@
             title.set($bucket.response.name);
         }
 
-        backButton.set('');
+        backButton.set(`${base}/console/${$page.params.project}/storage`);
 
         copyData.set({
             text: bucketId,
