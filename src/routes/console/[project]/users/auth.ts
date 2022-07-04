@@ -7,7 +7,6 @@ import Okta from './_oktaOAuth.svelte';
 import Auth0 from './_auth0OAuth.svelte';
 import Main from './_mainOAuth.svelte';
 
-export type AuthMethod = { label: string; method: string; value: boolean };
 export type Provider = {
     name: string;
     icon: string;
@@ -22,72 +21,6 @@ export type Providers = {
     providers: Provider[];
 };
 
-function createAuthMethods() {
-    const { subscribe, set } = writable({
-        list: [
-            {
-                label: 'Password',
-                method: 'email-password',
-                value: null
-            },
-            {
-                label: 'Magic URL',
-                method: 'magic-url',
-                value: null
-            },
-            {
-                label: 'Anonymous',
-                method: 'anonymous',
-                value: null
-            },
-            {
-                label: 'Invites',
-                method: 'invites',
-                value: null
-            },
-            {
-                label: 'JWT',
-                method: 'jwt',
-                value: null
-            }
-        ]
-    });
-
-    return {
-        subscribe,
-        set,
-        load: (project: Models.Project) => {
-            const list = [
-                {
-                    label: 'Password',
-                    method: 'email-password',
-                    value: project.authEmailPassword
-                },
-                {
-                    label: 'Magic URL',
-                    method: 'magic-url',
-                    value: project.authUsersAuthMagicURL
-                },
-                {
-                    label: 'Anonymous',
-                    method: 'anonymous',
-                    value: project.authAnonymous
-                },
-                {
-                    label: 'Invites',
-                    method: 'invites',
-                    value: project.authInvites
-                },
-                {
-                    label: 'JWT',
-                    method: 'jwt',
-                    value: project.authJWT
-                }
-            ];
-            set({ list });
-        }
-    };
-}
 function createOAuthProviders() {
     const { subscribe, set } = writable<Providers>({
         providers: [
@@ -647,5 +580,4 @@ function createOAuthProviders() {
     };
 }
 
-export const authMethods = createAuthMethods();
 export const OAuthProviders = createOAuthProviders();
