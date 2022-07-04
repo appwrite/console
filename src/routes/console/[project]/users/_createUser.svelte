@@ -22,7 +22,7 @@
 
     const create = async () => {
         try {
-            const user = await sdkForProject.users.create(id ? id : 'unique()', mail, pass, name);
+            const user = await sdkForProject.users.create(id ?? 'unique()', mail, pass, name);
             mail = pass = name = '';
             showCreate = false;
             dispatch('created', user);
@@ -33,6 +33,10 @@
             });
         }
     };
+
+    $: if (!showDropdown) {
+        id = null;
+    }
 </script>
 
 <Form on:submit={create}>

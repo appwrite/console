@@ -15,7 +15,7 @@
 
     const create = async () => {
         try {
-            const team = await sdkForProject.teams.create(id ? id : 'unique()', name);
+            const team = await sdkForProject.teams.create(id ?? 'unique()', name);
             name = '';
             showCreate = false;
             dispatch('created', team);
@@ -26,6 +26,10 @@
             });
         }
     };
+
+    $: if (!showDropdown) {
+        id = null;
+    }
 </script>
 
 <Form on:submit={create}>
