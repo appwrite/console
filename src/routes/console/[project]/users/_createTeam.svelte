@@ -15,9 +15,10 @@
 
     const create = async () => {
         try {
-            const team = await sdkForProject.teams.create(id ? id : 'unique()', name);
+            const team = await sdkForProject.teams.create(id ?? 'unique()', name);
             name = '';
             showCreate = false;
+            showDropdown = false;
             dispatch('created', team);
         } catch (error) {
             addNotification({
@@ -26,6 +27,10 @@
             });
         }
     };
+
+    $: if (!showDropdown) {
+        id = null;
+    }
 </script>
 
 <Form on:submit={create}>
