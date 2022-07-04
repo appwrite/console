@@ -1,6 +1,7 @@
 <script lang="ts">
     import { InputTags, Button, InputFile, Form, FormList } from '$lib/elements/forms';
-    import { Modal, Alert } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { Modal, Alert, CardDrop } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -15,12 +16,14 @@
     let files: FileList;
     let read: string[] = [];
     let write: string[] = [];
+    let id: string = null;
+    let showDropdown = false;
 
     const create = async () => {
         try {
             const file = await sdkForProject.storage.createFile(
                 bucket,
-                'unique()',
+                id ?? 'unique()',
                 files[0],
                 read,
                 write
@@ -37,6 +40,10 @@
         }
     };
 
+    $: if (!showDropdown) {
+        id = null;
+    }
+
     //TODO: add correct max file size
 </script>
 
@@ -49,11 +56,39 @@
                 <p>Max file size: 10MB</p>
             </div>
 
+            {#if !showDropdown}
+                <div>
+                    <Pill button on:click={() => (showDropdown = !showDropdown)}
+                        >File ID <i class="icon-pencil" /></Pill>
+                </div>
+            {:else}
+                <CardDrop bind:show={showDropdown}>
+                    <svelte:fragment slot="header">File ID</svelte:fragment>
+                    <p>Enter a custom file ID. Leave blank for a randomly generated file ID.</p>
+                    <svelte:fragment slot="footer">
+                        <input
+                            class="input-text "
+                            type="text"
+                            name="id"
+                            id="id"
+                            placeholder="Enter ID"
+                            bind:value={id} />
+                        <div class="u-flex u-gap-12">
+                            <div class="icon-info u-block" />
+                            <p class="u-small">
+                                Allowed characters: alphanumeric, hyphen, non-leading underscore,
+                                period
+                            </p>
+                        </div>
+                    </svelte:fragment>
+                </CardDrop>
+            {/if}
             <p class="heading-level-7">Permissions</p>
             <Alert type="info">
                 <p>
                     Tip: Add role:all for wildcard access. Check out our documentation for more on <a
-                        href="/#">
+                        class="link"
+                        href="#">
                         Permissions</a>
                 </p>
             </Alert>
