@@ -20,8 +20,8 @@
     },
     "dependencies": {
         "@aw-labs/appwrite-console": "^1.0.0-0",
-        "@aw-labs/icons": "^0.0.0-22",
-        "@aw-labs/ui": "^0.0.0-22",
+        "@aw-labs/icons": "^0.0.0-23",
+        "@aw-labs/ui": "^0.0.0-23",
         "echarts": "^5.3.3"
     },
     "devDependencies": {

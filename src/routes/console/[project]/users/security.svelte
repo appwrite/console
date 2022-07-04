@@ -77,8 +77,8 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <ul class="u-flex u-gap-12">
-                <li>
+            <ul class="form-list">
+                <li class="form-item">
                     <div class="input-text-wrapper">
                         <input
                             id="unlimited"
@@ -91,6 +91,8 @@
                         <label class="label" for="unlimited"
                             >Unlimited <Pill>recommended</Pill></label>
                     </div>
+                </li>
+                <li class="form-item is-multiple">
                     <div class="input-text-wrapper">
                         <input
                             id="limited"
@@ -102,11 +104,17 @@
                             value="limited" />
                         <label class="label" for="limited">Limited</label>
                     </div>
-                    <InputNumber
-                        id="limit"
-                        label=""
-                        disabled={isLimited === 'unlimited'}
-                        bind:value={newLimit} />
+                    <div
+                        class="input-text-wrapper u-stretch"
+                        on:click={() => (isLimited = 'limited')}>
+                        <input
+                            type="number"
+                            name="limit"
+                            id="limit"
+                            class="input-text"
+                            disabled={isLimited === 'unlimited'}
+                            bind:value={newLimit} />
+                    </div>
                 </li>
             </ul>
         </svelte:fragment>
