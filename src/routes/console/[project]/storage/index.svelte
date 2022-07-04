@@ -2,13 +2,12 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Tiles, Tooltip } from '$lib/components';
+    import { Empty, Pagination, Tooltip, Copy } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import { addNotification } from '$lib/stores/notifications';
     import { bucketList } from './store';
 
     let showCreate = false;
@@ -24,23 +23,6 @@
 
     $: bucketList.load(search, limit, offset ?? 0);
     $: if (search) offset = 0;
-
-    const copy = async (event: Event, value: string) => {
-        event.preventDefault();
-        event.stopPropagation();
-        try {
-            await navigator.clipboard.writeText(value);
-            addNotification({
-                message: 'Copied to clipboard.',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    };
 </script>
 
 <Container>
@@ -53,7 +35,7 @@
     </div>
 
     {#if $bucketList.response?.total}
-        <Tiles>
+        <div class="u-flex">
             {#each $bucketList.response.buckets as bucket}
                 <a class="card" href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
                     <div class="u-flex u-main-space-between">
@@ -64,10 +46,10 @@
                     </div>
                     <h3 class="tiles-title">{bucket.name}</h3>
                     <div class="u-flex u-main-space-between">
-                        <Pill button on:click={(e) => copy(e, bucket.$id)}
-                            ><i class="icon-duplicate" />Bucket ID
-                        </Pill>
-                        <div class="">
+                        <Copy value="bucket.$id">
+                            <Pill button><i class="icon-duplicate" />Bucket ID</Pill>
+                        </Copy>
+                        <div>
                             <Tooltip icon="lock-closed" aria="encryption">
                                 <span
                                     >{bucket.encryption
@@ -84,7 +66,7 @@
                     </div>
                 </a>
             {/each}
-        </Tiles>
+        </div>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.response.total}</p>
