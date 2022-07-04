@@ -30,6 +30,7 @@
             );
             files = null;
             showCreate = false;
+            showDropdown = false;
             uploader.addFile(file);
             dispatch('created');
         } catch (error) {
