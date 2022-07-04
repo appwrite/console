@@ -21,11 +21,11 @@
                 class="icon-button"
                 class:is-open={!$uploader.isCollapsed}
                 aria-label="toggle upload box"
-                on:click={() => uploader.close()}>
+                on:click={() => uploader.toggle()}>
                 <span class="icon-cheveron-up" aria-hidden="true" />
             </button>
             <button
-                on:click={() => uploader.toggle()}
+                on:click={() => uploader.close()}
                 class="icon-button"
                 aria-label="close upload box">
                 <span class="icon-x" aria-hidden="true" />
