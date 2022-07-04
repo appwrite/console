@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
 import type { SvelteComponent } from 'svelte';
-import Apple from './_appleOAuth.svelte';
-import Microsoft from './_microsoftOAuth.svelte';
-import Okta from './_oktaOAuth.svelte';
-import Auth0 from './_auth0OAuth.svelte';
-import Main from './_mainOAuth.svelte';
+import Apple from '../../routes/console/[project]/users/_appleOAuth.svelte';
+import Microsoft from '../../routes/console/[project]/users/_microsoftOAuth.svelte';
+import Okta from '../../routes/console/[project]/users/_oktaOAuth.svelte';
+import Auth0 from '../../routes/console/[project]/users/_auth0OAuth.svelte';
+import Main from '../../routes/console/[project]/users/_mainOAuth.svelte';
 
 export type Provider = {
     name: string;
