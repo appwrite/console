@@ -25,6 +25,7 @@
             const user = await sdkForProject.users.create(id ?? 'unique()', mail, pass, name);
             mail = pass = name = '';
             showCreate = false;
+            showDropdown = false;
             dispatch('created', user);
         } catch (error) {
             addNotification({
