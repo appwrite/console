@@ -1,32 +1,33 @@
 <script lang="ts">
-    import { browser } from '$app/env';
+    import { afterNavigate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { base } from '$app/paths';
     import { file } from './store';
+
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { onMount } from 'svelte';
 
     const bucketId = $page.params.bucket;
     const fileId = $page.params.file;
 
-    $: {
-        if (browser) {
-            file.load(bucketId, fileId);
-        }
-    }
+    onMount(handle);
+    afterNavigate(handle);
 
-    $: {
-        if ($file.response) {
+    async function handle() {
+        if ($file.response?.$id !== fileId) {
+            await file.load(bucketId, fileId);
+            title.set($file.response.name);
+        } else if ($file.response) {
             title.set($file.response.name);
         }
+        backButton.set(`${base}/console/${$page.params.project}/storage/bucket/${bucketId}`);
+
+        copyData.set({
+            text: fileId,
+            value: fileId
+        });
+        tabs.set([]);
     }
-
-    backButton.set(`${base}/console/${$page.params.project}/storage/bucket/${bucketId}`);
-
-    copyData.set({
-        text: fileId,
-        value: fileId
-    });
-    tabs.set([]);
 </script>
 
 <svelte:head>
