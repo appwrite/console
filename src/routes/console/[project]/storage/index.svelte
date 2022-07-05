@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Tooltip, Copy } from '$lib/components';
+    import { Empty, Pagination, Tooltip, Copy, Bucket } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -35,36 +35,37 @@
     </div>
 
     {#if $bucketList.response?.total}
-        <div class="u-flex">
+        <div class="grid-box" style="--grid-gap:2rem; --grid-item-size:25rem;">
             {#each $bucketList.response.buckets as bucket}
-                <a class="card" href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
-                    <div class="u-flex u-main-space-between">
-                        <span class="is-small">XX Files</span>
+                <Bucket href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
+                    <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
+                    <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
+                    <svelte:fragment slot="status">
                         {#if !bucket.enabled}
                             <Pill>Disabled</Pill>
-                        {/if}
-                    </div>
-                    <h3 class="tiles-title">{bucket.name}</h3>
-                    <div class="u-flex u-main-space-between">
-                        <Copy value="bucket.$id">
-                            <Pill button><i class="icon-duplicate" />Bucket ID</Pill>
-                        </Copy>
-                        <div>
+                        {/if}</svelte:fragment>
+                    <Copy value="bucket.$id">
+                        <Pill button><i class="icon-duplicate" />Bucket ID</Pill>
+                    </Copy>
+                    <svelte:fragment slot="icons">
+                        <li class:u-opacity-0-2={!bucket.encryption}>
                             <Tooltip icon="lock-closed" aria="encryption">
                                 <span
                                     >{bucket.encryption
                                         ? 'Encryption enabled'
                                         : 'Encryption disabled'}</span>
                             </Tooltip>
+                        </li>
+                        <li class:u-opacity-0-2={!bucket.antivirus}>
                             <Tooltip icon="shield-check" aria="antivirus">
                                 <span
                                     >{bucket.antivirus
                                         ? 'Antivirus enabled'
                                         : 'Antivirus disabled'}</span>
                             </Tooltip>
-                        </div>
-                    </div>
-                </a>
+                        </li>
+                    </svelte:fragment>
+                </Bucket>
             {/each}
         </div>
 
