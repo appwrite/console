@@ -12,7 +12,7 @@ export const event: Action<HTMLElement, AnalyticsActionParam> = (node, param) =>
         return;
     }
 
-    node.addEventListener('click', () =>
+    node.addEventListener(param.event ?? 'click', () =>
         gtag('event', param.name, {
             ...param.parameters,
             action: param.action

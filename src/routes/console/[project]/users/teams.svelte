@@ -13,6 +13,7 @@
     import { Empty, Pagination, Avatar, Search } from '$lib/components';
     import Create from './_createTeam.svelte';
     import { goto } from '$app/navigation';
+    import { event } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -91,15 +92,21 @@
                 <Button secondary on:click={() => (search = '')}>Clear Search</Button>
             </div>
         </Empty>
-        <div
-            class="u-flex u-margin-block-start-32
- u-main-space-between">
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$teamsList.response.total}</p>
             <Pagination {limit} bind:offset sum={$teamsList.response.total} />
         </div>
     {:else}
         <Empty dashed centered>
-            <div class="common-section">
+            <div
+                class="common-section"
+                use:event={{
+                    name: 'console_users',
+                    action: 'click_create',
+                    parameters: {
+                        type: 'team'
+                    }
+                }}>
                 <Button secondary round on:click={() => (showCreate = true)}>
                     <i class="icon-plus" />
                 </Button>
