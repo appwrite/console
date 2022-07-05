@@ -20,7 +20,7 @@
             await sdkForConsole.projects.updateAuthStatus(projectId, id, value);
             addNotification({
                 type: 'success',
-                message: 'Updated project auth status successfully'
+                message: 'Updated project authentication status successfully'
             });
         } catch (error) {
             addNotification({
@@ -37,8 +37,8 @@
 
 <Container>
     <CardGrid>
-        <h2 class="heading-level-7">Auth Methods</h2>
-        <p>Enable the auth methods you wish to use.</p>
+        <h2 class="heading-level-7">Authentication Methods</h2>
+        <p>Enable the authentication methods you wish to use.</p>
         <svelte:fragment slot="aside">
             <form class="form">
                 <ul class="form-list is-multiple">
