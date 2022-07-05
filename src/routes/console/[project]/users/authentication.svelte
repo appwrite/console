@@ -51,21 +51,6 @@
                                 authUpdate(box.method, box.value);
                             }} />
                     {/each}
-                    <li class="form-item ">
-                        <label class="choice-item" for="phone">
-                            <input
-                                label="Phone"
-                                id="phone"
-                                type="checkbox"
-                                class="switch"
-                                role="switch"
-                                disabled />
-                            <div class="choice-item-content">
-                                <div class="choice-item-title">Phone</div>
-                                <span class="choice-item-paragraph">(soon)</span>
-                            </div>
-                        </label>
-                    </li>
                 </ul>
             </form>
         </svelte:fragment>

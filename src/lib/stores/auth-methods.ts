@@ -28,6 +28,11 @@ function createAuthMethods() {
                 label: 'JWT',
                 method: 'jwt',
                 value: null
+            },
+            {
+                label: 'Phone',
+                method: 'phone',
+                value: null
             }
         ]
     });
@@ -61,6 +66,11 @@ function createAuthMethods() {
                     label: 'JWT',
                     method: 'jwt',
                     value: project.authJWT
+                },
+                {
+                    label: 'Phone',
+                    method: 'phone',
+                    value: project.authPhone
                 }
             ];
             set({ list });
