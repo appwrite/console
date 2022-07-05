@@ -5,12 +5,16 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { project } from '../../routes/console/[project]/store';
+    import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
+    import LightMode from '$lib/images/mode/light-mode.svg';
+    import DarkMode from '$lib/images/mode/dark-mode.svg';
+    import SystemMode from '$lib/images/mode/system-mode.svg';
 
     let showDropdown = false;
 </script>
 
 <a class="logo" href={`${base}/console`}>
-    <img src="/images/appwrite-gray-light.svg" width="132" height="34" alt="Appwrite" />
+    <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
 </a>
 <nav class="breadcrumbs is-only-desktop" aria-label="breadcrumb">
     <ol class="breadcrumbs-list">
@@ -59,7 +63,7 @@
                         <ul class="u-flex u-gap-12">
                             <li>
                                 <label class="image-radio">
-                                    <img src="/images/mode/light-mode.svg" alt="light mode" />
+                                    <img src={LightMode} alt="light mode" />
                                     <input
                                         type="radio"
                                         class="is-small"
@@ -70,7 +74,7 @@
                             </li>
                             <li>
                                 <label class="image-radio">
-                                    <img src="/images/mode/dark-mode.svg" alt="dark mode" />
+                                    <img src={DarkMode} alt="dark mode" />
                                     <input
                                         type="radio"
                                         class="is-small"
@@ -81,7 +85,7 @@
                             </li>
                             <li>
                                 <label class="image-radio">
-                                    <img src="/images/mode/system-mode.svg" alt="system mode" />
+                                    <img src={SystemMode} alt="system mode" />
                                     <input
                                         type="radio"
                                         class="is-small"
