@@ -8,7 +8,7 @@ export type AnalyticsActionParam = {
 };
 
 export const event: Action<HTMLElement, AnalyticsActionParam> = (node, param) => {
-    if (isTrackingAllowed()) {
+    if (!isTrackingAllowed()) {
         return;
     }
 
