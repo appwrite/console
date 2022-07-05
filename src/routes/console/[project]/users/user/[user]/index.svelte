@@ -3,7 +3,14 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Avatar, CardGrid, Box, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button, InputText, InputEmail, InputPassword, Helper } from '$lib/elements/forms';
+    import {
+        Button,
+        InputText,
+        InputEmail,
+        InputPassword,
+        InputPhone,
+        Helper
+    } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -19,11 +26,12 @@
         }
     }
     let showDelete = false;
-    let showError: false | 'name' | 'email' | 'password' = false;
+    let showError: false | 'name' | 'email' | 'phone' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
     let userName: string = null,
         userEmail: string = null,
+        userPhone: string = null,
         newPassword: string = null,
         newPref = false,
         newKey: string = null,
@@ -127,6 +135,20 @@
             });
         } catch (error) {
             addError('email', error.message, 'error');
+        }
+    }
+    async function updatePhone() {
+        try {
+            await sdkForProject.users.updatePhone($user.response.$id, userPhone);
+            $user.response.phone = userPhone;
+            userPhone = null;
+            showError = false;
+            addNotification({
+                message: 'Phone has been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addError('phone', error.message, 'error');
         }
     }
     async function updatePassword() {
@@ -300,6 +322,30 @@
                     disabled={!userEmail}
                     on:click={() => {
                         updateEmail();
+                    }}>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Phone</h6>
+            <svelte:fragment slot="aside">
+                <ul>
+                    <InputPhone
+                        id="phone"
+                        label="Phone"
+                        placeholder={$user.response.phone || '+4915739638796'}
+                        autocomplete={false}
+                        bind:value={userPhone} />
+                    {#if showError === 'phone'}
+                        <Helper type={errorType}>{errorMessage}</Helper>
+                    {/if}
+                </ul>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button
+                    disabled={!userPhone}
+                    on:click={() => {
+                        updatePhone();
                     }}>Update</Button>
             </svelte:fragment>
         </CardGrid>
