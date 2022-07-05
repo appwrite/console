@@ -12,7 +12,6 @@
         TableRowLink
     } from '$lib/elements/table';
     import Create from './_createUser.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
     import { goto } from '$app/navigation';
     import { event } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
@@ -21,6 +20,7 @@
     import { base } from '$app/paths';
     import { usersList } from './store';
     import { onMount } from 'svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let showCreate = false;
     let search = '';
@@ -53,9 +53,18 @@
 
 <Container>
     <Search bind:search placeholder="Search Name, Email, or ID">
-        <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
-        </Button>
+        <span
+            use:event={{
+                name: 'console_users',
+                action: 'click_create',
+                parameters: {
+                    type: 'user'
+                }
+            }}>
+            <Button on:click={() => (showCreate = true)}>
+                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
+            </Button>
+        </span>
     </Search>
     {#if $usersList?.response?.total}
         <Table>

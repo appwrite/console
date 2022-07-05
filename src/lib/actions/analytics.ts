@@ -11,7 +11,7 @@ export const event: Action<HTMLElement, AnalyticsActionParam> = (node, param) =>
     if (!isTrackingAllowed()) {
         return;
     }
-
+    console.log('asd');
     node.addEventListener(param.event ?? 'click', () =>
         gtag('event', param.name, {
             ...param.parameters,

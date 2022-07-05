@@ -48,9 +48,18 @@
 
 <Container>
     <Search bind:search placeholder="Search by Name">
-        <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Team</span>
-        </Button>
+        <span
+            use:event={{
+                name: 'console_users',
+                action: 'click_create',
+                parameters: {
+                    type: 'team'
+                }
+            }}>
+            <Button on:click={() => (showCreate = true)}>
+                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Team</span>
+            </Button>
+        </span>
     </Search>
     {#if $teamsList?.response?.total}
         <Table>
