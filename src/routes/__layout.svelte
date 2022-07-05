@@ -12,6 +12,10 @@
     import { browser } from '$app/env';
     import { app } from '$lib/stores/app';
 
+    if (browser) {
+        window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
+    }
+
     onMount(async () => {
         try {
             if (!$user) {
@@ -41,6 +45,22 @@
         }
     }
 </script>
+
+<svelte:head>
+    {#if browser && window.GOOGLE_ANALYTICS}
+        <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${window.GOOGLE_ANALYTICS}`}></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            gtag('config', window.GOOGLE_ANALYTICS);
+        </script>
+    {/if}
+</svelte:head>
 
 <Notifications />
 
