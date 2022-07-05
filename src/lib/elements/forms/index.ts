@@ -15,4 +15,5 @@ export { default as InputSearch } from './inputSearch.svelte';
 export { default as InputRadio } from './inputRadio.svelte';
 export { default as InputSelect } from './inputSelect.svelte';
 export { default as InputCheckbox } from './inputCheckbox.svelte';
+export { default as InputPhone } from './inputPhone.svelte';
 export { default as Helper } from './helper.svelte';
