@@ -35,7 +35,7 @@
     </div>
 
     {#if $bucketList.response?.total}
-        <div class="grid-box" style="--grid-gap:2rem; --grid-item-size:25rem;">
+        <div class="grid-box common-section" style="--grid-gap:2rem; --grid-item-size:25rem;">
             {#each $bucketList.response.buckets as bucket}
                 <Bucket href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
