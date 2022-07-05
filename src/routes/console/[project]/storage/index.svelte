@@ -43,21 +43,30 @@
                     <svelte:fragment slot="status">
                         {#if !bucket.enabled}
                             <Pill>Disabled</Pill>
-                        {/if}</svelte:fragment>
-                    <Copy value="bucket.$id">
+                        {/if}
+                    </svelte:fragment>
+
+                    <Copy value={bucket.$id}>
                         <Pill button><i class="icon-duplicate" />Bucket ID</Pill>
                     </Copy>
+
                     <svelte:fragment slot="icons">
-                        <li class:u-opacity-0-2={!bucket.encryption}>
-                            <Tooltip icon="lock-closed" aria="encryption">
+                        <li>
+                            <Tooltip
+                                icon="lock-closed"
+                                aria="encryption"
+                                disabled={!bucket.encryption}>
                                 <span
                                     >{bucket.encryption
                                         ? 'Encryption enabled'
                                         : 'Encryption disabled'}</span>
                             </Tooltip>
                         </li>
-                        <li class:u-opacity-0-2={!bucket.antivirus}>
-                            <Tooltip icon="shield-check" aria="antivirus">
+                        <li>
+                            <Tooltip
+                                icon="shield-check"
+                                aria="antivirus"
+                                disabled={!bucket.antivirus}>
                                 <span
                                     >{bucket.antivirus
                                         ? 'Antivirus enabled'
