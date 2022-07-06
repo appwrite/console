@@ -29,9 +29,9 @@
     let showError: false | 'name' | 'email' | 'phone' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName: string = null,
-        userEmail: string = null,
-        userPhone: string = null,
+    let userName: string = $user.response.name,
+        userEmail: string = $user.response.email,
+        userPhone: string = $user.response.phone,
         newPassword: string = null,
         newPref = false,
         newKey: string = null,
@@ -113,7 +113,6 @@
         try {
             await sdkForProject.users.updateName($user.response.$id, userName);
             $user.response.name = userName;
-            userName = null;
             showError = false;
             addNotification({
                 message: 'Name has been updated',
@@ -127,7 +126,6 @@
         try {
             await sdkForProject.users.updateEmail($user.response.$id, userEmail);
             $user.response.email = userEmail;
-            userEmail = null;
             showError = false;
             addNotification({
                 message: 'Email has been updated',
@@ -141,7 +139,6 @@
         try {
             await sdkForProject.users.updatePhone($user.response.$id, userPhone);
             $user.response.phone = userPhone;
-            userPhone = null;
             showError = false;
             addNotification({
                 message: 'Phone has been updated',
@@ -284,7 +281,7 @@
                     <InputText
                         id="name"
                         label="Name"
-                        placeholder={$user.response.name}
+                        placeholder="Enter name"
                         autocomplete={false}
                         bind:value={userName} />
                     {#if showError === 'name'}
@@ -295,7 +292,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={!userName}
+                    disabled={userName === $user.response.name}
                     on:click={() => {
                         updateName();
                     }}>Update</Button>
@@ -308,7 +305,7 @@
                     <InputEmail
                         id="email"
                         label="Email"
-                        placeholder={$user.response.email}
+                        placeholder="Enter email"
                         autocomplete={false}
                         bind:value={userEmail} />
                     {#if showError === 'email'}
@@ -319,7 +316,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={!userEmail}
+                    disabled={userEmail === $user.response.email}
                     on:click={() => {
                         updateEmail();
                     }}>Update</Button>
@@ -332,7 +329,7 @@
                     <InputPhone
                         id="phone"
                         label="Phone"
-                        placeholder={$user.response.phone || '+4915739638796'}
+                        placeholder="Enter phone number"
                         autocomplete={false}
                         bind:value={userPhone} />
                     {#if showError === 'phone'}
@@ -343,7 +340,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={!userPhone}
+                    disabled={userPhone === $user.response.phone}
                     on:click={() => {
                         updatePhone();
                     }}>Update</Button>
