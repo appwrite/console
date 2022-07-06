@@ -29,9 +29,9 @@
     let showError: false | 'name' | 'email' | 'phone' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName: string = $user.name,
-        userEmail: string = $user.email,
-        userPhone: string = $user.phone,
+    let userName = $user.name,
+        userEmail = $user.email,
+        userPhone = $user.phone,
         newPassword: string = null,
         newPref = false,
         newKey: string = null,
@@ -286,7 +286,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={userName === $user.name}
+                    disabled={userName === $user.name || !userName}
                     on:click={() => {
                         updateName();
                     }}>Update</Button>
@@ -310,7 +310,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={userEmail === $user.email}
+                    disabled={userEmail === $user.email || !userEmail}
                     on:click={() => {
                         updateEmail();
                     }}>Update</Button>
@@ -334,7 +334,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={userPhone === $user.phone}
+                    disabled={userPhone === $user.phone || !userPhone}
                     on:click={() => {
                         updatePhone();
                     }}>Update</Button>
