@@ -21,7 +21,7 @@
     $: if (newKey && newValue) {
         arePrefsDisabled = false;
     } else if (prefs) {
-        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.response.prefs))) {
+        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
             arePrefsDisabled = false;
         }
     }
@@ -29,9 +29,9 @@
     let showError: false | 'name' | 'email' | 'phone' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName: string = $user.response.name,
-        userEmail: string = $user.response.email,
-        userPhone: string = $user.response.phone,
+    let userName: string = $user.name,
+        userEmail: string = $user.email,
+        userPhone: string = $user.phone,
         newPassword: string = null,
         newPref = false,
         newKey: string = null,
@@ -43,7 +43,7 @@
 
     onMount(async () => {
         await user.load($page.params.user);
-        prefs = Object.entries($user.response.prefs);
+        prefs = Object.entries($user.prefs);
     });
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
@@ -56,14 +56,11 @@
 
     async function updateVerificationEmail() {
         try {
-            await sdkForProject.users.updateEmailVerification(
-                $user.response.$id,
-                !$user.response.emailVerification
-            );
-            $user.response.emailVerification = !$user.response.emailVerification;
+            await sdkForProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
+            $user.emailVerification = !$user.emailVerification;
             addNotification({
                 message: `The account has been ${
-                    $user.response.emailVerification ? 'verified' : 'unverified'
+                    $user.emailVerification ? 'verified' : 'unverified'
                 }`,
                 type: 'success'
             });
@@ -76,14 +73,11 @@
     }
     async function updateVerificationPhone() {
         try {
-            await sdkForProject.users.updatePhoneVerification(
-                $user.response.$id,
-                !$user.response.phoneVerification
-            );
-            $user.response.emailVerification = !$user.response.emailVerification;
+            await sdkForProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
+            $user.emailVerification = !$user.emailVerification;
             addNotification({
                 message: `The account has been ${
-                    $user.response.emailVerification ? 'verified' : 'unverified'
+                    $user.emailVerification ? 'verified' : 'unverified'
                 }`,
                 type: 'success'
             });
@@ -96,10 +90,10 @@
     }
     async function updateStatus() {
         try {
-            await sdkForProject.users.updateStatus($user.response.$id, !$user.response.status);
-            $user.response.status = !$user.response.status;
+            await sdkForProject.users.updateStatus($user.$id, !$user.status);
+            $user.status = !$user.status;
             addNotification({
-                message: `The account has been ${$user.response.status ? 'unblocked' : 'blocked'}`,
+                message: `The account has been ${$user.status ? 'unblocked' : 'blocked'}`,
                 type: 'success'
             });
         } catch (error) {
@@ -111,8 +105,8 @@
     }
     async function updateName() {
         try {
-            await sdkForProject.users.updateName($user.response.$id, userName);
-            $user.response.name = userName;
+            await sdkForProject.users.updateName($user.$id, userName);
+            $user.name = userName;
             showError = false;
             addNotification({
                 message: 'Name has been updated',
@@ -124,8 +118,8 @@
     }
     async function updateEmail() {
         try {
-            await sdkForProject.users.updateEmail($user.response.$id, userEmail);
-            $user.response.email = userEmail;
+            await sdkForProject.users.updateEmail($user.$id, userEmail);
+            $user.email = userEmail;
             showError = false;
             addNotification({
                 message: 'Email has been updated',
@@ -137,8 +131,8 @@
     }
     async function updatePhone() {
         try {
-            await sdkForProject.users.updatePhone($user.response.$id, userPhone);
-            $user.response.phone = userPhone;
+            await sdkForProject.users.updatePhone($user.$id, userPhone);
+            $user.phone = userPhone;
             showError = false;
             addNotification({
                 message: 'Phone has been updated',
@@ -150,7 +144,7 @@
     }
     async function updatePassword() {
         try {
-            await sdkForProject.users.updatePassword($user.response.$id, newPassword);
+            await sdkForProject.users.updatePassword($user.$id, newPassword);
             newPassword = null;
             showError = false;
             addNotification({
@@ -172,8 +166,8 @@
                 newValue = null;
             }
             newPref = null;
-            await sdkForProject.users.updatePrefs($user.response.$id, updatedPrefs);
-            $user.response.prefs = updatedPrefs;
+            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
+            $user.prefs = updatedPrefs;
             arePrefsDisabled = true;
 
             addNotification({
@@ -197,9 +191,9 @@
                 }
                 return acc;
             }, {});
-            await sdkForProject.users.updatePrefs($user.response.$id, updatedPrefs);
+            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
             prefs = Object.entries(updatedPrefs);
-            $user.response.prefs = updatedPrefs;
+            $user.prefs = updatedPrefs;
             addNotification({
                 message: 'Preferences have been updated',
                 type: 'success'
@@ -213,35 +207,35 @@
     }
 </script>
 
-{#if $user.response}
+{#if $user}
     <Container>
         <CardGrid>
             <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                <Avatar size={48} name={$user.response.name} src={getAvatar($user.response.name)} />
-                <h6 class="heading-level-7">{$user.response.name}</h6>
-                {#if !$user.response.status}
+                <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
+                <h6 class="heading-level-7">{$user.name}</h6>
+                {#if !$user.status}
                     <Pill danger>Blocked</Pill>
                 {:else}
-                    <Pill success={$user.response.emailVerification}>
-                        {$user.response.emailVerification ? 'Verified' : 'Unverified'}
+                    <Pill success={$user.emailVerification}>
+                        {$user.emailVerification ? 'Verified' : 'Unverified'}
                     </Pill>
                 {/if}
             </div>
             <svelte:fragment slot="aside">
                 <div>
-                    <span class="title">{$user.response.email}</span>
-                    <p>Joined: {toLocaleDate($user.response.registration)}</p>
+                    <span class="title">{$user.email}</span>
+                    <p>Joined: {toLocaleDate($user.registration)}</p>
                 </div>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
                 <Button
-                    text={$user.response.status}
-                    secondary={!$user.response.status}
+                    text={$user.status}
+                    secondary={!$user.status}
                     on:click={() => updateStatus()}
-                    >{$user.response.status ? 'Block Account' : 'Unblock Accout'}</Button>
-                {#if $user.response.status}
-                    {#if $user.response.phone && $user.response.email}
+                    >{$user.status ? 'Block Account' : 'Unblock Accout'}</Button>
+                {#if $user.status}
+                    {#if $user.phone && $user.email}
                         <DropList
                             bind:show={showVerifcationDropdown}
                             position="top"
@@ -251,24 +245,24 @@
                                 secondary
                                 on:click={() =>
                                     (showVerifcationDropdown = !showVerifcationDropdown)}>
-                                {$user.response.emailVerification ? 'Unverify' : 'Verify'} Account
+                                {$user.emailVerification ? 'Unverify' : 'Verify'} Account
                             </Button>
                             <svelte:fragment slot="list">
                                 <DropListItem icon="mail" on:click={() => updateVerificationEmail()}
-                                    >{$user.response.emailVerification ? 'Unverify' : 'Verify'} email</DropListItem>
+                                    >{$user.emailVerification ? 'Unverify' : 'Verify'} email</DropListItem>
                                 <DropListItem
                                     icon="phone"
                                     on:click={() => updateVerificationPhone()}>
-                                    {$user.response.phoneVerification ? 'Unverify' : 'Verify'} phone</DropListItem>
+                                    {$user.phoneVerification ? 'Unverify' : 'Verify'} phone</DropListItem>
                             </svelte:fragment>
                         </DropList>
-                    {:else if !$user.response.phone}
+                    {:else if !$user.phone}
                         <Button secondary on:click={() => updateVerificationEmail()}>
-                            {$user.response.emailVerification ? 'Unverify' : 'Verify'} Account
+                            {$user.emailVerification ? 'Unverify' : 'Verify'} Account
                         </Button>
-                    {:else if !$user.response.email}
+                    {:else if !$user.email}
                         <Button secondary on:click={() => updateVerificationPhone()}>
-                            {$user.response.phoneVerification ? 'Unverify' : 'Verify'} Account
+                            {$user.phoneVerification ? 'Unverify' : 'Verify'} Account
                         </Button>{/if}
                 {/if}
             </svelte:fragment>
@@ -292,7 +286,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={userName === $user.response.name}
+                    disabled={userName === $user.name}
                     on:click={() => {
                         updateName();
                     }}>Update</Button>
@@ -316,7 +310,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={userEmail === $user.response.email}
+                    disabled={userEmail === $user.email}
                     on:click={() => {
                         updateEmail();
                     }}>Update</Button>
@@ -340,7 +334,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={userPhone === $user.response.phone}
+                    disabled={userPhone === $user.phone}
                     on:click={() => {
                         updatePhone();
                     }}>Update</Button>
@@ -477,15 +471,12 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
-                        <Avatar
-                            size={48}
-                            name={$user.response.name}
-                            src={getAvatar($user.response.name)} />
+                        <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$user.response.name}</h6>
+                        <h6 class="u-bold">{$user.name}</h6>
                     </svelte:fragment>
-                    <p>{$user.response.email}</p>
+                    <p>{$user.email}</p>
                 </Box>
             </svelte:fragment>
 

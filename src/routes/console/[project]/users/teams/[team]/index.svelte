@@ -15,7 +15,7 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let teamName: string = $team.response.name;
+    let teamName: string = $team.name;
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
@@ -26,7 +26,7 @@
     async function updateName() {
         try {
             await sdkForProject.teams.update($page.params.team, teamName);
-            $team.response.name = teamName;
+            $team.name = teamName;
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -37,24 +37,21 @@
     }
 </script>
 
-{#if $team.response}
+{#if $team}
     <Container>
         <Card>
             <div class="common-section grid-1-2">
                 <div class="grid-1-2-col-1">
                     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                        <Avatar
-                            size={48}
-                            name={$team.response.name}
-                            src={getAvatar($team.response.name)} />
+                        <Avatar size={48} name={$team.name} src={getAvatar($team.name)} />
                         <div>
-                            <h6 class="heading-level-7">{$team.response.name}</h6>
-                            <p>{$team.response.total} Members</p>
+                            <h6 class="heading-level-7">{$team.name}</h6>
+                            <p>{$team.total} Members</p>
                         </div>
                     </div>
                 </div>
                 <div class="grid-1-2-col-2">
-                    <p>Created on {toLocaleDate($team.response.$createdAt)}</p>
+                    <p>Created on {toLocaleDate($team.$createdAt)}</p>
                 </div>
             </div>
         </Card>
@@ -78,7 +75,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={teamName === $team.response.name}
+                    disabled={teamName === $team.name}
                     on:click={() => {
                         updateName();
                     }}>Update</Button>
@@ -97,14 +94,11 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
-                        <Avatar
-                            size={48}
-                            name={$team.response.name}
-                            src={getAvatar($team.response.name)} />
+                        <Avatar size={48} name={$team.name} src={getAvatar($team.name)} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$team.response.name}</h6>
-                        <span>{$team.response.total} Members</span>
+                        <h6 class="u-bold">{$team.name}</h6>
+                        <span>{$team.total} Members</span>
                     </svelte:fragment>
                 </Box>
             </svelte:fragment>
@@ -114,5 +108,5 @@
             </svelte:fragment>
         </CardGrid>
     </Container>
-    <DeleteTeam team={$team.response} bind:showDelete />
+    <DeleteTeam team={$team} bind:showDelete />
 {/if}

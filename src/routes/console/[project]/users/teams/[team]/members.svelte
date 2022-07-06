@@ -48,7 +48,7 @@
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Add Member</span>
         </Button>
     </Search>
-    {#if $memberships.response?.total}
+    {#if $memberships?.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
@@ -57,7 +57,7 @@
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
-                {#each $memberships.response.memberships as membership}
+                {#each $memberships.memberships as membership}
                     <TableRowLink
                         href={`${base}/console/${project}/users/user/${membership.userId}`}>
                         <TableCellText title="Name">
@@ -91,8 +91,8 @@
         <div
             class="u-flex u-margin-block-start-32
  u-main-space-between">
-            <p class="text">Total results: {$memberships.response.total}</p>
-            <Pagination {limit} bind:offset sum={$memberships.response.total} />
+            <p class="text">Total results: {$memberships.total}</p>
+            <Pagination {limit} bind:offset sum={$memberships.total} />
         </div>
     {:else if search}
         <Empty>
@@ -109,8 +109,8 @@
         <div
             class="u-flex u-margin-block-start-32
  u-main-space-between">
-            <p class="text">Total results: {$memberships.response.total}</p>
-            <Pagination {limit} bind:offset sum={$memberships.response.total} />
+            <p class="text">Total results: {$memberships.total}</p>
+            <Pagination {limit} bind:offset sum={$memberships.total} />
         </div>
     {:else}
         <Empty dashed centered>

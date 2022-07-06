@@ -13,11 +13,11 @@
     afterNavigate(handle);
 
     async function handle() {
-        if ($user?.response?.$id !== userId) {
+        if ($user?.$id !== userId) {
             await user.load(userId);
-            title.set($user.response.name);
-        } else if ($user.response) {
-            title.set($user.response.name);
+            title.set($user.name);
+        } else if ($user) {
+            title.set($user.name);
         }
 
         backButton.set(`${base}/console/${$page.params.project}/users`);
