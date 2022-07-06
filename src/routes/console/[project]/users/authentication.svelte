@@ -8,6 +8,7 @@
     import { project } from '../store';
     import { authMethods } from '$lib/stores/auth-methods';
     import { OAuthProviders } from '$lib/stores/oauth-providers';
+    import { event } from '$lib/actions/analytics';
     import type { Provider } from '$lib/stores/oauth-providers';
 
     $: projectId = $project.$id;
@@ -64,6 +65,14 @@
                         selectedProvider = provider;
                         showModal = true;
                     }}
+                    use:event={{
+                        name: 'console_users',
+                        action: 'click_update',
+                        event: 'click',
+                        parameters: {
+                            provider: provider.name
+                        }
+                    }}
                     class="card u-flex u-flex-vertical u-cross-center">
                     <div class="image-item">
                         <img
@@ -74,8 +83,9 @@
                     </div>
                     <p class="u-margin-block-start-8">{provider.name}</p>
                     <div class="u-margin-block-start-24">
-                        <Pill success={provider.active}
-                            >{provider.active ? 'Enabled' : 'Disabled'}</Pill>
+                        <Pill success={provider.active}>
+                            {provider.active ? 'Enabled' : 'Disabled'}
+                        </Pill>
                     </div>
                 </button>
             {/each}
