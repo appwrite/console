@@ -29,9 +29,9 @@
     let showError: false | 'name' | 'email' | 'phone' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName = $user.name,
-        userEmail = $user.email,
-        userPhone = $user.phone,
+    let userName = $user?.name,
+        userEmail = $user?.email,
+        userPhone = $user?.phone,
         newPassword: string = null,
         newPref = false,
         newKey: string = null,
@@ -44,6 +44,9 @@
     onMount(async () => {
         await user.load($page.params.user);
         prefs = Object.entries($user.prefs);
+        userName ??= $user.name;
+        userEmail ??= $user.email;
+        userPhone ??= $user.phone;
     });
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
