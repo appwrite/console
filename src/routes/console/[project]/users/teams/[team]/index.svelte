@@ -15,7 +15,7 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let teamName: string = null;
+    let teamName: string = $team.response.name;
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
@@ -27,7 +27,6 @@
         try {
             await sdkForProject.teams.update($page.params.team, teamName);
             $team.response.name = teamName;
-            teamName = null;
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -68,7 +67,7 @@
                     <InputText
                         id="name"
                         label="Name"
-                        placeholder={$team.response.name}
+                        placeholder="Enter team name"
                         autocomplete={false}
                         bind:value={teamName} />
                     {#if showError === 'name'}
@@ -79,7 +78,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={!teamName}
+                    disabled={teamName === $team.response.name}
                     on:click={() => {
                         updateName();
                     }}>Update</Button>
