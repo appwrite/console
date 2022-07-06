@@ -33,6 +33,9 @@
     };
 
     const onScroll = () => {
+        if (!tabsList) {
+            return;
+        }
         const { offsetWidth, scrollLeft, scrollWidth } = tabsList;
         showLeft = scrollLeft > 10;
         showRight = scrollLeft < scrollWidth - offsetWidth - 10;
