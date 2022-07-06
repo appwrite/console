@@ -1,5 +1,7 @@
 <script context="module">
     import '@aw-labs/ui/src/_index.scss';
+    import LogRocket from 'logrocket';
+    LogRocket.init('rgthvf/appwrite');
 </script>
 
 <script lang="ts">

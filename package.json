@@ -22,7 +22,8 @@
         "@aw-labs/appwrite-console": "^1.0.0-0",
         "@aw-labs/icons": "^0.0.0-24",
         "@aw-labs/ui": "^0.0.0-24",
-        "echarts": "^5.3.3"
+        "echarts": "^5.3.3",
+        "logrocket": "^3.0.1"
     },
     "devDependencies": {
         "@playwright/test": "^1.22.2",
