@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Avatar, CardGrid, Box, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
     import {
@@ -227,7 +227,7 @@
             <svelte:fragment slot="aside">
                 <div>
                     <span class="title">{$user.email}</span>
-                    <p>Joined: {toLocaleDate($user.registration)}</p>
+                    <p>Joined: {toLocaleDateTime($user.registration)}</p>
                 </div>
             </svelte:fragment>
 
