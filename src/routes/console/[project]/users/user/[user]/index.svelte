@@ -29,9 +29,9 @@
     let showError: false | 'name' | 'email' | 'phone' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName = $user?.name,
-        userEmail = $user?.email,
-        userPhone = $user?.phone,
+    let userName = null,
+        userEmail = null,
+        userPhone = null,
         newPassword: string = null,
         newPref = false,
         newKey: string = null,
