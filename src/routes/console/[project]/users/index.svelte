@@ -94,7 +94,7 @@
                                 <Pill danger>Blocked</Pill>
                             {/if}
                         </TableCellText>
-                        <TableCellText title="ID">
+                        <TableCellText showOverflow title="ID">
                             <Copy value={user.$id}>
                                 <Pill button><i class="icon-duplicate" />User ID</Pill>
                             </Copy>
