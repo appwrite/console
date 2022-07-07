@@ -10,11 +10,26 @@
     import { OAuthProviders } from '$lib/stores/oauth-providers';
     import { event } from '$lib/actions/analytics';
     import type { Provider } from '$lib/stores/oauth-providers';
+    import { app } from '$lib/stores/app';
 
     $: projectId = $project.$id;
     $: authMethods.load($project);
     $: OAuthProviders.load($project);
     let showModal = false;
+    let theme = 'light';
+
+    $: if ($app?.theme) {
+        if ($app.theme === 'auto') {
+            const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
+            if (darkThemeMq.matches) {
+                theme = 'dark';
+            } else {
+                theme = 'light';
+            }
+        } else {
+            theme = $app.theme;
+        }
+    }
 
     const authUpdate = async (id: string, value: boolean) => {
         try {
@@ -78,7 +93,7 @@
                         <img
                             height="20"
                             width="20"
-                            src={`/icons/color/${provider.icon}.svg`}
+                            src={`/icons/${theme}/color/${provider.icon}.svg`}
                             alt={provider.name} />
                     </div>
                     <p class="u-margin-block-start-8">{provider.name}</p>
