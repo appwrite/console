@@ -36,11 +36,14 @@
                 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (darkThemeMq.matches) {
                     document.body.setAttribute('class', `theme-dark`);
+                    $app.themeInUse = 'dark';
                 } else {
                     document.body.setAttribute('class', `theme-light`);
+                    $app.themeInUse = 'light';
                 }
             } else {
                 document.body.setAttribute('class', `theme-${$app.theme}`);
+                $app.themeInUse = $app.theme;
             }
         }
     }
