@@ -69,7 +69,10 @@
                 on:click={() => (showInPlainText = !showInPlainText)}
                 class="show-password-button"
                 aria-label="show password">
-                <span class="icon-eye" aria-hidden="true" />
+                <span
+                    class:icon-eye={!showInPlainText}
+                    class:icon-eye-off={showInPlainText}
+                    aria-hidden="true" />
             </button>
         {/if}
     </div>
