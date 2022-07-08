@@ -4,7 +4,7 @@
     import { Container } from '$lib/layout';
     import { Button, InputText, Helper } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { team } from './store';
     import DeleteTeam from './_deleteTeam.svelte';
@@ -57,7 +57,7 @@
                     </div>
                 </div>
                 <div class="grid-1-2-col-2">
-                    <p>Created on {toLocaleDate($team.$createdAt)}</p>
+                    <p>Created on {toLocaleDateTime($team.$createdAt)}</p>
                 </div>
             </div>
         </Card>
