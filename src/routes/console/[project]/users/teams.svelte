@@ -57,7 +57,7 @@
                 }
             }}>
             <Button on:click={() => (showCreate = true)}>
-                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Team</span>
+                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
             </Button>
         </span>
     </Search>

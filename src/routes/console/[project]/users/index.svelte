@@ -62,7 +62,7 @@
                 }
             }}>
             <Button on:click={() => (showCreate = true)}>
-                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
+                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
             </Button>
         </span>
     </Search>
@@ -70,7 +70,7 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>E-Mail</TableCellHead>
+                <TableCellHead>Email</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
                 <TableCellHead width={100}>ID</TableCellHead>
                 <TableCellHead>Joined</TableCellHead>

@@ -243,7 +243,8 @@
                             bind:show={showVerifcationDropdown}
                             position="top"
                             horizontal="left"
-                            arrow={false}>
+                            arrow={true}
+                            arrowPosition="end">
                             <Button
                                 secondary
                                 on:click={() =>
