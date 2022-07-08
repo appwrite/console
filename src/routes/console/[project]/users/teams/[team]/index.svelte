@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { team } from './store';
     import DeleteTeam from './_deleteTeam.svelte';
+    import { onMount } from 'svelte';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
@@ -15,7 +16,12 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let teamName: string = $team.name;
+    let teamName: string = null;
+
+    onMount(async () => {
+        await team.load($page.params.team);
+        teamName ??= $team.name;
+    });
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
@@ -75,7 +81,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={teamName === $team.name}
+                    disabled={teamName === $team.name || !teamName}
                     on:click={() => {
                         updateName();
                     }}>Update</Button>
