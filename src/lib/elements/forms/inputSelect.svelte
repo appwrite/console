@@ -23,6 +23,6 @@
                 </option>
             {/each}
         </select>
-        <span class="icon-down-open" aria-hidden="true" />
+        <span class="icon-cheveron-down" aria-hidden="true" />
     </div>
 </FormItem>
