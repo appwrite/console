@@ -20,10 +20,7 @@
     };
 </script>
 
-<span
-    class="tooltip is-bottom"
-    on:mouseenter={() => (text = 'Copy ID')}
-    on:click|preventDefault={copy}>
+<span class="tooltip " on:mouseenter={() => (text = 'Copy ID')} on:click|preventDefault={copy}>
     <slot />
-    <span class="tooltip-popup is-block-end" role="tooltip"> {text} </span>
+    <span class="tooltip-popup is-bottom" role="tooltip"> {text} </span>
 </span>
