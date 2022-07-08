@@ -46,6 +46,10 @@
             }
         ]);
     }
+
+    $: if ($user) {
+        handle();
+    }
 </script>
 
 <svelte:head>
