@@ -24,5 +24,7 @@
     {#if icon !== ''}
         <span class={`icon-${icon}`} aria-hidden="true" />
     {/if}
-    <slot />
+    <span class="text">
+        <slot />
+    </span>
 </li>
