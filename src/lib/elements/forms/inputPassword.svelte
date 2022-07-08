@@ -4,6 +4,7 @@
 
     export let id: string;
     export let label: string;
+    export let showLabel = true;
     export let value = '';
     export let placeholder = '';
     export let required = false;
@@ -26,7 +27,7 @@
 </script>
 
 <FormItem>
-    <label class="label" for={id}>{label}</label>
+    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="input-text-wrapper">
         {#if showInPlainText}
             <input

@@ -2,6 +2,7 @@
     import { FormItem } from '.';
 
     export let label: string;
+    export let showLabel = true;
     export let id: string;
     export let group: string;
     export let value: string;
@@ -13,6 +14,6 @@
 <FormItem>
     <div class="input-text-wrapper">
         <input {id} {name} {disabled} {required} {value} type="radio" bind:group />
-        <label class="label" for={id}>{label}</label>
+        <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     </div>
 </FormItem>

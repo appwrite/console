@@ -2,6 +2,7 @@
     import { FormItem } from '.';
 
     export let label: string;
+    export let showLabel = true;
     export let id: string;
     export let value: string;
     export let required = false;
@@ -13,7 +14,7 @@
 </script>
 
 <FormItem>
-    <label class="label" for={id}>{label}</label>
+    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="select">
         <select bind:value {id} {required} {disabled}>
             {#each options as option}

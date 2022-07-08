@@ -4,6 +4,7 @@
 
     export let id: string;
     export let label: string;
+    export let showLabel = true;
     export let tags: string[] = [];
     export let placeholder = '';
     export let helper = '';
@@ -50,7 +51,7 @@
 </script>
 
 <FormItem>
-    <label class="label" for={id}>{label}</label>
+    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="input-text-wrapper">
         <div class="tags-input">
             <div class="tags">
