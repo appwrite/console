@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Modal, CardDrop } from '$lib/components';
+    import { Modal, InnerModal } from '$lib/components';
     import { Pill } from '$lib/elements/';
     import {
         Button,
@@ -38,6 +38,9 @@
     $: if (!showDropdown) {
         id = null;
     }
+    $: if (!showCreate) {
+        showDropdown = false;
+    }
 </script>
 
 <Form on:submit={create}>
@@ -69,26 +72,30 @@
                         >User ID <i class="icon-pencil" /></Pill>
                 </div>
             {:else}
-                <CardDrop bind:show={showDropdown}>
-                    <svelte:fragment slot="header">User ID</svelte:fragment>
-                    <p>Enter a custom user ID. Leave blank for a randomly generated user ID.</p>
-                    <svelte:fragment slot="footer">
-                        <input
-                            class="input-text "
-                            type="text"
-                            name="id"
-                            id="id"
-                            placeholder="Enter ID"
-                            bind:value={id} />
-                        <div class="u-flex u-gap-12">
-                            <div class="icon-info u-block" />
-                            <p class="u-small">
-                                Allowed characters: alphanumeric, hyphen, non-leading underscore,
-                                period
-                            </p>
+                <InnerModal bind:show={showDropdown}>
+                    <svelte:fragment slot="title">User ID</svelte:fragment>
+                    Enter a custom user ID. Leave blank for a randomly generated user ID.
+                    <svelte:fragment slot="content">
+                        <div class="form">
+                            <InputText
+                                id="id"
+                                label="Custom ID"
+                                showLabel={false}
+                                placeholder="Enter ID"
+                                autofocus={true}
+                                bind:value={name} />
+
+                            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+                                <span
+                                    class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+                                    aria-hidden="true" />
+                                <span class="text u-line-height-1-5"
+                                    >Allowed characters: alphanumeric, hyphen, non-leading
+                                    underscore, period</span>
+                            </div>
                         </div>
                     </svelte:fragment>
-                </CardDrop>
+                </InnerModal>
             {/if}
         </FormList>
         <svelte:fragment slot="footer">
