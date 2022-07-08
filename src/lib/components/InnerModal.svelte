@@ -1,5 +1,4 @@
 <script>
-    import { Card } from '$lib/components';
     export let show = false;
 </script>
 
