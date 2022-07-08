@@ -77,10 +77,10 @@
     async function updateVerificationPhone() {
         try {
             await sdkForProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
-            $user.emailVerification = !$user.emailVerification;
+            $user.phoneVerification = !$user.phoneVerification;
             addNotification({
                 message: `The account has been ${
-                    $user.emailVerification ? 'verified' : 'unverified'
+                    $user.phoneVerification ? 'verified' : 'unverified'
                 }`,
                 type: 'success'
             });
@@ -219,8 +219,10 @@
                 {#if !$user.status}
                     <Pill danger>Blocked</Pill>
                 {:else}
-                    <Pill success={$user.emailVerification}>
-                        {$user.emailVerification ? 'Verified' : 'Unverified'}
+                    <Pill success={$user.emailVerification || $user.phoneVerification}>
+                        {$user.emailVerification || $user.phoneVerification
+                            ? 'Verified'
+                            : 'Unverified'}
                     </Pill>
                 {/if}
             </div>
