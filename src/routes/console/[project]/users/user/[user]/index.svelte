@@ -29,15 +29,14 @@
     let showError: false | 'name' | 'email' | 'phone' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let userName = null,
-        userEmail = null,
-        userPhone = null,
+    let userName: string = null,
+        userEmail: string = null,
+        userPhone: string = null,
         newPassword: string = null,
         newPref = false,
         newKey: string = null,
         newValue: string = null;
     let showVerifcationDropdown = false;
-    //TODO: check correct type
     let prefs: [string, unknown][] = null;
     let arePrefsDisabled = true;
 
