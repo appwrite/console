@@ -51,7 +51,8 @@
                         <h3 class="tiles-title">{bucket.name}</h3>
                         <div class="u-flex u-main-space-between">
                             <Copy value={bucket.$id}>
-                                <Pill button><i class="icon-duplicate" />Bucket ID</Pill>
+                                <Pill button
+                                    ><span class="icon-duplicate" aria-hidden="true" />Bucket ID</Pill>
                             </Copy>
                             <div class="">
                                 <Tooltip icon="lock-closed" aria="encryption">
@@ -97,7 +98,7 @@
                 <div class="u-flex u-flex-vertical u-cross-center">
                     <div class="common-section">
                         <Button secondary round on:click={() => (showCreate = true)}>
-                            <i class="icon-plus" />
+                            <span class="icon-plus" aria-hidden="true" />
                         </Button>
                     </div>
                     <div class="common-section">

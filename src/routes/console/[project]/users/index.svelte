@@ -96,7 +96,9 @@
                         </TableCellText>
                         <TableCellText showOverflow title="ID">
                             <Copy value={user.$id}>
-                                <Pill button><i class="icon-duplicate" />User ID</Pill>
+                                <Pill button
+                                    ><span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text">User ID</span></Pill>
                             </Copy>
                         </TableCellText>
                         <TableCellText title="Joined">
@@ -139,7 +141,7 @@
                         }
                     }}>
                     <Button secondary round on:click={() => (showCreate = true)}>
-                        <i class="icon-plus" />
+                        <span class="icon-plus" aria-hidden="true" />
                     </Button>
                 </div>
                 <div class="common-section">

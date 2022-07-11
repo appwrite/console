@@ -69,7 +69,9 @@
             {#if !showDropdown}
                 <div>
                     <Pill button on:click={() => (showDropdown = !showDropdown)}
-                        ><span class="icon-pencil" /><span class="text"> User ID </span></Pill>
+                        ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                            User ID
+                        </span></Pill>
                 </div>
             {:else}
                 <InnerModal bind:show={showDropdown}>

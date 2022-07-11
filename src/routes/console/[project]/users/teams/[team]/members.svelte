@@ -45,7 +45,7 @@
 <Container>
     <Search bind:search placeholder="Search by ID">
         <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add Member</span>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Member</span>
         </Button>
     </Search>
     {#if $memberships?.total}
@@ -117,7 +117,7 @@
             <div class="u-flex u-flex-vertical u-cross-center">
                 <div class="common-section">
                     <Button secondary round on:click={() => (showCreate = true)}>
-                        <i class="icon-plus" />
+                        <span class="icon-plus" aria-hidden="true" />
                     </Button>
                 </div>
                 <div class="common-section">

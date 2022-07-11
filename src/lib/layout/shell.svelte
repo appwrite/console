@@ -84,7 +84,10 @@
                 </h1>
                 {#if $copyData?.value}
                     <Copy value={$copyData.value}>
-                        <Pill button><i class="icon-duplicate" />{$copyData.text}</Pill>
+                        <Pill button
+                            ><span
+                                class="icon-duplicate"
+                                aria-hidden="true" />{$copyData.text}</Pill>
                     </Copy>
                 {/if}
             </svelte:fragment>

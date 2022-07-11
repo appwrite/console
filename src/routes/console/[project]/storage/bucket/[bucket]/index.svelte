@@ -110,7 +110,7 @@
                 <div class="u-flex u-flex-vertical u-cross-center">
                     <div class="common-section">
                         <Button secondary round on:click={() => (showCreate = true)}>
-                            <i class="icon-plus" />
+                            <span class="icon-plus" aria-hidden="true" />
                         </Button>
                     </div>
                     <div class="common-section">

@@ -49,7 +49,8 @@
             {#if !showDropdown}
                 <div>
                     <Pill button on:click={() => (showDropdown = !showDropdown)}
-                        ><span class="icon-pencil" /> <span class="text"> Team ID </span>
+                        ><span class="icon-pencil" aria-hidden="true" />
+                        <span class="text"> Team ID </span>
                     </Pill>
                 </div>
             {:else}
