@@ -15,6 +15,7 @@
     import DeleteAllSessions from './_deleteAllSessions.svelte';
     import DeleteSessions from './_deleteSession.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { app } from '$lib/stores/app';
 
     let offset = 0;
     let showDelete = false;
@@ -54,7 +55,9 @@
                                         <img
                                             height="20"
                                             width="20"
-                                            src={`/icons/color/${session?.clientName.toLocaleLowerCase()}.svg`}
+                                            src={`/icons/${
+                                                $app.themeInUse
+                                            }/color/${session?.clientName.toLocaleLowerCase()}.svg`}
                                             alt={session.clientName} />
                                     </div>
                                     <span class="u-line-height-1-5">

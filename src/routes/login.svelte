@@ -1,7 +1,14 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Button, Form, FormItem, InputEmail, InputPassword } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormItem,
+        FormList,
+        InputEmail,
+        InputPassword
+    } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
@@ -33,23 +40,25 @@
 <h1>Login</h1>
 
 <Form on:submit={login}>
-    <InputEmail
-        id="email"
-        label="E-Mail"
-        placeholder="test@example.com"
-        autofocus={true}
-        required={true}
-        bind:value={mail} />
-
-    <InputPassword
-        id="password"
-        label="Password"
-        placeholder="********"
-        required={true}
-        bind:value={pass} />
-    <FormItem>
-        <Button submit>Login</Button>
-    </FormItem>
+    <FormList>
+        <InputEmail
+            id="email"
+            label="Email"
+            placeholder="Enter email"
+            autofocus={true}
+            required={true}
+            bind:value={mail} />
+        <InputPassword
+            id="password"
+            label="Password"
+            placeholder="Enter password"
+            required={true}
+            meter={false}
+            bind:value={pass} />
+        <FormItem>
+            <Button submit>Login</Button>
+        </FormItem>
+    </FormList>
 </Form>
 
 <a href={`${base}/register`}>Create an Account</a>

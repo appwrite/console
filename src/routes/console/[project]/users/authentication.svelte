@@ -10,6 +10,7 @@
     import { OAuthProviders } from '$lib/stores/oauth-providers';
     import { event } from '$lib/actions/analytics';
     import type { Provider } from '$lib/stores/oauth-providers';
+    import { app } from '$lib/stores/app';
 
     $: projectId = $project.$id;
     $: authMethods.load($project);
@@ -78,7 +79,7 @@
                         <img
                             height="20"
                             width="20"
-                            src={`/icons/color/${provider.icon}.svg`}
+                            src={`/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
                             alt={provider.name} />
                     </div>
                     <p class="u-margin-block-start-8">{provider.name}</p>

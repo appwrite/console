@@ -13,11 +13,11 @@
     afterNavigate(handle);
 
     async function handle() {
-        if ($team?.response?.$id !== teamId) {
+        if ($team?.$id !== teamId) {
             await team.load(teamId);
-            title.set($team.response.name);
-        } else if ($team.response) {
-            title.set($team.response.name);
+            title.set($team.name);
+        } else if ($team) {
+            title.set($team.name);
         }
 
         backButton.set(`${base}/console/${$page.params.project}/users/teams`);
@@ -42,12 +42,16 @@
             }
         ]);
     }
+
+    $: if ($team) {
+        handle();
+    }
 </script>
 
 <svelte:head>
     <title>Appwrite - Team</title>
 </svelte:head>
 
-{#if $team.response}
+{#if $team}
     <slot />
 {/if}

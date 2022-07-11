@@ -58,7 +58,7 @@ function createAuthMethods() {
                     value: project.authAnonymous
                 },
                 {
-                    label: 'Invites',
+                    label: 'Team Invites',
                     method: 'invites',
                     value: project.authInvites
                 },

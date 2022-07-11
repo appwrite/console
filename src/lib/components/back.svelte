@@ -3,6 +3,6 @@
 </script>
 
 <a {href}>
-    <i class="icon-cheveron-left" />
+    <span class="icon-cheveron-left" aria-hidden="true" />
     <slot />
 </a>

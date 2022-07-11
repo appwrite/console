@@ -2,14 +2,15 @@
     import { addNotification } from '$lib/stores/notifications';
 
     export let value: string;
+    let text = 'Copy ID';
 
     const copy = async () => {
         try {
             await navigator.clipboard.writeText(value);
-            addNotification({
-                message: 'Copied to clipboard.',
-                type: 'success'
-            });
+            text = 'Copied ID';
+            setTimeout(() => {
+                text = 'Copy ID';
+            }, 2000);
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -19,6 +20,7 @@
     };
 </script>
 
-<span on:click|preventDefault={copy}>
+<span class="tooltip " on:mouseenter={() => (text = 'Copy ID')} on:click|preventDefault={copy}>
     <slot />
+    <span class="tooltip-popup is-bottom" role="tooltip"> {text} </span>
 </span>

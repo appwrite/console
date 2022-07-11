@@ -16,7 +16,6 @@
     import { app } from '$lib/stores/app';
     import light from './echartLight.json';
     import dark from './echartDark.json';
-    import { browser } from '$app/env';
 
     echarts.use([
         TitleComponent,
@@ -60,23 +59,9 @@
     let timeoutId: unknown;
 
     $: option && setOption();
-    $: if (myChart && selectedTheme) {
+    $: if (myChart && $app.themeInUse) {
         makeChart();
         setOption();
-    }
-
-    $: selectedTheme = $app.theme;
-    $: if ($app.theme === 'auto') {
-        if (browser) {
-            const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
-            if (darkThemeMq.matches) {
-                selectedTheme = 'dark';
-            } else {
-                selectedTheme = 'light';
-            }
-        }
-    } else {
-        selectedTheme = $app.theme;
     }
 
     onMount(() => {
@@ -100,7 +85,7 @@
 
     const makeChart = () => {
         destroyChart();
-        myChart = echarts.init(document.getElementById(`echart-${title}`), selectedTheme);
+        myChart = echarts.init(document.getElementById(`echart-${title}`), $app.themeInUse);
         series.forEach((s: LineSeriesOption, i: number) => {
             s.areaStyle = colorToGradient(myChart['_theme'].color[i]);
         });

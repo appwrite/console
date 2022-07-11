@@ -3,9 +3,11 @@ import { writable } from 'svelte/store';
 
 export type AppStore = {
     theme: 'light' | 'dark' | 'auto';
+    themeInUse: 'light' | 'dark';
 };
 export const app = writable<AppStore>({
-    theme: 'auto'
+    theme: 'auto',
+    themeInUse: 'light'
 });
 
 if (browser) {

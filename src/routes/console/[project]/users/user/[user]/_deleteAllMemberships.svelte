@@ -14,9 +14,7 @@
         try {
             await sdkForProject.teams.deleteMembership('tmpstring', 'tmpstring2');
             showDeleteAll = false;
-            await goto(
-                `${base}/console/${$page.params.project}/users/${$user.response.$id}/membeships`
-            );
+            await goto(`${base}/console/${$page.params.project}/users/${$user.$id}/membeships`);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -31,7 +29,7 @@
         <svelte:fragment slot="header">Delete All Memberships</svelte:fragment>
 
         <p>
-            Are you sure you want to delete <b>{$user.response.name}'s</b> all memberships?
+            Are you sure you want to delete <b>{$user.name}'s</b> all memberships?
         </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDeleteAll = false)}>Cancel</Button>

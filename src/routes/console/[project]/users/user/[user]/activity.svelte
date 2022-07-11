@@ -13,6 +13,7 @@
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { app } from '$lib/stores/app';
 
     let offset = 0;
     const limit = 25;
@@ -42,7 +43,9 @@
                                         <img
                                             height="20"
                                             width="20"
-                                            src={`/icons/color/${log?.clientName.toLocaleLowerCase()}.svg`}
+                                            src={`/icons/${
+                                                $app.themeInUse
+                                            }/color/${log?.clientName.toLocaleLowerCase()}.svg`}
                                             alt={log.clientName} />
                                     </div>
                                     <span class="u-line-height-1-5">

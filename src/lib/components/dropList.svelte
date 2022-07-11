@@ -4,6 +4,7 @@
     export let show = false;
     export let position: 'top' | 'bottom' = 'top';
     export let horizontal: 'left' | 'right' = 'right';
+    export let arrowPosition: 'start' | 'center' | 'end' = 'start';
     export let arrow = true;
     let parentElement: HTMLDivElement;
 
@@ -24,6 +25,8 @@
     {#if show}
         <div
             class="drop"
+            class:is-arrow-center={arrowPosition === 'center'}
+            class:is-arrow-end={arrowPosition === 'end'}
             class:is-no-arrow={!arrow}
             class:is-block-end={position === 'bottom'}
             class:is-inline-end={horizontal === 'left'}

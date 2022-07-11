@@ -1,12 +1,13 @@
 <script>
-    import { Card } from '$lib/components';
     export let show = false;
 </script>
 
 {#if show}
-    <Card>
-        <header class="modal-header">
-            <h4 class="modal-title"><slot name="header" /></h4>
+    <section class="modal is-inner-modal">
+        <header class="modal-header u-flex-wrap">
+            <h4 class="modal-title body-text-1">
+                <slot name="title" />
+            </h4>
             <button
                 type="button"
                 class="x-button"
@@ -15,12 +16,12 @@
                 on:click={() => (show = false)}>
                 <span class="icon-x" aria-hidden="true" />
             </button>
+            <p class="u-flex-basis-100-percent">
+                <slot />
+            </p>
         </header>
         <div class="modal-content">
-            <slot />
+            <slot name="content" />
         </div>
-        <div class="modal-footer">
-            <slot name="footer" />
-        </div>
-    </Card>
+    </section>
 {/if}

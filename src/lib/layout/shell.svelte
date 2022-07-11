@@ -33,6 +33,9 @@
     };
 
     const onScroll = () => {
+        if (!tabsList) {
+            return;
+        }
         const { offsetWidth, scrollLeft, scrollWidth } = tabsList;
         showLeft = scrollLeft > 10;
         showRight = scrollLeft < scrollWidth - offsetWidth - 10;
@@ -70,24 +73,22 @@
     </nav>
     <section class="main-content">
         <Cover>
-            <svelte:fragment slot="title">
+            <svelte:fragment slot="header">
                 {#if $backButton}
                     <a class="back-button" href={$backButton} aria-label="page back">
                         <span class="icon-cheveron-left" aria-hidden="true" />
                     </a>
+                {/if}
+                <h1 class="heading-level-4">
                     <span class="text"> {$title}</span>
-                    {#if $copyData?.value}
-                        <Copy value={$copyData.value}>
-                            <Pill button><i class="icon-duplicate" />{$copyData.text}</Pill>
-                        </Copy>
-                    {/if}
-                {:else}
-                    <span class="text"> {$title}</span>
-                    {#if $copyData?.value}
-                        <Copy value={$copyData.value}>
-                            <Pill button><i class="icon-duplicate" />{$copyData.text}</Pill>
-                        </Copy>
-                    {/if}
+                </h1>
+                {#if $copyData?.value}
+                    <Copy value={$copyData.value}>
+                        <Pill button
+                            ><span
+                                class="icon-duplicate"
+                                aria-hidden="true" />{$copyData.text}</Pill>
+                    </Copy>
                 {/if}
             </svelte:fragment>
 

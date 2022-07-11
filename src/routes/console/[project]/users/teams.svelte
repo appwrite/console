@@ -57,11 +57,11 @@
                 }
             }}>
             <Button on:click={() => (showCreate = true)}>
-                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Team</span>
+                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
             </Button>
         </span>
     </Search>
-    {#if $teamsList?.response?.total}
+    {#if $teamsList?.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
@@ -69,7 +69,7 @@
                 <TableCellHead>Created</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each $teamsList.response.teams as team}
+                {#each $teamsList.teams as team}
                     <TableRowLink href={`${base}/console/${project}/users/teams/${team.$id}`}>
                         <TableCellText title="ID">
                             <div class="u-flex u-gap-12">
@@ -86,8 +86,8 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$teamsList.response.total}</p>
-            <Pagination {limit} bind:offset sum={$teamsList.response.total} />
+            <p class="text">Total results: {$teamsList.total}</p>
+            <Pagination {limit} bind:offset sum={$teamsList.total} />
         </div>
     {:else if search}
         <Empty>
@@ -102,8 +102,8 @@
             </div>
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$teamsList.response.total}</p>
-            <Pagination {limit} bind:offset sum={$teamsList.response.total} />
+            <p class="text">Total results: {$teamsList.total}</p>
+            <Pagination {limit} bind:offset sum={$teamsList.total} />
         </div>
     {:else}
         <Empty dashed centered>
@@ -117,7 +117,7 @@
                     }
                 }}>
                 <Button secondary round on:click={() => (showCreate = true)}>
-                    <i class="icon-plus" />
+                    <span class="icon-plus" aria-hidden="true" />
                 </Button>
             </div>
             <div class="common-section">

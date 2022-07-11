@@ -20,9 +20,11 @@
     }
 </script>
 
-<li class={`helper u-${type}`}>
+<li class={`helper u-${type} u-margin-block-start-8"`}>
     {#if icon !== ''}
         <span class={`icon-${icon}`} aria-hidden="true" />
     {/if}
-    <slot />
+    <span class="text">
+        <slot />
+    </span>
 </li>

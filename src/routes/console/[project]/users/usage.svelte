@@ -7,7 +7,7 @@
     let currentRange = '30d';
 
     $: usersUsage.load(currentRange);
-    $: data = $usersUsage.response;
+    $: data = $usersUsage;
 
     //TODO: add types once they are fixed
 </script>

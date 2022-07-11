@@ -62,21 +62,21 @@
                 }
             }}>
             <Button on:click={() => (showCreate = true)}>
-                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create User</span>
+                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
             </Button>
         </span>
     </Search>
-    {#if $usersList?.response?.total}
+    {#if $usersList?.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>E-Mail</TableCellHead>
+                <TableCellHead>Email</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
                 <TableCellHead width={100}>ID</TableCellHead>
                 <TableCellHead>Joined</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each $usersList.response.users as user}
+                {#each $usersList.users as user}
                     <TableRowLink href={`${base}/console/${project}/users/user/${user.$id}`}>
                         <TableCellText title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
@@ -84,7 +84,7 @@
                                 <span class="text">{user.name ? user.name : 'n/a'}</span>
                             </div>
                         </TableCellText>
-                        <TableCellText title="E-Mail">{user.email}</TableCellText>
+                        <TableCellText title="Email">{user.email}</TableCellText>
                         <TableCellText title="Status">
                             {#if user.status}
                                 <Pill success={user.emailVerification}>
@@ -94,9 +94,11 @@
                                 <Pill danger>Blocked</Pill>
                             {/if}
                         </TableCellText>
-                        <TableCellText title="ID">
+                        <TableCellText showOverflow title="ID">
                             <Copy value={user.$id}>
-                                <Pill button><i class="icon-duplicate" />User ID</Pill>
+                                <Pill button
+                                    ><span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text">User ID</span></Pill>
                             </Copy>
                         </TableCellText>
                         <TableCellText title="Joined">
@@ -107,8 +109,8 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$usersList.response.total}</p>
-            <Pagination {limit} bind:offset sum={$usersList.response.total} />
+            <p class="text">Total results: {$usersList.total}</p>
+            <Pagination {limit} bind:offset sum={$usersList.total} />
         </div>
     {:else if search}
         <Empty>
@@ -123,8 +125,8 @@
             </div>
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$usersList.response.total}</p>
-            <Pagination {limit} bind:offset sum={$usersList.response.total} />
+            <p class="text">Total results: {$usersList.total}</p>
+            <Pagination {limit} bind:offset sum={$usersList.total} />
         </div>
     {:else}
         <Empty dashed centered>
@@ -139,7 +141,7 @@
                         }
                     }}>
                     <Button secondary round on:click={() => (showCreate = true)}>
-                        <i class="icon-plus" />
+                        <span class="icon-plus" aria-hidden="true" />
                     </Button>
                 </div>
                 <div class="common-section">
