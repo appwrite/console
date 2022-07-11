@@ -27,7 +27,7 @@
 </script>
 
 <Form on:submit={deleteFile}>
-    <Modal bind:show={showDelete}>
+    <Modal warning={true} bind:show={showDelete}>
         <svelte:fragment slot="header">Delete File</svelte:fragment>
         <p>Are you sure you want to delete <b>{$file.response.name}</b>?</p>
         <svelte:fragment slot="footer">
