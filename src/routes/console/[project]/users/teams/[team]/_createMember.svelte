@@ -42,17 +42,21 @@
 </script>
 
 <Form on:submit={create}>
-    <Modal warning={true} bind:show={showCreate}>
+    <Modal bind:show={showCreate}>
         <svelte:fragment slot="header">Create User</svelte:fragment>
         <FormList>
             <InputEmail
                 id="email"
-                label="E-Mail"
-                placeholder="test@example.com"
+                label="Email"
+                placeholder="Enter email"
                 required={true}
                 autofocus={true}
                 bind:value={email} />
-            <InputText id="name" label="Name(optional)" placeholder="John Doe" bind:value={name} />
+            <InputText
+                id="name"
+                label="Name (optional)"
+                placeholder="Enter name"
+                bind:value={name} />
             <Alert type="info">
                 <p>
                     Roles are used to manage access permissions. You can create any role you want.

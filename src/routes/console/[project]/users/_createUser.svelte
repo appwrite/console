@@ -55,7 +55,7 @@
                 bind:value={name} />
             <InputEmail
                 id="email"
-                label="E-Mail"
+                label="Email"
                 placeholder="Enter email"
                 required={true}
                 bind:value={mail} />

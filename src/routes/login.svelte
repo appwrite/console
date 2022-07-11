@@ -35,7 +35,7 @@
 <Form on:submit={login}>
     <InputEmail
         id="email"
-        label="E-Mail"
+        label="Email"
         placeholder="test@example.com"
         autofocus={true}
         required={true}

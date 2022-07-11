@@ -84,7 +84,7 @@
                                 <span class="text">{user.name ? user.name : 'n/a'}</span>
                             </div>
                         </TableCellText>
-                        <TableCellText title="E-Mail">{user.email}</TableCellText>
+                        <TableCellText title="Email">{user.email}</TableCellText>
                         <TableCellText title="Status">
                             {#if user.status}
                                 <Pill success={user.emailVerification}>
