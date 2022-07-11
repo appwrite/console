@@ -30,7 +30,7 @@
 
     let search = '';
     let showCreate = false;
-    let showDropdown = false;
+    let showDropdown = [];
     let showDelete = false;
     let selectedFile: Models.File = null;
     let offset = 0;
@@ -67,7 +67,7 @@
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
-                {#each $files.response.files as file}
+                {#each $files.response.files as file, index}
                     <TableRowLink
                         href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
                         <TableCellText title="Name">
@@ -82,7 +82,7 @@
                             >{toLocaleDate(file.$createdAt)}</TableCellText>
                         <TableCellText showOverflow title="">
                             <DropList
-                                bind:show={showDropdown}
+                                bind:show={showDropdown[index]}
                                 position="bottom"
                                 horizontal="left"
                                 arrow={false}>
@@ -90,7 +90,7 @@
                                     class="button is-only-icon is-text"
                                     aria-label="More options"
                                     on:click|preventDefault={() => {
-                                        showDropdown = !showDropdown;
+                                        showDropdown[index] = !showDropdown[index];
                                     }}>
                                     <span class="icon-dots-horizontal" aria-hidden="true" />
                                 </button>
@@ -101,7 +101,8 @@
                                         >Update</DropListLink>
                                     <DropListItem
                                         icon="trash"
-                                        on:click={() => {
+                                        on:click={(e) => {
+                                            e.preventDefault();
                                             selectedFile = file;
                                             showDelete = true;
                                         }}>Delete</DropListItem>
