@@ -41,6 +41,10 @@
             }
         ]);
     }
+
+    $: if ($bucket) {
+        handle();
+    }
 </script>
 
 <svelte:head>
