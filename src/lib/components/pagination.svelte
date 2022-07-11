@@ -5,15 +5,15 @@
     export let offset: number;
 
     const dispatch = createEventDispatcher();
-    const totalPages = Math.ceil(sum / limit);
-    let currentPage = Math.floor(offset / limit + 1);
+    $: totalPages = Math.ceil(sum / limit);
+    $: currentPage = Math.floor(offset / limit + 1);
+    $: pages = pagination(currentPage, totalPages);
 
     function handleOptionClick(page: number) {
         if (currentPage !== page) {
             offset = limit * (page - 1);
             currentPage = page;
             dispatch('change');
-            pages = pagination(currentPage, totalPages);
         }
     }
 
@@ -22,16 +22,12 @@
             currentPage += 1;
             offset = limit * (currentPage - 1);
             dispatch('change');
-            pages = pagination(currentPage, totalPages);
         } else if (direction === 'prev' && currentPage > 1) {
             currentPage -= 1;
             offset = limit * (currentPage - 1);
             dispatch('change');
-            pages = pagination(currentPage, totalPages);
         }
     }
-
-    let pages = pagination(currentPage, totalPages);
 
     function pagination(page: number, total: number) {
         const pagesShown = 5;
