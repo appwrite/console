@@ -16,29 +16,43 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import Delete from './_deleteBucket.svelte';
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
 
     let showDelete = false;
-    let showError: false | 'name' | 'size' = false;
-    let errorMessage = 'Something went wrong';
-    let errorType: 'error' | 'warning' | 'success' = 'error';
-    let enabled = $bucket.enabled;
-    let bucketName = '';
-    let bucketPermissions = $bucket.permission;
-    let bucketRead = $bucket.$read;
-    let bucketWrite = $bucket.$write;
-    let arePermsDisabled = true;
-    let encryption = $bucket.encryption;
-    let antivirus = $bucket.antivirus;
-    let maxSize: number;
-    let byteUnit: 'Bytes' | 'KB' | 'MB' | 'GB' = 'Bytes';
-    let options = [
-        { label: 'Bytes', value: 'Bytes' },
-        { label: 'Kilobytes', value: 'KB' },
-        { label: 'Megabytes', value: 'MB' },
-        { label: 'Gigabytes', value: 'GB' }
-    ];
+    let showError: false | 'name' | 'size' = false,
+        errorMessage = 'Something went wrong',
+        errorType: 'error' | 'warning' | 'success' = 'error';
+    let enabled: boolean = null,
+        bucketName: string = null,
+        bucketPermissions: string = null,
+        bucketRead: string[] = null,
+        bucketWrite: string[] = null,
+        arePermsDisabled = true,
+        encryption: boolean = null,
+        antivirus: boolean = null,
+        maxSize: number;
+    let byteUnit: 'Bytes' | 'KB' | 'MB' | 'GB' = 'Bytes',
+        options = [
+            { label: 'Bytes', value: 'Bytes' },
+            { label: 'Kilobytes', value: 'KB' },
+            { label: 'Megabytes', value: 'MB' },
+            { label: 'Gigabytes', value: 'GB' }
+        ];
     let extensions = $bucket.allowedFileExtensions;
     let isExtensionsDisabled = true;
+
+    onMount(async () => {
+        await bucket.load($page.params.bucket);
+        enabled ??= $bucket.enabled;
+        bucketName ??= $bucket.name;
+        bucketName ??= $bucket.name;
+        bucketPermissions ??= $bucket.permission;
+        bucketRead ??= $bucket.$read;
+        bucketWrite ??= $bucket.$write;
+        encryption ??= $bucket.encryption;
+        antivirus ??= $bucket.antivirus;
+    });
 
     $: if (bucketPermissions || bucketRead || bucketWrite) {
         if (bucketPermissions !== $bucket.permission) {
@@ -91,7 +105,6 @@
         try {
             await sdkForProject.storage.updateBucket($bucket.$id, $bucket.name, $bucket.permission);
             $bucket.name = bucketName;
-            bucketName = null;
             showError = false;
             addNotification({
                 message: 'Name has been updated',
@@ -238,7 +251,7 @@
                     <InputText
                         id="name"
                         label="Name"
-                        placeholder={$bucket.name}
+                        placeholder="Enter name"
                         autocomplete={false}
                         bind:value={bucketName} />
                     {#if showError === 'name'}
@@ -249,7 +262,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={!bucketName}
+                    disabled={bucketName === $bucket.name || !bucketName}
                     on:click={() => {
                         updateName();
                     }}>Update</Button>
