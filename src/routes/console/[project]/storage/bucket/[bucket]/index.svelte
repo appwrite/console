@@ -2,7 +2,15 @@
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Avatar, Search } from '$lib/components';
+    import {
+        Empty,
+        Pagination,
+        Avatar,
+        Search,
+        DropList,
+        DropListItem,
+        DropListLink
+    } from '$lib/components';
     import Create from './_create.svelte';
     import Delete from './_deleteFile.svelte';
     import {
@@ -72,15 +80,33 @@
                         <TableCellText title="Size">{bytesToSize(file.sizeOriginal)}</TableCellText>
                         <TableCellText title="Date Created"
                             >{toLocaleDate(file.$createdAt)}</TableCellText>
-                        <TableCellText title="">
-                            <button
-                                class="button is-only-icon is-text"
-                                aria-label="Delete item"
-                                on:click|preventDefault={() => {
-                                    showDropdown = !showDropdown;
-                                }}>
-                                <span class="icon-dots-horizontal" aria-hidden="true" />
-                            </button>
+                        <TableCellText showOverflow title="">
+                            <DropList
+                                bind:show={showDropdown}
+                                position="bottom"
+                                horizontal="left"
+                                arrow={false}>
+                                <button
+                                    class="button is-only-icon is-text"
+                                    aria-label="More options"
+                                    on:click|preventDefault={() => {
+                                        showDropdown = !showDropdown;
+                                    }}>
+                                    <span class="icon-dots-horizontal" aria-hidden="true" />
+                                </button>
+                                <svelte:fragment slot="list">
+                                    <DropListLink
+                                        icon="pencil"
+                                        href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}
+                                        >Update</DropListLink>
+                                    <DropListItem
+                                        icon="trash"
+                                        on:click={() => {
+                                            selectedFile = file;
+                                            showDelete = true;
+                                        }}>Delete</DropListItem>
+                                </svelte:fragment>
+                            </DropList>
                         </TableCellText>
                     </TableRowLink>
                 {/each}
