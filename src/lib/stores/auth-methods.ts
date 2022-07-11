@@ -59,7 +59,7 @@ function createAuthMethods() {
                 },
                 {
                     label: 'Team Invites',
-                    method: 'team-invites',
+                    method: 'invites',
                     value: project.authInvites
                 },
                 {
