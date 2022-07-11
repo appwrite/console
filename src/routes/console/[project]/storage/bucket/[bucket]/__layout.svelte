@@ -13,11 +13,11 @@
     afterNavigate(handle);
 
     async function handle() {
-        if ($bucket.response?.$id !== bucketId) {
+        if ($bucket?.$id !== bucketId) {
             await bucket.load(bucketId);
-            title.set($bucket.response.name);
-        } else if ($bucket.response) {
-            title.set($bucket.response.name);
+            title.set($bucket.name);
+        } else if ($bucket) {
+            title.set($bucket.name);
         }
 
         backButton.set(`${base}/console/${$page.params.project}/storage`);

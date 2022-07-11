@@ -21,14 +21,14 @@
     let showError: false | 'name' | 'size' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let enabled = $bucket.response.enabled;
+    let enabled = $bucket.enabled;
     let bucketName = '';
-    let bucketPermissions = $bucket.response.permission;
-    let bucketRead = $bucket.response.$read;
-    let bucketWrite = $bucket.response.$write;
+    let bucketPermissions = $bucket.permission;
+    let bucketRead = $bucket.$read;
+    let bucketWrite = $bucket.$write;
     let arePermsDisabled = true;
-    let encryption = $bucket.response.encryption;
-    let antivirus = $bucket.response.antivirus;
+    let encryption = $bucket.encryption;
+    let antivirus = $bucket.antivirus;
     let maxSize: number;
     let byteUnit: 'Bytes' | 'KB' | 'MB' | 'GB' = 'Bytes';
     let options = [
@@ -37,24 +37,24 @@
         { label: 'Megabytes', value: 'MB' },
         { label: 'Gigabytes', value: 'GB' }
     ];
-    let extensions = $bucket.response.allowedFileExtensions;
+    let extensions = $bucket.allowedFileExtensions;
     let isExtensionsDisabled = true;
 
     $: if (bucketPermissions || bucketRead || bucketWrite) {
-        if (bucketPermissions !== $bucket.response.permission) {
+        if (bucketPermissions !== $bucket.permission) {
             arePermsDisabled = false;
         } else if (bucketRead) {
-            if (JSON.stringify(bucketRead) !== JSON.stringify($bucket.response.$read)) {
+            if (JSON.stringify(bucketRead) !== JSON.stringify($bucket.$read)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         } else if (bucketWrite) {
-            if (JSON.stringify(bucketWrite) !== JSON.stringify($bucket.response.$write)) {
+            if (JSON.stringify(bucketWrite) !== JSON.stringify($bucket.$write)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
     }
     $: if (extensions) {
-        if (JSON.stringify(extensions) !== JSON.stringify($bucket.response.allowedFileExtensions)) {
+        if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
             isExtensionsDisabled = false;
         } else isExtensionsDisabled = true;
     }
@@ -68,16 +68,16 @@
     async function toggleBucket() {
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.response.$id,
-                $bucket.response.name,
-                $bucket.response.permission,
-                $bucket.response.$read,
-                $bucket.response.$write,
+                $bucket.$id,
+                $bucket.name,
+                $bucket.permission,
+                $bucket.$read,
+                $bucket.$write,
                 enabled
             );
-            $bucket.response.enabled = enabled;
+            $bucket.enabled = enabled;
             addNotification({
-                message: `${$bucket.response.name} has been updatede`,
+                message: `${$bucket.name} has been updatede`,
                 type: 'success'
             });
         } catch (error) {
@@ -89,12 +89,8 @@
     }
     async function updateName() {
         try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.response.$id,
-                $bucket.response.name,
-                $bucket.response.permission
-            );
-            $bucket.response.name = bucketName;
+            await sdkForProject.storage.updateBucket($bucket.$id, $bucket.name, $bucket.permission);
+            $bucket.name = bucketName;
             bucketName = null;
             showError = false;
             addNotification({
@@ -108,15 +104,15 @@
     async function updatePermissions() {
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.response.$id,
-                $bucket.response.name,
+                $bucket.$id,
+                $bucket.name,
                 bucketPermissions,
-                bucketPermissions === 'bucket' ? bucketRead : $bucket.response.$read,
-                bucketPermissions === 'bucket' ? bucketWrite : $bucket.response.$write
+                bucketPermissions === 'bucket' ? bucketRead : $bucket.$read,
+                bucketPermissions === 'bucket' ? bucketWrite : $bucket.$write
             );
-            $bucket.response.permission = bucketPermissions;
-            $bucket.response.$read = bucketRead;
-            $bucket.response.$write = bucketWrite;
+            $bucket.permission = bucketPermissions;
+            $bucket.$read = bucketRead;
+            $bucket.$write = bucketWrite;
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -133,21 +129,21 @@
     async function updateSecurity() {
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.response.$id,
-                $bucket.response.name,
-                $bucket.response.permission,
-                $bucket.response.$read,
-                $bucket.response.$write,
-                $bucket.response.enabled,
-                $bucket.response.maximumFileSize,
-                $bucket.response.allowedFileExtensions,
+                $bucket.$id,
+                $bucket.name,
+                $bucket.permission,
+                $bucket.$read,
+                $bucket.$write,
+                $bucket.enabled,
+                $bucket.maximumFileSize,
+                $bucket.allowedFileExtensions,
                 encryption,
                 antivirus
             );
-            $bucket.response.encryption = encryption;
-            $bucket.response.antivirus = antivirus;
+            $bucket.encryption = encryption;
+            $bucket.antivirus = antivirus;
             addNotification({
-                message: `${$bucket.response.name} has been updatede`,
+                message: `${$bucket.name} has been updatede`,
                 type: 'success'
             });
         } catch (error) {
@@ -162,17 +158,17 @@
         console.log(size);
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.response.$id,
-                $bucket.response.name,
-                $bucket.response.permission,
-                $bucket.response.$read,
-                $bucket.response.$write,
-                $bucket.response.enabled,
+                $bucket.$id,
+                $bucket.name,
+                $bucket.permission,
+                $bucket.$read,
+                $bucket.$write,
+                $bucket.enabled,
                 size
             );
-            $bucket.response.maximumFileSize = maxSize;
+            $bucket.maximumFileSize = maxSize;
             addNotification({
-                message: `${$bucket.response.name} has been updatede`,
+                message: `${$bucket.name} has been updatede`,
                 type: 'success'
             });
         } catch (error) {
@@ -186,18 +182,18 @@
     async function updateAllowedExtensions() {
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.response.$id,
-                $bucket.response.name,
-                $bucket.response.permission,
-                $bucket.response.$read,
-                $bucket.response.$write,
-                $bucket.response.enabled,
-                $bucket.response.maximumFileSize,
+                $bucket.$id,
+                $bucket.name,
+                $bucket.permission,
+                $bucket.$read,
+                $bucket.$write,
+                $bucket.enabled,
+                $bucket.maximumFileSize,
                 extensions
             );
-            $bucket.response.allowedFileExtensions = extensions;
+            $bucket.allowedFileExtensions = extensions;
             addNotification({
-                message: `${$bucket.response.name} has been updatede`,
+                message: `${$bucket.name} has been updatede`,
                 type: 'success'
             });
         } catch (error) {
@@ -210,9 +206,9 @@
 </script>
 
 <Container>
-    {#if $bucket.response}
+    {#if $bucket}
         <CardGrid>
-            <h2 class="heading-level-7">{$bucket.response.name}</h2>
+            <h2 class="heading-level-7">{$bucket.name}</h2>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -221,13 +217,13 @@
                         id="toggle"
                         bind:value={enabled} />
                 </ul>
-                <p>Created: {toLocaleDateTime($bucket.response.$createdAt)}</p>
-                <p>Last Updated: {toLocaleDateTime($bucket.response.$updatedAt)}</p>
+                <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
+                <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={enabled === $bucket.response.enabled}
+                    disabled={enabled === $bucket.enabled}
                     on:click={() => {
                         toggleBucket();
                     }}>Update</Button>
@@ -242,7 +238,7 @@
                     <InputText
                         id="name"
                         label="Name"
-                        placeholder={$bucket.response.name}
+                        placeholder={$bucket.name}
                         autocomplete={false}
                         bind:value={bucketName} />
                     {#if showError === 'name'}
@@ -345,8 +341,7 @@
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={encryption === $bucket.response.encryption &&
-                        antivirus === $bucket.response.antivirus}
+                    disabled={encryption === $bucket.encryption && antivirus === $bucket.antivirus}
                     on:click={() => {
                         updateSecurity();
                     }}>Update</Button>
@@ -360,7 +355,7 @@
                     <InputNumber
                         id="size"
                         label="Size"
-                        placeholder={$bucket.response.maximumFileSize + ''}
+                        placeholder={$bucket.maximumFileSize + ''}
                         bind:value={maxSize} />
                     <InputSelect id="bytes" label="Bytes" {options} bind:value={byteUnit} />
                 </ul>
@@ -411,9 +406,9 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$bucket.response.name}</h6>
+                        <h6 class="u-bold">{$bucket.name}</h6>
                     </svelte:fragment>
-                    <p>Last Updated: {toLocaleDateTime($bucket.response.$updatedAt)}</p>
+                    <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                 </Box>
             </svelte:fragment>
 

@@ -34,9 +34,9 @@
         </Button>
     </div>
 
-    {#if $bucketList.response?.total}
+    {#if $bucketList?.total}
         <div class="grid-box common-section" style="--grid-gap:2rem; --grid-item-size:25rem;">
-            {#each $bucketList.response.buckets as bucket}
+            {#each $bucketList.buckets as bucket}
                 <Bucket href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
@@ -79,8 +79,8 @@
         </div>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$bucketList.response.total}</p>
-            <Pagination {limit} bind:offset sum={$bucketList.response.total} />
+            <p class="text">Total results: {$bucketList.total}</p>
+            <Pagination {limit} bind:offset sum={$bucketList.total} />
         </div>
     {:else if search}
         <Empty>
@@ -95,8 +95,8 @@
             </div>
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$bucketList.response?.total}</p>
-            <Pagination {limit} bind:offset sum={$bucketList.response?.total} />
+            <p class="text">Total results: {$bucketList?.total}</p>
+            <Pagination {limit} bind:offset sum={$bucketList?.total} />
         </div>
     {:else}
         <Empty dashed centered>

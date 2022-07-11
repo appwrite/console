@@ -16,29 +16,28 @@
         let bucketId = $page.params.bucket;
         let fileId = $page.params.file;
         await file.load(bucketId, fileId);
-        fileRead = $file.response?.$read;
-        fileWrite = $file.response?.$write;
+        fileRead = $file?.$read;
+        fileWrite = $file?.$write;
     });
 
     let showDelete = false;
-    let fileRead = $file.response?.$read;
-    let fileWrite = $file.response?.$write;
+    let fileRead = $file?.$read;
+    let fileWrite = $file?.$write;
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview($file.response.bucketId, fileId, 205, 125).toString() +
+        sdkForProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
         '&mode=admin';
     const getView = (fileId: string) =>
-        sdkForProject.storage.getFileView($file.response.bucketId, fileId).toString() +
-        '&mode=admin';
+        sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
 
     $: if (fileRead || fileWrite) {
         if (fileRead) {
-            if (JSON.stringify(fileRead) !== JSON.stringify($file.response.$read)) {
+            if (JSON.stringify(fileRead) !== JSON.stringify($file.$read)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         } else if (fileWrite) {
-            if (JSON.stringify(fileWrite) !== JSON.stringify($file.response.$write)) {
+            if (JSON.stringify(fileWrite) !== JSON.stringify($file.$write)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
@@ -46,22 +45,16 @@
 
     function downloadFile() {
         return (
-            sdkForProject.storage
-                .getFileDownload($file.response.bucketId, $file.response.$id)
-                .toString() + '&mode=admin'
+            sdkForProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
+            '&mode=admin'
         );
     }
 
     async function updatePermissions() {
         try {
-            await sdkForProject.storage.updateFile(
-                $file.response.bucketId,
-                $file.response.$id,
-                fileRead,
-                fileWrite
-            );
-            $file.response.$read = fileRead;
-            $file.response.$write = fileWrite;
+            await sdkForProject.storage.updateFile($file.bucketId, $file.$id, fileRead, fileWrite);
+            $file.$read = fileRead;
+            $file.$write = fileWrite;
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -77,27 +70,23 @@
 </script>
 
 <Container>
-    {#if $file.response}
+    {#if $file}
         <CardGrid>
             <div class="u-flex u-gap-16">
-                <img
-                    width="205"
-                    height="125"
-                    src={getPreview($file.response.$id)}
-                    alt={$file.response.name} />
+                <img width="205" height="125" src={getPreview($file.$id)} alt={$file.name} />
                 <div>
-                    <h2 class="heading-level-7">{$file.response.name}</h2>
-                    <Copy value={getView($file.response.$id)}>
+                    <h2 class="heading-level-7">{$file.name}</h2>
+                    <Copy value={getView($file.$id)}>
                         <Pill button><i class="icon-duplicate" />File URL</Pill>
                     </Copy>
                 </div>
             </div>
             <svelte:fragment slot="aside">
                 <div>
-                    <p>MIME Type: {$file.response.mimeType}</p>
-                    <p>Size: {bytesToSize($file.response.sizeOriginal)}</p>
-                    <p>Created: {toLocaleDate($file.response.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDate($file.response.$updatedAt)}</p>
+                    <p>MIME Type: {$file.mimeType}</p>
+                    <p>Size: {bytesToSize($file.sizeOriginal)}</p>
+                    <p>Created: {toLocaleDate($file.$createdAt)}</p>
+                    <p>Last Updated: {toLocaleDate($file.$updatedAt)}</p>
                 </div>
             </svelte:fragment>
 
@@ -157,10 +146,10 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$file.response.name}</h6>
+                        <h6 class="u-bold">{$file.name}</h6>
                     </svelte:fragment>
                     <p>
-                        Last Updated: {toLocaleDateTime($file.response.$updatedAt)}
+                        Last Updated: {toLocaleDateTime($file.$updatedAt)}
                     </p>
                 </Box>
             </svelte:fragment>

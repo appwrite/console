@@ -57,7 +57,7 @@
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Add File</span>
         </Button>
     </Search>
-    {#if $files?.response?.total}
+    {#if $files?.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
@@ -67,7 +67,7 @@
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
-                {#each $files.response.files as file, index}
+                {#each $files.files as file, index}
                     <TableRowLink
                         href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
                         <TableCellText title="Name">
@@ -114,8 +114,8 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$files.response.total}</p>
-            <Pagination {limit} bind:offset sum={$files.response.total} />
+            <p class="text">Total results: {$files.total}</p>
+            <Pagination {limit} bind:offset sum={$files.total} />
         </div>
     {:else if search}
         <Empty>
@@ -130,8 +130,8 @@
             </div>
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$files.response?.total}</p>
-            <Pagination {limit} bind:offset sum={$files.response?.total} />
+            <p class="text">Total results: {$files?.total}</p>
+            <Pagination {limit} bind:offset sum={$files?.total} />
         </div>
     {:else}
         <Empty dashed centered>

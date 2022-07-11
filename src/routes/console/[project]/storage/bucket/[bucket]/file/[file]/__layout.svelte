@@ -14,11 +14,11 @@
     afterNavigate(handle);
 
     async function handle() {
-        if ($file.response?.$id !== fileId) {
+        if ($file?.$id !== fileId) {
             await file.load(bucketId, fileId);
-            title.set($file.response.name);
-        } else if ($file.response) {
-            title.set($file.response.name);
+            title.set($file.name);
+        } else if ($file) {
+            title.set($file.name);
         }
         backButton.set(`${base}/console/${$page.params.project}/storage/bucket/${bucketId}`);
 
