@@ -43,13 +43,14 @@
             <InputText
                 id="name"
                 label="Name"
-                placeholder="John Doe"
+                placeholder="Enter name"
                 autofocus={true}
                 bind:value={name} />
             {#if !showDropdown}
                 <div>
                     <Pill button on:click={() => (showDropdown = !showDropdown)}
-                        >Team ID <i class="icon-pencil" /></Pill>
+                        ><span class="icon-pencil" /> <span class="text"> Team ID </span>
+                    </Pill>
                 </div>
             {:else}
                 <InnerModal bind:show={showDropdown}>
@@ -63,7 +64,7 @@
                                 showLabel={false}
                                 placeholder="Enter ID"
                                 autofocus={true}
-                                bind:value={name} />
+                                bind:value={id} />
                             <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
                                 <span
                                     class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"

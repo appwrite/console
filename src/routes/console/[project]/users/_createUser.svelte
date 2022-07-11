@@ -50,26 +50,26 @@
             <InputText
                 id="name"
                 label="Name"
-                placeholder="John Doe"
+                placeholder="Enter name"
                 autofocus={true}
                 bind:value={name} />
             <InputEmail
                 id="email"
                 label="E-Mail"
-                placeholder="test@example.com"
+                placeholder="Enter email"
                 required={true}
                 bind:value={mail} />
             <InputPassword
                 id="password"
                 label="Password"
-                placeholder="*****"
+                placeholder="Enter password"
                 required={true}
                 bind:value={pass} />
 
             {#if !showDropdown}
                 <div>
                     <Pill button on:click={() => (showDropdown = !showDropdown)}
-                        >User ID <i class="icon-pencil" /></Pill>
+                        ><span class="icon-pencil" /><span class="text"> User ID </span></Pill>
                 </div>
             {:else}
                 <InnerModal bind:show={showDropdown}>
@@ -83,7 +83,7 @@
                                 showLabel={false}
                                 placeholder="Enter ID"
                                 autofocus={true}
-                                bind:value={name} />
+                                bind:value={id} />
 
                             <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
                                 <span
