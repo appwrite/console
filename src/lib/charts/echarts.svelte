@@ -1,41 +1,19 @@
 <script lang="ts">
-    import * as echarts from 'echarts/core';
-    import { LineChart } from 'echarts/charts';
+    import { registerTheme, use, init, graphic } from 'echarts/core';
+    import type { ECharts } from 'echarts/core';
     import type { LineSeriesOption } from 'echarts/charts';
-    import {
-        TitleComponent,
-        TooltipComponent,
-        GridComponent,
-        DatasetComponent,
-        TransformComponent,
-        LegendComponent
-    } from 'echarts/components';
-    import { LabelLayout, UniversalTransition } from 'echarts/features';
-    import { CanvasRenderer } from 'echarts/renderers';
     import { onDestroy, onMount } from 'svelte';
     import { app } from '$lib/stores/app';
     import light from './echartLight.json';
     import dark from './echartDark.json';
 
-    echarts.use([
-        TitleComponent,
-        TooltipComponent,
-        GridComponent,
-        DatasetComponent,
-        TransformComponent,
-        LegendComponent,
-        LineChart,
-        LabelLayout,
-        UniversalTransition,
-        CanvasRenderer
-    ]);
-    echarts.registerTheme('light', light);
-    echarts.registerTheme('dark', dark);
+    registerTheme('light', light);
+    registerTheme('dark', dark);
 
     export let series: LineSeriesOption[];
     export let title: string;
 
-    let myChart: echarts.ECharts;
+    let chart: ECharts;
     $: option = {
         animationDuration: 400,
         title: {
@@ -59,12 +37,24 @@
     let timeoutId: unknown;
 
     $: option && setOption();
-    $: if (myChart && $app.themeInUse) {
+    $: if (chart && $app.themeInUse) {
         makeChart();
         setOption();
     }
 
-    onMount(() => {
+    onMount(async () => {
+        use([
+            (await import('echarts/charts')).LineChart,
+            (await import('echarts/components')).TitleComponent,
+            (await import('echarts/components')).TooltipComponent,
+            (await import('echarts/components')).GridComponent,
+            (await import('echarts/components')).DatasetComponent,
+            (await import('echarts/components')).TransformComponent,
+            (await import('echarts/components')).LegendComponent,
+            (await import('echarts/features')).LabelLayout,
+            (await import('echarts/features')).UniversalTransition,
+            (await import('echarts/renderers')).CanvasRenderer
+        ]);
         makeChart();
     });
 
@@ -72,29 +62,29 @@
         destroyChart();
     });
     const setOption = () => {
-        if (myChart && !myChart.isDisposed()) {
-            myChart.setOption(option, notMerge, lazyUpdate);
+        if (chart && !chart.isDisposed()) {
+            chart.setOption(option, notMerge, lazyUpdate);
         }
     };
 
     const destroyChart = () => {
-        if (myChart && !myChart.isDisposed()) {
-            myChart.dispose();
+        if (chart && !chart.isDisposed()) {
+            chart.dispose();
         }
     };
 
     const makeChart = () => {
         destroyChart();
-        myChart = echarts.init(document.getElementById(`echart-${title}`), $app.themeInUse);
+        chart = init(document.getElementById(`echart-${title}`), $app.themeInUse);
         series.forEach((s: LineSeriesOption, i: number) => {
-            s.areaStyle = colorToGradient(myChart['_theme'].color[i]);
+            s.areaStyle = colorToGradient(chart['_theme'].color[i]);
         });
     };
 
     function colorToGradient(color: string) {
         return {
             opacity: 0.8,
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            color: new graphic.LinearGradient(0, 0, 0, 1, [
                 {
                     offset: 0,
                     color: `${color}`
@@ -107,15 +97,15 @@
         };
     }
     window.onresize = () => {
-        if (myChart && !myChart.isDisposed()) {
+        if (chart && !chart.isDisposed()) {
             handleResize();
         }
     };
     const handleResize = () => {
         if (timeoutId == undefined) {
             timeoutId = setTimeout(() => {
-                if (myChart && !myChart.isDisposed()) {
-                    myChart.resize();
+                if (chart && !chart.isDisposed()) {
+                    chart.resize();
                 }
                 timeoutId = undefined;
             }, 500);
