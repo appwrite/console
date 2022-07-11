@@ -4,11 +4,11 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination, Tiles, Tooltip, Copy } from '$lib/components';
-    import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
+    import { Pill } from '$lib/elements';
 
     let showCreate = false;
     let search = '';
@@ -37,37 +37,37 @@
         <div aria-busy="true" />
     {:then response}
         {#if response.total}
-            <Tiles>
+            <Tiles columns={2}>
                 {#each response.buckets as bucket}
                     <a
                         class="card"
                         href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
-                        <div class="u-flex u-main-space-between">
-                            <span class="is-small">XX Files</span>
-                            {#if !bucket.enabled}
-                                <Pill>Disabled</Pill>
-                            {/if}
-                        </div>
-                        <h3 class="tiles-title">{bucket.name}</h3>
-                        <div class="u-flex u-main-space-between">
-                            <Copy value={bucket.$id}>
-                                <Pill button
-                                    ><span class="icon-duplicate" aria-hidden="true" />Bucket ID</Pill>
-                            </Copy>
-                            <div class="">
-                                <Tooltip icon="lock-closed" aria="encryption">
-                                    <span
-                                        >{bucket.encryption
+                        <div class="bucket">
+                            <div class="eyebrow-heading-3">XXX Files</div>
+                            <h2 class="heading-level-6">{bucket.name}</h2>
+                            <div class="bucket-status" />
+                            <Pill>
+                                <Copy value={bucket.$id}>
+                                    <span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text">{bucket.$id}</span>
+                                </Copy>
+                            </Pill>
+                            <ul class="bucket-icons u-flex u-gap-8">
+                                <li>
+                                    <Tooltip icon="lock-closed" aria="encryption">
+                                        {bucket.encryption
                                             ? 'Encryption enabled'
-                                            : 'Encryption disabled'}</span>
-                                </Tooltip>
-                                <Tooltip icon="shield-check" aria="antivirus">
-                                    <span
-                                        >{bucket.antivirus
+                                            : 'Encryption disabled'}
+                                    </Tooltip>
+                                </li>
+                                <li>
+                                    <Tooltip icon="shield-check" aria="antivirus">
+                                        {bucket.antivirus
                                             ? 'Antivirus enabled'
-                                            : 'Antivirus disabled'}</span>
-                                </Tooltip>
-                            </div>
+                                            : 'Antivirus disabled'}
+                                    </Tooltip>
+                                </li>
+                            </ul>
                         </div>
                     </a>
                 {/each}

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { Button, Form, InputText } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
 
     import { sdkForProject } from '$lib/stores/sdk';
@@ -30,7 +30,9 @@
 <Form on:submit={create}>
     <Modal bind:show={showCreate}>
         <svelte:fragment slot="header">Create Bucket</svelte:fragment>
-        <InputText id="name" label="Name" bind:value={name} autofocus required />
+        <FormList>
+            <InputText id="name" label="Name" bind:value={name} autofocus required />
+        </FormList>
         <svelte:fragment slot="footer">
             <Button submit>Create</Button>
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
