@@ -7,10 +7,13 @@
     import { page } from '$app/stores';
     import { user } from '$lib/stores/user';
     import { onMount } from 'svelte';
-    import Notifications from '$lib/layout/notifications.svelte';
     import { base } from '$app/paths';
     import { browser } from '$app/env';
     import { app } from '$lib/stores/app';
+    import Notifications from '$lib/layout/notifications.svelte';
+    import Loading from './_loading.svelte';
+
+    let loaded = false;
 
     if (browser) {
         window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
@@ -27,6 +30,8 @@
             }
         } catch (error) {
             await goto(`${base}/login`);
+        } finally {
+            loaded = true;
         }
     });
 
@@ -67,4 +72,8 @@
 
 <Notifications />
 
-<slot />
+{#if loaded}
+    <slot />
+{:else}
+    <Loading />
+{/if}
