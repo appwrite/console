@@ -26,8 +26,24 @@ function createFilesStore() {
     return {
         subscribe,
         set,
-        load: async (bucketId: string, search: string, limit: number, offset: number) => {
-            const response = await sdkForProject.storage.listFiles(bucketId, search, limit, offset);
+        load: async (
+            bucketId: string,
+            search?: string,
+            limit?: number,
+            offset?: number,
+            cursor?: string,
+            cursorDirection?: string,
+            orderType?: 'DESC' | 'ASC'
+        ) => {
+            const response = await sdkForProject.storage.listFiles(
+                bucketId,
+                search,
+                limit,
+                offset,
+                cursor,
+                cursorDirection,
+                (orderType = 'DESC')
+            );
             set(response);
         }
     };
