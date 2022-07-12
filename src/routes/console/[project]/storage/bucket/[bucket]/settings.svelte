@@ -91,7 +91,7 @@
             );
             $bucket.enabled = enabled;
             addNotification({
-                message: `${$bucket.name} has been updatede`,
+                message: `${$bucket.name} has been updated`,
                 type: 'success'
             });
         } catch (error) {
