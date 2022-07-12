@@ -42,8 +42,9 @@
     const getPreview = (fileId: string) =>
         sdkForProject.storage.getFilePreview(bucket, fileId, 32, 32).toString() + '&mode=admin';
 
-    const fileCreated = () => {
+    const filesUpdated = () => {
         showCreate = false;
+        showDelete = false;
         files.load(bucket, search, limit, offset);
     };
 
@@ -152,7 +153,7 @@
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={fileCreated} />
+<Create bind:showCreate on:created={filesUpdated} />
 {#if selectedFile}
-    <Delete file={selectedFile} bind:showDelete />
+    <Delete file={selectedFile} bind:showDelete on:deleted={filesUpdated} />
 {/if}

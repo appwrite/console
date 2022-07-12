@@ -1,21 +1,21 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { Modal } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { createEventDispatcher } from 'svelte';
 
     export let file: Models.File;
     export let showDelete = false;
+
+    const dispatch = createEventDispatcher();
 
     const deleteFile = async () => {
         try {
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             showDelete = false;
-            await goto(`${base}/console/${$page.params.project}/storage/bucket/${file.bucketId}`);
+            dispatch('deleted');
         } catch (error) {
             addNotification({
                 type: 'error',
