@@ -15,7 +15,7 @@
         try {
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             showDelete = false;
-            dispatch('deleted');
+            dispatch('deleted', file);
         } catch (error) {
             addNotification({
                 type: 'error',

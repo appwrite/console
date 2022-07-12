@@ -63,14 +63,14 @@ const createUploader = () => {
                 bucketId: file.bucketId,
                 name: file.name,
                 progress: calculateProgress(file),
-                completed: false,
+                completed: calculateProgress(file) === 100 ? true : false,
                 failed: false,
                 cancelled: false
             };
             return update((n) => {
                 n.isOpen = isOpen;
                 n.isCollapsed = isCollapsed;
-                n.files.push(newFile);
+                n.files.unshift(newFile);
                 return n;
             });
         },

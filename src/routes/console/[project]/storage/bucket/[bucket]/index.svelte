@@ -27,6 +27,7 @@
     import { base } from '$app/paths';
     import { files } from './store';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { uploader } from '$lib/stores/uploader';
 
     let search = '';
     let showCreate = false;
@@ -42,9 +43,14 @@
     const getPreview = (fileId: string) =>
         sdkForProject.storage.getFilePreview(bucket, fileId, 32, 32).toString() + '&mode=admin';
 
-    const filesUpdated = () => {
+    const fileCreated = () => {
         showCreate = false;
+        files.load(bucket, search, limit, offset);
+    };
+
+    const fileDeleted = (event: CustomEvent<Models.File>) => {
         showDelete = false;
+        uploader.removeFile(event.detail);
         files.load(bucket, search, limit, offset);
     };
 
@@ -153,7 +159,7 @@
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={filesUpdated} />
+<Create bind:showCreate on:created={fileCreated} />
 {#if selectedFile}
-    <Delete file={selectedFile} bind:showDelete on:deleted={filesUpdated} />
+    <Delete file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
 {/if}
