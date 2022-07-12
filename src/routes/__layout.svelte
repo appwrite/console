@@ -60,21 +60,45 @@
             gtag('config', window.GOOGLE_ANALYTICS);
         </script>
     {/if}
-    <!-- Hotjar Tracking Code for my site -->
-    <script>
-        (function (h, o, t, j, a, r) {
-            h.hj =
-                h.hj ||
-                function () {
-                    (h.hj.q = h.hj.q || []).push(arguments);
-                };
-            h._hjSettings = { hjid: 3054099, hjsv: 6 };
-            a = o.getElementsByTagName('head')[0];
-            r = o.createElement('script');
-            r.async = 1;
-            r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
-            a.appendChild(r);
-        })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+    <!-- Doorbell Code -->
+
+    <script type="text/javascript">
+        window.doorbellOptions = {
+            id: '13243',
+            appKey: 'IfjGo7zzMcyIBZXvLXoj305scu2ovRnAXEBVWsdPDUG7JSgnlvuFBY5y6U0UgFGl'
+        };
+        (function (w, d, t) {
+            var hasLoaded = false;
+            function l() {
+                if (hasLoaded) {
+                    return;
+                }
+                hasLoaded = true;
+                window.doorbellOptions.windowLoaded = true;
+                var g = d.createElement(t);
+                g.id = 'doorbellScript';
+                g.type = 'text/javascript';
+                g.async = true;
+                g.src =
+                    'https://embed.doorbell.io/button/' +
+                    window.doorbellOptions['id'] +
+                    '?t=' +
+                    new Date().getTime();
+                (
+                    d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]
+                ).appendChild(g);
+            }
+            if (w.attachEvent) {
+                w.attachEvent('onload', l);
+            } else if (w.addEventListener) {
+                w.addEventListener('load', l, false);
+            } else {
+                l();
+            }
+            if (d.readyState == 'complete') {
+                l();
+            }
+        })(window, document, 'script');
     </script>
 </svelte:head>
 
