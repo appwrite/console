@@ -50,6 +50,7 @@
             for (let i = 0; i < ev.dataTransfer.items.length; i++) {
                 // If dropped items aren't files, reject them
                 if (ev.dataTransfer.items[i].kind === 'file') {
+                    list.items.clear();
                     list.items.add(ev.dataTransfer.items[i].getAsFile());
                     files = list.files;
                 }
@@ -67,8 +68,12 @@
         ev.preventDefault();
     }
 
-    $: if (!showDropdown) {
+    $: if (!showCreate) {
         id = null;
+        list = new DataTransfer();
+        files = null;
+        read = [];
+        write = [];
     }
 
     //TODO: add correct max file size
