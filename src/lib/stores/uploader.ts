@@ -70,6 +70,9 @@ const createUploader = () => {
             return update((n) => {
                 n.isOpen = isOpen;
                 n.isCollapsed = isCollapsed;
+                if (n.files.length >= 3) {
+                    n.files.pop();
+                }
                 n.files.unshift(newFile);
                 return n;
             });
