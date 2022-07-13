@@ -7,10 +7,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
+    import { bucket } from './store';
+    import { bytesToSize } from '$lib/helpers/sizeConvertion';
 
     export let showCreate = false;
 
-    const bucket = $page.params.bucket;
+    const bucketId = $page.params.bucket;
     const dispatch = createEventDispatcher();
 
     let list = new DataTransfer();
@@ -23,7 +25,7 @@
     const create = async () => {
         try {
             const file = await sdkForProject.storage.createFile(
-                bucket,
+                bucketId,
                 id ?? 'unique()',
                 files[0],
                 read,
@@ -75,8 +77,6 @@
         read = [];
         write = [];
     }
-
-    //TODO: add correct max file size
 </script>
 
 <input bind:files id="file" type="file" style="display: none" />
@@ -120,7 +120,7 @@
                     </div>
                 </div>
 
-                <p>Max file size: 10MB</p>
+                <p>Max file size: {bytesToSize($bucket.maximumFileSize)}</p>
             </div>
 
             {#if !showDropdown}
