@@ -23,7 +23,7 @@
         backButton.set(`${base}/console/${$page.params.project}/storage`);
 
         copyData.set({
-            text: bucketId,
+            text: 'Bucket ID',
             value: bucketId
         });
         tabs.set([

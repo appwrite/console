@@ -23,7 +23,7 @@
         backButton.set(`${base}/console/${$page.params.project}/storage/bucket/${bucketId}`);
 
         copyData.set({
-            text: fileId,
+            text: 'File ID',
             value: fileId
         });
         tabs.set([]);
