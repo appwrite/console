@@ -3,9 +3,9 @@
     import { Pill } from '$lib/elements';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Avatar } from '$lib/components';
+
     async function removeFile($id: string, bucketId: string) {
         const file = await sdkForProject.storage.getFile(bucketId, $id);
-        console.log(file);
         uploader.removeFile(file);
     }
 
