@@ -76,6 +76,22 @@
                     </svelte:fragment>
                 </Bucket>
             {/each}
+            {#if $bucketList.total % 2 !== 0}
+                <article class="card is-border-dashed">
+                    <div class="bucket">
+                        <div class="u-flex u-flex-vertical u-cross-center">
+                            <div class="common-section">
+                                <Button secondary round on:click={() => (showCreate = true)}>
+                                    <i class="icon-plus" />
+                                </Button>
+                            </div>
+                            <div class="common-section">
+                                <p>Add a New Bucket</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            {/if}
         </div>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
