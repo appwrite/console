@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -18,6 +19,7 @@
         TableHeader,
         TableBody,
         TableRowLink,
+        TableRow,
         TableCellHead,
         TableCellText
     } from '$lib/elements/table';
@@ -28,6 +30,7 @@
     import { files } from './store';
     import type { Models } from '@aw-labs/appwrite-console';
     import { uploader } from '$lib/stores/uploader';
+    import { addNotification } from '$lib/stores/notifications';
 
     let search = '';
     let showCreate = false;
@@ -54,6 +57,19 @@
         files.load(bucket, search, limit, offset);
     };
 
+    const deleteFile = async (file) => {
+        try {
+            await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
+            uploader.removeFile(file);
+            files.load(bucket, search, limit, offset);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    };
+
     $: files.load(bucket, search, limit, offset);
     $: if (search) offset = 0;
 </script>
@@ -75,48 +91,87 @@
             </TableHeader>
             <TableBody>
                 {#each $files.files as file, index}
-                    <TableRowLink
-                        href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
-                        <TableCellText title="Name">
-                            <div class="u-flex u-gap-12">
-                                <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
-                                <span> {file.name}</span>
-                            </div>
-                        </TableCellText>
-                        <TableCellText title="Type">{file.mimeType}</TableCellText>
-                        <TableCellText title="Size">{bytesToSize(file.sizeOriginal)}</TableCellText>
-                        <TableCellText title="Date Created"
-                            >{toLocaleDate(file.$createdAt)}</TableCellText>
-                        <TableCellText showOverflow title="">
-                            <DropList
-                                bind:show={showDropdown[index]}
-                                position="bottom"
-                                horizontal="left"
-                                arrow={false}>
-                                <button
-                                    class="button is-only-icon is-text"
-                                    aria-label="More options"
-                                    on:click|preventDefault={() => {
-                                        showDropdown[index] = !showDropdown[index];
-                                    }}>
-                                    <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
-                                <svelte:fragment slot="list">
-                                    <DropListLink
-                                        icon="pencil"
-                                        href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}
-                                        >Update</DropListLink>
-                                    <DropListItem
-                                        icon="trash"
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            selectedFile = file;
-                                            showDelete = true;
-                                        }}>Delete</DropListItem>
-                                </svelte:fragment>
-                            </DropList>
-                        </TableCellText>
-                    </TableRowLink>
+                    {#if file.chunksTotal / file.chunksUploaded !== 1}
+                        <TableRow>
+                            <TableCellText title="Name">
+                                <div class="u-flex u-gap-12">
+                                    <div class="avatar is-color-empty" />
+
+                                    <span> {file.name}</span>
+                                    <Pill warning>Pending</Pill>
+                                </div>
+                            </TableCellText>
+                            <TableCellText title="Type">{file.mimeType}</TableCellText>
+                            <TableCellText title="Size"
+                                >{bytesToSize(file.sizeOriginal)}</TableCellText>
+                            <TableCellText title="Date Created"
+                                >{toLocaleDate(file.$createdAt)}</TableCellText>
+                            <TableCellText title="">
+                                <div class="u-flex u-main-center">
+                                    <button
+                                        class="button is-only-icon is-text"
+                                        aria-label="Delete item"
+                                        on:click|preventDefault={() => {
+                                            console.log('Feel refreshed?');
+                                        }}>
+                                        <span class="icon-refresh" aria-hidden="true" />
+                                    </button>
+                                    <button
+                                        class="button is-only-icon is-text"
+                                        aria-label="Delete item"
+                                        on:click|preventDefault={() => {
+                                            deleteFile(file);
+                                        }}>
+                                        <span class="icon-trash" aria-hidden="true" />
+                                    </button>
+                                </div>
+                            </TableCellText>
+                        </TableRow>
+                    {:else}
+                        <TableRowLink
+                            href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
+                            <TableCellText title="Name">
+                                <div class="u-flex u-gap-12">
+                                    <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
+                                    <span> {file.name}</span>
+                                </div>
+                            </TableCellText>
+                            <TableCellText title="Type">{file.mimeType}</TableCellText>
+                            <TableCellText title="Size"
+                                >{bytesToSize(file.sizeOriginal)}</TableCellText>
+                            <TableCellText title="Date Created"
+                                >{toLocaleDate(file.$createdAt)}</TableCellText>
+                            <TableCellText showOverflow title="">
+                                <DropList
+                                    bind:show={showDropdown[index]}
+                                    position="bottom"
+                                    horizontal="left"
+                                    arrow={false}>
+                                    <button
+                                        class="button is-only-icon is-text"
+                                        aria-label="More options"
+                                        on:click|preventDefault={() => {
+                                            showDropdown[index] = !showDropdown[index];
+                                        }}>
+                                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                                    </button>
+                                    <svelte:fragment slot="list">
+                                        <DropListLink
+                                            icon="pencil"
+                                            href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}
+                                            >Update</DropListLink>
+                                        <DropListItem
+                                            icon="trash"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                selectedFile = file;
+                                                showDelete = true;
+                                            }}>Delete</DropListItem>
+                                    </svelte:fragment>
+                                </DropList>
+                            </TableCellText>
+                        </TableRowLink>
+                    {/if}
                 {/each}
             </TableBody>
         </Table>
