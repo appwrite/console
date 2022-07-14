@@ -1,8 +1,7 @@
 <script>
     import { afterNavigate } from '$app/navigation';
-
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { setDatabase } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -18,15 +17,14 @@
         if ($database?.$id !== databaseId) {
             setDatabase($page.params.database);
             await database.load();
-            title.set(`Database - ${$database.name}`);
+            title.set($database.name);
         } else if ($database) {
-            title.set(`Database - ${$database.name}`);
+            title.set($database.name);
         }
-        backButton.set('');
-
+        backButton.set(`${base}/console/${$page.params.project}/databases`);
         copyData.set({
-            text: '',
-            value: ''
+            text: 'Database ID',
+            value: databaseId
         });
 
         tabs.set([
@@ -37,6 +35,10 @@
             {
                 href: `${path}/usage`,
                 title: 'Usage'
+            },
+            {
+                href: `${path}/settings`,
+                title: 'Settings'
             }
         ]);
     }
