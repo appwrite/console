@@ -32,6 +32,13 @@
             });
         }
     };
+
+    $: if (!showDropdown) {
+        id = null;
+    }
+    $: if (!showCreate) {
+        showDropdown = false;
+    }
 </script>
 
 <Form on:submit={create}>

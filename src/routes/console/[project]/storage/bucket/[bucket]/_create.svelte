@@ -77,6 +77,10 @@
         read = [];
         write = [];
     }
+
+    $: if (!showDropdown) {
+        id = null;
+    }
 </script>
 
 <input bind:files id="file" type="file" style="display: none" />
