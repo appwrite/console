@@ -30,7 +30,7 @@
         <h2 class="heading-level-5">Buckets</h2>
 
         <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add Bucket</span>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add bucket</span>
         </Button>
     </div>
 
@@ -86,7 +86,7 @@
                                 </Button>
                             </div>
                             <div class="common-section">
-                                <p>Add a New Bucket</p>
+                                <p>Add a new bucket</p>
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                     </Button>
                 </div>
                 <div class="common-section">
-                    <p>Add Your First Bucket To Get Started</p>
+                    <p>Add your first bucket to get started</p>
                 </div>
                 <div class="common-section">
                     <Button secondary href="#">Documentation</Button>
