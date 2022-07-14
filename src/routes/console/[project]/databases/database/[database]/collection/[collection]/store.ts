@@ -1,6 +1,7 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
+import { browser } from '$app/env';
 
 type Attributes =
     | Models.AttributeBoolean
@@ -17,7 +18,9 @@ type Collection = Omit<Models.Collection, 'attributes'> & {
 };
 
 function createCollection() {
-    const { subscribe, set, update } = writable<Collection>();
+    const { subscribe, set, update } = writable<Collection>(
+        browser ? JSON.parse(sessionStorage.getItem('collection')) : null
+    );
 
     return {
         subscribe,
@@ -49,4 +52,29 @@ function createCollection() {
     };
 }
 
+function createDocumentListStore() {
+    const { subscribe, set } = writable<Models.DocumentList<Models.Document>>(
+        browser ? JSON.parse(sessionStorage.getItem('documents')) : null
+    );
+    return {
+        subscribe,
+        set,
+        load: async (collectionId: string, queries: [], limit: number, offset: number) => {
+            const response = await sdkForProject.databases.listDocuments(
+                collectionId,
+                queries,
+                limit,
+                offset
+            );
+            set(response);
+        }
+    };
+}
+
 export const collection = createCollection();
+export const documentList = createDocumentListStore();
+
+if (browser) {
+    collection.subscribe((n) => sessionStorage?.setItem('collection', JSON.stringify(n ?? '')));
+    documentList.subscribe((n) => sessionStorage?.setItem('documentList', JSON.stringify(n ?? '')));
+}

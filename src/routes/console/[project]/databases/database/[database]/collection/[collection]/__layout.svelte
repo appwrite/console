@@ -22,7 +22,7 @@
             title.set($collection.name);
         }
 
-        backButton.set(`${base}/console/${$page.params.project}/database`);
+        backButton.set(`${base}/console/${$page.params.project}/database/${databaseId}`);
 
         copyData.set({
             text: '',

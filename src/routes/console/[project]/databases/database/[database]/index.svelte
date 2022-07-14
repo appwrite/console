@@ -45,6 +45,10 @@
                     href={`${base}/console/${project}/databases/database/${databaseId}/collection/${collection.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Documents</svelte:fragment>
                     <svelte:fragment slot="title">{collection.name}</svelte:fragment>
+                    <svelte:fragment slot="status">
+                        {#if !collection.enabled}
+                            <Pill>Disabled</Pill>
+                        {/if}</svelte:fragment>
 
                     <Copy value={collection.$id}>
                         <Pill button><i class="icon-duplicate" />Collection ID</Pill>
