@@ -17,7 +17,7 @@
     const limit = 5;
     const project = $page.params.project;
     const databaseId = $page.params.database;
-    const collectionCreated = async (event: CustomEvent<Models.Collection>) => {
+    const handleCreate = async (event: CustomEvent<Models.Collection>) => {
         showCreate = false;
         await goto(
             `${base}/console/${project}/databases/database/${databaseId}/collection/${event.detail.$id}`
@@ -112,4 +112,4 @@
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={collectionCreated} />
+<Create bind:showCreate on:created={handleCreate} />

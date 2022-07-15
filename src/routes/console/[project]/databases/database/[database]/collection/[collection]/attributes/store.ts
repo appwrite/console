@@ -12,50 +12,41 @@ import Url from './_url.svelte';
 export type Option = {
     name: string;
     component: typeof SvelteComponent;
-    icon: string;
 };
 
 export const options: Option[] = [
     {
         name: 'String',
-        component: String,
-        icon: 'string'
+        component: String
     },
     {
         name: 'Integer',
-        component: Integer,
-        icon: 'integer'
+        component: Integer
     },
     {
         name: 'Float',
-        component: Float,
-        icon: 'integer'
+        component: Float
     },
     {
         name: 'Boolean',
-        component: Boolean,
-        icon: 'boolean'
+        component: Boolean
     },
     {
         name: 'Email',
-        component: Email,
-        icon: 'email'
+        component: Email
     },
     {
         name: 'IP',
-        component: Ip,
-        icon: 'ip'
+        component: Ip
     },
     {
         name: 'URL',
-        component: Url,
-        icon: 'url'
+        component: Url
     },
     {
         name: 'Enum',
-        component: Enum,
-        icon: 'enum'
+        component: Enum
     }
 ];
 
-export const option = writable<Option>();
+export const option = writable<Option>({ name: null, component: null });

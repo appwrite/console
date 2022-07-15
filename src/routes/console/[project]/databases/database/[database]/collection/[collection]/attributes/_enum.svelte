@@ -1,20 +1,12 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import {
-        Button,
-        InputText,
-        InputSwitch,
-        InputSelect,
-        Form,
-        InputTags
-    } from '$lib/elements/forms';
+    import { InputSwitch, InputSelect, InputTags } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
 
-    let key: string,
-        def = '',
+    export let key: string;
+    let def = '',
         elements: string[],
         required = false,
         array = false;
@@ -46,23 +38,7 @@
         })) ?? [];
 </script>
 
-<Form on:submit={submit}>
-    <Modal on:close={() => dispatch('close')} show>
-        <svelte:fragment slot="header">Create Enum Attribute</svelte:fragment>
-
-        <InputText id="key" label="Key" bind:value={key} required autofocus />
-        <InputTags
-            id="elements"
-            label="Elements"
-            bind:tags={elements}
-            placeholder="Add elements here" />
-        <InputSelect id="default" label="Default" bind:options bind:value={def} />
-        <InputSwitch id="required" label="Required" bind:value={required} />
-        <InputSwitch id="required" label="Array" bind:value={array} />
-
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => dispatch('close')}>Cancel</Button>
-            <Button submit>Create</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<InputTags id="elements" label="Elements" bind:tags={elements} placeholder="Add elements here" />
+<InputSelect id="default" label="Default" bind:options bind:value={def} />
+<InputSwitch id="required" label="Required" bind:value={required} />
+<InputSwitch id="required" label="Array" bind:value={array} />

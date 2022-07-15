@@ -22,11 +22,11 @@
             title.set($collection.name);
         }
 
-        backButton.set(`${base}/console/${$page.params.project}/database/${databaseId}`);
+        backButton.set(`${base}/console/${$page.params.project}/databases/database/${databaseId}/`);
 
         copyData.set({
-            text: '',
-            value: ''
+            text: 'Collection ID',
+            value: collectionId
         });
 
         tabs.set([

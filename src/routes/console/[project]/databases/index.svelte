@@ -16,7 +16,7 @@
 
     const limit = 5;
     const project = $page.params.project;
-    const databaseCreated = async (event: CustomEvent<Models.Database>) => {
+    const handleCreate = async (event: CustomEvent<Models.Database>) => {
         showCreate = false;
         await goto(`${base}/console/${project}/databases/database/${event.detail.$id}`);
     };
@@ -103,4 +103,4 @@
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={databaseCreated} />
+<Create bind:showCreate on:created={handleCreate} />

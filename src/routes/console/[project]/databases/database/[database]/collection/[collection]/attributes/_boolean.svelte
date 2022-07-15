@@ -1,16 +1,15 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button, InputText, InputSwitch, Form } from '$lib/elements/forms';
+    import { InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
 
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
 
-    const dispatch = createEventDispatcher();
+    export const dispatch = createEventDispatcher();
 
-    let key: string,
-        def: boolean,
+    let key: string;
+    let def: boolean,
         required = false,
         array = false;
 
@@ -33,18 +32,6 @@
     };
 </script>
 
-<Form on:submit={submit}>
-    <Modal on:close={() => dispatch('close')} show>
-        <svelte:fragment slot="header">Create Boolean Attribute</svelte:fragment>
-
-        <InputText id="key" label="Key" bind:value={key} required autofocus />
-        <InputSwitch id="required" label="Required" bind:value={required} />
-        <InputSwitch id="array" label="Array" bind:value={array} />
-        <InputSwitch id="default" label="Default" bind:value={def} />
-
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => dispatch('close')}>Cancel</Button>
-            <Button submit>Create</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<InputSwitch id="required" label="Required" required bind:value={required} />
+<InputSwitch id="array" label="Array" bind:value={array} />
+<InputSwitch id="default" label="Default" bind:value={def} />

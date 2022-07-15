@@ -44,7 +44,7 @@
         </Button>
     </div>
 
-    {#if $documentList.total}
+    {#if $documentList?.total}
         <div class="table-wrapper">
             <Table sticky>
                 <TableHeader>

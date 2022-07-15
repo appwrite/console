@@ -3,7 +3,7 @@ import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
 import { browser } from '$app/env';
 
-type Attributes =
+export type Attributes =
     | Models.AttributeBoolean
     | Models.AttributeEmail
     | Models.AttributeEnum
