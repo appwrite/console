@@ -5,7 +5,8 @@
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
 
-    export let key: string;
+    export let id: string;
+    export let submitted = false;
     let def = '',
         elements: string[],
         required = false,
@@ -13,16 +14,17 @@
 
     const dispatch = createEventDispatcher();
     const submit = async () => {
+        submitted = false;
         try {
-            await sdkForProject.databases.createEnumAttribute(
+            const attribute = await sdkForProject.databases.createEnumAttribute(
                 $collection.$id,
-                key,
+                id,
                 elements,
                 required,
                 def ? def : undefined,
                 array
             );
-            dispatch('close');
+            dispatch('created', attribute);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -36,6 +38,10 @@
             value: e,
             label: e
         })) ?? [];
+
+    $: if (submitted) {
+        submit();
+    }
 </script>
 
 <InputTags id="elements" label="Elements" bind:tags={elements} placeholder="Add elements here" />

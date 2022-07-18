@@ -1,32 +1,19 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    // import { Pill } from '$lib/elements';
     import { option, options } from './attributes/store';
     import { Button, InputText, Form, FormList, InputSelect } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { createEventDispatcher } from 'svelte';
+    import { collection } from './store';
+    import type { Attributes } from './store';
 
     export let showCreate = false;
 
-    const dispatch = createEventDispatcher();
-
-    let name = '';
     let id: string = null;
-    let key: string = null;
     let selectedOption = '';
+    let submitted = false;
 
-    const create = async () => {
-        try {
-            console.log('test');
-            showCreate = false;
-            dispatch('created');
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
+    const created = async (event: CustomEvent<Attributes>) => {
+        collection.addAttribute(event.detail);
+        showCreate = false;
     };
 
     $: if (selectedOption) {
@@ -34,15 +21,15 @@
     }
 </script>
 
-<Form on:submit={create}>
+<Form on:submit={() => (submitted = true)}>
     <Modal size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Attribute</svelte:fragment>
         <FormList>
             <InputText
-                id="key"
-                label="Attribute key"
-                placeholder="Enter key"
-                bind:value={key}
+                id="ID"
+                label="Attribute ID"
+                placeholder="Enter ID"
+                bind:value={id}
                 autofocus
                 required />
 
@@ -63,7 +50,9 @@
             {#if selectedOption}
                 <svelte:component
                     this={$option.component}
-                    {key}
+                    {id}
+                    bind:submitted
+                    on:created={created}
                     on:close={() => ($option = null)} />
             {/if}
         </FormList>

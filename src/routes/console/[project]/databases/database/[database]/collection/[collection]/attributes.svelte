@@ -10,25 +10,22 @@
     import { Button } from '$lib/elements/forms';
     import { DropList, DropListItem, Empty, Pagination } from '$lib/components';
     import { collection } from './store';
-    // import type { Attributes } from './store';
+    import type { Attributes } from './store';
     import { Container } from '$lib/layout';
     import { Pill } from '$lib/elements';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import Create from './_createAttribute.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import Delete from './_deleteAttribute.svelte';
+    import Overview from './_overview.svelte';
 
     let offset = 0;
     const limit = 5;
     let showDropdown = [];
-    // let selectedAttribute: Attributes = null;
-    // let showDelete = false;
+    let selectedAttribute: Attributes = null;
     let showCreate = false;
-
-    const handleCreate = async (event: CustomEvent<Models.Collection>) => {
-        showCreate = false;
-        console.log(event);
-    };
+    let showDelete = false;
+    let showOverview = false;
 
     onMount(async () => {
         await collection.load($page.params.collection);
@@ -48,7 +45,7 @@
     {#if $collection?.attributes.length}
         <Table>
             <TableHeader>
-                <TableCellHead>Key</TableCellHead>
+                <TableCellHead>ID</TableCellHead>
                 <TableCellHead>Type</TableCellHead>
                 <TableCellHead>Default Value</TableCellHead>
                 <TableCellHead width={30} />
@@ -66,6 +63,8 @@
                                     )}>
                                     {attribute.status}
                                 </Pill>
+                            {:else if attribute.required}
+                                <Pill>Required</Pill>
                             {/if}
                         </TableCellText>
                         <TableCellText title="Type">{attribute.type}</TableCellText>
@@ -87,14 +86,20 @@
                                     <span class="icon-dots-horizontal" aria-hidden="true" />
                                 </button>
                                 <svelte:fragment slot="list">
-                                    <DropListItem icon="eye">Overview</DropListItem>
+                                    <DropListItem
+                                        icon="eye"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedAttribute = attribute;
+                                            showOverview = true;
+                                        }}>Overview</DropListItem>
                                     <DropListItem icon="plus">Create Index</DropListItem>
                                     <DropListItem
                                         icon="trash"
                                         on:click={(e) => {
                                             e.preventDefault();
-                                            // selectedAttribute = attribute;
-                                            // showDelete = true;
+                                            selectedAttribute = attribute;
+                                            showDelete = true;
                                         }}>Delete</DropListItem>
                                 </svelte:fragment>
                             </DropList>
@@ -126,4 +131,8 @@
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={handleCreate} />
+<Create bind:showCreate />
+{#if selectedAttribute}
+    <Delete bind:showDelete {selectedAttribute} />
+    <Overview bind:showOverview {selectedAttribute} />
+{/if}

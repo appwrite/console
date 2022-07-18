@@ -5,7 +5,8 @@
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
 
-    export let key: string;
+    export let id: string;
+    export let submitted = false;
     let def: string,
         size = 255,
         required = false,
@@ -13,16 +14,17 @@
 
     const dispatch = createEventDispatcher();
     const submit = async () => {
+        submitted = false;
         try {
-            await sdkForProject.databases.createStringAttribute(
+            const attribute = await sdkForProject.databases.createStringAttribute(
                 $collection.$id,
-                key,
+                id,
                 size,
                 required,
                 def ? def : undefined,
                 array
             );
-            dispatch('close');
+            dispatch('created', attribute);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -30,6 +32,10 @@
             });
         }
     };
+
+    $: if (submitted) {
+        submit();
+    }
 </script>
 
 <InputNumber id="size" label="Size" bind:value={size} required />

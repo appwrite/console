@@ -5,22 +5,24 @@
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
 
-    export let key: string;
+    export let id: string;
+    export let submitted = false;
     let def: string,
         required = false,
         array = false;
 
     const dispatch = createEventDispatcher();
     const submit = async () => {
+        submitted = false;
         try {
-            await sdkForProject.databases.createEmailAttribute(
+            const attribute = await sdkForProject.databases.createEmailAttribute(
                 $collection.$id,
-                key,
+                id,
                 required,
                 def ? def : undefined,
                 array
             );
-            dispatch('close');
+            dispatch('created', attribute);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -28,6 +30,10 @@
             });
         }
     };
+
+    $: if (submitted) {
+        submit();
+    }
 </script>
 
 <InputSwitch id="required" label="Required" bind:value={required} />

@@ -5,17 +5,20 @@
     import { Modal } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
     import { collection } from './store';
+    import type { Attributes } from './store';
+    import { sdkForProject } from '$lib/stores/sdk';
 
     export let showDelete = false;
+    export let selectedAttribute: Attributes;
 
     const deleteElement = async () => {
         try {
-            await sdkForProject.databases.deleteCollection($collection.$id);
+            await sdkForProject.databases.deleteAttribute($collection.$id, selectedAttribute.key);
+            collection.removeAttribute(selectedAttribute);
             showDelete = false;
             await goto(
-                `${base}/console/${$page.params.project}/databases/database/${$page.params.database}`
+                `${base}/console/${$page.params.project}/databases/database/${$page.params.database}/collection/${$page.params.collection}/attributes`
             );
         } catch (error) {
             addNotification({
@@ -28,10 +31,11 @@
 
 <Form on:submit={deleteElement}>
     <Modal warning={true} bind:show={showDelete}>
-        <svelte:fragment slot="header">Delete Collection</svelte:fragment>
+        <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
 
         <p>
-            Are you sure you want to delete <b>{$collection.name}</b>?
+            Are you sure you want to delete <b>'{selectedAttribute.key}' from {$collection.name}</b
+            >?
         </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>

@@ -7,7 +7,8 @@
 
     const dispatch = createEventDispatcher();
 
-    export let key: string;
+    export let id: string;
+    export let submitted = false;
     let min: number,
         max: number,
         def: number,
@@ -15,17 +16,18 @@
         array = false;
 
     const submit = async () => {
+        submitted = false;
         try {
-            await sdkForProject.databases.createFloatAttribute(
+            const attribute = await sdkForProject.databases.createFloatAttribute(
                 $collection.$id,
-                key,
+                id,
                 required,
                 min,
                 max,
                 def ? def : undefined,
                 array
             );
-            dispatch('close');
+            dispatch('created', attribute);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -33,6 +35,10 @@
             });
         }
     };
+
+    $: if (submitted) {
+        submit();
+    }
 </script>
 
 <InputNumber id="min" label="Min" bind:value={min} />
