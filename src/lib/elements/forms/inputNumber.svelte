@@ -9,6 +9,7 @@
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
+    export let readonly = false;
     export let autofocus = false;
     export let maxlength: number = null;
     export let minlength: number = null;
@@ -32,6 +33,7 @@
             {required}
             {minlength}
             {maxlength}
+            {readonly}
             type="number"
             class="input-text"
             bind:value

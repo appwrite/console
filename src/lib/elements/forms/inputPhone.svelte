@@ -9,6 +9,7 @@
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
+    export let readonly = false;
     export let autofocus = false;
     export let autocomplete = true;
     export let maxlength: number = null;
@@ -31,6 +32,7 @@
             {disabled}
             {required}
             {maxlength}
+            {readonly}
             autocomplete={autocomplete ? 'on' : 'off'}
             type="tel"
             class="input-text"

@@ -9,6 +9,8 @@
     export let placeholder = '';
     export let helper = '';
     export let autofocus = false;
+    export let disabled = false;
+    export let readonly = false;
 
     let value = '';
     let element: HTMLInputElement;
@@ -77,6 +79,8 @@
                 class="tags-input-text"
                 {id}
                 {placeholder}
+                {disabled}
+                {readonly}
                 on:keydown={handleInput}
                 on:blur={addValue}
                 bind:value

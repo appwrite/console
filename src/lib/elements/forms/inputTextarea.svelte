@@ -9,6 +9,7 @@
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
+    export let readonly = false;
     export let autofocus = false;
     export let maxlength: number = null;
 
@@ -28,6 +29,7 @@
             {id}
             {placeholder}
             {disabled}
+            {readonly}
             {required}
             {maxlength}
             class="input-text"
