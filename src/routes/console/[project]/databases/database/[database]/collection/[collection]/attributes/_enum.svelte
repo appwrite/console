@@ -4,10 +4,13 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export let id: string;
     export let submitted = false;
-    let def = '',
+    export let overview = false;
+    export let selectedAttribute: Models.AttributeEnum;
+    let xdefault = '',
         elements: string[],
         required = false,
         array = false;
@@ -21,7 +24,7 @@
                 id,
                 elements,
                 required,
-                def ? def : undefined,
+                xdefault ? xdefault : undefined,
                 array
             );
             dispatch('created', attribute);
@@ -42,9 +45,17 @@
     $: if (submitted) {
         submit();
     }
+    $: if (overview) {
+        ({ required, array, elements, xdefault } = selectedAttribute);
+    }
 </script>
 
-<InputTags id="elements" label="Elements" bind:tags={elements} placeholder="Add elements here" />
-<InputSelect id="default" label="Default" bind:options bind:value={def} />
-<InputSwitch id="required" label="Required" bind:value={required} />
-<InputSwitch id="required" label="Array" bind:value={array} />
+<InputTags
+    id="elements"
+    label="Elements"
+    bind:tags={elements}
+    placeholder="Add elements here"
+    readonly={overview} />
+<InputSelect id="default" label="Default" bind:options bind:value={xdefault} disabled={overview} />
+<InputSwitch id="required" label="Required" bind:value={required} disabled={overview} />
+<InputSwitch id="required" label="Array" bind:value={array} disabled={overview} />

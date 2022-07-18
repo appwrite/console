@@ -4,14 +4,17 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     const dispatch = createEventDispatcher();
 
     export let id: string;
     export let submitted = false;
+    export let overview = false;
+    export let selectedAttribute: Models.AttributeFloat;
     let min: number,
         max: number,
-        def: number,
+        xdefault: number,
         required = false,
         array = false;
 
@@ -24,7 +27,7 @@
                 required,
                 min,
                 max,
-                def ? def : undefined,
+                xdefault ? xdefault : undefined,
                 array
             );
             dispatch('created', attribute);
@@ -39,11 +42,15 @@
     $: if (submitted) {
         submit();
     }
+
+    $: if (overview) {
+        ({ required, array, min, max, xdefault } = selectedAttribute);
+    }
 </script>
 
-<InputNumber id="min" label="Min" bind:value={min} />
-<InputNumber id="max" label="Max" bind:value={max} />
+<InputNumber id="min" label="Min" bind:value={min} readonly={overview} />
+<InputNumber id="max" label="Max" bind:value={max} readonly={overview} />
 
-<InputSwitch id="required" label="Required" bind:value={required} />
-<InputSwitch id="array" label="Array" bind:value={array} />
-<InputNumber id="default" label="Default" bind:value={def} />
+<InputSwitch id="required" label="Required" bind:value={required} disabled={overview} />
+<InputSwitch id="array" label="Array" bind:value={array} disabled={overview} />
+<InputNumber id="default" label="Default" bind:value={xdefault} readonly={overview} />

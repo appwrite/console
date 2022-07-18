@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { option, options } from './attributes/store';
-    import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { InputText, FormList } from '$lib/elements/forms';
     import type { Attributes } from './store';
 
     export let showOverview = false;
@@ -26,12 +26,8 @@
                 disabled />
 
             {#if selectedAttribute}
-                <svelte:component this={$option.component} disabled={true} />
+                <svelte:component this={$option.component} overview={true} {selectedAttribute} />
             {/if}
         </FormList>
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => (showOverview = false)}>Cancel</Button>
-            <Button submit>Create</Button>
-        </svelte:fragment>
     </Modal>
 {/if}
