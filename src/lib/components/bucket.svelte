@@ -9,8 +9,9 @@
         <div class="bucket-status">
             <slot name="status" />
         </div>
-
-        <slot />
+        <div class="bucket-options">
+            <slot />
+        </div>
         <ul class="bucket-icons u-flex u-gap-8">
             <slot name="icons" />
         </ul>
