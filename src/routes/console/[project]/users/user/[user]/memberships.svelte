@@ -7,7 +7,8 @@
         TableBody,
         TableRowLink,
         TableCellHead,
-        TableCellText
+        TableCellText,
+        TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -61,7 +62,7 @@
                                 </div>
                             </TableCellText>
                             <TableCellText title="Role">{membership.roles}</TableCellText>
-                            <TableCellText title="">
+                            <TableCell>
                                 <button
                                     class="button is-only-icon is-text"
                                     aria-label="Delete item"
@@ -71,7 +72,7 @@
                                     }}>
                                     <span class="icon-trash" aria-hidden="true" />
                                 </button>
-                            </TableCellText>
+                            </TableCell>
                         </TableRowLink>
                     {/each}
                 </TableBody>

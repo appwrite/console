@@ -1,43 +1,44 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
-
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
 
     const path = 'users';
+
     onMount(handle);
     afterNavigate(handle);
 
-    function handle() {
-        title.set('Users');
-        backButton.set('');
+    let loaded = false;
 
-        copyData.set({
-            text: '',
-            value: ''
+    function handle(event = null) {
+        updateLayout({
+            navigate: event,
+            title: 'Users',
+            tabs: [
+                {
+                    href: path,
+                    title: 'Users'
+                },
+                {
+                    href: `${path}/teams`,
+                    title: 'Teams'
+                },
+                {
+                    href: `${path}/authentication`,
+                    title: 'Authentication'
+                },
+                {
+                    href: `${path}/usage`,
+                    title: 'Usage'
+                },
+                {
+                    href: `${path}/security`,
+                    title: 'Security'
+                }
+            ]
         });
-        tabs.set([
-            {
-                href: path,
-                title: 'Users'
-            },
-            {
-                href: `${path}/teams`,
-                title: 'Teams'
-            },
-            {
-                href: `${path}/authentication`,
-                title: 'Authentication'
-            },
-            {
-                href: `${path}/usage`,
-                title: 'Usage'
-            },
-            {
-                href: `${path}/security`,
-                title: 'Security'
-            }
-        ]);
+
+        loaded = true;
     }
 </script>
 
@@ -45,4 +46,6 @@
     <title>Appwrite - Users</title>
 </svelte:head>
 
-<slot />
+{#if loaded}
+    <slot />
+{/if}
