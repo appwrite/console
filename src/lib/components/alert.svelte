@@ -21,9 +21,11 @@
         {/if}
         <span class="icon-info" aria-hidden="true" />
         <div class="content">
-            <h6 class="title">
-                <slot name="title" />
-            </h6>
+            {#if $$slots.title}
+                <h6 class="title">
+                    <slot name="title" />
+                </h6>
+            {/if}
             <p class="message"><slot /></p>
             {#if buttons?.length}
                 <div class="buttons u-flex">
