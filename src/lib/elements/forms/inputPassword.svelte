@@ -11,7 +11,7 @@
     export let disabled = false;
     export let autofocus = false;
     export let meter = true;
-    export let autocomplete = true;
+    export let autocomplete = false;
     export let showPasswordButton = false;
 
     let element: HTMLInputElement;
