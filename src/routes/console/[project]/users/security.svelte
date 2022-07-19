@@ -88,7 +88,7 @@
                             checked={isLimited === 'unlimited'}
                             bind:group={isLimited}
                             value="unlimited" />
-                        <label class="label" for="unlimited"
+                        <label class="label u-inline-flex u-gap-16 u-cross-center" for="unlimited"
                             >Unlimited <Pill>recommended</Pill></label>
                     </div>
                 </li>

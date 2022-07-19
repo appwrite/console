@@ -58,7 +58,7 @@
                 <ul class="tags-list">
                     {#each tags as tag}
                         <li class="tags-item">
-                            <div class="tag">
+                            <div class="input-tag">
                                 <span class="tag-text">{tag}</span>
                                 <button
                                     type="button"

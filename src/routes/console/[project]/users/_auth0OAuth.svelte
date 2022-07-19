@@ -72,9 +72,7 @@
                 placeholder="Your Auth0 domain"
                 bind:value={auth0Domain} />
             <Alert type="info">
-                <p>
-                    To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
-                </p>
+                To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
             </Alert>
             <div>
                 <p>URI</p>

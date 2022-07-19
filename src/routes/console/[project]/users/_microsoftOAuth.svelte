@@ -72,9 +72,7 @@
                 placeholder="'common','organizations','consumers' or your TenantID"
                 bind:value={tenantID} />
             <Alert type="info">
-                <p>
-                    To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
-                </p>
+                To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
             </Alert>
             <div>
                 <p>URI</p>
