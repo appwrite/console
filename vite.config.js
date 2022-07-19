@@ -8,6 +8,9 @@ const config = {
     },
     ssr: {
         noExternal: ['echarts']
+    },
+    legacy: {
+        buildSsrCjsExternalHeuristics: true
     }
 };
 
