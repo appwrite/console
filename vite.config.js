@@ -11,6 +11,12 @@ const config = {
     },
     legacy: {
         buildSsrCjsExternalHeuristics: true
+    },
+    server: {
+        port: 3000
+    },
+    preview: {
+        port: 3000
     }
 };
 
