@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { base } from '$app/paths';
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { updateLayout } from '$lib/stores/layout';
     import { team } from './store';
     import { afterNavigate } from '$app/navigation';
     import { onMount } from 'svelte';
@@ -12,39 +12,34 @@
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle() {
+    async function handle(event = null) {
         if ($team?.$id !== teamId) {
             await team.load(teamId);
-            title.set($team.name);
-        } else if ($team) {
-            title.set($team.name);
         }
 
-        backButton.set(`${base}/console/${$page.params.project}/users/teams`);
-
-        copyData.set({
-            text: 'Team ID',
-            value: teamId
+        updateLayout({
+            navigate: event,
+            title: $team.name,
+            back: `${base}/console/${$page.params.project}/users/teams`,
+            copy: {
+                text: 'Team ID',
+                value: teamId
+            },
+            tabs: [
+                {
+                    href: path,
+                    title: 'Overview'
+                },
+                {
+                    href: `${path}/members`,
+                    title: 'Members'
+                },
+                {
+                    href: `${path}/activity`,
+                    title: 'Activity'
+                }
+            ]
         });
-
-        tabs.set([
-            {
-                href: path,
-                title: 'Overview'
-            },
-            {
-                href: `${path}/members`,
-                title: 'Members'
-            },
-            {
-                href: `${path}/activity`,
-                title: 'Activity'
-            }
-        ]);
-    }
-
-    $: if ($team) {
-        handle();
     }
 </script>
 
