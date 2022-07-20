@@ -46,7 +46,7 @@
     {#if $collection?.attributes.length}
         <Table>
             <TableHeader>
-                <TableCellHead>ID</TableCellHead>
+                <TableCellHead>Key</TableCellHead>
                 <TableCellHead>Type</TableCellHead>
                 <TableCellHead>Default Value</TableCellHead>
                 <TableCellHead width={30} />

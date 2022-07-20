@@ -7,7 +7,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let submitted = false;
-    export let id: string;
+    export let key: string;
     export let overview = false;
     export let selectedAttribute: Models.AttributeBoolean;
 
@@ -22,7 +22,7 @@
         try {
             const attribute = await sdkForProject.databases.createBooleanAttribute(
                 $collection.$id,
-                id,
+                key,
                 required,
                 xdefault ? xdefault : undefined,
                 array

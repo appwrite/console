@@ -7,7 +7,7 @@
 
     export let showCreate = false;
 
-    let id: string = null;
+    let key: string = null;
     let selectedOption = '';
     let submitted = false;
 
@@ -26,10 +26,10 @@
         <svelte:fragment slot="header">Create Attribute</svelte:fragment>
         <FormList>
             <InputText
-                id="ID"
-                label="Attribute ID"
-                placeholder="Enter ID"
-                bind:value={id}
+                id="key"
+                label="Attribute Key"
+                placeholder="Enter Key"
+                bind:value={key}
                 autofocus
                 required />
 
@@ -50,7 +50,7 @@
             {#if selectedOption}
                 <svelte:component
                     this={$option.component}
-                    {id}
+                    {key}
                     bind:submitted
                     on:created={created}
                     on:close={() => ($option = null)} />

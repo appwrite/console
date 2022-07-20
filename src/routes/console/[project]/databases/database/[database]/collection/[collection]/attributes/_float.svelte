@@ -8,7 +8,7 @@
 
     const dispatch = createEventDispatcher();
 
-    export let id: string;
+    export let key: string;
     export let submitted = false;
     export let overview = false;
     export let selectedAttribute: Models.AttributeFloat;
@@ -23,7 +23,7 @@
         try {
             const attribute = await sdkForProject.databases.createFloatAttribute(
                 $collection.$id,
-                id,
+                key,
                 required,
                 min,
                 max,

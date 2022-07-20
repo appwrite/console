@@ -6,7 +6,7 @@
     import { collection } from '../store';
     import type { Models } from '@aw-labs/appwrite-console';
 
-    export let id: string;
+    export let key: string;
     export let submitted = false;
     export let overview = false;
     export let selectedAttribute: Models.AttributeIp;
@@ -20,7 +20,7 @@
         try {
             const attribute = await sdkForProject.databases.createIpAttribute(
                 $collection.$id,
-                id,
+                key,
                 required,
                 xdefault ? xdefault : undefined,
                 array

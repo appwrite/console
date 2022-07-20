@@ -8,7 +8,7 @@
 
     const dispatch = createEventDispatcher();
 
-    export let id: string = null;
+    export let key: string = null;
     export let submitted = false;
     export let overview = false;
     export let selectedAttribute: Models.AttributeInteger;
@@ -23,7 +23,7 @@
         try {
             const attribute = await sdkForProject.databases.createIntegerAttribute(
                 $collection.$id,
-                id,
+                key,
                 required,
                 min,
                 max,
@@ -44,7 +44,6 @@
     }
 
     $: if (overview) {
-        //TODO: fix xdefault
         ({ required, array, min, max } = selectedAttribute);
         xdefault = selectedAttribute.default;
     }
