@@ -46,7 +46,8 @@
         submit();
     }
     $: if (overview) {
-        ({ required, array, elements, xdefault } = selectedAttribute);
+        ({ required, array, elements } = selectedAttribute);
+        xdefault = selectedAttribute.default;
     }
 </script>
 

@@ -41,7 +41,8 @@
     }
 
     $: if (overview) {
-        ({ required, array, size, xdefault } = selectedAttribute);
+        ({ required, array, size } = selectedAttribute);
+        xdefault = selectedAttribute.default;
     }
 </script>
 

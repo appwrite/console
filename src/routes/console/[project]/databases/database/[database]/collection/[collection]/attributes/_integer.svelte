@@ -45,7 +45,8 @@
 
     $: if (overview) {
         //TODO: fix xdefault
-        ({ required, array, min, max, xdefault } = selectedAttribute);
+        ({ required, array, min, max } = selectedAttribute);
+        xdefault = selectedAttribute.default;
     }
 </script>
 
