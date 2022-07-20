@@ -13,7 +13,17 @@
     function handle(event = null) {
         updateLayout({
             navigate: event,
-            title: 'Databases'
+            title: 'Databases',
+            tabs: [
+                {
+                    href: path,
+                    title: 'Databases'
+                },
+                {
+                    href: `${path}/usage`,
+                    title: 'Usage'
+                }
+            ]
         });
         loaded = true;
     }

@@ -1,5 +1,6 @@
 <script>
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { updateLayout } from '$lib/stores/layout';
     import { setDatabase } from '$lib/stores/sdk';
