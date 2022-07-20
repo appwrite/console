@@ -37,7 +37,7 @@
         on:input={valueChange}
         bind:this={element} />
     <span class="icon-search" aria-hidden="true" />
-    {#if isWithEndButton}
+    {#if isWithEndButton && value}
         <button
             class="x-button"
             aria-label="Clear search"
