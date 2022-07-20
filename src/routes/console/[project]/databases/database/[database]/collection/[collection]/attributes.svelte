@@ -54,19 +54,21 @@
             <TableBody>
                 {#each $collection.attributes as attribute, index}
                     <TableRow>
-                        <TableCell main title="Key"
-                            >{attribute.key}
-                            {#if attribute.status !== 'available'}
-                                <Pill
-                                    warning={attribute.status === 'processing'}
-                                    danger={['deleting', 'stuck', 'failed'].includes(
-                                        attribute.status
-                                    )}>
-                                    {attribute.status}
-                                </Pill>
-                            {:else if attribute.required}
-                                <Pill>Required</Pill>
-                            {/if}
+                        <TableCell main={true} title="Key">
+                            <div class="u-flex u-main-space-between">
+                                {attribute.key}
+                                {#if attribute.status !== 'available'}
+                                    <Pill
+                                        warning={attribute.status === 'processing'}
+                                        danger={['deleting', 'stuck', 'failed'].includes(
+                                            attribute.status
+                                        )}>
+                                        {attribute.status}
+                                    </Pill>
+                                {:else if attribute.required}
+                                    <Pill>Required</Pill>
+                                {/if}
+                            </div>
                         </TableCell>
                         <TableCellText title="Type">{attribute.type}</TableCellText>
                         <TableCellText title="Default Value">
