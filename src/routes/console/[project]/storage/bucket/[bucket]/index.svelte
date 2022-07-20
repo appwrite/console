@@ -3,15 +3,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import {
-        Empty,
-        Pagination,
-        Avatar,
-        Search,
-        DropList,
-        DropListItem,
-        DropListLink
-    } from '$lib/components';
+    import { Empty, Pagination, Avatar, Search, DropList, DropListItem } from '$lib/components';
     import Create from './_create.svelte';
     import Delete from './_deleteFile.svelte';
     import {
@@ -32,6 +24,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
+    import { goto } from '$app/navigation';
 
     let search = '';
     let showCreate = false;
@@ -157,10 +150,14 @@
                                         <span class="icon-dots-horizontal" aria-hidden="true" />
                                     </button>
                                     <svelte:fragment slot="list">
-                                        <DropListLink
+                                        <DropListItem
                                             icon="pencil"
-                                            href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}
-                                            >Update</DropListLink>
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                goto(
+                                                    `${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`
+                                                );
+                                            }}>Update</DropListItem>
                                         <DropListItem
                                             icon="trash"
                                             on:click={(e) => {

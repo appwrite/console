@@ -14,7 +14,7 @@
 </script>
 
 {#if $uploader?.isOpen}
-    <section class="upload-box">
+    <section class="upload-box is-float">
         <header class="upload-box-header">
             <h4 class="upload-box-title">
                 <span class="text">Uploading files</span>
@@ -97,12 +97,3 @@
         </div>
     </section>
 {/if}
-
-<style>
-    section.upload-box {
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        margin: 0 1rem 1rem 0;
-    }
-</style>

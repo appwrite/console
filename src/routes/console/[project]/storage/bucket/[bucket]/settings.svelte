@@ -336,19 +336,53 @@
                 and <b> Antivirus scanning.</b>
             </p>
             <svelte:fragment slot="aside">
-                <ul>
-                    <InputSwitch label="Encryption" id="encryption" bind:value={encryption} />
+                <ul class="form-list">
+                    <li class="form-item">
+                        <label class="choice-item" for="encryption">
+                            <div class="input-text-wrapper">
+                                <input
+                                    label="Encryption"
+                                    id="encryption"
+                                    type="checkbox"
+                                    class="switch"
+                                    role="switch"
+                                    bind:checked={encryption} />
+                            </div>
+                            <div class="choice-item-content">
+                                <div class="choice-item-title">Encryption</div>
 
-                    <li>
-                        This parameter allows you to configure whether or not the files inside the
-                        bucket will be encrypted. We don't encrypt files bigger than 20MB.
+                                <div class="choice-item-paragraph">
+                                    This parameter allows you to configure whether or not the files
+                                    inside the bucket will be encrypted. We don't encrypt files
+                                    bigger than 20MB.
+                                </div>
+                            </div>
+                        </label>
                     </li>
-                    <InputSwitch label="Antivirus" id="antivirus" bind:value={antivirus} />
+                    <li class="form-item">
+                        <label class="choice-item" for="antivirus">
+                            <div class="input-text-wrapper">
+                                <input
+                                    label="Antivirus"
+                                    id="antivirus"
+                                    type="checkbox"
+                                    class="switch"
+                                    role="switch"
+                                    bind:checked={antivirus} />
+                            </div>
+                            <div class="choice-item-content">
+                                <div class="choice-item-title">Antivirus</div>
 
-                    <li>
-                        This parameter allows you to configure whether or not the files inside the
-                        bucket should be scanned by the Appwrite Antivirus scanner.
+                                <div class="choice-item-paragraph">
+                                    This parameter allows you to configure whether or not the files
+                                    inside the bucket should be scanned by the Appwrite Antivirus
+                                    scanner.
+                                </div>
+                            </div>
+                        </label>
                     </li>
+
+                    <li />
                 </ul>
             </svelte:fragment>
 
