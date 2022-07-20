@@ -35,7 +35,7 @@
     </div>
 
     {#if $bucketList?.total}
-        <div
+        <li
             class="grid-box common-section"
             style={`--grid-gap:2rem; --grid-item-size:${
                 $bucketList.total > 3 ? '22rem' : '25rem'
@@ -96,7 +96,7 @@
                     </div>
                 </article>
             {/if}
-        </div>
+        </li>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.total}</p>
@@ -120,17 +120,19 @@
         </div>
     {:else}
         <Empty dashed centered>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <Button secondary round on:click={() => (showCreate = true)}>
-                        <i class="icon-plus" />
-                    </Button>
-                </div>
-                <div class="common-section">
-                    <p>Add your first bucket to get started</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary href="#">Documentation</Button>
+            <div class="bucket">
+                <div class="u-flex u-flex-vertical u-cross-center">
+                    <div class="common-section">
+                        <Button secondary round on:click={() => (showCreate = true)}>
+                            <i class="icon-plus" />
+                        </Button>
+                    </div>
+                    <div class="common-section">
+                        <p>Add your first bucket to get started</p>
+                    </div>
+                    <div class="common-section">
+                        <Button secondary href="#">Documentation</Button>
+                    </div>
                 </div>
             </div>
         </Empty>
