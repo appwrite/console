@@ -19,7 +19,7 @@ jobs:
               with:
                   node-version: 16
             - name: Audit dependencies
-              run: npm audit --audit-level low
+              run: npm audit --audit-level high
             - name: Install dependencies
               run: npm ci
             - name: Build Console

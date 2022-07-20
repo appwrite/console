@@ -11,7 +11,7 @@
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
-    export let autocomplete = true;
+    export let autocomplete = false;
 
     let element: HTMLInputElement;
 

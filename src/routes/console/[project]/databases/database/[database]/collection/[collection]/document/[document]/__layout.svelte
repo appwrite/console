@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { updateLayout } from '$lib/stores/layout';
     import { doc } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
@@ -13,31 +13,24 @@
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle() {
+    async function handle(event = null) {
         if ($doc?.$id !== documentId) {
             await doc.load(collectionId, documentId);
-            title.set(`Document - ${$doc.$id}`);
-        } else if ($doc) {
-            title.set(`Document - ${$doc.$id}`);
         }
-
-        backButton.set('');
-
-        copyData.set({
-            text: '',
-            value: ''
+        updateLayout({
+            navigate: event,
+            title: `Document - ${$doc.$id}`,
+            tabs: [
+                {
+                    href: path,
+                    title: 'Overview'
+                },
+                {
+                    href: `${path}/activity`,
+                    title: 'Activity'
+                }
+            ]
         });
-
-        tabs.set([
-            {
-                href: path,
-                title: 'Overview'
-            },
-            {
-                href: `${path}/activity`,
-                title: 'Activity'
-            }
-        ]);
     }
 </script>
 
@@ -45,4 +38,6 @@
     <title>Appwrite - Database Document</title>
 </svelte:head>
 
-<slot />
+{#if $doc}
+    <slot />
+{/if}

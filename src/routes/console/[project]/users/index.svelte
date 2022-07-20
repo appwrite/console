@@ -8,6 +8,7 @@
         TableHeader,
         TableBody,
         TableCellHead,
+        TableCell,
         TableCellText,
         TableRowLink
     } from '$lib/elements/table';
@@ -85,7 +86,7 @@
                             </div>
                         </TableCellText>
                         <TableCellText title="Email">{user.email}</TableCellText>
-                        <TableCellText title="Status">
+                        <TableCell title="Status">
                             {#if user.status}
                                 <Pill success={user.emailVerification}>
                                     {user.emailVerification ? 'Verified' : 'Unverified'}
@@ -93,14 +94,14 @@
                             {:else}
                                 <Pill danger>Blocked</Pill>
                             {/if}
-                        </TableCellText>
-                        <TableCellText showOverflow title="ID">
+                        </TableCell>
+                        <TableCell showOverflow title="ID">
                             <Copy value={user.$id}>
                                 <Pill button
                                     ><span class="icon-duplicate" aria-hidden="true" />
                                     <span class="text">User ID</span></Pill>
                             </Copy>
-                        </TableCellText>
+                        </TableCell>
                         <TableCellText title="Joined">
                             {toLocaleDateTime(user.registration)}
                         </TableCellText>

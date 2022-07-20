@@ -58,9 +58,7 @@
                 placeholder="Enter name"
                 bind:value={name} />
             <Alert type="info">
-                <p>
-                    Roles are used to manage access permissions. You can create any role you want.
-                </p>
+                Roles are used to manage access permissions. You can create any role you want.
             </Alert>
 
             <InputTags id="tags" label="Roles" placeholder="Add roles" bind:tags={roles} />

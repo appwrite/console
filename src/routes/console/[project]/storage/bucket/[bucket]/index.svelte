@@ -21,7 +21,8 @@
         TableRowLink,
         TableRow,
         TableCellHead,
-        TableCellText
+        TableCellText,
+        TableCell
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { bytesToSize } from '$lib/helpers/sizeConvertion';
@@ -106,7 +107,7 @@
                                 >{bytesToSize(file.sizeOriginal)}</TableCellText>
                             <TableCellText title="Date Created"
                                 >{toLocaleDate(file.$createdAt)}</TableCellText>
-                            <TableCellText title="">
+                            <TableCell>
                                 <div class="u-flex u-main-center">
                                     <button
                                         class="button is-only-icon is-text"
@@ -125,7 +126,7 @@
                                         <span class="icon-trash" aria-hidden="true" />
                                     </button>
                                 </div>
-                            </TableCellText>
+                            </TableCell>
                         </TableRow>
                     {:else}
                         <TableRowLink
@@ -141,7 +142,7 @@
                                 >{bytesToSize(file.sizeOriginal)}</TableCellText>
                             <TableCellText title="Date Created"
                                 >{toLocaleDate(file.$createdAt)}</TableCellText>
-                            <TableCellText showOverflow title="">
+                            <TableCell showOverflow>
                                 <DropList
                                     bind:show={showDropdown[index]}
                                     position="bottom"
@@ -169,7 +170,7 @@
                                             }}>Delete</DropListItem>
                                     </svelte:fragment>
                                 </DropList>
-                            </TableCellText>
+                            </TableCell>
                         </TableRowLink>
                     {/if}
                 {/each}

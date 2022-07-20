@@ -1,7 +1,6 @@
 <script>
     import { afterNavigate } from '$app/navigation';
-
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
 
     const path = 'databases';
@@ -9,24 +8,14 @@
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle() {
-        title.set('Database');
-        backButton.set('');
+    let loaded = false;
 
-        copyData.set({
-            text: '',
-            value: ''
+    function handle(event = null) {
+        updateLayout({
+            navigate: event,
+            title: 'Databases'
         });
-        tabs.set([
-            {
-                href: path,
-                title: 'Databases'
-            },
-            {
-                href: `${path}/usage`,
-                title: 'Usage'
-            }
-        ]);
+        loaded = true;
     }
 </script>
 
@@ -34,4 +23,6 @@
     <title>Appwrite - Database</title>
 </svelte:head>
 
-<slot />
+{#if loaded}
+    <slot />
+{/if}

@@ -73,9 +73,7 @@
                 bind:value={teamID} />
             <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={p8} />
             <Alert type="info">
-                <p>
-                    To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
-                </p>
+                To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
             </Alert>
             <div>
                 <p>URI</p>

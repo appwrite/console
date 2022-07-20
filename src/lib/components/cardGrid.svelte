@@ -1,9 +1,5 @@
 <script>
     import { Card } from './';
-
-    let actions = {
-        textContent: 'actions'
-    };
 </script>
 
 <Card>
@@ -15,8 +11,8 @@
             <slot name="aside" />
         </div>
     </div>
-    {#if actions?.textContent}
-        <div class="common-section card-separator u-flex u-main-end" bind:this={actions}>
+    {#if $$slots.actions}
+        <div class="common-section card-separator u-flex u-main-end">
             <slot name="actions" />
         </div>
     {/if}

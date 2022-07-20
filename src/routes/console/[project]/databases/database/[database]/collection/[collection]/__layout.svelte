@@ -2,7 +2,7 @@
     import { afterNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { collection } from './store';
 
@@ -14,39 +14,38 @@
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle() {
+    async function handle(event = null) {
         if ($collection?.$id !== collectionId) {
             await collection.load(collectionId);
-            title.set($collection.name);
-        } else if ($collection) {
-            title.set($collection.name);
         }
 
-        backButton.set(`${base}/console/${$page.params.project}/databases/database/${databaseId}/`);
-
-        copyData.set({
-            text: 'Collection ID',
-            value: collectionId
+        updateLayout({
+            navigate: event,
+            title: $collection.name,
+            back: `${base}/console/${$page.params.project}/databases/database/${databaseId}`,
+            copy: {
+                text: 'Collection ID',
+                value: collectionId
+            },
+            tabs: [
+                {
+                    href: path,
+                    title: 'Documents'
+                },
+                {
+                    href: `${path}/attributes`,
+                    title: 'Attributes'
+                },
+                {
+                    href: `${path}/indexes`,
+                    title: 'Indexes'
+                },
+                {
+                    href: `${path}/settings`,
+                    title: 'Settings'
+                }
+            ]
         });
-
-        tabs.set([
-            {
-                href: path,
-                title: 'Documents'
-            },
-            {
-                href: `${path}/attributes`,
-                title: 'Attributes'
-            },
-            {
-                href: `${path}/indexes`,
-                title: 'Indexes'
-            },
-            {
-                href: `${path}/settings`,
-                title: 'Settings'
-            }
-        ]);
     }
 </script>
 

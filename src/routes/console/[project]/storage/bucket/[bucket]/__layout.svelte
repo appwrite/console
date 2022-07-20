@@ -1,8 +1,7 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { bucket } from './store';
 
@@ -12,38 +11,33 @@
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle() {
+    async function handle(event = null) {
         if ($bucket?.$id !== bucketId) {
             await bucket.load(bucketId);
-            title.set($bucket.name);
-        } else if ($bucket) {
-            title.set($bucket.name);
         }
 
-        backButton.set(`${base}/console/${$page.params.project}/storage`);
-
-        copyData.set({
-            text: 'Bucket ID',
-            value: bucketId
+        updateLayout({
+            navigate: event,
+            title: $bucket.name,
+            copy: {
+                text: 'Bucket ID',
+                value: bucketId
+            },
+            tabs: [
+                {
+                    href: path,
+                    title: 'Files'
+                },
+                {
+                    href: `${path}/usage`,
+                    title: 'Usage'
+                },
+                {
+                    href: `${path}/settings`,
+                    title: 'Settings'
+                }
+            ]
         });
-        tabs.set([
-            {
-                href: path,
-                title: 'Files'
-            },
-            {
-                href: `${path}/usage`,
-                title: 'Usage'
-            },
-            {
-                href: `${path}/settings`,
-                title: 'Settings'
-            }
-        ]);
-    }
-
-    $: if ($bucket) {
-        handle();
     }
 </script>
 

@@ -1,46 +1,47 @@
 <script>
     import { afterNavigate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { updateLayout } from '$lib/stores/layout';
     import { setDatabase } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { database } from './store';
 
     const databaseId = $page.params.database;
+
     const path = `databases/database/${databaseId}`;
 
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle() {
+    async function handle(event = null) {
         if ($database?.$id !== databaseId) {
             setDatabase($page.params.database);
             await database.load();
-            title.set($database.name);
-        } else if ($database) {
-            title.set($database.name);
         }
-        backButton.set(`${base}/console/${$page.params.project}/databases`);
-        copyData.set({
-            text: 'Database ID',
-            value: databaseId
-        });
 
-        tabs.set([
-            {
-                href: path,
-                title: 'Collections'
+        updateLayout({
+            navigate: event,
+            back: `${base}/console/${$page.params.project}/databases`,
+            copy: {
+                text: 'Database ID',
+                value: databaseId
             },
-            {
-                href: `${path}/usage`,
-                title: 'Usage'
-            },
-            {
-                href: `${path}/settings`,
-                title: 'Settings'
-            }
-        ]);
+            title: $database.name,
+            tabs: [
+                {
+                    href: path,
+                    title: 'Collections'
+                },
+                {
+                    href: `${path}/usage`,
+                    title: 'Usage'
+                },
+                {
+                    href: `${path}/settings`,
+                    title: 'Settings'
+                }
+            ]
+        });
     }
 </script>
 
