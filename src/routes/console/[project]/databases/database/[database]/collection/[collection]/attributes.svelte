@@ -5,7 +5,8 @@
         TableBody,
         TableRow,
         TableCellHead,
-        TableCellText
+        TableCellText,
+        TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { DropList, DropListItem, Empty, Pagination } from '$lib/components';
@@ -53,7 +54,7 @@
             <TableBody>
                 {#each $collection.attributes as attribute, index}
                     <TableRow>
-                        <TableCellText title="Key"
+                        <TableCell main title="Key"
                             >{attribute.key}
                             {#if attribute.status !== 'available'}
                                 <Pill
@@ -66,7 +67,7 @@
                             {:else if attribute.required}
                                 <Pill>Required</Pill>
                             {/if}
-                        </TableCellText>
+                        </TableCell>
                         <TableCellText title="Type">{attribute.type}</TableCellText>
                         <TableCellText title="Default Value">
                             {attribute.default ? attribute.default : '-'}
