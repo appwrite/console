@@ -20,7 +20,7 @@
 
 <svelte:window on:click={onBlur} />
 
-<div class="drop-wrapper" bind:this={parentElement}>
+<div class="drop-wrapper" class:is-open={show} bind:this={parentElement}>
     <slot />
     {#if show}
         <div
