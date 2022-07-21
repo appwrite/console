@@ -54,7 +54,7 @@ function createCollection() {
 
 function createDocumentListStore() {
     const { subscribe, set } = writable<Models.DocumentList<Models.Document>>(
-        browser ? JSON.parse(sessionStorage.getItem('documents')) : null
+        browser ? JSON.parse(sessionStorage.getItem('documentList')) : null
     );
     return {
         subscribe,
@@ -70,11 +70,26 @@ function createDocumentListStore() {
         }
     };
 }
+function createIndexListStore() {
+    const { subscribe, set } = writable<Models.IndexList>(
+        browser ? JSON.parse(sessionStorage.getItem('indexList')) : null
+    );
+    return {
+        subscribe,
+        set,
+        load: async (collectionId: string) => {
+            const response = await sdkForProject.databases.listIndexes(collectionId);
+            set(response);
+        }
+    };
+}
 
 export const collection = createCollection();
 export const documentList = createDocumentListStore();
+export const indexList = createIndexListStore();
 
 if (browser) {
     collection.subscribe((n) => sessionStorage?.setItem('collection', JSON.stringify(n ?? '')));
     documentList.subscribe((n) => sessionStorage?.setItem('documentList', JSON.stringify(n ?? '')));
+    indexList.subscribe((n) => sessionStorage?.setItem('indexList', JSON.stringify(n ?? '')));
 }

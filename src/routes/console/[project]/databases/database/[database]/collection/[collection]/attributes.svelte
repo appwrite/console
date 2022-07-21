@@ -17,6 +17,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import Create from './_createAttribute.svelte';
+    import CreateIndex from './_createIndex.svelte';
     import Delete from './_deleteAttribute.svelte';
     import Overview from './_overview.svelte';
 
@@ -27,6 +28,7 @@
     let showCreate = false;
     let showDelete = false;
     let showOverview = false;
+    let showCreateIndex = false;
 
     onMount(async () => {
         await collection.load($page.params.collection);
@@ -74,7 +76,7 @@
                         <TableCellText title="Default Value">
                             {attribute.default ? attribute.default : '-'}
                         </TableCellText>
-                        <TableCellText showOverflow title="">
+                        <TableCell showOverflow>
                             <DropList
                                 bind:show={showDropdown[index]}
                                 position="bottom"
@@ -96,7 +98,13 @@
                                             selectedAttribute = attribute;
                                             showOverview = true;
                                         }}>Overview</DropListItem>
-                                    <DropListItem icon="plus">Create Index</DropListItem>
+                                    <DropListItem
+                                        icon="plus"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedAttribute = attribute;
+                                            showCreateIndex = true;
+                                        }}>Create Index</DropListItem>
                                     <DropListItem
                                         icon="trash"
                                         on:click={(e) => {
@@ -106,7 +114,7 @@
                                         }}>Delete</DropListItem>
                                 </svelte:fragment>
                             </DropList>
-                        </TableCellText>
+                        </TableCell>
                     </TableRow>
                 {/each}
             </TableBody>
@@ -138,4 +146,5 @@
 {#if selectedAttribute}
     <Delete bind:showDelete {selectedAttribute} />
     <Overview bind:showOverview {selectedAttribute} />
+    <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />
 {/if}
