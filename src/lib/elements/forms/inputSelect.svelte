@@ -5,6 +5,7 @@
     export let showLabel = true;
     export let id: string;
     export let value: string;
+    export let placeholder = '';
     export let required = false;
     export let disabled = false;
     export let options: {
@@ -17,6 +18,9 @@
     <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="select">
         <select bind:value {id} {required} {disabled}>
+            {#if placeholder}
+                <option value="" disabled selected hidden>{placeholder}</option>
+            {/if}
             {#each options as option}
                 <option value={option.value} selected={option.value === value}>
                     {option.label}
