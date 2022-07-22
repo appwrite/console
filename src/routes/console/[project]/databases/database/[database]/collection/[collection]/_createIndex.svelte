@@ -16,7 +16,7 @@
         { value: 'fulltext', label: 'FullText' }
     ];
     let newAttr = false;
-    let selectedType: string = '';
+    let selectedType = '';
     let attributeOptions = $collection.attributes.map((attribute: Attributes) => ({
         value: attribute.key,
         label: attribute.key
@@ -24,7 +24,7 @@
     $: attributeList = [];
 
     let selectedAttribute = '';
-    let selectedOrder: string = '';
+    let selectedOrder = '';
 
     onMount(() => {
         if (externalAttribute) {
