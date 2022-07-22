@@ -32,8 +32,7 @@ function createFilesStore() {
             limit?: number,
             offset?: number,
             cursor?: string,
-            cursorDirection?: string,
-            orderType?: 'DESC' | 'ASC'
+            cursorDirection?: string
         ) => {
             const response = await sdkForProject.storage.listFiles(
                 bucketId,
@@ -42,7 +41,7 @@ function createFilesStore() {
                 offset,
                 cursor,
                 cursorDirection,
-                (orderType = 'DESC')
+                'DESC'
             );
             set(response);
         }
