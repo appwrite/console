@@ -11,35 +11,29 @@ const data = {
 test('shows drop list component', () => {
     render(DropList, { ...data });
     const wrapper = document.querySelector('div');
-    const dropList = document.querySelector('ul');
+    const dropList = document.querySelector('ul.drop-list');
 
     expect(wrapper).toBeInTheDocument();
     expect(dropList).toBeInTheDocument();
 });
 
 test('hide drop list on body click', async () => {
-    render(DropList, { ...data });
-    const body = document.querySelector('body');
-    const dropList = document.querySelector('ul');
-
-    await fireEvent.click(body);
-    await new Promise((r) => setTimeout(r, 200));
-    expect(dropList).not.toBeInTheDocument();
+    const { component } = render(DropList, { ...data });
+    await fireEvent.click(document.body);
+    expect(component.show).toStrictEqual(false);
 });
 
 test('hide drop list on wrapper click', async () => {
-    render(DropList, { ...data });
+    const { component } = render(DropList, { ...data });
     const wrapper = document.querySelector('div');
-    const dropList = document.querySelector('ul');
 
     await fireEvent.click(wrapper);
-    await new Promise((r) => setTimeout(r, 200));
-    expect(dropList).not.toBeInTheDocument();
+    expect(component.show).toStrictEqual(false);
 });
 
 test('drop list visible on list click', async () => {
     render(DropList, { ...data });
-    const dropList = document.querySelector('ul');
+    const dropList = document.querySelector('ul.drop-list');
 
     await fireEvent.click(dropList);
     await new Promise((r) => setTimeout(r, 200));

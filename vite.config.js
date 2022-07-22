@@ -14,6 +14,12 @@ const config = {
     },
     server: {
         port: 3000
+    },
+    test: {
+        include: ['tests/**/*.test.ts'],
+        globals: true,
+        environment: 'jsdom',
+        thread: true
     }
 };
 

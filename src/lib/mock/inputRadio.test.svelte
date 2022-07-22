@@ -1,5 +1,5 @@
 <script>
-    import { InputRadio } from '../../../src/lib/elements/forms';
+    import { InputRadio } from '$lib/elements/forms';
 </script>
 
 <InputRadio label="one" id="one" group="radio" value="1" name="radio" />

@@ -1,5 +1,5 @@
 <script>
-    import { Modal } from '../../../src/lib/components';
+    import { Modal } from '../components';
 
     export let show = false;
 </script>

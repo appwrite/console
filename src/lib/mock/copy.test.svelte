@@ -1,5 +1,5 @@
 <script>
-    import { Copy } from '../../../src/lib/components';
+    import { Copy } from '../components';
 
     export let value = false;
 </script>
