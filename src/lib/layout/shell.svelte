@@ -6,6 +6,7 @@
     import { Pill } from '$lib/elements';
 
     export let isOpen = false;
+    export let showSideNavigation = false;
 
     $: base = `/console/${$page.params.project}`;
 
@@ -58,7 +59,10 @@
 
 <svelte:window on:resize={throttle(onScroll, 25)} />
 
-<main class="grid-with-side" class:is-open={isOpen}>
+<main
+    class:grid-with-side={showSideNavigation}
+    class:grid={!showSideNavigation}
+    class:is-open={isOpen}>
     <header class="main-header">
         <button
             class="icon-button is-no-desktop"

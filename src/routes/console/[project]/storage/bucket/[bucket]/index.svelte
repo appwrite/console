@@ -51,7 +51,7 @@
         files.load(bucket, search, limit, offset);
     };
 
-    const deleteFile = async (file) => {
+    const deleteFile = async (file: Models.File) => {
         try {
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);

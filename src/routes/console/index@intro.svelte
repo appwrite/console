@@ -3,6 +3,7 @@
     import { base } from '$app/paths';
     import { Tiles, Tile } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { Container } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import CreateOrganization from './_createOrganization.svelte';
@@ -40,22 +41,24 @@
 <svelte:head>
     <title>Appwrite - Console</title>
 </svelte:head>
-<h1>Your Organizations</h1>
-<Button on:click={() => (addOrganization = true)}>Add Organization</Button>
+<Container>
+    <h1>Your Organizations</h1>
+    <Button on:click={() => (addOrganization = true)}>Add Organization</Button>
 
-{#await request}
-    <div aria-busy="true" />
-{:then organizations}
-    {#each organizations as organization}
-        <h1>{organization.name}</h1>
-        <Tiles>
-            {#each organization.projects as project}
-                <Tile href={`${base}/console/${project.$id}`} title={project.name} />
-            {/each}
-        </Tiles>
-        <Button on:click={() => createProject(organization.$id)}>Create Project</Button>
-    {/each}
-{/await}
+    {#await request}
+        <div aria-busy="true" />
+    {:then organizations}
+        {#each organizations as organization}
+            <h1>{organization.name}</h1>
+            <Tiles>
+                {#each organization.projects as project}
+                    <Tile href={`${base}/console/${project.$id}`} title={project.name} />
+                {/each}
+            </Tiles>
+            <Button on:click={() => createProject(organization.$id)}>Create Project</Button>
+        {/each}
+    {/await}
+</Container>
 
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject

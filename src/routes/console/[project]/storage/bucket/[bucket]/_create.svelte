@@ -165,7 +165,7 @@
                 <p>
                     Tip: Add role:all for wildcard access. Check out our documentation for more on <a
                         class="link"
-                        href="#">
+                        href="#?">
                         Permissions</a>
                 </p>
             </Alert>
