@@ -73,7 +73,24 @@
     {#if $file}
         <CardGrid>
             <div class="u-flex u-gap-16">
-                <img width="205" height="125" src={getPreview($file.$id)} alt={$file.name} />
+                <a
+                    href={downloadFile()}
+                    class="file-preview is-with-image"
+                    target="_blank"
+                    aria-label="open file in new window">
+                    <div class="file-preview-image">
+                        <img
+                            width="205"
+                            height="125"
+                            src={getPreview($file.$id)}
+                            alt={$file.name} />
+                    </div>
+                    <div class="file-preview-content">
+                        <div class="avatar">
+                            <span class="icon-external-link" aria-hidden="true" />
+                        </div>
+                    </div>
+                </a>
                 <div>
                     <h2 class="heading-level-7">{$file.name}</h2>
                     <Copy value={getView($file.$id)}>
@@ -110,7 +127,7 @@
                     </svelte:fragment>
                     <p>
                         If you want to assign permissions specific to this file, you will need to
-                        update your <a class="link" href="#?"> Bucket Settings</a> to enable File Level
+                        update your <a class="link" href="#"> Bucket Settings</a> to enable File Level
                         permissions.
                     </p>
                 </Alert>
