@@ -6,6 +6,13 @@ export type Notification = {
     dismissible?: boolean;
     timeout?: number;
     message: string;
+    title?: string;
+    buttons?: Buttons[];
+};
+
+export type Buttons = {
+    method: () => void | Promise<void>;
+    name: string;
 };
 
 let counter = 0;

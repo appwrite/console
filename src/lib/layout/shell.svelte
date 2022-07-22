@@ -1,10 +1,12 @@
 <script lang="ts">
     import { navigating, page } from '$app/stores';
-    import { tabs, title } from '$lib/stores/layout';
-    import { fade } from 'svelte/transition';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { Cover } from '.';
+    import { Copy } from '$lib/components';
+    import { Pill } from '$lib/elements';
 
     export let isOpen = false;
+    export let showSideNavigation = false;
 
     $: base = `/console/${$page.params.project}`;
 
@@ -32,6 +34,9 @@
     };
 
     const onScroll = () => {
+        if (!tabsList) {
+            return;
+        }
         const { offsetWidth, scrollLeft, scrollWidth } = tabsList;
         showLeft = scrollLeft > 10;
         showRight = scrollLeft < scrollWidth - offsetWidth - 10;
@@ -54,7 +59,10 @@
 
 <svelte:window on:resize={throttle(onScroll, 25)} />
 
-<main class="grid-with-side" class:is-open={isOpen}>
+<main
+    class:grid-with-side={showSideNavigation}
+    class:grid={!showSideNavigation}
+    class:is-open={isOpen}>
     <header class="main-header">
         <button
             class="icon-button is-no-desktop"
@@ -69,7 +77,25 @@
     </nav>
     <section class="main-content">
         <Cover>
-            <svelte:fragment slot="title">{$title}</svelte:fragment>
+            <svelte:fragment slot="header">
+                {#if $backButton}
+                    <a class="back-button" href={$backButton} aria-label="page back">
+                        <span class="icon-cheveron-left" aria-hidden="true" />
+                    </a>
+                {/if}
+                <h1 class="heading-level-4">
+                    <span class="text"> {$title}</span>
+                </h1>
+                {#if $copyData?.value}
+                    <Copy value={$copyData.value}>
+                        <Pill button
+                            ><span
+                                class="icon-duplicate"
+                                aria-hidden="true" />{$copyData.text}</Pill>
+                    </Copy>
+                {/if}
+            </svelte:fragment>
+
             {#if $tabs.length}
                 <div class="tabs">
                     {#if showLeft}
@@ -107,11 +133,7 @@
                 </div>
             {/if}
         </Cover>
-        {#key $page.routeId}
-            <div in:fade>
-                <slot />
-            </div>
-        {/key}
+        <slot />
     </section>
 </main>
 

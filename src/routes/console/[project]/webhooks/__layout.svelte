@@ -1,7 +1,13 @@
 <script>
-    import { tabs, title } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
 
     title.set('Webhooks');
+    backButton.set('');
+
+    copyData.set({
+        text: '',
+        value: ''
+    });
     tabs.set([]);
 </script>
 

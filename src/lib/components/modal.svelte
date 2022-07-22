@@ -1,8 +1,15 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
 
     export let show = false;
+    export let size: 'small' | 'big' = null;
+    export let warning = false;
+    let browser = false;
+    //TODO: explore other solutions compatible with testing library
+    onMount(() => {
+        browser = true;
+    });
 
     const dispatch = createEventDispatcher();
     const transitionFly: FlyParams = {
@@ -31,15 +38,32 @@
         show = false;
         dispatch('close');
     };
+
+    $: if (browser) {
+        if (show) {
+            document.body.classList.add('u-overflow-hidden');
+        } else {
+            document.body.classList.remove('u-overflow-hidden');
+        }
+    }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
 {#if show}
     <div class="modal-curtain" data-curtain on:click={handleBLur} transition:fade={transitionFade}>
-        <section class="modal" transition:fly={transitionFly}>
+        <section
+            class:is-small={size === 'small'}
+            class:is-big={size === 'big'}
+            class="modal"
+            transition:fly={transitionFly}>
             <header class="modal-header">
-                <h4 class="modal-title">
+                {#if warning}
+                    <div class="avatar is-color-orange is-medium">
+                        <span class="icon-exclamation" aria-hidden="true" />
+                    </div>
+                {/if}
+                <h4 class="heading-level-5">
                     <slot name="header" />
                 </h4>
                 <button
@@ -55,7 +79,7 @@
                 <slot />
             </div>
             <div class="modal-footer">
-                <div class="u-flex u-main-space-end u-gap-12">
+                <div class="u-flex u-main-end u-gap-12">
                     <slot name="footer" />
                 </div>
             </div>

@@ -6,13 +6,16 @@ const config = {
     // Consult https://github.com/sveltejs/svelte-preprocess
     // for more information about preprocessors
     preprocess: preprocess(),
+    compilerOptions: {
+        accessors: process.env.VITEST
+    },
     kit: {
         adapter: adapter(),
         paths: {
             base: ''
         },
         prerender: {
-            default: true
+            default: false
         }
     }
 };

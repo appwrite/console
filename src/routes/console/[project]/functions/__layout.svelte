@@ -1,8 +1,17 @@
 <script>
-    import { tabs, title } from '$lib/stores/layout';
+    import { afterNavigate } from '$app/navigation';
+    import { updateLayout } from '$lib/stores/layout';
+    import { onMount } from 'svelte';
 
-    title.set('Functions');
-    tabs.set([]);
+    onMount(handle);
+    afterNavigate(handle);
+
+    function handle(event = null) {
+        updateLayout({
+            navigate: event,
+            title: 'Functions'
+        });
+    }
 </script>
 
 <svelte:head>

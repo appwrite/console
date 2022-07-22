@@ -4,9 +4,9 @@
 
 <div class="top-cover" class:is-adjust-content-to-cover={adjustContentToCover}>
     <div class="container">
-        <h1 class="heading-level-2">
-            <slot name="title" />
-        </h1>
+        <div class="u-flex u-cross-center u-gap-16 u-margin-block-start-20">
+            <slot name="header" />
+        </div>
         <slot />
     </div>
 </div>

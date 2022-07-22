@@ -4,6 +4,7 @@
 
     export let id: string;
     export let label: string;
+    export let showLabel = true;
     export let tags: string[] = [];
     export let placeholder = '';
     export let helper = '';
@@ -50,21 +51,21 @@
 </script>
 
 <FormItem>
-    <label class="label" for={id}>{label}</label>
+    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="input-text-wrapper">
         <div class="tags-input">
             <div class="tags">
                 <ul class="tags-list">
                     {#each tags as tag}
                         <li class="tags-item">
-                            <div class="tag">
+                            <div class="input-tag">
                                 <span class="tag-text">{tag}</span>
                                 <button
                                     type="button"
                                     class="x-button"
                                     aria-label={`delete ${tag} tag`}
                                     on:click={() => removeValue(tag)}>
-                                    <span class="icon-cancel" aria-hidden="true" />
+                                    <span class="icon-x" aria-hidden="true" />
                                 </button>
                             </div>
                         </li>

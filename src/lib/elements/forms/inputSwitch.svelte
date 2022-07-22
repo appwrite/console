@@ -9,15 +9,20 @@
 </script>
 
 <FormItem>
-    <label class="label" for={id}>{label}</label>
-    <div class="input-text-wrapper">
-        <input
-            {id}
-            {disabled}
-            {required}
-            type="checkbox"
-            class="switch"
-            role="switch"
-            bind:checked={value} />
-    </div>
+    <label class="choice-item" for={id}>
+        <div class="input-text-wrapper">
+            <input
+                {id}
+                {disabled}
+                {required}
+                type="checkbox"
+                class="switch"
+                role="switch"
+                bind:checked={value}
+                on:change />
+        </div>
+        <div class="choice-item-content">
+            <div class="choice-item-title">{label}</div>
+        </div>
+    </label>
 </FormItem>

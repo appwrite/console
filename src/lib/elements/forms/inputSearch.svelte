@@ -7,6 +7,7 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
+    export let isWithEndButton = true;
 
     let element: HTMLInputElement;
     let timer: ReturnType<typeof setTimeout>;
@@ -26,7 +27,7 @@
     };
 </script>
 
-<div class="input-text-wrapper">
+<div class="input-text-wrapper" class:is-with-end-button={isWithEndButton}>
     <input
         {placeholder}
         {disabled}
@@ -36,4 +37,15 @@
         on:input={valueChange}
         bind:this={element} />
     <span class="icon-search" aria-hidden="true" />
+    {#if isWithEndButton && value}
+        <button
+            class="x-button"
+            aria-label="Clear search"
+            on:click={() => {
+                value = '';
+                element.value = value;
+            }}>
+            <span class="icon-x" aria-hidden="true" />
+        </button>
+    {/if}
 </div>

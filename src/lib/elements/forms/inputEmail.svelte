@@ -3,12 +3,14 @@
     import { FormItem } from '.';
 
     export let label: string;
+    export let showLabel = true;
     export let id: string;
     export let value = '';
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
+    export let autocomplete = false;
 
     let element: HTMLInputElement;
 
@@ -20,13 +22,14 @@
 </script>
 
 <FormItem>
-    <label class="label" for={id}>{label}</label>
+    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="input-text-wrapper">
         <input
             {id}
             {placeholder}
             {disabled}
             {required}
+            autocomplete={autocomplete ? 'on' : 'off'}
             type="email"
             class="input-text"
             bind:value

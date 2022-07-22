@@ -4,7 +4,7 @@
     import Header from '$lib/layout/header.svelte';
 </script>
 
-<Shell>
+<Shell showSideNavigation>
     <svelte:fragment slot="header">
         <Header />
     </svelte:fragment>
@@ -12,4 +12,5 @@
         <SideNavigation />
     </svelte:fragment>
     <slot />
+    <footer class="main-footer" />
 </Shell>

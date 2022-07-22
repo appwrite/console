@@ -1,22 +1,23 @@
 <script lang="ts">
-    import { tabs, title } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { Button } from '$lib/elements/forms';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from './store';
     import { Card, List, ListItem } from '$lib/components';
     import { Cover, Container } from '$lib/layout';
-    import { Line } from '$lib/charts';
-    // import { page } from '$app/stores';
     import { base } from '$app/paths';
     import CreatePlatform from './_createPlatform.svelte';
 
     title.set($project.name);
     tabs.set([]);
+    backButton.set('');
+
+    copyData.set({
+        text: '',
+        value: ''
+    });
 
     let addPlatform = false;
-    // let range: '24h' | '30d' | '90d' = '30d';
-
-    // $: requestUsage = sdkForConsole.projects.getUsage($page.params.project, range);
 </script>
 
 <svelte:head>
@@ -47,9 +48,6 @@
         </ul>
     </Cover>
     <Container>
-        <Card>
-            <Line />
-        </Card>
         <h1>Platforms</h1>
         <List>
             {#each $project.platforms as platform}

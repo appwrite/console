@@ -1,38 +1,50 @@
 <script lang="ts">
-    import { browser } from '$app/env';
+    import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tabs, title } from '$lib/stores/layout';
+    import { updateLayout } from '$lib/stores/layout';
+    import { onMount } from 'svelte';
     import { user } from './store';
 
     const userId = $page.params.user;
     const path = `users/user/${userId}`;
 
-    $: {
-        if (browser) {
-            user.load(userId);
-        }
-    }
+    onMount(handle);
+    afterNavigate(handle);
 
-    $: {
-        if ($user) {
-            title.set($user.name);
+    async function handle(event = null) {
+        if ($user?.$id !== userId) {
+            await user.load(userId);
         }
-    }
 
-    tabs.set([
-        {
-            href: path,
-            title: 'Overview'
-        },
-        {
-            href: `${path}/sessions`,
-            title: 'Sessions'
-        },
-        {
-            href: `${path}/activity`,
-            title: 'Activity'
-        }
-    ]);
+        updateLayout({
+            navigate: event,
+            title: $user.name,
+            back: `${base}/console/${$page.params.project}/users`,
+            copy: {
+                text: 'User ID',
+                value: userId
+            },
+            tabs: [
+                {
+                    href: path,
+                    title: 'Overview'
+                },
+                {
+                    href: `${path}/memberships`,
+                    title: 'Memberships'
+                },
+                {
+                    href: `${path}/sessions`,
+                    title: 'Sessions'
+                },
+                {
+                    href: `${path}/activity`,
+                    title: 'Activity'
+                }
+            ]
+        });
+    }
 </script>
 
 <svelte:head>

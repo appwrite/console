@@ -1,18 +1,15 @@
 <script lang="ts">
     import { onMount, tick } from 'svelte';
     import { FormItem } from '.';
-
     export let id: string;
     export let label: string;
     export let value = '';
     export let placeholder = '';
     export let required = false;
     export let autofocus = false;
-
     let element: HTMLInputElement;
     let unique = true;
     let bench = '';
-
     const toggle = async () => {
         unique = !unique;
         if (unique) {
@@ -24,7 +21,6 @@
             element.focus();
         }
     };
-
     onMount(() => {
         value = 'unique()';
         if (element && autofocus) {

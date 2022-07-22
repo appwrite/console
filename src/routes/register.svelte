@@ -17,7 +17,7 @@
     const register = async () => {
         try {
             await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
-            await sdkForConsole.account.createSession(mail, pass);
+            await sdkForConsole.account.createEmailSession(mail, pass);
             await goto(`${base}/console`);
         } catch (error) {
             addNotification({
@@ -38,7 +38,7 @@
     <InputText id="name" label="Name" placeholder="John Doe" autofocus={true} bind:value={name} />
     <InputEmail
         id="email"
-        label="E-Mail"
+        label="Email"
         placeholder="test@example.com"
         required={true}
         bind:value={mail} />

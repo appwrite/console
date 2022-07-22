@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
-import { render, fireEvent } from '@testing-library/svelte';
+import { render, fireEvent, cleanup } from '@testing-library/svelte';
 import { InputRadio } from '../../../src/lib/elements/forms';
-import radioGroup from './radioGroup.test.svelte';
+import RadioGroup from '../../../src/lib/mock/inputRadio.test.svelte';
 
 const data = {
     id: 'radio',
@@ -10,6 +10,7 @@ const data = {
     value: 'radio',
     name: 'radio'
 };
+afterEach(() => cleanup());
 
 test('shows label', () => {
     const { getByText } = render(InputRadio, { ...data });
@@ -30,7 +31,7 @@ test('shows boolean input - disabled', () => {
 });
 
 test('state', async () => {
-    const { getByLabelText } = render(radioGroup);
+    const { getByLabelText } = render(RadioGroup);
 
     const one = getByLabelText('one');
     const two = getByLabelText('two');

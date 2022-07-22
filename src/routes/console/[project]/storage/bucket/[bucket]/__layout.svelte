@@ -1,38 +1,44 @@
 <script lang="ts">
-    import { browser } from '$app/env';
+    import { afterNavigate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { tabs, title } from '$lib/stores/layout';
+    import { updateLayout } from '$lib/stores/layout';
+    import { onMount } from 'svelte';
     import { bucket } from './store';
 
     const bucketId = $page.params.bucket;
     const path = `storage/bucket/${bucketId}`;
 
-    $: {
-        if (browser) {
-            bucket.load(bucketId);
-        }
-    }
+    onMount(handle);
+    afterNavigate(handle);
 
-    $: {
-        if ($bucket) {
-            title.set($bucket.name);
+    async function handle(event = null) {
+        if ($bucket?.$id !== bucketId) {
+            await bucket.load(bucketId);
         }
-    }
 
-    tabs.set([
-        {
-            href: path,
-            title: 'Files'
-        },
-        {
-            href: `${path}/usage`,
-            title: 'Usage'
-        },
-        {
-            href: `${path}/settings`,
-            title: 'Settings'
-        }
-    ]);
+        updateLayout({
+            navigate: event,
+            title: $bucket.name,
+            copy: {
+                text: 'Bucket ID',
+                value: bucketId
+            },
+            tabs: [
+                {
+                    href: path,
+                    title: 'Files'
+                },
+                {
+                    href: `${path}/usage`,
+                    title: 'Usage'
+                },
+                {
+                    href: `${path}/settings`,
+                    title: 'Settings'
+                }
+            ]
+        });
+    }
 </script>
 
 <svelte:head>

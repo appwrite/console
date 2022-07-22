@@ -5,22 +5,21 @@
         Table,
         TableHeader,
         TableBody,
-        TableRow,
+        TableRowLink,
         TableCellHead,
-        TableCellLink,
-        TableCellText,
-        TableCell
+        TableCellText
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination } from '$lib/components';
+    import { Empty, Pagination, Avatar, Search } from '$lib/components';
     import Create from './_createTeam.svelte';
     import { goto } from '$app/navigation';
+    import { event } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { teamsList } from './store';
     import { onMount } from 'svelte';
-    import type { Models } from 'src/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let search = '';
     let showCreate = false;
@@ -28,9 +27,9 @@
 
     const limit = 25;
     const project = $page.params.project;
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 30, 30).toString();
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
-        await goto(`${base}/console/${project}/users/team/${event.detail.$id}`);
+        await goto(`${base}/console/${project}/users/teams/${event.detail.$id}`);
     };
     $: teamsList.load(search, limit, offset);
     $: if (search) offset = 0;
@@ -48,57 +47,51 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <div class="input-text-wrapper u-stretch" style="max-width: 500px">
-            <input type="search" class="input-text" bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-        </div>
-
-        <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Team</span>
-        </Button>
-    </div>
-    {#if $teamsList?.response?.total}
+    <Search bind:search placeholder="Search by Name">
+        <span
+            use:event={{
+                name: 'console_users',
+                action: 'click_create',
+                parameters: {
+                    type: 'team'
+                }
+            }}>
+            <Button on:click={() => (showCreate = true)}>
+                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
+            </Button>
+        </span>
+    </Search>
+    {#if $teamsList?.total}
         <Table>
             <TableHeader>
-                <TableCellHead width={30} />
                 <TableCellHead>Name</TableCellHead>
                 <TableCellHead>Members</TableCellHead>
                 <TableCellHead>Created</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each $teamsList.response.teams as team}
-                    <TableRow>
-                        <TableCell onlyDesktop>
-                            <div class="image">
-                                <img
-                                    class="avatar"
-                                    width="30"
-                                    height="30"
-                                    src={getAvatar(team.name)}
-                                    alt={team.name} />
+                {#each $teamsList.teams as team}
+                    <TableRowLink href={`${base}/console/${project}/users/teams/${team.$id}`}>
+                        <TableCellText title="ID">
+                            <div class="u-flex u-gap-12">
+                                <Avatar size={32} name={team.name} src={getAvatar(team.name)} />
+                                <span>{team.name}</span>
                             </div>
-                        </TableCell>
-                        <TableCellLink
-                            title="ID"
-                            href={`${base}/console/${project}/users/teams/${team.$id}`}>
-                            {team.name}
-                        </TableCellLink>
-                        <TableCellText title="Members">{team.total}</TableCellText>
-                        <TableCellText title="Members">
-                            {toLocaleDateTime(team.dateCreated)}
                         </TableCellText>
-                    </TableRow>
+                        <TableCellText title="Members">{team.total} members</TableCellText>
+                        <TableCellText title="Members">
+                            {toLocaleDateTime(team.$createdAt)}
+                        </TableCellText>
+                    </TableRowLink>
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex common-section u-main-space-between">
-            <p class="text">Total results: {$teamsList.response.total}</p>
-            <Pagination {limit} bind:offset sum={$teamsList.response.total} />
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {$teamsList.total}</p>
+            <Pagination {limit} bind:offset sum={$teamsList.total} />
         </div>
     {:else if search}
         <Empty>
-            <div class="common-section">
+            <div class="common-section ">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
             </div>
             <div class="common-section">
@@ -108,11 +101,23 @@
                 <Button secondary on:click={() => (search = '')}>Clear Search</Button>
             </div>
         </Empty>
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {$teamsList.total}</p>
+            <Pagination {limit} bind:offset sum={$teamsList.total} />
+        </div>
     {:else}
         <Empty dashed centered>
-            <div class="common-section">
+            <div
+                class="common-section"
+                use:event={{
+                    name: 'console_users',
+                    action: 'click_create',
+                    parameters: {
+                        type: 'team'
+                    }
+                }}>
                 <Button secondary round on:click={() => (showCreate = true)}>
-                    <i class="icon-plus" />
+                    <span class="icon-plus" aria-hidden="true" />
                 </Button>
             </div>
             <div class="common-section">

@@ -1,83 +1,99 @@
 <script lang="ts">
-    export let show = false;
-    export let collapsed = false;
+    import { uploader } from '$lib/stores/uploader';
+    import { Pill } from '$lib/elements';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { Avatar } from '$lib/components';
+
+    async function removeFile($id: string, bucketId: string) {
+        const file = await sdkForProject.storage.getFile(bucketId, $id);
+        uploader.removeFile(file);
+    }
+
+    const getPreview = (fileId: string, bucketId: string) =>
+        sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 </script>
 
-{#if show}
-    <section class="upload-box">
+{#if $uploader?.isOpen}
+    <section class="upload-box is-float">
         <header class="upload-box-header">
             <h4 class="upload-box-title">
                 <span class="text">Uploading files</span>
-                <span class="amount">3</span>
+                <span class="amount">{$uploader.files.length}</span>
             </h4>
             <button
                 class="icon-button"
-                class:is-open={collapsed}
+                class:is-open={!$uploader.isCollapsed}
                 aria-label="toggle upload box"
-                on:click={() => (collapsed = !collapsed)}>
-                <span class="icon-up-dir" aria-hidden="true" />
+                on:click={() => uploader.toggle()}>
+                <span class="icon-cheveron-up" aria-hidden="true" />
             </button>
-            <button class="icon-button" aria-label="close upload box">
-                <span class="icon-cancel" aria-hidden="true" />
+            <button
+                on:click={() => uploader.close()}
+                class="icon-button"
+                aria-label="close upload box">
+                <span class="icon-x" aria-hidden="true" />
             </button>
         </header>
-        <div class="upload-box-content" class:is-open={collapsed}>
+        <div class="upload-box-content" class:is-open={!$uploader.isCollapsed}>
             <ul class="upload-box-list">
-                <li class="upload-box-item">
-                    <div class="upload-image u-margin-inline-end-16">
-                        <div
-                            class="progress"
-                            style="--progress-value:20"
-                            role="progressbar"
-                            aria-valuenow={20}
-                            aria-valuemin={0}
-                            aria-valuemax={100} />
-                        <span class="icon">%</span>
-                    </div>
-                    <label for="file1" class="file-name">hello.mp4</label>
-                    <button class="icon-button" aria-label="Uploading"
-                        ><span class="icon">&</span></button>
-                </li>
-                <li class="upload-box-item">
-                    <div class="upload-image u-margin-inline-end-16">
-                        <div
-                            class="progress"
-                            style="--progress-value:70"
-                            role="progressbar"
-                            aria-valuenow={20}
-                            aria-valuemin={0}
-                            aria-valuemax={100} />
-                        <span class="icon">%</span>
-                    </div>
-                    <label for="file1" class="file-name">hello.mp4</label>
-                    <button class="icon-button" aria-label="Uploading"
-                        ><span class="icon">&</span></button>
-                </li>
-                <li class="upload-box-item">
-                    <div class="upload-image is-finished u-margin-inline-end-16">
-                        <div
-                            class="progress"
-                            style="--progress-value:100"
-                            role="progressbar"
-                            aria-valuenow={20}
-                            aria-valuemin={0}
-                            aria-valuemax={100} />
-                        <span class="icon">%</span>
-                    </div>
-                    <label for="file1" class="file-name">hello.mp4</label>
-                    <button class="icon-button" aria-label="Uploading"
-                        ><span class="icon">&</span></button>
-                </li>
+                {#each $uploader.files as file}
+                    {#if file.completed || file.progress === 100}
+                        <li class="upload-box-item">
+                            <div class="u-margin-inline-end-16">
+                                <Avatar
+                                    size={32}
+                                    src={getPreview(file.$id, file.bucketId)}
+                                    name={file.name} />
+                            </div>
+
+                            <label for={file.name} class="file-name">{file.name}</label>
+                            <span class="icon-check" />
+                        </li>
+                    {:else if file.failed}
+                        <li class="upload-box-item">
+                            <div class="upload-image u-margin-inline-end-16">
+                                <div
+                                    class="progress"
+                                    role="progressbar"
+                                    aria-valuenow={file.progress}
+                                    aria-valuemin={0}
+                                    aria-valuemax={100} />
+                                <span class="icon">{file.progress}%</span>
+                            </div>
+                            <label for={file.name} class="file-name">{file.name}</label>
+                            <Pill danger>Failed</Pill>
+                            <button
+                                class="icon-button"
+                                aria-label="Failed"
+                                on:click={() => removeFile(file.$id, file.bucketId)}>
+                                <span class="icon-x" />
+                            </button>
+                        </li>
+                    {:else if file.cancelled}
+                        cancelled?
+                    {:else}
+                        <li class="upload-box-item">
+                            <div class="upload-image u-margin-inline-end-16">
+                                <div
+                                    class="progress"
+                                    role="progressbar"
+                                    aria-valuenow={file.progress}
+                                    aria-valuemin={0}
+                                    aria-valuemax={100} />
+                                <span class="icon">{file.progress}%</span>
+                            </div>
+                            <label for={file.name} class="file-name">{file.name}</label>
+                            <Pill warning>Pending</Pill>
+                            <button
+                                class="icon-button"
+                                aria-label="Pending"
+                                on:click={() => removeFile(file.$id, file.bucketId)}>
+                                <span class="icon-x" />
+                            </button>
+                        </li>
+                    {/if}
+                {/each}
             </ul>
         </div>
     </section>
 {/if}
-
-<style>
-    section.upload-box {
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        margin: 0 1rem 1rem 0;
-    }
-</style>

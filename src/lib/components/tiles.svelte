@@ -1,3 +1,3 @@
-<ul class="grid-box">
+<ul class="grid-box common-section">
     <slot />
 </ul>

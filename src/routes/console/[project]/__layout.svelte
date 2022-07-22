@@ -2,10 +2,10 @@
     import { browser } from '$app/env';
     import { page } from '$app/stores';
     import { sdkForConsole, setProject } from '$lib/stores/sdk';
-    import { collection } from './database/collection/[collection]/store';
+    import { collection } from './databases/database/[database]/collection/[collection]/store';
     import { UploadBox } from '$lib/components';
     import { project } from './store';
-    import type { Models } from 'src/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     type Attributes =
         | Models.AttributeBoolean
@@ -19,13 +19,15 @@
 
     $: projectId = $page.params.project;
     $: {
-        setProject(projectId);
-        if (browser) {
-            project.load(projectId);
+        if ($project?.$id !== projectId) {
+            setProject(projectId);
+            if (browser) {
+                project.load(projectId);
+            }
         }
     }
     if (browser) {
-        sdkForConsole.subscribe<Attributes | Models.Index>('console', (message) => {
+        sdkForConsole.client.subscribe<Attributes | Models.Index>('console', (message) => {
             if (message.events.includes('collections.*.attributes.*.create')) {
                 collection.addAttribute(<Attributes>message.payload);
 

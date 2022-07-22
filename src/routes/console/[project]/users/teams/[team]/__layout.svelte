@@ -1,30 +1,52 @@
 <script lang="ts">
-    import { browser } from '$app/env';
     import { page } from '$app/stores';
-    import { tabs, title } from '$lib/stores/layout';
+    import { base } from '$app/paths';
+    import { updateLayout } from '$lib/stores/layout';
     import { team } from './store';
+    import { afterNavigate } from '$app/navigation';
+    import { onMount } from 'svelte';
 
     const teamId = $page.params.team;
-    // const path = `users/teams/${projectId}`;
+    const path = `users/teams/${teamId}`;
 
-    $: {
-        if (browser) {
-            team.load(teamId);
+    onMount(handle);
+    afterNavigate(handle);
+
+    async function handle(event = null) {
+        if ($team?.$id !== teamId) {
+            await team.load(teamId);
         }
-    }
 
-    $: {
-        if ($team) {
-            title.set($team.name);
-        }
+        updateLayout({
+            navigate: event,
+            title: $team.name,
+            back: `${base}/console/${$page.params.project}/users/teams`,
+            copy: {
+                text: 'Team ID',
+                value: teamId
+            },
+            tabs: [
+                {
+                    href: path,
+                    title: 'Overview'
+                },
+                {
+                    href: `${path}/members`,
+                    title: 'Members'
+                },
+                {
+                    href: `${path}/activity`,
+                    title: 'Activity'
+                }
+            ]
+        });
     }
-    // title.set('Teams');
-
-    tabs.set([]);
 </script>
 
 <svelte:head>
     <title>Appwrite - Team</title>
 </svelte:head>
 
-<slot />
+{#if $team}
+    <slot />
+{/if}

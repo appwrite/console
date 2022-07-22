@@ -1,9 +1,10 @@
-import { version, build } from '$service-worker';
+import { version, build, files } from '$service-worker';
 
 const name = `cache-${version}`;
+const cachedFiles = [...build, ...files];
 
 self.addEventListener('install', (event: ExtendableEvent) => {
-    event.waitUntil(caches.open(name).then((cache) => cache.addAll(build)));
+    event.waitUntil(caches.open(name).then((cache) => cache.addAll(cachedFiles)));
 });
 
 self.addEventListener('activate', (event: ExtendableEvent) => {
@@ -24,7 +25,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
     const url = new URL(request.url);
     const cached = caches.match(request);
 
-    if (url.origin === location.origin && build.includes(url.pathname)) {
+    if (url.origin === location.origin && cachedFiles.includes(url.pathname)) {
         // always return build files from cache
         event.respondWith(cached);
     } else if (url.protocol === 'https:' || location.hostname === 'localhost') {
