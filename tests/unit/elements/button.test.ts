@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
-
 import { Button } from '../../../src/lib/elements/forms';
 
 test('shows button', () => {
@@ -35,7 +35,7 @@ test('shows button - text', () => {
 test('shows button - on:click', async () => {
     const { getByRole, component } = render(Button);
     const button = getByRole('button');
-    const callback = jest.fn();
+    const callback = vi.fn();
     component.$on('click', callback);
 
     await fireEvent.click(button);

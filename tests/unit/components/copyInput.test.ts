@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import { CopyInput } from '../../../src/lib/components';
 
@@ -20,7 +21,7 @@ test('copy to clipboard function called on click', async () => {
 
     Object.assign(window.navigator, {
         clipboard: {
-            writeText: jest.fn().mockImplementation(() => Promise.resolve())
+            writeText: vi.fn().mockImplementation(() => Promise.resolve())
         }
     });
 
