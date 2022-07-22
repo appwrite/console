@@ -20,7 +20,7 @@
             navigate: event,
             title: $bucket.name,
             copy: {
-                text: bucketId,
+                text: 'Bucket ID',
                 value: bucketId
             },
             tabs: [

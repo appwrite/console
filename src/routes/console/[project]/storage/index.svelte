@@ -1,14 +1,14 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { sdkForProject } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Tiles, Tooltip, Copy } from '$lib/components';
+    import { Empty, Pagination, Tooltip, Copy, Bucket } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
+    import { bucketList } from './store';
 
     let showCreate = false;
     let search = '';
@@ -21,7 +21,7 @@
         await goto(`${base}/console/${project}/storage/bucket/${event.detail.$id}`);
     };
 
-    $: request = sdkForProject.storage.listBuckets(search, limit, offset);
+    $: bucketList.load(search, limit, offset ?? 0);
     $: if (search) offset = 0;
 </script>
 
@@ -30,87 +30,113 @@
         <h2 class="heading-level-5">Buckets</h2>
 
         <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add Bucket</span>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add bucket</span>
         </Button>
     </div>
-    {#await request}
-        <div aria-busy="true" />
-    {:then response}
-        {#if response.total}
-            <Tiles>
-                {#each response.buckets as bucket}
-                    <a
-                        class="card"
-                        href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
-                        <div class="u-flex u-main-space-between">
-                            <span class="is-small">XX Files</span>
-                            {#if !bucket.enabled}
-                                <Pill>Disabled</Pill>
-                            {/if}
-                        </div>
-                        <h3 class="tiles-title">{bucket.name}</h3>
-                        <div class="u-flex u-main-space-between">
-                            <Copy value={bucket.$id}>
-                                <Pill button
-                                    ><span class="icon-duplicate" aria-hidden="true" />Bucket ID</Pill>
-                            </Copy>
-                            <div class="">
-                                <Tooltip icon="lock-closed" aria="encryption">
-                                    <span
-                                        >{bucket.encryption
-                                            ? 'Encryption enabled'
-                                            : 'Encryption disabled'}</span>
-                                </Tooltip>
-                                <Tooltip icon="shield-check" aria="antivirus">
-                                    <span
-                                        >{bucket.antivirus
-                                            ? 'Antivirus enabled'
-                                            : 'Antivirus disabled'}</span>
-                                </Tooltip>
+
+    {#if $bucketList?.total}
+        <li
+            class="grid-box common-section"
+            style={`--grid-gap:2rem; --grid-item-size:${
+                $bucketList.total > 3 ? '22rem' : '25rem'
+            };`}>
+            {#each $bucketList.buckets as bucket}
+                <Bucket href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
+                    <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
+                    <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
+                    <svelte:fragment slot="status">
+                        {#if !bucket.enabled}
+                            <Pill>Disabled</Pill>
+                        {/if}
+                    </svelte:fragment>
+
+                    <Copy value={bucket.$id}>
+                        <Pill button><i class="icon-duplicate" />Bucket ID</Pill>
+                    </Copy>
+
+                    <svelte:fragment slot="icons">
+                        <li>
+                            <Tooltip
+                                icon="lock-closed"
+                                aria="encryption"
+                                disabled={!bucket.encryption}>
+                                <span
+                                    >{bucket.encryption
+                                        ? 'Encryption enabled'
+                                        : 'Encryption disabled'}</span>
+                            </Tooltip>
+                        </li>
+                        <li>
+                            <Tooltip
+                                icon="shield-check"
+                                aria="antivirus"
+                                disabled={!bucket.antivirus}>
+                                <span
+                                    >{bucket.antivirus
+                                        ? 'Antivirus enabled'
+                                        : 'Antivirus disabled'}</span>
+                            </Tooltip>
+                        </li>
+                    </svelte:fragment>
+                </Bucket>
+            {/each}
+            {#if $bucketList.total % 2 !== 0}
+                <article class="card is-border-dashed">
+                    <div class="bucket">
+                        <div class="u-flex u-flex-vertical u-cross-center">
+                            <div class="common-section">
+                                <Button secondary round on:click={() => (showCreate = true)}>
+                                    <i class="icon-plus" />
+                                </Button>
+                            </div>
+                            <div class="common-section">
+                                <p>Add a new bucket</p>
                             </div>
                         </div>
-                    </a>
-                {/each}
-            </Tiles>
+                    </div>
+                </article>
+            {/if}
+        </li>
 
-            <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {response.total}</p>
-                <Pagination {limit} bind:offset sum={response.total} />
-            </div>
-        {:else if search}
-            <Empty>
-                <div class="u-flex u-flex-vertical">
-                    <b>Sorry, we couldn’t find ‘{search}’</b>
-                    <div class="common-section">
-                        <p>There are no buckets that match your search.</p>
-                    </div>
-                    <div class="common-section">
-                        <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-                    </div>
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {$bucketList.total}</p>
+            <Pagination {limit} bind:offset sum={$bucketList.total} />
+        </div>
+    {:else if search}
+        <Empty>
+            <div class="u-flex u-flex-vertical">
+                <b>Sorry, we couldn’t find ‘{search}’</b>
+                <div class="common-section">
+                    <p>There are no buckets that match your search.</p>
                 </div>
-            </Empty>
-            <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {response.total}</p>
-                <Pagination {limit} bind:offset sum={response.total} />
+                <div class="common-section">
+                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+                </div>
             </div>
-        {:else}
-            <Empty dashed centered>
+        </Empty>
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {$bucketList?.total}</p>
+            <Pagination {limit} bind:offset sum={$bucketList?.total} />
+        </div>
+    {:else}
+        <Empty dashed centered>
+            <div class="bucket">
                 <div class="u-flex u-flex-vertical u-cross-center">
                     <div class="common-section">
                         <Button secondary round on:click={() => (showCreate = true)}>
-                            <span class="icon-plus" aria-hidden="true" />
+                            <i class="icon-plus" />
                         </Button>
                     </div>
                     <div class="common-section">
-                        <p>Add Your First Bucket To Get Started</p>
+                        <p>Add your first bucket to get started</p>
                     </div>
                     <div class="common-section">
                         <Button secondary href="#">Documentation</Button>
                     </div>
                 </div>
-            </Empty>
-        {/if}
-    {/await}
+            </div>
+        </Empty>
+    {/if}
 </Container>
 
 <Create bind:showCreate on:created={bucketCreated} />
