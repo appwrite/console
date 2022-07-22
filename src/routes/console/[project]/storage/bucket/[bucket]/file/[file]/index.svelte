@@ -73,7 +73,25 @@
     {#if $file}
         <CardGrid>
             <div class="u-flex u-gap-16">
-                <img width="205" height="125" src={getPreview($file.$id)} alt={$file.name} />
+                <a
+                    href={getView($file.$id)}
+                    class="file-preview is-with-image"
+                    target="_blank"
+                    aria-label="open file in new window">
+                    <div class="file-preview-image">
+                        <img
+                            width="205"
+                            height="125"
+                            src={getPreview($file.$id)}
+                            alt={$file.name} />
+                    </div>
+                    <div class="file-preview-content">
+                        <div class="avatar">
+                            <span class="icon-external-link" aria-hidden="true" />
+                        </div>
+                    </div>
+                </a>
+                <!-- <img width="205" height="125" src={getPreview($file.$id)} alt={$file.name} /> -->
                 <div>
                     <h2 class="heading-level-7">{$file.name}</h2>
                     <Copy value={getView($file.$id)}>
