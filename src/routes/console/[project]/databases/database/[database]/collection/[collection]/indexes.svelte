@@ -2,6 +2,7 @@
     import { page } from '$app/stores';
     import { Empty, Pagination, Search, DropList, DropListItem } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { Pill } from '$lib/elements';
     import {
         Table,
         TableHeader,
@@ -11,7 +12,6 @@
         TableCellText,
         TableRow
     } from '$lib/elements/table';
-    // import Create from './_createUser.svelte';
     import { Container } from '$lib/layout';
     import { indexList, collection } from './store';
     import { onMount } from 'svelte';
@@ -79,7 +79,18 @@
                 {#each $indexList.indexes as index, i}
                     <TableRow>
                         <TableCellText title="Key">
-                            {index.key}
+                            <div class="u-flex u-main-space-between">
+                                {index.key}
+                                {#if index.status !== 'available'}
+                                    <Pill
+                                        warning={index.status === 'processing'}
+                                        danger={['deleting', 'stuck', 'failed'].includes(
+                                            index.status
+                                        )}>
+                                        {index.status}
+                                    </Pill>
+                                {/if}
+                            </div>
                         </TableCellText>
                         <TableCellText title="Type">{index.type}</TableCellText>
                         <TableCellText title="Attributes">
@@ -157,7 +168,7 @@
                     <p>Create your first attribute to get started</p>
                 </div>
                 <div class="common-section">
-                    <Button secondary href="#">Documentation</Button>
+                    <Button secondary href="#?">Documentation</Button>
                 </div>
             </div>
         </Empty>
