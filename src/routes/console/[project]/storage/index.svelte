@@ -35,8 +35,8 @@
     </div>
 
     {#if $bucketList?.total}
-        <li
-            class="grid-box common-section"
+        <ul
+            class="grid-box common-section u-margin-block-start-32"
             style={`--grid-gap:2rem; --grid-item-size:${
                 $bucketList.total > 3 ? '22rem' : '25rem'
             };`}>
@@ -96,7 +96,7 @@
                     </div>
                 </article>
             {/if}
-        </li>
+        </ul>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.total}</p>
