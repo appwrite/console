@@ -17,6 +17,7 @@
     import { onMount } from 'svelte';
     import Delete from './_deleteIndex.svelte';
     import Create from './_createIndex.svelte';
+    import Overview from './_overviewIndex.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
 
     let showDropdown = [];
@@ -194,4 +195,5 @@
 <Create bind:showCreateIndex />
 {#if selectedIndex}
     <Delete bind:showDelete {selectedIndex} on:deleted={handleDelete} />
+    <Overview bind:showOverview {selectedIndex} />
 {/if}
