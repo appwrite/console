@@ -59,9 +59,10 @@
                             href={`${base}/console/${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}>
                             <TableCell main width={230}>
                                 <Copy value={document.$id}>
-                                    <Pill button
-                                        ><span class="icon-duplicate" aria-hidden="true" />
-                                        <span class="text">{document.$id}</span></Pill>
+                                    <Pill button>
+                                        <span class="icon-duplicate" aria-hidden="true" />
+                                        <span class="text u-trim-start">{document.$id}</span>
+                                    </Pill>
                                 </Copy>
                             </TableCell>
                             {#each columns as column}
