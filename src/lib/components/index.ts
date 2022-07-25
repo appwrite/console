@@ -26,3 +26,5 @@ export { default as Alert } from './alert.svelte';
 export { default as Box } from './box.svelte';
 export { default as Search } from './search.svelte';
 export { default as Bucket } from './bucket.svelte';
+export { default as Steps } from './steps.svelte';
+export { default as Step } from './step.svelte';
