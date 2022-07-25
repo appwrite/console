@@ -62,3 +62,13 @@
         </div>
     </section>
 {/if}
+
+<style>
+    .wizard {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+    }
+</style>

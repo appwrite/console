@@ -15,8 +15,10 @@
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { onMount } from 'svelte';
+    import Create from './_create.svelte';
 
     let offset = 0;
+    let showCreate = false;
 
     const limit = 5;
     const projectId = $page.params.project;
@@ -38,7 +40,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <h2 class="heading-level-5">Documents</h2>
 
-        <Button on:click={() => console.log('showCreate = true')}>
+        <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create document</span>
         </Button>
@@ -83,7 +85,7 @@
         <Empty dashed centered>
             <div class="u-flex u-flex-vertical u-cross-center">
                 <div class="common-section">
-                    <Button secondary round on:click={() => console.log('showCreate = true')}>
+                    <Button secondary round on:click={() => (showCreate = true)}>
                         <span class="icon-plus" aria-hidden="true" />
                     </Button>
                 </div>
@@ -97,3 +99,5 @@
         </Empty>
     {/if}
 </Container>
+
+<Create bind:showCreate />
