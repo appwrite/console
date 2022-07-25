@@ -44,6 +44,9 @@
         <aside class="wizard-side">
             <slot name="aside" />
         </aside>
+        <div class="wizard-media">
+            <slot name="media" />
+        </div>
         <div class="wizard-main">
             <slot />
         </div>
