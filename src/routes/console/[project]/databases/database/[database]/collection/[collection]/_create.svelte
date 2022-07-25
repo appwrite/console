@@ -85,12 +85,30 @@
         <div class="form-content">
             <FormList>
                 {#each $collection.attributes as attribute}
-                    <svelte:component
-                        this={comp(attribute.type)}
-                        label={attribute.key}
-                        id={attribute.key}
-                        required={attribute.required}
-                        bind:value={newDocument[attribute.key]} />
+                    {#if attribute.array}
+                        <li class="form-item is-multiple">
+                            <div class="form-item-part u-stretch">
+                                <svelte:component
+                                    this={comp(attribute.type)}
+                                    label={attribute.key}
+                                    id={attribute.key}
+                                    required={attribute.required}
+                                    bind:value={newDocument[attribute.key]} />
+                            </div>
+                            <div class="form-item-part u-cross-child-end">
+                                <Button text>
+                                    <span class="icon-x" aria-hidden="true" />
+                                </Button>
+                            </div>
+                        </li>
+                    {:else}
+                        <svelte:component
+                            this={comp(attribute.type)}
+                            label={attribute.key}
+                            id={attribute.key}
+                            required={attribute.required}
+                            bind:value={newDocument[attribute.key]} />
+                    {/if}
                 {/each}
             </FormList>
         </div>
