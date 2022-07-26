@@ -83,13 +83,30 @@ function createIndexListStore() {
         }
     };
 }
+function createAttributeListStore() {
+    const { subscribe, set } = writable<Models.AttributeList>(
+        browser ? JSON.parse(sessionStorage.getItem('attributeList')) : null
+    );
+    return {
+        subscribe,
+        set,
+        load: async (collectionId: string) => {
+            const response = await sdkForProject.databases.listAttributes(collectionId);
+            set(response);
+        }
+    };
+}
 
 export const collection = createCollection();
 export const documentList = createDocumentListStore();
 export const indexList = createIndexListStore();
+export const attributeList = createAttributeListStore();
 
 if (browser) {
     collection.subscribe((n) => sessionStorage?.setItem('collection', JSON.stringify(n ?? '')));
     documentList.subscribe((n) => sessionStorage?.setItem('documentList', JSON.stringify(n ?? '')));
     indexList.subscribe((n) => sessionStorage?.setItem('indexList', JSON.stringify(n ?? '')));
+    attributeList.subscribe((n) =>
+        sessionStorage?.setItem('attributeList', JSON.stringify(n ?? ''))
+    );
 }
