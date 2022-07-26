@@ -4,7 +4,7 @@
     import { sdkForConsole, setProject } from '$lib/stores/sdk';
     import { collection } from './databases/database/[database]/collection/[collection]/store';
     import { UploadBox } from '$lib/components';
-    import { project } from './store';
+    import { organisation, project } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { updateLayout } from '$lib/stores/layout';
@@ -50,12 +50,11 @@
     async function handle(event = null) {
         if ($project?.$id !== projectId) {
             setProject(projectId);
-            if (browser) {
-                await project.load(projectId);
-            }
+            await project.load(projectId);
         }
-        // TODO: load organization
-        // const organisation = await sdkForConsole.teams.get($project.teamId);
+        if ($organisation?.$id !== $project.teamId) {
+            await organisation.load($project.teamId);
+        }
 
         updateLayout({
             navigate: event,
@@ -64,7 +63,7 @@
             breadcrumbs: [
                 {
                     href: '#',
-                    title: $project.name,
+                    title: $organisation.name,
                     level: 1
                 },
                 {
