@@ -54,8 +54,8 @@
                 await project.load(projectId);
             }
         }
-        // TODO: make this part of state
-        const organisation = await sdkForConsole.teams.get($project.teamId);
+        // TODO: load organization
+        // const organisation = await sdkForConsole.teams.get($project.teamId);
 
         updateLayout({
             navigate: event,
@@ -64,7 +64,8 @@
             breadcrumbs: [
                 {
                     href: '#',
-                    title: organisation.name
+                    title: $project.name,
+                    level: 1
                 },
                 {
                     href: '#',
