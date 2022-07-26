@@ -22,6 +22,11 @@
         updateLayout({
             navigate: event,
             title: $database.name,
+            level: 4,
+            breadcrumbs: {
+                href: '#',
+                title: $database.name
+            },
             tabs: [
                 {
                     href: path,

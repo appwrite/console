@@ -19,6 +19,11 @@
         updateLayout({
             navigate: event,
             title: $func.name,
+            level: 4,
+            breadcrumbs: {
+                title: $func.name,
+                href: '#'
+            },
             tabs: [
                 {
                     href: path,

@@ -9,7 +9,12 @@
     function handle(event = null) {
         updateLayout({
             navigate: event,
-            title: 'Functions'
+            title: 'Functions',
+            level: 3,
+            breadcrumbs: {
+                href: '#',
+                title: 'Functions'
+            }
         });
     }
 </script>

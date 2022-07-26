@@ -19,6 +19,11 @@
         updateLayout({
             navigate: event,
             title: $bucket.name,
+            level: 4,
+            breadcrumbs: {
+                title: $bucket.name,
+                href: '#'
+            },
             copy: {
                 text: 'Bucket ID',
                 value: bucketId

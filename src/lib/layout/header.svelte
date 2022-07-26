@@ -9,8 +9,14 @@
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
+    import { breadcrumbs as breadcrumbsStore, level } from '$lib/stores/layout';
 
     let showDropdown = false;
+
+    $: breadcrumbs = [...$breadcrumbsStore]
+        .map(([level, value]) => ({ level, value }))
+        .sort((a, b) => (a.level > b.level ? 1 : -1))
+        .filter((n) => n.level <= $level);
 </script>
 
 <a class="logo" href={`${base}/console`}>
@@ -18,9 +24,11 @@
 </a>
 <nav class="breadcrumbs is-only-desktop" aria-label="breadcrumb">
     <ol class="breadcrumbs-list">
-        <li class="breadcrumbs-item">
-            <a href="#/">Home</a>
-        </li>
+        {#each breadcrumbs as breadcrumb}
+            <li class="breadcrumbs-item">
+                <a href={breadcrumb.value.href}>{breadcrumb.value.title}</a>
+            </li>
+        {/each}
     </ol>
 </nav>
 

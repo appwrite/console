@@ -12,6 +12,11 @@
         updateLayout({
             navigate: event,
             title: 'Storage',
+            level: 3,
+            breadcrumbs: {
+                title: 'Storage',
+                href: '#'
+            },
             tabs: [
                 {
                     href: path,

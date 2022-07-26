@@ -19,6 +19,11 @@
 
         updateLayout({
             navigate: event,
+            level: 5,
+            breadcrumbs: {
+                href: '#',
+                title: $file.name
+            },
             back: `${base}/console/${$page.params.project}/storage/bucket/${bucketId}`,
             title: $file.name,
             copy: {

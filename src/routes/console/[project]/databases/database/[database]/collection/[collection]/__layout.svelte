@@ -22,6 +22,11 @@
         updateLayout({
             navigate: event,
             title: $collection.name,
+            level: 5,
+            breadcrumbs: {
+                href: '#',
+                title: $collection.name
+            },
             back: `${base}/console/${$page.params.project}/database`,
             tabs: [
                 {

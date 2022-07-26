@@ -20,6 +20,11 @@
         updateLayout({
             navigate: event,
             title: $user.name,
+            level: 4,
+            breadcrumbs: {
+                title: $user.name,
+                href: '#'
+            },
             back: `${base}/console/${$page.params.project}/users`,
             copy: {
                 text: 'User ID',
