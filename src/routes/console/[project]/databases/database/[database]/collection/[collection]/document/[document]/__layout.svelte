@@ -4,6 +4,7 @@
     import { doc } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -19,7 +20,9 @@
         }
         updateLayout({
             navigate: event,
-            title: `Document - ${$doc.$id}`,
+            title: 'Document',
+            copy: { text: 'Document ID', value: $doc.$id },
+            back: `${base}/console/${$page.params.project}/databases/database/${databaseId}/collection/${collectionId}`,
             tabs: [
                 {
                     href: path,
