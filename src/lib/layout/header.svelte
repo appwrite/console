@@ -9,28 +9,16 @@
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { breadcrumbs as breadcrumbsStore, level } from '$lib/stores/layout';
+    import Breadcrumbs from './breadcrumbs.svelte';
 
     let showDropdown = false;
-
-    $: breadcrumbs = [...$breadcrumbsStore]
-        .map(([level, value]) => ({ level, value }))
-        .sort((a, b) => (a.level > b.level ? 1 : -1))
-        .filter((n) => n.level <= $level);
 </script>
 
 <a class="logo" href={`${base}/console`}>
     <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
 </a>
-<nav class="breadcrumbs is-only-desktop" aria-label="breadcrumb">
-    <ol class="breadcrumbs-list">
-        {#each breadcrumbs as breadcrumb}
-            <li class="breadcrumbs-item">
-                <a href={breadcrumb.value.href}>{breadcrumb.value.title}</a>
-            </li>
-        {/each}
-    </ol>
-</nav>
+
+<Breadcrumbs />
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop">

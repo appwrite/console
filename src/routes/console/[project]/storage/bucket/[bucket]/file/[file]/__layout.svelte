@@ -21,7 +21,7 @@
             navigate: event,
             level: 5,
             breadcrumbs: {
-                href: '#',
+                href: `file/${fileId}`,
                 title: $file.name
             },
             back: `${base}/console/${$page.params.project}/storage/bucket/${bucketId}`,

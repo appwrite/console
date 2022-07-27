@@ -47,6 +47,7 @@
     afterNavigate(handle);
 
     let loaded = false;
+    const path = 'console';
     async function handle(event = null) {
         if ($project?.$id !== projectId) {
             setProject(projectId);
@@ -62,12 +63,12 @@
             level: 2,
             breadcrumbs: [
                 {
-                    href: '#',
+                    href: path,
                     title: $organisation.name,
                     level: 1
                 },
                 {
-                    href: '#',
+                    href: $project.$id,
                     title: $project.name
                 }
             ]

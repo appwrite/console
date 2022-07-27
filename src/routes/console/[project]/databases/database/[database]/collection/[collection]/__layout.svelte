@@ -24,7 +24,7 @@
             title: $collection.name,
             level: 5,
             breadcrumbs: {
-                href: '#',
+                href: `collection/${collectionId}`,
                 title: $collection.name
             },
             back: `${base}/console/${$page.params.project}/database`,

@@ -22,7 +22,7 @@
             level: 4,
             breadcrumbs: {
                 title: $bucket.name,
-                href: '#'
+                href: `bucket/${bucketId}`
             },
             copy: {
                 text: 'Bucket ID',

@@ -24,7 +24,7 @@
             title: $database.name,
             level: 4,
             breadcrumbs: {
-                href: '#',
+                href: `database/${databaseId}`,
                 title: $database.name
             },
             tabs: [

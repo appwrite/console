@@ -24,7 +24,7 @@
             back: `${base}/console/${$page.params.project}/users/teams`,
             breadcrumbs: {
                 title: $team.name,
-                href: '#'
+                href: `teams/${teamId}`
             },
             copy: {
                 text: 'Team ID',

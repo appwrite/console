@@ -24,7 +24,7 @@
             level: 6,
             breadcrumbs: {
                 title: $doc.$id,
-                href: '#'
+                href: `document/${documentId}`
             },
             tabs: [
                 {

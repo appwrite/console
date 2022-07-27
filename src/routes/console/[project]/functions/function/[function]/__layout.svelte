@@ -22,7 +22,7 @@
             level: 4,
             breadcrumbs: {
                 title: $func.name,
-                href: '#'
+                href: `function/${functionId}`
             },
             tabs: [
                 {

@@ -12,7 +12,7 @@
             title: 'Functions',
             level: 3,
             breadcrumbs: {
-                href: '#',
+                href: 'functions',
                 title: 'Functions'
             }
         });

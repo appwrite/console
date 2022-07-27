@@ -15,7 +15,7 @@
             level: 3,
             breadcrumbs: {
                 title: 'Settings',
-                href: '#'
+                href: 'settings'
             },
             tabs: [
                 {

@@ -23,7 +23,7 @@
             level: 4,
             breadcrumbs: {
                 title: $user.name,
-                href: '#'
+                href: `user/${userId}`
             },
             back: `${base}/console/${$page.params.project}/users`,
             copy: {

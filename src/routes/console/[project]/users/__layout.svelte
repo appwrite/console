@@ -17,7 +17,7 @@
             level: 3,
             breadcrumbs: {
                 title: 'Users',
-                href: '#'
+                href: path
             },
             tabs: [
                 {
