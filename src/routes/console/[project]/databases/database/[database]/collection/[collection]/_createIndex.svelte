@@ -5,6 +5,7 @@
     import type { Attributes } from './store';
     import { onMount } from 'svelte';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
@@ -42,13 +43,24 @@
             attributeList.push({ value: selectedAttribute, order: selectedOrder });
             selectedAttribute = selectedOrder = '';
         }
-        await sdkForProject.databases.createIndex(
-            $collection.$id,
-            key,
-            selectedType,
-            attributeList.map((a) => a.value),
-            attributeList.map((a) => a.order)
-        );
+        try {
+            await sdkForProject.databases.createIndex(
+                $collection.$id,
+                key,
+                selectedType,
+                attributeList.map((a) => a.value),
+                attributeList.map((a) => a.order)
+            );
+            addNotification({
+                message: 'Index created!',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
 
         showCreateIndex = false;
     };

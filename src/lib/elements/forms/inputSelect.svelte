@@ -9,7 +9,7 @@
     export let required = false;
     export let disabled = false;
     export let options: {
-        value: string;
+        value: string | boolean | number;
         label: string;
     }[];
 </script>
@@ -19,7 +19,7 @@
     <div class="select">
         <select bind:value {id} {required} {disabled}>
             {#if placeholder}
-                <option value="" disabled selected hidden>{placeholder}</option>
+                <option value={null} disabled selected hidden>{placeholder}</option>
             {/if}
             {#each options as option}
                 <option value={option.value} selected={option.value === value}>

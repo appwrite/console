@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { CardGrid, Box, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputTags } from '$lib/elements/forms';
@@ -11,8 +10,8 @@
     import Delete from './_delete.svelte';
 
     let showDelete = false;
-    let fileRead = $doc?.$read;
-    let fileWrite = $doc?.$write;
+    let read = $doc?.$read;
+    let write = $doc?.$write;
     let arePermsDisabled = true;
 
     async function updatePermissions() {
@@ -21,11 +20,11 @@
                 $doc.collectionId,
                 $doc.$id,
                 $doc.data,
-                fileRead,
-                fileWrite
+                read,
+                write
             );
-            $doc.$read = fileRead;
-            $doc.$write = fileWrite;
+            $doc.$read = read;
+            $doc.$write = write;
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -39,13 +38,13 @@
         }
     }
 
-    $: if (fileRead || fileWrite) {
-        if (fileRead) {
-            if (JSON.stringify(fileRead) !== JSON.stringify($doc.$read)) {
+    $: if (read || write) {
+        if (read) {
+            if (JSON.stringify(read) !== JSON.stringify($doc.$read)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
-        } else if (fileWrite) {
-            if (JSON.stringify(fileWrite) !== JSON.stringify($doc.$write)) {
+        } else if (write) {
+            if (JSON.stringify(write) !== JSON.stringify($doc.$write)) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
@@ -67,6 +66,7 @@
                 </div>
             </svelte:fragment>
         </CardGrid>
+        <Document />
 
         <CardGrid>
             <h6 class="heading-level-7">Update Permissions</h6>
@@ -87,12 +87,12 @@
                         id="read"
                         label="Read Access"
                         placeholder="User ID, Team ID, or Role"
-                        bind:tags={fileRead} />
+                        bind:tags={read} />
                     <InputTags
                         id="write"
                         label="Write Access"
                         placeholder="User ID, Team ID, or Role"
-                        bind:tags={fileWrite} />
+                        bind:tags={write} />
                 </ul>
             </svelte:fragment>
 
@@ -104,7 +104,6 @@
                     }}>Update</Button>
             </svelte:fragment>
         </CardGrid>
-        <Document />
 
         <CardGrid>
             <h6 class="heading-level-7">Delete document</h6>

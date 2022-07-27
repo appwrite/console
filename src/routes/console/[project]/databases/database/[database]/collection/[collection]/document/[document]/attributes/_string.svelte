@@ -8,4 +8,10 @@
     export let attribute: Models.AttributeString;
 </script>
 
-<InputText {id} {label} required={attribute.required} maxlength={attribute.size} bind:value />
+<InputText
+    {id}
+    {label}
+    showLabel={!!label?.length}
+    required={attribute.required}
+    maxlength={attribute.size}
+    bind:value />
