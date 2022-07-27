@@ -41,8 +41,11 @@
         {#each truncate(breadcrumbs) as breadcrumb, i}
             <li class="breadcrumbs-item">
                 {#if breadcrumb.value.href}
-                    <a href={buildHref(breadcrumbs.length > 4 ? i + breadcrumbs.length - 4 : i)}
-                        >{breadcrumb.value.title}</a>
+                    <a
+                        href={buildHref(breadcrumbs.length > 4 ? i + breadcrumbs.length - 4 : i)}
+                        title={breadcrumb.value.title}>
+                        {breadcrumb.value.title}
+                    </a>
                 {:else}
                     <span>{breadcrumb.value.title}</span>
                 {/if}

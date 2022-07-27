@@ -1,5 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { Breadcrumbs } from '.';
     import { Avatar, DropList, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -9,7 +10,6 @@
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import Breadcrumbs from './breadcrumbs.svelte';
 
     let showDropdown = false;
 </script>
