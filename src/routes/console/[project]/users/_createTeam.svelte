@@ -56,7 +56,7 @@
             {:else}
                 <InnerModal bind:show={showDropdown}>
                     <svelte:fragment slot="title">Team ID</svelte:fragment>
-                    Enter a custom team ID. Leave blank for a randomly generated team ID.
+                    Enter a custom team ID. Leave blank for a randomly generated one.
                     <svelte:fragment slot="content">
                         <div class="form">
                             <InputText

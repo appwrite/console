@@ -137,7 +137,7 @@
             {:else}
                 <InnerModal bind:show={showDropdown}>
                     <svelte:fragment slot="title">File ID</svelte:fragment>
-                    <p>Enter a custom file ID. Leave blank for a randomly generated file ID.</p>
+                    <p>Enter a custom file ID. Leave blank for a randomly generated one.</p>
                     <svelte:fragment slot="content">
                         <div class="form">
                             <InputText

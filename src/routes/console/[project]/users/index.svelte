@@ -89,10 +89,10 @@
                         <TableCell title="Status">
                             {#if user.status}
                                 <Pill success={user.emailVerification}>
-                                    {user.emailVerification ? 'Verified' : 'Unverified'}
+                                    {user.emailVerification ? 'verified' : 'unverified'}
                                 </Pill>
                             {:else}
-                                <Pill danger>Blocked</Pill>
+                                <Pill danger>blocked</Pill>
                             {/if}
                         </TableCell>
                         <TableCell showOverflow title="ID">

@@ -216,12 +216,12 @@
                 <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
                 <h6 class="heading-level-7">{$user.name}</h6>
                 {#if !$user.status}
-                    <Pill danger>Blocked</Pill>
+                    <Pill danger>blocked</Pill>
                 {:else}
                     <Pill success={$user.emailVerification || $user.phoneVerification}>
                         {$user.emailVerification || $user.phoneVerification
-                            ? 'Verified'
-                            : 'Unverified'}
+                            ? 'verified'
+                            : 'unverified'}
                     </Pill>
                 {/if}
             </div>
