@@ -15,6 +15,10 @@
         try {
             await sdkForProject.users.delete($user.$id);
             showDelete = false;
+            addNotification({
+                type: 'success',
+                message: `${$user.name} has been deleted`
+            });
             await goto(`${base}/console/${$page.params.project}/users`);
         } catch (error) {
             addNotification({
