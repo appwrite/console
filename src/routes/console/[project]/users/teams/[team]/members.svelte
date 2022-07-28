@@ -17,7 +17,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { memberships } from './store';
-    import CreateMember from './_createMember.svelte';
+    import CreateMember from './_createMembership.svelte';
     import DeleteMembership from './_deleteMembership.svelte';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
@@ -45,7 +45,8 @@
 <Container>
     <Search bind:search placeholder="Search by ID">
         <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create Member</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create membership</span>
         </Button>
     </Search>
     {#if $memberships?.total}

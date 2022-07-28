@@ -19,6 +19,10 @@
             name = '';
             showCreate = false;
             showDropdown = false;
+            addNotification({
+                type: 'success',
+                message: `${team.name} has been created`
+            });
             dispatch('created', team);
         } catch (error) {
             addNotification({
