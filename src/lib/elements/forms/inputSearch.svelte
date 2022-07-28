@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { browser } from '$app/env';
-
     import { onMount } from 'svelte';
 
     export let value = '';
