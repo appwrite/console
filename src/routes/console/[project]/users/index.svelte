@@ -53,7 +53,7 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search Name, Email, or ID">
+    <Search bind:search placeholder="Search by name, email, or ID">
         <span
             use:event={{
                 name: 'console_users',
