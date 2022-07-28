@@ -41,6 +41,10 @@
             ]
         });
     }
+
+    $: if ($team.name) {
+        handle();
+    }
 </script>
 
 <svelte:head>
