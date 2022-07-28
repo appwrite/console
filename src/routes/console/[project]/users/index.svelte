@@ -88,8 +88,10 @@
                         <TableCellText title="Email">{user.email}</TableCellText>
                         <TableCell title="Status">
                             {#if user.status}
-                                <Pill success={user.emailVerification}>
-                                    {user.emailVerification ? 'verified' : 'unverified'}
+                                <Pill success={user.emailVerification || user.phoneVerification}>
+                                    {user.emailVerification || user.phoneVerification
+                                        ? 'verified'
+                                        : 'unverified'}
                                 </Pill>
                             {:else}
                                 <Pill danger>blocked</Pill>
