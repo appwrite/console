@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { browser } from '$app/env';
+
     import { onMount } from 'svelte';
 
     export let value = '';
@@ -25,6 +27,12 @@
             value = target.value;
         }, debounce);
     };
+
+    $: if (!value) {
+        if (element) {
+            element.value = value;
+        }
+    }
 </script>
 
 <div class="input-text-wrapper" class:is-with-end-button={isWithEndButton}>
@@ -43,7 +51,6 @@
             aria-label="Clear search"
             on:click={() => {
                 value = '';
-                element.value = value;
             }}>
             <span class="icon-x" aria-hidden="true" />
         </button>
