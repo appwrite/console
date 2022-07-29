@@ -45,4 +45,6 @@
     <title>Appwrite - Bucket</title>
 </svelte:head>
 
-<slot />
+{#if $bucket}
+    <slot />
+{/if}

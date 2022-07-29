@@ -34,4 +34,6 @@
     <title>Appwrite - File</title>
 </svelte:head>
 
-<slot />
+{#if $file}
+    <slot />
+{/if}
