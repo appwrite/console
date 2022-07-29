@@ -1,5 +1,6 @@
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
+import { sdkForProject } from './sdk';
 
 type UploaderFile = {
     $id: string;
@@ -57,28 +58,46 @@ const createUploader = () => {
                 isCollapsed: false,
                 files: []
             }),
-        addFile: async (file: Models.File, isOpen = true, isCollapsed = false) => {
+        uploadFile: async (
+            bucketId: string,
+            id: string,
+            file: File,
+            read: string[],
+            write: string[]
+        ) => {
             const newFile: UploaderFile = {
-                $id: file.$id,
-                bucketId: file.bucketId,
+                $id: id,
+                bucketId: bucketId,
                 name: file.name,
-                progress: calculateProgress(file),
-                completed: calculateProgress(file) === 100 ? true : false,
+                progress: 0,
+                completed: false,
                 failed: false,
                 cancelled: false
             };
-            return update((n) => {
-                n.isOpen = isOpen;
-                n.isCollapsed = isCollapsed;
+            update((n) => {
+                n.isOpen = true;
+                n.isCollapsed = false;
                 n.files.unshift(newFile);
                 return n;
             });
+            await sdkForProject.storage.createFile(
+                bucketId,
+                id ?? 'unique()',
+                file,
+                read,
+                write,
+                (p) => {
+                    newFile.$id = p.$id;
+                    newFile.progress = p.progress;
+                    newFile.completed = p.progress === 100 ? true : false;
+                    updateFile(p.$id, newFile);
+                }
+            );
         },
         removeFile: async (file: Models.File) => {
             if (file.chunksTotal === file.chunksUploaded) {
                 return update((n) => {
                     n.files = n.files.filter((f) => f.$id !== file.$id);
-
                     return n;
                 });
             } else {
@@ -91,8 +110,3 @@ const createUploader = () => {
 };
 
 export const uploader = createUploader();
-
-function calculateProgress(file: Models.File) {
-    const progress = file.chunksUploaded / file.chunksTotal;
-    return Math.round(progress * 100);
-}

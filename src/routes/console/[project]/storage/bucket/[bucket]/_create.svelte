@@ -2,7 +2,6 @@
     import { InputTags, InputText, Button, Form, FormList } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Modal, Alert, InnerModal } from '$lib/components';
-    import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
@@ -24,18 +23,12 @@
 
     const create = async () => {
         try {
-            const file = await sdkForProject.storage.createFile(
-                bucketId,
-                id ?? 'unique()',
-                files[0],
-                read,
-                write
-            );
-            files = null;
             showCreate = false;
             showDropdown = false;
-            uploader.addFile(file);
-            dispatch('created');
+            const file = await uploader.uploadFile(bucketId, id, files[0], read, write);
+
+            files = null;
+            dispatch('created', file);
         } catch (error) {
             addNotification({
                 type: 'error',

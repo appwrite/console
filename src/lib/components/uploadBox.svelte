@@ -55,10 +55,10 @@
                                 <div
                                     class="progress"
                                     role="progressbar"
-                                    aria-valuenow={file.progress}
+                                    aria-valuenow={Math.round(file.progress)}
                                     aria-valuemin={0}
                                     aria-valuemax={100} />
-                                <span class="icon">{file.progress}%</span>
+                                <span class="icon">{Math.round(file.progress)}%</span>
                             </div>
                             <label for={file.name} class="file-name">{file.name}</label>
                             <Pill danger>Failed</Pill>
@@ -77,10 +77,11 @@
                                 <div
                                     class="progress"
                                     role="progressbar"
-                                    aria-valuenow={file.progress}
+                                    style={`--progress-value:${Math.round(file.progress)}`}
+                                    aria-valuenow={Math.round(file.progress)}
                                     aria-valuemin={0}
                                     aria-valuemax={100} />
-                                <span class="icon">{file.progress}%</span>
+                                <span class="icon">{Math.round(file.progress)}%</span>
                             </div>
                             <label for={file.name} class="file-name">{file.name}</label>
                             <Pill warning>Pending</Pill>

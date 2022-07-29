@@ -40,9 +40,9 @@
     const getPreview = (fileId: string) =>
         sdkForProject.storage.getFilePreview(bucket, fileId, 32, 32).toString() + '&mode=admin';
 
-    const fileCreated = () => {
+    const fileCreated = async () => {
         showCreate = false;
-        files.load(bucket, search, limit, offset);
+        await files.load(bucket, search, limit, offset);
     };
 
     const fileDeleted = (event: CustomEvent<Models.File>) => {
