@@ -17,6 +17,7 @@
     import DeleteUser from './_deleteUser.svelte';
     import { user } from './store';
     import { onMount } from 'svelte';
+    import { title } from '$lib/stores/layout';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -111,6 +112,7 @@
         try {
             await sdkForProject.users.updateName($user.$id, userName);
             $user.name = userName;
+            title.set(userName);
             showError = false;
             addNotification({
                 message: 'Name has been updated',

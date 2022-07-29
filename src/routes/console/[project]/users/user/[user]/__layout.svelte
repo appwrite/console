@@ -45,10 +45,6 @@
             ]
         });
     }
-
-    $: if ($user.name) {
-        handle();
-    }
 </script>
 
 <svelte:head>
