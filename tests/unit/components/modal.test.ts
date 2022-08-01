@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, fireEvent, waitFor, cleanup } from '@testing-library/svelte';
+import { render, fireEvent, cleanup } from '@testing-library/svelte';
 import Modal from '../../../src/lib/mock/modal.test.svelte';
 
 afterEach(() => cleanup());
