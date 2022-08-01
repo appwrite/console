@@ -14,6 +14,11 @@
         updateLayout({
             navigate: event,
             title: 'Users',
+            level: 3,
+            breadcrumbs: {
+                title: 'Users',
+                href: path
+            },
             tabs: [
                 {
                     href: path,

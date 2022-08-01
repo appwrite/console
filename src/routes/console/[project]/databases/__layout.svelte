@@ -23,7 +23,12 @@
                     href: `${path}/usage`,
                     title: 'Usage'
                 }
-            ]
+            ],
+            level: 3,
+            breadcrumbs: {
+                href: 'databases',
+                title: 'Databases'
+            }
         });
         loaded = true;
     }

@@ -18,11 +18,17 @@
         if ($doc?.$id !== documentId) {
             await doc.load(collectionId, documentId);
         }
+
         updateLayout({
             navigate: event,
             title: 'Document',
             copy: { text: 'Document ID', value: $doc.$id },
             back: `${base}/console/${$page.params.project}/databases/database/${databaseId}/collection/${collectionId}`,
+            level: 6,
+            breadcrumbs: {
+                title: $doc.$id,
+                href: `document/${documentId}`
+            },
             tabs: [
                 {
                     href: path,

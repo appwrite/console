@@ -19,6 +19,11 @@
         updateLayout({
             navigate: event,
             title: $bucket.name,
+            level: 4,
+            breadcrumbs: {
+                title: $bucket.name,
+                href: `bucket/${bucketId}`
+            },
             copy: {
                 text: 'Bucket ID',
                 value: bucketId
@@ -45,4 +50,6 @@
     <title>Appwrite - Bucket</title>
 </svelte:head>
 
-<slot />
+{#if $bucket}
+    <slot />
+{/if}

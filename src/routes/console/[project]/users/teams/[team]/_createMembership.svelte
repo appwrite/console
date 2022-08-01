@@ -43,7 +43,7 @@
 
 <Form on:submit={create}>
     <Modal bind:show={showCreate}>
-        <svelte:fragment slot="header">Create User</svelte:fragment>
+        <svelte:fragment slot="header">Create Membership</svelte:fragment>
         <FormList>
             <InputEmail
                 id="email"

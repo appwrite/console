@@ -28,6 +28,11 @@
                 value: databaseId
             },
             title: $database.name,
+            level: 4,
+            breadcrumbs: {
+                href: `database/${databaseId}`,
+                title: $database.name
+            },
             tabs: [
                 {
                     href: path,

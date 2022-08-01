@@ -1,12 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Card, Avatar, CardGrid, Box } from '$lib/components';
+    import { Avatar, CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, Helper } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { team } from './store';
+    import { title } from '$lib/stores/layout';
     import DeleteTeam from './_deleteTeam.svelte';
     import { onMount } from 'svelte';
 
@@ -33,6 +34,7 @@
         try {
             await sdkForProject.teams.update($page.params.team, teamName);
             $team.name = teamName;
+            title.set(teamName);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -45,22 +47,20 @@
 
 {#if $team}
     <Container>
-        <Card>
-            <div class="common-section grid-1-2">
-                <div class="grid-1-2-col-1">
-                    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                        <Avatar size={48} name={$team.name} src={getAvatar($team.name)} />
-                        <div>
-                            <h6 class="heading-level-7">{$team.name}</h6>
-                            <p>{$team.total} Members</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-1-2-col-2">
-                    <p>Created on {toLocaleDateTime($team.$createdAt)}</p>
+        <CardGrid>
+            <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
+                <Avatar size={48} name={$team.name} src={getAvatar($team.name)} />
+                <div>
+                    <h6 class="heading-level-7">{$team.name}</h6>
                 </div>
             </div>
-        </Card>
+            <svelte:fragment slot="aside">
+                <div>
+                    <p>{$team.total} Members</p>
+                    <p>Created on {toLocaleDateTime($team.$createdAt)}</p>
+                </div>
+            </svelte:fragment>
+        </CardGrid>
 
         <CardGrid>
             <h6 class="heading-level-7">Update Name</h6>

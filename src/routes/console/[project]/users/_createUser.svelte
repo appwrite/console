@@ -26,6 +26,10 @@
             mail = pass = name = '';
             showCreate = false;
             showDropdown = false;
+            addNotification({
+                type: 'success',
+                message: `${user.name} has been created`
+            });
             dispatch('created', user);
         } catch (error) {
             addNotification({
@@ -64,6 +68,7 @@
                 label="Password"
                 placeholder="Enter password"
                 required={true}
+                showPasswordButton={true}
                 bind:value={pass} />
 
             {#if !showDropdown}
@@ -76,7 +81,7 @@
             {:else}
                 <InnerModal bind:show={showDropdown}>
                     <svelte:fragment slot="title">User ID</svelte:fragment>
-                    Enter a custom user ID. Leave blank for a randomly generated user ID.
+                    Enter a custom user ID. Leave blank for a randomly generated one.
                     <svelte:fragment slot="content">
                         <div class="form">
                             <InputText

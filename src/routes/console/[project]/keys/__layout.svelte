@@ -9,7 +9,12 @@
     function handle(event = null) {
         updateLayout({
             navigate: event,
-            title: 'API Keys'
+            title: 'API Keys',
+            level: 3,
+            breadcrumbs: {
+                href: 'keys',
+                title: 'API Keys'
+            }
         });
     }
 </script>

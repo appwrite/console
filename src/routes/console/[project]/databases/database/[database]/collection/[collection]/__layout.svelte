@@ -27,6 +27,11 @@
                 text: 'Collection ID',
                 value: collectionId
             },
+            level: 5,
+            breadcrumbs: {
+                href: `collection/${collectionId}`,
+                title: $collection.name
+            },
             tabs: [
                 {
                     href: path,
