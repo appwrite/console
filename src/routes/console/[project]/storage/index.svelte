@@ -81,9 +81,9 @@
                 </Bucket>
             {/each}
             {#if $bucketList.total % 2 !== 0}
-                <EmptyBucket>
+                <EmptyBucket on:click={() => (showCreate = true)}>
                     <div class="common-section">
-                        <Button secondary round on:click={() => (showCreate = true)}>
+                        <Button secondary round>
                             <i class="icon-plus" />
                         </Button>
                     </div>
