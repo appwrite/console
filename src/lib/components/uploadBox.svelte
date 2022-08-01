@@ -7,6 +7,7 @@
     async function removeFile($id: string, bucketId: string) {
         const file = await sdkForProject.storage.getFile(bucketId, $id);
         uploader.removeFile(file);
+        await sdkForProject.storage.deleteFile(bucketId, $id);
     }
 
     const getPreview = (fileId: string, bucketId: string) =>
@@ -69,8 +70,6 @@
                                 <span class="icon-x" />
                             </button>
                         </li>
-                    {:else if file.cancelled}
-                        cancelled?
                     {:else}
                         <li class="upload-box-item">
                             <div class="upload-image u-margin-inline-end-16">

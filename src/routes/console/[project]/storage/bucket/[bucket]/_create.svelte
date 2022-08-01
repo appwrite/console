@@ -6,7 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
-    import { bucket } from './store';
+    import { bucket, files } from './store';
     import { bytesToSize } from '$lib/helpers/sizeConvertion';
 
     export let showCreate = false;
@@ -16,7 +16,7 @@
 
     let input: HTMLInputElement;
     let list = new DataTransfer();
-    let files: FileList;
+    let fileList: FileList;
     let read: string[] = [];
     let write: string[] = [];
     let id: string = null;
@@ -26,9 +26,26 @@
         try {
             showCreate = false;
             showDropdown = false;
-            const file = await uploader.uploadFile(bucketId, id, files[0], read, write);
 
-            files = null;
+            // Not sure about this
+            $files.files.unshift({
+                $id: 'tmp',
+                bucketId,
+                name: fileList[0].name,
+                sizeOriginal: fileList[0].size,
+                $createdAt: Date.now(),
+                $updatedAt: Date.now(),
+                $read: read,
+                $write: write,
+                signature: '',
+                mimeType: fileList[0].type,
+                chunksTotal: 10,
+                chunksUploaded: 1
+            });
+            $files = $files;
+
+            const file = await uploader.uploadFile(bucketId, id, fileList[0], read, write);
+            fileList = null;
             dispatch('created', file);
         } catch (error) {
             addNotification({
@@ -48,7 +65,7 @@
                 if (ev.dataTransfer.items[i].kind === 'file') {
                     list.items.clear();
                     list.items.add(ev.dataTransfer.items[i].getAsFile());
-                    files = list.files;
+                    fileList = list.files;
                 }
             }
         } else {
@@ -67,10 +84,12 @@
     $: if (!showCreate) {
         id = null;
         list = new DataTransfer();
-        files = null;
-        input.value = null;
+        fileList = null;
         read = [];
         write = [];
+        if (input) {
+            input.value = null;
+        }
     }
 
     $: if (!showDropdown) {
@@ -78,7 +97,7 @@
     }
 </script>
 
-<input bind:this={input} bind:files id="file" type="file" style="display: none" />
+<input bind:this={input} bind:files={fileList} id="file" type="file" style="display: none" />
 
 <Form on:submit={create}>
     <Modal bind:show={showCreate}>
@@ -104,10 +123,10 @@
                                     <span class="icon-upload" aria-hidden="true" />
                                     <span class="text">Choose File</span>
                                 </Button>
-                                {#if files?.length}
-                                    {files.item(0).name}
+                                {#if fileList?.length}
+                                    {fileList.item(0).name}
                                     <button
-                                        on:click={() => (files = null)}
+                                        on:click={() => (fileList = null)}
                                         type="button"
                                         class="x-button"
                                         aria-label="remove file"

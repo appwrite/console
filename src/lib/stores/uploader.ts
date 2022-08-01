@@ -9,7 +9,6 @@ type UploaderFile = {
     progress: number;
     completed: boolean;
     failed: boolean;
-    cancelled: boolean;
     error?: string;
 };
 export type Uploader = {
@@ -71,8 +70,7 @@ const createUploader = () => {
                 name: file.name,
                 progress: 0,
                 completed: false,
-                failed: false,
-                cancelled: false
+                failed: false
             };
             update((n) => {
                 n.isOpen = true;
@@ -99,14 +97,10 @@ const createUploader = () => {
             updateFile(newFile.$id, newFile);
         },
         removeFile: async (file: Models.File) => {
-            if (file.chunksTotal === file.chunksUploaded) {
-                return update((n) => {
-                    n.files = n.files.filter((f) => f.$id !== file.$id);
-                    return n;
-                });
-            } else {
-                updateFile(file.$id, { cancelled: true });
-            }
+            return update((n) => {
+                n.files = n.files.filter((f) => f.$id !== file.$id);
+                return n;
+            });
         }
     };
 };

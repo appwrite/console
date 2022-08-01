@@ -65,6 +65,8 @@
 
     $: files.load(bucket, search, limit, offset);
     $: if (search) offset = 0;
+
+    //TODO: when upload cancelled remove file from list
 </script>
 
 <Container>
@@ -87,7 +89,7 @@
                     {#if file.chunksTotal / file.chunksUploaded !== 1}
                         <TableRow>
                             <TableCellText title="Name">
-                                <div class="u-flex u-gap-12">
+                                <div class="u-flex u-gap-12 u-main-space-between">
                                     <div class="avatar is-color-empty" />
 
                                     <span class="u-trim"> {file.name}</span>
