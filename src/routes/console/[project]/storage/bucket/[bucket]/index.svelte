@@ -41,7 +41,6 @@
         sdkForProject.storage.getFilePreview(bucket, fileId, 32, 32).toString() + '&mode=admin';
 
     const fileCreated = async () => {
-        showCreate = false;
         await files.load(bucket, search, limit, offset);
     };
 
@@ -91,7 +90,7 @@
                                 <div class="u-flex u-gap-12">
                                     <div class="avatar is-color-empty" />
 
-                                    <span> {file.name}</span>
+                                    <span class="u-trim"> {file.name}</span>
                                     <Pill warning>Pending</Pill>
                                 </div>
                             </TableCellText>
@@ -127,7 +126,7 @@
                             <TableCellText title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
-                                    <span> {file.name}</span>
+                                    <span class="u-trim"> {file.name}</span>
                                 </div>
                             </TableCellText>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>

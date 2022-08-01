@@ -80,7 +80,7 @@ const createUploader = () => {
                 n.files.unshift(newFile);
                 return n;
             });
-            await sdkForProject.storage.createFile(
+            const uploadedFile = await sdkForProject.storage.createFile(
                 bucketId,
                 id ?? 'unique()',
                 file,
@@ -93,6 +93,10 @@ const createUploader = () => {
                     updateFile(p.$id, newFile);
                 }
             );
+            newFile.$id = uploadedFile.$id;
+            newFile.progress = 100;
+            newFile.completed = true;
+            updateFile(newFile.$id, newFile);
         },
         removeFile: async (file: Models.File) => {
             if (file.chunksTotal === file.chunksUploaded) {
@@ -101,9 +105,7 @@ const createUploader = () => {
                     return n;
                 });
             } else {
-                if (confirm('Are you sure you want to cancel the upload?')) {
-                    updateFile(file.$id, { cancelled: true });
-                }
+                updateFile(file.$id, { cancelled: true });
             }
         }
     };

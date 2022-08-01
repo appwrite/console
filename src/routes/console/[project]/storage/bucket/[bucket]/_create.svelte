@@ -14,6 +14,7 @@
     const bucketId = $page.params.bucket;
     const dispatch = createEventDispatcher();
 
+    let input: HTMLInputElement;
     let list = new DataTransfer();
     let files: FileList;
     let read: string[] = [];
@@ -67,6 +68,7 @@
         id = null;
         list = new DataTransfer();
         files = null;
+        input.value = null;
         read = [];
         write = [];
     }
@@ -76,7 +78,7 @@
     }
 </script>
 
-<input bind:files id="file" type="file" style="display: none" />
+<input bind:this={input} bind:files id="file" type="file" style="display: none" />
 
 <Form on:submit={create}>
     <Modal bind:show={showCreate}>
