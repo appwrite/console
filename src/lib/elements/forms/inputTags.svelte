@@ -62,7 +62,7 @@
                                 <span class="tag-text">{tag}</span>
                                 <button
                                     type="button"
-                                    class="x-button"
+                                    class="input-tag-delete-button"
                                     aria-label={`delete ${tag} tag`}
                                     on:click={() => removeValue(tag)}>
                                     <span class="icon-x" aria-hidden="true" />

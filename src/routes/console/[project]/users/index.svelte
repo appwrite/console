@@ -53,7 +53,7 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search Name, Email, or ID">
+    <Search bind:search placeholder="Search by name, email, or ID">
         <span
             use:event={{
                 name: 'console_users',
@@ -88,11 +88,13 @@
                         <TableCellText title="Email">{user.email}</TableCellText>
                         <TableCell title="Status">
                             {#if user.status}
-                                <Pill success={user.emailVerification}>
-                                    {user.emailVerification ? 'Verified' : 'Unverified'}
+                                <Pill success={user.emailVerification || user.phoneVerification}>
+                                    {user.emailVerification || user.phoneVerification
+                                        ? 'verified'
+                                        : 'unverified'}
                                 </Pill>
                             {:else}
-                                <Pill danger>Blocked</Pill>
+                                <Pill danger>blocked</Pill>
                             {/if}
                         </TableCell>
                         <TableCell showOverflow title="ID">

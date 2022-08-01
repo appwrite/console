@@ -47,7 +47,7 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search by Name">
+    <Search bind:search placeholder="Search by name">
         <span
             use:event={{
                 name: 'console_users',
@@ -121,7 +121,7 @@
                 </Button>
             </div>
             <div class="common-section">
-                <p>Add Your First Team To Get Started</p>
+                <p>Create your first team to get started</p>
             </div>
             <div class="common-section">
                 <Button secondary href="#">Documentation</Button>

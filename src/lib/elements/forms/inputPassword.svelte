@@ -10,7 +10,7 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let meter = true;
+    export let meter = false;
     export let autocomplete = false;
     export let showPasswordButton = false;
 

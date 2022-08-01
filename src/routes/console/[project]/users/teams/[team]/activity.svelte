@@ -48,16 +48,12 @@
                                             }/color/${log?.clientName.toLocaleLowerCase()}.svg`}
                                             alt={log.clientName} />
                                     </div>
-                                    <span class="u-line-height-1-5">
-                                        <p>
-                                            {log.clientName}
-                                            {log.clientVersion}
-                                        </p>
-                                        <span class="u-small">
-                                            on {log.osName}
-                                            {log.osVersion}
-                                        </span>
-                                    </span>
+                                    <p class="u-line-height-1-5">
+                                        {log.clientName}
+                                        {log.clientVersion}
+                                        on {log.osName}
+                                        {log.osVersion}
+                                    </p>
                                 </div>
                             </TableCellText>
                             <TableCellText title="Event">{log.event}</TableCellText>
