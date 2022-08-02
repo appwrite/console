@@ -1,15 +1,10 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { fly, type FlyParams } from 'svelte/transition';
 
     export let show = false;
     export let title: string;
 
     const dispatch = createEventDispatcher();
-    const transitionFly: FlyParams = {
-        duration: 150,
-        y: 50
-    };
 
     const handleKeydown = (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
@@ -27,7 +22,7 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if show}
-    <section class="wizard" transition:fly={transitionFly}>
+    <section class="wizard">
         <div class="wizard-header-strip" />
         <div class="wizard-start-bg" />
         <div class="wizard-end-bg" />
