@@ -79,30 +79,36 @@
         <svelte:fragment slot="aside">
             <ul class="form-list">
                 <li class="form-item">
-                    <div class="input-text-wrapper">
+                    <label class="choice-item" for="unlimited">
                         <input
                             id="unlimited"
                             name="authLimit"
+                            class=" u-cross-child-center"
                             required
                             type="radio"
                             checked={isLimited === 'unlimited'}
                             bind:group={isLimited}
                             value="unlimited" />
-                        <label class="label u-inline-flex u-gap-16 u-cross-center" for="unlimited"
-                            >Unlimited <Pill>recommended</Pill></label>
-                    </div>
+                        <div class="choice-item-content  u-cross-child-center">
+                            <div class="choice-item-title">Unlimited</div>
+                        </div>
+                        <Pill>recommended</Pill></label>
                 </li>
                 <li class="form-item is-multiple">
                     <div class="input-text-wrapper">
-                        <input
-                            id="limited"
-                            name="authLimit"
-                            required
-                            type="radio"
-                            checked={isLimited === 'limited'}
-                            bind:group={isLimited}
-                            value="limited" />
-                        <label class="label" for="limited">Limited</label>
+                        <label class="choice-item" for="limited">
+                            <input
+                                id="limited"
+                                name="authLimit"
+                                required
+                                type="radio"
+                                checked={isLimited === 'limited'}
+                                bind:group={isLimited}
+                                value="limited" />
+                            <div class="choice-item-content">
+                                <div class="choice-item-title">Limited</div>
+                            </div>
+                        </label>
                     </div>
                     <div
                         class="input-text-wrapper u-stretch"
