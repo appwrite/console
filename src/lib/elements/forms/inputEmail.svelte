@@ -13,7 +13,6 @@
     export let autocomplete = false;
     export let errorMessage = 'Your email should be formatted as: name@example.com';
     export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
-
     export let showHelper = false;
 
     let element: HTMLInputElement;
