@@ -12,7 +12,7 @@
     export let autofocus = false;
     export let autocomplete = false;
     export let maxlength: number = null;
-    export let errorMessage = 'An error occurred';
+    export let errorMessage = 'Allowed characters: leading ‘+’ and maximum of 15 digits';
     export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
     export let showHelper = false;
 
