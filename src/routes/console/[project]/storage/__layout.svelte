@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { afterNavigate } from '$app/navigation';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
@@ -8,10 +8,17 @@
     onMount(handle);
     afterNavigate(handle);
 
+    let loaded = false;
+
     async function handle(event = null) {
         updateLayout({
             navigate: event,
             title: 'Storage',
+            level: 3,
+            breadcrumbs: {
+                title: 'Storage',
+                href: 'storage'
+            },
             tabs: [
                 {
                     href: path,
@@ -23,6 +30,7 @@
                 }
             ]
         });
+        loaded = true;
     }
 </script>
 
@@ -30,4 +38,6 @@
     <title>Appwrite - Storage</title>
 </svelte:head>
 
-<slot />
+{#if loaded}
+    <slot />
+{/if}

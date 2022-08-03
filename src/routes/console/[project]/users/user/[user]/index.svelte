@@ -17,12 +17,15 @@
     import DeleteUser from './_deleteUser.svelte';
     import { user } from './store';
     import { onMount } from 'svelte';
+    import { title } from '$lib/stores/layout';
 
-    $: if (newKey && newValue) {
-        arePrefsDisabled = false;
-    } else if (prefs) {
+    $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
-            arePrefsDisabled = false;
+            if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
+                arePrefsDisabled = false;
+            }
+        } else {
+            arePrefsDisabled = true;
         }
     }
 
@@ -30,17 +33,17 @@
     let userName: string = null,
         userEmail: string = null,
         userPhone: string = null,
-        newPassword: string = null,
-        newPref = false,
-        newKey: string = null,
-        newValue: string = null;
-    let showVerifcationDropdown = false;
+        newPassword: string = null;
     let prefs: [string, unknown][] = null;
     let arePrefsDisabled = true;
+    let showVerifcationDropdown = false;
 
     onMount(async () => {
         await user.load($page.params.user);
         prefs = Object.entries($user.prefs);
+        if (!prefs?.length) {
+            prefs.push(['', '']);
+        }
         userName ??= $user.name;
         userEmail ??= $user.email;
         userPhone ??= $user.phone;
@@ -101,6 +104,7 @@
         try {
             await sdkForProject.users.updateName($user.$id, userName);
             $user.name = userName;
+            title.set(userName);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -161,41 +165,11 @@
     async function updatePrefs() {
         try {
             let updatedPrefs = Object.fromEntries(prefs);
-            if (newKey && newValue) {
-                updatedPrefs[newKey] = newValue;
-                prefs = Object.entries(updatedPrefs);
-                newKey = null;
-                newValue = null;
-            }
-            newPref = null;
+
             await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
             $user.prefs = updatedPrefs;
             arePrefsDisabled = true;
 
-            addNotification({
-                message: 'Preferences have been updated',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-
-    async function deletePref(selectedKey: string) {
-        try {
-            let updatedPrefs = Object.fromEntries(prefs);
-            updatedPrefs = Object.keys(updatedPrefs).reduce((acc, key) => {
-                if (key !== selectedKey) {
-                    acc[key] = updatedPrefs[key];
-                }
-                return acc;
-            }, {});
-            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
-            prefs = Object.entries(updatedPrefs);
-            $user.prefs = updatedPrefs;
             addNotification({
                 message: 'Preferences have been updated',
                 type: 'success'
@@ -216,18 +190,35 @@
                 <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
                 <h6 class="heading-level-7">{$user.name}</h6>
                 {#if !$user.status}
-                    <Pill danger>Blocked</Pill>
+                    <Pill danger>blocked</Pill>
+                {:else if $user.email && $user.phone}
+                    <Pill success={$user.emailVerification || $user.phoneVerification}>
+                        {$user.emailVerification && $user.phoneVerification
+                            ? 'verified'
+                            : $user.emailVerification
+                            ? 'verified email'
+                            : $user.phoneVerification
+                            ? 'verified phone'
+                            : 'unverified'}
+                    </Pill>
                 {:else}
                     <Pill success={$user.emailVerification || $user.phoneVerification}>
-                        {$user.emailVerification || $user.phoneVerification
-                            ? 'Verified'
-                            : 'Unverified'}
+                        {$user.emailVerification
+                            ? 'verified '
+                            : $user.phoneVerification
+                            ? 'verified '
+                            : 'unverified'}
                     </Pill>
                 {/if}
             </div>
             <svelte:fragment slot="aside">
                 <div>
-                    <span class="title">{$user.email}</span>
+                    {#if $user.email}
+                        <p class="title">{$user.email}</p>
+                    {/if}
+                    {#if $user.phone}
+                        <p class="title">{$user.phone}</p>
+                    {/if}
                     <p>Joined: {toLocaleDateTime($user.registration)}</p>
                 </div>
             </svelte:fragment>
@@ -237,7 +228,7 @@
                     text={$user.status}
                     secondary={!$user.status}
                     on:click={() => updateStatus()}
-                    >{$user.status ? 'Block Account' : 'Unblock Accout'}</Button>
+                    >{$user.status ? 'Block account' : 'Unblock account'}</Button>
                 {#if $user.status}
                     {#if $user.phone && $user.email}
                         <DropList
@@ -250,7 +241,7 @@
                                 secondary
                                 on:click={() =>
                                     (showVerifcationDropdown = !showVerifcationDropdown)}>
-                                {$user.emailVerification ? 'Unverify' : 'Verify'} Account
+                                {$user.emailVerification ? 'Unverify' : 'Verify'} account
                             </Button>
                             <svelte:fragment slot="list">
                                 <DropListItem icon="mail" on:click={() => updateVerificationEmail()}
@@ -263,11 +254,11 @@
                         </DropList>
                     {:else if !$user.phone}
                         <Button secondary on:click={() => updateVerificationEmail()}>
-                            {$user.emailVerification ? 'Unverify' : 'Verify'} Account
+                            {$user.emailVerification ? 'Unverify' : 'Verify'} account
                         </Button>
                     {:else if !$user.email}
                         <Button secondary on:click={() => updateVerificationPhone()}>
-                            {$user.phoneVerification ? 'Unverify' : 'Verify'} Account
+                            {$user.phoneVerification ? 'Unverify' : 'Verify'} account
                         </Button>{/if}
                 {/if}
             </svelte:fragment>
@@ -376,76 +367,59 @@
                 <form class="form u-grid u-gap-16">
                     <ul class="form-list">
                         {#if prefs}
-                            {#each prefs as [key, value]}
+                            {#each prefs as [key, value], index}
                                 <li class="form-item is-multiple">
                                     <div class="form-item-part u-stretch">
-                                        <label class="label" for={`value-${key}`}>Key</label>
+                                        <label class="label" for={`key-${index}`}>Key</label>
                                         <div class="input-text-wrapper">
                                             <input
-                                                id={`value-${key}`}
-                                                placeholder=""
+                                                id={`key-${key}`}
+                                                placeholder="Enter key"
                                                 type="text"
                                                 class="input-text"
                                                 bind:value={key} />
                                         </div>
                                     </div>
                                     <div class="form-item-part u-stretch">
-                                        <label class="label" for={`value-${value}`}>Value</label>
+                                        <label class="label" for={`value-${index}`}>Value</label>
                                         <div class="input-text-wrapper">
                                             <input
                                                 id={`value-${value}`}
-                                                placeholder=""
+                                                placeholder="Enter value"
                                                 type="text"
                                                 class="input-text"
                                                 bind:value />
                                         </div>
                                     </div>
                                     <div class="form-item-part u-cross-child-end">
-                                        <Button text on:click={() => deletePref(key)}>
+                                        <Button
+                                            text
+                                            disabled={(!key || !value) && index === 0}
+                                            on:click={() => {
+                                                if (index === 0) {
+                                                    prefs = [['', '']];
+                                                } else {
+                                                    prefs.splice(index, 1);
+                                                    prefs = prefs;
+                                                }
+                                            }}>
                                             <span class="icon-x" aria-hidden="true" />
                                         </Button>
                                     </div>
                                 </li>
                             {/each}
-                            {#if prefs.length === 0 || newPref}
-                                <li class="form-item is-multiple">
-                                    <div class="form-item-part u-stretch">
-                                        <label class="label" for="newKey">Key</label>
-                                        <div class="input-text-wrapper">
-                                            <input
-                                                id="newKey"
-                                                placeholder="Enter Key"
-                                                type="text"
-                                                class="input-text"
-                                                bind:value={newKey} />
-                                        </div>
-                                    </div>
-                                    <div class="form-item-part u-stretch">
-                                        <label class="label" for="newValue">Value</label>
-                                        <div class="input-text-wrapper">
-                                            <input
-                                                id="newValue"
-                                                placeholder="Enter Value"
-                                                type="text"
-                                                class="input-text"
-                                                bind:value={newValue} />
-                                        </div>
-                                    </div>
-                                    <div class="form-item-part u-cross-child-end">
-                                        <Button
-                                            text
-                                            disabled={!prefs.length}
-                                            on:click={() => (newPref = false)}>
-                                            <span class="icon-x" aria-hidden="true" />
-                                        </Button>
-                                    </div>
-                                </li>
-                            {/if}
                         {/if}
                     </ul>
-                    <Button text on:click={() => (newPref = true)}>
+                    <Button
+                        text
+                        on:click={() => {
+                            if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
+                                prefs.push(['', '']);
+                                prefs = prefs;
+                            }
+                        }}>
                         <span class="icon-plus" aria-hidden="true" />
-                        <span class="text"> Add Preferences </span></Button>
+                        <span class="text"> Add Preference </span></Button>
                 </form>
             </svelte:fragment>
 

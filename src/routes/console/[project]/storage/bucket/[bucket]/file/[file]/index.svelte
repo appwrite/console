@@ -127,7 +127,7 @@
                     </svelte:fragment>
                     <p>
                         If you want to assign permissions specific to this file, you will need to
-                        update your <a class="link" href="#"> Bucket Settings</a> to enable File Level
+                        update your <a class="link" href="#/"> Bucket Settings</a> to enable File Level
                         permissions.
                     </p>
                 </Alert>

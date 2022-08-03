@@ -19,8 +19,13 @@
 
         updateLayout({
             navigate: event,
+            level: 4,
             title: $team.name,
             back: `${base}/console/${$page.params.project}/users/teams`,
+            breadcrumbs: {
+                title: $team.name,
+                href: `teams/${teamId}`
+            },
             copy: {
                 text: 'Team ID',
                 value: teamId

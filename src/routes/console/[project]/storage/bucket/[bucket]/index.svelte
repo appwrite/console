@@ -69,7 +69,7 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search by Filename">
+    <Search bind:search placeholder="Search by filename">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Add File</span>
         </Button>

@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Tooltip, Copy, Bucket } from '$lib/components';
+    import { Empty, Pagination, Tooltip, Copy, Bucket, EmptyBucket } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -81,20 +81,16 @@
                 </Bucket>
             {/each}
             {#if $bucketList.total % 2 !== 0}
-                <article class="card is-border-dashed">
-                    <div class="bucket">
-                        <div class="u-flex u-flex-vertical u-cross-center">
-                            <div class="common-section">
-                                <Button secondary round on:click={() => (showCreate = true)}>
-                                    <i class="icon-plus" />
-                                </Button>
-                            </div>
-                            <div class="common-section">
-                                <p>Add a new bucket</p>
-                            </div>
-                        </div>
+                <EmptyBucket on:click={() => (showCreate = true)}>
+                    <div class="common-section">
+                        <Button secondary round>
+                            <i class="icon-plus" />
+                        </Button>
                     </div>
-                </article>
+                    <div class="common-section">
+                        <p>Add a new bucket</p>
+                    </div>
+                </EmptyBucket>
             {/if}
         </ul>
 

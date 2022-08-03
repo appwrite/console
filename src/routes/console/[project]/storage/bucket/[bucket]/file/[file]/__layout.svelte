@@ -19,6 +19,11 @@
 
         updateLayout({
             navigate: event,
+            level: 5,
+            breadcrumbs: {
+                href: `file/${fileId}`,
+                title: $file.name
+            },
             back: `${base}/console/${$page.params.project}/storage/bucket/${bucketId}`,
             title: $file.name,
             copy: {
@@ -34,4 +39,6 @@
     <title>Appwrite - File</title>
 </svelte:head>
 
-<slot />
+{#if $file}
+    <slot />
+{/if}

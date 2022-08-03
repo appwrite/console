@@ -63,7 +63,7 @@
             {:else}
                 <InnerModal bind:show={showDropdown}>
                     <svelte:fragment slot="title">Bucket ID</svelte:fragment>
-                    <p>Enter a custom bucket ID. Leave blank for a randomly generated bucket ID.</p>
+                    <p>Enter a custom bucket ID. Leave blank for a randomly generated one.</p>
                     <svelte:fragment slot="content">
                         <div class="form">
                             <InputText
