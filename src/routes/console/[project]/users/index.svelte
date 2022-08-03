@@ -79,12 +79,12 @@
             <TableBody>
                 {#each $usersList.users as user}
                     <TableRowLink href={`${base}/console/${project}/users/user/${user.$id}`}>
-                        <TableCellText title="Name">
+                        <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar size={32} src={getAvatar(user.name)} name={user.name} />
-                                <span class="text">{user.name ? user.name : 'n/a'}</span>
+                                <span class="text u-trim">{user.name ? user.name : 'n/a'}</span>
                             </div>
-                        </TableCellText>
+                        </TableCell>
                         <TableCellText title="Email">{user.email}</TableCellText>
                         <TableCell title="Status">
                             {#if user.status}
