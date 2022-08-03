@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { Avatar, CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { Button, InputText, Helper } from '$lib/elements/forms';
+    import { Button, InputText, Form } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -14,21 +14,12 @@
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
     let showDelete = false;
-    let showError: false | 'name' | 'email' | 'password' = false;
-    let errorMessage = 'Something went wrong';
-    let errorType: 'error' | 'warning' | 'success' = 'error';
     let teamName: string = null;
 
     onMount(async () => {
         await team.load($page.params.team);
         teamName ??= $team.name;
     });
-
-    function addError(location: typeof showError, message: string, type: typeof errorType) {
-        showError = location;
-        errorMessage = message;
-        errorType = type;
-    }
 
     async function updateName() {
         try {
@@ -40,7 +31,10 @@
                 type: 'success'
             });
         } catch (error) {
-            addError('name', error.message, 'error');
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
         }
     }
 </script>
@@ -62,31 +56,30 @@
             </svelte:fragment>
         </CardGrid>
 
-        <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+        <Form on:submit={updateName}>
+            <CardGrid>
+                <h6 class="heading-level-7">Update Name</h6>
 
-            <svelte:fragment slot="aside">
-                <ul>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        placeholder="Enter team name"
-                        autocomplete={false}
-                        bind:value={teamName} />
-                    {#if showError === 'name'}
-                        <Helper type={errorType}>{errorMessage}</Helper>
-                    {/if}
-                </ul>
-            </svelte:fragment>
+                <svelte:fragment slot="aside">
+                    <ul>
+                        <InputText
+                            id="name"
+                            label="Name"
+                            placeholder="Enter team name"
+                            autocomplete={false}
+                            bind:value={teamName} />
+                    </ul>
+                </svelte:fragment>
 
-            <svelte:fragment slot="actions">
-                <Button
-                    disabled={teamName === $team.name || !teamName}
-                    on:click={() => {
-                        updateName();
-                    }}>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
+                <svelte:fragment slot="actions">
+                    <Button
+                        disabled={teamName === $team.name || !teamName}
+                        on:click={() => {
+                            updateName();
+                        }}>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
 
         <CardGrid>
             <div>
