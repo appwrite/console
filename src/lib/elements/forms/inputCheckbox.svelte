@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormItem } from '.';
+    import { FormItem, Helper } from '.';
 
     export let label: string;
     export let showLabel = true;
@@ -7,11 +7,32 @@
     export let value = false;
     export let required = false;
     export let disabled = false;
+    export let errorMessage = 'An error occurred';
+    export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
+    export let showHelper = false;
+
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+        showHelper = true;
+    };
+
+    $: if (value) {
+        showHelper = false;
+    }
 </script>
 
 <FormItem>
     <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="input-text-wrapper">
-        <input {id} {disabled} {required} type="checkbox" bind:checked={value} />
+        <input
+            on:invalid={handleInvalid}
+            {id}
+            {disabled}
+            {required}
+            type="checkbox"
+            bind:checked={value} />
     </div>
+    {#if showHelper}
+        <Helper type={errorType}>{errorMessage}</Helper>
+    {/if}
 </FormItem>

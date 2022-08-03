@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem } from '.';
+    import { FormItem, Helper } from '.';
 
     export let id: string;
     export let label: string;
@@ -9,6 +9,9 @@
     export let placeholder = '';
     export let helper = '';
     export let autofocus = false;
+    export let errorMessage = 'An error occurred';
+    export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
+    export let showHelper = false;
 
     let value = '';
     let element: HTMLInputElement;
@@ -48,6 +51,15 @@
     const removeValue = (value: string) => {
         tags = tags.filter((tag) => tag !== value);
     };
+
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+        showHelper = true;
+    };
+
+    $: if (value) {
+        showHelper = false;
+    }
 </script>
 
 <FormItem>
@@ -73,6 +85,7 @@
                 </ul>
             </div>
             <input
+                on:invalid={handleInvalid}
                 type="text"
                 class="tags-input-text"
                 {id}
@@ -83,7 +96,7 @@
                 bind:this={element} />
         </div>
     </div>
-    {#if helper}
-        <p class="helper u-margin-block-start-12">{helper}</p>
+    {#if showHelper}
+        <Helper type={errorType}>{errorMessage}</Helper>
     {/if}
 </FormItem>
