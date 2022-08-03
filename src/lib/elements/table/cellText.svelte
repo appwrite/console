@@ -4,5 +4,5 @@
 </script>
 
 <div class="table-col " class:u-overflow-visible={showOverflow} data-title={title} role="cell">
-    <span class="text"><slot /></span>
+    <span class="text u-trim"><slot /></span>
 </div>

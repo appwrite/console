@@ -87,14 +87,14 @@
                 {#each $files.files as file, index}
                     {#if file.chunksTotal / file.chunksUploaded !== 1}
                         <TableRow>
-                            <TableCellText title="Name">
+                            <TableCell title="Name">
                                 <div class="u-flex u-gap-12">
                                     <div class="avatar is-color-empty" />
 
-                                    <span> {file.name}</span>
+                                    <span class="text u-trim"> {file.name}</span>
                                     <Pill warning>Pending</Pill>
                                 </div>
-                            </TableCellText>
+                            </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size"
                                 >{bytesToSize(file.sizeOriginal)}</TableCellText>
@@ -124,12 +124,12 @@
                     {:else}
                         <TableRowLink
                             href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
-                            <TableCellText title="Name">
+                            <TableCell title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
-                                    <span> {file.name}</span>
+                                    <span class="text u-trim"> {file.name}</span>
                                 </div>
-                            </TableCellText>
+                            </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size"
                                 >{bytesToSize(file.sizeOriginal)}</TableCellText>
