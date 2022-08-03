@@ -56,9 +56,9 @@
             <TableBody>
                 {#each $collection.attributes as attribute, index}
                     <TableRow>
-                        <TableCell main={true} title="Key">
+                        <TableCell title="Key">
                             <div class="u-flex u-main-space-between">
-                                {attribute.key}
+                                <span class="text u-trim">{attribute.key}</span>
                                 {#if attribute.status !== 'available'}
                                     <Pill
                                         warning={attribute.status === 'processing'}

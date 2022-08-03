@@ -59,7 +59,7 @@
                     {#each $documentList.documents as document}
                         <TableRowLink
                             href={`${base}/console/${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}>
-                            <TableCell main width={230}>
+                            <TableCell width={230}>
                                 <Copy value={document.$id}>
                                     <Pill button>
                                         <span class="icon-duplicate" aria-hidden="true" />

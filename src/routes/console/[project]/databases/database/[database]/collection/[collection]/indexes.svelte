@@ -79,9 +79,9 @@
             <TableBody>
                 {#each $indexList.indexes as index, i}
                     <TableRow>
-                        <TableCellText title="Key">
+                        <TableCell title="Key">
                             <div class="u-flex u-main-space-between">
-                                {index.key}
+                                <span class="text u-trim"> {index.key}</span>
                                 {#if index.status !== 'available'}
                                     <Pill
                                         warning={index.status === 'processing'}
@@ -92,7 +92,7 @@
                                     </Pill>
                                 {/if}
                             </div>
-                        </TableCellText>
+                        </TableCell>
                         <TableCellText title="Type">{index.type}</TableCellText>
                         <TableCellText title="Attributes">
                             {index.attributes}
