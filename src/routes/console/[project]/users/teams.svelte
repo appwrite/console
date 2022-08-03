@@ -7,7 +7,8 @@
         TableBody,
         TableRowLink,
         TableCellHead,
-        TableCellText
+        TableCellText,
+        TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination, Avatar, Search } from '$lib/components';
@@ -71,12 +72,12 @@
             <TableBody>
                 {#each $teamsList.teams as team}
                     <TableRowLink href={`${base}/console/${project}/users/teams/${team.$id}`}>
-                        <TableCellText title="ID">
+                        <TableCell title="ID">
                             <div class="u-flex u-gap-12">
                                 <Avatar size={32} name={team.name} src={getAvatar(team.name)} />
-                                <span>{team.name}</span>
+                                <span class="text u-trim">{team.name}</span>
                             </div>
-                        </TableCellText>
+                        </TableCell>
                         <TableCellText title="Members">{team.total} members</TableCellText>
                         <TableCellText title="Members">
                             {toLocaleDateTime(team.$createdAt)}
