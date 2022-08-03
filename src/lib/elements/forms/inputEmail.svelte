@@ -11,7 +11,7 @@
     export let disabled = false;
     export let autofocus = false;
     export let autocomplete = false;
-    export let errorMessage = 'Your email should be formatted as: name@example.com';
+    export let errorMessage = 'An error occurred';
     export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
     export let showHelper = false;
 
@@ -24,6 +24,11 @@
     });
 
     const handleInvalid = (event: Event) => {
+        errorMessage = element.validationMessage;
+
+        if (element.validity.typeMismatch) {
+            errorMessage = 'Your email should be formatted as: name@example.com';
+        }
         event.preventDefault();
         showHelper = true;
     };

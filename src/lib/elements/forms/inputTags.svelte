@@ -53,6 +53,8 @@
     };
 
     const handleInvalid = (event: Event) => {
+        errorMessage = element.validationMessage;
+
         event.preventDefault();
         showHelper = true;
     };

@@ -13,7 +13,11 @@
     export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
     export let showHelper = false;
 
+    let element: HTMLInputElement;
+
     const handleInvalid = (event: Event) => {
+        errorMessage = element.validationMessage;
+
         event.preventDefault();
         showHelper = true;
     };
@@ -27,6 +31,7 @@
     <div class="input-text-wrapper">
         <input
             on:invalid={handleInvalid}
+            bind:this={element}
             {id}
             {name}
             {disabled}
