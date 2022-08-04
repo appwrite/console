@@ -3,11 +3,17 @@
     import { Pill } from '$lib/elements';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Avatar } from '$lib/components';
+    import { files } from '../../routes/console/[project]/storage/bucket/[bucket]/store';
 
     async function removeFile($id: string, bucketId: string) {
-        const file = await sdkForProject.storage.getFile(bucketId, $id);
-        uploader.removeFile(file);
-        await sdkForProject.storage.deleteFile(bucketId, $id);
+        try {
+            const file = await sdkForProject.storage.getFile(bucketId, $id);
+            uploader.removeFile(file);
+            await sdkForProject.storage.deleteFile(bucketId, $id);
+            files.removeFile(file.$id);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const getPreview = (fileId: string, bucketId: string) =>
