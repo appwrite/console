@@ -48,6 +48,10 @@
         showDelete = false;
         uploader.removeFile(event.detail);
         files.load(bucket, search, limit, offset);
+        addNotification({
+            type: 'success',
+            message: `${event.detail.name} has been deleted`
+        });
     };
 
     const deleteFile = async (file: Models.File) => {
@@ -55,6 +59,10 @@
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
             files.load(bucket, search, limit, offset);
+            addNotification({
+                type: 'success',
+                message: `${file.name} has been deleted`
+            });
         } catch (error) {
             addNotification({
                 type: 'error',
