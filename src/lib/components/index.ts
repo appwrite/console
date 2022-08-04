@@ -20,8 +20,6 @@ export { default as DropTabs } from './dropTabs.svelte';
 export { default as DropTabsItem } from './dropTabsItem.svelte';
 export { default as Tooltip } from './tooltip.svelte';
 export { default as Avatar } from './avatar.svelte';
-export { default as SwitchBox } from './switchBox.svelte';
-export { default as SwitchBoxes } from './switchBoxes.svelte';
 export { default as Alert } from './alert.svelte';
 export { default as Box } from './box.svelte';
 export { default as Search } from './search.svelte';
