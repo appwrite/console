@@ -7,7 +7,7 @@
     import { user } from './store';
 
     const userId = $page.params.user;
-    const path = `users/user/${userId}`;
+    const path = `authentication/user/${userId}`;
 
     onMount(handle);
     afterNavigate(handle);

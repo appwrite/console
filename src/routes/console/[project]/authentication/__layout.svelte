@@ -3,7 +3,7 @@
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
 
-    const path = 'users';
+    const path = 'authentication';
 
     onMount(handle);
     afterNavigate(handle);
@@ -29,16 +29,16 @@
                     title: 'Teams'
                 },
                 {
-                    href: `${path}/authentication`,
-                    title: 'Authentication'
-                },
-                {
                     href: `${path}/usage`,
                     title: 'Usage'
                 },
                 {
                     href: `${path}/security`,
                     title: 'Security'
+                },
+                {
+                    href: `${path}/settings`,
+                    title: 'Settings'
                 }
             ]
         });

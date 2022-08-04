@@ -7,7 +7,7 @@
     import { onMount } from 'svelte';
 
     const teamId = $page.params.team;
-    const path = `users/teams/${teamId}`;
+    const path = `authentication/teams/${teamId}`;
 
     onMount(handle);
     afterNavigate(handle);
