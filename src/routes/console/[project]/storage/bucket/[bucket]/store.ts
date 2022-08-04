@@ -19,7 +19,7 @@ function createBucketStore() {
 }
 
 function createFilesStore() {
-    const { subscribe, set } = writable<Models.FileList>(
+    const { subscribe, set, update } = writable<Models.FileList>(
         browser ? JSON.parse(sessionStorage.getItem('files')) : null
     );
 
@@ -44,6 +44,32 @@ function createFilesStore() {
                 'DESC'
             );
             set(response);
+        },
+        addFile: async (bucketId: string, file: File, read: string[], write: string[]) => {
+            const newFile = {
+                $id: 'tmp',
+                bucketId,
+                name: file.name,
+                sizeOriginal: file.size,
+                $createdAt: Date.now(),
+                $updatedAt: Date.now(),
+                $read: read,
+                $write: write,
+                signature: '',
+                mimeType: file.type,
+                chunksTotal: 100,
+                chunksUploaded: 1
+            };
+            update((n) => {
+                n.files.unshift(newFile);
+                return n;
+            });
+        },
+        removeFile: async (id: string) => {
+            return update((n) => {
+                n.files = n.files.filter((f) => f.$id !== id);
+                return n;
+            });
         }
     };
 }

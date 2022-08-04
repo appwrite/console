@@ -28,23 +28,9 @@
             showDropdown = false;
 
             // Not sure about this
-            $files.files.unshift({
-                $id: 'tmp',
-                bucketId,
-                name: fileList[0].name,
-                sizeOriginal: fileList[0].size,
-                $createdAt: Date.now(),
-                $updatedAt: Date.now(),
-                $read: read,
-                $write: write,
-                signature: '',
-                mimeType: fileList[0].type,
-                chunksTotal: 10,
-                chunksUploaded: 1
-            });
-            $files = $files;
-
+            files.addFile(bucketId, fileList[0], read, write);
             const file = await uploader.uploadFile(bucketId, id, fileList[0], read, write);
+
             fileList = null;
             dispatch('created', file);
         } catch (error) {
