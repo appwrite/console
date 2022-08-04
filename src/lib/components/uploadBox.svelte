@@ -38,6 +38,7 @@
         <div class="upload-box-content" class:is-open={!$uploader.isCollapsed}>
             <ul class="upload-box-list">
                 {#each $uploader.files as file}
+                    {@const progress = Math.round(file.progress)}
                     {#if file.completed || file.progress === 100}
                         <li class="upload-box-item">
                             <div class="u-margin-inline-end-16">
@@ -56,10 +57,10 @@
                                 <div
                                     class="progress"
                                     role="progressbar"
-                                    aria-valuenow={Math.round(file.progress)}
+                                    aria-valuenow={progress}
                                     aria-valuemin={0}
                                     aria-valuemax={100} />
-                                <span class="icon">{Math.round(file.progress)}%</span>
+                                <span class="icon">{progress}%</span>
                             </div>
                             <label for={file.name} class="file-name">{file.name}</label>
                             <Pill danger>Failed</Pill>
@@ -76,11 +77,11 @@
                                 <div
                                     class="progress"
                                     role="progressbar"
-                                    style={`--progress-value:${Math.round(file.progress)}`}
-                                    aria-valuenow={Math.round(file.progress)}
+                                    style={`--progress-value:${progress}`}
+                                    aria-valuenow={progress}
                                     aria-valuemin={0}
                                     aria-valuemax={100} />
-                                <span class="icon">{Math.round(file.progress)}%</span>
+                                <span class="icon">{progress}%</span>
                             </div>
                             <label for={file.name} class="file-name">{file.name}</label>
                             <Pill warning>Pending</Pill>
