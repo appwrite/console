@@ -17,7 +17,7 @@
     import DeleteUser from './_deleteUser.svelte';
     import { user } from './store';
     import { onMount } from 'svelte';
-    import { title } from '$lib/stores/layout';
+    import { title, breadcrumbs } from '$lib/stores/layout';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -113,6 +113,10 @@
             await sdkForProject.users.updateName($user.$id, userName);
             $user.name = userName;
             title.set(userName);
+            const breadcrumb = $breadcrumbs.get($breadcrumbs.size - 1);
+            breadcrumb.title = userName;
+            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size - 1, breadcrumb);
+
             showError = false;
             addNotification({
                 message: 'Name has been updated',
@@ -423,14 +427,15 @@
                     </ul>
                     <Button
                         text
+                        disabled={prefs?.length
+                            ? !prefs[prefs.length - 1][0] || !prefs[prefs.length - 1][1]
+                            : true}
                         on:click={() => {
-                            if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
-                                prefs.push(['', '']);
-                                prefs = prefs;
-                            }
+                            prefs.push(['', '']);
+                            prefs = prefs;
                         }}>
                         <span class="icon-plus" aria-hidden="true" />
-                        <span class="text"> Add Preference </span></Button>
+                        <span class="text"> Add preference </span></Button>
                 </form>
             </svelte:fragment>
 

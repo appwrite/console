@@ -7,7 +7,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { team } from './store';
-    import { title } from '$lib/stores/layout';
+    import { title, breadcrumbs } from '$lib/stores/layout';
     import DeleteTeam from './_deleteTeam.svelte';
     import { onMount } from 'svelte';
 
@@ -35,6 +35,9 @@
             await sdkForProject.teams.update($page.params.team, teamName);
             $team.name = teamName;
             title.set(teamName);
+            const breadcrumb = $breadcrumbs.get($breadcrumbs.size - 1);
+            breadcrumb.title = teamName;
+            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size - 1, breadcrumb);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
