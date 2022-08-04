@@ -143,8 +143,9 @@
         <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
                 <ul class="form-list is-multiple">
-                    <InputNumber id="length" label="Length" value={1} />
+                    <InputNumber disabled id="length" label="Length" value={1} />
                     <InputSelect
+                        disabled
                         id="period"
                         {options}
                         label="Time Period"
