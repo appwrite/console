@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { Step, Steps, Alert } from '$lib/components';
+    import { Steps, Alert } from '$lib/components';
     import { Form, Button, InputTags } from '$lib/elements/forms';
     import { attributeList } from './store';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -14,10 +14,7 @@
     export let showCreate = false;
 
     let newDocument = {};
-    let steps = [
-        { title: 'Create data', current: true, completed: false },
-        { title: 'Set permissions', current: false, completed: false }
-    ];
+    let steps = ['Create data', 'Set permissions'];
     let currentStep = 0;
     let read: string[];
     let write: string[];
@@ -36,34 +33,19 @@
             //     read,
             //     write
             // );
-        } catch (error) {
             console.log('test');
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
         }
-    };
-
-    const nextStep = () => {
-        steps[currentStep].current = false;
-        steps[currentStep].completed = true;
-        currentStep++;
-        steps[currentStep].current = true;
-    };
-    const prevStep = () => {
-        steps[currentStep].current = false;
-        currentStep--;
-        steps[currentStep].current = true;
-        steps[currentStep].completed = false;
     };
 </script>
 
 <Wizard title="Create document" bind:show={showCreate}>
     <svelte:fragment slot="aside">
-        <Steps>
-            {#each steps as step}
-                <Step current={step.current} completed={step.completed}>
-                    {step.title}
-                </Step>
-            {/each}
-        </Steps>
+        <Steps {steps} bind:currentStep />
     </svelte:fragment>
     <Form on:submit={create}>
         {#if currentStep === 0}
@@ -174,13 +156,13 @@
             <div class="u-flex u-main-end u-gap-12">
                 {#if currentStep === 0}
                     <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-                    <Button on:click={nextStep}>Next</Button>
+                    <Button on:click={() => currentStep++}>Next</Button>
                 {:else if currentStep === steps.length - 1}
-                    <Button secondary on:click={prevStep}>Back</Button>
+                    <Button secondary on:click={() => currentStep--}>Back</Button>
                     <Button submit>Create</Button>
                 {:else}
-                    <Button secondary on:click={prevStep}>Back</Button>
-                    <Button on:click={nextStep}>Next</Button>
+                    <Button secondary on:click={() => currentStep--}>Back</Button>
+                    <Button on:click={() => currentStep++}>Next</Button>
                 {/if}
             </div>
         </div>
