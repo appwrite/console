@@ -1,34 +1,34 @@
 <script lang="ts">
-    import { afterNavigate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { base } from '$app/paths';
     import { updateLayout } from '$lib/stores/layout';
+    import { team } from './store';
+    import { afterNavigate } from '$app/navigation';
     import { onMount } from 'svelte';
-    import { user } from './store';
 
-    const userId = $page.params.user;
-    const path = `users/user/${userId}`;
+    const teamId = $page.params.team;
+    const path = `users/teams/${teamId}`;
 
     onMount(handle);
     afterNavigate(handle);
 
     async function handle(event = null) {
-        if ($user?.$id !== userId) {
-            await user.load(userId);
+        if ($team?.$id !== teamId) {
+            await team.load(teamId);
         }
 
         updateLayout({
             navigate: event,
-            title: $user.name,
             level: 4,
+            title: $team.name,
+            back: `${base}/console/${$page.params.project}/authentication/teams`,
             breadcrumbs: {
-                title: $user.name,
-                href: `user/${userId}`
+                title: $team.name,
+                href: `teams/${teamId}`
             },
-            back: `${base}/console/${$page.params.project}/users`,
             copy: {
-                text: 'User ID',
-                value: userId
+                text: 'Team ID',
+                value: teamId
             },
             tabs: [
                 {
@@ -36,12 +36,8 @@
                     title: 'Overview'
                 },
                 {
-                    href: `${path}/memberships`,
-                    title: 'Memberships'
-                },
-                {
-                    href: `${path}/sessions`,
-                    title: 'Sessions'
+                    href: `${path}/members`,
+                    title: 'Members'
                 },
                 {
                     href: `${path}/activity`,
@@ -53,9 +49,9 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - User</title>
+    <title>Appwrite - Team</title>
 </svelte:head>
 
-{#if $user}
+{#if $team}
     <slot />
 {/if}

@@ -89,7 +89,7 @@
                         <Button
                             external
                             secondary
-                            href="https://appwrite.io/docs/server/users?sdk=nodejs-default#usersGetLogs"
+                            href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetLogs"
                             >Documentation</Button>
                     </div>
                 </div>

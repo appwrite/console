@@ -51,7 +51,7 @@
                 <TableBody>
                     {#each response.memberships as membership}
                         <TableRowLink
-                            href={`${base}/console/${project}/users/user/${membership.userId}`}>
+                            href={`${base}/console/${project}/authentication/user/${membership.userId}`}>
                             <TableCellText title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar
@@ -87,7 +87,7 @@
                         <Button
                             external
                             secondary
-                            href="https://appwrite.io/docs/server/users?sdk=nodejs-default#usersGetMemberships"
+                            href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetMemberships"
                             >Documentation</Button>
                     </div>
                 </div>

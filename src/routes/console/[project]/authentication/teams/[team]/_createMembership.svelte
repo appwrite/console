@@ -14,7 +14,7 @@
     let name: string, email: string, roles: [];
 
     const create = async () => {
-        const url = `${$page.url.origin}/console/${$page.params.project}/users/teams/${$page.params.team}/members`;
+        const url = `${$page.url.origin}/console/${$page.params.project}/authentication/teams/${$page.params.team}/members`;
 
         try {
             const user = await sdkForProject.teams.createMembership(

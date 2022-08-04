@@ -6,20 +6,16 @@
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { user } from './store';
-    import { project } from '../../../store';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export let showDelete = false;
+    export let team: Models.Team;
 
-    const deleteUser = async () => {
+    const deleteTeam = async () => {
         try {
-            await sdkForProject.users.delete($user.$id);
+            await sdkForProject.teams.delete(team.$id);
             showDelete = false;
-            addNotification({
-                type: 'success',
-                message: `${$user.name} has been deleted`
-            });
-            await goto(`${base}/console/${$page.params.project}/users`);
+            await goto(`${base}/console/${$page.params.project}/authentication/teams`);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -29,10 +25,13 @@
     };
 </script>
 
-<Form on:submit={deleteUser}>
+<Form on:submit={deleteTeam}>
     <Modal warning={true} bind:show={showDelete}>
-        <svelte:fragment slot="header">Delete User</svelte:fragment>
-        <p>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
+        <svelte:fragment slot="header">Delete Team</svelte:fragment>
+
+        <p>
+            Are you sure you want to delete <b>{team.name}</b>?
+        </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
             <Button secondary submit>Delete</Button>

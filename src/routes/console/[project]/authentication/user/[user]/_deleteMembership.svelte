@@ -7,15 +7,24 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { createEventDispatcher } from 'svelte';
+
+    const dispatch = createEventDispatcher();
 
     export let showDelete = false;
-    export let team: Models.Team;
+    export let selectedMembership: Models.Membership;
 
-    const deleteTeam = async () => {
+    const deleteMembership = async () => {
         try {
-            await sdkForProject.teams.delete(team.$id);
+            await sdkForProject.teams.deleteMembership(
+                selectedMembership.teamId,
+                selectedMembership.$id
+            );
             showDelete = false;
-            await goto(`${base}/console/${$page.params.project}/users/teams`);
+            dispatch('deleted');
+            await goto(
+                `${base}/console/${$page.params.project}/authentication/user/${selectedMembership.userId}/memberships`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -25,12 +34,11 @@
     };
 </script>
 
-<Form on:submit={deleteTeam}>
+<Form on:submit={deleteMembership}>
     <Modal warning={true} bind:show={showDelete}>
-        <svelte:fragment slot="header">Delete Team</svelte:fragment>
-
+        <svelte:fragment slot="header">Delete Member</svelte:fragment>
         <p>
-            Are you sure you want to delete <b>{team.name}</b>?
+            Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
         </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>

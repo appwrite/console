@@ -6,25 +6,20 @@
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { createEventDispatcher } from 'svelte';
-
-    const dispatch = createEventDispatcher();
+    import { user } from './store';
+    import { project } from '../../../store';
 
     export let showDelete = false;
-    export let selectedMembership: Models.Membership;
 
-    const deleteMembership = async () => {
+    const deleteUser = async () => {
         try {
-            await sdkForProject.teams.deleteMembership(
-                selectedMembership.teamId,
-                selectedMembership.$id
-            );
+            await sdkForProject.users.delete($user.$id);
             showDelete = false;
-            dispatch('deleted');
-            await goto(
-                `${base}/console/${$page.params.project}/users/user/${selectedMembership.userId}/memberships`
-            );
+            addNotification({
+                type: 'success',
+                message: `${$user.name} has been deleted`
+            });
+            await goto(`${base}/console/${$page.params.project}/authentication`);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -34,12 +29,10 @@
     };
 </script>
 
-<Form on:submit={deleteMembership}>
+<Form on:submit={deleteUser}>
     <Modal warning={true} bind:show={showDelete}>
-        <svelte:fragment slot="header">Delete Member</svelte:fragment>
-        <p>
-            Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
-        </p>
+        <svelte:fragment slot="header">Delete User</svelte:fragment>
+        <p>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
             <Button secondary submit>Delete</Button>

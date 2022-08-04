@@ -38,7 +38,9 @@
 
     const memberCreated = async (event: CustomEvent<Models.Membership>) => {
         memberships.load($page.params.team, search, limit, offset ?? 0);
-        await goto(`${base}/console/${project}/users/teams/${event.detail.teamId}/members`);
+        await goto(
+            `${base}/console/${project}/authentication/teams/${event.detail.teamId}/members`
+        );
     };
 </script>
 
@@ -60,7 +62,7 @@
             <TableBody>
                 {#each $memberships.memberships as membership}
                     <TableRowLink
-                        href={`${base}/console/${project}/users/user/${membership.userId}`}>
+                        href={`${base}/console/${project}/authentication/user/${membership.userId}`}>
                         <TableCellText title="Name">
                             <div class="u-flex u-gap-12">
                                 <Avatar

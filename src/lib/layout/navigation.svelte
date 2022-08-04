@@ -41,10 +41,12 @@
                     <li class="drop-list-item">
                         <a
                             class="drop-button"
-                            class:is-selected={$page.url.pathname.startsWith(`${path}/users`)}
-                            href={`${path}/users`}>
+                            class:is-selected={$page.url.pathname.startsWith(
+                                `${path}/authentication`
+                            )}
+                            href={`${path}/authentication`}>
                             <span class="icon-user-group" aria-hidden="true" />
-                            <span class="text">Users</span>
+                            <span class="text">Authentication</span>
                         </a>
                     </li>
                     <li class="drop-list-item">
