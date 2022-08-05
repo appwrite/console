@@ -28,4 +28,5 @@ export { default as Search } from './search.svelte';
 export { default as Bucket } from './bucket.svelte';
 export { default as Steps } from './steps.svelte';
 export { default as Step } from './step.svelte';
+export { default as SubStep } from './subStep.svelte';
 export { default as EmptyBucket } from './emptyBucket.svelte';

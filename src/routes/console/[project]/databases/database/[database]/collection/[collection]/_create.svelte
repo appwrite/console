@@ -14,7 +14,7 @@
     export let showCreate = false;
 
     let newDocument = {};
-    let steps = ['Create data', 'Set permissions'];
+    let steps = [{ text: 'Create data' }, { text: 'Set permissions' }];
     let currentStep = 0;
     let read: string[];
     let write: string[];
