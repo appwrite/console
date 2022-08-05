@@ -134,7 +134,7 @@
                                 }
                             }}>
                             <span class="icon-plus" aria-hidden="true" />
-                            <span class="text"> Add attribute</span>
+                            <span class="text"> Add item</span>
                         </Button>
                     {:else}
                         <ul class="form-list">
