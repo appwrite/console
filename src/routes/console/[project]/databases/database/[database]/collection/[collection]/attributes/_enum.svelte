@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputSwitch, InputSelect, InputTags } from '$lib/elements/forms';
+    import { InputChoice, InputSelect, InputTags } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -57,6 +57,13 @@
     bind:tags={elements}
     placeholder="Add elements here"
     readonly={overview} />
-<InputSelect id="default" label="Default" bind:options bind:value={xdefault} disabled={overview} />
-<InputSwitch id="required" label="Required" bind:value={required} disabled={overview} />
-<InputSwitch id="required" label="Array" bind:value={array} disabled={overview} />
+<InputSelect
+    id="default"
+    label="Default value"
+    bind:options
+    bind:value={xdefault}
+    disabled={overview} />
+<InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
+    Indicate whether this is a required attribute</InputChoice>
+<InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
+    Indicate whether this attribute should act as an array</InputChoice>

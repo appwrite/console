@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputNumber, InputSwitch } from '$lib/elements/forms';
+    import { InputNumber, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -52,6 +52,13 @@
 <InputNumber id="min" label="Min" bind:value={min} readonly={overview} />
 <InputNumber id="max" label="Max" bind:value={max} readonly={overview} />
 
-<InputSwitch id="required" label="Required" bind:value={required} disabled={overview} />
-<InputSwitch id="array" label="Array" bind:value={array} disabled={overview} />
-<InputNumber id="default" label="Default" bind:value={xdefault} readonly={overview} />
+<InputNumber
+    id="default"
+    label="Default value"
+    bind:value={xdefault}
+    readonly={overview}
+    step="any" />
+<InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
+    Indicate whether this is a required attribute</InputChoice>
+<InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
+    Indicate whether this attribute should act as an array</InputChoice>
