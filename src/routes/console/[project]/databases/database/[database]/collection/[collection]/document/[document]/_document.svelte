@@ -95,13 +95,12 @@
 
                     <Button
                         text
+                        disabled={$doc[attribute.key][$doc[attribute.key].length - 1] === null}
                         on:click={() => {
-                            if ($doc[attribute.key][$doc[attribute.key].length - 1] !== null) {
-                                doc.addAttribute(attribute.key);
-                            }
+                            doc.addAttribute(attribute.key);
                         }}>
                         <span class="icon-plus" aria-hidden="true" />
-                        <span class="text"> Add Attribute</span>
+                        <span class="text"> Add attribute</span>
                     </Button>
                 {:else}
                     <ul class="form-list">
