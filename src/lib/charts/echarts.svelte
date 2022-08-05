@@ -20,14 +20,15 @@
             text: ''
         },
         legend: {
-            orient: 'vertical',
-            right: 10,
-            top: 'center'
+            orient: 'horizontal',
+            top: 'bottom',
+            left: '3%'
         },
         tooltip: { trigger: 'axis' },
+        grid: { containLabel: true, left: 0, right: 0, bottom: 15, top: 15 },
         xAxis: {
             type: 'time',
-            show: true
+            show: false
         },
         yAxis: { type: 'value' },
         series
