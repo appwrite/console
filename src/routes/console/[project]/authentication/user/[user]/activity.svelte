@@ -19,6 +19,14 @@
     const limit = 25;
 
     $: request = sdkForProject.users.getLogs($page.params.user, limit, offset);
+
+    let browsers = {
+        firefox: 'firefox',
+        chrome: 'chrome',
+        safari: 'safari',
+        opera: 'opera',
+        edge: 'edge'
+    };
 </script>
 
 <Container>
@@ -40,13 +48,17 @@
                             <TableCellText title="Client">
                                 <div class="u-flex u-cross-center u-gap-12">
                                     <div class="avatar is-small">
-                                        <img
-                                            height="20"
-                                            width="20"
-                                            src={`/icons/${
-                                                $app.themeInUse
-                                            }/color/${log?.clientName.toLocaleLowerCase()}.svg`}
-                                            alt={log.clientName} />
+                                        {#if browsers[log.clientName.toLocaleLowerCase()]}
+                                            <img
+                                                height="20"
+                                                width="20"
+                                                src={`/icons/${
+                                                    $app.themeInUse
+                                                }/color/${log?.clientName.toLocaleLowerCase()}.svg`}
+                                                alt={log.clientName} />
+                                        {:else}
+                                            <span class="icon-globe-alt" />
+                                        {/if}
                                     </div>
                                     <p class="text u-trim">
                                         {log.clientName}
