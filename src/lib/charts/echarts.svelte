@@ -10,10 +10,11 @@
     registerTheme('light', light);
     registerTheme('dark', dark);
 
-    export let series: LineSeriesOption[];
     export let title: string;
+    export let series: LineSeriesOption[];
 
     let chart: ECharts;
+
     $: option = {
         animationDuration: 400,
         title: {
@@ -22,7 +23,13 @@
         legend: {
             orient: 'horizontal',
             top: 'bottom',
-            left: '3%'
+            left: 15,
+            icon: 'circle',
+            itemGap: 20,
+            textStyle: {
+                fontSize: 12,
+                lineHeight: 18
+            }
         },
         tooltip: { trigger: 'axis' },
         grid: { containLabel: true, left: 0, right: 0, bottom: 15, top: 15 },
@@ -78,6 +85,8 @@
         destroyChart();
         chart = init(document.getElementById(`echart-${title}`), $app.themeInUse);
         series.forEach((s: LineSeriesOption, i: number) => {
+            s.type = 'line';
+            s.smooth = true;
             s.areaStyle = colorToGradient(chart['_theme'].color[i]);
         });
     };

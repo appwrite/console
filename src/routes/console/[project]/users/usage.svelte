@@ -50,10 +50,7 @@
                 series={[
                     {
                         name: 'User',
-                        data: [...data.usersCount.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
+                        data: [...data.usersCount.map((e) => [e.date * 1000, e.value])]
                     }
                 ]} />
         </Card>
@@ -65,31 +62,19 @@
                 series={[
                     {
                         name: 'Create',
-                        data: [...data.usersCreate.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
+                        data: [...data.usersCreate.map((e) => [e.date * 1000, e.value])]
                     },
                     {
                         name: 'Read',
-                        data: [...data.usersRead.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
+                        data: [...data.usersRead.map((e) => [e.date * 1000, e.value])]
                     },
                     {
                         name: 'Update',
-                        data: [...data.usersUpdate.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
+                        data: [...data.usersUpdate.map((e) => [e.date * 1000, e.value])]
                     },
                     {
                         name: 'Delete',
-                        data: [...data.usersDelete.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
+                        data: [...data.usersDelete.map((e) => [e.date * 1000, e.value])]
                     }
                 ]} />
         </Card>
