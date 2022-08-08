@@ -84,7 +84,7 @@
 
     function colorToGradient(color: string) {
         return {
-            opacity: 0.8,
+            opacity: 1,
             color: new graphic.LinearGradient(0, 0, 0, 1, [
                 {
                     offset: 0,
@@ -92,7 +92,7 @@
                 },
                 {
                     offset: 1,
-                    color: `${color}30`
+                    color: `${color}50`
                 }
             ])
         };
