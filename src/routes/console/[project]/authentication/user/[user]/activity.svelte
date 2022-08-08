@@ -39,7 +39,7 @@
                         <TableRow>
                             <TableCellText title="Client">
                                 <div class="u-flex u-cross-center u-gap-12">
-                                    <div class="image-item">
+                                    <div class="avatar is-small">
                                         <img
                                             height="20"
                                             width="20"
@@ -48,16 +48,12 @@
                                             }/color/${log?.clientName.toLocaleLowerCase()}.svg`}
                                             alt={log.clientName} />
                                     </div>
-                                    <span class="u-line-height-1-5">
-                                        <p>
-                                            {log.clientName}
-                                            {log.clientVersion}
-                                        </p>
-                                        <span class="u-small">
-                                            on {log.osName}
-                                            {log.osVersion}
-                                        </span>
-                                    </span>
+                                    <p class="text u-trim">
+                                        {log.clientName}
+                                        {log.clientVersion}
+                                        on {log.osName}
+                                        {log.osVersion}
+                                    </p>
                                 </div>
                             </TableCellText>
                             <TableCellText title="Event">{log.event}</TableCellText>
