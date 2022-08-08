@@ -193,37 +193,39 @@
             <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
                 <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
                 <h6 class="heading-level-7">{$user.name}</h6>
-                {#if !$user.status}
-                    <Pill danger>blocked</Pill>
-                {:else if $user.email && $user.phone}
-                    <Pill success={$user.emailVerification || $user.phoneVerification}>
-                        {$user.emailVerification && $user.phoneVerification
-                            ? 'verified'
-                            : $user.emailVerification
-                            ? 'verified email'
-                            : $user.phoneVerification
-                            ? 'verified phone'
-                            : 'unverified'}
-                    </Pill>
-                {:else}
-                    <Pill success={$user.emailVerification || $user.phoneVerification}>
-                        {$user.emailVerification
-                            ? 'verified '
-                            : $user.phoneVerification
-                            ? 'verified '
-                            : 'unverified'}
-                    </Pill>
-                {/if}
             </div>
             <svelte:fragment slot="aside">
-                <div>
-                    {#if $user.email}
-                        <p class="title">{$user.email}</p>
+                <div class="u-flex u-main-space-between">
+                    <div>
+                        {#if $user.email}
+                            <p class="title">{$user.email}</p>
+                        {/if}
+                        {#if $user.phone}
+                            <p class="title">{$user.phone}</p>
+                        {/if}
+                        <p>Joined: {toLocaleDateTime($user.registration)}</p>
+                    </div>
+                    {#if !$user.status}
+                        <Pill danger>blocked</Pill>
+                    {:else if $user.email && $user.phone}
+                        <Pill success={$user.emailVerification || $user.phoneVerification}>
+                            {$user.emailVerification && $user.phoneVerification
+                                ? 'verified'
+                                : $user.emailVerification
+                                ? 'verified email'
+                                : $user.phoneVerification
+                                ? 'verified phone'
+                                : 'unverified'}
+                        </Pill>
+                    {:else}
+                        <Pill success={$user.emailVerification || $user.phoneVerification}>
+                            {$user.emailVerification
+                                ? 'verified '
+                                : $user.phoneVerification
+                                ? 'verified '
+                                : 'unverified'}
+                        </Pill>
                     {/if}
-                    {#if $user.phone}
-                        <p class="title">{$user.phone}</p>
-                    {/if}
-                    <p>Joined: {toLocaleDateTime($user.registration)}</p>
                 </div>
             </svelte:fragment>
 
