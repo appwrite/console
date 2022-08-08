@@ -5,7 +5,7 @@ function createAuthMethods() {
     const { subscribe, set } = writable({
         list: [
             {
-                label: 'Password',
+                label: 'Email/Password',
                 method: 'email-password',
                 value: null
             },
@@ -43,7 +43,7 @@ function createAuthMethods() {
         load: (project: Models.Project) => {
             const list = [
                 {
-                    label: 'Password',
+                    label: 'Email/Password',
                     method: 'email-password',
                     value: project.authEmailPassword
                 },
