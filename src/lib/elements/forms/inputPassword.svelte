@@ -16,6 +16,8 @@
     export let errorMessage = 'An error occurred';
     export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
     export let showHelper = false;
+    export let minlength = 8;
+    export let maxlength: number;
 
     let element: HTMLInputElement;
     let showInPlainText = false;
@@ -28,7 +30,10 @@
 
     const handleInvalid = (event: Event) => {
         errorMessage = element.validationMessage;
-
+        console.log(element.validity);
+        if (element.validity.tooShort) {
+            errorMessage = 'Password should contain at least 8 characters';
+        }
         event.preventDefault();
         showHelper = true;
     };
@@ -49,9 +54,10 @@
                 {id}
                 name={id}
                 {placeholder}
-                {required}
                 {disabled}
                 autocomplete={autocomplete ? 'on' : 'off'}
+                {minlength}
+                {maxlength}
                 class="input-text"
                 bind:value
                 bind:this={element} />
@@ -63,6 +69,8 @@
                 {disabled}
                 {required}
                 autocomplete={autocomplete ? 'on' : 'off'}
+                {minlength}
+                {maxlength}
                 type="password"
                 class="input-text"
                 bind:value
@@ -82,6 +90,7 @@
         {/if}
         {#if showPasswordButton}
             <button
+                type="button"
                 on:click={() => (showInPlainText = !showInPlainText)}
                 class="show-password-button"
                 aria-label="show password">
