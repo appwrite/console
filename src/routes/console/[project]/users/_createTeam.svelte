@@ -12,6 +12,7 @@
 
     let name: string, id: string;
     let showDropdown = false;
+    let modalError: string;
 
     const create = async () => {
         try {
@@ -25,10 +26,7 @@
             });
             dispatch('created', team);
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            modalError = error.message;
         }
     };
 
@@ -37,11 +35,12 @@
     }
     $: if (!showCreate) {
         showDropdown = false;
+        modalError = null;
     }
 </script>
 
 <Form on:submit={create}>
-    <Modal size="big" bind:show={showCreate}>
+    <Modal error={modalError} size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Team</svelte:fragment>
         <FormList>
             <InputText

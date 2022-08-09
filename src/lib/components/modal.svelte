@@ -1,10 +1,12 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
+    import { Alert } from '$lib/components';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
     export let warning = false;
+    export let error: string = null;
     let browser = false;
     //TODO: explore other solutions compatible with testing library
     onMount(() => {
@@ -76,6 +78,16 @@
                 </button>
             </header>
             <div class="modal-content">
+                {#if error}
+                    <Alert
+                        dismissible
+                        type="warning"
+                        on:dismiss={() => {
+                            error = null;
+                        }}>
+                        {error}
+                    </Alert>
+                {/if}
                 <slot />
             </div>
             <div class="modal-footer">
