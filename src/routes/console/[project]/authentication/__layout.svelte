@@ -13,10 +13,10 @@
     function handle(event = null) {
         updateLayout({
             navigate: event,
-            title: 'Users',
+            title: 'Authentication',
             level: 3,
             breadcrumbs: {
-                title: 'Users',
+                title: 'Authentication',
                 href: path
             },
             tabs: [
