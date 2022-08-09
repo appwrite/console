@@ -20,12 +20,11 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { usersList } from './store';
-    import { onMount } from 'svelte';
     import type { Models } from '@aw-labs/appwrite-console';
 
     let showCreate = false;
     let search = '';
-    let offset: number = null;
+    let offset = 0;
 
     const limit = 5;
     const project = $page.params.project;
@@ -34,22 +33,8 @@
         await goto(`${base}/console/${project}/users/user/${event.detail.$id}`);
     };
 
-    $: usersList.load(search, limit, offset ?? 0);
     $: if (search) offset = 0;
-    $: {
-        //TODO: refactor this into something maintainable without the use of goto
-        if (offset !== null) {
-            $page.url.searchParams.set('offset', offset.toString());
-            goto(`?${$page.url.searchParams.toString()}`, { replaceState: true, keepfocus: true });
-        }
-    }
-
-    onMount(() => {
-        const queryOffset = +$page.url.searchParams.get('offset') ?? 0;
-        if (offset && offset !== queryOffset) {
-            offset = queryOffset;
-        }
-    });
+    $: usersList.load(search, limit, offset ?? 0);
 </script>
 
 <Container>

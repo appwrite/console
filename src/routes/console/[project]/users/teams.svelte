@@ -19,7 +19,6 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { teamsList } from './store';
-    import { onMount } from 'svelte';
     import type { Models } from '@aw-labs/appwrite-console';
 
     let search = '';
@@ -32,19 +31,9 @@
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
         await goto(`${base}/console/${project}/users/teams/${event.detail.$id}`);
     };
-    $: teamsList.load(search, limit, offset);
-    $: if (search) offset = 0;
-    $: {
-        //TODO: refactor this into something maintainable without the use of goto
-        if (offset !== null) {
-            $page.url.searchParams.set('offset', offset.toString());
-            goto(`?${$page.url.searchParams.toString()}`, { replaceState: true, keepfocus: true });
-        }
-    }
 
-    onMount(() => {
-        offset = +$page.url.searchParams.get('offset') ?? 0;
-    });
+    $: if (search) offset = 0;
+    $: teamsList.load(search, limit, offset);
 </script>
 
 <Container>
