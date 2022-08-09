@@ -87,7 +87,7 @@
                     <p class="u-margin-block-start-8">{provider.name}</p>
                     <div class="u-margin-block-start-24">
                         <Pill success={provider.active}>
-                            {provider.active ? 'Enabled' : 'Disabled'}
+                            {provider.active ? 'enabled' : 'disabled'}
                         </Pill>
                     </div>
                 </button>

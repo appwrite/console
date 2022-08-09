@@ -22,7 +22,7 @@
 </script>
 
 <div class="input-text-wrapper is-with-end-button">
-    <input {value} type="text" class="input-text" disabled />
+    <input {value} type="text" class="input-text" readonly />
     <button type="button" class="input-button tooltip" aria-label="Click to copy." on:click={copy}>
         <span class="icon-duplicate" aria-hidden="true" />
         <div class="tootip">
