@@ -2,8 +2,6 @@
     import { Modal, InnerModal } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, Form, FormList } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
-
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
@@ -14,6 +12,7 @@
     let name = '';
     let id: string = null;
     let showDropdown = false;
+    let modalError: string;
 
     const create = async () => {
         try {
@@ -26,10 +25,7 @@
             showCreate = false;
             dispatch('created', bucket);
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            modalError = error.message;
         }
     };
 
@@ -38,11 +34,12 @@
     }
     $: if (!showCreate) {
         showDropdown = false;
+        modalError = null;
     }
 </script>
 
 <Form on:submit={create}>
-    <Modal size="big" bind:show={showCreate}>
+    <Modal error={modalError} size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Bucket</svelte:fragment>
         <FormList>
             <InputText

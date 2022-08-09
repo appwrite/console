@@ -4,7 +4,6 @@
     import { Modal, Alert, InnerModal } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
     import { bucket } from './store';
@@ -21,6 +20,7 @@
     let write: string[] = [];
     let id: string = null;
     let showDropdown = false;
+    let modalError: string;
 
     const create = async () => {
         try {
@@ -37,10 +37,7 @@
             uploader.addFile(file);
             dispatch('created');
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            modalError = error.message;
         }
     };
 
@@ -76,6 +73,7 @@
         files = null;
         read = [];
         write = [];
+        modalError = null;
     }
 
     $: if (!showDropdown) {
@@ -86,7 +84,7 @@
 <input bind:files id="file" type="file" style="display: none" />
 
 <Form on:submit={create}>
-    <Modal bind:show={showCreate}>
+    <Modal error={modalError} bind:show={showCreate}>
         <svelte:fragment slot="header">Upload File</svelte:fragment>
         <FormList>
             <div>
