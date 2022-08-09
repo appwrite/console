@@ -31,6 +31,7 @@
                 lineHeight: 18
             }
         },
+        animation: false,
         tooltip: { trigger: 'axis' },
         grid: { containLabel: true, left: 0, right: 0, bottom: 15, top: 15 },
         xAxis: {
