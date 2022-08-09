@@ -6,7 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
-    import { authMethods } from '$lib/stores/auth-methods';
+    import { authMethods, type AuthMethod } from '$lib/stores/auth-methods';
     import { OAuthProviders } from '$lib/stores/oauth-providers';
     import { event } from '$lib/actions/analytics';
     import type { Provider } from '$lib/stores/oauth-providers';
@@ -17,12 +17,14 @@
     $: OAuthProviders.load($project);
     let showModal = false;
 
-    const authUpdate = async (id: string, value: boolean) => {
+    const authUpdate = async (box: AuthMethod) => {
         try {
-            await sdkForConsole.projects.updateAuthStatus(projectId, id, value);
+            await sdkForConsole.projects.updateAuthStatus(projectId, box.method, box.value);
             addNotification({
                 type: 'success',
-                message: 'Updated project authentication status successfully'
+                message: `${box.label} authentication has been ${
+                    box.value ? 'enabled' : 'disabled'
+                }`
             });
         } catch (error) {
             addNotification({
@@ -50,7 +52,7 @@
                             id={box.method}
                             bind:value={box.value}
                             on:change={() => {
-                                authUpdate(box.method, box.value);
+                                authUpdate(box);
                             }} />
                     {/each}
                 </ul>

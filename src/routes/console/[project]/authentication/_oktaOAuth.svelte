@@ -28,8 +28,13 @@
                 provider.id,
                 secret
             );
-
             showModal = false;
+            addNotification({
+                type: 'success',
+                message: `${provider.name} authentication has been ${
+                    provider.active ? 'enabled' : 'disabled'
+                }`
+            });
         } catch (error) {
             addNotification({
                 type: 'error',

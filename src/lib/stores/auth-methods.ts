@@ -1,6 +1,12 @@
 import { writable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
 
+export type AuthMethod = {
+    label: string;
+    method: string;
+    value: boolean | null;
+};
+
 function createAuthMethods() {
     const { subscribe, set } = writable({
         list: [
