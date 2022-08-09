@@ -9,13 +9,14 @@
         Form,
         FormList
     } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
 
     export let showModal = false;
     export let provider: Provider;
     const projectId = $page.params.project;
+    let modalError: string;
+
     const update = async () => {
         try {
             await sdkForConsole.projects.updateOAuth2(
@@ -26,16 +27,13 @@
             );
             showModal = false;
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            modalError = error.message;
         }
     };
 </script>
 
 <Form on:submit={update}>
-    <Modal size="big" bind:show={showModal}>
+    <Modal error={modalError} size="big" bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
         <FormList>
             <p>
