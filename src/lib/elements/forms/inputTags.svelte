@@ -7,7 +7,6 @@
     export let showLabel = true;
     export let tags: string[] = [];
     export let placeholder = '';
-    export let helper = '';
     export let autofocus = false;
     export let errorMessage = 'An error occurred';
     export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
@@ -54,7 +53,9 @@
 
     const handleInvalid = (event: Event) => {
         errorMessage = element.validationMessage;
-
+        if (element.validity.valueMissing) {
+            errorMessage = 'This field is required';
+        }
         event.preventDefault();
         showHelper = true;
     };

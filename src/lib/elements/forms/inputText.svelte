@@ -26,7 +26,9 @@
 
     const handleInvalid = (event: Event) => {
         errorMessage = element.validationMessage;
-
+        if (element.validity.valueMissing) {
+            errorMessage = 'This field is required';
+        }
         event.preventDefault();
         showHelper = true;
     };

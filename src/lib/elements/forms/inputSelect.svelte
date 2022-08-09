@@ -20,8 +20,8 @@
     const handleInvalid = (event: Event) => {
         errorMessage = element.validationMessage;
 
-        if (element.validity.typeMismatch) {
-            errorMessage = 'Your email should be formatted as: name@example.com';
+        if (element.validity.valueMissing) {
+            errorMessage = 'This field is required';
         }
         event.preventDefault();
         showHelper = true;

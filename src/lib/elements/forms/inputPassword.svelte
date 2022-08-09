@@ -31,6 +31,9 @@
     const handleInvalid = (event: Event) => {
         errorMessage = element.validationMessage;
         console.log(element.validity);
+        if (element.validity.valueMissing) {
+            errorMessage = 'This field is required';
+        }
         if (element.validity.tooShort) {
             errorMessage = 'Password should contain at least 8 characters';
         }
