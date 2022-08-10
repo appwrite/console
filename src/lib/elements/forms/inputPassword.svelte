@@ -17,7 +17,7 @@
     export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
     export let showHelper = false;
     export let minlength = 8;
-    export let maxlength: number;
+    export let maxlength: number = null;
 
     let element: HTMLInputElement;
     let showInPlainText = false;
