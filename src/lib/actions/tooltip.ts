@@ -13,6 +13,12 @@ export const tooltip: Action<HTMLElement, Partial<Props>> = (node, config) => {
                 });
             }
         },
+        enable() {
+            instance.enable();
+        },
+        disable() {
+            instance.disable();
+        },
         destroy() {
             instance.destroy();
         }
