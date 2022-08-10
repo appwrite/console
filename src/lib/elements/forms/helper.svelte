@@ -12,7 +12,7 @@
 
 <p class={`helper u-${type} u-margin-block-start-12"`}>
     {#if type}
-        <span class={type ? icon[type] : ''} aria-hidden="true" />
+        <span class={icon[type] ?? ''} aria-hidden="true" />
     {/if}
     <span class="text">
         <slot />
