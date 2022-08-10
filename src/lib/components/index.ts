@@ -18,7 +18,6 @@ export { default as DropListLink } from './dropListLink.svelte';
 export { default as Collapsible } from './collapsible.svelte';
 export { default as DropTabs } from './dropTabs.svelte';
 export { default as DropTabsItem } from './dropTabsItem.svelte';
-export { default as Tooltip } from './tooltip.svelte';
 export { default as Avatar } from './avatar.svelte';
 export { default as Alert } from './alert.svelte';
 export { default as Box } from './box.svelte';
