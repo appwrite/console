@@ -60,6 +60,7 @@
     }
 
     async function updateVerificationEmail() {
+        showVerifcationDropdown = false;
         try {
             await sdkForProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
             $user.emailVerification = !$user.emailVerification;
@@ -77,6 +78,7 @@
         }
     }
     async function updateVerificationPhone() {
+        showVerifcationDropdown = false;
         try {
             await sdkForProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             $user.phoneVerification = !$user.phoneVerification;
