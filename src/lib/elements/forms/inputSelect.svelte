@@ -18,12 +18,12 @@
     let element: HTMLSelectElement;
 
     const handleInvalid = (event: Event) => {
+        event.preventDefault();
         errorMessage = element.validationMessage;
 
         if (element.validity.valueMissing) {
             errorMessage = 'This field is required';
         }
-        event.preventDefault();
         showHelper = true;
     };
 

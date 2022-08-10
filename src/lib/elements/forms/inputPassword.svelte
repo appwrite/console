@@ -29,6 +29,7 @@
     });
 
     const handleInvalid = (event: Event) => {
+        event.preventDefault();
         errorMessage = element.validationMessage;
         console.log(element.validity);
         if (element.validity.valueMissing) {
@@ -37,7 +38,6 @@
         if (element.validity.tooShort) {
             errorMessage = 'Password should contain at least 8 characters';
         }
-        event.preventDefault();
         showHelper = true;
     };
 
