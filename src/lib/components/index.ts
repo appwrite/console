@@ -26,3 +26,4 @@ export { default as Box } from './box.svelte';
 export { default as Search } from './search.svelte';
 export { default as Bucket } from './bucket.svelte';
 export { default as EmptyBucket } from './emptyBucket.svelte';
+export { default as Trim } from './trim.svelte';
