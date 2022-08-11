@@ -115,9 +115,9 @@
             await sdkForProject.users.updateName($user.$id, userName);
             $user.name = userName;
             title.set(userName);
-            const breadcrumb = $breadcrumbs.get($breadcrumbs.size - 1);
+            const breadcrumb = $breadcrumbs.get($breadcrumbs.size);
             breadcrumb.title = userName;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size - 1, breadcrumb);
+            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
 
             showError = false;
             addNotification({

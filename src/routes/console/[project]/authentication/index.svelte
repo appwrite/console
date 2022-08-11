@@ -21,12 +21,12 @@
     import { base } from '$app/paths';
     import { usersList } from './store';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { pageLimit } from '$lib/stores/layout';
 
     let showCreate = false;
     let search = '';
     let offset = 0;
 
-    const limit = 5;
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
@@ -34,7 +34,7 @@
     };
 
     $: if (search) offset = 0;
-    $: usersList.load(search, limit, offset ?? 0);
+    $: usersList.load(search, $pageLimit, offset ?? 0);
 </script>
 
 <Container>
@@ -99,7 +99,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$usersList.total}</p>
-            <Pagination {limit} bind:offset sum={$usersList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$usersList.total} />
         </div>
     {:else if search}
         <Empty>
@@ -115,7 +115,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$usersList.total}</p>
-            <Pagination {limit} bind:offset sum={$usersList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$usersList.total} />
         </div>
     {:else}
         <Empty dashed centered>

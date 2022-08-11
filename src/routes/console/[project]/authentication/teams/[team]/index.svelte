@@ -35,9 +35,9 @@
             await sdkForProject.teams.update($page.params.team, teamName);
             $team.name = teamName;
             title.set(teamName);
-            const breadcrumb = $breadcrumbs.get($breadcrumbs.size - 1);
+            const breadcrumb = $breadcrumbs.get($breadcrumbs.size);
             breadcrumb.title = teamName;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size - 1, breadcrumb);
+            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
