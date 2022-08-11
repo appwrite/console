@@ -429,8 +429,8 @@
                             {/each}
                         {/if}
                     </ul>
-                    <Button
-                        text
+                    <button
+                        class="button is-text u-padding-inline-0"
                         disabled={prefs?.length
                             ? !prefs[prefs.length - 1][0] || !prefs[prefs.length - 1][1]
                             : true}
@@ -439,7 +439,7 @@
                             prefs = prefs;
                         }}>
                         <span class="icon-plus" aria-hidden="true" />
-                        <span class="text"> Add preference </span></Button>
+                        <span class="text"> Add preference </span></button>
                 </form>
             </svelte:fragment>
 
