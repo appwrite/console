@@ -16,6 +16,11 @@ function createAuthMethods() {
                 value: null
             },
             {
+                label: 'Phone',
+                method: 'phone',
+                value: null
+            },
+            {
                 label: 'Magic URL',
                 method: 'magic-url',
                 value: null
@@ -34,11 +39,6 @@ function createAuthMethods() {
                 label: 'JWT',
                 method: 'jwt',
                 value: null
-            },
-            {
-                label: 'Phone',
-                method: 'phone',
-                value: null
             }
         ]
     });
@@ -52,6 +52,11 @@ function createAuthMethods() {
                     label: 'Email/Password',
                     method: 'email-password',
                     value: project.authEmailPassword
+                },
+                {
+                    label: 'Phone',
+                    method: 'phone',
+                    value: project.authPhone
                 },
                 {
                     label: 'Magic URL',
@@ -72,11 +77,6 @@ function createAuthMethods() {
                     label: 'JWT',
                     method: 'jwt',
                     value: project.authJWT
-                },
-                {
-                    label: 'Phone',
-                    method: 'phone',
-                    value: project.authPhone
                 }
             ];
             set({ list });
