@@ -19,9 +19,10 @@
     import { memberships } from './store';
     import CreateMember from './_createMembership.svelte';
     import DeleteMembership from './_deleteMembership.svelte';
+    import { pageLimit } from '$lib/stores/layout';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
-    const deleted = () => memberships.load($page.params.team, search, limit, offset ?? 0);
+    const deleted = () => memberships.load($page.params.team, search, $pageLimit, offset ?? 0);
 
     const project = $page.params.project;
 
@@ -31,13 +32,11 @@
     let offset: number = null;
     let selectedMembership: Models.Membership;
 
-    const limit = 5;
-
     $: if (search) offset = 0;
-    $: memberships.load($page.params.team, search, limit, offset ?? 0);
+    $: memberships.load($page.params.team, search, $pageLimit, offset ?? 0);
 
     const memberCreated = async (event: CustomEvent<Models.Membership>) => {
-        memberships.load($page.params.team, search, limit, offset ?? 0);
+        memberships.load($page.params.team, search, $pageLimit, offset ?? 0);
         await goto(
             `${base}/console/${project}/authentication/teams/${event.detail.teamId}/members`
         );
@@ -95,7 +94,7 @@
             class="u-flex u-margin-block-start-32
  u-main-space-between">
             <p class="text">Total results: {$memberships.total}</p>
-            <Pagination {limit} bind:offset sum={$memberships.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$memberships.total} />
         </div>
     {:else if search}
         <Empty>
@@ -113,7 +112,7 @@
             class="u-flex u-margin-block-start-32
  u-main-space-between">
             <p class="text">Total results: {$memberships.total}</p>
-            <Pagination {limit} bind:offset sum={$memberships.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$memberships.total} />
         </div>
     {:else}
         <Empty dashed centered>

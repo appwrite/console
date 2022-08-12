@@ -16,13 +16,13 @@
     import DeleteSessions from './_deleteSession.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
+    import { pageLimit } from '$lib/stores/layout';
 
     let offset = 0;
     let showDelete = false;
     let showDeleteAll = false;
     let selectedSessionId: string = null;
 
-    const limit = 5;
     const request = sdkForProject.users.getSessions($page.params.user);
 
     //TODO: replace session.expire with "last activity"
@@ -104,7 +104,7 @@
             class="u-flex u-margin-block-start-32
  u-main-space-between">
             <p class="text">Total results: {response.total}</p>
-            <Pagination {limit} bind:offset sum={response.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={response.total} />
         </div>
     {/await}
 </Container>

@@ -14,11 +14,11 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
     import { app } from '$lib/stores/app';
+    import { pageLimit } from '$lib/stores/layout';
 
     let offset = 0;
-    const limit = 5;
 
-    $: request = sdkForProject.teams.listLogs($page.params.team, limit, offset);
+    $: request = sdkForProject.teams.listLogs($page.params.team, $pageLimit, offset);
 
     let browsers = {
         firefox: 'firefox',
@@ -100,7 +100,7 @@
             class="u-flex u-margin-block-start-32
  u-main-space-between">
             <p class="text">Total results: {response.total}</p>
-            <Pagination {limit} bind:offset sum={response.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={response.total} />
         </div>
     {/await}
 </Container>
