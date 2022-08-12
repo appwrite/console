@@ -1,67 +1,95 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Tiles, Tile } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { Bucket, EmptyBucket, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import CreateOrganization from './_createOrganization.svelte';
     import CreateProject from './_createProject.svelte';
+    import { organizationList, organization, projectList } from './store';
+    import { onMount } from 'svelte';
 
-    type Organization = Models.Team & {
-        projects: Models.Project[];
-    };
+    let projects: Models.Project[] = [];
 
-    const request: Promise<Organization[]> = Promise.all([
-        sdkForConsole.projects.list(),
-        sdkForConsole.teams.list()
-    ]).then(([{ projects }, { teams }]) => {
-        return teams.map((team) => {
-            return {
-                ...team,
-                projects: projects.filter((a) => a.teamId === team.$id)
-            };
-        });
+    onMount(async () => {
+        organizationList.load();
+        if (!$organization) {
+            organization.load($organizationList.teams[0].$id);
+        }
+        projectList.load();
+
+        projects = $projectList.projects.filter((a) => a.teamId === $organization.$id);
     });
 
-    let addProject = false;
+    let showCreate = false;
     let addOrganization = false;
-    let currentOrganization = '';
+    let currentOrganization = $organization?.$id;
+    let offset = 0;
+    const limit = 5;
 
-    const createProject = (teamId: string) => {
-        currentOrganization = teamId;
-        addProject = true;
-    };
     const projectCreated = async (event: CustomEvent<Models.Project>) => {
         await goto(`${base}/console/${event.detail.$id}`);
     };
+    //TODO: fix technology icon display
 </script>
 
 <svelte:head>
     <title>Appwrite - Console</title>
 </svelte:head>
 <Container>
-    <h1>Your Organizations</h1>
-    <Button on:click={() => (addOrganization = true)}>Add Organization</Button>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <h2 class="heading-level-5">Projects</h2>
 
-    {#await request}
-        <div aria-busy="true" />
-    {:then organizations}
-        {#each organizations as organization}
-            <h1>{organization.name}</h1>
-            <Tiles>
-                {#each organization.projects as project}
-                    <Tile href={`${base}/console/${project.$id}`} title={project.name} />
-                {/each}
-            </Tiles>
-            <Button on:click={() => createProject(organization.$id)}>Create Project</Button>
-        {/each}
-    {/await}
+        <Button
+            on:click={() => {
+                showCreate = true;
+            }}>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create project</span>
+        </Button>
+    </div>
+
+    {#if projects?.length}
+        <ul
+            class="grid-box common-section u-margin-block-start-32"
+            style={`--grid-gap:2rem; --grid-item-size:${projects.length > 3 ? '22rem' : '25rem'};`}>
+            {#each projects as project}
+                <Bucket href={`${base}/console/${project.$id}`}>
+                    <svelte:fragment slot="eyebrow">XX apps</svelte:fragment>
+                    <svelte:fragment slot="title">
+                        {project.name}
+                    </svelte:fragment>
+                    {#each project.platforms as platform}
+                        <Pill>
+                            <span class={`icon-${platform.type}`} aria-hidden="true" />
+                            {platform.type}</Pill>
+                    {/each}
+                </Bucket>
+            {/each}
+            {#if projects.length % 2 !== 0}
+                <EmptyBucket on:click={() => (showCreate = true)}>
+                    <div class="common-section">
+                        <Button secondary round>
+                            <i class="icon-plus" />
+                        </Button>
+                    </div>
+                    <div class="common-section">
+                        <p>Add a new bucket</p>
+                    </div>
+                </EmptyBucket>
+            {/if}
+        </ul>
+
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {projects.length}</p>
+            <Pagination {limit} bind:offset sum={projects.length} />
+        </div>
+    {/if}
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject
-    bind:show={addProject}
+    bind:show={showCreate}
     bind:teamId={currentOrganization}
     on:created={projectCreated} />

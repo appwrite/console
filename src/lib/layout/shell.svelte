@@ -1,18 +1,19 @@
 <script lang="ts">
     import { navigating, page } from '$app/stores';
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData, titleDropdown } from '$lib/stores/layout';
     import { Cover } from '.';
-    import { Copy } from '$lib/components';
+    import { Copy, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
 
     export let isOpen = false;
     export let showSideNavigation = false;
 
-    $: base = `/console/${$page.params.project}`;
+    // $: base = `/console/${$page.params.project}`;
 
     let tabsList: HTMLUListElement;
     let showLeft = false;
     let showRight = false;
+    let showDropdown = false;
 
     navigating.subscribe(() => {
         if (isOpen) isOpen = false;
@@ -83,9 +84,38 @@
                         <span class="icon-cheveron-left" aria-hidden="true" />
                     </a>
                 {/if}
-                <h1 class="heading-level-4">
-                    <span class="text"> {$title}</span>
-                </h1>
+                {#if $titleDropdown?.length}
+                    <DropList bind:show={showDropdown} position="bottom" arrow={false}>
+                        <button
+                            class="button is-text u-padding-inline-0"
+                            on:click={() => (showDropdown = !showDropdown)}>
+                            <h1 class="heading-level-4">
+                                <span class="text"> drop</span>
+
+                                <span
+                                    class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}
+                                    aria-hidden="true" />
+                            </h1>
+                        </button>
+                        <svelte:fragment slot="list">
+                            {#each $titleDropdown as organization}
+                                <DropListItem>
+                                    {organization.name}
+                                </DropListItem>
+                            {/each}
+                        </svelte:fragment>
+                        <svelte:fragment slot="other">
+                            <section class="drop-section">
+                                <ul class="drop-list">
+                                    <DropListItem icon="plus">New Organizations</DropListItem>
+                                </ul>
+                            </section></svelte:fragment>
+                    </DropList>
+                {:else}
+                    <h1 class="heading-level-4">
+                        <span class="text"> {$title}</span>
+                    </h1>
+                {/if}
                 {#if $copyData?.value}
                     <Copy value={$copyData.value}>
                         <Pill button
@@ -122,9 +152,8 @@
                             <li class="tabs-item">
                                 <a
                                     class="tabs-button"
-                                    href={`${base}/${tab.href}`}
-                                    class:is-selected={$page.url.pathname ===
-                                        `${base}/${tab.href}`}>
+                                    href={`${tab.href}`}
+                                    class:is-selected={$page.url.pathname === `${tab.href}`}>
                                     <span class="text">{tab.title}</span>
                                 </a>
                             </li>

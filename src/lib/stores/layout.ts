@@ -1,5 +1,6 @@
 import { project } from '../../routes/console/[project]/store';
 import { get, writable } from 'svelte/store';
+import type { Models } from '@aw-labs/appwrite-console';
 
 export type Tab = {
     href: string;
@@ -14,6 +15,7 @@ export type Breadcrumb = {
 
 export type updateLayoutArguments = {
     title: string;
+    titleDropdown?: Models.Team[];
     level?: number;
     tabs?: Tab[];
     back?: string;
@@ -22,6 +24,7 @@ export type updateLayoutArguments = {
         text: string;
         value: string;
     };
+    customBase?: string;
     navigate?: {
         from: URL | null;
         to: URL;
@@ -30,6 +33,7 @@ export type updateLayoutArguments = {
 
 export const level = writable<number>();
 export const title = writable<string>('');
+export const titleDropdown = writable<Models.Team[]>([]);
 export const backButton = writable<string>('');
 export const tabs = writable<Tab[]>([]);
 export const breadcrumbs = writable<Map<number, Breadcrumb>>(new Map());
@@ -40,7 +44,13 @@ export const copyData = writable({
 
 export function updateLayout(args: updateLayoutArguments) {
     const projectId = get(project)?.$id;
-    const base = projectId ? `/console/${projectId}` : `/console`;
+    const base = args?.customBase ?? projectId ? `/console/${projectId}` : ``;
+
+    if (args?.tabs) {
+        args.tabs.map((tab) => {
+            tab.href = `${base}/${tab.href}`;
+        });
+    }
 
     if (args?.navigate?.to) {
         const previousTabs = get(tabs);
@@ -50,6 +60,7 @@ export function updateLayout(args: updateLayoutArguments) {
     }
 
     title.set(args.title);
+    titleDropdown.set(args.titleDropdown ?? []);
     backButton.set(args.back ?? null);
     copyData.set(args.copy ?? null);
     level.set(args.level ?? null);

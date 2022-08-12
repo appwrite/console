@@ -4,7 +4,7 @@
     import { sdkForConsole, setProject } from '$lib/stores/sdk';
     import { collection } from './databases/database/[database]/collection/[collection]/store';
     import { UploadBox } from '$lib/components';
-    import { organisation, project } from './store';
+    import { organization, project } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { updateLayout } from '$lib/stores/layout';
@@ -53,18 +53,18 @@
             setProject(projectId);
             await project.load(projectId);
         }
-        if ($organisation?.$id !== $project.teamId) {
-            await organisation.load($project.teamId);
+        if ($organization?.$id !== $project.teamId) {
+            await organization.load($project.teamId);
         }
 
         updateLayout({
             navigate: event,
             title: $project.name,
-            level: 2,
+            level: 1,
             breadcrumbs: [
                 {
                     href: path,
-                    title: $organisation.name,
+                    title: $project.name,
                     level: 1
                 },
                 {

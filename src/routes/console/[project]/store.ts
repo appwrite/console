@@ -15,7 +15,7 @@ function createProject() {
     };
 }
 
-function createOrganisation() {
+function createOrganization() {
     const { subscribe, set } = writable<Models.Team>();
 
     return {
@@ -29,4 +29,4 @@ function createOrganisation() {
 }
 
 export const project = createProject();
-export const organisation = createOrganisation();
+export const organization = createOrganization();

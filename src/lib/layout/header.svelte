@@ -51,7 +51,7 @@
                         class:icon-cheveron-down={!showDropdown} />
                 </button>
                 <svelte:fragment slot="list">
-                    <DropListItem icon="plus">New organisation</DropListItem>
+                    <DropListItem icon="plus">New organization</DropListItem>
                     <DropListLink href="/console/$me">Your Account</DropListLink>
                 </svelte:fragment>
                 <svelte:fragment slot="other">
