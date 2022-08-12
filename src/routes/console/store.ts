@@ -12,8 +12,8 @@ function createOrganizationList() {
         subscribe,
         set,
         load: async () => {
-            const team = await sdkForConsole.teams.list();
-            set(team);
+            const response = await sdkForConsole.teams.list();
+            set(response);
         }
     };
 }
@@ -26,8 +26,8 @@ function createOrganization() {
         subscribe,
         set,
         load: async (teamId: string) => {
-            const team = await sdkForConsole.teams.get(teamId);
-            set(team);
+            const response = await sdkForConsole.teams.get(teamId);
+            set(response);
         }
     };
 }
@@ -41,8 +41,28 @@ function createProjectList() {
         subscribe,
         set,
         load: async () => {
-            const projects = await sdkForConsole.projects.list();
-            set(projects);
+            const response = await sdkForConsole.projects.list();
+            set(response);
+        }
+    };
+}
+
+function createMemberList() {
+    const { subscribe, set } = writable<Models.MembershipList>(
+        browser ? JSON.parse(sessionStorage.getItem('memberList')) : null
+    );
+
+    return {
+        subscribe,
+        set,
+        load: async (teamId: string, search: string, limit: number, offset: number) => {
+            const response = await sdkForConsole.teams.getMemberships(
+                teamId,
+                search,
+                limit,
+                offset
+            );
+            set(response);
         }
     };
 }
@@ -50,6 +70,7 @@ function createProjectList() {
 export const organizationList = createOrganizationList();
 export const organization = createOrganization();
 export const projectList = createProjectList();
+export const memberList = createMemberList();
 
 if (browser) {
     organizationList.subscribe((n) =>
@@ -57,4 +78,5 @@ if (browser) {
     );
     organization.subscribe((n) => sessionStorage?.setItem('organization', JSON.stringify(n ?? '')));
     projectList.subscribe((n) => sessionStorage?.setItem('projectList', JSON.stringify(n ?? '')));
+    memberList.subscribe((n) => sessionStorage?.setItem('memberList', JSON.stringify(n ?? '')));
 }

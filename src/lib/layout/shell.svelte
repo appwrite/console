@@ -4,6 +4,7 @@
     import { Cover } from '.';
     import { Copy, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { organization } from '../../routes/console/store';
 
     export let isOpen = false;
     export let showSideNavigation = false;
@@ -90,7 +91,7 @@
                             class="button is-text u-padding-inline-0"
                             on:click={() => (showDropdown = !showDropdown)}>
                             <h1 class="heading-level-4">
-                                <span class="text"> drop</span>
+                                <span class="text"> {$organization.name}</span>
 
                                 <span
                                     class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}

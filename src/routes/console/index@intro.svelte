@@ -8,17 +8,13 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import CreateOrganization from './_createOrganization.svelte';
     import CreateProject from './_createProject.svelte';
-    import { organizationList, organization, projectList } from './store';
+    import { organization, projectList } from './store';
     import { onMount } from 'svelte';
 
     let projects: Models.Project[] = [];
 
     onMount(async () => {
-        organizationList.load();
-        if (!$organization) {
-            organization.load($organizationList.teams[0].$id);
-        }
-        projectList.load();
+        await projectList.load();
 
         projects = $projectList.projects.filter((a) => a.teamId === $organization.$id);
     });
@@ -35,9 +31,6 @@
     //TODO: fix technology icon display
 </script>
 
-<svelte:head>
-    <title>Appwrite - Console</title>
-</svelte:head>
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <h2 class="heading-level-5">Projects</h2>
@@ -56,7 +49,8 @@
             style={`--grid-gap:2rem; --grid-item-size:${projects.length > 3 ? '22rem' : '25rem'};`}>
             {#each projects as project}
                 <Bucket href={`${base}/console/${project.$id}`}>
-                    <svelte:fragment slot="eyebrow">XX apps</svelte:fragment>
+                    <svelte:fragment slot="eyebrow"
+                        >{project?.platforms?.length ?? 0} apps</svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
@@ -89,7 +83,10 @@
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
-<CreateProject
-    bind:show={showCreate}
-    bind:teamId={currentOrganization}
-    on:created={projectCreated} />
+
+{#if projects?.length}
+    <CreateProject
+        bind:show={showCreate}
+        bind:teamId={currentOrganization}
+        on:created={projectCreated} />
+{/if}
