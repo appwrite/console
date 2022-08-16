@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem } from '.';
+    import { FormItem, Helper } from '.';
 
     export let id: string;
     export let label: string;
@@ -13,8 +13,11 @@
     export let meter = false;
     export let autocomplete = false;
     export let showPasswordButton = false;
+    export let minlength = 8;
+    export let maxlength: number = null;
 
     let element: HTMLInputElement;
+    let error: string;
     let showInPlainText = false;
 
     onMount(() => {
@@ -23,7 +26,24 @@
         }
     });
 
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+
+        if (element.validity.valueMissing) {
+            error = 'This field is required';
+            return;
+        }
+        if (element.validity.tooShort) {
+            error = 'Password should contain at least 8 characters';
+            return;
+        }
+        error = element.validationMessage;
+    };
+
     $: strength = value ? value.length * 10 : 0;
+    $: if (value) {
+        error = null;
+    }
 </script>
 
 <FormItem>
@@ -31,27 +51,32 @@
     <div class="input-text-wrapper">
         {#if showInPlainText}
             <input
-                type="text"
                 {id}
-                name={id}
                 {placeholder}
-                {required}
                 {disabled}
-                autocomplete={autocomplete ? 'on' : 'off'}
+                {minlength}
+                {maxlength}
+                name={id}
+                type="text"
                 class="input-text"
+                autocomplete={autocomplete ? 'on' : 'off'}
                 bind:value
-                bind:this={element} />
+                bind:this={element}
+                on:invalid={handleInvalid} />
         {:else}
             <input
                 {id}
                 {placeholder}
                 {disabled}
                 {required}
-                autocomplete={autocomplete ? 'on' : 'off'}
+                {minlength}
+                {maxlength}
                 type="password"
                 class="input-text"
+                autocomplete={autocomplete ? 'on' : 'off'}
                 bind:value
-                bind:this={element} />
+                bind:this={element}
+                on:invalid={handleInvalid} />
         {/if}
 
         {#if meter}
@@ -67,6 +92,7 @@
         {/if}
         {#if showPasswordButton}
             <button
+                type="button"
                 on:click={() => (showInPlainText = !showInPlainText)}
                 class="show-password-button"
                 aria-label="show password">
@@ -77,4 +103,7 @@
             </button>
         {/if}
     </div>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
+    {/if}
 </FormItem>

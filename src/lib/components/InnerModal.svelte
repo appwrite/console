@@ -17,7 +17,7 @@
                 <span class="icon-x" aria-hidden="true" />
             </button>
             <p class="u-flex-basis-100-percent">
-                <slot />
+                <slot name="subtitle" />
             </p>
         </header>
         <div class="modal-content">

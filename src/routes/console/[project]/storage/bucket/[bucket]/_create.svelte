@@ -4,7 +4,6 @@
     import { Modal, Alert, InnerModal } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
     import { bucket } from './store';
@@ -20,6 +19,7 @@
     let read: string[] = [];
     let write: string[] = [];
     let id: string = null;
+    let error: string;
     let showDropdown = false;
 
     const create = async () => {
@@ -36,11 +36,8 @@
             showDropdown = false;
             uploader.addFile(file);
             dispatch('created');
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+        } catch ({ message }) {
+            error = message;
         }
     };
 
@@ -71,9 +68,8 @@
     }
 
     $: if (!showCreate) {
-        id = null;
+        id = files = error = null;
         list = new DataTransfer();
-        files = null;
         read = [];
         write = [];
     }
@@ -86,7 +82,7 @@
 <input bind:files id="file" type="file" style="display: none" />
 
 <Form on:submit={create}>
-    <Modal bind:show={showCreate}>
+    <Modal {error} bind:show={showCreate}>
         <svelte:fragment slot="header">Upload File</svelte:fragment>
         <FormList>
             <div>
@@ -137,7 +133,9 @@
             {:else}
                 <InnerModal bind:show={showDropdown}>
                     <svelte:fragment slot="title">File ID</svelte:fragment>
-                    <p>Enter a custom file ID. Leave blank for a randomly generated one.</p>
+                    <svelte:fragment slot="subtitle">
+                        Enter a custom file ID. Leave blank for a randomly generated one.
+                    </svelte:fragment>
                     <svelte:fragment slot="content">
                         <div class="form">
                             <InputText
