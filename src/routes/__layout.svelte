@@ -1,5 +1,6 @@
 <script context="module">
     import '@aw-labs/ui/src/_index.scss';
+    import 'tippy.js/dist/tippy.css';
 </script>
 
 <script lang="ts">
@@ -77,3 +78,28 @@
 {:else}
     <Loading />
 {/if}
+
+<style lang="scss" global>
+    .tippy-box {
+        --p-tooltip-text-color: var(--color-neutral-10);
+        --p-tooltip--bg-color: var(--color-neutral-100);
+
+        background-color: hsl(var(--p-tooltip--bg-color));
+        color: hsl(var(--p-tooltip-text-color));
+        font-size: var(--font-size-0);
+        line-height: 1.5;
+
+        &[data-placement^='top'] > .tippy-arrow::before {
+            border-top-color: hsl(var(--p-tooltip--bg-color));
+        }
+        &[data-placement^='bottom'] > .tippy-arrow::before {
+            border-bottom-color: hsl(var(--p-tooltip--bg-color));
+        }
+        &[data-placement^='left'] > .tippy-arrow::before {
+            border-left-color: hsl(var(--p-tooltip--bg-color));
+        }
+        &[data-placement^='right'] > .tippy-arrow::before {
+            border-right-color: hsl(var(--p-tooltip--bg-color));
+        }
+    }
+</style>
