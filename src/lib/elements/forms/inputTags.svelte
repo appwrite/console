@@ -8,12 +8,10 @@
     export let tags: string[] = [];
     export let placeholder = '';
     export let autofocus = false;
-    export let errorMessage = 'An error occurred';
-    export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
-    export let showHelper = false;
 
     let value = '';
     let element: HTMLInputElement;
+    let error: string;
 
     onMount(() => {
         if (element && autofocus) {
@@ -53,15 +51,16 @@
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();
-        errorMessage = element.validationMessage;
+
         if (element.validity.valueMissing) {
-            errorMessage = 'This field is required';
+            error = 'This field is required';
+            return;
         }
-        showHelper = true;
+        error = element.validationMessage;
     };
 
     $: if (value) {
-        showHelper = false;
+        error = null;
     }
 </script>
 
@@ -88,18 +87,18 @@
                 </ul>
             </div>
             <input
-                on:invalid={handleInvalid}
-                type="text"
-                class="tags-input-text"
                 {id}
                 {placeholder}
+                type="text"
+                class="tags-input-text"
+                bind:value
+                bind:this={element}
                 on:keydown={handleInput}
                 on:blur={addValue}
-                bind:value
-                bind:this={element} />
+                on:invalid={handleInvalid} />
         </div>
     </div>
-    {#if showHelper}
-        <Helper type={errorType}>{errorMessage}</Helper>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
     {/if}
 </FormItem>

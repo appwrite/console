@@ -16,7 +16,7 @@
     export let provider: Provider;
 
     let { clientSecret, auth0Domain } = JSON.parse(provider.secret);
-    let modalError: string;
+    let error: string;
 
     const projectId = $page.params.project;
     const update = async () => {
@@ -29,14 +29,14 @@
                 secret
             );
             showModal = false;
-        } catch (error) {
-            modalError = error.message;
+        } catch ({ message }) {
+            error = message;
         }
     };
 </script>
 
 <Form on:submit={update}>
-    <Modal error={modalError} size="big" bind:show={showModal}>
+    <Modal {error} size="big" bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
         <FormList>
             <p>

@@ -11,8 +11,8 @@
 
     const dispatch = createEventDispatcher();
 
-    let name: string, email: string, roles: [];
-    let modalError: string;
+    let name: string, email: string, roles: string[];
+    let error: string;
 
     const create = async () => {
         const url = `${$page.url.origin}/console/${$page.params.project}/users/teams/${$page.params.team}/members`;
@@ -33,14 +33,14 @@
             roles = [];
             showCreate = false;
             dispatch('created', user);
-        } catch (error) {
-            modalError = error.message;
+        } catch ({ message }) {
+            error = message;
         }
     };
 </script>
 
 <Form on:submit={create}>
-    <Modal error={modalError} size="big" bind:show={showCreate}>
+    <Modal {error} size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Membership</svelte:fragment>
         <FormList>
             <InputEmail

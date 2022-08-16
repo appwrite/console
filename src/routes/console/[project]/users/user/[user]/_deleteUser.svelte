@@ -30,7 +30,7 @@
 </script>
 
 <Form on:submit={deleteUser}>
-    <Modal warning={true} bind:show={showDelete}>
+    <Modal bind:show={showDelete} warning>
         <svelte:fragment slot="header">Delete User</svelte:fragment>
         <p>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
         <svelte:fragment slot="footer">

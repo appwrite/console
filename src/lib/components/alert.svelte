@@ -3,15 +3,8 @@
     import type { Buttons } from '../stores/notifications';
 
     export let dismissible = false;
-    export let type: '' | 'info' | 'success' | 'warning' | 'error' = 'info';
+    export let type: 'info' | 'success' | 'warning' | 'error' = 'info';
     export let buttons: Buttons[] = [];
-
-    let icon = {
-        success: 'icon-check-circle',
-        warning: 'icon-exclamation',
-        error: 'icon-exclamation-circle',
-        info: 'icon-info'
-    };
 
     const dispatch = createEventDispatcher();
 </script>
@@ -31,7 +24,12 @@
                 <span class="icon-x" aria-hidden="true" />
             </button>
         {/if}
-        <span class={type ? icon[type] : 'icon-info'} aria-hidden="true" />
+        <span
+            class:icon-info={type === 'info'}
+            class:icon-check-circle={type === 'success'}
+            class:icon-exclamation={type === 'warning'}
+            class:icon-exclamation-circle={type === 'error'}
+            aria-hidden="true" />
         <div class="content">
             {#if $$slots.title}
                 <h6 class="title">

@@ -228,7 +228,8 @@
                     text={$user.status}
                     secondary={!$user.status}
                     on:click={() => updateStatus()}
-                    >{$user.status ? 'Block account' : 'Unblock account'}</Button>
+                    >{$user.status ? 'Block account' : 'Unblock account'}
+                </Button>
                 {#if $user.status}
                     {#if $user.phone && $user.email}
                         <DropList
@@ -244,12 +245,16 @@
                                 {$user.emailVerification ? 'Unverify' : 'Verify'} account
                             </Button>
                             <svelte:fragment slot="list">
-                                <DropListItem icon="mail" on:click={() => updateVerificationEmail()}
-                                    >{$user.emailVerification ? 'Unverify' : 'Verify'} email</DropListItem>
+                                <DropListItem
+                                    icon="mail"
+                                    on:click={() => updateVerificationEmail()}>
+                                    {$user.emailVerification ? 'Unverify' : 'Verify'} email
+                                </DropListItem>
                                 <DropListItem
                                     icon="phone"
                                     on:click={() => updateVerificationPhone()}>
-                                    {$user.phoneVerification ? 'Unverify' : 'Verify'} phone</DropListItem>
+                                    {$user.phoneVerification ? 'Unverify' : 'Verify'} phone
+                                </DropListItem>
                             </svelte:fragment>
                         </DropList>
                     {:else if !$user.phone}
@@ -300,8 +305,9 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={userEmail === $user.email || !userEmail} submit
-                        >Update</Button>
+                    <Button disabled={userEmail === $user.email || !userEmail} submit>
+                        Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -321,8 +327,9 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={userPhone === $user.phone || !userPhone} submit
-                        >Update</Button>
+                    <Button disabled={userPhone === $user.phone || !userPhone} submit>
+                        Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -334,7 +341,7 @@
                 </div>
 
                 <p>
-                    Enter a new password. A password must contain <b> at least 8 characters.</b>
+                    Enter a new password. A password must contain <b>at least 8 characters.</b>
                 </p>
                 <svelte:fragment slot="aside">
                     <ul>
@@ -380,8 +387,9 @@
                                             </div>
                                         </div>
                                         <div class="form-item-part u-stretch">
-                                            <label class="label" for={`value-${index}`}
-                                                >Value</label>
+                                            <label class="label" for={`value-${index}`}>
+                                                Value
+                                            </label>
                                             <div class="input-text-wrapper">
                                                 <input
                                                     id={`value-${value}`}
@@ -419,7 +427,8 @@
                                 }
                             }}>
                             <span class="icon-plus" aria-hidden="true" />
-                            <span class="text"> Add Preference </span></Button>
+                            <span class="text">Add Preference</span>
+                        </Button>
                     </form>
                 </svelte:fragment>
 

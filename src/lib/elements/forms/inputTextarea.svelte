@@ -11,11 +11,9 @@
     export let disabled = false;
     export let autofocus = false;
     export let maxlength: number = null;
-    export let errorMessage = 'An error occurred';
-    export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
-    export let showHelper = false;
 
     let element: HTMLTextAreaElement;
+    let error: string;
 
     onMount(() => {
         if (element && autofocus) {
@@ -25,15 +23,15 @@
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();
-        errorMessage = element.validationMessage;
         if (element.validity.valueMissing) {
-            errorMessage = 'This field is required';
+            error = 'This field is required';
+            return;
         }
-        showHelper = true;
+        error = element.validationMessage;
     };
 
     $: if (value) {
-        showHelper = false;
+        error = null;
     }
 </script>
 
@@ -41,7 +39,6 @@
     <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="input-text-wrapper">
         <textarea
-            on:invalid={handleInvalid}
             {id}
             {placeholder}
             {disabled}
@@ -49,9 +46,10 @@
             {maxlength}
             class="input-text"
             bind:value
-            bind:this={element} />
+            bind:this={element}
+            on:invalid={handleInvalid} />
     </div>
-    {#if showHelper}
-        <Helper type={errorType}>{errorMessage}</Helper>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
     {/if}
 </FormItem>

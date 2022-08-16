@@ -13,13 +13,11 @@
     export let meter = false;
     export let autocomplete = false;
     export let showPasswordButton = false;
-    export let errorMessage = 'An error occurred';
-    export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
-    export let showHelper = false;
     export let minlength = 8;
     export let maxlength: number = null;
 
     let element: HTMLInputElement;
+    let error: string;
     let showInPlainText = false;
 
     onMount(() => {
@@ -30,21 +28,22 @@
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();
-        errorMessage = element.validationMessage;
-        console.log(element.validity);
+
         if (element.validity.valueMissing) {
-            errorMessage = 'This field is required';
+            error = 'This field is required';
+            return;
         }
         if (element.validity.tooShort) {
-            errorMessage = 'Password should contain at least 8 characters';
+            error = 'Password should contain at least 8 characters';
+            return;
         }
-        showHelper = true;
+        error = element.validationMessage;
     };
 
-    $: if (value) {
-        showHelper = false;
-    }
     $: strength = value ? value.length * 10 : 0;
+    $: if (value) {
+        error = null;
+    }
 </script>
 
 <FormItem>
@@ -52,32 +51,32 @@
     <div class="input-text-wrapper">
         {#if showInPlainText}
             <input
-                on:invalid={handleInvalid}
-                type="text"
                 {id}
-                name={id}
                 {placeholder}
                 {disabled}
-                autocomplete={autocomplete ? 'on' : 'off'}
                 {minlength}
                 {maxlength}
+                name={id}
+                type="text"
                 class="input-text"
+                autocomplete={autocomplete ? 'on' : 'off'}
                 bind:value
-                bind:this={element} />
+                bind:this={element}
+                on:invalid={handleInvalid} />
         {:else}
             <input
-                on:invalid={handleInvalid}
                 {id}
                 {placeholder}
                 {disabled}
                 {required}
-                autocomplete={autocomplete ? 'on' : 'off'}
                 {minlength}
                 {maxlength}
                 type="password"
                 class="input-text"
+                autocomplete={autocomplete ? 'on' : 'off'}
                 bind:value
-                bind:this={element} />
+                bind:this={element}
+                on:invalid={handleInvalid} />
         {/if}
 
         {#if meter}
@@ -104,7 +103,7 @@
             </button>
         {/if}
     </div>
-    {#if showHelper}
-        <Helper type={errorType}>{errorMessage}</Helper>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
     {/if}
 </FormItem>

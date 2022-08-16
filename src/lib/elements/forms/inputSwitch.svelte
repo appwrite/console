@@ -6,24 +6,22 @@
     export let value = false;
     export let required = false;
     export let disabled = false;
-    export let errorMessage = 'An error occurred';
-    export let errorType: false | 'success' | 'warning' | 'error' = 'warning';
-    export let showHelper = false;
 
     let element: HTMLInputElement;
+    let error: string;
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();
-        errorMessage = element.validationMessage;
 
         if (element.validity.valueMissing) {
-            errorMessage = 'This field is required';
+            error = 'This field is required';
+            return;
         }
-        showHelper = true;
+        error = element.validationMessage;
     };
 
     $: if (value) {
-        showHelper = false;
+        error = null;
     }
 </script>
 
@@ -31,7 +29,6 @@
     <label class="choice-item" for={id}>
         <div class="input-text-wrapper">
             <input
-                on:invalid={handleInvalid}
                 {id}
                 {disabled}
                 {required}
@@ -40,13 +37,14 @@
                 role="switch"
                 bind:this={element}
                 bind:checked={value}
-                on:change />
+                on:change
+                on:invalid={handleInvalid} />
         </div>
         <div class="choice-item-content">
             <div class="choice-item-title">{label}</div>
         </div>
     </label>
-    {#if showHelper}
-        <Helper type={errorType}>{errorMessage}</Helper>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
     {/if}
 </FormItem>

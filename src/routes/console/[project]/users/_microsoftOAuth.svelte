@@ -14,8 +14,9 @@
 
     export let showModal = false;
     export let provider: Provider;
+
     let { clientSecret, tenantID } = JSON.parse(provider.secret);
-    let modalError: string;
+    let error: string;
 
     const projectId = $page.params.project;
 
@@ -30,21 +31,22 @@
             );
 
             showModal = false;
-        } catch (error) {
-            modalError = error.message;
+        } catch ({ message }) {
+            error = message;
         }
     };
 </script>
 
 <Form on:submit={update}>
-    <Modal error={modalError} size="big" bind:show={showModal}>
+    <Modal {error} size="big" bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
         <FormList>
             <p>
                 To use {provider.name} authentication in your application, first fill in this form. For
                 more info you can
-                <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
-                    >visit the docs.</a>
+                <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer">
+                    visit the docs.
+                </a>
             </p>
             <InputSwitch
                 id="state"

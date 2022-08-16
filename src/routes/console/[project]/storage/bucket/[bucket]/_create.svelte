@@ -19,8 +19,8 @@
     let read: string[] = [];
     let write: string[] = [];
     let id: string = null;
+    let error: string;
     let showDropdown = false;
-    let modalError: string;
 
     const create = async () => {
         try {
@@ -36,8 +36,8 @@
             showDropdown = false;
             uploader.addFile(file);
             dispatch('created');
-        } catch (error) {
-            modalError = error.message;
+        } catch ({ message }) {
+            error = message;
         }
     };
 
@@ -68,12 +68,10 @@
     }
 
     $: if (!showCreate) {
-        id = null;
+        id = files = error = null;
         list = new DataTransfer();
-        files = null;
         read = [];
         write = [];
-        modalError = null;
     }
 
     $: if (!showDropdown) {
@@ -84,7 +82,7 @@
 <input bind:files id="file" type="file" style="display: none" />
 
 <Form on:submit={create}>
-    <Modal error={modalError} bind:show={showCreate}>
+    <Modal {error} bind:show={showCreate}>
         <svelte:fragment slot="header">Upload File</svelte:fragment>
         <FormList>
             <div>
@@ -135,7 +133,9 @@
             {:else}
                 <InnerModal bind:show={showDropdown}>
                     <svelte:fragment slot="title">File ID</svelte:fragment>
-                    <p>Enter a custom file ID. Leave blank for a randomly generated one.</p>
+                    <svelte:fragment slot="subtitle">
+                        Enter a custom file ID. Leave blank for a randomly generated one.
+                    </svelte:fragment>
                     <svelte:fragment slot="content">
                         <div class="form">
                             <InputText

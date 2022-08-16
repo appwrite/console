@@ -1,18 +1,22 @@
 <script lang="ts">
-    export let type: false | 'success' | 'warning' | 'error' | 'info' | 'neutral' = 'warning';
-
-    let icon = {
-        info: 'icon-info',
-        success: 'icon-check-circle',
-        warning: 'icon-exclamation',
-        error: 'icon-exclamation-circle',
-        neutral: 'icon-info'
-    };
+    export let type: 'success' | 'warning' | 'error' | 'info' | 'neutral' = 'warning';
 </script>
 
-<p class={`helper u-${type} u-margin-block-start-12"`}>
+<p
+    class="helper u-margin-block-start-12"
+    class:u-info={type === 'info'}
+    class:u-error={type === 'error'}
+    class:u-success={type === 'success'}
+    class:u-warning={type === 'warning'}
+    class:u-neutral={type === 'neutral'}>
     {#if type}
-        <span class={icon[type] ?? ''} aria-hidden="true" />
+        <span
+            class:icon-info={type === 'info'}
+            class:icon-error={type === 'error'}
+            class:icon-success={type === 'success'}
+            class:icon-warning={type === 'warning'}
+            class:icon-neutral={type === 'neutral'}
+            aria-hidden="true" />
     {/if}
     <span class="text">
         <slot />

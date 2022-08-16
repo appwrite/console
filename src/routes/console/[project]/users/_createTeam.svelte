@@ -10,9 +10,8 @@
 
     const dispatch = createEventDispatcher();
 
-    let name: string, id: string;
+    let name: string, id: string, error: string;
     let showDropdown = false;
-    let modalError: string;
 
     const create = async () => {
         try {
@@ -25,8 +24,8 @@
                 message: `${team.name} has been created`
             });
             dispatch('created', team);
-        } catch (error) {
-            modalError = error.message;
+        } catch ({ message }) {
+            error = message;
         }
     };
 
@@ -35,12 +34,12 @@
     }
     $: if (!showCreate) {
         showDropdown = false;
-        modalError = null;
+        error = null;
     }
 </script>
 
 <Form on:submit={create}>
-    <Modal error={modalError} size="big" bind:show={showCreate}>
+    <Modal {error} size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Team</svelte:fragment>
         <FormList>
             <InputText
@@ -59,7 +58,9 @@
             {:else}
                 <InnerModal bind:show={showDropdown}>
                     <svelte:fragment slot="title">Team ID</svelte:fragment>
-                    Enter a custom team ID. Leave blank for a randomly generated one.
+                    <svelte:fragment slot="subtitle">
+                        Enter a custom team ID. Leave blank for a randomly generated one.
+                    </svelte:fragment>
                     <svelte:fragment slot="content">
                         <div class="form">
                             <InputText
