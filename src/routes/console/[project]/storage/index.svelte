@@ -2,26 +2,27 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Tooltip, Copy, Bucket, EmptyBucket } from '$lib/components';
+    import { Empty, Pagination, Copy, Bucket, EmptyBucket } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { bucketList } from './store';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { pageLimit } from '$lib/stores/layout';
 
     let showCreate = false;
     let search = '';
     let offset = 0;
 
-    const limit = 5;
     const project = $page.params.project;
     const bucketCreated = async (event: CustomEvent<Models.Bucket>) => {
         showCreate = false;
         await goto(`${base}/console/${project}/storage/bucket/${event.detail.$id}`);
     };
 
-    $: bucketList.load(search, limit, offset ?? 0);
+    $: bucketList.load(search, $pageLimit, offset ?? 0);
     $: if (search) offset = 0;
 </script>
 
@@ -56,26 +57,26 @@
 
                     <svelte:fragment slot="icons">
                         <li>
-                            <Tooltip
-                                icon="lock-closed"
-                                aria="encryption"
-                                disabled={!bucket.encryption}>
-                                <span
-                                    >{bucket.encryption
+                            <span
+                                class:u-opacity-0-2={!bucket.encryption}
+                                class="icon-lock-closed"
+                                aria-hidden="true"
+                                use:tooltip={{
+                                    content: bucket.encryption
                                         ? 'Encryption enabled'
-                                        : 'Encryption disabled'}</span>
-                            </Tooltip>
+                                        : 'Encryption disabled'
+                                }} />
                         </li>
                         <li>
-                            <Tooltip
-                                icon="shield-check"
-                                aria="antivirus"
-                                disabled={!bucket.antivirus}>
-                                <span
-                                    >{bucket.antivirus
+                            <span
+                                class:u-opacity-0-2={!bucket.antivirus}
+                                class="icon-shield-check"
+                                aria-hidden="true"
+                                use:tooltip={{
+                                    content: bucket.antivirus
                                         ? 'Antivirus enabled'
-                                        : 'Antivirus disabled'}</span>
-                            </Tooltip>
+                                        : 'Antivirus disabled'
+                                }} />
                         </li>
                     </svelte:fragment>
                 </Bucket>
@@ -96,7 +97,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.total}</p>
-            <Pagination {limit} bind:offset sum={$bucketList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$bucketList.total} />
         </div>
     {:else if search}
         <Empty>
@@ -112,7 +113,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList?.total}</p>
-            <Pagination {limit} bind:offset sum={$bucketList?.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$bucketList?.total} />
         </div>
     {:else}
         <Empty dashed centered>

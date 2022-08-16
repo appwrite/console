@@ -78,12 +78,12 @@
     <section class="main-content">
         <Cover>
             <svelte:fragment slot="header">
-                {#if $backButton}
-                    <a class="back-button" href={$backButton} aria-label="page back">
-                        <span class="icon-cheveron-left" aria-hidden="true" />
-                    </a>
-                {/if}
                 <h1 class="heading-level-4">
+                    {#if $backButton}
+                        <a class="back-button" href={$backButton} aria-label="page back">
+                            <span class="icon-cheveron-left" aria-hidden="true" />
+                        </a>
+                    {/if}
                     <span class="text"> {$title}</span>
                 </h1>
                 {#if $copyData?.value}

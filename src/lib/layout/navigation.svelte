@@ -41,10 +41,12 @@
                     <li class="drop-list-item">
                         <a
                             class="drop-button"
-                            class:is-selected={$page.url.pathname.startsWith(`${path}/users`)}
-                            href={`${path}/users`}>
+                            class:is-selected={$page.url.pathname.startsWith(
+                                `${path}/authentication`
+                            )}
+                            href={`${path}/authentication`}>
                             <span class="icon-user-group" aria-hidden="true" />
-                            <span class="text">Users</span>
+                            <span class="text">Authentication</span>
                         </a>
                     </li>
                     <li class="drop-list-item">
@@ -54,24 +56,6 @@
                             href={`${path}/functions`}>
                             <span class="icon-lightning-bolt" aria-hidden="true" />
                             <span class="text">Functions</span>
-                        </a>
-                    </li>
-                    <li class="drop-list-item">
-                        <a
-                            class="drop-button"
-                            class:is-selected={$page.url.pathname.startsWith(`${path}/webhooks`)}
-                            href={`${path}/webhooks`}>
-                            <span class="icon-link" aria-hidden="true" />
-                            <span class="text">Webhooks</span>
-                        </a>
-                    </li>
-                    <li class="drop-list-item">
-                        <a
-                            class="drop-button"
-                            class:is-selected={$page.url.pathname.startsWith(`${path}/keys`)}
-                            href={`${path}/keys`}>
-                            <span class="icon-key" aria-hidden="true" />
-                            <span class="text">API Keys</span>
                         </a>
                     </li>
                 </ul>

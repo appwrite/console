@@ -20,9 +20,10 @@
     },
     "dependencies": {
         "@aw-labs/appwrite-console": "^1.0.0-0",
-        "@aw-labs/icons": "0.0.0-38",
-        "@aw-labs/ui": "0.0.0-38",
-        "echarts": "^5.3.3"
+        "@aw-labs/icons": "0.0.0-44",
+        "@aw-labs/ui": "0.0.0-44",
+        "echarts": "^5.3.3",
+        "tippy.js": "^6.3.7"
     },
     "devDependencies": {
         "@playwright/test": "^1.24.0",

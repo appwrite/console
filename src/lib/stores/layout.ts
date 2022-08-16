@@ -1,5 +1,5 @@
 import { project } from '../../routes/console/[project]/store';
-import { get, writable } from 'svelte/store';
+import { get, readable, writable } from 'svelte/store';
 
 export type Tab = {
     href: string;
@@ -64,3 +64,5 @@ export function updateLayout(args: updateLayoutArguments) {
         }
     }
 }
+
+export const pageLimit = readable(12); // default page limit
