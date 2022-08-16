@@ -7,8 +7,8 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
-    import Attribute from './document/[document]/_attribute.svelte';
     import { addNotification } from '$lib/stores/notifications';
+    import Attribute from './document/[document]/_attribute.svelte';
 
     $: attributeList.load($page.params.collection);
 
