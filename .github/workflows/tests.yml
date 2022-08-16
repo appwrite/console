@@ -24,32 +24,12 @@ jobs:
               run: npm ci
             - name: Build Console
               run: npm run build
-    diagnostics:
-        name: Diagnostics
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
             - name: Svelte Diagnostics
               run: npm run check
-    linter:
-        name: Linter
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
             - name: Linter
               run: npm run lint
-    unit-tests:
-        name: Unit Tests
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
             - name: Unit Tests
               run: npm test
-    e2e-tests:
-        name: E2E Tests
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
             - name: E2E Tests
               run: |
                   npx playwright install
