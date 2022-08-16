@@ -12,13 +12,13 @@
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination, Avatar, Search } from '$lib/components';
-    import Create from './_createTeam.svelte';
+    import Create from '../_createTeam.svelte';
     import { goto } from '$app/navigation';
     import { event } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import { teamsList } from './store';
+    import { teamsList } from '../store';
     import type { Models } from '@aw-labs/appwrite-console';
 
     let search = '';

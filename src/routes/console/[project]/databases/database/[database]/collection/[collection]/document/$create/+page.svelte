@@ -4,14 +4,14 @@
     import { Button, Form } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { collection } from '../store';
-    import { doc } from './[document]/store';
+    import { collection } from '../../store';
+    import { doc } from '../[document]/store';
     import { addNotification } from '$lib/stores/notifications';
-    import Document from './[document]/_document.svelte';
     import { goto } from '$app/navigation';
-    import InputCustomId from '$lib/elements/forms/inputCustomId.svelte';
     import { Container, Cover } from '$lib/layout';
     import { base } from '$app/paths';
+    import Document from '../[document]/_document.svelte';
+    import InputCustomId from '$lib/elements/forms/inputCustomId.svelte';
 
     $: projectId = $page.params.project;
 

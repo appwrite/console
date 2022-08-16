@@ -12,7 +12,7 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { collection } from './store';
+    import { collection } from '../store';
 
     const updateCollection = async () => {
         try {

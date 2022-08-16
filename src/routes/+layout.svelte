@@ -1,8 +1,3 @@
-<script context="module">
-    import '@aw-labs/ui/src/_index.scss';
-    import 'tippy.js/dist/tippy.css';
-</script>
-
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';

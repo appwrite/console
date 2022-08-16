@@ -10,12 +10,12 @@
         InputSwitch,
         Helper
     } from '$lib/elements/forms';
-    import { bucket } from './store';
+    import { bucket } from '../store';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import Delete from './_deleteBucket.svelte';
+    import Delete from '../_deleteBucket.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
 

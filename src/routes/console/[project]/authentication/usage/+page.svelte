@@ -2,7 +2,7 @@
     import { Container } from '$lib/layout';
     import { Chart } from '$lib/charts';
     import { Card } from '$lib/components';
-    import { usersUsage } from './store';
+    import { usersUsage } from '../store';
 
     let currentRange = '30d';
 

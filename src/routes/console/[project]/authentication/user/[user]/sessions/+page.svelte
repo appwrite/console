@@ -12,8 +12,8 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { sdkForProject } from '$lib/stores/sdk';
-    import DeleteAllSessions from './_deleteAllSessions.svelte';
-    import DeleteSessions from './_deleteSession.svelte';
+    import DeleteAllSessions from '../_deleteAllSessions.svelte';
+    import DeleteSessions from '../_deleteSession.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import { pageLimit } from '$lib/stores/layout';

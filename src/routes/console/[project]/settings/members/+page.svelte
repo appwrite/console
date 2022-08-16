@@ -4,7 +4,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { project } from '../store';
+    import { project } from '../../store';
 
     $: request = sdkForConsole.teams.getMemberships($project?.teamId ?? undefined);
 </script>

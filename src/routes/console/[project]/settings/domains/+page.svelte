@@ -12,7 +12,7 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import CreateDomain from './_createDomain.svelte';
+    import CreateDomain from '../_createDomain.svelte';
 
     const projectId = $page.params.project;
     const listDomains = () => sdkForConsole.projects.listDomains(projectId);

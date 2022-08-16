@@ -16,9 +16,9 @@
     import { base } from '$app/paths';
     import { sdkForProject } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { memberships } from './store';
-    import CreateMember from './_createMembership.svelte';
-    import DeleteMembership from './_deleteMembership.svelte';
+    import { memberships } from '../store';
+    import CreateMember from '../_createMembership.svelte';
+    import DeleteMembership from '../_deleteMembership.svelte';
     import { pageLimit } from '$lib/stores/layout';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();

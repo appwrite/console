@@ -14,8 +14,8 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { sdkForProject } from '$lib/stores/sdk';
-    import DeleteMembership from './_deleteMembership.svelte';
-    import DeleteAllMemberships from './_deleteAllMemberships.svelte';
+    import DeleteMembership from '../_deleteMembership.svelte';
+    import DeleteAllMemberships from '../_deleteAllMemberships.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();

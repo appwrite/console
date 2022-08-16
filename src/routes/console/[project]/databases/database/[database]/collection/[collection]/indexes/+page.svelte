@@ -10,7 +10,7 @@
         TableCellText
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
-    import { collection } from './store';
+    import { collection } from '../store';
 </script>
 
 <Container>

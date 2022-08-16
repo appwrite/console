@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements/';
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { project } from '../store';
+    import { project } from '../../store';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
 

@@ -9,8 +9,8 @@
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { DropList, DropListItem, Empty } from '$lib/components';
-    import { option, options } from './attributes/store';
-    import { collection } from './store';
+    import { option, options } from '../attributes/store';
+    import { collection } from '../store';
     import { Container } from '$lib/layout';
     import { Pill } from '$lib/elements';
 
