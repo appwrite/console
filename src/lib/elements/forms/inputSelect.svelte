@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormItem } from '.';
+    import { FormItem, Helper } from '.';
 
     export let label: string;
     export let showLabel = true;
@@ -12,12 +12,35 @@
         value: string | boolean | number;
         label: string;
     }[];
+
+    let element: HTMLSelectElement;
+    let error: string;
+
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+
+        if (element.validity.valueMissing) {
+            error = 'This field is required';
+            return;
+        }
+        error = element.validationMessage;
+    };
+
+    $: if (value) {
+        error = null;
+    }
 </script>
 
 <FormItem>
     <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="select">
-        <select bind:value {id} {required} {disabled}>
+        <select
+            {id}
+            {required}
+            {disabled}
+            bind:this={element}
+            bind:value
+            on:invalid={handleInvalid}>
             {#if placeholder}
                 <option value={null} disabled selected hidden>{placeholder}</option>
             {/if}
@@ -29,4 +52,7 @@
         </select>
         <span class="icon-cheveron-down" aria-hidden="true" />
     </div>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
+    {/if}
 </FormItem>

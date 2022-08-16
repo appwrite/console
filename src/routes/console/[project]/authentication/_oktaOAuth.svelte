@@ -9,16 +9,18 @@
         Form,
         FormList
     } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let showModal = false;
     export let provider: Provider;
 
     let { clientSecret, oktaDomain, authorizationServerId } = JSON.parse(provider.secret);
+    let error: string;
 
     const projectId = $page.params.project;
+
     const update = async () => {
         try {
             const secret = JSON.stringify({ clientSecret, oktaDomain, authorizationServerId });
@@ -35,17 +37,14 @@
                     provider.active ? 'enabled' : 'disabled'
                 }`
             });
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+        } catch ({ message }) {
+            error = message;
         }
     };
 </script>
 
 <Form on:submit={update}>
-    <Modal size="big" bind:show={showModal}>
+    <Modal {error} size="big" bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
         <FormList>
             <p>

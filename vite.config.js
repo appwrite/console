@@ -19,7 +19,7 @@ const config = {
         include: ['tests/**/*.test.ts'],
         globals: true,
         environment: 'jsdom',
-        thread: true
+        threads: true
     }
 };
 

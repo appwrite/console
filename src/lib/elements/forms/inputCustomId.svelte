@@ -7,9 +7,11 @@
     export let placeholder = '';
     export let required = false;
     export let autofocus = false;
+
     let element: HTMLInputElement;
     let unique = true;
     let bench = '';
+
     const toggle = async () => {
         unique = !unique;
         if (unique) {

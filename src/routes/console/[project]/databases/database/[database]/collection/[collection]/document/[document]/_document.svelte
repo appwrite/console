@@ -3,14 +3,15 @@
     import { CardGrid } from '$lib/components';
     import { collection } from '../../store';
     import { doc } from './store';
-    import Attribute from './_attribute.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import Attribute from './_attribute.svelte';
 
     let currentDoc: string;
     let updateBtnDisabled = true;
+
     onMount(async () => {
         await doc.load($collection.$id, $page.params.document);
         currentDoc = JSON.stringify($doc);
