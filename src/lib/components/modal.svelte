@@ -1,15 +1,11 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { browser } from '$app/env';
+    import { createEventDispatcher } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
     export let warning = false;
-    let browser = false;
-    //TODO: explore other solutions compatible with testing library
-    onMount(() => {
-        browser = true;
-    });
 
     const dispatch = createEventDispatcher();
     const transitionFly: FlyParams = {

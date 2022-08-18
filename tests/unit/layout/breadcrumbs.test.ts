@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/svelte';
-import { Breadcrumbs as BreadcrumbsComponent } from '../../../src/lib/layout';
 import { level, updateLayout } from '../../../src/lib/stores/layout';
 import { tick } from 'svelte';
+import BreadcrumbsComponent from '../../../src/lib/layout/breadcrumbs.svelte';
 
 test('shows relevant breadcrumbs', async () => {
     const { queryByText } = render(BreadcrumbsComponent);
