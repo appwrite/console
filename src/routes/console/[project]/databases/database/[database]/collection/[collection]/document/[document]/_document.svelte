@@ -33,12 +33,10 @@
         id="read"
         label="Read Permissions"
         bind:tags={$doc.$read}
-        helper="Add 'role:all' for wildcard access"
         placeholder="User ID, Team ID or Role" />
     <InputTags
         id="write"
         label="Write Permissions"
         bind:tags={$doc.$write}
-        helper="Add 'role:all' for wildcard access"
         placeholder="User ID, Team ID or Role" />
 </Collapsible>
