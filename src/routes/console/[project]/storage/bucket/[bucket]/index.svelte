@@ -17,7 +17,7 @@
         TableCell
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { bytesToSize } from '$lib/helpers/sizeConvertion';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { files } from './store';
@@ -25,6 +25,7 @@
     import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
     import { goto } from '$app/navigation';
+    import { pageLimit } from '$lib/stores/layout';
 
     let search = '';
     let showCreate = false;
@@ -33,7 +34,6 @@
     let selectedFile: Models.File = null;
     let offset = 0;
 
-    const limit = 5;
     const project = $page.params.project;
     const bucket = $page.params.bucket;
 
@@ -42,20 +42,20 @@
 
     const fileCreated = () => {
         showCreate = false;
-        files.load(bucket, search, limit, offset);
+        files.load(bucket, search, $pageLimit, offset);
     };
 
     const fileDeleted = (event: CustomEvent<Models.File>) => {
         showDelete = false;
         uploader.removeFile(event.detail);
-        files.load(bucket, search, limit, offset);
+        files.load(bucket, search, $pageLimit, offset);
     };
 
     const deleteFile = async (file: Models.File) => {
         try {
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
-            files.load(bucket, search, limit, offset);
+            files.load(bucket, search, $pageLimit, offset);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -64,7 +64,7 @@
         }
     };
 
-    $: files.load(bucket, search, limit, offset);
+    $: files.load(bucket, search, $pageLimit, offset);
     $: if (search) offset = 0;
 </script>
 
@@ -97,7 +97,7 @@
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size"
-                                >{bytesToSize(file.sizeOriginal)}</TableCellText>
+                                >{calculateSize(file.sizeOriginal)}</TableCellText>
                             <TableCellText title="Date Created"
                                 >{toLocaleDate(file.$createdAt)}</TableCellText>
                             <TableCell>
@@ -132,7 +132,7 @@
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size"
-                                >{bytesToSize(file.sizeOriginal)}</TableCellText>
+                                >{calculateSize(file.sizeOriginal)}</TableCellText>
                             <TableCellText title="Date Created"
                                 >{toLocaleDate(file.$createdAt)}</TableCellText>
                             <TableCell showOverflow>
@@ -175,7 +175,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$files.total}</p>
-            <Pagination {limit} bind:offset sum={$files.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$files.total} />
         </div>
     {:else if search}
         <Empty>
@@ -191,7 +191,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$files?.total}</p>
-            <Pagination {limit} bind:offset sum={$files?.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$files?.total} />
         </div>
     {:else}
         <Empty dashed centered>

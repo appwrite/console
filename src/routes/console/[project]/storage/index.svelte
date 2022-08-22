@@ -10,19 +10,19 @@
     import { base } from '$app/paths';
     import { bucketList } from './store';
     import { tooltip } from '$lib/actions/tooltip';
+    import { pageLimit } from '$lib/stores/layout';
 
     let showCreate = false;
     let search = '';
     let offset = 0;
 
-    const limit = 5;
     const project = $page.params.project;
     const bucketCreated = async (event: CustomEvent<Models.Bucket>) => {
         showCreate = false;
         await goto(`${base}/console/${project}/storage/bucket/${event.detail.$id}`);
     };
 
-    $: bucketList.load(search, limit, offset ?? 0);
+    $: bucketList.load(search, $pageLimit, offset ?? 0);
     $: if (search) offset = 0;
 </script>
 
@@ -31,7 +31,7 @@
         <h2 class="heading-level-5">Buckets</h2>
 
         <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add bucket</span>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create bucket</span>
         </Button>
     </div>
 
@@ -97,7 +97,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.total}</p>
-            <Pagination {limit} bind:offset sum={$bucketList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$bucketList.total} />
         </div>
     {:else if search}
         <Empty>
@@ -113,7 +113,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList?.total}</p>
-            <Pagination {limit} bind:offset sum={$bucketList?.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$bucketList?.total} />
         </div>
     {:else}
         <Empty dashed centered>

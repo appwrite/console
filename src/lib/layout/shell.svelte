@@ -70,7 +70,7 @@
             class="icon-button is-no-desktop"
             aria-label="Open Menu"
             on:click={() => (isOpen = !isOpen)}>
-            <span class={isOpen ? 'icon-x' : 'icon-menu'} aria-hidden="true" />
+            <span class:icon-x={isOpen} class:icon-menu={!isOpen} aria-hidden="true" />
         </button>
         <slot name="header" />
     </header>
@@ -119,10 +119,10 @@
                 {/if}
                 {#if $copyData?.value}
                     <Copy value={$copyData.value}>
-                        <Pill button
-                            ><span
-                                class="icon-duplicate"
-                                aria-hidden="true" />{$copyData.text}</Pill>
+                        <Pill button>
+                            <span class="icon-duplicate" aria-hidden="true" />
+                            {$copyData.text}
+                        </Pill>
                     </Copy>
                 {/if}
             </svelte:fragment>

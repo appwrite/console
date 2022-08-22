@@ -9,7 +9,6 @@ test('shows phone input', () => {
 
     expect(getByText('input')).toBeInTheDocument();
     expect(input).toBeInTheDocument();
-    expect(input).toHaveAttribute('type', 'tel');
 });
 
 test('shows phone input - required', () => {

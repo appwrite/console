@@ -1,5 +1,5 @@
 import { project } from '../../routes/console/[project]/store';
-import { get, writable } from 'svelte/store';
+import { get, writable, readable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
 
 export type Tab = {
@@ -75,3 +75,5 @@ export function updateLayout(args: updateLayoutArguments) {
         }
     }
 }
+
+export const pageLimit = readable(12); // default page limit

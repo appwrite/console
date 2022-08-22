@@ -3,13 +3,18 @@
     import type { Buttons } from '../stores/notifications';
 
     export let dismissible = false;
-    export let type: '' | 'info' | 'success' | 'warning' | 'danger' = 'info';
+    export let type: 'info' | 'success' | 'warning' | 'error' = 'info';
     export let buttons: Buttons[] = [];
 
     const dispatch = createEventDispatcher();
 </script>
 
-<section class={`alert is-${type} `}>
+<section
+    class="alert"
+    class:is-success={type === 'success'}
+    class:is-warning={type === 'warning'}
+    class:is-danger={type === 'error'}
+    class:is-info={type === 'info'}>
     <div class="alert-grid">
         {#if dismissible}
             <button
@@ -19,7 +24,12 @@
                 <span class="icon-x" aria-hidden="true" />
             </button>
         {/if}
-        <span class="icon-info" aria-hidden="true" />
+        <span
+            class:icon-info={type === 'info'}
+            class:icon-check-circle={type === 'success'}
+            class:icon-exclamation={type === 'warning'}
+            class:icon-exclamation-circle={type === 'error'}
+            aria-hidden="true" />
         <div class="content">
             {#if $$slots.title}
                 <h6 class="title">
