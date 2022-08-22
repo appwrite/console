@@ -26,10 +26,6 @@ test('login page has a working sign up link', async ({ page }) => {
     await page.waitForTimeout(100);
     const signup = page.locator('a[href="/register"]');
     expect(await signup.isVisible());
-    await signup.click();
-    await page.waitForTimeout(100);
-    expect(page.url()).toContain('/register');
-    expect(await page.locator('Register').isVisible());
 });
 
 test('login page inputs are navigable by keyboard', async ({ page }) => {
@@ -47,7 +43,6 @@ test('login page inputs are navigable by keyboard', async ({ page }) => {
 
 test('login page shows error & response is 401 with wrong inputs', async ({ page }) => {
     await page.goto('/login');
-
     await page.fill('id=email', 'wrongemail@apppwrite.io');
     await page.fill('id=password', 'wrongpassword');
     await page.click('button:has-text("Login")');
