@@ -12,20 +12,26 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
+    import Delete from './_deleteMember.svelte';
+    import Create from './_createMember.svelte';
     import { organization, memberList } from './store';
     import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { pageLimit } from '$lib/stores/layout';
 
-    const limit = 5;
     let search = '';
     let offset: number = null;
 
+    let selectedMember: Models.Membership;
     let showCreate = false;
     let showDelete = false;
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
+    const deleted = () => memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
+    const created = () => memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
 
     $: if (search) offset = 0;
-    $: memberList.load($organization.$id, search, limit, offset ?? 0);
+    $: memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
 </script>
 
 <Container>
@@ -38,7 +44,7 @@
                     showCreate = true;
                 }}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create project</span>
+                <span class="text">Invite</span>
             </Button>
         </div>
 
@@ -79,7 +85,7 @@
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
                                 on:click|preventDefault={() => {
-                                    // selectedMembership = membership;
+                                    selectedMember = member;
                                     showDelete = true;
                                 }}>
                                 <span class="icon-trash" aria-hidden="true" />
@@ -91,7 +97,12 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$memberList.total}</p>
-            <Pagination {limit} bind:offset sum={$memberList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$memberList.total} />
         </div>
     {/if}
 </Container>
+
+<Create bind:showCreate on:created={() => created()} />
+{#if selectedMember}
+    <Delete {selectedMember} bind:showDelete on:deleted={() => deleted()} />
+{/if}
