@@ -3,7 +3,7 @@ import { getCLS, getFCP, getFID, getLCP, getTTFB, type Metric } from 'web-vitals
 type Options = {
     params:
         | {
-              [s: string]: any;
+              [s: string]: string | number | boolean;
           }
         | ArrayLike<any>;
     path: string;
