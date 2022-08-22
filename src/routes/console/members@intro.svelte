@@ -15,7 +15,7 @@
     import Delete from './_deleteMember.svelte';
     import Create from './_createMember.svelte';
     import { organization, memberList } from './store';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
 
@@ -26,7 +26,7 @@
     let showCreate = false;
     let showDelete = false;
 
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
+    const getAvatar = (name: string) => sdkForConsole.avatars.getInitials(name, 32, 32).toString();
     const deleted = () => memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
     const created = () => memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
 
@@ -62,7 +62,7 @@
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar
                                     size={32}
-                                    src={getAvatar(member.userName) + $organization.name}
+                                    src={getAvatar(member.userName)}
                                     name={member.userName} />
                                 <span class="text u-trim"
                                     >{member.userName ? member.userName : 'n/a'}</span>
