@@ -18,6 +18,7 @@
     import Delete from './_deleteBucket.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import Pill from '$lib/elements/pill.svelte';
 
     let showDelete = false;
 
@@ -37,6 +38,7 @@
             { label: 'Megabytes', value: 'MB' },
             { label: 'Gigabytes', value: 'GB' }
         ];
+    let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
     let extensions = $bucket.allowedFileExtensions;
     let isExtensionsDisabled = true;
 
@@ -412,18 +414,26 @@
                     types.
                 </p>
                 <svelte:fragment slot="aside">
-                    <Alert type="info">
-                        <p>
-                            Tip: Commonly added extensions include JPG, PNG, SVG, GIF, HTML, PDF,
-                            MP4.
-                        </p>
-                    </Alert>
                     <ul class="common-section">
                         <InputTags
                             id="read"
                             label="Allowed file extensions"
                             placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
                             bind:tags={extensions} />
+                        <li class="u-flex u-gap-12 u-margin-block-start-8 ">
+                            {#each suggestedExtensions as ext}
+                                <Pill
+                                    selected={extensions.includes(ext)}
+                                    button
+                                    on:click={() => {
+                                        if (!extensions.includes(ext))
+                                            extensions = [...extensions, ext];
+                                    }}>
+                                    <span class="icon-plus" aria-hidden="true" />
+                                    {ext}
+                                </Pill>
+                            {/each}
+                        </li>
                     </ul>
                 </svelte:fragment>
 
