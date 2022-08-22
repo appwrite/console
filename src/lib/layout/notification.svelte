@@ -20,7 +20,7 @@
     </button>
     <div class="alert-sticky-image">
         <span
-            class:icon-check-cirle={type === 'success'}
+            class:icon-check-circle={type === 'success'}
             class:icon-exclamation={type === 'warning'}
             class:icon-exclamation-circle={type === 'error'}
             class:icon-info={type === 'info'}
