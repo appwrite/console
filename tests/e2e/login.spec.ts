@@ -27,7 +27,7 @@ test('login page has a working sign up link', async ({ page }) => {
     const signup = page.locator('a[href="/register"]');
     expect(await signup.isVisible());
     await signup.click();
-    await page.waitForNavigation({ url: '**/register' });
+    await page.waitForTimeout(100);
     expect(page.url()).toContain('/register');
     expect(await page.locator('Register').isVisible());
 });
