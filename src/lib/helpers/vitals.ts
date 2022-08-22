@@ -3,9 +3,9 @@ import { getCLS, getFCP, getFID, getLCP, getTTFB, type Metric } from 'web-vitals
 type Options = {
     params:
         | {
-              [s: string]: string | number | boolean;
+              [s: string]: string;
           }
-        | ArrayLike<any>;
+        | ArrayLike<string>;
     path: string;
     analyticsId: string;
     debug?: boolean;
