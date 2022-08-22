@@ -7,7 +7,7 @@
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
     import { bucket } from './store';
-    import { bytesToSize } from '$lib/helpers/sizeConvertion';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
 
     export let showCreate = false;
 
@@ -120,7 +120,7 @@
                     </div>
                 </div>
 
-                <p>Max file size: {bytesToSize($bucket.maximumFileSize)}</p>
+                <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
             </div>
 
             {#if !showDropdown}

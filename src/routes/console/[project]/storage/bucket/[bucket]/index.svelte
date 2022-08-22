@@ -17,7 +17,7 @@
         TableCell
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { bytesToSize } from '$lib/helpers/sizeConvertion';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { files } from './store';
@@ -97,7 +97,7 @@
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size"
-                                >{bytesToSize(file.sizeOriginal)}</TableCellText>
+                                >{calculateSize(file.sizeOriginal)}</TableCellText>
                             <TableCellText title="Date Created"
                                 >{toLocaleDate(file.$createdAt)}</TableCellText>
                             <TableCell>
@@ -132,7 +132,7 @@
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size"
-                                >{bytesToSize(file.sizeOriginal)}</TableCellText>
+                                >{calculateSize(file.sizeOriginal)}</TableCellText>
                             <TableCellText title="Date Created"
                                 >{toLocaleDate(file.$createdAt)}</TableCellText>
                             <TableCell showOverflow>
