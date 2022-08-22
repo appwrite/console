@@ -15,4 +15,18 @@ function createProject() {
     };
 }
 
+function createOrganisation() {
+    const { subscribe, set } = writable<Models.Team>();
+
+    return {
+        subscribe,
+        set,
+        load: async (teamId: string) => {
+            const team = await sdkForConsole.teams.get(teamId);
+            set(team);
+        }
+    };
+}
+
 export const project = createProject();
+export const organisation = createOrganisation();

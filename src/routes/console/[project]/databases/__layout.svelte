@@ -11,7 +11,12 @@
     function handle(event = null) {
         updateLayout({
             navigate: event,
-            title: 'Databases'
+            title: 'Databases',
+            level: 3,
+            breadcrumbs: {
+                href: 'databases',
+                title: 'Databases'
+            }
         });
         loaded = true;
     }

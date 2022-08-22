@@ -1,23 +1,23 @@
 import { project } from '../../routes/console/[project]/store';
-import { get, writable } from 'svelte/store';
+import { get, readable, writable } from 'svelte/store';
 
 export type Tab = {
     href: string;
     title: string;
 };
 
-export const title = writable<string>('');
-export const backButton = writable<string>('');
-export const copyData = writable({
-    text: '',
-    value: ''
-});
-export const tabs = writable<Tab[]>([]);
-
-export function updateLayout(args: {
+export type Breadcrumb = {
+    href: string;
     title: string;
+    level?: number;
+};
+
+export type updateLayoutArguments = {
+    title: string;
+    level?: number;
     tabs?: Tab[];
     back?: string;
+    breadcrumbs?: Breadcrumb[] | Breadcrumb;
     copy?: {
         text: string;
         value: string;
@@ -26,13 +26,25 @@ export function updateLayout(args: {
         from: URL | null;
         to: URL;
     };
-}) {
+};
+
+export const level = writable<number>();
+export const title = writable<string>('');
+export const backButton = writable<string>('');
+export const tabs = writable<Tab[]>([]);
+export const breadcrumbs = writable<Map<number, Breadcrumb>>(new Map());
+export const copyData = writable({
+    text: '',
+    value: ''
+});
+
+export function updateLayout(args: updateLayoutArguments) {
     const projectId = get(project)?.$id;
     const base = projectId ? `/console/${projectId}` : `/console`;
 
     if (args?.navigate?.to) {
-        const oldTabs = get(tabs);
-        if (oldTabs.some((t) => `${base}/${t.href}` === args.navigate.to.pathname)) {
+        const previousTabs = get(tabs);
+        if (previousTabs.some((t) => `${base}/${t.href}` === args.navigate.to.pathname)) {
             return;
         }
     }
@@ -40,5 +52,17 @@ export function updateLayout(args: {
     title.set(args.title);
     backButton.set(args.back ?? null);
     copyData.set(args.copy ?? null);
+    level.set(args.level ?? null);
     tabs.set(args.tabs ?? []);
+
+    if (args.breadcrumbs) {
+        if (!Array.isArray(args.breadcrumbs)) {
+            args.breadcrumbs = [args.breadcrumbs];
+        }
+        for (const breadcrumb of args.breadcrumbs) {
+            breadcrumbs.update((n) => n.set(breadcrumb.level ?? args.level, breadcrumb));
+        }
+    }
 }
+
+export const pageLimit = readable(12); // default page limit

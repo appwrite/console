@@ -1,15 +1,13 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { browser } from '$app/env';
+    import { createEventDispatcher } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
+    import { Alert } from '$lib/components';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
     export let warning = false;
-    let browser = false;
-    //TODO: explore other solutions compatible with testing library
-    onMount(() => {
-        browser = true;
-    });
+    export let error: string = null;
 
     const dispatch = createEventDispatcher();
     const transitionFly: FlyParams = {
@@ -26,19 +24,20 @@
             closeModal();
         }
     };
-
     const handleBLur = (event: MouseEvent) => {
         const target: Partial<HTMLElement> = event.target;
         if (target.hasAttribute('data-curtain')) {
             closeModal();
         }
     };
-
     const closeModal = () => {
         show = false;
         dispatch('close');
     };
 
+    /**
+     * Workaround until https://github.com/sveltejs/svelte/issues/3105 is resolved.
+     */
     $: if (browser) {
         if (show) {
             document.body.classList.add('u-overflow-hidden');
@@ -76,6 +75,16 @@
                 </button>
             </header>
             <div class="modal-content">
+                {#if error}
+                    <Alert
+                        dismissible
+                        type="warning"
+                        on:dismiss={() => {
+                            error = null;
+                        }}>
+                        {error}
+                    </Alert>
+                {/if}
                 <slot />
             </div>
             <div class="modal-footer">

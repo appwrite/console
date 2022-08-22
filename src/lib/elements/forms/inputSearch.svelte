@@ -25,6 +25,12 @@
             value = target.value;
         }, debounce);
     };
+
+    $: if (!value) {
+        if (element) {
+            element.value = value;
+        }
+    }
 </script>
 
 <div class="input-text-wrapper" class:is-with-end-button={isWithEndButton}>
@@ -34,17 +40,11 @@
         {required}
         type="search"
         class="input-text"
-        on:input={valueChange}
-        bind:this={element} />
+        bind:this={element}
+        on:input={valueChange} />
     <span class="icon-search" aria-hidden="true" />
     {#if isWithEndButton && value}
-        <button
-            class="x-button"
-            aria-label="Clear search"
-            on:click={() => {
-                value = '';
-                element.value = value;
-            }}>
+        <button class="x-button" aria-label="Clear search" on:click={() => (value = '')}>
             <span class="icon-x" aria-hidden="true" />
         </button>
     {/if}

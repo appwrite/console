@@ -1,5 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { Breadcrumbs } from '.';
     import { Avatar, DropList, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -16,13 +17,8 @@
 <a class="logo" href={`${base}/console`}>
     <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
 </a>
-<nav class="breadcrumbs is-only-desktop" aria-label="breadcrumb">
-    <ol class="breadcrumbs-list">
-        <li class="breadcrumbs-item">
-            <a href="#/">Home</a>
-        </li>
-    </ol>
-</nav>
+
+<Breadcrumbs />
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop">
@@ -31,7 +27,8 @@
             href="https://appwrite.io/support"
             target="_blank"
             rel="noopener noreferrer"
-            class="button is-small is-text"><span class="text">Support</span></a>
+            class="button is-small is-text u-margin-inline-end-16"
+            ><span class="text">Support</span></a>
         <button class="button is-small is-secondary"><span class="text">Upgrade</span></button>
     </nav>
     <nav class="user-profile">

@@ -12,6 +12,6 @@
 <FormItem>
     <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="input-text-wrapper">
-        <input {id} {disabled} {required} bind:files type="file" />
+        <input {id} {disabled} {required} type="file" bind:files />
     </div>
 </FormItem>

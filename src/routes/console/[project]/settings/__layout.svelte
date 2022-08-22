@@ -12,6 +12,11 @@
         updateLayout({
             navigate: event,
             title: 'Settings',
+            level: 3,
+            breadcrumbs: {
+                title: 'Settings',
+                href: 'settings'
+            },
             tabs: [
                 {
                     href: path,

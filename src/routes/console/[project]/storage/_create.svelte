@@ -2,8 +2,6 @@
     import { Modal, InnerModal } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, Form, FormList } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
-
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
@@ -14,6 +12,7 @@
     let name = '';
     let id: string = null;
     let showDropdown = false;
+    let error: string;
 
     const create = async () => {
         try {
@@ -25,11 +24,8 @@
             name = null;
             showCreate = false;
             dispatch('created', bucket);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+        } catch ({ message }) {
+            error = message;
         }
     };
 
@@ -38,11 +34,12 @@
     }
     $: if (!showCreate) {
         showDropdown = false;
+        error = null;
     }
 </script>
 
 <Form on:submit={create}>
-    <Modal size="big" bind:show={showCreate}>
+    <Modal {error} size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Bucket</svelte:fragment>
         <FormList>
             <InputText
@@ -55,15 +52,17 @@
 
             {#if !showDropdown}
                 <div>
-                    <Pill button on:click={() => (showDropdown = !showDropdown)}
-                        ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            Bucket ID
-                        </span></Pill>
+                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
+                        <span class="icon-pencil" aria-hidden="true" />
+                        <span class="text"> Bucket ID </span>
+                    </Pill>
                 </div>
             {:else}
                 <InnerModal bind:show={showDropdown}>
                     <svelte:fragment slot="title">Bucket ID</svelte:fragment>
-                    <p>Enter a custom bucket ID. Leave blank for a randomly generated bucket ID.</p>
+                    <svelte:fragment slot="subtitle">
+                        Enter a custom bucket ID. Leave blank for a randomly generated one.
+                    </svelte:fragment>
                     <svelte:fragment slot="content">
                         <div class="form">
                             <InputText
@@ -78,9 +77,10 @@
                                 <span
                                     class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                                     aria-hidden="true" />
-                                <span class="text u-line-height-1-5"
-                                    >Allowed characters: alphanumeric, hyphen, non-leading
-                                    underscore, period</span>
+                                <span class="text u-line-height-1-5">
+                                    Allowed characters: alphanumeric, hyphen, non-leading
+                                    underscore, period
+                                </span>
                             </div>
                         </div>
                     </svelte:fragment>

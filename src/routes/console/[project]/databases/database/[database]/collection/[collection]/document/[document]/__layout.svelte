@@ -17,9 +17,15 @@
         if ($doc?.$id !== documentId) {
             await doc.load(collectionId, documentId);
         }
+
         updateLayout({
             navigate: event,
-            title: `Document - ${$doc.$id}`,
+            title: $doc.$id,
+            level: 6,
+            breadcrumbs: {
+                title: $doc.$id,
+                href: `document/${documentId}`
+            },
             tabs: [
                 {
                     href: path,

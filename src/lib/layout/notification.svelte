@@ -6,37 +6,25 @@
     export let title: Notification['title'];
     export let buttons: Notification['buttons'];
 
-    let icon: string;
-    switch (type) {
-        case 'success':
-            icon = 'check-circle';
-            break;
-        case 'warning':
-            icon = 'exclamation';
-            break;
-
-        case 'error':
-            icon = 'exclamation-circle';
-            break;
-
-        case 'info':
-            icon = 'info';
-            break;
-
-        default:
-            icon = '';
-            break;
-    }
-
     const dispatch = createEventDispatcher();
 </script>
 
-<li class={`alert-sticky is-${type}`}>
+<li
+    class="alert-sticky"
+    class:is-success={type === 'success'}
+    class:is-warning={type === 'warning'}
+    class:is-error={type === 'error'}
+    class:is-info={type === 'info'}>
     <button class="x-button" aria-label="close alert" on:click={() => dispatch('dismiss')}>
         <span class="icon-x" aria-hidden="true" />
     </button>
     <div class="alert-sticky-image">
-        <span class={`icon-${icon}`} aria-hidden="true" />
+        <span
+            class:icon-check-circle={type === 'success'}
+            class:icon-exclamation={type === 'warning'}
+            class:icon-exclamation-circle={type === 'error'}
+            class:icon-info={type === 'info'}
+            aria-hidden="true" />
     </div>
     <div class="alert-sticky-content">
         {#if title}
