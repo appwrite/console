@@ -13,10 +13,12 @@
     import { app } from '$lib/stores/app';
     import Notifications from '$lib/layout/notifications.svelte';
     import Loading from './_loading.svelte';
+    import { webVitals } from '$lib/helpers/vitals';
 
     let loaded = false;
 
     if (browser) {
+        window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
         window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
     }
 
@@ -35,6 +37,15 @@
             loaded = true;
         }
     });
+
+    $: if (browser && window.VERCEL_ANALYTICS_ID) {
+        webVitals({
+            path: $page.url.pathname,
+            params: $page.params,
+            analyticsId: window.VERCEL_ANALYTICS_ID,
+            debug: true
+        });
+    }
 
     $: {
         if (browser) {
