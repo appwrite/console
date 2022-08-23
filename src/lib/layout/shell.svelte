@@ -4,12 +4,11 @@
     import { Cover } from '.';
     import { Copy, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { organization } from '../../routes/console/store';
+    import { Button } from '$lib/elements/forms';
+    import { organization, newOrgModal, newMemberModal } from '../../routes/console/store';
 
     export let isOpen = false;
     export let showSideNavigation = false;
-
-    // $: base = `/console/${$page.params.project}`;
 
     let tabsList: HTMLUListElement;
     let showLeft = false;
@@ -99,19 +98,36 @@
                             </h1>
                         </button>
                         <svelte:fragment slot="list">
-                            {#each $titleDropdown as organization}
-                                <DropListItem>
-                                    {organization.name}
+                            {#each $titleDropdown as org}
+                                <DropListItem
+                                    on:click={() => {
+                                        showDropdown = false;
+                                        if (org.$id !== $organization.$id) {
+                                            organization.load(org.$id);
+                                        }
+                                    }}>
+                                    {org.name}
                                 </DropListItem>
                             {/each}
                         </svelte:fragment>
                         <svelte:fragment slot="other">
                             <section class="drop-section">
                                 <ul class="drop-list">
-                                    <DropListItem icon="plus">New Organizations</DropListItem>
+                                    <DropListItem
+                                        icon="plus"
+                                        on:click={() => {
+                                            showDropdown = false;
+                                            newOrgModal.set(true);
+                                        }}>New Organization</DropListItem>
                                 </ul>
                             </section></svelte:fragment>
                     </DropList>
+                    <div class="u-margin-inline-start-auto">
+                        <Button secondary on:click={() => newMemberModal.set(true)}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Invite</span>
+                        </Button>
+                    </div>
                 {:else}
                     <h1 class="heading-level-4">
                         <span class="text"> {$title}</span>

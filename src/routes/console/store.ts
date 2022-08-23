@@ -71,6 +71,8 @@ export const organizationList = createOrganizationList();
 export const organization = createOrganization();
 export const projectList = createProjectList();
 export const memberList = createMemberList();
+export const newOrgModal = writable<boolean>(false);
+export const newMemberModal = writable<boolean>(false);
 
 if (browser) {
     organizationList.subscribe((n) =>

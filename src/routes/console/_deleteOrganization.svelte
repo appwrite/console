@@ -5,7 +5,7 @@
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization } from './store';
+    import { organization, organizationList } from './store';
 
     export let showDelete = false;
 
@@ -17,6 +17,9 @@
                 type: 'success',
                 message: `${$organization.name} has been deleted`
             });
+            if ($organizationList?.total) {
+                organization.set($organizationList.teams[0]);
+            }
             await goto(`${base}/console/`);
         } catch (error) {
             addNotification({

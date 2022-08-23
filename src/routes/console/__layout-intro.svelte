@@ -4,7 +4,11 @@
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
-    import { organizationList, organization } from './store';
+    import { organizationList, organization, newOrgModal, newMemberModal } from './store';
+    import CreateMember from './_createMember.svelte';
+    import Create from './_createOrganization.svelte';
+
+    const created = () => console.log('test');
 
     onMount(handle);
     afterNavigate(handle);
@@ -16,7 +20,7 @@
         }
         updateLayout({
             navigate: event,
-            title: `${$organizationList.teams[0].name}`,
+            title: $organization?.name ?? `${$organizationList.teams[0].name}`,
             titleDropdown: $organizationList.teams,
             level: 0,
             customBase: '',
@@ -40,6 +44,10 @@
             ]
         });
     }
+
+    organization.subscribe(() => {
+        handle();
+    });
 </script>
 
 <svelte:head>
@@ -55,3 +63,6 @@
         <footer class="main-footer" />
     </Shell>
 {/if}
+
+<Create bind:show={$newOrgModal} on:created={() => created()} />
+<CreateMember bind:showCreate={$newMemberModal} on:created={() => created()} />

@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
-    import { Bucket, EmptyBucket, Pagination } from '$lib/components';
+    import { Bucket, EmptyBucket, Empty, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -28,6 +28,12 @@
     const projectCreated = async (event: CustomEvent<Models.Project>) => {
         await goto(`${base}/console/${event.detail.$id}`);
     };
+
+    $: if (currentOrganization !== $organization?.$id) {
+        currentOrganization = $organization.$id;
+        projectList.load();
+        projects = $projectList.projects.filter((a) => a.teamId === $organization.$id);
+    }
     //TODO: fix technology icon display
 </script>
 
@@ -69,7 +75,7 @@
                         </Button>
                     </div>
                     <div class="common-section">
-                        <p>Add a new bucket</p>
+                        <p>Create a new project</p>
                     </div>
                 </EmptyBucket>
             {/if}
@@ -79,14 +85,31 @@
             <p class="text">Total results: {projects.length}</p>
             <Pagination {limit} bind:offset sum={projects.length} />
         </div>
+    {:else}
+        <Empty dashed centered>
+            <div class="bucket">
+                <div class="u-flex u-flex-vertical u-cross-center">
+                    <div class="common-section">
+                        <Button secondary round on:click={() => (showCreate = true)}>
+                            <i class="icon-plus" />
+                        </Button>
+                    </div>
+                    <div class="common-section">
+                        <p>Create a new project</p>
+                    </div>
+                </div>
+            </div>
+        </Empty>
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {projects.length}</p>
+            <Pagination {limit} bind:offset sum={projects.length} />
+        </div>
     {/if}
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
 
-{#if projects?.length}
-    <CreateProject
-        bind:show={showCreate}
-        bind:teamId={currentOrganization}
-        on:created={projectCreated} />
-{/if}
+<CreateProject
+    bind:show={showCreate}
+    bind:teamId={currentOrganization}
+    on:created={projectCreated} />

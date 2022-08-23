@@ -3,9 +3,10 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Header from '$lib/layout/header.svelte';
     import { updateLayout } from '$lib/stores/layout';
+    import { organization } from './store';
 
     updateLayout({
-        title: 'Projects',
+        title: $organization.name ?? 'Projects',
         level: 0
     });
 </script>

@@ -18,7 +18,7 @@
             await sdkForConsole.teams.update($organization.$id, name);
             $organization.name = name;
             title.set(name);
-            const breadcrumb = $breadcrumbs.get($breadcrumbs.size);
+            const breadcrumb = $breadcrumbs.get(0);
             breadcrumb.title = name;
             $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
             addNotification({
@@ -32,6 +32,8 @@
             });
         }
     }
+
+    organization.subscribe((org) => (name = org.name));
 </script>
 
 <Container>

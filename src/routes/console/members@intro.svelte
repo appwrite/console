@@ -13,8 +13,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import Delete from './_deleteMember.svelte';
-    import Create from './_createMember.svelte';
-    import { organization, memberList } from './store';
+    import { organization, memberList, newMemberModal } from './store';
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
@@ -23,12 +22,10 @@
     let offset: number = null;
 
     let selectedMember: Models.Membership;
-    let showCreate = false;
     let showDelete = false;
 
     const getAvatar = (name: string) => sdkForConsole.avatars.getInitials(name, 32, 32).toString();
     const deleted = () => memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
-    const created = () => memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
 
     $: if (search) offset = 0;
     $: memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
@@ -41,7 +38,7 @@
 
             <Button
                 on:click={() => {
-                    showCreate = true;
+                    newMemberModal.set(true);
                 }}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Invite</span>
@@ -102,7 +99,6 @@
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={() => created()} />
 {#if selectedMember}
     <Delete {selectedMember} bind:showDelete on:deleted={() => deleted()} />
 {/if}
