@@ -17,15 +17,26 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
+    import { page } from '$app/stores';
 
     let search = '';
     let offset: number = null;
 
     let selectedMember: Models.Membership;
     let showDelete = false;
+    const url = `${$page.url.origin}/console/`;
 
-    const getAvatar = (name: string) => sdkForConsole.avatars.getInitials(name, 32, 32).toString();
+    const getAvatar = (name: string) =>
+        sdkForConsole.avatars.getInitials(name, 120, 120).toString();
     const deleted = () => memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
+    const resend = async (member: Models.Membership) =>
+        await sdkForConsole.teams.createMembership(
+            $organization.$id,
+            member.userEmail,
+            member.roles,
+            url,
+            member.userName
+        );
 
     $: if (search) offset = 0;
     $: memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
@@ -58,7 +69,7 @@
                         <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar
-                                    size={32}
+                                    size={40}
                                     src={getAvatar(member.userName)}
                                     name={member.userName} />
                                 <span class="text u-trim"
@@ -71,7 +82,7 @@
                         <TableCellText title="Email">{member.userEmail}</TableCellText>
                         <TableCell title="Roles">
                             {#if member.invited && !member.joined}
-                                <Button secondary>Resend</Button>
+                                <Button secondary on:click={() => resend(member)}>Resend</Button>
                             {:else}
                                 {member.roles}
                             {/if}
@@ -81,7 +92,8 @@
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
-                                on:click|preventDefault={() => {
+                                disabled={$memberList.total === 1}
+                                on:click={() => {
                                     selectedMember = member;
                                     showDelete = true;
                                 }}>

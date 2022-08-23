@@ -8,8 +8,6 @@
     import CreateMember from './_createMember.svelte';
     import Create from './_createOrganization.svelte';
 
-    const created = () => console.log('test');
-
     onMount(handle);
     afterNavigate(handle);
 
@@ -64,5 +62,5 @@
     </Shell>
 {/if}
 
-<Create bind:show={$newOrgModal} on:created={() => created()} />
-<CreateMember bind:showCreate={$newMemberModal} on:created={() => created()} />
+<Create bind:show={$newOrgModal} />
+<CreateMember bind:showCreate={$newMemberModal} />

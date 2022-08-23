@@ -6,7 +6,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
-    import { organization } from './store';
+    import { organization, memberList } from './store';
+    import { pageLimit } from '$lib/stores/layout';
 
     export let showCreate = false;
 
@@ -29,6 +30,7 @@
                 type: 'success',
                 message: `Invite has been sent to ${email}`
             });
+            memberList.load($organization.$id, '', $pageLimit, 0);
             dispatch('created', team);
         } catch ({ message }) {
             error = message;
@@ -54,7 +56,6 @@
                 id="name"
                 label="Name (optional)"
                 placeholder="Enter name"
-                autofocus={true}
                 bind:value={name} />
         </FormList>
         <svelte:fragment slot="footer">

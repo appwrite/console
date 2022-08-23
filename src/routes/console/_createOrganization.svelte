@@ -5,6 +5,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
+    import { organization, organizationList } from './store';
+    import { titleDropdown } from '$lib/stores/layout';
 
     export let show = false;
 
@@ -17,13 +19,18 @@
 
     const create = async () => {
         try {
-            await sdkForConsole.teams.create(id ?? 'unique()', name);
-            name = null;
+            const team = await sdkForConsole.teams.create(id ?? 'unique()', name);
             dispatch('created');
+            await organizationList.load();
+            titleDropdown.set($organizationList.teams);
+            organization.set(team);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
             });
+            name = null;
+            id = null;
+            show = false;
         } catch ({ message }) {
             error = message;
         }
@@ -34,7 +41,13 @@
     <Modal {error} size="big" bind:show>
         <svelte:fragment slot="header">Create New Organization</svelte:fragment>
         <FormList>
-            <InputText id="name" label="Name" bind:value={name} required />
+            <InputText
+                id="name"
+                label="Name"
+                placeholder="Enter name"
+                bind:value={name}
+                autofocus={true}
+                required />
             {#if !showDropdown}
                 <div>
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
