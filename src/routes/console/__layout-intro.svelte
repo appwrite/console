@@ -19,40 +19,49 @@
 
     async function handle(event = null) {
         await organizationList.load();
-        if (!$organization) {
-            await organization.load($organizationList.teams[0].$id);
-            await memberList.load($organization.$id, '', 100, 0);
+        if ($organizationList?.total) {
+            if (!$organization) {
+                await organization.load($organizationList.teams[0].$id);
+                await memberList.load($organization.$id, '', 100, 0);
+            }
+            updateLayout({
+                navigate: event,
+                title: $organization?.name ?? `${$organizationList.teams[0].name}`,
+                titleDropdown: $organizationList.teams,
+                level: 0,
+                customBase: '',
+                breadcrumbs: {
+                    title: `${$organization.name}`,
+                    href: 'console'
+                },
+                tabs: [
+                    {
+                        href: 'console',
+                        title: 'Projects'
+                    },
+                    {
+                        href: 'console/members',
+                        title: 'Members'
+                    },
+                    {
+                        href: 'console/settings',
+                        title: 'Settings'
+                    }
+                ]
+            });
+        } else {
+            $newOrgModal = true;
+            closable = false;
         }
-        updateLayout({
-            navigate: event,
-            title: $organization?.name ?? `${$organizationList.teams[0].name}`,
-            titleDropdown: $organizationList.teams,
-            level: 0,
-            customBase: '',
-            breadcrumbs: {
-                title: `${$organization.name}`,
-                href: 'console'
-            },
-            tabs: [
-                {
-                    href: 'console',
-                    title: 'Projects'
-                },
-                {
-                    href: 'console/members',
-                    title: 'Members'
-                },
-                {
-                    href: 'console/settings',
-                    title: 'Settings'
-                }
-            ]
-        });
     }
+
+    let closable = true;
 
     organization.subscribe((org) => {
         handle();
-        memberList.load(org.$id, '', 100, 0);
+        if (org?.$id) {
+            memberList.load(org.$id, '', 100, 0);
+        }
     });
 </script>
 
@@ -60,15 +69,15 @@
     <title>Appwrite - Console</title>
 </svelte:head>
 
-{#if $organization}
-    <Shell>
-        <svelte:fragment slot="header">
-            <Header />
-        </svelte:fragment>
+<Shell>
+    <svelte:fragment slot="header">
+        <Header />
+    </svelte:fragment>
+    {#if $organization}
         <slot />
-        <footer class="main-footer" />
-    </Shell>
-{/if}
+    {/if}
+    <footer class="main-footer" />
+</Shell>
 
-<Create bind:show={$newOrgModal} />
+<Create bind:show={$newOrgModal} {closable} />
 <CreateMember bind:showCreate={$newMemberModal} />

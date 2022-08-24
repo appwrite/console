@@ -10,7 +10,7 @@
     import { goto } from '$app/navigation';
 
     export let show = false;
-
+    export let closable = true;
     const dispatch = createEventDispatcher();
 
     let name: string;
@@ -40,7 +40,7 @@
 </script>
 
 <Form on:submit={create}>
-    <Modal {error} size="big" bind:show>
+    <Modal {error} size="big" bind:show {closable}>
         <svelte:fragment slot="header">Create New Organization</svelte:fragment>
         <FormList>
             <InputText
