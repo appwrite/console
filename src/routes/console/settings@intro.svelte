@@ -33,7 +33,6 @@
 
     organization.subscribe((org) => {
         name = org.name;
-        memberList.load(org.$id, '', 100, 0);
     });
 
     let avatars = [];

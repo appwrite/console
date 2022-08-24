@@ -12,11 +12,18 @@
     import { onMount } from 'svelte';
 
     let projects: Models.Project[] = [];
+    let platforms = [];
 
     onMount(async () => {
         await projectList.load();
 
-        projects = $projectList.projects.filter((a) => a.teamId === $organization.$id);
+        projects = $projectList.projects.filter((n) => n.teamId === $organization.$id);
+
+        //Not sure about this
+        platforms = projects.map((project) => {
+            let platformList = project.platforms.map((platform) => platform.type);
+            return Array.from(new Set(platformList));
+        });
     });
 
     let showCreate = false;
@@ -29,12 +36,28 @@
         await goto(`${base}/console/${event.detail.$id}`);
     };
 
+    const platformsName = {
+        web: 'Web',
+        'flutter-ios': 'Flutter',
+        'flutter-android': 'Flutter',
+        ios: 'Apple',
+        android: 'Android',
+        unity: 'Unity'
+    };
+    const platformsIcon = {
+        web: 'code',
+        'flutter-ios': 'flutter',
+        'flutter-android': 'flutter',
+        ios: 'apple',
+        android: 'android',
+        unity: 'unity'
+    };
+
     $: if (currentOrganization !== $organization?.$id) {
         currentOrganization = $organization.$id;
         projectList.load();
         projects = $projectList.projects.filter((a) => a.teamId === $organization.$id);
     }
-    //TODO: fix technology icon display
 </script>
 
 <Container>
@@ -53,18 +76,28 @@
         <ul
             class="grid-box common-section u-margin-block-start-32"
             style={`--grid-gap:2rem; --grid-item-size:${projects.length > 3 ? '22rem' : '25rem'};`}>
-            {#each projects as project}
+            {#each projects as project, i}
                 <Bucket href={`${base}/console/${project.$id}`}>
                     <svelte:fragment slot="eyebrow"
                         >{project?.platforms?.length ?? 0} apps</svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
-                    {#each project.platforms as platform}
-                        <Pill>
-                            <span class={`icon-${platform.type}`} aria-hidden="true" />
-                            {platform.type}</Pill>
+                    {#each platforms[i] as platform, i}
+                        {#if i < 3}
+                            <Pill>
+                                <span
+                                    class={`icon-${platformsIcon[platform]}`}
+                                    aria-hidden="true" />
+                                {platformsName[platform]}
+                            </Pill>
+                        {/if}
                     {/each}
+                    {#if platforms?.length > 3}
+                        <Pill>
+                            +{project.platforms.length - 3}
+                        </Pill>
+                    {/if}
                 </Bucket>
             {/each}
             {#if projects.length % 2 !== 0}

@@ -50,8 +50,9 @@
         });
     }
 
-    organization.subscribe(() => {
+    organization.subscribe((org) => {
         handle();
+        memberList.load(org.$id, '', 100, 0);
     });
 </script>
 
