@@ -3,7 +3,8 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Header from '$lib/layout/header.svelte';
     import { updateLayout } from '$lib/stores/layout';
-    import { organization } from './store';
+    import { organization, newOrgModal } from './store';
+    import Create from './_createOrganization.svelte';
 
     updateLayout({
         title: $organization.name ?? 'Projects',
@@ -21,3 +22,7 @@
     <slot />
     <footer class="main-footer" />
 </Shell>
+
+{#if $newOrgModal}
+    <Create bind:show={$newOrgModal} />
+{/if}

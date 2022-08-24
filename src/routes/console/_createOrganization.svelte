@@ -7,6 +7,7 @@
     import { createEventDispatcher } from 'svelte';
     import { organization, organizationList } from './store';
     import { titleDropdown } from '$lib/stores/layout';
+    import { goto } from '$app/navigation';
 
     export let show = false;
 
@@ -24,6 +25,7 @@
             await organizationList.load();
             titleDropdown.set($organizationList.teams);
             organization.set(team);
+            goto('/console');
             addNotification({
                 type: 'success',
                 message: `${name} has been created`

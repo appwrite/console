@@ -10,8 +10,18 @@
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
+    import { organizationList, organization, newOrgModal } from '../../routes/console/store';
+    import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
 
     let showDropdown = false;
+
+    onMount(async () => {
+        await organizationList.load();
+        if (!$organization) {
+            await organization.load($organizationList.teams[0].$id);
+        }
+    });
 </script>
 
 <a class="logo" href={`${base}/console`}>
@@ -41,8 +51,8 @@
                         src={sdkForConsole.avatars.getInitials($user.name, 40, 40).toString()} />
                     <span class="user-profile-info is-only-desktop">
                         <span class="name">{$user.name}</span>
-                        {#if $project}
-                            <span class="title">{$project.name}</span>
+                        {#if $organization}
+                            <span class="title">{$organization.name}</span>
                         {/if}
                     </span>
                     <span
@@ -52,10 +62,27 @@
                         class:icon-cheveron-down={!showDropdown} />
                 </button>
                 <svelte:fragment slot="list">
-                    <DropListItem icon="plus">New organization</DropListItem>
-                    <DropListLink href="/console/$me">Your Account</DropListLink>
+                    {#each $organizationList.teams as org}
+                        <DropListItem
+                            on:click={() => {
+                                showDropdown = false;
+                                goto(`/console`);
+                                organization.set(org);
+                            }}>{org.name}</DropListItem>
+                    {/each}
                 </svelte:fragment>
                 <svelte:fragment slot="other">
+                    <section class="drop-section">
+                        <ul class="drop-list">
+                            <DropListItem
+                                icon="plus"
+                                on:click={() => {
+                                    showDropdown = false;
+                                    newOrgModal.set(true);
+                                }}>New organization</DropListItem>
+                            <DropListLink href="/console/$me">Your Account</DropListLink>
+                        </ul>
+                    </section>
                     <section class="drop-section">
                         <ul class="u-flex u-gap-12">
                             <li>
