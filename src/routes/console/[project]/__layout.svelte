@@ -4,7 +4,8 @@
     import { sdkForConsole, setProject } from '$lib/stores/sdk';
     import { collection } from './databases/database/[database]/collection/[collection]/store';
     import { UploadBox } from '$lib/components';
-    import { organization, project } from './store';
+    import { project } from './store';
+    import { organization } from '../store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { updateLayout } from '$lib/stores/layout';
@@ -47,7 +48,6 @@
     afterNavigate(handle);
 
     let loaded = false;
-    const path = 'console';
     async function handle(event = null) {
         if ($project?.$id !== projectId) {
             setProject(projectId);
@@ -63,9 +63,9 @@
             level: 1,
             breadcrumbs: [
                 {
-                    href: path,
-                    title: $project.name,
-                    level: 1
+                    href: 'console',
+                    title: $organization.name,
+                    level: 0
                 },
                 {
                     href: $project.$id,
