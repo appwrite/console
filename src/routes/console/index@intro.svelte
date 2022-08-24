@@ -12,18 +12,11 @@
     import { onMount } from 'svelte';
 
     let projects: Models.Project[] = [];
-    let platforms = [];
 
     onMount(async () => {
         await projectList.load();
 
         projects = $projectList.projects.filter((n) => n.teamId === $organization.$id);
-
-        //Not sure about this
-        platforms = projects.map((project) => {
-            let platformList = project.platforms.map((platform) => platform.type);
-            return Array.from(new Set(platformList));
-        });
     });
 
     let showCreate = false;
@@ -76,14 +69,16 @@
         <ul
             class="grid-box common-section u-margin-block-start-32"
             style={`--grid-gap:2rem; --grid-item-size:${projects.length > 3 ? '22rem' : '25rem'};`}>
-            {#each projects as project, i}
+            {#each projects as project}
                 <Bucket href={`${base}/console/${project.$id}`}>
                     <svelte:fragment slot="eyebrow"
                         >{project?.platforms?.length ?? 0} apps</svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
-                    {#each platforms[i] as platform, i}
+                    {@const platformList = project.platforms.map((platform) => platform.type)}
+                    {@const platforms = Array.from(new Set(platformList))}
+                    {#each platforms as platform, i}
                         {#if i < 3}
                             <Pill>
                                 <span
