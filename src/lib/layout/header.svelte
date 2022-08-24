@@ -5,7 +5,6 @@
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
-    import { project } from '../../routes/console/[project]/store';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
