@@ -38,6 +38,21 @@
             member.userName
         );
 
+    let avatars = [];
+    let avatarsTotal = 0;
+
+    memberList.subscribe((value) => {
+        if (value?.total > 0) {
+            avatarsTotal = value.total;
+            avatars = value.memberships.map((team) => {
+                return {
+                    name: team.userName,
+                    img: sdkForConsole.avatars.getInitials(team.userName, 120, 120).toString()
+                };
+            });
+        }
+    });
+
     $: if (search) offset = 0;
     $: memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
 </script>

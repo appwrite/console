@@ -4,7 +4,13 @@
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
-    import { organizationList, organization, newOrgModal, newMemberModal } from './store';
+    import {
+        organizationList,
+        organization,
+        memberList,
+        newOrgModal,
+        newMemberModal
+    } from './store';
     import CreateMember from './_createMember.svelte';
     import Create from './_createOrganization.svelte';
 
@@ -15,6 +21,7 @@
         await organizationList.load();
         if (!$organization) {
             await organization.load($organizationList.teams[0].$id);
+            await memberList.load($organization.$id, '', 100, 0);
         }
         updateLayout({
             navigate: event,

@@ -2,10 +2,16 @@
     import { navigating, page } from '$app/stores';
     import { tabs, title, backButton, copyData, titleDropdown } from '$lib/stores/layout';
     import { Cover } from '.';
-    import { Copy, DropList, DropListItem } from '$lib/components';
+    import { Copy, DropList, DropListItem, AvatarGroup } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { organization, newOrgModal, newMemberModal } from '../../routes/console/store';
+    import {
+        organization,
+        memberList,
+        newOrgModal,
+        newMemberModal
+    } from '../../routes/console/store';
+    import { sdkForConsole } from '$lib/stores/sdk';
 
     export let isOpen = false;
     export let showSideNavigation = false;
@@ -33,6 +39,20 @@
             }
         }, 10);
     };
+    let avatars = [];
+    let avatarsTotal = 0;
+
+    memberList.subscribe((value) => {
+        if (value?.total > 0) {
+            avatarsTotal = value.total;
+            avatars = value.memberships.map((team) => {
+                return {
+                    name: team.userName,
+                    img: sdkForConsole.avatars.getInitials(team.userName, 120, 120).toString()
+                };
+            });
+        }
+    });
 
     const onScroll = () => {
         if (!tabsList) {
@@ -123,10 +143,13 @@
                             </section></svelte:fragment>
                     </DropList>
                     <div class="u-margin-inline-start-auto">
-                        <Button secondary on:click={() => newMemberModal.set(true)}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Invite</span>
-                        </Button>
+                        <div class="u-flex u-gap-16">
+                            <AvatarGroup {avatars} total={avatarsTotal} />
+                            <Button secondary on:click={() => newMemberModal.set(true)}>
+                                <span class="icon-plus" aria-hidden="true" />
+                                <span class="text">Invite</span>
+                            </Button>
+                        </div>
                     </div>
                 {:else}
                     <h1 class="heading-level-4">

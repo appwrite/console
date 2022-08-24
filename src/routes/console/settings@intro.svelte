@@ -1,17 +1,15 @@
 <script lang="ts">
-    import { CardGrid, Box, Avatar } from '$lib/components';
+    import { CardGrid, Box, AvatarGroup } from '$lib/components';
     import { InputText, Form, Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization } from './store';
+    import { organization, memberList } from './store';
     import { title, breadcrumbs } from '$lib/stores/layout';
     import Delete from './_deleteOrganization.svelte';
 
     let name: string = $organization.name;
     let showDelete = false;
-
-    const getAvatar = (name: string) => sdkForConsole.avatars.getInitials(name, 48, 48).toString();
 
     async function updateName() {
         try {
@@ -34,6 +32,21 @@
     }
 
     organization.subscribe((org) => (name = org.name));
+
+    let avatars = [];
+    let avatarsTotal = 0;
+
+    memberList.subscribe((value) => {
+        if (value?.total > 0) {
+            avatarsTotal = value.total;
+            avatars = value.memberships.map((team) => {
+                return {
+                    name: team.userName,
+                    img: sdkForConsole.avatars.getInitials(team.userName, 120, 120).toString()
+                };
+            });
+        }
+    });
 </script>
 
 <Container>
@@ -69,10 +82,7 @@
         <svelte:fragment slot="aside">
             <Box>
                 <svelte:fragment slot="image">
-                    <Avatar
-                        size={48}
-                        name={$organization.name}
-                        src={getAvatar($organization.name)} />
+                    <AvatarGroup {avatars} total={avatarsTotal} />
                 </svelte:fragment>
                 <svelte:fragment slot="title">
                     <h6 class="u-bold">{$organization.name}</h6>
