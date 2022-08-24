@@ -6,15 +6,15 @@
 
 <ul class="avatars-group">
     {#each avatars as av, index}
-        {#if index < 3}
+        {#if index < 2}
             <li class="avatars-group-item">
                 <Avatar size={40} src={av.img} name={av.name} />
             </li>
         {/if}
     {/each}
-    {#if total > 3}
+    {#if total > 2}
         <li class="avatars-group-item">
-            <div class="avatar">+{total - 3}</div>
+            <div class="avatar">+{total - 2}</div>
         </li>
     {/if}
 </ul>
