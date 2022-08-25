@@ -48,7 +48,7 @@
 
     {#if $documentList?.total}
         <div class="table-wrapper">
-            <Table sticky>
+            <Table sticky={true}>
                 <TableHeader>
                     <TableCellHead>Document ID</TableCellHead>
                     {#each columns as column}

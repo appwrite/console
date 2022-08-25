@@ -76,12 +76,15 @@
     </svelte:fragment>
     <Form on:submit={create}>
         {#if currentStep === 0}
+            {@const attributes =
+                $attributeList?.attributes?.filter((a) => a.status === 'available') || []}
+
             <header class="form-header">
                 <h1 class="heading-level-6">Create document data</h1>
                 <p>Provide document data based on attributes you created earlier.</p>
             </header>
             <ul class="form-list">
-                {#each $attributeList?.attributes?.filter((a) => a.status === 'available') as attribute}
+                {#each attributes as attribute}
                     {@const label = attribute.required ? `${attribute.key}*` : attribute.key}
                     {#if attribute.array}
                         {#each newDocument[attribute.key] as _v, index}
