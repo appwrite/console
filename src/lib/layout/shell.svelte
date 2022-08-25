@@ -48,7 +48,7 @@
             avatars = value.memberships.map((team) => {
                 return {
                     name: team.userName,
-                    img: sdkForConsole.avatars.getInitials(team.userName, 120, 120).toString()
+                    img: sdkForConsole.avatars.getInitials(team.userName, 80, 80).toString()
                 };
             });
         }
@@ -148,7 +148,7 @@
                     </DropList>
                     <div class="u-margin-inline-start-auto">
                         <div class="u-flex u-gap-16">
-                            <AvatarGroup {avatars} total={avatarsTotal} />
+                            <AvatarGroup size={40} {avatars} total={avatarsTotal} />
                             <Button secondary on:click={() => newMemberModal.set(true)}>
                                 <span class="icon-plus" aria-hidden="true" />
                                 <span class="text">Invite</span>
