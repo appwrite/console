@@ -42,7 +42,12 @@
     </nav>
     <nav class="user-profile">
         {#if $user}
-            <DropList bind:show={showDropdown} position="bottom" horizontal="left" arrow={false}>
+            <DropList
+                bind:show={showDropdown}
+                position="bottom"
+                horizontal="left"
+                arrow={false}
+                scrollable={true}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
                     <Avatar
                         size={40}

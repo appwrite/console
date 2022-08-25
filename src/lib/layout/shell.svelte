@@ -105,7 +105,11 @@
                     </a>
                 {/if}
                 {#if $titleDropdown?.length}
-                    <DropList bind:show={showDropdown} position="bottom" arrow={false}>
+                    <DropList
+                        bind:show={showDropdown}
+                        position="bottom"
+                        arrow={false}
+                        scrollable={true}>
                         <button
                             class="button is-text u-padding-inline-0"
                             on:click={() => (showDropdown = !showDropdown)}>
