@@ -19,12 +19,12 @@
     const create = async () => {
         try {
             const project = await sdkForConsole.projects.create(id ?? 'unique()', name, teamId);
-            id = name = null;
             dispatch('created', project);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
             });
+            id = name = null;
         } catch ({ message }) {
             error = message;
         }
@@ -35,7 +35,7 @@
     <Modal {error} size="big" bind:show>
         <svelte:fragment slot="header">Create Project</svelte:fragment>
         <FormList>
-            <InputText id="name" label="Name" bind:value={name} required />
+            <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
             {#if !showDropdown}
                 <div>
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
