@@ -31,7 +31,7 @@
         <h2 class="heading-level-5">Buckets</h2>
 
         <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add bucket</span>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create bucket</span>
         </Button>
     </div>
 

@@ -72,8 +72,9 @@
     <CardGrid>
         <h2 class="heading-level-6">Users Limit</h2>
         <p>
-            This limits new users from signing up for your project, regardless of authentication
-            method. You can still create users from your Appwrite console.
+            Limit new users from signing up for your project, regardless of authentication method.
+            You can still create users and team memberships from your Appwrite console. <b>
+                The maximum limit is 10,000 users.</b>
         </p>
 
         <svelte:fragment slot="aside">
@@ -135,7 +136,7 @@
     </CardGrid>
 
     <CardGrid>
-        <h2 class="heading-level-6">Session Length - (Coming Soon)</h2>
+        <h2 class="heading-level-6">Session Length (Coming Soon)</h2>
         <p>
             If you reduce the limit, users who are currently logged in will be logged out of the
             application.

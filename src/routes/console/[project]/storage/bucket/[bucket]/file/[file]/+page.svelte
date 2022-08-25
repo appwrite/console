@@ -7,7 +7,7 @@
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import { bytesToSize } from '$lib/helpers/sizeConvertion';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import Delete from './_deleteFile.svelte';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
@@ -101,7 +101,7 @@
             <svelte:fragment slot="aside">
                 <div>
                     <p>MIME Type: {$file.mimeType}</p>
-                    <p>Size: {bytesToSize($file.sizeOriginal)}</p>
+                    <p>Size: {calculateSize($file.sizeOriginal)}</p>
                     <p>Created: {toLocaleDate($file.$createdAt)}</p>
                     <p>Last Updated: {toLocaleDate($file.$updatedAt)}</p>
                 </div>

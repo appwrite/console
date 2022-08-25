@@ -2,27 +2,26 @@
     import { Alert, CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
     import {
+        Form,
         Button,
         InputText,
         InputTags,
         InputNumber,
         InputSelect,
-        InputSwitch,
-        Helper
+        InputSwitch
     } from '$lib/elements/forms';
     import { bucket } from '../store';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { sizeToBytes } from '$lib/helpers/sizeConvertion';
+    import { sizeToBytes, bytesToSize } from '$lib/helpers/sizeConvertion';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import Delete from '../_deleteBucket.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import Pill from '$lib/elements/pill.svelte';
 
     let showDelete = false;
-    let showError: false | 'name' | 'size' = false,
-        errorMessage = 'Something went wrong',
-        errorType: 'error' | 'warning' | 'success' = 'error';
+
     let enabled: boolean = null,
         bucketName: string = null,
         bucketPermissions: string = null,
@@ -32,13 +31,14 @@
         encryption: boolean = null,
         antivirus: boolean = null,
         maxSize: number;
-    let byteUnit: 'Bytes' | 'KB' | 'MB' | 'GB' = 'Bytes',
+    let byteUnit: 'Bytes' | 'KB' | 'MB' | 'GB' = 'MB',
         options = [
             { label: 'Bytes', value: 'Bytes' },
             { label: 'Kilobytes', value: 'KB' },
             { label: 'Megabytes', value: 'MB' },
             { label: 'Gigabytes', value: 'GB' }
         ];
+    let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
     let extensions = $bucket.allowedFileExtensions;
     let isExtensionsDisabled = true;
 
@@ -53,7 +53,7 @@
         encryption ??= $bucket.encryption;
         antivirus ??= $bucket.antivirus;
     });
-
+    $: maxSizePlaceholder = bytesToSize($bucket.maximumFileSize, byteUnit);
     $: if (bucketPermissions || bucketRead || bucketWrite) {
         if (bucketPermissions !== $bucket.permission) {
             arePermsDisabled = false;
@@ -71,12 +71,6 @@
         if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
             isExtensionsDisabled = false;
         } else isExtensionsDisabled = true;
-    }
-
-    function addError(location: typeof showError, message: string, type: typeof errorType) {
-        showError = location;
-        errorMessage = message;
-        errorType = type;
     }
 
     async function toggleBucket() {
@@ -105,13 +99,15 @@
         try {
             await sdkForProject.storage.updateBucket($bucket.$id, $bucket.name, $bucket.permission);
             $bucket.name = bucketName;
-            showError = false;
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
             });
         } catch (error) {
-            addError('name', error.message, 'error');
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
         }
     }
     async function updatePermissions() {
@@ -156,7 +152,7 @@
             $bucket.encryption = encryption;
             $bucket.antivirus = antivirus;
             addNotification({
-                message: `${$bucket.name} has been updatede`,
+                message: `${$bucket.name} has been updated`,
                 type: 'success'
             });
         } catch (error) {
@@ -181,7 +177,7 @@
             );
             $bucket.maximumFileSize = maxSize;
             addNotification({
-                message: `${$bucket.name} has been updatede`,
+                message: `${$bucket.name} has been updated`,
                 type: 'success'
             });
         } catch (error) {
@@ -206,7 +202,7 @@
             );
             $bucket.allowedFileExtensions = extensions;
             addNotification({
-                message: `${$bucket.name} has been updatede`,
+                message: `${$bucket.name} has been updated`,
                 type: 'success'
             });
         } catch (error) {
@@ -220,230 +216,233 @@
 
 <Container>
     {#if $bucket}
-        <CardGrid>
-            <h2 class="heading-level-7">{$bucket.name}</h2>
+        <Form on:submit={toggleBucket}>
+            <CardGrid>
+                <h2 class="heading-level-7">{$bucket.name}</h2>
 
-            <svelte:fragment slot="aside">
-                <ul>
-                    <InputSwitch
-                        label={enabled ? 'Enabled' : 'Disabled'}
-                        id="toggle"
-                        bind:value={enabled} />
-                </ul>
-                <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
-            </svelte:fragment>
+                <svelte:fragment slot="aside">
+                    <ul>
+                        <InputSwitch
+                            label={enabled ? 'Enabled' : 'Disabled'}
+                            id="toggle"
+                            bind:value={enabled} />
+                    </ul>
+                    <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
+                    <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                </svelte:fragment>
 
-            <svelte:fragment slot="actions">
-                <Button
-                    disabled={enabled === $bucket.enabled}
-                    on:click={() => {
-                        toggleBucket();
-                    }}>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
+                <svelte:fragment slot="actions">
+                    <Button disabled={enabled === $bucket.enabled} submit>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
 
-        <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+        <Form on:submit={updateName}>
+            <CardGrid>
+                <h6 class="heading-level-7">Update Name</h6>
+                <svelte:fragment slot="aside">
+                    <ul>
+                        <InputText
+                            id="name"
+                            label="Name"
+                            placeholder="Enter name"
+                            autocomplete={false}
+                            bind:value={bucketName} />
+                    </ul>
+                </svelte:fragment>
 
-            <svelte:fragment slot="aside">
-                <ul>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        placeholder="Enter name"
-                        autocomplete={false}
-                        bind:value={bucketName} />
-                    {#if showError === 'name'}
-                        <Helper type={errorType}>{errorMessage}</Helper>
+                <svelte:fragment slot="actions">
+                    <Button disabled={bucketName === $bucket.name || !bucketName} submit
+                        >Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+
+        <Form on:submit={updatePermissions}>
+            <CardGrid>
+                <h6 class="heading-level-7">Update Permissions</h6>
+                <p>
+                    Assign read or write permissions at the <b>Bucket Level</b> or
+                    <b>File Level</b>. If Bucket Level permissions are assigned, file permissions
+                    will be ignored.
+                </p>
+                <svelte:fragment slot="aside">
+                    <ul class="u-flex u-gap-12 common-section">
+                        <li>
+                            <label class="label">
+                                <input
+                                    type="radio"
+                                    class="is-small"
+                                    name="level"
+                                    bind:group={bucketPermissions}
+                                    value="bucket" />
+                                <span>Bucket Level</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="label">
+                                <input
+                                    type="radio"
+                                    class="is-small"
+                                    name="level"
+                                    bind:group={bucketPermissions}
+                                    value="file" />
+                                <span>File Level</span>
+                            </label>
+                        </li>
+                    </ul>
+                    <Alert type="info">
+                        <p>
+                            Tip: Add <b>role:all</b> for wildcards access. Check out our
+                            documentation for more on <a href="/#">Permissions</a>
+                        </p>
+                    </Alert>
+                    {#if bucketPermissions === 'bucket'}
+                        <ul class="common-section">
+                            <InputTags
+                                id="read"
+                                label="Read Access"
+                                placeholder="User ID, Team ID, or Role"
+                                bind:tags={bucketRead} />
+                            <InputTags
+                                id="write"
+                                label="Write Access"
+                                placeholder="User ID, Team ID, or Role"
+                                bind:tags={bucketWrite} />
+                        </ul>
                     {/if}
-                </ul>
-            </svelte:fragment>
+                </svelte:fragment>
+                <svelte:fragment slot="actions">
+                    <Button disabled={arePermsDisabled} submit>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
 
-            <svelte:fragment slot="actions">
-                <Button
-                    disabled={bucketName === $bucket.name || !bucketName}
-                    on:click={() => {
-                        updateName();
-                    }}>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-        <CardGrid>
-            <h6 class="heading-level-7">Update Permissions</h6>
-            <p>
-                Assign read or write permissions at the <b>Bucket Level</b> or
-                <b>File Level</b>. If Bucket Level permissions are assigned, file permissions will
-                be ignored.
-            </p>
-            <svelte:fragment slot="aside">
-                <ul class="u-flex u-gap-12 common-section">
-                    <li>
-                        <label class="label">
-                            <input
-                                type="radio"
-                                class="is-small"
-                                name="level"
-                                bind:group={bucketPermissions}
-                                value="bucket" />
-                            <span>Bucket Level</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="label">
-                            <input
-                                type="radio"
-                                class="is-small"
-                                name="level"
-                                bind:group={bucketPermissions}
-                                value="file" />
-                            <span>File Level</span>
-                        </label>
-                    </li>
-                </ul>
-                <Alert type="info">
-                    <p>
-                        Tip: Add <b>role:all</b> for wildcards access. Check out our documentation
-                        for more on <a href="/#">Permissions</a>
-                    </p>
-                </Alert>
-                {#if bucketPermissions === 'bucket'}
+        <Form on:submit={updateSecurity}>
+            <CardGrid>
+                <h2 class="heading-level-7">Update Security Settings</h2>
+                <p>
+                    Enable or disable security services for the bucket including <b> Ecryption</b>
+                    and <b> Antivirus scanning.</b>
+                </p>
+                <svelte:fragment slot="aside">
+                    <ul class="form-list">
+                        <li class="form-item">
+                            <label class="choice-item" for="encryption">
+                                <div class="input-text-wrapper">
+                                    <input
+                                        label="Encryption"
+                                        id="encryption"
+                                        type="checkbox"
+                                        class="switch"
+                                        role="switch"
+                                        bind:checked={encryption} />
+                                </div>
+                                <div class="choice-item-content">
+                                    <div class="choice-item-title">Encryption</div>
+
+                                    <div class="choice-item-paragraph">
+                                        This parameter allows you to configure whether or not the
+                                        files inside the bucket will be encrypted. We don't encrypt
+                                        files bigger than 20MB.
+                                    </div>
+                                </div>
+                            </label>
+                        </li>
+                        <li class="form-item">
+                            <label class="choice-item" for="antivirus">
+                                <div class="input-text-wrapper">
+                                    <input
+                                        label="Antivirus"
+                                        id="antivirus"
+                                        type="checkbox"
+                                        class="switch"
+                                        role="switch"
+                                        bind:checked={antivirus} />
+                                </div>
+                                <div class="choice-item-content">
+                                    <div class="choice-item-title">Antivirus</div>
+
+                                    <div class="choice-item-paragraph">
+                                        This parameter allows you to configure whether or not the
+                                        files inside the bucket should be scanned by the Appwrite
+                                        Antivirus scanner.
+                                    </div>
+                                </div>
+                            </label>
+                        </li>
+
+                        <li />
+                    </ul>
+                </svelte:fragment>
+
+                <svelte:fragment slot="actions">
+                    <Button
+                        disabled={encryption === $bucket.encryption &&
+                            antivirus === $bucket.antivirus}
+                        submit>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+
+        <Form on:submit={updateMaxSize}>
+            <CardGrid>
+                <h2 class="heading-level-6">Update Maximum File Size</h2>
+                <p>Set the maximum file size allowed in the bucket.</p>
+                <svelte:fragment slot="aside">
+                    <ul class="u-flex u-gap-12">
+                        <InputNumber
+                            id="size"
+                            label="Size"
+                            placeholder={`${maxSizePlaceholder}`}
+                            bind:value={maxSize} />
+                        <InputSelect id="bytes" label="Bytes" {options} bind:value={byteUnit} />
+                    </ul>
+                </svelte:fragment>
+
+                <svelte:fragment slot="actions">
+                    <Button disabled={!maxSize} submit>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+
+        <Form on:submit={updateAllowedExtensions}>
+            <CardGrid>
+                <h6 class="heading-level-7">Update Allowed File Extensions</h6>
+                <p>
+                    A maxiumum of 100 file extensions can be added. Leave blank to allow all file
+                    types.
+                </p>
+                <svelte:fragment slot="aside">
                     <ul class="common-section">
                         <InputTags
                             id="read"
-                            label="Read Access"
-                            placeholder="User ID, Team ID, or Role"
-                            bind:tags={bucketRead} />
-                        <InputTags
-                            id="write"
-                            label="Write Access"
-                            placeholder="User ID, Team ID, or Role"
-                            bind:tags={bucketWrite} />
+                            label="Allowed file extensions"
+                            placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
+                            bind:tags={extensions} />
+                        <li class="u-flex u-gap-12 u-margin-block-start-8 ">
+                            {#each suggestedExtensions as ext}
+                                <Pill
+                                    selected={extensions.includes(ext)}
+                                    button
+                                    on:click={() => {
+                                        if (!extensions.includes(ext))
+                                            extensions = [...extensions, ext];
+                                    }}>
+                                    <span class="icon-plus" aria-hidden="true" />
+                                    {ext}
+                                </Pill>
+                            {/each}
+                        </li>
                     </ul>
-                {/if}
-            </svelte:fragment>
-            <svelte:fragment slot="actions">
-                <Button
-                    disabled={arePermsDisabled}
-                    on:click={() => {
-                        updatePermissions();
-                    }}>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-        <CardGrid>
-            <h2 class="heading-level-7">Update Security Settings</h2>
-            <p>
-                Enable or disable security services for the bucket including <b> Ecryption</b>
-                and <b> Antivirus scanning.</b>
-            </p>
-            <svelte:fragment slot="aside">
-                <ul class="form-list">
-                    <li class="form-item">
-                        <label class="choice-item" for="encryption">
-                            <div class="input-text-wrapper">
-                                <input
-                                    label="Encryption"
-                                    id="encryption"
-                                    type="checkbox"
-                                    class="switch"
-                                    role="switch"
-                                    bind:checked={encryption} />
-                            </div>
-                            <div class="choice-item-content">
-                                <div class="choice-item-title">Encryption</div>
+                </svelte:fragment>
 
-                                <div class="choice-item-paragraph">
-                                    This parameter allows you to configure whether or not the files
-                                    inside the bucket will be encrypted. We don't encrypt files
-                                    bigger than 20MB.
-                                </div>
-                            </div>
-                        </label>
-                    </li>
-                    <li class="form-item">
-                        <label class="choice-item" for="antivirus">
-                            <div class="input-text-wrapper">
-                                <input
-                                    label="Antivirus"
-                                    id="antivirus"
-                                    type="checkbox"
-                                    class="switch"
-                                    role="switch"
-                                    bind:checked={antivirus} />
-                            </div>
-                            <div class="choice-item-content">
-                                <div class="choice-item-title">Antivirus</div>
+                <svelte:fragment slot="actions">
+                    <Button disabled={isExtensionsDisabled} submit>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
 
-                                <div class="choice-item-paragraph">
-                                    This parameter allows you to configure whether or not the files
-                                    inside the bucket should be scanned by the Appwrite Antivirus
-                                    scanner.
-                                </div>
-                            </div>
-                        </label>
-                    </li>
-
-                    <li />
-                </ul>
-            </svelte:fragment>
-
-            <svelte:fragment slot="actions">
-                <Button
-                    disabled={encryption === $bucket.encryption && antivirus === $bucket.antivirus}
-                    on:click={() => {
-                        updateSecurity();
-                    }}>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-        <CardGrid>
-            <h2 class="heading-level-6">Update Maximum File Size</h2>
-            <p>Set the maximum file size allowed in the bucket.</p>
-            <svelte:fragment slot="aside">
-                <ul class="u-flex u-gap-12">
-                    <InputNumber
-                        id="size"
-                        label="Size"
-                        placeholder={$bucket.maximumFileSize + ''}
-                        bind:value={maxSize} />
-                    <InputSelect id="bytes" label="Bytes" {options} bind:value={byteUnit} />
-                </ul>
-            </svelte:fragment>
-
-            <svelte:fragment slot="actions">
-                <Button
-                    disabled={!maxSize}
-                    on:click={() => {
-                        updateMaxSize();
-                    }}>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-        <CardGrid>
-            <h6 class="heading-level-7">Update Allowed File Extensions</h6>
-            <p>
-                A maxiumum of 100 file extensions can be added. Leave blank to allow all file types.
-            </p>
-            <svelte:fragment slot="aside">
-                <Alert type="info">
-                    <p>
-                        Tip: Commonly added extensions include JPG, PNG, SVG, GIF, HTML, PDF, MP4.
-                    </p>
-                </Alert>
-                <ul class="common-section">
-                    <InputTags
-                        id="read"
-                        label="Allowed file extensions"
-                        placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
-                        bind:tags={extensions} />
-                </ul>
-            </svelte:fragment>
-
-            <svelte:fragment slot="actions">
-                <Button
-                    disabled={isExtensionsDisabled}
-                    on:click={() => {
-                        updateAllowedExtensions();
-                    }}>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
         <CardGrid>
             <h6 class="heading-level-7">Delete Bucket</h6>
             <p>

@@ -51,14 +51,14 @@
                 <TableBody>
                     {#each response.memberships as membership}
                         <TableRowLink
-                            href={`${base}/console/${project}/authentication/user/${membership.userId}`}>
+                            href={`${base}/console/${project}/authentication/teams/${membership.teamId}`}>
                             <TableCellText title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar
                                         size={32}
-                                        src={getAvatar(membership.userName)}
-                                        name={membership.userName} />
-                                    <span>{membership.userName ? membership.userName : 'n/a'}</span>
+                                        src={getAvatar(membership.teamName)}
+                                        name={membership.teamName} />
+                                    <span>{membership.teamName ? membership.teamName : 'n/a'}</span>
                                 </div>
                             </TableCellText>
                             <TableCellText title="Role">{membership.roles}</TableCellText>
