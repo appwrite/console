@@ -10,8 +10,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import Attribute from './document/[document]/_attribute.svelte';
 
-    $: attributeList.load($page.params.collection);
-
     export let showCreate = false;
 
     let newDocument = {};
@@ -62,6 +60,8 @@
             }
         }
     };
+
+    $: attributeList.load($page.params.collection);
 
     $: if (!showCreate) {
         initializeDocument();

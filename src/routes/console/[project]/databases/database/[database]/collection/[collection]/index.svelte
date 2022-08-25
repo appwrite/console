@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import {
-        Table,
+        TableScroll,
         TableRowLink,
         TableBody,
         TableHeader,
@@ -47,36 +47,35 @@
     </div>
 
     {#if $documentList?.total}
-        <div class="table-wrapper">
-            <Table sticky={true}>
-                <TableHeader>
-                    <TableCellHead>Document ID</TableCellHead>
-                    {#each columns as column}
-                        <TableCellHead>{column.title}</TableCellHead>
-                    {/each}
-                </TableHeader>
-                <TableBody>
-                    {#each $documentList.documents as document}
-                        <TableRowLink
-                            href={`${base}/console/${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}>
-                            <TableCell width={230}>
-                                <Copy value={document.$id}>
-                                    <Pill button>
-                                        <span class="icon-duplicate" aria-hidden="true" />
-                                        <span class="text u-trim-start">{document.$id}</span>
-                                    </Pill>
-                                </Copy>
+        <TableScroll>
+            <TableHeader>
+                <TableCellHead>Document ID</TableCellHead>
+                {#each columns as column}
+                    <TableCellHead>{column.title}</TableCellHead>
+                {/each}
+            </TableHeader>
+            <TableBody>
+                {#each $documentList.documents as document}
+                    <TableRowLink
+                        href={`${base}/console/${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}>
+                        <TableCell width={230}>
+                            <Copy value={document.$id}>
+                                <Pill button>
+                                    <span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text u-trim-start">{document.$id}</span>
+                                </Pill>
+                            </Copy>
+                        </TableCell>
+                        {#each columns as column}
+                            <TableCell>
+                                {document[column.key] ?? 'n/a'}
                             </TableCell>
-                            {#each columns as column}
-                                <TableCell>
-                                    {document[column.key] ?? 'n/a'}
-                                </TableCell>
-                            {/each}
-                        </TableRowLink>
-                    {/each}
-                </TableBody>
-            </Table>
-        </div>
+                        {/each}
+                    </TableRowLink>
+                {/each}
+            </TableBody>
+        </TableScroll>
+
         <div class="u-flex common-section u-main-space-between">
             <p class="text">Total results: {$documentList.total}</p>
             <Pagination {limit} bind:offset sum={$documentList.total} />
@@ -100,4 +99,6 @@
     {/if}
 </Container>
 
-<Create bind:showCreate />
+{#if showCreate}
+    <Create bind:showCreate />
+{/if}
