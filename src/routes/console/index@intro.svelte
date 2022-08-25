@@ -29,21 +29,28 @@
         await goto(`${base}/console/${event.detail.$id}`);
     };
 
-    const platformsName = {
-        web: 'Web',
-        'flutter-ios': 'Flutter',
-        'flutter-android': 'Flutter',
-        ios: 'Apple',
-        android: 'Android',
-        unity: 'Unity'
-    };
-    const platformsIcon = {
-        web: 'code',
-        'flutter-ios': 'flutter',
-        'flutter-android': 'flutter',
-        ios: 'apple',
-        android: 'android',
-        unity: 'unity'
+    const getPlatformInfo = (platform: string) => {
+        let name: string, icon: string;
+        if (platform.includes('flutter')) {
+            name = 'Flutter';
+            icon = 'flutter';
+        } else if (platform.includes('apple')) {
+            name = 'Apple';
+            icon = 'apple';
+        } else if (platform.includes('android')) {
+            name = 'Android';
+            icon = 'android';
+        } else if (platform.includes('unity')) {
+            name = 'Unity';
+            icon = 'unity';
+        } else if (platform.includes('web')) {
+            name = 'Web';
+            icon = 'code';
+        } else {
+            name = 'Unknown';
+            icon = 'unknown';
+        }
+        return { name, icon };
     };
 
     $: if (currentOrganization !== $organization?.$id) {
@@ -82,9 +89,9 @@
                         {#if i < 3}
                             <Pill>
                                 <span
-                                    class={`icon-${platformsIcon[platform]}`}
+                                    class={`icon-${getPlatformInfo(platform).icon}`}
                                     aria-hidden="true" />
-                                {platformsName[platform]}
+                                {getPlatformInfo(platform).name}
                             </Pill>
                         {/if}
                     {/each}
