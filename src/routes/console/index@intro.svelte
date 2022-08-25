@@ -72,7 +72,7 @@
             {#each projects as project}
                 <Bucket href={`${base}/console/${project.$id}`}>
                     <svelte:fragment slot="eyebrow"
-                        >{project?.platforms?.length ?? 0} apps</svelte:fragment>
+                        >{project?.platforms?.length ? project?.platforms?.length : 'No'} apps</svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
