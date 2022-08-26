@@ -1,4 +1,4 @@
-import { project } from '../../routes/console/[project]/store';
+import { project } from '../../routes/console/project-[project]/store';
 import { get, writable, readable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
 

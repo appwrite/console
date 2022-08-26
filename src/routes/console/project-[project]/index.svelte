@@ -28,19 +28,19 @@
     <Cover adjustContentToCover>
         <ul class="links-nav">
             <li class="links-nav-item">
-                <a class="link" href={`${base}/console/${$project.$id}/settings`}>
+                <a class="link" href={`${base}/console/project-${$project.$id}/settings`}>
                     <span class="icon-cog" aria-hidden="true" />
                     <span class="text">Settings</span>
                 </a>
             </li>
             <li class="links-nav-item">
-                <a class="link" href={`${base}/console/${$project.$id}/keys`}>
+                <a class="link" href={`${base}/console/project-${$project.$id}/keys`}>
                     <span class="icon-key" aria-hidden="true" />
                     <span class="text">API Keys</span>
                 </a>
             </li>
             <li class="links-nav-item">
-                <a class="link" href={`${base}/console/${$project.$id}/webhooks`}>
+                <a class="link" href={`${base}/console/project-${$project.$id}/webhooks`}>
                     <span class="icon-link" aria-hidden="true" />
                     <span class="text">Webhooks</span>
                 </a>

@@ -73,7 +73,7 @@
             class="grid-box common-section u-margin-block-start-32"
             style={`--grid-gap:2rem; --grid-item-size:${projects.length > 3 ? '22rem' : '25rem'};`}>
             {#each projects as project}
-                <Bucket href={`${base}/console/${project.$id}`}>
+                <Bucket href={`${base}/console/project-${project.$id}`}>
                     <svelte:fragment slot="eyebrow"
                         >{project?.platforms?.length ? project?.platforms?.length : 'No'} apps</svelte:fragment>
                     <svelte:fragment slot="title">
