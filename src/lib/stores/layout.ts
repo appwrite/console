@@ -44,7 +44,7 @@ export const copyData = writable({
 
 export function updateLayout(args: updateLayoutArguments) {
     const projectId = get(project)?.$id;
-    const base = args?.customBase ?? projectId ? `/console/${projectId}` : ``;
+    const base = args?.customBase ?? projectId ? `/console/project-${projectId}` : ``;
 
     if (args?.tabs) {
         args.tabs.map((tab) => {

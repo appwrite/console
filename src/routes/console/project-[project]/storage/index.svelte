@@ -19,7 +19,7 @@
     const project = $page.params.project;
     const bucketCreated = async (event: CustomEvent<Models.Bucket>) => {
         showCreate = false;
-        await goto(`${base}/console/${project}/storage/bucket/${event.detail.$id}`);
+        await goto(`${base}/console/project-${project}/storage/bucket/${event.detail.$id}`);
     };
 
     $: bucketList.load(search, $pageLimit, offset ?? 0);
@@ -42,7 +42,7 @@
                 $bucketList.total > 3 ? '22rem' : '25rem'
             };`}>
             {#each $bucketList.buckets as bucket}
-                <Bucket href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
+                <Bucket href={`${base}/console/project-${project}/storage/bucket/${bucket.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
                     <svelte:fragment slot="status">

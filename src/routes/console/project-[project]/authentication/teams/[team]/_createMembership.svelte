@@ -15,7 +15,7 @@
     let error: string;
 
     const create = async () => {
-        const url = `${$page.url.origin}/console/${$page.params.project}/authentication/teams/${$page.params.team}/members`;
+        const url = `${$page.url.origin}/console/project-${$page.params.project}/authentication/teams/${$page.params.team}/members`;
 
         try {
             const user = await sdkForProject.teams.createMembership(

@@ -19,7 +19,7 @@
             type: 'success'
         });
         project.load(projectId);
-        await goto(`${base}/console/${projectId}/keys`);
+        await goto(`${base}/console/project-${projectId}/keys`);
     };
 </script>
 

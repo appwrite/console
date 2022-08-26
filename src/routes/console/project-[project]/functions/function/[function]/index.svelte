@@ -58,7 +58,7 @@
                     <TableRow>
                         <TableCellLink
                             title="ID"
-                            href={`${base}/console/${project}/storage/bucket/${functionId}/${deployment.$id}`}>
+                            href={`${base}/console/project-${project}/storage/bucket/${functionId}/${deployment.$id}`}>
                             {deployment.$id}
                         </TableCellLink>
                         <TableCellText title="Active">{deployment.activate}</TableCellText>

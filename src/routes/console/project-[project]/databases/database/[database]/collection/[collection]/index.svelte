@@ -54,7 +54,7 @@
                         <TableRow>
                             {#each columns as column}
                                 <TableCellLink
-                                    href={`${base}/console/${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}
+                                    href={`${base}/console/project-${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}
                                     title={column.title}>
                                     {document[column.key] ?? 'n/a'}
                                 </TableCellLink>

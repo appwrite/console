@@ -43,7 +43,7 @@
                 type: 'success'
             });
             await goto(
-                `${base}/console/${projectId}/database/collection/${created.$collection}/document/${created.$id}`
+                `${base}/console/project-${projectId}/database/collection/${created.$collection}/document/${created.$id}`
             );
         } catch (error) {
             addNotification({
@@ -59,7 +59,7 @@
 </svelte:head>
 {#if $doc && $collection}
     <Cover>
-        <Back href={`${base}/console/${projectId}/database/collection/${$collection.$id}`}>
+        <Back href={`${base}/console/project-${projectId}/database/collection/${$collection.$id}`}>
             Collection - {$collection.name}
         </Back>
         <h1>Create Document</h1>

@@ -29,7 +29,7 @@
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
-        await goto(`${base}/console/${project}/authentication/teams/${event.detail.$id}`);
+        await goto(`${base}/console/project-${project}/authentication/teams/${event.detail.$id}`);
     };
 
     $: if (search) offset = 0;
@@ -61,7 +61,7 @@
             <TableBody>
                 {#each $teamsList.teams as team}
                     <TableRowLink
-                        href={`${base}/console/${project}/authentication/teams/${team.$id}`}>
+                        href={`${base}/console/project-${project}/authentication/teams/${team.$id}`}>
                         <TableCell title="ID">
                             <div class="u-flex u-gap-12">
                                 <Avatar size={32} name={team.name} src={getAvatar(team.name)} />

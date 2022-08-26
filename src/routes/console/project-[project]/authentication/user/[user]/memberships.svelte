@@ -51,7 +51,7 @@
                 <TableBody>
                     {#each response.memberships as membership}
                         <TableRowLink
-                            href={`${base}/console/${project}/authentication/teams/${membership.teamId}`}>
+                            href={`${base}/console/project-${project}/authentication/teams/${membership.teamId}`}>
                             <TableCellText title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar

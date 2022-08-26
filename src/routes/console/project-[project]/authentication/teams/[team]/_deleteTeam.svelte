@@ -15,7 +15,7 @@
         try {
             await sdkForProject.teams.delete(team.$id);
             showDelete = false;
-            await goto(`${base}/console/${$page.params.project}/authentication/teams`);
+            await goto(`${base}/console/project-${$page.params.project}/authentication/teams`);
         } catch (error) {
             addNotification({
                 type: 'error',

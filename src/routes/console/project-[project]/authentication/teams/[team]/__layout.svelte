@@ -21,7 +21,7 @@
             navigate: event,
             level: 4,
             title: $team.name,
-            back: `${base}/console/${$page.params.project}/authentication/teams`,
+            back: `${base}/console/project-${$page.params.project}/authentication/teams`,
             breadcrumbs: {
                 title: $team.name,
                 href: `teams/${teamId}`

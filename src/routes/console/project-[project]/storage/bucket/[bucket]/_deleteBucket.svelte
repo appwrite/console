@@ -14,7 +14,7 @@
         try {
             await sdkForProject.storage.deleteBucket($bucket.$id);
             showDelete = false;
-            await goto(`${base}/console/${$page.params.project}/storage`);
+            await goto(`${base}/console/project-${$page.params.project}/storage`);
         } catch (error) {
             addNotification({
                 type: 'error',

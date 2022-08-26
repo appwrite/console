@@ -25,7 +25,7 @@
                 title: $user.name,
                 href: `user/${userId}`
             },
-            back: `${base}/console/${$page.params.project}/authentication`,
+            back: `${base}/console/project-${$page.params.project}/authentication`,
             copy: {
                 text: 'User ID',
                 value: userId

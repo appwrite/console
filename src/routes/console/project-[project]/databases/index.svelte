@@ -16,7 +16,7 @@
     const limit = 25;
     const project = $page.params.project;
     const databaseCreated = async (event: CustomEvent<Models.Database>) => {
-        await goto(`${base}/console/${project}/databases/database/${event.detail.$id}`);
+        await goto(`${base}/console/project-${project}/databases/database/${event.detail.$id}`);
     };
     $: request = sdkForProject.databases.list(search, limit, offset);
     $: if (search) offset = 0;
@@ -36,7 +36,7 @@
             <Tiles>
                 {#each response.databases as database}
                     <Tile
-                        href={`${base}/console/${project}/databases/database/${database.$id}`}
+                        href={`${base}/console/project-${project}/databases/database/${database.$id}`}
                         title={database.name} />
                 {/each}
             </Tiles>

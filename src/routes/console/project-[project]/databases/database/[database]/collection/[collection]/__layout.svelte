@@ -27,7 +27,7 @@
                 href: `collection/${collectionId}`,
                 title: $collection.name
             },
-            back: `${base}/console/${$page.params.project}/database`,
+            back: `${base}/console/project-${$page.params.project}/database`,
             tabs: [
                 {
                     href: path,

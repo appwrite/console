@@ -30,7 +30,7 @@
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
-        await goto(`${base}/console/${project}/authentication/user/${event.detail.$id}`);
+        await goto(`${base}/console/project-${project}/authentication/user/${event.detail.$id}`);
     };
 
     $: if (search) offset = 0;
@@ -64,7 +64,7 @@
             <TableBody>
                 {#each $usersList.users as user}
                     <TableRowLink
-                        href={`${base}/console/${project}/authentication/user/${user.$id}`}>
+                        href={`${base}/console/project-${project}/authentication/user/${user.$id}`}>
                         <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar size={32} src={getAvatar(user.name)} name={user.name} />

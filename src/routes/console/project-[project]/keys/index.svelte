@@ -37,7 +37,7 @@
                     {#each $project.keys as key}
                         <TableRow>
                             <TableCellLink
-                                href={`${base}/console/${projectId}/keys/key/${key.$id}`}
+                                href={`${base}/console/project-${projectId}/keys/key/${key.$id}`}
                                 title="Name">
                                 {key.name}
                             </TableCellLink>

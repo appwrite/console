@@ -123,7 +123,7 @@
                         </TableRow>
                     {:else}
                         <TableRowLink
-                            href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
+                            href={`${base}/console/project-${project}/storage/bucket/${bucket}/file/${file.$id}`}>
                             <TableCell title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
@@ -155,7 +155,7 @@
                                             on:click={(e) => {
                                                 e.preventDefault();
                                                 goto(
-                                                    `${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`
+                                                    `${base}/console/project-${project}/storage/bucket/${bucket}/file/${file.$id}`
                                                 );
                                             }}>Update</DropListItem>
                                         <DropListItem

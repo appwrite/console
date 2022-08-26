@@ -17,7 +17,7 @@
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
     const collectionCreated = async (event: CustomEvent<Models.Collection>) => {
-        await goto(`${base}/console/${projectId}/databases/collection/${event.detail.$id}`);
+        await goto(`${base}/console/project-${projectId}/databases/collection/${event.detail.$id}`);
     };
 
     $: request = sdkForProject.databases.listCollections(search, limit, offset);
@@ -40,7 +40,7 @@
             <Tiles>
                 {#each response.collections as collection}
                     <Tile
-                        href={`${base}/console/${projectId}/databases/database/${databaseId}/collection/${collection.$id}`}
+                        href={`${base}/console/project-${projectId}/databases/database/${databaseId}/collection/${collection.$id}`}
                         title={collection.name} />
                 {/each}
             </Tiles>

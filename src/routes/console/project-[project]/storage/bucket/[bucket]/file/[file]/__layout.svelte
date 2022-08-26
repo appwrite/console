@@ -24,7 +24,7 @@
                 href: `file/${fileId}`,
                 title: $file.name
             },
-            back: `${base}/console/${$page.params.project}/storage/bucket/${bucketId}`,
+            back: `${base}/console/project-${$page.params.project}/storage/bucket/${bucketId}`,
             title: $file.name,
             copy: {
                 text: 'File ID',

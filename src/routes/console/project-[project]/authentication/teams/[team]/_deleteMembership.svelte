@@ -23,7 +23,7 @@
             showDelete = false;
             dispatch('deleted');
             await goto(
-                `${base}/console/${$page.params.project}/authentication/teams/${selectedMembership.teamId}/members`
+                `${base}/console/project-${$page.params.project}/authentication/teams/${selectedMembership.teamId}/members`
             );
         } catch (error) {
             addNotification({

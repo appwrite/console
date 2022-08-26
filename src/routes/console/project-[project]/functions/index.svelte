@@ -32,7 +32,7 @@
             <Tiles>
                 {#each response.functions as func}
                     <Tile
-                        href={`${base}/console/${project}/functions/function/${func.$id}`}
+                        href={`${base}/console/project-${project}/functions/function/${func.$id}`}
                         title={func.name} />
                 {/each}
             </Tiles>

@@ -15,7 +15,7 @@
             await sdkForProject.teams.deleteMembership('tmpstring', 'tmpstring2');
             showDeleteAll = false;
             await goto(
-                `${base}/console/${$page.params.project}/authentication/${$user.$id}/membeships`
+                `${base}/console/project-${$page.params.project}/authentication/${$user.$id}/membeships`
             );
         } catch (error) {
             addNotification({

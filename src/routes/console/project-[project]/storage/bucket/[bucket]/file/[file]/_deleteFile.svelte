@@ -14,7 +14,9 @@
         try {
             await sdkForProject.storage.deleteFile($file.bucketId, $file.$id);
             showDelete = false;
-            await goto(`${base}/console/${$page.params.project}/storage/bucket/${$file.bucketId}`);
+            await goto(
+                `${base}/console/project-${$page.params.project}/storage/bucket/${$file.bucketId}`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',

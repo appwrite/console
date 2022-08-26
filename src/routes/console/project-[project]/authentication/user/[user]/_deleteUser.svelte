@@ -19,7 +19,7 @@
                 type: 'success',
                 message: `${$user.name} has been deleted`
             });
-            await goto(`${base}/console/${$page.params.project}/authentication`);
+            await goto(`${base}/console/project-${$page.params.project}/authentication`);
         } catch (error) {
             addNotification({
                 type: 'error',

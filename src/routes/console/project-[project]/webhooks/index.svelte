@@ -36,7 +36,7 @@
                     {#each response.webhooks as webhook}
                         <TableCellLink
                             title="Name"
-                            href={`${base}/console/${projectId}/webhooks/webhook/${webhook.$id}`}>
+                            href={`${base}/console/project-${projectId}/webhooks/webhook/${webhook.$id}`}>
                             {webhook.name}
                         </TableCellLink>
                         <TableCellText title="URL">{webhook.url}</TableCellText>
