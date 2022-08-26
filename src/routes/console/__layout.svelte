@@ -49,6 +49,4 @@
     <footer class="main-footer" />
 </Shell>
 
-{#if $newOrgModal}
-    <Create bind:show={$newOrgModal} closable={!!$organizationList?.total} />
-{/if}
+<Create bind:show={$newOrgModal} closable={!!$organizationList?.total} />

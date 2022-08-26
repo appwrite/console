@@ -13,16 +13,16 @@
     import Create from '../_createOrganization.svelte';
     import { page } from '$app/stores';
 
-    $: org = $page.params.organization;
-    $: path = `console/organization-${org}`;
+    $: organizationId = $page.params.organization;
+    $: path = `console/organization-${organizationId}`;
 
     onMount(handle);
     afterNavigate(handle);
 
     async function handle(event = null) {
-        if ($organization.$id !== org) {
-            await organization.load(org);
-            await memberList.load(org, '', 100, 0);
+        if ($organization.$id !== organizationId) {
+            await organization.load(organizationId);
+            await memberList.load(organizationId, '', 12, 0);
         }
         updateLayout({
             navigate: event,
