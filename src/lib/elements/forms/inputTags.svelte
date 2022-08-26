@@ -90,7 +90,7 @@
             </div>
             <input
                 {id}
-                {placeholder}
+                placeholder={!tags.length ? placeholder : ''}
                 {disabled}
                 {readonly}
                 type="text"

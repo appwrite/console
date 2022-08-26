@@ -22,7 +22,8 @@
         "@aw-labs/icons": "0.0.0-48",
         "@aw-labs/ui": "0.0.0-48",
         "echarts": "^5.3.3",
-        "tippy.js": "^6.3.7"
+        "tippy.js": "^6.3.7",
+        "web-vitals": "^2.1.4"
     },
     "devDependencies": {
         "@playwright/test": "^1.25.0",
