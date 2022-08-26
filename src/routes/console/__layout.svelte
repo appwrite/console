@@ -34,6 +34,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>Appwrite - Console</title>
+</svelte:head>
+
 <Shell showSideNavigation={$page.url.pathname !== '/console' && !$page?.params.organization}>
     <svelte:fragment slot="header">
         <Header />
