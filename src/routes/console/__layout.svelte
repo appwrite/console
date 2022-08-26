@@ -15,7 +15,7 @@
     import { onMount } from 'svelte';
 
     updateLayout({
-        title: $organization?.name ?? 'Projects',
+        title: $organization?.name ?? '',
         level: 0
     });
 
@@ -28,26 +28,23 @@
 
     afterNavigate(async () => {
         if ($page.url.pathname === '/console' && !$newOrgModal) {
-            console.log('test');
             const destination = await redirectTo();
             await goto(destination);
         }
     });
 </script>
 
-<Shell showSideNavigation={!$page?.params.organization}>
+<Shell showSideNavigation={$page.url.pathname !== '/console' && !$page?.params.organization}>
     <svelte:fragment slot="header">
         <Header />
     </svelte:fragment>
     <svelte:fragment slot="side">
-        {#if !$page?.params.organization}
-            <SideNavigation />
-        {/if}
+        <SideNavigation />
     </svelte:fragment>
     <slot />
     <footer class="main-footer" />
 </Shell>
 
 {#if $newOrgModal}
-    <Create bind:show={$newOrgModal} closable={!$organizationList?.total} />
+    <Create bind:show={$newOrgModal} closable={!!$organizationList?.total} />
 {/if}

@@ -67,13 +67,15 @@
                         class:icon-cheveron-down={!showDropdown} />
                 </button>
                 <svelte:fragment slot="list">
-                    {#each $organizationList.teams as org}
-                        <DropListLink
-                            href={`${base}/console/organization-${org.$id}`}
-                            on:click={() => {
-                                showDropdown = false;
-                            }}>{org.name}</DropListLink>
-                    {/each}
+                    {#if $organizationList?.total}
+                        {#each $organizationList.teams as org}
+                            <DropListLink
+                                href={`${base}/console/organization-${org.$id}`}
+                                on:click={() => {
+                                    showDropdown = false;
+                                }}>{org.name}</DropListLink>
+                        {/each}
+                    {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="other">
                     <section class="drop-section">

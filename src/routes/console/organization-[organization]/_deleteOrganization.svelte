@@ -1,13 +1,14 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { Modal } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { createEventDispatcher } from 'svelte';
     import { organization, organizationList } from '$lib/stores/organization';
 
     export let showDelete = false;
+
+    const dispatch = createEventDispatcher();
 
     const deleteUser = async () => {
         try {
@@ -20,7 +21,7 @@
             if ($organizationList?.total) {
                 organization.set($organizationList.teams[0]);
             }
-            await goto(`${base}/console/`);
+            dispatch('deleted');
         } catch (error) {
             addNotification({
                 type: 'error',

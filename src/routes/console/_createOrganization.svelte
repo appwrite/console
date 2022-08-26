@@ -25,7 +25,7 @@
             await organizationList.load();
             titleDropdown.set($organizationList.teams);
             organization.set(team);
-            goto('/console');
+            await goto(`/console/organization-${$organization.$id}`);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
@@ -89,7 +89,7 @@
             {/if}
         </FormList>
         <svelte:fragment slot="footer">
-            <Button secondary on:click={() => (show = false)}>Cancel</Button>
+            <Button disabled={!closable} secondary on:click={() => (show = false)}>Cancel</Button>
             <Button submit>Create</Button>
         </svelte:fragment>
     </Modal>

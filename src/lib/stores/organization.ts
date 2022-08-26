@@ -30,6 +30,9 @@ function createOrganization() {
         load: async (teamId: string) => {
             const response = await sdkForConsole.teams.get(teamId);
             set(response);
+        },
+        deleteCache: () => {
+            sessionStorage.removeItem('organization');
         }
     };
 }

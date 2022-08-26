@@ -4,9 +4,11 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization, memberList } from '$lib/stores/organization';
-    import { title, breadcrumbs } from '$lib/stores/layout';
+    import { organization, organizationList, memberList } from '$lib/stores/organization';
+    import { title, breadcrumbs, updateLayout } from '$lib/stores/layout';
     import Delete from './_deleteOrganization.svelte';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
     let name: string = $organization.name;
     let showDelete = false;
@@ -31,8 +33,19 @@
         }
     }
 
+    const deleted = async () => {
+        await organizationList.load();
+        if (!$organizationList?.total) {
+            organization.set(null);
+            updateLayout({
+                title: ''
+            });
+        }
+        await goto(`${base}/console`);
+    };
+
     organization.subscribe((org) => {
-        name = org.name;
+        name = org?.name;
     });
 
     let avatars = [];
@@ -52,51 +65,53 @@
 </script>
 
 <Container>
-    <Form on:submit={updateName}>
-        <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+    {#if $organization}
+        <Form on:submit={updateName}>
+            <CardGrid>
+                <h6 class="heading-level-7">Update Name</h6>
 
+                <svelte:fragment slot="aside">
+                    <ul>
+                        <InputText
+                            id="name"
+                            label="Name"
+                            placeholder="Enter name"
+                            autocomplete={false}
+                            bind:value={name} />
+                    </ul>
+                </svelte:fragment>
+
+                <svelte:fragment slot="actions">
+                    <Button disabled={name === $organization.name || !name} submit>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+
+        <CardGrid>
+            <div>
+                <h6 class="heading-level-7">Delete Organization</h6>
+            </div>
+            <p>
+                The organization will be permanently deleted, including all projects and data
+                associated with this organization. This action is irreversible.
+            </p>
             <svelte:fragment slot="aside">
-                <ul>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        placeholder="Enter name"
-                        autocomplete={false}
-                        bind:value={name} />
-                </ul>
+                <Box>
+                    <svelte:fragment slot="image">
+                        <AvatarGroup {avatars} total={avatarsTotal} />
+                    </svelte:fragment>
+                    <svelte:fragment slot="title">
+                        <h6 class="u-bold">{$organization.name}</h6>
+                    </svelte:fragment>
+                    <p>{$organization.total} projects</p>
+                </Box>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={name === $organization.name || !name} submit>Update</Button>
+                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
             </svelte:fragment>
         </CardGrid>
-    </Form>
-
-    <CardGrid>
-        <div>
-            <h6 class="heading-level-7">Delete Organization</h6>
-        </div>
-        <p>
-            The organization will be permanently deleted, including all projects and data associated
-            with this organization. This action is irreversible.
-        </p>
-        <svelte:fragment slot="aside">
-            <Box>
-                <svelte:fragment slot="image">
-                    <AvatarGroup {avatars} total={avatarsTotal} />
-                </svelte:fragment>
-                <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$organization.name}</h6>
-                </svelte:fragment>
-                <p>{$organization.total} projects</p>
-            </Box>
-        </svelte:fragment>
-
-        <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-        </svelte:fragment>
-    </CardGrid>
+    {/if}
 </Container>
 
-<Delete bind:showDelete />
+<Delete bind:showDelete on:deleted={deleted} />

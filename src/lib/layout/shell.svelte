@@ -105,7 +105,7 @@
                         <span class="icon-cheveron-left" aria-hidden="true" />
                     </a>
                 {/if}
-                {#if $titleDropdown?.length}
+                {#if $titleDropdown?.length && $organization}
                     <DropList
                         bind:show={showDropdown}
                         position="bottom"
