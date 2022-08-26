@@ -13,11 +13,11 @@
     import { page } from '$app/stores';
 
     let projects: Models.Project[] = [];
-    $: org = $page.params.organization;
+    $: organizationId = $page.params.organization;
 
     onMount(async () => {
         await projectList.load();
-        projects = $projectList?.projects?.filter((n) => n.teamId === org);
+        projects = $projectList?.projects?.filter((n) => n.teamId === organizationId);
     });
 
     let showCreate = false;
@@ -53,7 +53,7 @@
         return { name, icon };
     };
 
-    $: projects = $projectList?.projects?.filter((a) => a.teamId === org);
+    $: projects = $projectList?.projects?.filter((a) => a.teamId === organizationId);
 </script>
 
 <Container>
@@ -140,4 +140,4 @@
 
 <CreateOrganization bind:show={addOrganization} />
 
-<CreateProject bind:show={showCreate} teamId={org} on:created={projectCreated} />
+<CreateProject bind:show={showCreate} teamId={organizationId} on:created={projectCreated} />
