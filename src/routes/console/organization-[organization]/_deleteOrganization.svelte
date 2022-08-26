@@ -5,7 +5,7 @@
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization, organizationList } from './store';
+    import { organization, organizationList } from '$lib/stores/organization';
 
     export let showDelete = false;
 

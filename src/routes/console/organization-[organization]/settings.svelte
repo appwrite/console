@@ -4,7 +4,7 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization, memberList } from './store';
+    import { organization, memberList } from '$lib/stores/organization';
     import { title, breadcrumbs } from '$lib/stores/layout';
     import Delete from './_deleteOrganization.svelte';
 

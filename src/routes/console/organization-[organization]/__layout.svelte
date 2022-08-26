@@ -8,7 +8,7 @@
         memberList,
         newOrgModal,
         newMemberModal
-    } from './store';
+    } from '$lib/stores/organization';
     import CreateMember from './_createMember.svelte';
     import Create from '../_createOrganization.svelte';
     import { page } from '$app/stores';

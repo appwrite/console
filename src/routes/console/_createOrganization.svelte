@@ -5,7 +5,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
-    import { organization, organizationList } from './organization-[organization]/store';
+    import { organization, organizationList } from '$lib/stores/organization';
     import { titleDropdown } from '$lib/stores/layout';
     import { goto } from '$app/navigation';
 

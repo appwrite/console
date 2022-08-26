@@ -10,7 +10,7 @@
         memberList,
         newOrgModal,
         newMemberModal
-    } from '../../routes/console/organization-[organization]/store';
+    } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { base } from '$app/paths';
 

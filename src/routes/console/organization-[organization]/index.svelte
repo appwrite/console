@@ -8,7 +8,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import CreateOrganization from '../_createOrganization.svelte';
     import CreateProject from './_createProject.svelte';
-    import { projectList } from './store';
+    import { projectList } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
 

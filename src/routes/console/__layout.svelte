@@ -3,11 +3,7 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Header from '$lib/layout/header.svelte';
     import { updateLayout } from '$lib/stores/layout';
-    import {
-        organization,
-        organizationList,
-        newOrgModal
-    } from './organization-[organization]/store';
+    import { organization, organizationList, newOrgModal } from '$lib/stores/organization';
     import Create from './_createOrganization.svelte';
     import { page } from '$app/stores';
     import { afterNavigate, goto } from '$app/navigation';

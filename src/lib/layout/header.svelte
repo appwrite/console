@@ -10,11 +10,7 @@
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import {
-        organizationList,
-        organization,
-        newOrgModal
-    } from '../../routes/console/organization-[organization]/store';
+    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
 
     let showDropdown = false;
 

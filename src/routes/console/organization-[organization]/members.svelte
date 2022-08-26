@@ -13,7 +13,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import Delete from './_deleteMember.svelte';
-    import { organization, memberList, newMemberModal } from './store';
+    import { organization, memberList, newMemberModal } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';

@@ -6,7 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
-    import { organization, memberList } from './store';
+    import { organization, memberList } from '$lib/stores/organization';
     import { pageLimit } from '$lib/stores/layout';
 
     export let showCreate = false;
