@@ -53,7 +53,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Console</title>
+    <title>Appwrite - Organizations</title>
 </svelte:head>
 
 {#if $organization}
