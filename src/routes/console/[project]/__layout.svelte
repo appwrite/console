@@ -5,7 +5,7 @@
     import { collection } from './databases/database/[database]/collection/[collection]/store';
     import { UploadBox } from '$lib/components';
     import { project } from './store';
-    import { organization } from '../store';
+    import { organization } from '../organization-[organization]/store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { updateLayout } from '$lib/stores/layout';

@@ -2,7 +2,7 @@
     import { navigating, page } from '$app/stores';
     import { tabs, title, backButton, copyData, titleDropdown } from '$lib/stores/layout';
     import { Cover } from '.';
-    import { Copy, DropList, DropListItem, AvatarGroup } from '$lib/components';
+    import { Copy, DropList, DropListItem, DropListLink, AvatarGroup } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -10,8 +10,9 @@
         memberList,
         newOrgModal,
         newMemberModal
-    } from '../../routes/console/store';
+    } from '../../routes/console/organization-[organization]/store';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { base } from '$app/paths';
 
     export let isOpen = false;
     export let showSideNavigation = false;
@@ -123,15 +124,13 @@
                         </button>
                         <svelte:fragment slot="list">
                             {#each $titleDropdown as org}
-                                <DropListItem
+                                <DropListLink
+                                    href={`${base}/console/organization-${org.$id}`}
                                     on:click={() => {
                                         showDropdown = false;
-                                        if (org.$id !== $organization.$id) {
-                                            organization.load(org.$id);
-                                        }
                                     }}>
                                     {org.name}
-                                </DropListItem>
+                                </DropListLink>
                             {/each}
                         </svelte:fragment>
                         <svelte:fragment slot="other">

@@ -6,22 +6,22 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@aw-labs/appwrite-console';
-    import CreateOrganization from './_createOrganization.svelte';
+    import CreateOrganization from '../_createOrganization.svelte';
     import CreateProject from './_createProject.svelte';
-    import { organization, projectList } from './store';
+    import { projectList } from './store';
     import { onMount } from 'svelte';
+    import { page } from '$app/stores';
 
     let projects: Models.Project[] = [];
+    $: org = $page.params.organization;
 
     onMount(async () => {
         await projectList.load();
-
-        projects = $projectList.projects.filter((n) => n.teamId === $organization.$id);
+        projects = $projectList?.projects.filter((n) => n.teamId === org);
     });
 
     let showCreate = false;
     let addOrganization = false;
-    let currentOrganization = $organization?.$id;
     let offset = 0;
     const limit = 5;
 
@@ -53,11 +53,7 @@
         return { name, icon };
     };
 
-    $: if (currentOrganization !== $organization?.$id) {
-        currentOrganization = $organization.$id;
-        projectList.load();
-        projects = $projectList.projects.filter((a) => a.teamId === $organization.$id);
-    }
+    $: projects = $projectList?.projects.filter((a) => a.teamId === org);
 </script>
 
 <Container>
@@ -136,15 +132,12 @@
             </div>
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {projects.length}</p>
-            <Pagination {limit} bind:offset sum={projects.length} />
+            <p class="text">Total results: {projects?.length}</p>
+            <Pagination {limit} bind:offset sum={projects?.length} />
         </div>
     {/if}
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
 
-<CreateProject
-    bind:show={showCreate}
-    bind:teamId={currentOrganization}
-    on:created={projectCreated} />
+<CreateProject bind:show={showCreate} teamId={org} on:created={projectCreated} />

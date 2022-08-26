@@ -1,5 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { onMount } from 'svelte';
     import { Breadcrumbs } from '.';
     import { Avatar, DropList, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
@@ -9,9 +10,11 @@
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { organizationList, organization, newOrgModal } from '../../routes/console/store';
-    import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
+    import {
+        organizationList,
+        organization,
+        newOrgModal
+    } from '../../routes/console/organization-[organization]/store';
 
     let showDropdown = false;
 
@@ -23,7 +26,9 @@
     });
 </script>
 
-<a class="logo" href={`${base}/console`}>
+<a
+    class="logo"
+    href={$organization ? `${base}/console/organization-${$organization.$id}` : `${base}/console`}>
     <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
 </a>
 
@@ -67,12 +72,11 @@
                 </button>
                 <svelte:fragment slot="list">
                     {#each $organizationList.teams as org}
-                        <DropListItem
+                        <DropListLink
+                            href={`${base}/console/organization-${org.$id}`}
                             on:click={() => {
                                 showDropdown = false;
-                                goto(`/console`);
-                                organization.set(org);
-                            }}>{org.name}</DropListItem>
+                            }}>{org.name}</DropListLink>
                     {/each}
                 </svelte:fragment>
                 <svelte:fragment slot="other">
