@@ -47,7 +47,7 @@
                     <svelte:fragment slot="title">{collection.name}</svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if !collection.enabled}
-                            <Pill>Disabled</Pill>
+                            <Pill>disabled</Pill>
                         {/if}</svelte:fragment>
 
                     <Copy value={collection.$id}>
