@@ -17,7 +17,7 @@
 
     onMount(async () => {
         await projectList.load();
-        projects = $projectList?.projects.filter((n) => n.teamId === org);
+        projects = $projectList?.projects?.filter((n) => n.teamId === org);
     });
 
     let showCreate = false;
@@ -53,7 +53,7 @@
         return { name, icon };
     };
 
-    $: projects = $projectList?.projects.filter((a) => a.teamId === org);
+    $: projects = $projectList?.projects?.filter((a) => a.teamId === org);
 </script>
 
 <Container>

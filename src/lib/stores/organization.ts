@@ -2,6 +2,8 @@ import { sdkForConsole } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
 import { browser } from '$app/env';
+import { get } from 'svelte/store';
+import { base } from '$app/paths';
 
 function createOrganizationList() {
     const { subscribe, set } = writable<Models.TeamList>(
@@ -82,3 +84,21 @@ if (browser) {
     projectList.subscribe((n) => sessionStorage?.setItem('projectList', JSON.stringify(n ?? '')));
     memberList.subscribe((n) => sessionStorage?.setItem('memberList', JSON.stringify(n ?? '')));
 }
+
+export const redirectTo = async () => {
+    let org = get(organization);
+    if (org) {
+        return `${base}/console/organization-${org.$id}`;
+    } else {
+        await organizationList.load();
+        const orgList = get(organizationList);
+        if (orgList?.total) {
+            await organization.load(orgList.teams[0].$id);
+            org = get(organization);
+            return `${base}/console/organization-${org.$id}`;
+        } else {
+            newOrgModal.set(true);
+            return `${base}/console`;
+        }
+    }
+};

@@ -7,6 +7,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { user } from '$lib/stores/user';
+    import { redirectTo } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { browser } from '$app/env';
@@ -29,7 +30,8 @@
             }
 
             if (!$page.url.pathname.startsWith('/console')) {
-                await goto(`${base}/console`);
+                const destination = await redirectTo();
+                await goto(destination);
             }
         } catch (error) {
             await goto(`${base}/login`);
