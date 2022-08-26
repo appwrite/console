@@ -88,7 +88,7 @@
             </div>
             <input
                 {id}
-                {placeholder}
+                placeholder={!tags.length ? placeholder : ''}
                 type="text"
                 class="tags-input-text"
                 bind:value

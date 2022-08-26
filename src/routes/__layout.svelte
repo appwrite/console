@@ -42,8 +42,7 @@
         webVitals({
             path: $page.url.pathname,
             params: $page.params,
-            analyticsId: window.VERCEL_ANALYTICS_ID,
-            debug: true
+            analyticsId: window.VERCEL_ANALYTICS_ID
         });
     }
 

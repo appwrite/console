@@ -47,7 +47,7 @@
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if !bucket.enabled}
-                            <Pill>Disabled</Pill>
+                            <Pill>disabled</Pill>
                         {/if}
                     </svelte:fragment>
 

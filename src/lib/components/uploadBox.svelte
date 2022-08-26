@@ -73,6 +73,7 @@
                             <button
                                 class="icon-button"
                                 aria-label="Failed"
+                                disabled={!file.$id}
                                 on:click={() => removeFile(file.$id, file.bucketId)}>
                                 <span class="icon-x" />
                             </button>
@@ -94,6 +95,7 @@
                             <button
                                 class="icon-button"
                                 aria-label="Pending"
+                                disabled={!file.$id}
                                 on:click={() => removeFile(file.$id, file.bucketId)}>
                                 <span class="icon-x" />
                             </button>

@@ -3,11 +3,10 @@
     import { Pill } from '$lib/elements';
     import { Modal, Alert, InnerModal } from '$lib/components';
     import { createEventDispatcher } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
     import { bucket, files } from './store';
-    import { bytesToSize } from '$lib/helpers/sizeConvertion';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
 
     export let showCreate = false;
 
@@ -20,6 +19,7 @@
     let read: string[] = [];
     let write: string[] = [];
     let id: string = null;
+    let error: string;
     let showDropdown = false;
 
     const create = async () => {
@@ -33,11 +33,8 @@
 
             fileList = null;
             dispatch('created', file);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+        } catch ({ message }) {
+            error = message;
         }
     };
 
@@ -86,7 +83,7 @@
 <input bind:this={input} bind:files={fileList} id="file" type="file" style="display: none" />
 
 <Form on:submit={create}>
-    <Modal bind:show={showCreate}>
+    <Modal {error} bind:show={showCreate}>
         <svelte:fragment slot="header">Upload File</svelte:fragment>
         <FormList>
             <div>
@@ -124,7 +121,7 @@
                     </div>
                 </div>
 
-                <p>Max file size: {bytesToSize($bucket.maximumFileSize)}</p>
+                <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
             </div>
 
             {#if !showDropdown}
