@@ -17,6 +17,7 @@
     let offset = 0;
 
     const project = $page.params.project;
+
     const bucketCreated = async (event: CustomEvent<Models.Bucket>) => {
         showCreate = false;
         await goto(`${base}/console/${project}/storage/bucket/${event.detail.$id}`);
@@ -43,7 +44,13 @@
             };`}>
             {#each $bucketList.buckets as bucket}
                 <Bucket href={`${base}/console/${project}/storage/bucket/${bucket.$id}`}>
-                    <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
+                    <svelte:fragment slot="eyebrow">
+                        {#await bucketList.count(bucket.$id)}
+                            N Files
+                        {:then n}
+                            {n[bucket.$id]} Files
+                        {/await}
+                    </svelte:fragment>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if !bucket.enabled}

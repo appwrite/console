@@ -14,6 +14,14 @@ function createBucketListStore() {
         load: async (search: string, limit: number, offset: number) => {
             const response = await sdkForProject.storage.listBuckets(search, limit, offset);
             set(response);
+        },
+        count: async (id: string) => {
+            let total = {};
+            total = browser ? JSON.parse(sessionStorage.getItem('bucketCount')) ?? {} : {};
+            const response = await sdkForProject.storage.listFiles(id);
+            total[id] = response.total;
+            sessionStorage?.setItem('bucketCount', JSON.stringify(total));
+            return total;
         }
     };
 }
