@@ -426,8 +426,9 @@
                                     selected={extensions.includes(ext)}
                                     button
                                     on:click={() => {
-                                        if (!extensions.includes(ext))
+                                        if (!extensions.includes(ext)) {
                                             extensions = [...extensions, ext];
+                                        } else extensions = extensions.filter((e) => e !== ext);
                                     }}>
                                     <span class="icon-plus" aria-hidden="true" />
                                     {ext}
