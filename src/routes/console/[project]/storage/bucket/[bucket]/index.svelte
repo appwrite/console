@@ -22,7 +22,7 @@
     import { base } from '$app/paths';
     import { files } from './store';
     import type { Models } from '@aw-labs/appwrite-console';
-    import { uploader } from '$lib/stores/uploader';
+    import { uploader, list } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
     import { goto } from '$app/navigation';
 
@@ -71,6 +71,19 @@
         }
     };
 
+    const refreshFile = async (file: Models.File) => {
+        const uploadFile = Array.from($list.files).filter((f) => f.name === file.name);
+        await uploader.uploadFile(file.bucketId, file.$id, uploadFile[0], file.$read, file.$write);
+    };
+
+    let uploadFileNames: string[] = [];
+
+    list.subscribe(() => {
+        if ($list?.files) {
+            uploadFileNames = Array.from($list.files).map((file) => file.name);
+        }
+    });
+
     $: files.load(bucket, search, limit, offset);
     $: if (search) offset = 0;
 
@@ -88,7 +101,7 @@
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
                 <TableCellHead>Type</TableCellHead>
-                <TableCellHead>Size</TableCellHead>
+                <TableCellHead width={100}>Size</TableCellHead>
                 <TableCellHead>Date Created</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
@@ -110,24 +123,39 @@
                             <TableCellText title="Date Created"
                                 >{toLocaleDate(file.$createdAt)}</TableCellText>
                             <TableCell>
-                                <div class="u-flex u-main-center">
+                                {#if uploadFileNames.includes(file.name)}
+                                    <div class="u-flex u-main-center">
+                                        <button
+                                            class="button is-only-icon is-text"
+                                            aria-label="Delete item"
+                                            on:click|preventDefault={() => {
+                                                if (file.$id !== 'tmp') {
+                                                    refreshFile(file);
+                                                }
+                                            }}>
+                                            <span class="icon-refresh" aria-hidden="true" />
+                                        </button>
+                                        <button
+                                            class="button is-only-icon is-text"
+                                            aria-label="Delete item"
+                                            disabled={file.$id === 'tmp'}
+                                            on:click|preventDefault={() => {
+                                                deleteFile(file);
+                                            }}>
+                                            <span class="icon-trash" aria-hidden="true" />
+                                        </button>
+                                    </div>
+                                {:else}
                                     <button
                                         class="button is-only-icon is-text"
                                         aria-label="Delete item"
-                                        on:click|preventDefault={() => {
-                                            console.log('Feel refreshed?');
-                                        }}>
-                                        <span class="icon-refresh" aria-hidden="true" />
-                                    </button>
-                                    <button
-                                        class="button is-only-icon is-text"
-                                        aria-label="Delete item"
+                                        disabled={file.$id === 'tmp'}
                                         on:click|preventDefault={() => {
                                             deleteFile(file);
                                         }}>
                                         <span class="icon-trash" aria-hidden="true" />
                                     </button>
-                                </div>
+                                {/if}
                             </TableCell>
                         </TableRow>
                     {:else}

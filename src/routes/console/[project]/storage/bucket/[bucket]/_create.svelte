@@ -4,7 +4,7 @@
     import { Modal, Alert, InnerModal } from '$lib/components';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
-    import { uploader } from '$lib/stores/uploader';
+    import { uploader, list } from '$lib/stores/uploader';
     import { bucket, files } from './store';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
 
@@ -14,7 +14,7 @@
     const dispatch = createEventDispatcher();
 
     let input: HTMLInputElement;
-    let list = new DataTransfer();
+    $list ??= new DataTransfer();
     let fileList: FileList;
     let read: string[] = [];
     let write: string[] = [];
@@ -26,10 +26,17 @@
         try {
             showCreate = false;
             showDropdown = false;
+            fileList = $list.files;
 
             // Not sure about this
-            files.addFile(bucketId, fileList[0], read, write);
-            const file = await uploader.uploadFile(bucketId, id, fileList[0], read, write);
+            files.addFile(bucketId, fileList[fileList.length - 1], read, write);
+            const file = await uploader.uploadFile(
+                bucketId,
+                id,
+                fileList[fileList.length - 1],
+                read,
+                write
+            );
 
             fileList = null;
             dispatch('created', file);
@@ -46,9 +53,9 @@
             for (let i = 0; i < ev.dataTransfer.items.length; i++) {
                 // If dropped items aren't files, reject them
                 if (ev.dataTransfer.items[i].kind === 'file') {
-                    list.items.clear();
-                    list.items.add(ev.dataTransfer.items[i].getAsFile());
-                    fileList = list.files;
+                    // $list.items.clear();
+                    $list.items.add(ev.dataTransfer.items[i].getAsFile());
+                    fileList = $list.files;
                 }
             }
         } else {
@@ -64,9 +71,13 @@
         ev.preventDefault();
     }
 
+    $: if (fileList?.length) {
+        $list.items.add(fileList[0]);
+        console.log($list);
+    }
+
     $: if (!showCreate) {
         id = null;
-        list = new DataTransfer();
         fileList = null;
         read = [];
         write = [];

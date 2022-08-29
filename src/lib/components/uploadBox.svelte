@@ -73,8 +73,9 @@
                             <button
                                 class="icon-button"
                                 aria-label="Failed"
-                                disabled={!file.$id}
-                                on:click={() => removeFile(file.$id, file.bucketId)}>
+                                on:click={() => {
+                                    removeFile(file.$id, file.bucketId);
+                                }}>
                                 <span class="icon-x" />
                             </button>
                         </li>
@@ -93,9 +94,9 @@
                             <label for={file.name} class="file-name">{file.name}</label>
                             <Pill warning>Pending</Pill>
                             <button
-                                class="icon-button"
+                                class="button button is-only-icon is-text icon-button"
                                 aria-label="Pending"
-                                disabled={!file.$id}
+                                disabled={!file.$id || file.$id === 'tmp'}
                                 on:click={() => removeFile(file.$id, file.bucketId)}>
                                 <span class="icon-x" />
                             </button>

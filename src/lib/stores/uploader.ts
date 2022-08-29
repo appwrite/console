@@ -17,6 +17,8 @@ export type Uploader = {
     files: UploaderFile[];
 };
 
+export const list = writable<DataTransfer>();
+
 const createUploader = () => {
     const { subscribe, set, update } = writable<Uploader>({
         isOpen: false,
