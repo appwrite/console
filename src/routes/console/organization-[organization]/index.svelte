@@ -9,6 +9,7 @@
     import CreateOrganization from '../_createOrganization.svelte';
     import CreateProject from './_createProject.svelte';
     import { projectList } from '$lib/stores/organization';
+    import { project } from '../project-[project]/store';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
 
@@ -16,17 +17,18 @@
     $: organizationId = $page.params.organization;
 
     onMount(async () => {
-        await projectList.load();
+        await projectList.load('', undefined, offset);
         projects = $projectList?.projects?.filter((n) => n.teamId === organizationId);
     });
 
     let showCreate = false;
     let addOrganization = false;
     let offset = 0;
-    const limit = 5;
+    const limit = 6;
 
     const projectCreated = async (event: CustomEvent<Models.Project>) => {
-        await goto(`${base}/console/${event.detail.$id}`);
+        await project.load(event.detail.$id);
+        await goto(`${base}/console/project-${event.detail.$id}`);
     };
 
     const getPlatformInfo = (platform: string) => {
@@ -53,6 +55,7 @@
         return { name, icon };
     };
 
+    // $: projectList.load('', limit, offset);
     $: projects = $projectList?.projects?.filter((a) => a.teamId === organizationId);
 </script>
 
@@ -72,33 +75,35 @@
         <ul
             class="grid-box common-section u-margin-block-start-32"
             style={`--grid-gap:2rem; --grid-item-size:${projects.length > 3 ? '22rem' : '25rem'};`}>
-            {#each projects as project}
-                <Bucket href={`${base}/console/project-${project.$id}`}>
-                    <svelte:fragment slot="eyebrow"
-                        >{project?.platforms?.length ? project?.platforms?.length : 'No'} apps</svelte:fragment>
-                    <svelte:fragment slot="title">
-                        {project.name}
-                    </svelte:fragment>
-                    {@const platformList = project.platforms.map((platform) => platform.type)}
-                    {@const platforms = Array.from(new Set(platformList))}
-                    {#each platforms as platform, i}
-                        {#if i < 3}
+            {#each projects as project, index}
+                {#if index >= offset && index < limit + offset}
+                    <Bucket href={`${base}/console/project-${project.$id}`}>
+                        <svelte:fragment slot="eyebrow"
+                            >{project?.platforms?.length ? project?.platforms?.length : 'No'} apps</svelte:fragment>
+                        <svelte:fragment slot="title">
+                            {project.name}
+                        </svelte:fragment>
+                        {@const platformList = project.platforms.map((platform) => platform.type)}
+                        {@const platforms = Array.from(new Set(platformList))}
+                        {#each platforms as platform, i}
+                            {#if i < 3}
+                                <Pill>
+                                    <span
+                                        class={`icon-${getPlatformInfo(platform).icon}`}
+                                        aria-hidden="true" />
+                                    {getPlatformInfo(platform).name}
+                                </Pill>
+                            {/if}
+                        {/each}
+                        {#if platforms?.length > 3}
                             <Pill>
-                                <span
-                                    class={`icon-${getPlatformInfo(platform).icon}`}
-                                    aria-hidden="true" />
-                                {getPlatformInfo(platform).name}
+                                +{project.platforms.length - 3}
                             </Pill>
                         {/if}
-                    {/each}
-                    {#if platforms?.length > 3}
-                        <Pill>
-                            +{project.platforms.length - 3}
-                        </Pill>
-                    {/if}
-                </Bucket>
+                    </Bucket>
+                {/if}
             {/each}
-            {#if projects.length % 2 !== 0}
+            {#if projects.length < limit + offset && (projects.length % 2 !== 0 || projects.length % 4 === 0)}
                 <EmptyBucket on:click={() => (showCreate = true)}>
                     <div class="common-section">
                         <Button secondary round>
@@ -118,8 +123,8 @@
         </div>
     {:else}
         <Empty dashed centered>
-            <div class="bucket">
-                <div class="u-flex u-flex-vertical u-cross-center">
+            <div class="bucket ">
+                <div class="u-flex u-flex-vertical u-cross-center ">
                     <div class="common-section">
                         <Button secondary round on:click={() => (showCreate = true)}>
                             <i class="icon-plus" />
