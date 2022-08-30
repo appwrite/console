@@ -4,11 +4,9 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization, organizationList, memberList } from '$lib/stores/organization';
-    import { title, breadcrumbs, updateLayout } from '$lib/stores/layout';
+    import { organization, memberList } from '$lib/stores/organization';
+    import { title, breadcrumbs } from '$lib/stores/layout';
     import Delete from './_deleteOrganization.svelte';
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
 
     let name: string = $organization.name;
     let showDelete = false;
@@ -32,17 +30,6 @@
             });
         }
     }
-
-    const deleted = async () => {
-        await organizationList.load();
-        if (!$organizationList?.total) {
-            organization.set(null);
-            updateLayout({
-                title: ''
-            });
-        }
-        await goto(`${base}/console`);
-    };
 
     organization.subscribe((org) => {
         name = org?.name;
@@ -114,4 +101,4 @@
     {/if}
 </Container>
 
-<Delete bind:showDelete on:deleted={deleted} />
+<Delete bind:showDelete />

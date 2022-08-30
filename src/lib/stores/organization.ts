@@ -45,8 +45,15 @@ function createProjectList() {
     return {
         subscribe,
         set,
-        load: async () => {
-            const response = await sdkForConsole.projects.list();
+        load: async (search: string, limit: number, offset: number) => {
+            const response = await sdkForConsole.projects.list(
+                search,
+                limit,
+                offset,
+                undefined,
+                undefined,
+                'ASC'
+            );
             set(response);
         }
     };

@@ -52,9 +52,9 @@
         if ($project?.$id !== projectId) {
             setProject(projectId);
             await project.load(projectId);
-        }
-        if ($organization?.$id !== $project.teamId) {
-            await organization.load($project.teamId);
+            if ($organization?.$id !== $project?.teamId) {
+                await organization.load($project.teamId);
+            }
         }
 
         updateLayout({

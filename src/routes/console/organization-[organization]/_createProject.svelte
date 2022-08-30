@@ -25,6 +25,8 @@
                 message: `${name} has been created`
             });
             id = name = null;
+            showDropdown = false;
+            show = false;
         } catch ({ message }) {
             error = message;
         }

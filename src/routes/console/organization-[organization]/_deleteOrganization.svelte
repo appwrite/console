@@ -3,12 +3,9 @@
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { createEventDispatcher } from 'svelte';
     import { organization, organizationList } from '$lib/stores/organization';
 
     export let showDelete = false;
-
-    const dispatch = createEventDispatcher();
 
     const deleteUser = async () => {
         try {
@@ -19,9 +16,9 @@
                 message: `${$organization.name} has been deleted`
             });
             if ($organizationList?.total) {
+                await organizationList.load();
                 organization.set($organizationList.teams[0]);
             }
-            dispatch('deleted');
         } catch (error) {
             addNotification({
                 type: 'error',
