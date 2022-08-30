@@ -213,7 +213,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$files.total}</p>
-            <Pagination {$pageLimit} bind:offset sum={$files.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$files.total} />
         </div>
     {:else if search}
         <Empty>
@@ -229,7 +229,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$files?.total}</p>
-            <Pagination {$pageLimit} bind:offset sum={$files?.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$files?.total} />
         </div>
     {:else}
         <Empty dashed centered>
