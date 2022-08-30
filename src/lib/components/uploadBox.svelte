@@ -4,6 +4,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { Avatar } from '$lib/components';
     import { files } from '../../routes/console/[project]/storage/bucket/[bucket]/store';
+    import { addNotification } from '$lib/stores/notifications';
 
     async function removeFile($id: string, bucketId: string) {
         try {
@@ -12,7 +13,10 @@
             await sdkForProject.storage.deleteFile(bucketId, $id);
             files.removeFile(file.$id);
         } catch (error) {
-            console.log(error);
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
         }
     }
 
@@ -54,7 +58,7 @@
                                     name={file.name} />
                             </div>
 
-                            <label for={file.name} class="file-name">{file.name}</label>
+                            <label for={file.name} class="file-name u-trim">{file.name}</label>
                             <span class="icon-check" />
                         </li>
                     {:else if file.failed}
@@ -68,7 +72,7 @@
                                     aria-valuemax={100} />
                                 <span class="icon">{progress}%</span>
                             </div>
-                            <label for={file.name} class="file-name">{file.name}</label>
+                            <label for={file.name} class="file-name u-trim">{file.name}</label>
                             <Pill danger>Failed</Pill>
                             <button
                                 class="icon-button"
@@ -91,7 +95,7 @@
                                     aria-valuemax={100} />
                                 <span class="icon">{progress}%</span>
                             </div>
-                            <label for={file.name} class="file-name">{file.name}</label>
+                            <label for={file.name} class="file-name u-trim">{file.name}</label>
                             <Pill warning>Pending</Pill>
                             <button
                                 class="button button is-only-icon is-text icon-button"

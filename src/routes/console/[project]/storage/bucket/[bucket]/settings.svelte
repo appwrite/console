@@ -227,8 +227,10 @@
                             id="toggle"
                             bind:value={enabled} />
                     </ul>
-                    <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                    <div>
+                        <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
+                        <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                    </div>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
