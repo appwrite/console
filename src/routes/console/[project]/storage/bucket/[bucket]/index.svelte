@@ -25,6 +25,7 @@
     import { uploader, list } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
     import { goto } from '$app/navigation';
+    import { pageLimit } from '$lib/stores/layout';
 
     let search = '';
     let showCreate = false;
@@ -33,7 +34,6 @@
     let selectedFile: Models.File = null;
     let offset = 0;
 
-    const limit = 5;
     const project = $page.params.project;
     const bucket = $page.params.bucket;
 
@@ -41,13 +41,13 @@
         sdkForProject.storage.getFilePreview(bucket, fileId, 32, 32).toString() + '&mode=admin';
 
     const fileCreated = async () => {
-        await files.load(bucket, search, limit, offset);
+        await files.load(bucket, search, $pageLimit, offset);
     };
 
     const fileDeleted = (event: CustomEvent<Models.File>) => {
         showDelete = false;
         uploader.removeFile(event.detail);
-        files.load(bucket, search, limit, offset);
+        files.load(bucket, search, $pageLimit, offset);
         addNotification({
             type: 'success',
             message: `${event.detail.name} has been deleted`
@@ -58,7 +58,7 @@
         try {
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
-            files.load(bucket, search, limit, offset);
+            files.load(bucket, search, $pageLimit, offset);
             addNotification({
                 type: 'success',
                 message: `${file.name} has been deleted`
@@ -84,7 +84,7 @@
         }
     });
 
-    $: files.load(bucket, search, limit, offset);
+    $: files.load(bucket, search, $pageLimit, offset);
     $: if (search) offset = 0;
 
     //TODO: when upload cancelled remove file from list
@@ -100,23 +100,24 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
-                <TableCellHead>Type</TableCellHead>
+                <TableCellHead width={140}>Type</TableCellHead>
                 <TableCellHead width={100}>Size</TableCellHead>
-                <TableCellHead>Date Created</TableCellHead>
+                <TableCellHead width={120}>Date Created</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
                 {#each $files.files as file, index}
                     {#if file.chunksTotal / file.chunksUploaded !== 1}
                         <TableRow>
-                            <TableCellText title="Name">
+                            <TableCell title="Name">
                                 <div class="u-flex u-gap-12 u-main-space-between">
-                                    <div class="avatar is-color-empty" />
-
-                                    <span class="u-trim"> {file.name}</span>
-                                    <Pill warning>Pending</Pill>
+                                    <span class="avatar is-size-small is-color-empty" />
+                                    <span class="text u-trim"> {file.name}</span>
+                                    <div>
+                                        <Pill warning>Pending</Pill>
+                                    </div>
                                 </div>
-                            </TableCellText>
+                            </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size"
                                 >{calculateSize(file.sizeOriginal)}</TableCellText>
@@ -161,12 +162,12 @@
                     {:else}
                         <TableRowLink
                             href={`${base}/console/${project}/storage/bucket/${bucket}/file/${file.$id}`}>
-                            <TableCellText title="Name">
+                            <TableCell title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
                                     <span class="u-trim"> {file.name}</span>
                                 </div>
-                            </TableCellText>
+                            </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size"
                                 >{calculateSize(file.sizeOriginal)}</TableCellText>
@@ -212,7 +213,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$files.total}</p>
-            <Pagination {limit} bind:offset sum={$files.total} />
+            <Pagination {$pageLimit} bind:offset sum={$files.total} />
         </div>
     {:else if search}
         <Empty>
@@ -228,7 +229,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$files?.total}</p>
-            <Pagination {limit} bind:offset sum={$files?.total} />
+            <Pagination {$pageLimit} bind:offset sum={$files?.total} />
         </div>
     {:else}
         <Empty dashed centered>

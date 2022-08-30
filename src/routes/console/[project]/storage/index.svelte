@@ -10,11 +10,11 @@
     import { base } from '$app/paths';
     import { bucketList } from './store';
     import { tooltip } from '$lib/actions/tooltip';
-    import { pageLimit } from '$lib/stores/layout';
 
     let showCreate = false;
     let search = '';
     let offset = 0;
+    let pageLimit = 6;
 
     const project = $page.params.project;
 
@@ -23,7 +23,7 @@
         await goto(`${base}/console/${project}/storage/bucket/${event.detail.$id}`);
     };
 
-    $: bucketList.load(search, $pageLimit, offset ?? 0);
+    $: bucketList.load(search, pageLimit, offset ?? 0);
     $: if (search) offset = 0;
 </script>
 
@@ -104,7 +104,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$bucketList.total} />
+            <Pagination limit={pageLimit} bind:offset sum={$bucketList.total} />
         </div>
     {:else if search}
         <Empty>
@@ -120,7 +120,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList?.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$bucketList?.total} />
+            <Pagination limit={pageLimit} bind:offset sum={$bucketList?.total} />
         </div>
     {:else}
         <Empty dashed centered>
