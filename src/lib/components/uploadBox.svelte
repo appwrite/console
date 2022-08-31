@@ -5,13 +5,16 @@
     import { Avatar } from '$lib/components';
     import { files } from '../../routes/console/[project]/storage/bucket/[bucket]/store';
     import { addNotification } from '$lib/stores/notifications';
+    import { pageLimit } from '$lib/stores/layout';
 
-    async function removeFile($id: string, bucketId: string) {
+    async function removeFile(fileId: string, bucketId: string) {
         try {
-            const file = await sdkForProject.storage.getFile(bucketId, $id);
-            uploader.removeFile(file);
-            await sdkForProject.storage.deleteFile(bucketId, $id);
-            files.removeFile(file.$id);
+            uploader.removeFile(fileId);
+            await files.deleteFile(bucketId, fileId);
+            await files.load(bucketId, '', $pageLimit, 0);
+            // if ($files.files.filter((f) => f.$id === fileId)?.length) {
+            //     await files.deleteFile(bucketId, fileId);
+            // }
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -95,7 +98,9 @@
                                     aria-valuemax={100} />
                                 <span class="icon">{progress}%</span>
                             </div>
-                            <label for={file.name} class="file-name u-trim">{file.name}</label>
+                            <label for={file.name} class="file-name u-trim">
+                                {file.name}
+                            </label>
                             <Pill warning>Pending</Pill>
                             <button
                                 class="button button is-only-icon is-text icon-button"

@@ -1,8 +1,7 @@
-import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
 import { sdkForProject } from './sdk';
 
-type UploaderFile = {
+export type UploaderFile = {
     $id: string;
     bucketId: string;
     name: string;
@@ -98,9 +97,9 @@ const createUploader = () => {
             newFile.completed = true;
             updateFile(newFile.$id, newFile);
         },
-        removeFile: async (file: Models.File) => {
+        removeFile: async (id: string) => {
             return update((n) => {
-                n.files = n.files.filter((f) => f.$id !== file.$id);
+                n.files = n.files.filter((f) => f.$id !== id);
                 return n;
             });
         }

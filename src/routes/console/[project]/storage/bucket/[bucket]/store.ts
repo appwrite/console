@@ -45,6 +45,13 @@ function createFilesStore() {
             );
             set(response);
         },
+        deleteFile: async (bucketId: string, fileId: string) => {
+            await sdkForProject.storage.deleteFile(bucketId, fileId);
+            return update((n) => {
+                n.files = n.files.filter((f) => f.$id !== fileId);
+                return n;
+            });
+        },
         addFile: async (bucketId: string, file: File, read: string[], write: string[]) => {
             const newFile = {
                 $id: 'tmp',

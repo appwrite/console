@@ -46,7 +46,7 @@
 
     const fileDeleted = (event: CustomEvent<Models.File>) => {
         showDelete = false;
-        uploader.removeFile(event.detail);
+        uploader.removeFile(event.detail.$id);
         files.load(bucket, search, $pageLimit, offset);
         addNotification({
             type: 'success',
@@ -56,8 +56,8 @@
 
     const deleteFile = async (file: Models.File) => {
         try {
-            await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
-            uploader.removeFile(file);
+            await files.deleteFile(file.bucketId, file.$id);
+
             files.load(bucket, search, $pageLimit, offset);
             addNotification({
                 type: 'success',
