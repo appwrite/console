@@ -74,7 +74,9 @@
     {#if projects?.length}
         <ul
             class="grid-box common-section u-margin-block-start-32"
-            style={`--grid-gap:2rem; --grid-item-size:${projects.length > 3 ? '22rem' : '25rem'};`}>
+            style={`--grid-gap:1.5rem; --grid-item-size:${
+                projects.length > 3 ? '22rem' : '25rem'
+            };`}>
             {#each projects as project, index}
                 {#if index >= offset && index < limit + offset}
                     <Bucket href={`${base}/console/project-${project.$id}`}>
@@ -123,7 +125,7 @@
         </div>
     {:else}
         <Empty dashed centered>
-            <div class="bucket ">
+            <div class="bucket">
                 <div class="u-flex u-flex-vertical u-cross-center ">
                     <div class="common-section">
                         <Button secondary round on:click={() => (showCreate = true)}>

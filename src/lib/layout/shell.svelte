@@ -195,8 +195,8 @@
                             <li class="tabs-item">
                                 <a
                                     class="tabs-button"
-                                    href={`${tab.href}`}
-                                    class:is-selected={$page.url.pathname === `${tab.href}`}>
+                                    href={tab.href}
+                                    class:is-selected={$page.url.pathname === tab.href}>
                                     <span class="text">{tab.title}</span>
                                 </a>
                             </li>

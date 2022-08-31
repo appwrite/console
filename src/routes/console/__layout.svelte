@@ -11,7 +11,7 @@
     } from '$lib/stores/organization';
     import Create from './_createOrganization.svelte';
     import { page } from '$app/stores';
-    import { afterNavigate, goto } from '$app/navigation';
+    import { afterNavigate } from '$app/navigation';
     import { onMount } from 'svelte';
 
     updateLayout({
@@ -21,15 +21,13 @@
 
     onMount(async () => {
         if ($page.url.pathname === '/console' && !$newOrgModal) {
-            const destination = await redirectTo();
-            await goto(destination);
+            await redirectTo();
         }
     });
 
     afterNavigate(async () => {
         if ($page.url.pathname === '/console' && !$newOrgModal) {
-            const destination = await redirectTo();
-            await goto(destination);
+            await redirectTo();
         }
     });
 </script>

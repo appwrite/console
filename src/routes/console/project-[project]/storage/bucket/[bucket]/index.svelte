@@ -3,7 +3,15 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Avatar, Search, DropList, DropListItem } from '$lib/components';
+    import {
+        Empty,
+        Pagination,
+        Avatar,
+        Search,
+        DropList,
+        DropListItem,
+        DropListLink
+    } from '$lib/components';
     import Create from './_create.svelte';
     import Delete from './_deleteFile.svelte';
     import {
@@ -24,7 +32,6 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
-    import { goto } from '$app/navigation';
     import { pageLimit } from '$lib/stores/layout';
 
     let search = '';
@@ -150,14 +157,9 @@
                                         <span class="icon-dots-horizontal" aria-hidden="true" />
                                     </button>
                                     <svelte:fragment slot="list">
-                                        <DropListItem
-                                            icon="pencil"
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                goto(
-                                                    `${base}/console/project-${project}/storage/bucket/${bucket}/file/${file.$id}`
-                                                );
-                                            }}>Update</DropListItem>
+                                        <DropListLink
+                                            href={`${base}/console/project-${project}/storage/bucket/${bucket}/file/${file.$id}`}
+                                            icon="pencil">Update</DropListLink>
                                         <DropListItem
                                             icon="trash"
                                             on:click={(e) => {

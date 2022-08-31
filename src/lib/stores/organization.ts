@@ -4,6 +4,7 @@ import { writable } from 'svelte/store';
 import { browser } from '$app/env';
 import { get } from 'svelte/store';
 import { base } from '$app/paths';
+import { goto } from '$app/navigation';
 
 function createOrganizationList() {
     const { subscribe, set } = writable<Models.TeamList>(
@@ -98,17 +99,17 @@ if (browser) {
 export const redirectTo = async () => {
     let org = get(organization);
     if (org) {
-        return `${base}/console/organization-${org.$id}`;
+        await goto(`${base}/console/organization-${org.$id}`);
     } else {
         await organizationList.load();
         const orgList = get(organizationList);
         if (orgList?.total) {
             await organization.load(orgList.teams[0].$id);
             org = get(organization);
-            return `${base}/console/organization-${org.$id}`;
+            await goto(`${base}/console/organization-${org.$id}`);
         } else {
             newOrgModal.set(true);
-            return `${base}/console`;
+            await goto(`${base}/console`);
         }
     }
 };
