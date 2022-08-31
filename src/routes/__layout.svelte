@@ -30,8 +30,7 @@
             }
 
             if (!$page.url.pathname.startsWith('/console')) {
-                const destination = await redirectTo();
-                await goto(destination);
+                await redirectTo();
             }
         } catch (error) {
             await goto(`${base}/login`);
