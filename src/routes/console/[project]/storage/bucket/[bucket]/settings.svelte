@@ -269,8 +269,8 @@
                     will be ignored.
                 </p>
                 <svelte:fragment slot="aside">
-                    <ul class="u-flex u-gap-12 common-section">
-                        <li>
+                    <ul class="checkboxes-list">
+                        <li class="checkboxes-item">
                             <label class="label">
                                 <input
                                     type="radio"
@@ -281,7 +281,7 @@
                                 <span>Bucket Level</span>
                             </label>
                         </li>
-                        <li>
+                        <li class="checkboxes-item">
                             <label class="label">
                                 <input
                                     type="radio"
@@ -293,14 +293,14 @@
                             </label>
                         </li>
                     </ul>
-                    <Alert type="info">
-                        <p>
-                            Tip: Add <b>role:all</b> for wildcards access. Check out our
-                            documentation for more on <a href="/#">Permissions</a>
-                        </p>
-                    </Alert>
                     {#if bucketPermissions === 'bucket'}
-                        <ul class="common-section">
+                        <Alert type="info">
+                            <p>
+                                Tip: Add <b>role:all</b> for wildcards access. Check out our
+                                documentation for more on <a class="link" href="/#">Permissions</a>
+                            </p>
+                        </Alert>
+                        <ul class="form-list">
                             <InputTags
                                 id="read"
                                 label="Read Access"
@@ -312,6 +312,14 @@
                                 placeholder="User ID, Team ID, or Role"
                                 bind:tags={bucketWrite} />
                         </ul>
+                    {:else}
+                        <Alert type="info">
+                            <p>
+                                Manage permissions at the <b> File Level</b> to control access over
+                                every file in your bucket. Check out our documentation for more on
+                                <a class="link" href="/#">Permissions</a>
+                            </p>
+                        </Alert>
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
@@ -342,14 +350,14 @@
                                 </div>
                                 <div class="choice-item-content">
                                     <div class="choice-item-title">Encryption</div>
-
-                                    <div class="choice-item-paragraph">
-                                        This parameter allows you to configure whether or not the
-                                        files inside the bucket will be encrypted. We don't encrypt
-                                        files bigger than 20MB.
-                                    </div>
                                 </div>
                             </label>
+
+                            <p class="text">
+                                This parameter allows you to configure whether or not the files
+                                inside the bucket will be encrypted. We don't encrypt files bigger
+                                than 20MB.
+                            </p>
                         </li>
                         <li class="form-item">
                             <label class="choice-item" for="antivirus">
@@ -364,14 +372,13 @@
                                 </div>
                                 <div class="choice-item-content">
                                     <div class="choice-item-title">Antivirus</div>
-
-                                    <div class="choice-item-paragraph">
-                                        This parameter allows you to configure whether or not the
-                                        files inside the bucket should be scanned by the Appwrite
-                                        Antivirus scanner.
-                                    </div>
                                 </div>
                             </label>
+                            <p class="text">
+                                This parameter allows you to configure whether or not the files
+                                inside the bucket should be scanned by the Appwrite Antivirus
+                                scanner.
+                            </p>
                         </li>
 
                         <li />
@@ -392,7 +399,7 @@
                 <h2 class="heading-level-6">Update Maximum File Size</h2>
                 <p>Set the maximum file size allowed in the bucket.</p>
                 <svelte:fragment slot="aside">
-                    <ul class="u-flex u-gap-12">
+                    <ul class="form-list is-multiple">
                         <InputNumber
                             id="size"
                             label="Size"

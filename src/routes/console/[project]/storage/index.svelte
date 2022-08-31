@@ -39,7 +39,7 @@
     {#if $bucketList?.total}
         <ul
             class="grid-box common-section u-margin-block-start-32"
-            style={`--grid-gap:2rem; --grid-item-size:${
+            style={`--grid-gap:1.5rem; --grid-item-size:${
                 $bucketList.total > 3 ? '22rem' : '25rem'
             };`}>
             {#each $bucketList.buckets as bucket}
@@ -88,7 +88,7 @@
                     </svelte:fragment>
                 </Bucket>
             {/each}
-            {#if $bucketList.total % 2 !== 0}
+            {#if ($bucketList.total % 2 !== 0 || $bucketList.total % 4 !== 0) && $bucketList.total - offset <= pageLimit}
                 <EmptyBucket on:click={() => (showCreate = true)}>
                     <div class="common-section">
                         <Button secondary round>
