@@ -39,11 +39,18 @@
     </div>
 
     {#if $collections?.total}
-        <div class="grid-box common-section" style=" --grid-item-size:25rem;">
+        <div
+            class="grid-box common-section"
+            style={` --grid-item-size:${$collections.total > 3 ? '22rem' : '25rem'};`}>
             {#each $collections.collections as collection}
                 <Bucket
                     href={`${base}/console/${project}/databases/database/${databaseId}/collection/${collection.$id}`}>
-                    <svelte:fragment slot="eyebrow">XX Documents</svelte:fragment>
+                    <svelte:fragment slot="eyebrow">
+                        {#await collections.total(collection.$id)}
+                            N Documents
+                        {:then n}
+                            {n[collection.$id] ? n[collection.$id] : 'NO'} Documents
+                        {/await}</svelte:fragment>
                     <svelte:fragment slot="title">{collection.name}</svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if !collection.enabled}
@@ -55,7 +62,7 @@
                     </Copy>
                 </Bucket>
             {/each}
-            {#if ($collections.total % 2 !== 0 || $collections.total % 4 !== 0) && $collections.total - offset <= limit}
+            {#if ($collections.total % 2 !== 0 || $collections.total % 4 === 0) && $collections.total - offset <= limit}
                 <EmptyBucket on:click={() => (showCreate = true)}>
                     <div class="common-section">
                         <Button secondary round>

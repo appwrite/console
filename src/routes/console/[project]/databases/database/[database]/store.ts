@@ -13,6 +13,14 @@ function createCollectionStore() {
         load: async (search: string, limit: number, offset: number) => {
             const response = await sdkForProject.databases.listCollections(search, limit, offset);
             set(response);
+        },
+        total: async (id: string) => {
+            let total = {};
+            total = browser ? JSON.parse(sessionStorage.getItem('collectionTotal')) ?? {} : {};
+            const response = await sdkForProject.databases.listDocuments(id);
+            total[id] = response.total;
+            sessionStorage?.setItem('collectionTotal', JSON.stringify(total));
+            return total;
         }
     };
 }
