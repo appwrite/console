@@ -6,6 +6,7 @@
     export let horizontal: 'left' | 'right' = 'right';
     export let arrowPosition: 'start' | 'center' | 'end' = 'start';
     export let arrow = true;
+    export let scrollable = false;
     let parentElement: HTMLDivElement;
 
     const onBlur = (event: MouseEvent) => {
@@ -31,7 +32,10 @@
             class:is-block-end={position === 'bottom'}
             class:is-inline-end={horizontal === 'left'}
             transition:slide={{ duration: 100 }}>
-            <section class="drop-section">
+            <section
+                class:u-overflow-y-auto={scrollable}
+                class:u-max-height-200={scrollable}
+                class="drop-section ">
                 <ul class="drop-list">
                     <slot name="list" />
                 </ul>

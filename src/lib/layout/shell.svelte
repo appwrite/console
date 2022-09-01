@@ -1,18 +1,26 @@
 <script lang="ts">
     import { navigating, page } from '$app/stores';
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
+    import { tabs, title, backButton, copyData, titleDropdown } from '$lib/stores/layout';
     import { Cover } from '.';
-    import { Copy } from '$lib/components';
+    import { Copy, DropList, DropListItem, DropListLink, AvatarGroup } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
+    import {
+        organization,
+        memberList,
+        newOrgModal,
+        newMemberModal
+    } from '$lib/stores/organization';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { base } from '$app/paths';
 
     export let isOpen = false;
     export let showSideNavigation = false;
 
-    $: base = `/console/${$page.params.project}`;
-
     let tabsList: HTMLUListElement;
     let showLeft = false;
     let showRight = false;
+    let showDropdown = false;
 
     navigating.subscribe(() => {
         if (isOpen) isOpen = false;
@@ -32,6 +40,20 @@
             }
         }, 10);
     };
+    let avatars = [];
+    let avatarsTotal = 0;
+
+    memberList.subscribe((value) => {
+        if (value?.total > 0) {
+            avatarsTotal = value.total;
+            avatars = value.memberships.map((team) => {
+                return {
+                    name: team.userName,
+                    img: sdkForConsole.avatars.getInitials(team.userName, 80, 80).toString()
+                };
+            });
+        }
+    });
 
     const onScroll = () => {
         if (!tabsList) {
@@ -78,14 +100,65 @@
     <section class="main-content">
         <Cover>
             <svelte:fragment slot="header">
-                <h1 class="heading-level-4">
-                    {#if $backButton}
-                        <a class="back-button" href={$backButton} aria-label="page back">
-                            <span class="icon-cheveron-left" aria-hidden="true" />
-                        </a>
-                    {/if}
-                    <span class="text"> {$title}</span>
-                </h1>
+                {#if $backButton}
+                    <a class="back-button" href={$backButton} aria-label="page back">
+                        <span class="icon-cheveron-left" aria-hidden="true" />
+                    </a>
+                {/if}
+                {#if $titleDropdown?.length && $organization}
+                    <DropList
+                        bind:show={showDropdown}
+                        position="bottom"
+                        arrow={false}
+                        scrollable={true}>
+                        <button
+                            class="button is-text u-padding-inline-0"
+                            on:click={() => (showDropdown = !showDropdown)}>
+                            <h1 class="heading-level-4">
+                                <span class="text"> {$organization.name}</span>
+
+                                <span
+                                    class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}
+                                    aria-hidden="true" />
+                            </h1>
+                        </button>
+                        <svelte:fragment slot="list">
+                            {#each $titleDropdown as org}
+                                <DropListLink
+                                    href={`${base}/console/organization-${org.$id}`}
+                                    on:click={() => {
+                                        showDropdown = false;
+                                    }}>
+                                    {org.name}
+                                </DropListLink>
+                            {/each}
+                        </svelte:fragment>
+                        <svelte:fragment slot="other">
+                            <section class="drop-section">
+                                <ul class="drop-list">
+                                    <DropListItem
+                                        icon="plus"
+                                        on:click={() => {
+                                            showDropdown = false;
+                                            newOrgModal.set(true);
+                                        }}>New Organization</DropListItem>
+                                </ul>
+                            </section></svelte:fragment>
+                    </DropList>
+                    <div class="u-margin-inline-start-auto">
+                        <div class="u-flex u-gap-16">
+                            <AvatarGroup size={40} {avatars} total={avatarsTotal} />
+                            <Button secondary on:click={() => newMemberModal.set(true)}>
+                                <span class="icon-plus" aria-hidden="true" />
+                                <span class="text">Invite</span>
+                            </Button>
+                        </div>
+                    </div>
+                {:else}
+                    <h1 class="heading-level-4">
+                        <span class="text"> {$title}</span>
+                    </h1>
+                {/if}
                 {#if $copyData?.value}
                     <Copy value={$copyData.value}>
                         <Pill button>
@@ -122,9 +195,8 @@
                             <li class="tabs-item">
                                 <a
                                     class="tabs-button"
-                                    href={`${base}/${tab.href}`}
-                                    class:is-selected={$page.url.pathname ===
-                                        `${base}/${tab.href}`}>
+                                    href={tab.href}
+                                    class:is-selected={$page.url.pathname === tab.href}>
                                     <span class="text">{tab.title}</span>
                                 </a>
                             </li>

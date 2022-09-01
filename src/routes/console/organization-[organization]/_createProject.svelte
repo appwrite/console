@@ -5,33 +5,27 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
-    import { organization, organizationList } from '$lib/stores/organization';
-    import { titleDropdown } from '$lib/stores/layout';
-    import { goto } from '$app/navigation';
 
     export let show = false;
-    export let closable = true;
+    export let teamId: string;
+
     const dispatch = createEventDispatcher();
 
-    let name: string;
     let id: string;
+    let name: string;
     let showDropdown = false;
     let error: string;
 
     const create = async () => {
         try {
-            const team = await sdkForConsole.teams.create(id ?? 'unique()', name);
-            dispatch('created');
-            await organizationList.load();
-            titleDropdown.set($organizationList.teams);
-            organization.set(team);
-            await goto(`/console/organization-${$organization.$id}`);
+            const project = await sdkForConsole.projects.create(id ?? 'unique()', name, teamId);
+            dispatch('created', project);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
             });
-            name = null;
-            id = null;
+            id = name = null;
+            showDropdown = false;
             show = false;
         } catch ({ message }) {
             error = message;
@@ -40,29 +34,23 @@
 </script>
 
 <Form on:submit={create}>
-    <Modal {error} size="big" bind:show {closable}>
-        <svelte:fragment slot="header">Create New Organization</svelte:fragment>
+    <Modal {error} size="big" bind:show>
+        <svelte:fragment slot="header">Create Project</svelte:fragment>
         <FormList>
-            <InputText
-                id="name"
-                label="Name"
-                placeholder="Enter name"
-                bind:value={name}
-                autofocus={true}
-                required />
+            <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
             {#if !showDropdown}
                 <div>
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
                         <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            Organization ID
+                            Project ID
                         </span>
                     </Pill>
                 </div>
             {:else}
                 <InnerModal bind:show={showDropdown}>
-                    <svelte:fragment slot="title">Organization ID</svelte:fragment>
+                    <svelte:fragment slot="title">Project ID</svelte:fragment>
                     <svelte:fragment slot="subtitle">
-                        Enter a custom organization ID. Leave blank for a randomly generated one.
+                        Enter a custom project ID. Leave blank for a randomly generated one.
                     </svelte:fragment>
                     <svelte:fragment slot="content">
                         <div class="form">
@@ -89,7 +77,7 @@
             {/if}
         </FormList>
         <svelte:fragment slot="footer">
-            <Button disabled={!closable} secondary on:click={() => (show = false)}>Cancel</Button>
+            <Button secondary on:click={() => (show = false)}>Cancel</Button>
             <Button submit>Create</Button>
         </svelte:fragment>
     </Modal>

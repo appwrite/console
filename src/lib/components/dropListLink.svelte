@@ -3,7 +3,7 @@
     export let icon: string = null;
 </script>
 
-<li class="drop-list-item">
+<li class="drop-list-item" on:click>
     <a {href} class="drop-button">
         <span class="text"><slot /></span>
         {#if icon}
