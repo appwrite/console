@@ -19,6 +19,7 @@
     let showCustomId = false;
     let steps = [{ text: 'Create data' }, { text: 'Set permissions' }];
     let currentStep = 0;
+    let attributes = [];
 
     onMount(async () => {
         await attributeList.load($page.params.collection);
@@ -26,6 +27,7 @@
     });
 
     const initializeDocument = () => {
+        attributes = $attributeList?.attributes?.filter((a) => a.status === 'available');
         $attributeList.attributes.forEach((attr) => {
             if (attr.array) {
                 newDocument[attr.key] = [null];
@@ -76,114 +78,112 @@
     </svelte:fragment>
     <Form on:submit={create}>
         {#if currentStep === 0}
-            {@const attributes =
-                $attributeList?.attributes?.filter((a) => a.status === 'available') || []}
-
             <header class="form-header">
                 <h1 class="heading-level-6">Create document data</h1>
                 <p>Provide document data based on attributes you created earlier.</p>
             </header>
-            <ul class="form-list">
-                {#each attributes as attribute}
-                    {@const label = attribute.required ? `${attribute.key}*` : attribute.key}
-                    {#if attribute.array}
-                        {#each newDocument[attribute.key] as _v, index}
-                            <li class="form-item is-multiple">
-                                <div class="form-item-part u-stretch">
-                                    <Attribute
-                                        {attribute}
-                                        id={`${attribute.key}-${index}`}
-                                        label={index === 0 ? label : ''}
-                                        bind:value={newDocument[attribute.key][index]} />
-                                </div>
-                                <div class="form-item-part u-cross-child-end">
-                                    <Button
-                                        text
-                                        disabled={index === 0}
-                                        on:click={() => {
-                                            newDocument[attribute.key].splice(index, 1);
-                                            newDocument = newDocument;
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </div>
-                            </li>
+            {#if attributes.length}
+                <ul class="form-list">
+                    {#each attributes as attribute}
+                        {@const label = attribute.required ? `${attribute.key}*` : attribute.key}
+                        {#if attribute.array}
+                            {#each newDocument[attribute.key] as _v, index}
+                                <li class="form-item is-multiple">
+                                    <div class="form-item-part u-stretch">
+                                        <Attribute
+                                            {attribute}
+                                            id={`${attribute.key}-${index}`}
+                                            label={index === 0 ? label : ''}
+                                            bind:value={newDocument[attribute.key][index]} />
+                                    </div>
+                                    <div class="form-item-part u-cross-child-end">
+                                        <Button
+                                            text
+                                            disabled={index === 0}
+                                            on:click={() => {
+                                                newDocument[attribute.key].splice(index, 1);
+                                                newDocument = newDocument;
+                                            }}>
+                                            <span class="icon-x" aria-hidden="true" />
+                                        </Button>
+                                    </div>
+                                </li>
+                            {:else}
+                                <li class="form-item is-multiple">
+                                    <div class="form-item-part u-stretch">
+                                        <Attribute
+                                            {attribute}
+                                            id={`${attribute.key}-0`}
+                                            {label}
+                                            bind:value={newDocument[attribute.key][0]} />
+                                    </div>
+                                    <div class="form-item-part u-cross-child-end">
+                                        <Button text disabled>
+                                            <span class="icon-x" aria-hidden="true" />
+                                        </Button>
+                                    </div>
+                                </li>
+                            {/each}
+
+                            <Button
+                                text
+                                disabled={newDocument[attribute.key][
+                                    newDocument[attribute.key].length - 1
+                                ] === null}
+                                on:click={() => {
+                                    {
+                                        newDocument[attribute.key].push(null);
+                                        newDocument = newDocument;
+                                    }
+                                }}>
+                                <span class="icon-plus" aria-hidden="true" />
+                                <span class="text"> Add item</span>
+                            </Button>
                         {:else}
-                            <li class="form-item is-multiple">
-                                <div class="form-item-part u-stretch">
-                                    <Attribute
-                                        {attribute}
-                                        id={`${attribute.key}-0`}
-                                        {label}
-                                        bind:value={newDocument[attribute.key][0]} />
-                                </div>
-                                <div class="form-item-part u-cross-child-end">
-                                    <Button text disabled>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </div>
-                            </li>
-                        {/each}
-
-                        <Button
-                            text
-                            disabled={newDocument[attribute.key][
-                                newDocument[attribute.key].length - 1
-                            ] === null}
-                            on:click={() => {
-                                {
-                                    newDocument[attribute.key].push(null);
-                                    newDocument = newDocument;
-                                }
-                            }}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text"> Add item</span>
-                        </Button>
+                            <ul class="form-list">
+                                <Attribute
+                                    {attribute}
+                                    id={attribute.key}
+                                    {label}
+                                    bind:value={newDocument[attribute.key]} />
+                            </ul>
+                        {/if}
+                    {/each}
+                    {#if !showCustomId}
+                        <div>
+                            <Pill button on:click={() => (showCustomId = !showCustomId)}
+                                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                                    Document ID
+                                </span></Pill>
+                        </div>
                     {:else}
-                        <ul class="form-list">
-                            <Attribute
-                                {attribute}
-                                id={attribute.key}
-                                {label}
-                                bind:value={newDocument[attribute.key]} />
-                        </ul>
-                    {/if}
-                {/each}
+                        <InnerModal bind:show={showCustomId}>
+                            <svelte:fragment slot="title">User ID</svelte:fragment>
+                            Enter a custom document ID. Leave blank for a randomly generated one.
+                            <svelte:fragment slot="content">
+                                <div class="form">
+                                    <InputText
+                                        id="id"
+                                        label="Custom ID"
+                                        showLabel={false}
+                                        placeholder="Enter ID"
+                                        autofocus={true}
+                                        bind:value={id} />
 
-                {#if !showCustomId}
-                    <div>
-                        <Pill button on:click={() => (showCustomId = !showCustomId)}
-                            ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                                Document ID
-                            </span></Pill>
-                    </div>
-                {:else}
-                    <InnerModal bind:show={showCustomId}>
-                        <svelte:fragment slot="title">User ID</svelte:fragment>
-                        Enter a custom document ID. Leave blank for a randomly generated one.
-                        <svelte:fragment slot="content">
-                            <div class="form">
-                                <InputText
-                                    id="id"
-                                    label="Custom ID"
-                                    showLabel={false}
-                                    placeholder="Enter ID"
-                                    autofocus={true}
-                                    bind:value={id} />
-
-                                <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-                                    <span
-                                        class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-                                        aria-hidden="true" />
-                                    <span class="text u-line-height-1-5"
-                                        >Allowed characters: alphanumeric, hyphen, non-leading
-                                        underscore, period</span>
+                                    <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+                                        <span
+                                            class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+                                            aria-hidden="true" />
+                                        <span class="text u-line-height-1-5"
+                                            >Allowed characters: alphanumeric, hyphen, non-leading
+                                            underscore, period</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </svelte:fragment>
-                    </InnerModal>
-                {/if}
-            </ul>
+                            </svelte:fragment>
+                        </InnerModal>
+                    {/if}
+                </ul>
+            {/if}
         {:else if currentStep === 1}
             <header class="form-header">
                 <h1 class="heading-level-6">Set Permissions</h1>
