@@ -14,7 +14,7 @@
     let search = '';
     let offset = 0;
 
-    const limit = 5;
+    const limit = 6;
     const project = $page.params.project;
     const handleCreate = async (event: CustomEvent<Models.Database>) => {
         showCreate = false;
@@ -35,7 +35,7 @@
     </div>
 
     {#if $databaseList?.total}
-        <div class="grid-box common-section" style="--grid-gap:2rem; --grid-item-size:25rem;">
+        <div class="grid-box common-section" style=" --grid-item-size:25rem;">
             {#each $databaseList.databases as database}
                 <Bucket href={`${base}/console/${project}/databases/database/${database.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Collections</svelte:fragment>
@@ -46,7 +46,7 @@
                     </Copy>
                 </Bucket>
             {/each}
-            {#if $databaseList.total % 2 !== 0}
+            {#if ($databaseList.total % 2 !== 0 || $databaseList.total % 4 !== 0) && $databaseList.total - offset <= limit}
                 <EmptyBucket on:click={() => (showCreate = true)}>
                     <div class="common-section">
                         <Button secondary round>

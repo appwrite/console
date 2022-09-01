@@ -176,8 +176,8 @@
                 applied to individual documents are ignored.
             </p>
             <svelte:fragment slot="aside">
-                <ul class="u-flex u-gap-12 common-section">
-                    <li>
+                <ul class="checkboxes-list">
+                    <li class="checkboxes-item">
                         <label class="label">
                             <input
                                 type="radio"
@@ -188,7 +188,7 @@
                             <span>Collection Level</span>
                         </label>
                     </li>
-                    <li>
+                    <li class="checkboxes-item">
                         <label class="label">
                             <input
                                 type="radio"
@@ -203,11 +203,11 @@
                 <Alert type="info">
                     <p>
                         Tip: Add <b>role:all</b> for wildcards access. Check out our documentation
-                        for more on <a href="/#">Permissions</a>
+                        for more on <a class="link" href="/#">Permissions</a>
                     </p>
                 </Alert>
                 {#if collectionPermissions === 'collection'}
-                    <ul class="common-section">
+                    <ul class="form-list">
                         <InputTags
                             id="read"
                             label="Read Access"

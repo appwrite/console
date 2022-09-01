@@ -7,7 +7,7 @@
         <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
             <slot />
         </div>
-        <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-32">
+        <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-24">
             <slot name="aside" />
         </div>
     </div>

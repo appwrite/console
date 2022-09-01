@@ -14,7 +14,7 @@
     let search = '';
     let offset = 0;
 
-    const limit = 5;
+    const limit = 6;
     const project = $page.params.project;
     const databaseId = $page.params.database;
     const handleCreate = async (event: CustomEvent<Models.Collection>) => {
@@ -39,7 +39,7 @@
     </div>
 
     {#if $collections?.total}
-        <div class="grid-box common-section" style="--grid-gap:2rem; --grid-item-size:25rem;">
+        <div class="grid-box common-section" style=" --grid-item-size:25rem;">
             {#each $collections.collections as collection}
                 <Bucket
                     href={`${base}/console/${project}/databases/database/${databaseId}/collection/${collection.$id}`}>
@@ -55,7 +55,7 @@
                     </Copy>
                 </Bucket>
             {/each}
-            {#if $collections.total % 2 !== 0}
+            {#if ($collections.total % 2 !== 0 || $collections.total % 4 !== 0) && $collections.total - offset <= limit}
                 <EmptyBucket on:click={() => (showCreate = true)}>
                     <div class="common-section">
                         <Button secondary round>
