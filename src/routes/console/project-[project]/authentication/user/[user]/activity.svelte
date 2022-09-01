@@ -8,24 +8,20 @@
         TableHeader,
         TableRow,
         TableCellHead,
+        TableCell,
         TableCellText
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { app } from '$lib/stores/app';
 
     let offset = 0;
     const limit = 25;
 
     $: request = sdkForProject.users.getLogs($page.params.user, limit, offset);
 
-    let browsers = {
-        firefox: 'firefox',
-        chrome: 'chrome',
-        safari: 'safari',
-        opera: 'opera',
-        edge: 'edge'
+    const getBrowser = (clientCode: string) => {
+        return sdkForProject.avatars.getBrowser(clientCode, 40, 40);
     };
 </script>
 
@@ -45,20 +41,14 @@
                 <TableBody>
                     {#each response.logs as log}
                         <TableRow>
-                            <TableCellText title="Client">
+                            <TableCell title="Client">
                                 <div class="u-flex u-cross-center u-gap-12">
                                     <div class="avatar is-small">
-                                        {#if browsers[log.clientName.toLocaleLowerCase()]}
-                                            <img
-                                                height="20"
-                                                width="20"
-                                                src={`/icons/${
-                                                    $app.themeInUse
-                                                }/color/${log?.clientName.toLocaleLowerCase()}.svg`}
-                                                alt={log.clientName} />
-                                        {:else}
-                                            <span class="icon-globe-alt" />
-                                        {/if}
+                                        <img
+                                            height="20"
+                                            width="20"
+                                            src={getBrowser(log.clientCode).toString()}
+                                            alt={log.clientName} />
                                     </div>
                                     <p class="text u-trim">
                                         {log.clientName}
@@ -67,7 +57,7 @@
                                         {log.osVersion}
                                     </p>
                                 </div>
-                            </TableCellText>
+                            </TableCell>
                             <TableCellText title="Event">{log.event}</TableCellText>
 
                             <TableCellText title="Location">
@@ -103,9 +93,7 @@
                 </div>
             </Empty>
         {/if}
-        <div
-            class="u-flex u-margin-block-start-32
- u-main-space-between">
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {response.total}</p>
             <Pagination {limit} bind:offset sum={response.total} />
         </div>
