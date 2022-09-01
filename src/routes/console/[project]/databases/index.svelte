@@ -40,13 +40,7 @@
             style={` --grid-item-size:${$databaseList.total > 3 ? '22rem' : '25rem'};`}>
             {#each $databaseList.databases as database}
                 <Bucket href={`${base}/console/${project}/databases/database/${database.$id}`}>
-                    <svelte:fragment slot="eyebrow">
-                        {#await databaseList.total(database.$id)}
-                            N Collections
-                        {:then n}
-                            {n[database.$id] ? n[database.$id] : 'NO'} Collections
-                        {/await}
-                    </svelte:fragment>
+                    <svelte:fragment slot="eyebrow">X Collections</svelte:fragment>
                     <svelte:fragment slot="title">{database.name}</svelte:fragment>
 
                     <Copy value={database.$id}>

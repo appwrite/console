@@ -200,13 +200,14 @@
                         </label>
                     </li>
                 </ul>
-                <Alert type="info">
-                    <p>
-                        Tip: Add <b>role:all</b> for wildcards access. Check out our documentation
-                        for more on <a class="link" href="/#">Permissions</a>
-                    </p>
-                </Alert>
+
                 {#if collectionPermissions === 'collection'}
+                    <Alert type="info">
+                        <p>
+                            Tip: Add <b>role:all</b> for wildcards access. Check out our
+                            documentation for more on <a class="link" href="/#">Permissions</a>
+                        </p>
+                    </Alert>
                     <ul class="form-list">
                         <InputTags
                             id="read"
@@ -219,6 +220,15 @@
                             placeholder="User ID, Team ID, or Role"
                             bind:tags={collectionWrite} />
                     </ul>
+                {:else}
+                    <Alert type="info">
+                        <p>
+                            Manage permissions at the <b>Document Level</b> to control access over
+                            every document in your collection. Check out our documentation for more
+                            on
+                            <a class="link" href="/#">Permissions</a>
+                        </p>
+                    </Alert>
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">

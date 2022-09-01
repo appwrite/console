@@ -14,14 +14,6 @@ function createDatabaseListStore() {
         load: async (search: string, limit: number, offset: number) => {
             const response = await sdkForProject.databases.list(search, limit, offset);
             set(response);
-        },
-        total: async (id: string) => {
-            let total = {};
-            total = browser ? JSON.parse(sessionStorage.getItem('databaseTotal')) ?? {} : {};
-            const response = await sdkForProject.databases.listCollections(id);
-            total[id] = response.total;
-            sessionStorage?.setItem('databaseTotal', JSON.stringify(total));
-            return total;
         }
     };
 }
