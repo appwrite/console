@@ -1,30 +1,20 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import {
-        Button,
-        Form,
-        FormItem,
-        FormList,
-        InputEmail,
-        InputPassword
-    } from '$lib/elements/forms';
+    import { Button, Form, FormItem, FormList, InputEmail } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { Unauthenticated } from '$lib/layout';
 
-    let mail: string, pass: string;
-
-    const login = async () => {
+    let mail: string;
+    const recover = async () => {
         try {
-            await sdkForConsole.account.createEmailSession(mail, pass);
+            await sdkForConsole.account.createRecovery(mail, `${base}`);
             user.fetchUser();
             addNotification({
                 type: 'success',
-                message: 'Successfully logged in.'
+                message: 'We have sent you an email with a password reset link'
             });
-            await goto(`${base}/console`);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -35,39 +25,30 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Sign in</title>
+    <title>Appwrite - Recover</title>
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Sign in</svelte:fragment>
+    <svelte:fragment slot="title">Password Recovery</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={login}>
+        <Form on:submit={recover}>
             <FormList>
                 <InputEmail
                     id="email"
                     label="Email"
                     placeholder="Email"
-                    showLabel={false}
                     autofocus={true}
                     required={true}
                     bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Password"
-                    showLabel={false}
-                    required={true}
-                    meter={false}
-                    showPasswordButton={true}
-                    bind:value={pass} />
+
                 <FormItem>
-                    <Button fullWidth submit>Sign in</Button>
+                    <Button fullWidth submit>Recover</Button>
                 </FormItem>
             </FormList>
         </Form></svelte:fragment>
     <svelte:fragment slot="links">
         <li class="inline-links-item">
-            <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
+            <a href={`${base}/login`}><span class="text">Sign in</span></a>
         </li>
         <li class="inline-links-item">
             <a href={`${base}/register`}><span class="text">Sign Up</span></a>
