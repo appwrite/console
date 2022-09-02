@@ -15,7 +15,7 @@ test('login page has inputs and button', async ({ page }) => {
     await page.goto('/login');
     const mail = page.locator('id=email');
     const pass = page.locator('id=password');
-    const button = page.locator('button:has-text("Login")');
+    const button = page.locator('button:has-text("Sign in")');
     expect(await mail.isVisible());
     expect(await pass.isVisible());
     expect(await button.isVisible());
@@ -45,7 +45,7 @@ test('login page shows error & response is 401 with wrong inputs', async ({ page
     await page.goto('/login');
     await page.fill('id=email', 'wrongemail@apppwrite.io');
     await page.fill('id=password', 'wrongpassword');
-    await page.click('button:has-text("Login")');
+    await page.click('button:has-text("Sign in")');
     page.on('response', (response) => {
         expect(response.status()).toBe(401);
     });
