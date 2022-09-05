@@ -1,12 +1,23 @@
 import { writable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
 
+export type AuthMethod = {
+    label: string;
+    method: string;
+    value: boolean | null;
+};
+
 function createAuthMethods() {
     const { subscribe, set } = writable({
         list: [
             {
-                label: 'Password',
+                label: 'Email/Password',
                 method: 'email-password',
+                value: null
+            },
+            {
+                label: 'Phone',
+                method: 'phone',
                 value: null
             },
             {
@@ -28,11 +39,6 @@ function createAuthMethods() {
                 label: 'JWT',
                 method: 'jwt',
                 value: null
-            },
-            {
-                label: 'Phone',
-                method: 'phone',
-                value: null
             }
         ]
     });
@@ -43,9 +49,14 @@ function createAuthMethods() {
         load: (project: Models.Project) => {
             const list = [
                 {
-                    label: 'Password',
+                    label: 'Email/Password',
                     method: 'email-password',
                     value: project.authEmailPassword
+                },
+                {
+                    label: 'Phone',
+                    method: 'phone',
+                    value: project.authPhone
                 },
                 {
                     label: 'Magic URL',
@@ -66,11 +77,6 @@ function createAuthMethods() {
                     label: 'JWT',
                     method: 'jwt',
                     value: project.authJWT
-                },
-                {
-                    label: 'Phone',
-                    method: 'phone',
-                    value: project.authPhone
                 }
             ];
             set({ list });

@@ -1,21 +1,25 @@
 <script context="module">
     import '@aw-labs/ui/src/_index.scss';
+    import 'tippy.js/dist/tippy.css';
 </script>
 
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { user } from '$lib/stores/user';
+    import { redirectTo } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { browser } from '$app/env';
     import { app } from '$lib/stores/app';
     import Notifications from '$lib/layout/notifications.svelte';
     import Loading from './_loading.svelte';
+    import { webVitals } from '$lib/helpers/vitals';
 
     let loaded = false;
 
     if (browser) {
+        window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
         window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
     }
 
@@ -26,7 +30,7 @@
             }
 
             if (!$page.url.pathname.startsWith('/console')) {
-                await goto(`${base}/console`);
+                await redirectTo();
             }
         } catch (error) {
             await goto(`${base}/login`);
@@ -34,6 +38,14 @@
             loaded = true;
         }
     });
+
+    $: if (browser && window.VERCEL_ANALYTICS_ID) {
+        webVitals({
+            path: $page.url.pathname,
+            params: $page.params,
+            analyticsId: window.VERCEL_ANALYTICS_ID
+        });
+    }
 
     $: {
         if (browser) {
@@ -77,3 +89,28 @@
 {:else}
     <Loading />
 {/if}
+
+<style lang="scss" global>
+    .tippy-box {
+        --p-tooltip-text-color: var(--color-neutral-10);
+        --p-tooltip--bg-color: var(--color-neutral-100);
+
+        background-color: hsl(var(--p-tooltip--bg-color));
+        color: hsl(var(--p-tooltip-text-color));
+        font-size: var(--font-size-0);
+        line-height: 1.5;
+
+        &[data-placement^='top'] > .tippy-arrow::before {
+            border-top-color: hsl(var(--p-tooltip--bg-color));
+        }
+        &[data-placement^='bottom'] > .tippy-arrow::before {
+            border-bottom-color: hsl(var(--p-tooltip--bg-color));
+        }
+        &[data-placement^='left'] > .tippy-arrow::before {
+            border-left-color: hsl(var(--p-tooltip--bg-color));
+        }
+        &[data-placement^='right'] > .tippy-arrow::before {
+            border-right-color: hsl(var(--p-tooltip--bg-color));
+        }
+    }
+</style>

@@ -1,5 +1,6 @@
 <script lang="ts">
     export let disabled = false;
+    export let selected = false;
     export let success = false;
     export let warning = false;
     export let danger = false;
@@ -18,6 +19,7 @@
         rel={external ? 'noopener noreferrer' : ''}
         class="tag"
         class:is-disabled={disabled}
+        class:is-selected={selected}
         class:is-success={success}
         class:is-warning={warning}
         class:is-danger={danger}
@@ -31,6 +33,7 @@
         type={submit ? 'submit' : 'button'}
         class="tag"
         class:is-disabled={disabled}
+        class:is-selected={selected}
         class:is-success={success}
         class:is-warning={warning}
         class:is-danger={danger}
@@ -41,6 +44,7 @@
     <div
         class="tag"
         class:is-disabled={disabled}
+        class:is-selected={selected}
         class:is-success={success}
         class:is-warning={warning}
         class:is-danger={danger}

@@ -1,17 +1,17 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem } from '.';
+    import { FormItem, Helper } from '.';
 
     export let id: string;
     export let label: string;
     export let showLabel = true;
     export let tags: string[] = [];
     export let placeholder = '';
-    export let helper = '';
     export let autofocus = false;
 
     let value = '';
     let element: HTMLInputElement;
+    let error: string;
 
     onMount(() => {
         if (element && autofocus) {
@@ -48,6 +48,20 @@
     const removeValue = (value: string) => {
         tags = tags.filter((tag) => tag !== value);
     };
+
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+
+        if (element.validity.valueMissing) {
+            error = 'This field is required';
+            return;
+        }
+        error = element.validationMessage;
+    };
+
+    $: if (value) {
+        error = null;
+    }
 </script>
 
 <FormItem>
@@ -73,17 +87,18 @@
                 </ul>
             </div>
             <input
+                {id}
+                placeholder={!tags.length ? placeholder : ''}
                 type="text"
                 class="tags-input-text"
-                {id}
-                {placeholder}
+                bind:value
+                bind:this={element}
                 on:keydown={handleInput}
                 on:blur={addValue}
-                bind:value
-                bind:this={element} />
+                on:invalid={handleInvalid} />
         </div>
     </div>
-    {#if helper}
-        <p class="helper u-margin-block-start-12">{helper}</p>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
     {/if}
 </FormItem>
