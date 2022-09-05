@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Avatar } from '$lib/components';
-    import { files } from '../../routes/console/[project]/storage/bucket/[bucket]/store';
+    import { files } from '../../routes/console/project-[project]/storage/bucket/[bucket]/store';
     import { addNotification } from '$lib/stores/notifications';
     import { pageLimit } from '$lib/stores/layout';
 
