@@ -21,7 +21,7 @@
     $: request = sdkForProject.teams.listLogs($page.params.team, $pageLimit, offset);
 
     const getBrowser = (clientCode: string) => {
-        return sdkForProject.avatars.getBrowser(clientCode, 40, 40);
+        return sdkForProject.avatars.getBrowser(clientCode, 80, 80);
     };
 </script>
 
@@ -42,21 +42,31 @@
                     {#each response.logs as log}
                         <TableRow>
                             <TableCell title="Client">
-                                <div class="u-flex u-cross-center u-gap-12">
-                                    <div class="avatar is-small">
-                                        <img
-                                            height="20"
-                                            width="20"
-                                            src={getBrowser(log.clientCode).toString()}
-                                            alt={log.clientName} />
+                                {#if log.clientName}
+                                    <div class="u-flex u-cross-center u-gap-12">
+                                        <div class="avatar is-small">
+                                            <img
+                                                height="20"
+                                                width="20"
+                                                src={getBrowser(log.clientCode).toString()}
+                                                alt={log.clientName} />
+                                        </div>
+                                        <p class="text u-trim">
+                                            {log.clientName}
+                                            {log.clientVersion}
+                                            on {log.osName}
+                                            {log.osVersion}
+                                        </p>
                                     </div>
-                                    <p class="text u-trim">
-                                        {log.clientName}
-                                        {log.clientVersion}
-                                        on {log.osName}
-                                        {log.osVersion}
-                                    </p>
-                                </div>
+                                {:else}
+                                    <div class="u-flex u-cross-center u-gap-12">
+                                        <p class="text u-trim">
+                                            <span class="avatar  is-color-empty" />
+
+                                            Unknown
+                                        </p>
+                                    </div>
+                                {/if}
                             </TableCell>
                             <TableCellText title="Event">{log.event}</TableCellText>
 
