@@ -3,14 +3,12 @@
     import { Button, Form, FormItem, FormList, InputEmail } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
     import { Unauthenticated } from '$lib/layout';
 
     let mail: string;
     const recover = async () => {
         try {
-            await sdkForConsole.account.createRecovery(mail, `${base}`);
-            user.fetchUser();
+            sdkForConsole.account.createRecovery(mail, `${base}`);
             addNotification({
                 type: 'success',
                 message: 'We have sent you an email with a password reset link'
@@ -45,7 +43,8 @@
                     <Button fullWidth submit>Recover</Button>
                 </FormItem>
             </FormList>
-        </Form></svelte:fragment>
+        </Form>
+    </svelte:fragment>
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <a href={`${base}/login`}><span class="text">Sign in</span></a>
