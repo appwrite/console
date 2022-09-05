@@ -7,3 +7,4 @@ export { default as Notification } from './notification.svelte';
 export { default as Notifications } from './notifications.svelte';
 export { default as Shell } from './shell.svelte';
 export { default as Breadcrumbs } from './breadcrumbs.svelte';
+export { default as Unauthenticated } from './unauthenticated.svelte';
