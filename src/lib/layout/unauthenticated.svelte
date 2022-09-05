@@ -2,7 +2,6 @@
     import AppwriteLogo from '$lib/images/appwrite.svg';
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
-    3;
     import { app } from '$lib/stores/app';
 
     const technologies = [

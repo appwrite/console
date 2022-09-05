@@ -62,7 +62,8 @@
                     <Button fullWidth submit>Sign in</Button>
                 </FormItem>
             </FormList>
-        </Form></svelte:fragment>
+        </Form>
+    </svelte:fragment>
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
