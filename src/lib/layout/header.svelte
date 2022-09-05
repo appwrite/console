@@ -1,20 +1,30 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { onMount } from 'svelte';
     import { Breadcrumbs } from '.';
     import { Avatar, DropList, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
-    import { project } from '../../routes/console/[project]/store';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
+    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
 
     let showDropdown = false;
+
+    onMount(async () => {
+        await organizationList.load();
+        if (!$organization) {
+            await organization.load($organizationList.teams[0].$id);
+        }
+    });
 </script>
 
-<a class="logo" href={`${base}/console`}>
+<a
+    class="logo"
+    href={$organization ? `${base}/console/organization-${$organization.$id}` : `${base}/console`}>
     <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
 </a>
 
@@ -33,7 +43,12 @@
     </nav>
     <nav class="user-profile">
         {#if $user}
-            <DropList bind:show={showDropdown} position="bottom" horizontal="left" arrow={false}>
+            <DropList
+                bind:show={showDropdown}
+                position="bottom"
+                horizontal="left"
+                arrow={false}
+                scrollable={true}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
                     <Avatar
                         size={40}
@@ -41,8 +56,8 @@
                         src={sdkForConsole.avatars.getInitials($user.name, 40, 40).toString()} />
                     <span class="user-profile-info is-only-desktop">
                         <span class="name">{$user.name}</span>
-                        {#if $project}
-                            <span class="title">{$project.name}</span>
+                        {#if $organization}
+                            <span class="title">{$organization.name}</span>
                         {/if}
                     </span>
                     <span
@@ -52,10 +67,28 @@
                         class:icon-cheveron-down={!showDropdown} />
                 </button>
                 <svelte:fragment slot="list">
-                    <DropListItem icon="plus">New organisation</DropListItem>
-                    <DropListLink href="/console/$me">Your Account</DropListLink>
+                    {#if $organizationList?.total}
+                        {#each $organizationList.teams as org}
+                            <DropListLink
+                                href={`${base}/console/organization-${org.$id}`}
+                                on:click={() => {
+                                    showDropdown = false;
+                                }}>{org.name}</DropListLink>
+                        {/each}
+                    {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="other">
+                    <section class="drop-section">
+                        <ul class="drop-list">
+                            <DropListItem
+                                icon="plus"
+                                on:click={() => {
+                                    showDropdown = false;
+                                    newOrgModal.set(true);
+                                }}>New organization</DropListItem>
+                            <DropListLink href="/console/$me">Your Account</DropListLink>
+                        </ul>
+                    </section>
                     <section class="drop-section">
                         <ul class="u-flex u-gap-12">
                             <li>
