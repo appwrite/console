@@ -47,7 +47,6 @@
                     id="email"
                     label="Email"
                     placeholder="Email"
-                    showLabel={false}
                     autofocus={true}
                     required={true}
                     bind:value={mail} />
@@ -55,7 +54,6 @@
                     id="password"
                     label="Password"
                     placeholder="Password"
-                    showLabel={false}
                     required={true}
                     meter={false}
                     showPasswordButton={true}
