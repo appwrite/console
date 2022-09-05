@@ -25,10 +25,6 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Activity</h2>
-    </div>
-
     {#await request}
         <div aria-busy="true" />
     {:then response}
