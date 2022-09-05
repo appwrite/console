@@ -108,13 +108,15 @@
                         placeholder="Enter email"
                         autocomplete={false}
                         bind:value={email} />
-                    <InputPassword
-                        id="emailPassword"
-                        label="Password"
-                        placeholder="Enter password"
-                        autocomplete={false}
-                        showPasswordButton={true}
-                        bind:value={emailPassword} />
+                    {#if email !== $user.email && email}
+                        <InputPassword
+                            id="emailPassword"
+                            label="Password"
+                            placeholder="Enter password"
+                            autocomplete={false}
+                            showPasswordButton={true}
+                            bind:value={emailPassword} />
+                    {/if}
                 </FormList>
             </svelte:fragment>
 
@@ -172,7 +174,6 @@
                 <svelte:fragment slot="title">
                     <h6 class="u-bold">{$user.name}</h6>
                 </svelte:fragment>
-                <p>{$user.email}</p>
             </Box>
         </svelte:fragment>
 
