@@ -2,6 +2,8 @@
     import AppwriteLogo from '$lib/images/appwrite.svg';
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
+    3;
+    import { app } from '$lib/stores/app';
 
     const technologies = [
         'js',
@@ -33,8 +35,11 @@
         <div
             class="container u-margin-block-start-20"
             style="--p-container-max-size: var(--container-size-large);">
-            <img src={LoginLight} alt="" class="u-only-light" />
-            <img src={LoginDark} alt="" class="u-only-dark" />
+            {#if $app.themeInUse === 'dark'}
+                <img src={LoginDark} alt="" class="u-only-dark" />
+            {:else}
+                <img src={LoginLight} alt="" class="u-only-light" />
+            {/if}
         </div>
 
         <div class="u-margin-block-start-auto" />
