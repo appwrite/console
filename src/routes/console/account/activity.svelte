@@ -48,21 +48,28 @@
                             <TableCellText title="Event">{log.event}</TableCellText>
 
                             <TableCell title="Client">
-                                <div class="u-flex u-cross-center u-gap-12">
-                                    <div class="avatar is-small">
-                                        <img
-                                            height="20"
-                                            width="20"
-                                            src={getBrowser(log.clientCode).toString()}
-                                            alt={log.clientName} />
+                                {#if log.clientName}
+                                    <div class="u-flex u-cross-center u-gap-12">
+                                        <div class="avatar is-small">
+                                            <img
+                                                height="20"
+                                                width="20"
+                                                src={getBrowser(log.clientCode).toString()}
+                                                alt={log.clientName} />
+                                        </div>
+                                        <p class="text u-trim">
+                                            {log.clientName}
+                                            {log.clientVersion}
+                                            on {log.osName}
+                                            {log.osVersion}
+                                        </p>
                                     </div>
-                                    <p class="text u-trim">
-                                        {log.clientName}
-                                        {log.clientVersion}
-                                        on {log.osName}
-                                        {log.osVersion}
-                                    </p>
-                                </div>
+                                {:else}
+                                    <div class="u-flex u-cross-center u-gap-12">
+                                        <span class="avatar  is-color-empty" />
+                                        <p class="text u-trim">Unknown</p>
+                                    </div>
+                                {/if}
                             </TableCell>
 
                             <TableCellText title="Location">
