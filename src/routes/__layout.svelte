@@ -36,7 +36,7 @@
             }
         } catch (error) {
             if (acceptedRoutes.includes($page.url.pathname)) {
-                await goto(`${base}${$page.url.pathname}`);
+                await goto(`${base}${$page.url.pathname}${$page.url.search}`);
             } else await goto(`${base}/login`);
         } finally {
             loaded = true;
