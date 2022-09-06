@@ -53,7 +53,9 @@
                                                 src={getBrowser(log.clientCode).toString()}
                                                 alt={log.clientName} />
                                         </div>
-                                        <p class="text u-trim">
+                                        <p
+                                            class="text u-trim"
+                                            title={`${log.clientName} ${log.clientVersion} on ${log.osName} ${log.osVersion}`}>
                                             {log.clientName}
                                             {log.clientVersion}
                                             on {log.osName}
