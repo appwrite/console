@@ -22,7 +22,7 @@
 <main class="grid-1-1 is-full-page" id="main">
     <section class="grid-1-1-col-1 u-flex u-flex-vertical">
         <div
-            class="container u-margin-block-start-40"
+            class="container u-margin-block-start-20"
             style="--p-container-max-size: var(--container-size-medium);">
             <a href="/">
                 <img src={AppwriteLogo} width="196" height="47" class="u-block" alt="Appwrite" />
@@ -80,7 +80,7 @@
             <p class="u-max-width-500 u-width-full-line u-margin-block-start-24">
                 version 0.15.2.402
             </p>
-            <div class="u-margin-block-start-40" />
+            <div class="u-margin-block-start-20" />
         </div>
     </section>
 </main>
