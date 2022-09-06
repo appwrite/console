@@ -8,13 +8,14 @@
     import { addNotification } from '$lib/stores/notifications';
     import { title, breadcrumbs } from '$lib/stores/layout';
     import { base } from '$app/paths';
+    import Delete from './_delete.svelte';
 
     let name: string = null,
         email: string = null,
         emailPassword: string = null,
         newPassword: string = null,
         oldPassword: string = null;
-    // let showDelete = false;
+    let showDelete = false;
 
     onMount(async () => {
         name ??= $user.name;
@@ -178,7 +179,9 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => console.log('showDelete = true')}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>
+
+<Delete bind:showDelete />
