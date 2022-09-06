@@ -15,8 +15,8 @@
 
             if (data.offsetWidth < data.scrollWidth) {
                 if (tool) {
-                    tool.setContent(content);
-                    tool.enable();
+                    if (!tool?.props?.content) tool.setContent(content);
+                    if (!tool.state.isEnabled) tool.enable();
                 } else {
                     tippy(data, { content });
                 }
