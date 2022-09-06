@@ -18,6 +18,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
     import { page } from '$app/stores';
+    import { addNotification } from '$lib/stores/notifications';
 
     let search = '';
     let offset: number = null;
@@ -29,14 +30,26 @@
     const getAvatar = (name: string) =>
         sdkForConsole.avatars.getInitials(name, 120, 120).toString();
     const deleted = () => memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
-    const resend = async (member: Models.Membership) =>
-        await sdkForConsole.teams.createMembership(
-            $organization.$id,
-            member.userEmail,
-            member.roles,
-            url,
-            member.userName
-        );
+    const resend = async (member: Models.Membership) => {
+        try {
+            await sdkForConsole.teams.createMembership(
+                $organization.$id,
+                member.userEmail,
+                member.roles,
+                url,
+                member.userName
+            );
+            addNotification({
+                type: 'success',
+                message: `Invite has been sent to ${member.userEmail}`
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error
+            });
+        }
+    };
 
     $: if (search) offset = 0;
     $: memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
