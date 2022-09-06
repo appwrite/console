@@ -54,7 +54,9 @@
                     <li>
                         <img
                             src={`${base}/icons/${$app.themeInUse}/grayscale/${tech}.svg`}
-                            alt={tech} />
+                            alt={tech}
+                            aria-hidden="true"
+                            aria-label={tech} />
                     </li>
                 {/each}
             </ul>

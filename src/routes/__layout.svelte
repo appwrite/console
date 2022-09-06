@@ -23,6 +23,8 @@
         window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
     }
 
+    const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+
     onMount(async () => {
         try {
             if (!$user) {
@@ -33,7 +35,9 @@
                 await redirectTo();
             }
         } catch (error) {
-            await goto(`${base}/login`);
+            if (acceptedRoutes.includes($page.url.pathname)) {
+                await goto(`${base}${$page.url.pathname}`);
+            } else await goto(`${base}/login`);
         } finally {
             loaded = true;
         }
