@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
     import { onMount } from 'svelte';
+    import tippy, { type PopperElement } from 'tippy.js';
 
-    let data: HTMLSpanElement;
+    let data: HTMLSpanElement & Partial<PopperElement>;
 
     onMount(() => {
         setTooltip();
@@ -11,12 +11,19 @@
     const setTooltip = () => {
         if (data.innerText) {
             const content = data.innerText;
-            const tool = tooltip(data, { content });
-            tool.disable();
+            let tool = data?._tippy;
+
             if (data.offsetWidth < data.scrollWidth) {
-                tool.enable();
+                if (tool) {
+                    tool.setContent(content);
+                    tool.enable();
+                } else {
+                    tippy(data, { content });
+                }
             } else {
-                tool.disable();
+                if (tool) {
+                    tool.disable();
+                }
             }
         }
     };
@@ -34,10 +41,10 @@
         };
     };
 
-    //TODO: disable tooltip when text is with elipsis
+    //TODO: disable tooltip when text is without elipsis
 </script>
 
-<svelte:window on:resize={throttle(setTooltip, 50)} />
+<svelte:window on:resize={throttle(setTooltip, 250)} />
 
 <span bind:this={data} class="text u-trim">
     <slot />
