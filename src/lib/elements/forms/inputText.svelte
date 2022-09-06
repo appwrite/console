@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem } from '.';
+    import { FormItem, Helper } from '.';
 
     export let label: string;
     export let showLabel = true;
@@ -14,12 +14,28 @@
     export let maxlength: number = null;
 
     let element: HTMLInputElement;
+    let error: string;
 
     onMount(() => {
         if (element && autofocus) {
             element.focus();
         }
     });
+
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+
+        if (element.validity.valueMissing) {
+            error = 'This field is required';
+            return;
+        }
+
+        error = element.validationMessage;
+    };
+
+    $: if (value) {
+        error = null;
+    }
 </script>
 
 <FormItem>
@@ -35,6 +51,10 @@
             type="text"
             class="input-text"
             bind:value
-            bind:this={element} />
+            bind:this={element}
+            on:invalid={handleInvalid} />
     </div>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
+    {/if}
 </FormItem>

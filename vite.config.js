@@ -9,6 +9,9 @@ const config = {
     ssr: {
         noExternal: ['echarts']
     },
+    define: {
+        'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)
+    },
     legacy: {
         buildSsrCjsExternalHeuristics: true
     },
@@ -19,7 +22,7 @@ const config = {
         include: ['tests/**/*.test.ts'],
         globals: true,
         environment: 'jsdom',
-        thread: true
+        threads: true
     }
 };
 

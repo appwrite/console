@@ -1,15 +1,14 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { browser } from '$app/env';
+    import { createEventDispatcher } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
+    import { Alert } from '$lib/components';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
     export let warning = false;
-    let browser = false;
-    //TODO: explore other solutions compatible with testing library
-    onMount(() => {
-        browser = true;
-    });
+    export let error: string = null;
+    export let closable = true;
 
     const dispatch = createEventDispatcher();
     const transitionFly: FlyParams = {
@@ -26,19 +25,22 @@
             closeModal();
         }
     };
-
     const handleBLur = (event: MouseEvent) => {
         const target: Partial<HTMLElement> = event.target;
         if (target.hasAttribute('data-curtain')) {
             closeModal();
         }
     };
-
     const closeModal = () => {
-        show = false;
-        dispatch('close');
+        if (closable) {
+            show = false;
+            dispatch('close');
+        }
     };
 
+    /**
+     * Workaround until https://github.com/sveltejs/svelte/issues/3105 is resolved.
+     */
     $: if (browser) {
         if (show) {
             document.body.classList.add('u-overflow-hidden');
@@ -66,16 +68,28 @@
                 <h4 class="heading-level-5">
                     <slot name="header" />
                 </h4>
-                <button
-                    type="button"
-                    class="x-button"
-                    aria-label="Close Modal"
-                    title="Close Modal"
-                    on:click={closeModal}>
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
+                {#if closable}
+                    <button
+                        type="button"
+                        class="x-button"
+                        aria-label="Close Modal"
+                        title="Close Modal"
+                        on:click={closeModal}>
+                        <span class="icon-x" aria-hidden="true" />
+                    </button>
+                {/if}
             </header>
             <div class="modal-content">
+                {#if error}
+                    <Alert
+                        dismissible
+                        type="warning"
+                        on:dismiss={() => {
+                            error = null;
+                        }}>
+                        {error}
+                    </Alert>
+                {/if}
                 <slot />
             </div>
             <div class="modal-footer">

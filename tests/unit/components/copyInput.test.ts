@@ -13,7 +13,7 @@ test('shows CopyInput component', () => {
     expect(input).toBeInTheDocument();
     expect(button).toBeInTheDocument();
     expect(input).toHaveAttribute('type', 'text');
-    expect(input).toBeDisabled();
+    expect(input).toHaveAttribute('readonly');
 });
 
 test('copy to clipboard function called on click', async () => {
