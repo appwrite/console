@@ -9,7 +9,6 @@
 
     const deleteAccount = async () => {
         try {
-            //TODO delete all data beforehand??
             await sdkForConsole.users.delete($user.$id);
             showDelete = false;
             addNotification({
