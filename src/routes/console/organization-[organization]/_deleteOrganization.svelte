@@ -3,22 +3,27 @@
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization, organizationList } from '$lib/stores/organization';
+    import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
     export let showDelete = false;
 
-    const deleteUser = async () => {
+    const deleteOrg = async () => {
         try {
             await sdkForConsole.teams.delete($organization.$id);
-            showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$organization.name} has been deleted`
             });
-            if ($organizationList?.total) {
+            if ($organizationList?.total > 1) {
                 await organizationList.load();
-                organization.set($organizationList.teams[0]);
+                goto(`${base}/console/organization-${$organizationList.teams[0].$id}`);
+            } else {
+                newOrgModal.set(true);
+                goto(`${base}/console`);
             }
+            showDelete = false;
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -28,7 +33,7 @@
     };
 </script>
 
-<Form on:submit={deleteUser}>
+<Form on:submit={deleteOrg}>
     <Modal bind:show={showDelete} warning>
         <svelte:fragment slot="header">Delete Organization</svelte:fragment>
         <p>
