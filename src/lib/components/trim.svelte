@@ -40,8 +40,6 @@
             }
         };
     };
-
-    //TODO: disable tooltip when text is without elipsis
 </script>
 
 <svelte:window on:resize={throttle(setTooltip, 250)} />
