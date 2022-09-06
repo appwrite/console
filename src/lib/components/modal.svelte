@@ -8,6 +8,7 @@
     export let size: 'small' | 'big' = null;
     export let warning = false;
     export let error: string = null;
+    export let closable = true;
 
     const dispatch = createEventDispatcher();
     const transitionFly: FlyParams = {
@@ -31,8 +32,10 @@
         }
     };
     const closeModal = () => {
-        show = false;
-        dispatch('close');
+        if (closable) {
+            show = false;
+            dispatch('close');
+        }
     };
 
     /**
@@ -65,14 +68,16 @@
                 <h4 class="heading-level-5">
                     <slot name="header" />
                 </h4>
-                <button
-                    type="button"
-                    class="x-button"
-                    aria-label="Close Modal"
-                    title="Close Modal"
-                    on:click={closeModal}>
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
+                {#if closable}
+                    <button
+                        type="button"
+                        class="x-button"
+                        aria-label="Close Modal"
+                        title="Close Modal"
+                        on:click={closeModal}>
+                        <span class="icon-x" aria-hidden="true" />
+                    </button>
+                {/if}
             </header>
             <div class="modal-content">
                 {#if error}

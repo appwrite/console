@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
 
     $: project = $page.params.project;
-    $: path = `${base}/console/${project}`;
+    $: path = `${base}/console/project-${project}`;
 </script>
 
 <div class="side-nav">

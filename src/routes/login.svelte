@@ -12,6 +12,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
+    import { Unauthenticated } from '$lib/layout';
 
     let mail: string, pass: string;
 
@@ -34,31 +35,41 @@
 </script>
 
 <svelte:head>
-    <title>Login</title>
+    <title>Appwrite - Sign in</title>
 </svelte:head>
 
-<h1>Login</h1>
-
-<Form on:submit={login}>
-    <FormList>
-        <InputEmail
-            id="email"
-            label="Email"
-            placeholder="Enter email"
-            autofocus={true}
-            required={true}
-            bind:value={mail} />
-        <InputPassword
-            id="password"
-            label="Password"
-            placeholder="Enter password"
-            required={true}
-            meter={false}
-            bind:value={pass} />
-        <FormItem>
-            <Button submit>Login</Button>
-        </FormItem>
-    </FormList>
-</Form>
-
-<a href={`${base}/register`}>Create an Account</a>
+<Unauthenticated>
+    <svelte:fragment slot="title">Sign in</svelte:fragment>
+    <svelte:fragment>
+        <Form on:submit={login}>
+            <FormList>
+                <InputEmail
+                    id="email"
+                    label="Email"
+                    placeholder="Email"
+                    autofocus={true}
+                    required={true}
+                    bind:value={mail} />
+                <InputPassword
+                    id="password"
+                    label="Password"
+                    placeholder="Password"
+                    required={true}
+                    meter={false}
+                    showPasswordButton={true}
+                    bind:value={pass} />
+                <FormItem>
+                    <Button fullWidth submit>Sign in</Button>
+                </FormItem>
+            </FormList>
+        </Form>
+    </svelte:fragment>
+    <svelte:fragment slot="links">
+        <li class="inline-links-item">
+            <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
+        </li>
+        <li class="inline-links-item">
+            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
+        </li>
+    </svelte:fragment>
+</Unauthenticated>
