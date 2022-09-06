@@ -3,6 +3,7 @@
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { app } from '$lib/stores/app';
+    import { base } from '$app/paths';
 
     const technologies = [
         'js',
@@ -51,10 +52,9 @@
                 class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 ">
                 {#each technologies as tech}
                     <li>
-                        <span
-                            class={`icon-${tech} u-font-size-32`}
-                            aria-hidden="true"
-                            aria-label={tech} />
+                        <img
+                            src={`${base}/icons/${$app.themeInUse}/grayscale/${tech}.svg`}
+                            alt={tech} />
                     </li>
                 {/each}
             </ul>
