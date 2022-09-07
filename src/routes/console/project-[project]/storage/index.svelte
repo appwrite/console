@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, Bucket, EmptyBucket } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1, EmptyGridItem } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -42,7 +42,7 @@
                 $bucketList.total > 3 ? '22rem' : '25rem'
             };`}>
             {#each $bucketList.buckets as bucket}
-                <Bucket href={`${base}/console/project-${project}/storage/bucket/${bucket.$id}`}>
+                <GridItem1 href={`${base}/console/project-${project}/storage/bucket/${bucket.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
                     <svelte:fragment slot="status">
@@ -79,10 +79,10 @@
                                 }} />
                         </li>
                     </svelte:fragment>
-                </Bucket>
+                </GridItem1>
             {/each}
             {#if $bucketList.total % 2 !== 0}
-                <EmptyBucket on:click={() => (showCreate = true)}>
+                <EmptyGridItem on:click={() => (showCreate = true)}>
                     <div class="common-section">
                         <Button secondary round>
                             <i class="icon-plus" />
@@ -91,7 +91,7 @@
                     <div class="common-section">
                         <p>Add a new bucket</p>
                     </div>
-                </EmptyBucket>
+                </EmptyGridItem>
             {/if}
         </ul>
 
@@ -117,7 +117,7 @@
         </div>
     {:else}
         <Empty dashed centered>
-            <div class="bucket">
+            <div class="grid-item-1">
                 <div class="u-flex u-flex-vertical u-cross-center">
                     <div class="common-section">
                         <Button secondary round on:click={() => (showCreate = true)}>
