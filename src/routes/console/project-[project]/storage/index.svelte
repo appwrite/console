@@ -117,7 +117,7 @@
         </div>
     {:else}
         <Empty dashed centered>
-            <div class="bucket">
+            <div class="grid-item-1">
                 <div class="u-flex u-flex-vertical u-cross-center">
                     <div class="common-section">
                         <Button secondary round on:click={() => (showCreate = true)}>
