@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, EmptyBucket, Pagination, Copy, Bucket } from '$lib/components';
+    import { Empty, EmptyGridItem, Pagination, Copy, GridItem1 } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -43,7 +43,7 @@
             class="grid-box common-section"
             style={` --grid-item-size:${$collections.total > 3 ? '22rem' : '25rem'};`}>
             {#each $collections.collections as collection}
-                <Bucket
+                <GridItem1
                     href={`${base}/console/project-${project}/databases/database/${databaseId}/collection/${collection.$id}`}>
                     <svelte:fragment slot="eyebrow">
                         {#await collections.total(collection.$id)}
@@ -60,10 +60,10 @@
                     <Copy value={collection.$id}>
                         <Pill button><i class="icon-duplicate" />Collection ID</Pill>
                     </Copy>
-                </Bucket>
+                </GridItem1>
             {/each}
             {#if ($collections.total % 2 !== 0 || $collections.total % 4 === 0) && $collections.total - offset <= limit}
-                <EmptyBucket on:click={() => (showCreate = true)}>
+                <EmptyGridItem on:click={() => (showCreate = true)}>
                     <div class="common-section">
                         <Button secondary round>
                             <i class="icon-plus" />
@@ -72,7 +72,7 @@
                     <div class="common-section">
                         <p>Create a new collection</p>
                     </div>
-                </EmptyBucket>
+                </EmptyGridItem>
             {/if}
         </div>
 
