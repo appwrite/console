@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Bucket, EmptyBucket, Empty, Pagination, AvatarGroup } from '$lib/components';
+    import { GridItem1, EmptyGridItem, Empty, Pagination, AvatarGroup } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateOrganization from '../_createOrganization.svelte';
@@ -53,7 +53,7 @@
             {#each $organizationList.teams as organization, index}
                 {@const avatarList = getMemberships(organization.$id)}
                 {#if index >= offset && index < limit + offset}
-                    <Bucket href={`${base}/console/organization-${organization.$id}`}>
+                    <GridItem1 href={`${base}/console/organization-${organization.$id}`}>
                         <svelte:fragment slot="eyebrow"
                             >{organization?.total ? organization?.total : 'No'} projects</svelte:fragment>
                         <svelte:fragment slot="title">
@@ -64,11 +64,11 @@
                         {:then avatars}
                             <AvatarGroup size={40} {avatars} />
                         {/await}
-                    </Bucket>
+                    </GridItem1>
                 {/if}
             {/each}
             {#if $organizationList?.total < limit + offset && ($organizationList?.total % 2 !== 0 || $organizationList?.total % 4 === 0)}
-                <EmptyBucket on:click={() => (addOrganization = true)}>
+                <EmptyGridItem on:click={() => (addOrganization = true)}>
                     <div class="common-section">
                         <Button secondary round>
                             <i class="icon-plus" />
@@ -77,7 +77,7 @@
                     <div class="common-section">
                         <p>Create a new organization</p>
                     </div>
-                </EmptyBucket>
+                </EmptyGridItem>
             {/if}
         </ul>
 
@@ -87,7 +87,7 @@
         </div>
     {:else}
         <Empty dashed centered>
-            <div class="bucket">
+            <div class="grid-item-1">
                 <div class="u-flex u-flex-vertical u-cross-center ">
                     <div class="common-section">
                         <Button secondary round on:click={() => (addOrganization = true)}>
