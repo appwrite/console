@@ -57,7 +57,7 @@
                     >.</InputChoice>
 
                 <div class="u-flex u-main-end u-gap-12">
-                    <Button secondary>Cancel</Button>
+                    <Button secondary href={`${base}/login`}>Cancel</Button>
                     <Button submit>Accept</Button>
                 </div>
             </FormList>
