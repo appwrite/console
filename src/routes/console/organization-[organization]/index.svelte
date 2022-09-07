@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
-    import { Bucket, EmptyBucket, Empty, Pagination } from '$lib/components';
+    import { GridItem1, EmptyGridItem, Empty, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -79,7 +79,7 @@
             };`}>
             {#each projects as project, index}
                 {#if index >= offset && index < limit + offset}
-                    <Bucket href={`${base}/console/project-${project.$id}`}>
+                    <GridItem1 href={`${base}/console/project-${project.$id}`}>
                         <svelte:fragment slot="eyebrow"
                             >{project?.platforms?.length ? project?.platforms?.length : 'No'} apps</svelte:fragment>
                         <svelte:fragment slot="title">
@@ -102,11 +102,11 @@
                                 +{project.platforms.length - 3}
                             </Pill>
                         {/if}
-                    </Bucket>
+                    </GridItem1>
                 {/if}
             {/each}
             {#if projects.length < limit + offset && (projects.length % 2 !== 0 || projects.length % 4 === 0)}
-                <EmptyBucket on:click={() => (showCreate = true)}>
+                <EmptyGridItem on:click={() => (showCreate = true)}>
                     <div class="common-section">
                         <Button secondary round>
                             <i class="icon-plus" />
@@ -115,7 +115,7 @@
                     <div class="common-section">
                         <p>Create a new project</p>
                     </div>
-                </EmptyBucket>
+                </EmptyGridItem>
             {/if}
         </ul>
 
