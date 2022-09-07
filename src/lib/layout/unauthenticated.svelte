@@ -51,7 +51,7 @@
             style="--p-container-max-size:var(--container-size-small); --p-container-padding-inline:1rem;">
             <p>Integrate with your favourite technologies</p>
             <ul
-                class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 ">
+                class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 u-opacity-0-5">
                 {#each technologies as tech}
                     <li>
                         <img

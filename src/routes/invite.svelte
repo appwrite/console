@@ -43,6 +43,7 @@
 <Unauthenticated>
     <svelte:fragment slot="title">Invite</svelte:fragment>
     <svelte:fragment>
+        <p class="text">You have been invited to join a team project on Appwrite</p>
         <Form on:submit={acceptInvite}>
             <FormList>
                 <InputChoice required bind:value={terms} id="terms" label="terms" showLabel={false}>
