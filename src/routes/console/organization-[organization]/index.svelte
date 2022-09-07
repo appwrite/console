@@ -88,20 +88,20 @@
                         {@const platformList = project.platforms.map((platform) => platform.type)}
                         {@const platforms = Array.from(new Set(platformList))}
                         {#each platforms as platform, i}
-                            {#if i < 3}
-                                <Pill>
-                                    <span
-                                        class={`icon-${getPlatformInfo(platform).icon}`}
-                                        aria-hidden="true" />
-                                    {getPlatformInfo(platform).name}
-                                </Pill>
-                            {/if}
+                            <Pill>
+                                <span
+                                    class={`icon-${getPlatformInfo(platform).icon}`}
+                                    aria-hidden="true" />
+                                {getPlatformInfo(platform).name}
+                            </Pill>
+                            <!-- {#if i < 3}
+                            {/if} -->
                         {/each}
-                        {#if platforms?.length > 3}
+                        <!-- {#if platforms?.length > 3}
                             <Pill>
                                 +{project.platforms.length - 3}
                             </Pill>
-                        {/if}
+                        {/if} -->
                     </GridItem1>
                 {/if}
             {/each}
