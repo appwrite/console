@@ -38,7 +38,8 @@
             class="grid-box common-section"
             style={` --grid-item-size:${$databaseList.total > 3 ? '22rem' : '25rem'};`}>
             {#each $databaseList.databases as database}
-                <GridItem1 href={`${base}/console/${project}/databases/database/${database.$id}`}>
+                <GridItem1
+                    href={`${base}/console/project-${project}/databases/database/${database.$id}`}>
                     <svelte:fragment slot="eyebrow">X Collections</svelte:fragment>
                     <svelte:fragment slot="title">{database.name}</svelte:fragment>
 
