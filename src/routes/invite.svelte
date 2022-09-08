@@ -9,6 +9,9 @@
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
 
+    let teamId: string, membershipId: string, userId: string, secret: string;
+    let terms = false;
+
     onMount(() => {
         userId = $page.url.searchParams.get('userId');
         secret = $page.url.searchParams.get('secret');
@@ -16,12 +19,10 @@
         membershipId = $page.url.searchParams.get('membershipId');
     });
 
-    let teamId: string, membershipId: string, userId: string, secret: string;
-    let terms = false;
     const acceptInvite = async () => {
         try {
             await sdkForConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
-            user.fetchUser();
+            await user.fetchUser();
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'
@@ -58,7 +59,8 @@
 
                 <div class="u-flex u-main-end u-gap-12">
                     <Button secondary href={`${base}/login`}>Cancel</Button>
-                    <Button submit>Accept</Button>
+                    <Button disabled={!userId || !secret || !membershipId || !teamId} submit
+                        >Accept</Button>
                 </div>
             </FormList>
         </Form>
