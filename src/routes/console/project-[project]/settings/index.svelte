@@ -1,15 +1,18 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { CardGrid, CopyInput } from '$lib/components';
-    import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
-    import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
     import { services, type Service } from '$lib/stores/project-services';
+    import { CardGrid, CopyInput, Box } from '$lib/components';
+    import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
+    import { Container } from '$lib/layout';
+    import Delete from './_deleteProject.svelte';
 
     let name: string = null;
+    let showDelete = false;
     const endpoint = import.meta.env.VITE_APPWRITE_ENDPOINT.toString();
 
     onMount(async () => {
@@ -21,7 +24,7 @@
     const updateName = async () => {
         try {
             await sdkForConsole.projects.update($project.$id, name);
-            await project.load($project.$id);
+            $project.name = name;
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'
@@ -119,5 +122,29 @@
                 </FormList>
             </svelte:fragment>
         </CardGrid>
+
+        <CardGrid>
+            <div>
+                <h6 class="heading-level-7">Delete Project</h6>
+            </div>
+            <p>
+                The project will be permanently deleted, including all the metadata, resources and
+                stats within it. This action is irreversible.
+            </p>
+            <svelte:fragment slot="aside">
+                <Box>
+                    <svelte:fragment slot="title">
+                        <h6 class="u-bold">{$project.name}</h6>
+                    </svelte:fragment>
+                    <p>Last update: {toLocaleDateTime($project.$updatedAt)}</p>
+                </Box>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            </svelte:fragment>
+        </CardGrid>
     {/if}
 </Container>
+
+<Delete bind:showDelete />
