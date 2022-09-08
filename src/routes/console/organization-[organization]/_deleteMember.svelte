@@ -19,7 +19,7 @@
             await sdkForConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
 
             if (isUser) {
-                user.logout();
+                await user.logout();
                 await goto(`${base}/login`);
             } else {
                 dispatch('deleted');
