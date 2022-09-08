@@ -17,7 +17,10 @@
     let write: string[];
     let id: string;
     let showCustomId = false;
-    let steps = [{ text: 'Create data' }, { text: 'Set permissions' }];
+    let steps = [
+        { text: 'Create data', substeps: [{ text: 'test' }, { text: 'text2' }] },
+        { text: 'Set permissions' }
+    ];
     let currentStep = 0;
     let attributes = [];
 

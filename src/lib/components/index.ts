@@ -27,4 +27,3 @@ export { default as GridItem1 } from './gridItem1.svelte';
 export { default as EmptyGridItem } from './emptyGridItem.svelte';
 export { default as Steps } from './steps.svelte';
 export { default as Step } from './step.svelte';
-export { default as SubStep } from './subStep.svelte';
