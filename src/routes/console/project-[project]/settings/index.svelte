@@ -1,19 +1,19 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { CardGrid, CopyInput } from '$lib/components';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../store';
+    import { services, type Service } from '$lib/stores/project-services';
 
     let name: string = null;
     const endpoint = import.meta.env.VITE_APPWRITE_ENDPOINT.toString();
 
     onMount(async () => {
         await project.load($page.params.project);
-        console.log($project);
 
         name ??= $project.name;
     });
@@ -33,6 +33,29 @@
             });
         }
     };
+
+    const serviceUpdate = async (service: Service) => {
+        try {
+            await sdkForConsole.projects.updateServiceStatus(
+                $project.$id,
+                service.method,
+                service.value
+            );
+            addNotification({
+                type: 'success',
+                message: `${service.label} service has been ${
+                    service.value ? 'enabled' : 'disabled'
+                }`
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    };
+
+    $: services.load($project);
 </script>
 
 <Container>
@@ -60,7 +83,7 @@
 
         <CardGrid>
             <h6 class="heading-level-7">API Credentials</h6>
-            <p>
+            <p class="text">
                 Access Appwrite services using your API Endpoint and Project ID. You can connect
                 Appwrite to your applications and server-side code by <a href="#/" class="link"
                     >integrating a new platform</a>
@@ -71,6 +94,28 @@
                 <FormList>
                     <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
                     <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
+                </FormList>
+            </svelte:fragment>
+        </CardGrid>
+
+        <CardGrid>
+            <h6 class="heading-level-7">Services</h6>
+            <p class="text">Choose services you wish to enable or disable.</p>
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <form class="form">
+                        <ul class="form-list is-multiple">
+                            {#each $services.list as service}
+                                <InputSwitch
+                                    label={service.label}
+                                    id={service.method}
+                                    bind:value={service.value}
+                                    on:change={() => {
+                                        serviceUpdate(service);
+                                    }} />
+                            {/each}
+                        </ul>
+                    </form>
                 </FormList>
             </svelte:fragment>
         </CardGrid>
