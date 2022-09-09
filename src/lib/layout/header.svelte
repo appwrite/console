@@ -34,7 +34,14 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop">
-        <DropList bind:show={showFeedback} position="bottom" horizontal="right" scrollable={true}>
+        <DropList
+            bind:show={showFeedback}
+            width={20}
+            xPadding={1.5}
+            yPadding={1.5}
+            position="bottom"
+            horizontal="right"
+            scrollable={true}>
             <button class="button is-small is-text" on:click={() => (showFeedback = !showFeedback)}>
                 <span class="text">Feedback</span>
             </button>

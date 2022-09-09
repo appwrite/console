@@ -7,6 +7,9 @@
     export let arrowPosition: 'start' | 'center' | 'end' = 'start';
     export let arrow = true;
     export let scrollable = false;
+    export let width: number = null;
+    export let xPadding: number = null;
+    export let yPadding: number = null;
     let parentElement: HTMLDivElement;
 
     const onBlur = (event: MouseEvent) => {
@@ -21,7 +24,14 @@
 
 <svelte:window on:click={onBlur} />
 
-<div class="drop-wrapper" class:is-open={show} bind:this={parentElement}>
+<div
+    class="drop-wrapper"
+    style={`
+    ${width ? `--drop-width-size-desktop:${width}rem;` : ''}
+    ${xPadding ? `--section-padding-horizontal:${xPadding}rem;` : ''}
+    ${yPadding ? `--section-padding-vertical:${yPadding}rem;` : ''}`}
+    class:is-open={show}
+    bind:this={parentElement}>
     <slot />
     {#if show}
         <div
@@ -32,14 +42,16 @@
             class:is-block-end={position === 'bottom'}
             class:is-inline-end={horizontal === 'left'}
             transition:slide={{ duration: 100 }}>
-            <section
-                class:u-overflow-y-auto={scrollable}
-                class:u-max-height-200={scrollable}
-                class="drop-section ">
-                <ul class="drop-list">
-                    <slot name="list" />
-                </ul>
-            </section>
+            {#if $$slots.list}
+                <section
+                    class:u-overflow-y-auto={scrollable}
+                    class:u-max-height-200={scrollable}
+                    class="drop-section ">
+                    <ul class="drop-list">
+                        <slot name="list" />
+                    </ul>
+                </section>
+            {/if}
             <slot name="other" />
         </div>
     {/if}

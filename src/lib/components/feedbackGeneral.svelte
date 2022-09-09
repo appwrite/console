@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Form, FormList, InputTextarea, Button } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
-    import Card from './card.svelte';
 
     export let show = false;
 
@@ -13,20 +12,21 @@
     };
 </script>
 
-<Form on:action={handleSubmit}>
-    <Card>
-        <section class="u-flex common-section">
-            <h3 class="body-text-1"><slot name="title" /></h3>
-            <button
-                type="button"
-                class="x-button u-margin-inline-start-auto"
-                aria-label="Close Modal"
-                title="Close Modal"
-                on:click={() => (show = false)}>
-                <span class="icon-x" aria-hidden="true" />
-            </button>
-        </section>
-        <div class="common-section"><slot /></div>
+<section class="drop-section">
+    <header class="u-flex u-main-space-between u-gap-16">
+        <h4 class="body-text-1"><slot name="title" /></h4>
+        <button
+            type="button"
+            class="x-button u-margin-inline-start-auto"
+            aria-label="Close Modal"
+            title="Close Modal"
+            on:click={() => (show = false)}>
+            <span class="icon-x" aria-hidden="true" />
+        </button>
+    </header>
+    <div class="u-margin-block-start-8 u-line-height-1-5"><slot /></div>
+
+    <Form on:action={handleSubmit}>
         <FormList>
             <InputTextarea
                 id="feedback"
@@ -36,9 +36,9 @@
                 bind:value={feedback} />
         </FormList>
 
-        <div class="u-flex u-main-end u-gap-12">
+        <div class="u-flex u-main-end u-gap-16 u-margin-block-start-24">
             <Button text on:click={() => (show = false)}>Cancel</Button>
             <Button disabled={!feedback} secondary submit>Submit</Button>
         </div>
-    </Card>
-</Form>
+    </Form>
+</section>
