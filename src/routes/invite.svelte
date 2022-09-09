@@ -44,25 +44,33 @@
 <Unauthenticated>
     <svelte:fragment slot="title">Invite</svelte:fragment>
     <svelte:fragment>
-        <p class="text">You have been invited to join a team project on Appwrite</p>
-        <Form on:submit={acceptInvite}>
-            <FormList>
-                <InputChoice required bind:value={terms} id="terms" label="terms" showLabel={false}>
-                    By accepting the invitation, you agree to the <a
-                        class="link"
-                        href="https://appwrite.io/policy/terms"
-                        target="_blank">Terms and Conditions</a>
-                    and
-                    <a class="link" href="https://appwrite.io/policy/privacy" target="_blank">
-                        Privacy Policy</a
-                    >.</InputChoice>
+        {#if !userId || !secret || !membershipId || !teamId}
+            <p class="text">Invalid invite link.</p>
+        {:else}
+            <p class="text">You have been invited to join a team project on Appwrite</p>
+            <Form on:submit={acceptInvite}>
+                <FormList>
+                    <InputChoice
+                        required
+                        bind:value={terms}
+                        id="terms"
+                        label="terms"
+                        showLabel={false}>
+                        By accepting the invitation, you agree to the <a
+                            class="link"
+                            href="https://appwrite.io/policy/terms"
+                            target="_blank">Terms and Conditions</a>
+                        and
+                        <a class="link" href="https://appwrite.io/policy/privacy" target="_blank">
+                            Privacy Policy</a
+                        >.</InputChoice>
 
-                <div class="u-flex u-main-end u-gap-12">
-                    <Button secondary href={`${base}/login`}>Cancel</Button>
-                    <Button disabled={!userId || !secret || !membershipId || !teamId} submit
-                        >Accept</Button>
-                </div>
-            </FormList>
-        </Form>
+                    <div class="u-flex u-main-end u-gap-12">
+                        <Button secondary href={`${base}/login`}>Cancel</Button>
+                        <Button submit>Accept</Button>
+                    </div>
+                </FormList>
+            </Form>
+        {/if}
     </svelte:fragment>
 </Unauthenticated>
