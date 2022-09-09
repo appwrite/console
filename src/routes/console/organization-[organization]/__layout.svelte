@@ -20,7 +20,7 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
-        if ($organization.$id !== organizationId) {
+        if ($organization?.$id !== organizationId) {
             await organization.load(organizationId);
             await memberList.load(organizationId, '', 12, 0);
         }
