@@ -14,7 +14,7 @@
         try {
             await sdkForProject.databases.delete();
             showDelete = false;
-            await goto(`${base}/console/${$page.params.project}/databases`);
+            await goto(`${base}/console/project-${$page.params.project}/databases`);
         } catch (error) {
             addNotification({
                 type: 'error',

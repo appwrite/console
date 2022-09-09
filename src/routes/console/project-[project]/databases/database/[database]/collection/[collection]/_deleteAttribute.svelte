@@ -18,7 +18,7 @@
             collection.removeAttribute(selectedAttribute);
             showDelete = false;
             await goto(
-                `${base}/console/${$page.params.project}/databases/database/${$page.params.database}/collection/${$page.params.collection}/attributes`
+                `${base}/console/project-${$page.params.project}/databases/database/${$page.params.database}/collection/${$page.params.collection}/attributes`
             );
         } catch (error) {
             addNotification({

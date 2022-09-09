@@ -18,7 +18,7 @@
             );
             showDelete = false;
             await goto(
-                `${base}/console/${$page.params.project}/databases/database/${$page.params.database}/collection/${$page.params.collection}`
+                `${base}/console/project-${$page.params.project}/databases/database/${$page.params.database}/collection/${$page.params.collection}`
             );
         } catch (error) {
             addNotification({

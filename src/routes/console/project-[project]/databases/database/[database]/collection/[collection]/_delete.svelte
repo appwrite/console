@@ -15,7 +15,7 @@
             await sdkForProject.databases.deleteCollection($collection.$id);
             showDelete = false;
             await goto(
-                `${base}/console/${$page.params.project}/databases/database/${$page.params.database}`
+                `${base}/console/project-${$page.params.project}/databases/database/${$page.params.database}`
             );
         } catch (error) {
             addNotification({

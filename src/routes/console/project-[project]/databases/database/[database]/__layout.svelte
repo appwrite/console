@@ -22,7 +22,7 @@
 
         updateLayout({
             navigate: event,
-            back: `${base}/console/${$page.params.project}/databases`,
+            back: `${base}/console/project-${$page.params.project}/databases`,
             copy: {
                 text: 'Database ID',
                 value: databaseId

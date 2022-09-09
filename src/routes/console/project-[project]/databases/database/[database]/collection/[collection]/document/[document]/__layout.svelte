@@ -23,7 +23,7 @@
             navigate: event,
             title: 'Document',
             copy: { text: 'Document ID', value: $doc.$id },
-            back: `${base}/console/${$page.params.project}/databases/database/${databaseId}/collection/${collectionId}`,
+            back: `${base}/console/project-${$page.params.project}/databases/database/${databaseId}/collection/${collectionId}`,
             level: 6,
             breadcrumbs: {
                 title: $doc.$id,
