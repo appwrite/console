@@ -14,8 +14,6 @@
     import type { Attributes } from './store';
     import { Container } from '$lib/layout';
     import { Pill } from '$lib/elements';
-    import { onMount } from 'svelte';
-    import { page } from '$app/stores';
     import Create from './_createAttribute.svelte';
     import CreateIndex from './_createIndex.svelte';
     import Delete from './_deleteAttribute.svelte';
@@ -29,10 +27,6 @@
     let showDelete = false;
     let showOverview = false;
     let showCreateIndex = false;
-
-    onMount(async () => {
-        await collection.load($page.params.collection);
-    });
 </script>
 
 <Container>
