@@ -10,7 +10,7 @@
 
     export let showDelete = false;
 
-    const deleteElement = async () => {
+    const handleDelete = async () => {
         try {
             await sdkForProject.databases.deleteDocument(
                 $page.params.collection,
@@ -29,7 +29,7 @@
     };
 </script>
 
-<Form on:submit={deleteElement}>
+<Form on:submit={handleDelete}>
     <Modal warning={true} bind:show={showDelete}>
         <svelte:fragment slot="header">Delete Document</svelte:fragment>
 

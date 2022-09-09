@@ -12,7 +12,7 @@
     export let showDelete = false;
     export let selectedAttribute: Attributes;
 
-    const deleteElement = async () => {
+    const handleDelete = async () => {
         try {
             await sdkForProject.databases.deleteAttribute($collection.$id, selectedAttribute.key);
             collection.removeAttribute(selectedAttribute);
@@ -29,7 +29,7 @@
     };
 </script>
 
-<Form on:submit={deleteElement}>
+<Form on:submit={handleDelete}>
     <Modal warning={true} bind:show={showDelete}>
         <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
 
