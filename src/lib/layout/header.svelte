@@ -11,7 +11,7 @@
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
-    import { FeedbackGeneral } from '$lib/components';
+    import { FeedbackNPS } from '$lib/components';
 
     let showDropdown = false;
     let showFeedback = true;
@@ -36,7 +36,7 @@
     <nav class="u-flex is-only-desktop">
         <DropList
             bind:show={showFeedback}
-            width={20}
+            width={28}
             xPadding={1.5}
             yPadding={1.5}
             position="bottom"
@@ -46,10 +46,10 @@
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
-                <FeedbackGeneral bind:show={showFeedback}>
+                <FeedbackNPS bind:show={showFeedback}>
                     <svelte:fragment slot="title">How can we improve</svelte:fragment>
                     Your feedback is important to us. Please be honest and tell us what you think.
-                </FeedbackGeneral>
+                </FeedbackNPS>
             </svelte:fragment>
         </DropList>
         <a

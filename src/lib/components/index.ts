@@ -26,3 +26,5 @@ export { default as Search } from './search.svelte';
 export { default as GridItem1 } from './gridItem1.svelte';
 export { default as EmptyGridItem } from './emptyGridItem.svelte';
 export { default as FeedbackGeneral } from './feedbackGeneral.svelte';
+export { default as FeedbackNPS } from './feedbackNPS.svelte';
+export { default as Evaluation } from './evaluation.svelte';

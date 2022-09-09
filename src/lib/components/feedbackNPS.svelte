@@ -1,15 +1,19 @@
 <script lang="ts">
     import { Form, FormList, InputTextarea, Button } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
+    import Evaluation from './evaluation.svelte';
 
     export let show = false;
 
     const dispatch = createEventDispatcher();
 
+    let value: number = null;
     let feedback: string;
     const handleSubmit = () => {
-        dispatch('feedback', { feedback });
+        dispatch('feedback', { value, feedback });
     };
+
+    $: console.log(value);
 </script>
 
 <section class="drop-section">
@@ -27,6 +31,8 @@
     <div class="u-margin-block-start-8 u-line-height-1-5"><slot /></div>
 
     <Form on:action={handleSubmit}>
+        <Evaluation bind:value
+            >How likely are you to recommend Appwrite to a friend or colleague?</Evaluation>
         <FormList>
             <InputTextarea
                 id="feedback"
@@ -37,8 +43,8 @@
         </FormList>
 
         <div class="u-flex u-main-end u-gap-16 u-margin-block-start-24">
-            <Button text on:click={() => (show = false)}>Cancel</Button>
-            <Button disabled={!feedback} secondary submit>Submit</Button>
+            <Button text on:click={() => (show = false)}>No thanks</Button>
+            <Button disabled={!value} secondary submit>Submit</Button>
         </div>
     </Form>
 </section>
