@@ -13,7 +13,7 @@
 
     let name: string = null;
     let showDelete = false;
-    const endpoint = import.meta.env.VITE_APPWRITE_ENDPOINT.toString();
+    const endpoint = sdkForConsole.client.config.endpoint;
 
     onMount(async () => {
         await project.load($page.params.project);
