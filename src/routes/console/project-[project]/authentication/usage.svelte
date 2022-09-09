@@ -1,6 +1,6 @@
 <script>
     import { Container } from '$lib/layout';
-    import { Chart } from '$lib/charts';
+    import { BarChart } from '$lib/charts';
     import { Card } from '$lib/components';
     import { usersUsage } from './store';
 
@@ -45,7 +45,7 @@
         <Card>
             <h6 class="heading-level-6">Users</h6>
             <p>Count of users over time</p>
-            <Chart
+            <BarChart
                 title="Users"
                 series={[
                     {
@@ -57,21 +57,45 @@
         <Card>
             <h6 class="heading-level-6">Operations</h6>
             <p>Count of users create, read, update and delete operations over time</p>
-            <Chart
-                title="Operations"
+            <BarChart
+                title="Create"
                 series={[
                     {
                         name: 'Create',
                         data: [...data.usersCreate.map((e) => [e.date * 1000, e.value])]
-                    },
+                    }
+                ]} />
+        </Card>
+        <Card>
+            <h6 class="heading-level-6">Operations</h6>
+            <p>Count of users create, read, update and delete operations over time</p>
+            <BarChart
+                title="Read"
+                series={[
                     {
                         name: 'Read',
                         data: [...data.usersRead.map((e) => [e.date * 1000, e.value])]
-                    },
+                    }
+                ]} />
+        </Card>
+        <Card>
+            <h6 class="heading-level-6">Operations</h6>
+            <p>Count of users create, read, update and delete operations over time</p>
+            <BarChart
+                title="Update"
+                series={[
                     {
                         name: 'Update',
                         data: [...data.usersUpdate.map((e) => [e.date * 1000, e.value])]
-                    },
+                    }
+                ]} />
+        </Card>
+        <Card>
+            <h6 class="heading-level-6">Operations</h6>
+            <p>Count of users create, read, update and delete operations over time</p>
+            <BarChart
+                title="Delete"
+                series={[
                     {
                         name: 'Delete',
                         data: [...data.usersDelete.map((e) => [e.date * 1000, e.value])]

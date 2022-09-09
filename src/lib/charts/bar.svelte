@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { registerTheme, use, init, graphic } from 'echarts/core';
+    import { registerTheme, use, init } from 'echarts/core';
     import { onDestroy, onMount } from 'svelte';
     import { app } from '$lib/stores/app';
     import type { ECharts } from 'echarts/core';
-    import type { LineSeriesOption } from 'echarts/charts';
+    import type { BarSeriesOption } from 'echarts/charts';
     import light from './echartLight.json';
     import dark from './echartDark.json';
 
@@ -11,36 +11,39 @@
     registerTheme('dark', dark);
 
     export let title: string;
-    export let series: LineSeriesOption[];
+    export let series: BarSeriesOption[];
 
     let chart: ECharts;
+    let container: HTMLDivElement;
 
     $: option = {
         animationDuration: 400,
         title: {
             text: ''
         },
-        legend: {
-            orient: 'horizontal',
-            top: 'bottom',
-            left: 15,
-            icon: 'circle',
-            itemGap: 20,
-            textStyle: {
-                fontSize: 12,
-                lineHeight: 18
-            }
-        },
         animation: false,
-        tooltip: { trigger: 'axis' },
-        grid: { containLabel: true, left: 0, right: 0, bottom: 15, top: 15 },
+        tooltip: {
+            trigger: 'axis'
+        },
+        grid: {
+            containLabel: true,
+            left: 0,
+            right: 0,
+            bottom: 15,
+            top: 15
+        },
         xAxis: {
             type: 'time',
             show: false
         },
-        yAxis: { type: 'value' },
+        yAxis: {
+            type: 'value',
+            splitNumber: 3,
+            minInterval: 1
+        },
         series
     };
+
     let notMerge = false;
     let lazyUpdate = false;
     let timeoutId: unknown;
@@ -53,7 +56,7 @@
 
     onMount(async () => {
         use([
-            (await import('echarts/charts')).LineChart,
+            (await import('echarts/charts')).BarChart,
             (await import('echarts/components')).TitleComponent,
             (await import('echarts/components')).TooltipComponent,
             (await import('echarts/components')).GridComponent,
@@ -85,29 +88,16 @@
 
     const makeChart = () => {
         destroyChart();
-        chart = init(document.getElementById(`echart-${title}`), $app.themeInUse);
-        series.forEach((s: LineSeriesOption, i: number) => {
-            s.type = 'line';
-            s.smooth = true;
-            s.areaStyle = colorToGradient(chart['_theme'].color[i]);
+        chart = init(container, $app.themeInUse);
+        series.forEach((s: BarSeriesOption) => {
+            s.type = 'bar';
+            s.stack = 'total';
+            s.barMaxWidth = 6;
+            s.itemStyle = {
+                borderRadius: [10, 10, 0, 0]
+            };
         });
     };
-
-    function colorToGradient(color: string) {
-        return {
-            opacity: 1,
-            color: new graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                    offset: 0,
-                    color: `${color}`
-                },
-                {
-                    offset: 1,
-                    color: `${color}50`
-                }
-            ])
-        };
-    }
 
     const onResize = () => {
         if (timeoutId == undefined) {
@@ -123,7 +113,7 @@
 
 <svelte:window on:resize={onResize} />
 
-<div class="echart" id={`echart-${title}`} />
+<div class="echart" bind:this={container} />
 
 <style>
     .echart {
