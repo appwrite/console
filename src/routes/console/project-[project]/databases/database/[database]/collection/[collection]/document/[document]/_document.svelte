@@ -10,7 +10,7 @@
     import Attribute from './_attribute.svelte';
 
     let currentDoc: string;
-    let updateBtnDisabled = true;
+    let disableUpdate = true;
 
     onMount(async () => {
         await doc.load($collection.$id, $page.params.document);
@@ -19,9 +19,9 @@
 
     $: if (currentDoc && $doc) {
         if (currentDoc !== JSON.stringify($doc)) {
-            updateBtnDisabled = false;
+            disableUpdate = false;
         } else {
-            updateBtnDisabled = true;
+            disableUpdate = true;
         }
     }
 
@@ -36,7 +36,7 @@
             );
 
             currentDoc = JSON.stringify($doc);
-            updateBtnDisabled = true;
+            disableUpdate = true;
             addNotification({
                 message: 'Document was updated!',
                 type: 'success'
@@ -117,6 +117,6 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button disabled={updateBtnDisabled} on:click={() => updateData()}>Update</Button>
+        <Button disabled={disableUpdate} on:click={() => updateData()}>Update</Button>
     </svelte:fragment>
 </CardGrid>
