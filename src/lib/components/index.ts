@@ -25,3 +25,4 @@ export { default as Box } from './box.svelte';
 export { default as Search } from './search.svelte';
 export { default as GridItem1 } from './gridItem1.svelte';
 export { default as EmptyGridItem } from './emptyGridItem.svelte';
+export { default as FeedbackGeneral } from './feedbackGeneral.svelte';

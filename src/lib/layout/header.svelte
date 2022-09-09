@@ -11,8 +11,10 @@
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
+    import { FeedbackGeneral } from '$lib/components';
 
     let showDropdown = false;
+    let showFeedback = true;
 
     onMount(async () => {
         await organizationList.load();
@@ -32,7 +34,17 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop">
-        <button class="button is-small is-text"><span class="text">Feedback</span></button>
+        <DropList bind:show={showFeedback} position="bottom" horizontal="right" scrollable={true}>
+            <button class="button is-small is-text" on:click={() => (showFeedback = !showFeedback)}>
+                <span class="text">Feedback</span>
+            </button>
+            <svelte:fragment slot="other">
+                <FeedbackGeneral bind:show={showFeedback}>
+                    <svelte:fragment slot="title">How can we improve</svelte:fragment>
+                    Your feedback is important to us. Please be honest and tell us what you think.
+                </FeedbackGeneral>
+            </svelte:fragment>
+        </DropList>
         <a
             href="https://appwrite.io/support"
             target="_blank"
