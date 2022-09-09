@@ -8,7 +8,6 @@
     export let value = false;
     export let required = false;
     export let disabled = false;
-    export let description = '';
 </script>
 
 <FormItem>

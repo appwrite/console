@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { base } from '$app/paths';
+    import { goto } from '$app/navigation';
     import { Modal } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -15,8 +17,14 @@
     const deleteMembership = async () => {
         try {
             await sdkForConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
+
+            if (isUser) {
+                await user.logout();
+                await goto(`${base}/login`);
+            } else {
+                dispatch('deleted');
+            }
             showDelete = false;
-            dispatch('deleted');
             addNotification({
                 type: 'success',
                 message: `${selectedMember.userName} was deleted from ${selectedMember.teamName}`
