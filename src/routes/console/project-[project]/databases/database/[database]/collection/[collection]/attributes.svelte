@@ -87,22 +87,19 @@
                                 <svelte:fragment slot="list">
                                     <DropListItem
                                         icon="eye"
-                                        on:click={(e) => {
-                                            e.preventDefault();
+                                        on:click={() => {
                                             selectedAttribute = attribute;
                                             showOverview = true;
                                         }}>Overview</DropListItem>
                                     <DropListItem
                                         icon="plus"
-                                        on:click={(e) => {
-                                            e.preventDefault();
+                                        on:click={() => {
                                             selectedAttribute = attribute;
                                             showCreateIndex = true;
                                         }}>Create Index</DropListItem>
                                     <DropListItem
                                         icon="trash"
-                                        on:click={(e) => {
-                                            e.preventDefault();
+                                        on:click={() => {
                                             selectedAttribute = attribute;
                                             showDelete = true;
                                         }}>Delete</DropListItem>

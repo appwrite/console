@@ -44,6 +44,8 @@
         ({ required, array } = selectedAttribute);
         xdefault = selectedAttribute.default;
     }
+
+    //TODO: refactor to use context module instead of submitted
 </script>
 
 <InputSelect
