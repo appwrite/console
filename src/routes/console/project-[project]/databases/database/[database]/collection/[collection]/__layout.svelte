@@ -24,7 +24,7 @@
         updateLayout({
             navigate: event,
             title: $collection.name,
-            back: `${base}/console/project-${$page.params.project}/database`,
+            back: `${base}/console/project-${$page.params.project}/databases/database/${databaseId}`,
             copy: {
                 text: 'Collection ID',
                 value: collectionId

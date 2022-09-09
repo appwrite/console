@@ -55,6 +55,6 @@
     <title>Appwrite - Database</title>
 </svelte:head>
 
-{#if $database}
+{#if $database && $database.$id === databaseId}
     <slot />
 {/if}
