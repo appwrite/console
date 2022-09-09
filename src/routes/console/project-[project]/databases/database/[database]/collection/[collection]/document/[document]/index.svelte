@@ -8,6 +8,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Document from './_document.svelte';
     import Delete from './_delete.svelte';
+    import { difference } from '$lib/helpers/arrayComparison';
 
     let showDelete = false;
     let read = $doc?.$read;
@@ -39,15 +40,9 @@
     }
 
     $: if (read || write) {
-        if (read) {
-            if (JSON.stringify(read) !== JSON.stringify($doc.$read)) {
-                arePermsDisabled = false;
-            } else arePermsDisabled = true;
-        } else if (write) {
-            if (JSON.stringify(write) !== JSON.stringify($doc.$write)) {
-                arePermsDisabled = false;
-            } else arePermsDisabled = true;
-        }
+        if (difference(read, $doc.$read).length || difference(write, $doc.$write).length) {
+            arePermsDisabled = false;
+        } else arePermsDisabled = true;
     }
 </script>
 

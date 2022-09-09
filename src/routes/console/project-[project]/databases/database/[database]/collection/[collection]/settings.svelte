@@ -9,6 +9,7 @@
     import Delete from './_delete.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import { difference } from '$lib/helpers/arrayComparison';
 
     let showDelete = false;
     let showError: false | 'name' | 'size' = false,
@@ -34,12 +35,11 @@
     $: if (collectionPermissions || collectionRead || collectionWrite) {
         if (collectionPermissions !== $collection.permission) {
             arePermsDisabled = false;
-        } else if (collectionRead) {
-            if (JSON.stringify(collectionRead) !== JSON.stringify($collection.$read)) {
-                arePermsDisabled = false;
-            } else arePermsDisabled = true;
-        } else if (collectionWrite) {
-            if (JSON.stringify(collectionWrite) !== JSON.stringify($collection.$write)) {
+        } else if (collectionRead || collectionWrite) {
+            if (
+                difference(collectionRead, $collection.$read).length ||
+                difference(collectionWrite, $collection.$write).length
+            ) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
