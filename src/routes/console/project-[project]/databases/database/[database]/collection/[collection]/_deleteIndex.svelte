@@ -12,7 +12,7 @@
 
     const dispatch = createEventDispatcher();
 
-    const deleteElement = async () => {
+    const handleDelete = async () => {
         try {
             await sdkForProject.databases.deleteIndex($collection.$id, selectedIndex.key);
             showDelete = false;
@@ -26,7 +26,7 @@
     };
 </script>
 
-<Form on:submit={deleteElement}>
+<Form on:submit={handleDelete}>
     <Modal warning={true} bind:show={showDelete}>
         <svelte:fragment slot="header">Delete Index</svelte:fragment>
 
