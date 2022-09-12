@@ -47,7 +47,7 @@
             </button>
             <svelte:fragment slot="other">
                 <FeedbackNPS bind:show={showFeedback}>
-                    <svelte:fragment slot="title">How can we improve</svelte:fragment>
+                    <svelte:fragment slot="title">How Can We Improve</svelte:fragment>
                     Your feedback is important to us. Please be honest and tell us what you think.
                 </FeedbackNPS>
             </svelte:fragment>
