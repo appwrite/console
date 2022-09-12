@@ -2,6 +2,7 @@ import { sdkForProject } from '$lib/stores/sdk';
 import { writable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
 import { browser } from '$app/env';
+import { cache } from '$lib/helpers/cache';
 
 function createUsersListStore() {
     const { subscribe, set } = writable<Models.UserList<Record<string, unknown>>>(
@@ -65,8 +66,8 @@ export const usersList = createUsersListStore();
 export const teamsList = createTeamsListStore();
 export const usersUsage = createUsersUsageStore();
 
-if (browser) {
-    usersList.subscribe((n) => sessionStorage?.setItem('users', JSON.stringify(n ?? '')));
-    teamsList.subscribe((n) => sessionStorage?.setItem('teams', JSON.stringify(n ?? '')));
-    usersUsage.subscribe((n) => sessionStorage?.setItem('usersUsage', JSON.stringify(n ?? '')));
-}
+cache([
+    { store: usersList, name: 'users' },
+    { store: teamsList, name: 'teams' },
+    { store: usersUsage, name: 'usersUsage' }
+]);
