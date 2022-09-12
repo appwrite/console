@@ -2,7 +2,7 @@ import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
 import { cachedStore } from '$lib/helpers/cache';
 
-export const user = cachedStore<
+export const team = cachedStore<
     Models.Team,
     {
         load: (teamId: string) => Promise<void>;
