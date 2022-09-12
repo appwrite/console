@@ -1,49 +1,50 @@
 import { sdkForConsole } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
-import { browser } from '$app/env';
 import { get } from 'svelte/store';
 import { base } from '$app/paths';
 import { goto } from '$app/navigation';
+import { cachedStore } from '$lib/helpers/cache';
 
-function createOrganizationList() {
-    const { subscribe, set } = writable<Models.TeamList>(
-        browser ? JSON.parse(sessionStorage.getItem('organizationList')) : null
-    );
+export const newOrgModal = writable<boolean>(false);
+export const newMemberModal = writable<boolean>(false);
 
+export const organizationList = cachedStore<
+    Models.TeamList,
+    {
+        load: () => Promise<void>;
+    }
+>('organizationList', function ({ set }) {
     return {
-        subscribe,
-        set,
         load: async () => {
             const response = await sdkForConsole.teams.list();
             set(response);
         }
     };
-}
-function createOrganization() {
-    const { subscribe, set } = writable<Models.Team>(
-        browser ? JSON.parse(sessionStorage.getItem('organization')) : null
-    );
+});
 
+export const organization = cachedStore<
+    Models.Team,
+    {
+        load: (teamId: string) => Promise<void>;
+    }
+>('organization', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (teamId: string) => {
+        load: async (teamId) => {
             const response = await sdkForConsole.teams.get(teamId);
             set(response);
         }
     };
-}
+});
 
-function createProjectList() {
-    const { subscribe, set } = writable<Models.ProjectList>(
-        browser ? JSON.parse(sessionStorage.getItem('projectList')) : null
-    );
-
+export const projectList = cachedStore<
+    Models.ProjectList,
+    {
+        load: (search: string, limit: number, offset: number) => Promise<void>;
+    }
+>('projectList', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (search: string, limit: number, offset: number) => {
+        load: async (search, limit, offset) => {
             const response = await sdkForConsole.projects.list(
                 search,
                 limit,
@@ -55,17 +56,16 @@ function createProjectList() {
             set(response);
         }
     };
-}
+});
 
-function createMemberList() {
-    const { subscribe, set } = writable<Models.MembershipList>(
-        browser ? JSON.parse(sessionStorage.getItem('memberList')) : null
-    );
-
+export const memberList = cachedStore<
+    Models.MembershipList,
+    {
+        load: (teamId: string, search: string, limit: number, offset: number) => Promise<void>;
+    }
+>('memberList', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (teamId: string, search: string, limit: number, offset: number) => {
+        load: async (teamId, search, limit, offset) => {
             const response = await sdkForConsole.teams.getMemberships(
                 teamId,
                 search,
@@ -75,23 +75,7 @@ function createMemberList() {
             set(response);
         }
     };
-}
-
-export const organizationList = createOrganizationList();
-export const organization = createOrganization();
-export const projectList = createProjectList();
-export const memberList = createMemberList();
-export const newOrgModal = writable<boolean>(false);
-export const newMemberModal = writable<boolean>(false);
-
-if (browser) {
-    organizationList.subscribe((n) =>
-        sessionStorage?.setItem('organizationList', JSON.stringify(n ?? ''))
-    );
-    organization.subscribe((n) => sessionStorage?.setItem('organization', JSON.stringify(n ?? '')));
-    projectList.subscribe((n) => sessionStorage?.setItem('projectList', JSON.stringify(n ?? '')));
-    memberList.subscribe((n) => sessionStorage?.setItem('memberList', JSON.stringify(n ?? '')));
-}
+});
 
 export const redirectTo = async () => {
     let org = get(organization);

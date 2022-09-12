@@ -1,31 +1,28 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { writable } from 'svelte/store';
-import { browser } from '$app/env';
+import { cachedStore } from '$lib/helpers/cache';
 
-function createTeamStore() {
-    const { subscribe, set } = writable<Models.Team>(
-        browser ? JSON.parse(sessionStorage.getItem('team')) : null
-    );
-
+export const user = cachedStore<
+    Models.Team,
+    {
+        load: (teamId: string) => Promise<void>;
+    }
+>('team', function ({ set }) {
     return {
-        subscribe,
-        set,
         load: async (teamId: string) => {
             const response = await sdkForProject.teams.get(teamId);
             set(response);
         }
     };
-}
-function createMembershipStore() {
-    const { subscribe, set } = writable<Models.MembershipList>(
-        browser ? JSON.parse(sessionStorage.getItem('memberships')) : null
-    );
-
+});
+export const memberships = cachedStore<
+    Models.MembershipList,
+    {
+        load: (teamId: string, search: string, limit: number, offset: number) => Promise<void>;
+    }
+>('memberships', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (teamId: string, search: string, limit: number, offset: number) => {
+        load: async (teamId, search, limit, offset) => {
             const response = await sdkForProject.teams.getMemberships(
                 teamId,
                 search,
@@ -38,12 +35,4 @@ function createMembershipStore() {
             set(response);
         }
     };
-}
-
-export const memberships = createMembershipStore();
-export const team = createTeamStore();
-
-if (browser) {
-    team.subscribe((n) => sessionStorage?.setItem('team', JSON.stringify(n ?? '')));
-    memberships.subscribe((n) => sessionStorage?.setItem('memberships', JSON.stringify(n ?? '')));
-}
+});
