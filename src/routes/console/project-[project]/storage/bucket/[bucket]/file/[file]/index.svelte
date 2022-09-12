@@ -49,6 +49,9 @@
             '&mode=admin'
         );
     }
+    function getFileView(fileId: string) {
+        return sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
+    }
 
     async function updatePermissions() {
         try {
@@ -74,7 +77,7 @@
         <CardGrid>
             <div class="u-flex u-gap-16">
                 <a
-                    href={downloadFile()}
+                    href={getFileView($file.$id)}
                     class="file-preview is-with-image"
                     target="_blank"
                     aria-label="open file in new window">
