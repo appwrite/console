@@ -105,7 +105,9 @@
                                     showDropdown = false;
                                     newOrgModal.set(true);
                                 }}>New organization</DropListItem>
-                            <DropListLink href="/console/$me">Your Account</DropListLink>
+                            <DropListLink
+                                href={`${base}/console/account`}
+                                on:click={() => (showDropdown = false)}>Your Account</DropListLink>
                         </ul>
                     </section>
                     <section class="drop-section">

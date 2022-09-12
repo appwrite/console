@@ -13,6 +13,8 @@
     } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { base } from '$app/paths';
+    import { user } from '$lib/stores/user';
+    import { goto } from '$app/navigation';
     import { browser } from '$app/env';
 
     export let isOpen = false;
@@ -56,6 +58,11 @@
             });
         }
     });
+
+    const logout = async () => {
+        await user.logout();
+        await goto(`${base}/login`);
+    };
 
     const onScroll = () => {
         if (!tabsList) {
@@ -174,6 +181,12 @@
                         <span class="text"> {$title}</span>
                     </h1>
                 {/if}
+                {#if $page.url.pathname.includes('/console/account')}
+                    <div class="u-margin-inline-start-auto">
+                        <Button secondary on:click={logout}>Logout</Button>
+                    </div>
+                {/if}
+
                 {#if $copyData?.value}
                     <Copy value={$copyData.value}>
                         <Pill button>

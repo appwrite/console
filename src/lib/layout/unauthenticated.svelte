@@ -3,6 +3,7 @@
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { app } from '$lib/stores/app';
+    import { base } from '$app/paths';
 
     const technologies = [
         'js',
@@ -31,8 +32,9 @@
 
         <div class="u-margin-block-start-auto" />
 
+        <div class="u-margin-block-start-auto is-no-mobile" />
         <div
-            class="container u-margin-block-start-20"
+            class="container u-margin-block-start-20 is-no-mobile"
             style="--p-container-max-size: var(--container-size-large);">
             {#if $app.themeInUse === 'dark'}
                 <img src={LoginDark} alt="" class="u-only-dark" />
@@ -43,16 +45,18 @@
 
         <div class="u-margin-block-start-auto" />
 
+        <div class="u-margin-block-start-auto is-no-mobile" />
         <div
-            class="container u-text-color-light-gray is-only-desktop"
+            class="container u-text-color-light-gray is-no-mobile"
             style="--p-container-max-size:var(--container-size-small); --p-container-padding-inline:1rem;">
             <p>Integrate with your favourite technologies</p>
             <ul
-                class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 ">
+                class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 u-opacity-0-5">
                 {#each technologies as tech}
                     <li>
-                        <span
-                            class={`icon-${tech} u-font-size-32`}
+                        <img
+                            src={`${base}/icons/${$app.themeInUse}/grayscale/${tech}.svg`}
+                            alt={tech}
                             aria-hidden="true"
                             aria-label={tech} />
                     </li>
@@ -62,7 +66,7 @@
         <div class="u-margin-block-start-40" />
     </section>
     <section class="grid-1-1-col-2 u-flex u-main-center u-cross-center">
-        <div class="container u-flex u-flex-vertical u-cross-center">
+        <div class="container u-flex u-flex-vertical u-cross-center u-height-100-percents">
             <div class="u-margin-block-start-auto" />
 
             <div class="u-max-width-500 u-width-full-line">

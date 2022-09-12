@@ -10,6 +10,9 @@ function createUserStore() {
         set,
         fetchUser: async () => {
             set(await sdkForConsole.account.get());
+        },
+        logout: async () => {
+            await sdkForConsole.account.deleteSession('current');
         }
     };
 }
