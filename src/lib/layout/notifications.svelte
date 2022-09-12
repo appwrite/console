@@ -4,8 +4,8 @@
 </script>
 
 {#if $notifications}
-    <section class="toaster">
-        <ul class="toaster-list">
+    <section>
+        <ul class="u-flex u-flex-vertical u-gap-16">
             {#each $notifications as notification (notification.id)}
                 <Notification
                     type={notification.type}

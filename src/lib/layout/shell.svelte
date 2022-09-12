@@ -13,10 +13,14 @@
     } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { base } from '$app/paths';
+    import { user } from '$lib/stores/user';
+    import { goto } from '$app/navigation';
+    import { browser } from '$app/env';
 
     export let isOpen = false;
     export let showSideNavigation = false;
 
+    let y: number;
     let tabsList: HTMLUListElement;
     let showLeft = false;
     let showRight = false;
@@ -55,6 +59,11 @@
         }
     });
 
+    const logout = async () => {
+        await user.logout();
+        await goto(`${base}/login`);
+    };
+
     const onScroll = () => {
         if (!tabsList) {
             return;
@@ -77,9 +86,21 @@
             }
         };
     };
+
+    const toggleMenu = () => {
+        y = 0;
+        isOpen = !isOpen;
+        if (browser) {
+            if (isOpen) {
+                document.body.classList.add('u-overflow-hidden');
+            } else {
+                document.body.classList.remove('u-overflow-hidden');
+            }
+        }
+    };
 </script>
 
-<svelte:window on:resize={throttle(onScroll, 25)} />
+<svelte:window bind:scrollY={y} on:resize={throttle(onScroll, 25)} />
 
 <main
     class:grid-with-side={showSideNavigation}
@@ -87,9 +108,10 @@
     class:is-open={isOpen}>
     <header class="main-header">
         <button
+            class:u-hide={!showSideNavigation}
             class="icon-button is-no-desktop"
             aria-label="Open Menu"
-            on:click={() => (isOpen = !isOpen)}>
+            on:click={toggleMenu}>
             <span class:icon-x={isOpen} class:icon-menu={!isOpen} aria-hidden="true" />
         </button>
         <slot name="header" />
@@ -159,6 +181,12 @@
                         <span class="text"> {$title}</span>
                     </h1>
                 {/if}
+                {#if $page.url.pathname.includes('/console/account')}
+                    <div class="u-margin-inline-start-auto">
+                        <Button secondary on:click={logout}>Logout</Button>
+                    </div>
+                {/if}
+
                 {#if $copyData?.value}
                     <Copy value={$copyData.value}>
                         <Pill button>
