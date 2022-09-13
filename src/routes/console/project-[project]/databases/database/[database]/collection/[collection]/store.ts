@@ -18,15 +18,17 @@ type Collection = Omit<Models.Collection, 'attributes'> & {
     attributes: Array<Attributes>;
 };
 
-function createCollection() {
-    const { subscribe, set, update } = writable<Collection>(
-        browser ? JSON.parse(sessionStorage.getItem('collection')) : null
-    );
-
+export const collection = cachedStore<
+    Collection,
+    {
+        load: (databaseId: string, collectionId: string) => Promise<void>;
+        addAttribute: (attribute: Attributes) => void;
+        updateAttribute: (attribute: Attributes) => void;
+        removeAttribute: (attribute: Attributes) => void;
+    }
+>('collection', function ({ set, update }) {
     return {
-        subscribe,
-        set,
-        load: async (databaseId: string, collectionId: string) => {
+        load: async (databaseId, collectionId) => {
             set(
                 (await sdkForProject.databases.getCollection(
                     databaseId,
@@ -34,27 +36,27 @@ function createCollection() {
                 )) as unknown as Collection
             );
         },
-        addAttribute: (attribute: Attributes) =>
+        addAttribute: (attribute) =>
             update((n) => {
                 n.attributes.push(attribute);
 
                 return n;
             }),
-        updateAttribute: (attribute: Attributes) =>
+        updateAttribute: (attribute) =>
             update((n) => {
                 const index = n.attributes.findIndex((a) => a.key === attribute.key);
                 n.attributes[index] = attribute;
 
                 return n;
             }),
-        removeAttribute: (attribute: Attributes) =>
+        removeAttribute: (attribute) =>
             update((n) => {
                 n.attributes = n.attributes.filter((a) => a.key !== attribute.key);
 
                 return n;
             })
     };
-}
+});
 
 export const documentList = cachedStore<
     Models.DocumentList<Models.Document>,
@@ -109,9 +111,3 @@ export const attributeList = cachedStore<
         }
     };
 });
-
-export const collection = createCollection();
-
-if (browser) {
-    collection.subscribe((n) => sessionStorage?.setItem('collection', JSON.stringify(n ?? '')));
-}
