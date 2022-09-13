@@ -7,12 +7,13 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { database } from './store';
+    const databaseId = $page.params.database;
 
     export let showDelete = false;
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.delete();
+            await sdkForProject.databases.delete(databaseId);
             showDelete = false;
             await goto(`${base}/console/project-${$page.params.project}/databases`);
         } catch (error) {

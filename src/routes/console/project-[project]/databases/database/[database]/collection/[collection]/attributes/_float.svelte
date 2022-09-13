@@ -5,13 +5,16 @@
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
     import type { Models } from '@aw-labs/appwrite-console';
-
-    const dispatch = createEventDispatcher();
+    import { page } from '$app/stores';
 
     export let key: string;
     export let submitted = false;
     export let overview = false;
     export let selectedAttribute: Models.AttributeFloat;
+
+    const databaseId = $page.params.database;
+    const dispatch = createEventDispatcher();
+
     let min: number,
         max: number,
         xdefault: number,
@@ -22,6 +25,7 @@
         submitted = false;
         try {
             const attribute = await sdkForProject.databases.createFloatAttribute(
+                databaseId,
                 $collection.$id,
                 key,
                 required,

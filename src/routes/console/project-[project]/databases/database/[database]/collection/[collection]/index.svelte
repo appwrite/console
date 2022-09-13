@@ -25,7 +25,7 @@
     const databaseId = $page.params.database;
 
     onMount(async () => {
-        await documentList.load($collection.$id, [], limit, offset);
+        await documentList.load(databaseId, $collection.$id, [], limit, offset);
     });
 
     $: columns = [

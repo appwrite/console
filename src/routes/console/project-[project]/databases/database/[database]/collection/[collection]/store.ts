@@ -25,9 +25,12 @@ function createCollection() {
     return {
         subscribe,
         set,
-        load: async (collectionId: string) => {
+        load: async (databaseId: string, collectionId: string) => {
             set(
-                (await sdkForProject.databases.getCollection(collectionId)) as unknown as Collection
+                (await sdkForProject.databases.getCollection(
+                    databaseId,
+                    collectionId
+                )) as unknown as Collection
             );
         },
         addAttribute: (attribute: Attributes) =>
@@ -59,8 +62,15 @@ function createDocumentListStore() {
     return {
         subscribe,
         set,
-        load: async (collectionId: string, queries: [], limit: number, offset: number) => {
+        load: async (
+            databaseId: string,
+            collectionId: string,
+            queries: [],
+            limit: number,
+            offset: number
+        ) => {
             const response = await sdkForProject.databases.listDocuments(
+                databaseId,
                 collectionId,
                 queries,
                 limit,
@@ -77,8 +87,8 @@ function createIndexListStore() {
     return {
         subscribe,
         set,
-        load: async (collectionId: string) => {
-            const response = await sdkForProject.databases.listIndexes(collectionId);
+        load: async (databaseId: string, collectionId: string) => {
+            const response = await sdkForProject.databases.listIndexes(databaseId, collectionId);
             set(response);
         }
     };
@@ -90,8 +100,8 @@ function createAttributeListStore() {
     return {
         subscribe,
         set,
-        load: async (collectionId: string) => {
-            const response = await sdkForProject.databases.listAttributes(collectionId);
+        load: async (databaseId: string, collectionId: string) => {
+            const response = await sdkForProject.databases.listAttributes(databaseId, collectionId);
             set(response);
         }
     };

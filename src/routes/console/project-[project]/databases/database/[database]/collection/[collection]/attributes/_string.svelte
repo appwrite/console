@@ -5,11 +5,15 @@
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { page } from '$app/stores';
 
     export let key: string;
     export let submitted = false;
     export let overview = false;
     export let selectedAttribute: Models.AttributeString;
+
+    const databaseId = $page.params.database;
+
     let xdefault: string,
         size = 255,
         required = false,
@@ -20,6 +24,7 @@
         submitted = false;
         try {
             const attribute = await sdkForProject.databases.createStringAttribute(
+                databaseId,
                 $collection.$id,
                 key,
                 size,

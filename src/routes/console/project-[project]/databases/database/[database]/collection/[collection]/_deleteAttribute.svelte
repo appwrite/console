@@ -11,14 +11,19 @@
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
+    const databaseId = $page.params.database;
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteAttribute($collection.$id, selectedAttribute.key);
+            await sdkForProject.databases.deleteAttribute(
+                databaseId,
+                $collection.$id,
+                selectedAttribute.key
+            );
             collection.removeAttribute(selectedAttribute);
             showDelete = false;
             await goto(
-                `${base}/console/project-${$page.params.project}/databases/database/${$page.params.database}/collection/${$page.params.collection}/attributes`
+                `${base}/console/project-${$page.params.project}/databases/database/${databaseId}/collection/${$page.params.collection}/attributes`
             );
         } catch (error) {
             addNotification({

@@ -10,14 +10,19 @@ function createCollectionStore() {
     return {
         subscribe,
         set,
-        load: async (search: string, limit: number, offset: number) => {
-            const response = await sdkForProject.databases.listCollections(search, limit, offset);
+        load: async (databaseId: string, search: string, limit: number, offset: number) => {
+            const response = await sdkForProject.databases.listCollections(
+                databaseId,
+                search,
+                limit,
+                offset
+            );
             set(response);
         },
-        total: async (id: string) => {
+        total: async (databaseId: string, id: string) => {
             let total = {};
             total = browser ? JSON.parse(sessionStorage.getItem('collectionTotal')) ?? {} : {};
-            const response = await sdkForProject.databases.listDocuments(id);
+            const response = await sdkForProject.databases.listDocuments(databaseId, id);
             total[id] = response.total;
             sessionStorage?.setItem('collectionTotal', JSON.stringify(total));
             return total;
@@ -31,8 +36,8 @@ function createDatabase() {
     return {
         subscribe,
         set,
-        load: async () => {
-            set(await sdkForProject.databases.get());
+        load: async (databaseId: string) => {
+            set(await sdkForProject.databases.get(databaseId));
         }
     };
 }

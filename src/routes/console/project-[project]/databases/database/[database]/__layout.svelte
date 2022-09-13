@@ -3,7 +3,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { updateLayout } from '$lib/stores/layout';
-    import { setDatabase } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { database } from './store';
 
@@ -16,8 +15,7 @@
 
     async function handle(event = null) {
         if ($database?.$id !== databaseId) {
-            setDatabase($page.params.database);
-            await database.load();
+            await database.load(databaseId);
         }
 
         updateLayout({

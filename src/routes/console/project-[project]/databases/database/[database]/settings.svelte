@@ -9,6 +9,7 @@
     import Delete from './_delete.svelte';
     import { onMount } from 'svelte';
 
+    const databaseId = $page.params.database;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
     let showDelete = false;
@@ -18,7 +19,7 @@
     let databaseName: string = null;
 
     onMount(async () => {
-        await database.load();
+        await database.load(databaseId);
         databaseName ??= $database.name;
     });
 

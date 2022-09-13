@@ -24,7 +24,7 @@
         );
     };
 
-    $: collections.load(search, limit, offset ?? 0);
+    $: collections.load(databaseId, search, limit, offset ?? 0);
     $: if (search) offset = 0;
 </script>
 
@@ -46,7 +46,7 @@
                 <GridItem1
                     href={`${base}/console/project-${project}/databases/database/${databaseId}/collection/${collection.$id}`}>
                     <svelte:fragment slot="eyebrow">
-                        {#await collections.total(collection.$id)}
+                        {#await collections.total(databaseId, collection.$id)}
                             N Documents
                         {:then n}
                             {n[collection.$id] ? n[collection.$id] : 'NO'} Documents

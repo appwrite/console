@@ -16,7 +16,7 @@
 
     async function handle(event = null) {
         if ($doc?.$id !== documentId) {
-            await doc.load(collectionId, documentId);
+            await doc.load(databaseId, collectionId, documentId);
         }
 
         updateLayout({

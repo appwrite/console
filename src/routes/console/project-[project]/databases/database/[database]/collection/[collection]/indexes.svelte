@@ -30,9 +30,10 @@
 
     const limit = 5;
     const collectionId = $page.params.collection;
+    const databaseId = $page.params.database;
 
     const handleDelete = async () => {
-        await indexList.load(collectionId);
+        await indexList.load(databaseId, collectionId);
     };
 
     // $: indexes.load(search);
@@ -53,7 +54,7 @@
     // });
 
     onMount(async () => {
-        await indexList.load(collectionId);
+        await indexList.load(databaseId, collectionId);
     });
 </script>
 

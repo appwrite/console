@@ -5,20 +5,25 @@
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { page } from '$app/stores';
 
     export let key: string;
     export let submitted = false;
     export let overview = false;
     export let selectedAttribute: Models.AttributeUrl;
+
+    const databaseId = $page.params.database;
+    const dispatch = createEventDispatcher();
+
     let xdefault: string,
         required = false,
         array = false;
 
-    const dispatch = createEventDispatcher();
     const submit = async () => {
         submitted = false;
         try {
             const attribute = await sdkForProject.databases.createUrlAttribute(
+                databaseId,
                 $collection.$id,
                 key,
                 required,

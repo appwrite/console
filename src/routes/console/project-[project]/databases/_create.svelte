@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { Button, InputText, Form, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject, setDatabase } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -16,8 +16,7 @@
 
     const create = async () => {
         try {
-            setDatabase(id ? id : 'unique()');
-            const database = await sdkForProject.databases.create(name);
+            const database = await sdkForProject.databases.create(id ? id : 'unique()', name);
             name = id = null;
             showCreate = false;
             dispatch('created', database);

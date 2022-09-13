@@ -5,11 +5,14 @@
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { page } from '$app/stores';
 
     export let submitted = false;
     export let key: string;
     export let overview = false;
     export let selectedAttribute: Models.AttributeBoolean;
+
+    const databaseId = $page.params.database;
 
     const dispatch = createEventDispatcher();
 
@@ -21,6 +24,7 @@
         submitted = false;
         try {
             const attribute = await sdkForProject.databases.createBooleanAttribute(
+                databaseId,
                 $collection.$id,
                 key,
                 required,

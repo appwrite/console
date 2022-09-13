@@ -16,10 +16,10 @@
 
     async function handle(event = null) {
         if ($collection?.$id !== collectionId) {
-            await collection.load(collectionId);
+            await collection.load(databaseId, collectionId);
         }
         if ($collection) {
-            await documentList.load($collection.$id, [], 12, 0);
+            await documentList.load(databaseId, $collection.$id, [], 12, 0);
         }
         updateLayout({
             navigate: event,

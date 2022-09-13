@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { page } from '$app/stores';
+
     import { Modal, InnerModal } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, Form, FormList } from '$lib/elements/forms';
@@ -8,6 +10,7 @@
 
     export let showCreate = false;
 
+    const databaseId = $page.params.database;
     const dispatch = createEventDispatcher();
 
     let name = '';
@@ -17,6 +20,7 @@
     const create = async () => {
         try {
             const collection = await sdkForProject.databases.createCollection(
+                databaseId,
                 id ? id : 'unique()',
                 name,
                 'collection',

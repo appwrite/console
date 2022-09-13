@@ -10,9 +10,11 @@
 
     export let showDelete = false;
 
+    const databaseId = $page.params.database;
+
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteCollection($collection.$id);
+            await sdkForProject.databases.deleteCollection(databaseId, $collection.$id);
             showDelete = false;
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database/${$page.params.database}`

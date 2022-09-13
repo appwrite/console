@@ -9,15 +9,18 @@
     import Document from './_document.svelte';
     import Delete from './_delete.svelte';
     import { difference } from '$lib/helpers/arrayComparison';
+    import { page } from '$app/stores';
 
     let showDelete = false;
     let read = $doc?.$read;
     let write = $doc?.$write;
     let arePermsDisabled = true;
+    const databaseId = $page.params.database;
 
     async function updatePermissions() {
         try {
             await sdkForProject.databases.updateDocument(
+                databaseId,
                 $doc.collectionId,
                 $doc.$id,
                 $doc.data,

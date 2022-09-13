@@ -8,8 +8,8 @@ function createDocumentStore() {
     return {
         subscribe,
         set,
-        load: async (collectionId: string, documentId: string) =>
-            set(await sdkForProject.databases.getDocument(collectionId, documentId)),
+        load: async (databaseId: string, collectionId: string, documentId: string) =>
+            set(await sdkForProject.databases.getDocument(databaseId, collectionId, documentId)),
         addAttribute: (attribute: string) =>
             update((n) => {
                 n[attribute].push(null);

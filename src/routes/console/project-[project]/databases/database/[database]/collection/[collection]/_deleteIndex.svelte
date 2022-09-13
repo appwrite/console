@@ -6,15 +6,21 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
+    import { page } from '$app/stores';
 
     export let showDelete = false;
     export let selectedIndex: Models.Index;
+    const databaseId = $page.params.database;
 
     const dispatch = createEventDispatcher();
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteIndex($collection.$id, selectedIndex.key);
+            await sdkForProject.databases.deleteIndex(
+                databaseId,
+                $collection.$id,
+                selectedIndex.key
+            );
             showDelete = false;
             dispatch('deleted');
         } catch (error) {

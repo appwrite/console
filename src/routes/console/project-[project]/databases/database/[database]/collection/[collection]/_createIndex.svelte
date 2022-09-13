@@ -6,9 +6,12 @@
     import { onMount } from 'svelte';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import { page } from '$app/stores';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
+
+    const databaseId = $page.params.database;
 
     let key: string = null;
     let types = [
@@ -45,6 +48,7 @@
         }
         try {
             await sdkForProject.databases.createIndex(
+                databaseId,
                 $collection.$id,
                 key,
                 selectedType,

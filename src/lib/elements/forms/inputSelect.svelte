@@ -4,7 +4,7 @@
     export let label: string;
     export let showLabel = true;
     export let id: string;
-    export let value: string;
+    export let value: string | number | boolean;
     export let placeholder = '';
     export let required = false;
     export let disabled = false;

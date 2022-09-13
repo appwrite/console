@@ -10,9 +10,12 @@
 
     export let showDelete = false;
 
+    const databaseId = $page.params.database;
+
     const handleDelete = async () => {
         try {
             await sdkForProject.databases.deleteDocument(
+                databaseId,
                 $page.params.collection,
                 $page.params.document
             );

@@ -12,6 +12,9 @@
 
     export let showCreate = false;
 
+    const databaseId = $page.params.database;
+    const collectionId = $page.params.collection;
+
     let newDocument = {};
     let read: string[];
     let write: string[];
@@ -22,7 +25,7 @@
     let attributes = [];
 
     onMount(async () => {
-        await attributeList.load($page.params.collection);
+        await attributeList.load(databaseId, collectionId);
         initializeDocument();
     });
 
@@ -43,7 +46,8 @@
         } else {
             try {
                 await sdkForProject.databases.createDocument(
-                    $page.params.collection,
+                    databaseId,
+                    collectionId,
                     id ?? 'unique()',
                     newDocument,
                     read,
@@ -63,7 +67,7 @@
         }
     };
 
-    $: attributeList.load($page.params.collection);
+    $: attributeList.load(databaseId, collectionId);
 
     $: if (!showCreate) {
         initializeDocument();

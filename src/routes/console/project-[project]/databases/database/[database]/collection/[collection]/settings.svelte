@@ -11,6 +11,8 @@
     import { page } from '$app/stores';
     import { difference } from '$lib/helpers/arrayComparison';
 
+    const databaseId = $page.params.database;
+
     let showDelete = false;
     let showError: false | 'name' | 'size' = false,
         errorMessage = 'Something went wrong',
@@ -23,7 +25,7 @@
         arePermsDisabled = true;
 
     onMount(async () => {
-        await collection.load($page.params.collection);
+        await collection.load(databaseId, $page.params.collection);
         enabled ??= $collection.enabled;
         collectionName ??= $collection.name;
         collectionName ??= $collection.name;
@@ -54,6 +56,7 @@
     async function togglecollection() {
         try {
             await sdkForProject.databases.updateCollection(
+                databaseId,
                 $collection.$id,
                 $collection.name,
                 $collection.permission,
@@ -76,6 +79,7 @@
     async function updateName() {
         try {
             await sdkForProject.databases.updateCollection(
+                databaseId,
                 $collection.$id,
                 $collection.name,
                 $collection.permission
@@ -93,6 +97,7 @@
     async function updatePermissions() {
         try {
             await sdkForProject.databases.updateCollection(
+                databaseId,
                 $collection.$id,
                 $collection.name,
                 collectionPermissions,
