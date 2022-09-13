@@ -1,7 +1,5 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { writable } from 'svelte/store';
-import { browser } from '$app/env';
 import { cachedStore } from '$lib/helpers/cache';
 
 export type Attributes =
