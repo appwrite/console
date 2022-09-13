@@ -1,18 +1,17 @@
 import { sdkForConsole } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { writable } from 'svelte/store';
+import { cachedStore } from '$lib/helpers/cache';
 
-function createProject() {
-    const { subscribe, set } = writable<Models.Project>();
-
+export const project = cachedStore<
+    Models.Project,
+    {
+        load: (projectId: string) => Promise<void>;
+    }
+>('project', function ({ set }) {
     return {
-        subscribe,
-        set,
         load: async (projectId: string) => {
             const project = await sdkForConsole.projects.get(projectId);
             set(project);
         }
     };
-}
-
-export const project = createProject();
+});

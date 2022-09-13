@@ -1,25 +1,17 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { writable } from 'svelte/store';
-import { browser } from '$app/env';
+import { cachedStore } from '$lib/helpers/cache';
 
-function createFileStore() {
-    const { subscribe, set } = writable<Models.File>(
-        browser ? JSON.parse(sessionStorage.getItem('file')) : null
-    );
-
+export const file = cachedStore<
+    Models.File,
+    {
+        load: (bucketId: string, fileId: string) => Promise<void>;
+    }
+>('file', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (bucketId: string, fileId: string) => {
+        load: async (bucketId, fileId) => {
             const response = await sdkForProject.storage.getFile(bucketId, fileId);
             set(response);
         }
     };
-}
-
-export const file = createFileStore();
-
-if (browser) {
-    file.subscribe((n) => sessionStorage?.setItem('file', JSON.stringify(n ?? '')));
-}
+});
