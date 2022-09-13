@@ -2,6 +2,7 @@ import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
 import { browser } from '$app/env';
+import { cachedStore } from '$lib/helpers/cache';
 
 export type Attributes =
     | Models.AttributeBoolean
@@ -55,20 +56,20 @@ function createCollection() {
     };
 }
 
-function createDocumentListStore() {
-    const { subscribe, set } = writable<Models.DocumentList<Models.Document>>(
-        browser ? JSON.parse(sessionStorage.getItem('documentList')) : null
-    );
-    return {
-        subscribe,
-        set,
-        load: async (
+export const documentList = cachedStore<
+    Models.DocumentList<Models.Document>,
+    {
+        load: (
             databaseId: string,
             collectionId: string,
             queries: [],
             limit: number,
             offset: number
-        ) => {
+        ) => Promise<void>;
+    }
+>('documentList', function ({ set }) {
+    return {
+        load: async (databaseId, collectionId, queries, limit, offset) => {
             const response = await sdkForProject.databases.listDocuments(
                 databaseId,
                 collectionId,
@@ -79,44 +80,38 @@ function createDocumentListStore() {
             set(response);
         }
     };
-}
-function createIndexListStore() {
-    const { subscribe, set } = writable<Models.IndexList>(
-        browser ? JSON.parse(sessionStorage.getItem('indexList')) : null
-    );
+});
+
+export const indexList = cachedStore<
+    Models.IndexList,
+    {
+        load: (databaseId: string, collectionId: string) => Promise<void>;
+    }
+>('indexList', function ({ set }) {
     return {
-        subscribe,
-        set,
         load: async (databaseId: string, collectionId: string) => {
             const response = await sdkForProject.databases.listIndexes(databaseId, collectionId);
             set(response);
         }
     };
-}
-function createAttributeListStore() {
-    const { subscribe, set } = writable<Models.AttributeList>(
-        browser ? JSON.parse(sessionStorage.getItem('attributeList')) : null
-    );
+});
+
+export const attributeList = cachedStore<
+    Models.AttributeList,
+    {
+        load: (databaseId: string, collectionId: string) => Promise<void>;
+    }
+>('attributeList', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (databaseId: string, collectionId: string) => {
+        load: async (databaseId, collectionId) => {
             const response = await sdkForProject.databases.listAttributes(databaseId, collectionId);
             set(response);
         }
     };
-}
+});
 
 export const collection = createCollection();
-export const documentList = createDocumentListStore();
-export const indexList = createIndexListStore();
-export const attributeList = createAttributeListStore();
 
 if (browser) {
     collection.subscribe((n) => sessionStorage?.setItem('collection', JSON.stringify(n ?? '')));
-    documentList.subscribe((n) => sessionStorage?.setItem('documentList', JSON.stringify(n ?? '')));
-    indexList.subscribe((n) => sessionStorage?.setItem('indexList', JSON.stringify(n ?? '')));
-    attributeList.subscribe((n) =>
-        sessionStorage?.setItem('attributeList', JSON.stringify(n ?? ''))
-    );
 }

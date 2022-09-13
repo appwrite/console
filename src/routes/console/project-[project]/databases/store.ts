@@ -1,25 +1,17 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { writable } from 'svelte/store';
-import { browser } from '$app/env';
+import { cachedStore } from '$lib/helpers/cache';
 
-function createDatabaseListStore() {
-    const { subscribe, set } = writable<Models.DatabaseList>(
-        browser ? JSON.parse(sessionStorage.getItem('databaseList')) : null
-    );
-
+export const databaseList = cachedStore<
+    Models.DatabaseList,
+    {
+        load: (search: string, limit: number, offset: number) => Promise<void>;
+    }
+>('databaseList', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (search: string, limit: number, offset: number) => {
+        load: async (search, limit, offset) => {
             const response = await sdkForProject.databases.list(search, limit, offset);
             set(response);
         }
     };
-}
-
-export const databaseList = createDatabaseListStore();
-
-if (browser) {
-    databaseList.subscribe((n) => sessionStorage?.setItem('databaseList', JSON.stringify(n ?? '')));
-}
+});

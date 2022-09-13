@@ -1,16 +1,17 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { writable } from 'svelte/store';
 import { browser } from '$app/env';
+import { cachedStore } from '$lib/helpers/cache';
 
-function createCollectionStore() {
-    const { subscribe, set } = writable<Models.CollectionList>(
-        browser ? JSON.parse(sessionStorage.getItem('database')) : null
-    );
+export const collections = cachedStore<
+    Models.CollectionList,
+    {
+        load: (databaseId: string, search: string, limit: number, offset: number) => Promise<void>;
+        total: (databaseId: string, id: string) => Promise<Record<string, unknown>>;
+    }
+>('collections', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (databaseId: string, search: string, limit: number, offset: number) => {
+        load: async (databaseId, search, limit, offset) => {
             const response = await sdkForProject.databases.listCollections(
                 databaseId,
                 search,
@@ -19,7 +20,7 @@ function createCollectionStore() {
             );
             set(response);
         },
-        total: async (databaseId: string, id: string) => {
+        total: async (databaseId, id) => {
             let total = {};
             total = browser ? JSON.parse(sessionStorage.getItem('collectionTotal')) ?? {} : {};
             const response = await sdkForProject.databases.listDocuments(databaseId, id);
@@ -28,23 +29,17 @@ function createCollectionStore() {
             return total;
         }
     };
-}
+});
 
-function createDatabase() {
-    const { subscribe, set } = writable<Models.Database>();
-
+export const database = cachedStore<
+    Models.Database,
+    {
+        load: (databaseId: string) => Promise<void>;
+    }
+>('database', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (databaseId: string) => {
+        load: async (databaseId) => {
             set(await sdkForProject.databases.get(databaseId));
         }
     };
-}
-export const collections = createCollectionStore();
-export const database = createDatabase();
-
-if (browser) {
-    collections.subscribe((n) => sessionStorage?.setItem('collections', JSON.stringify(n ?? '')));
-    database.subscribe((n) => sessionStorage?.setItem('database', JSON.stringify(n ?? '')));
-}
+});
