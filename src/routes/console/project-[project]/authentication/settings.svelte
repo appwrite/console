@@ -11,11 +11,17 @@
     import { event } from '$lib/actions/analytics';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
 
-    $: projectId = $project.$id;
-    $: authMethods.load($project);
-    $: OAuthProviders.load($project);
+    const projectId = $page.params.project;
     let showModal = false;
+
+    onMount(async () => {
+        await project.load(projectId);
+        authMethods.load($project);
+        OAuthProviders.load($project);
+    });
 
     const authUpdate = async (box: AuthMethod) => {
         try {
@@ -39,62 +45,64 @@
     //TODO: if operation not successful revert switchbox value
 </script>
 
-<Container>
-    <CardGrid>
-        <h2 class="heading-level-7">Authentication Methods</h2>
-        <p>Enable the authentication methods you wish to use.</p>
-        <svelte:fragment slot="aside">
-            <form class="form">
-                <ul class="form-list is-multiple">
-                    {#each $authMethods.list as box}
-                        <InputSwitch
-                            label={box.label}
-                            id={box.method}
-                            bind:value={box.value}
-                            on:change={() => {
-                                authUpdate(box);
-                            }} />
-                    {/each}
-                </ul>
-            </form>
-        </svelte:fragment>
-    </CardGrid>
-    <section class="common-section">
-        <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
-        <ul class="grid-box common-section">
-            {#each $OAuthProviders.providers as provider}
-                <button
-                    on:click={() => {
-                        selectedProvider = provider;
-                        showModal = true;
-                    }}
-                    use:event={{
-                        name: 'console_users',
-                        action: 'click_update',
-                        event: 'click',
-                        parameters: {
-                            provider: provider.name
-                        }
-                    }}
-                    class="card u-flex u-flex-vertical u-cross-center">
-                    <div class="image-item">
-                        <img
-                            height="20"
-                            width="20"
-                            src={`/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
-                            alt={provider.name} />
-                    </div>
-                    <p class="u-margin-block-start-8">{provider.name}</p>
-                    <div class="u-margin-block-start-24">
-                        <Pill success={provider.active}>
-                            {provider.active ? 'enabled' : 'disabled'}
-                        </Pill>
-                    </div>
-                </button>
-            {/each}
-        </ul>
-    </section>
-</Container>
+{#if $authMethods && $OAuthProviders}
+    <Container>
+        <CardGrid>
+            <h2 class="heading-level-7">Authentication Methods</h2>
+            <p>Enable the authentication methods you wish to use.</p>
+            <svelte:fragment slot="aside">
+                <form class="form">
+                    <ul class="form-list is-multiple">
+                        {#each $authMethods.list as box}
+                            <InputSwitch
+                                label={box.label}
+                                id={box.method}
+                                bind:value={box.value}
+                                on:change={() => {
+                                    authUpdate(box);
+                                }} />
+                        {/each}
+                    </ul>
+                </form>
+            </svelte:fragment>
+        </CardGrid>
+        <section class="common-section">
+            <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
+            <ul class="grid-box common-section">
+                {#each $OAuthProviders.providers as provider}
+                    <button
+                        on:click={() => {
+                            selectedProvider = provider;
+                            showModal = true;
+                        }}
+                        use:event={{
+                            name: 'console_users',
+                            action: 'click_update',
+                            event: 'click',
+                            parameters: {
+                                provider: provider.name
+                            }
+                        }}
+                        class="card u-flex u-flex-vertical u-cross-center">
+                        <div class="image-item">
+                            <img
+                                height="20"
+                                width="20"
+                                src={`/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
+                                alt={provider.name} />
+                        </div>
+                        <p class="u-margin-block-start-8">{provider.name}</p>
+                        <div class="u-margin-block-start-24">
+                            <Pill success={provider.active}>
+                                {provider.active ? 'enabled' : 'disabled'}
+                            </Pill>
+                        </div>
+                    </button>
+                {/each}
+            </ul>
+        </section>
+    </Container>
+{/if}
 
 {#if selectedProvider}
     <svelte:component
