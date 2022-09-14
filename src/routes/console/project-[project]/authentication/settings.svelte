@@ -33,6 +33,7 @@
                 }`
             });
         } catch (error) {
+            box.value = !box.value;
             addNotification({
                 type: 'error',
                 message: error.message
@@ -41,8 +42,6 @@
     };
 
     let selectedProvider: Provider | null = null;
-
-    //TODO: if operation not successful revert switchbox value
 </script>
 
 {#if $authMethods && $OAuthProviders}
