@@ -26,6 +26,8 @@
     onMount(() => {
         isOverflowing();
     });
+
+    //TODO: fix onDestroy error
 </script>
 
 <a class="card" {href}>
