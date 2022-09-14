@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { Pill } from '$lib/elements';
+    import { browser } from '$app/env';
     export let href: string;
 
     let options: HTMLElement;
@@ -8,12 +9,14 @@
     let more = 0;
 
     const isOverflowing = () => {
-        if ($$slots.default) {
-            for (let i = 0; i < options?.childElementCount; i++) {
-                if (itemWidth < options?.offsetWidth + 40) {
-                    if (options && options?.lastElementChild) {
-                        options.lastElementChild.remove();
-                        more++;
+        if ($$slots.default && browser) {
+            if (options?.childElementCount > 0) {
+                for (let i = 0; i < options?.childElementCount; i++) {
+                    if (itemWidth < options?.offsetWidth + 40) {
+                        if (options && options?.lastElementChild) {
+                            options?.removeChild(options.lastElementChild);
+                            more++;
+                        }
                     }
                 }
             }
@@ -26,7 +29,7 @@
 </script>
 
 <a class="card" {href}>
-    <div class="grid-item-1">
+    <div class="grid-item-1" bind:offsetWidth={itemWidth}>
         <div class="grid-item-1-start-start">
             <div class="eyebrow-heading-3"><slot name="eyebrow" /></div>
             <h2 class="heading-level-6"><slot name="title" /></h2>
