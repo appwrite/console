@@ -29,10 +29,6 @@
                 {
                     href: `${path}/domains`,
                     title: 'Custom Domains'
-                },
-                {
-                    href: `${path}/members`,
-                    title: 'Members'
                 }
             ]
         });

@@ -36,7 +36,10 @@
     <title>Appwrite - Console</title>
 </svelte:head>
 
-<Shell showSideNavigation={$page.url.pathname !== '/console' && !$page?.params.organization}>
+<Shell
+    showSideNavigation={$page.url.pathname !== '/console' &&
+        !$page?.params.organization &&
+        !$page.url.pathname.includes('/console/account')}>
     <svelte:fragment slot="header">
         <Header />
     </svelte:fragment>
@@ -47,4 +50,6 @@
     <footer class="main-footer" />
 </Shell>
 
-<Create bind:show={$newOrgModal} closable={!!$organizationList?.total} />
+{#if $newOrgModal}
+    <Create bind:show={$newOrgModal} closable={!!$organizationList?.total} />
+{/if}
