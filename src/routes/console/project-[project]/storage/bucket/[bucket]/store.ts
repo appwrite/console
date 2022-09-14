@@ -1,39 +1,39 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { writable } from 'svelte/store';
-import { browser } from '$app/env';
+import { cachedStore } from '$lib/helpers/cache';
 
-function createBucketStore() {
-    const { subscribe, set } = writable<Models.Bucket>(
-        browser ? JSON.parse(sessionStorage.getItem('bucket')) : null
-    );
-
+export const bucket = cachedStore<
+    Models.Bucket,
+    {
+        load: (bucketId: string) => Promise<void>;
+    }
+>('bucket', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (bucketId: string) => {
+        load: async (bucketId) => {
             const response = await sdkForProject.storage.getBucket(bucketId);
             set(response);
         }
     };
-}
+});
 
-function createFilesStore() {
-    const { subscribe, set, update } = writable<Models.FileList>(
-        browser ? JSON.parse(sessionStorage.getItem('files')) : null
-    );
-
-    return {
-        subscribe,
-        set,
-        load: async (
+export const files = cachedStore<
+    Models.FileList,
+    {
+        load: (
             bucketId: string,
             search?: string,
             limit?: number,
             offset?: number,
             cursor?: string,
             cursorDirection?: string
-        ) => {
+        ) => Promise<void>;
+        deleteFile: (bucketId: string, fileId: string) => Promise<void>;
+        addFile: (bucketId: string, file: File, read: string[], write: string[]) => Promise<void>;
+        removeFile: (id: string) => Promise<void>;
+    }
+>('files', function ({ set, update }) {
+    return {
+        load: async (bucketId, search, limit, offset, cursor, cursorDirection) => {
             const response = await sdkForProject.storage.listFiles(
                 bucketId,
                 search,
@@ -45,14 +45,14 @@ function createFilesStore() {
             );
             set(response);
         },
-        deleteFile: async (bucketId: string, fileId: string) => {
+        deleteFile: async (bucketId, fileId) => {
             await sdkForProject.storage.deleteFile(bucketId, fileId);
             return update((n) => {
                 n.files = n.files.filter((f) => f.$id !== fileId);
                 return n;
             });
         },
-        addFile: async (bucketId: string, file: File, read: string[], write: string[]) => {
+        addFile: async (bucketId, file, read, write) => {
             const newFile = {
                 $id: 'tmp',
                 bucketId,
@@ -72,19 +72,11 @@ function createFilesStore() {
                 return n;
             });
         },
-        removeFile: async (id: string) => {
+        removeFile: async (id) => {
             return update((n) => {
                 n.files = n.files.filter((f) => f.$id !== id);
                 return n;
             });
         }
     };
-}
-
-export const bucket = createBucketStore();
-export const files = createFilesStore();
-
-if (browser) {
-    bucket.subscribe((n) => sessionStorage?.setItem('bucket', JSON.stringify(n ?? '')));
-    files.subscribe((n) => sessionStorage?.setItem('files', JSON.stringify(n ?? '')));
-}
+});
