@@ -1,7 +1,7 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 
 function createBucketStore() {
     const { subscribe, set } = writable<Models.Bucket>(

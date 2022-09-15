@@ -34,6 +34,17 @@ test('shows options', () => {
     });
 });
 
+test('shows placeholder', () => {
+    const { getByText } = render(InputSelect, {
+        id: 'select',
+        label: 'select',
+        options,
+        placeholder: 'placeholder'
+    });
+
+    expect(getByText('placeholder')).toBeInTheDocument();
+});
+
 test('shows select input - required', () => {
     const { getByLabelText } = render(InputSelect, {
         id: 'select',

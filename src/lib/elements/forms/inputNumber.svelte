@@ -9,9 +9,11 @@
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
+    export let readonly = false;
     export let autofocus = false;
     export let maxlength: number = null;
     export let minlength: number = null;
+    export let step: number | 'any' = 1;
 
     let element: HTMLInputElement;
     let error: string;
@@ -48,6 +50,8 @@
             {required}
             {minlength}
             {maxlength}
+            {readonly}
+            {step}
             type="number"
             class="input-text"
             bind:value

@@ -15,7 +15,7 @@
     import { base } from '$app/paths';
     import { user } from '$lib/stores/user';
     import { goto } from '$app/navigation';
-    import { browser } from '$app/env';
+    import { browser } from '$app/environment';
 
     export let isOpen = false;
     export let showSideNavigation = false;

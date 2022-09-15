@@ -1,4 +1,5 @@
 export { default as Table } from './table.svelte';
+export { default as TableScroll } from './tableScroll.svelte';
 export { default as TableBody } from './body.svelte';
 export { default as TableHeader } from './header.svelte';
 export { default as TableFooter } from './footer.svelte';

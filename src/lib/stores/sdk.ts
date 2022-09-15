@@ -20,7 +20,6 @@ const clientProject = new Client();
 clientProject.setEndpoint(endpoint).setMode('admin');
 
 const setProject = (projectId: string): Client => clientProject.setProject(projectId);
-const setDatabase = (databaseId: string): void => sdkForProject.databases.setDatabaseId(databaseId);
 
 const sdkForConsole = {
     client: clientConsole,
@@ -38,7 +37,7 @@ const sdkForProject = {
     client: clientProject,
     account: new Account(clientProject),
     avatars: new Avatars(clientProject),
-    databases: new Databases(clientProject, null),
+    databases: new Databases(clientProject),
     functions: new Functions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
@@ -48,4 +47,4 @@ const sdkForProject = {
     users: new Users(clientProject)
 };
 
-export { sdkForConsole, sdkForProject, setProject, setDatabase };
+export { sdkForConsole, sdkForProject, setProject };

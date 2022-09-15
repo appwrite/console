@@ -1,29 +1,37 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button, InputText, InputSwitch, Form } from '$lib/elements/forms';
+    import { InputChoice, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { page } from '$app/stores';
+
+    export let submitted = false;
+    export let key: string;
+    export let overview = false;
+    export let selectedAttribute: Models.AttributeBoolean;
+
+    const databaseId = $page.params.database;
 
     const dispatch = createEventDispatcher();
 
-    let key: string,
-        def: boolean,
+    let xdefault: boolean,
         required = false,
         array = false;
 
     const submit = async () => {
+        submitted = false;
         try {
-            await sdkForProject.databases.createBooleanAttribute(
+            const attribute = await sdkForProject.databases.createBooleanAttribute(
+                databaseId,
                 $collection.$id,
                 key,
                 required,
-                def ? def : undefined,
+                xdefault ? xdefault : undefined,
                 array
             );
-            dispatch('close');
+            dispatch('created', attribute);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -31,20 +39,30 @@
             });
         }
     };
+
+    $: if (submitted) {
+        submit();
+    }
+
+    $: if (overview) {
+        ({ required, array } = selectedAttribute);
+        xdefault = selectedAttribute.default;
+    }
+
+    //TODO: refactor to use context module instead of submitted
 </script>
 
-<Form on:submit={submit}>
-    <Modal on:close={() => dispatch('close')} show>
-        <svelte:fragment slot="header">Create Boolean Attribute</svelte:fragment>
-
-        <InputText id="key" label="Key" bind:value={key} required autofocus />
-        <InputSwitch id="required" label="Required" bind:value={required} />
-        <InputSwitch id="array" label="Array" bind:value={array} />
-        <InputSwitch id="default" label="Default" bind:value={def} />
-
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => dispatch('close')}>Cancel</Button>
-            <Button submit>Create</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<InputSelect
+    id="default"
+    label="Default value"
+    placeholder="Select a value"
+    options={[
+        { label: 'True', value: true },
+        { label: 'False', value: false }
+    ]}
+    bind:value={xdefault}
+    disabled={overview} />
+<InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
+    Indicate whether this is a required attribute</InputChoice>
+<InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
+    Indicate whether this attribute should act as an array</InputChoice>

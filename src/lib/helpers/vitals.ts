@@ -45,6 +45,7 @@ function sendToAnalytics(metric: Metric, options: Options) {
         // This content type is necessary for `sendBeacon`
         type: 'application/x-www-form-urlencoded'
     });
+
     if (navigator.sendBeacon) {
         navigator.sendBeacon(vitalsUrl, blob);
     } else
