@@ -336,6 +336,7 @@
                                         type="checkbox"
                                         class="switch"
                                         role="switch"
+                                        aria-checked={encryption}
                                         bind:checked={encryption} />
                                 </div>
                                 <div class="choice-item-content">
@@ -358,6 +359,7 @@
                                         type="checkbox"
                                         class="switch"
                                         role="switch"
+                                        aria-checked={antivirus}
                                         bind:checked={antivirus} />
                                 </div>
                                 <div class="choice-item-content">
