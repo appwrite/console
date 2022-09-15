@@ -1,6 +1,6 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 import { cachedStore } from '$lib/helpers/cache';
 
 export const collections = cachedStore<

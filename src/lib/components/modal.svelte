@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { browser } from '$app/env';
+    import { browser } from '$app/environment';
     import { createEventDispatcher } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
     import { Alert } from '$lib/components';
