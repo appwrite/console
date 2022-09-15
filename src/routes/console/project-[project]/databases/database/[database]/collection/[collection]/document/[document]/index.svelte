@@ -8,7 +8,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Document from './_document.svelte';
     import Delete from './_delete.svelte';
-    import { difference } from '$lib/helpers/arrayComparison';
+    import { difference } from '$lib/helpers/array';
     import { page } from '$app/stores';
 
     let showDelete = false;

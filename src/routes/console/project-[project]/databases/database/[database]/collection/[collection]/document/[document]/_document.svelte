@@ -11,10 +11,13 @@
 
     let currentDoc: string;
     let disableUpdate = true;
+
     const databaseId = $page.params.database;
+    const collectionId = $page.params.collection;
+    const documentId = $page.params.document;
 
     onMount(async () => {
-        await doc.load(databaseId, $collection.$id, $page.params.document);
+        await doc.load(databaseId, collectionId, documentId);
         currentDoc = JSON.stringify($doc);
     });
 
@@ -30,8 +33,8 @@
         try {
             await sdkForProject.databases.updateDocument(
                 databaseId,
-                $collection.$id,
-                $page.params.document,
+                collectionId,
+                documentId,
                 $doc,
                 $doc.$read,
                 $doc.$write

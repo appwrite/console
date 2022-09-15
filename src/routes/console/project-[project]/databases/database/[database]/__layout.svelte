@@ -7,8 +7,9 @@
     import { database } from './store';
 
     const databaseId = $page.params.database;
-
     const path = `databases/database/${databaseId}`;
+
+    let loaded = false;
 
     onMount(handle);
     afterNavigate(handle);
@@ -46,6 +47,7 @@
                 }
             ]
         });
+        loaded = true;
     }
 </script>
 
@@ -53,6 +55,6 @@
     <title>Appwrite - Database</title>
 </svelte:head>
 
-{#if $database && $database.$id === databaseId}
+{#if loaded}
     <slot />
 {/if}

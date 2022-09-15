@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
-    import { collection, documentList } from './store';
+    import { collection } from './store';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -18,9 +18,7 @@
         if ($collection?.$id !== collectionId) {
             await collection.load(databaseId, collectionId);
         }
-        if ($collection) {
-            await documentList.load(databaseId, $collection.$id, [], 12, 0);
-        }
+
         updateLayout({
             navigate: event,
             title: $collection.name,
@@ -60,6 +58,6 @@
     <title>Appwrite - {$collection?.name ?? 'Collection'}</title>
 </svelte:head>
 
-{#if $collection && $documentList}
+{#if $collection}
     <slot />
 {/if}

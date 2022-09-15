@@ -9,7 +9,7 @@
     import Delete from './_delete.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { difference } from '$lib/helpers/arrayComparison';
+    import { difference } from '$lib/helpers/array';
 
     const databaseId = $page.params.database;
 

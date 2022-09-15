@@ -14,7 +14,6 @@
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
-    import { onMount } from 'svelte';
     import Create from './_create.svelte';
 
     let offset = 0;
@@ -24,10 +23,7 @@
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
 
-    onMount(async () => {
-        await documentList.load(databaseId, $collection.$id, [], limit, offset);
-    });
-
+    $: documentList.load(databaseId, $collection.$id, [], limit, offset);
     $: columns = [
         ...$collection.attributes.map((attribute) => ({
             key: attribute.key,
