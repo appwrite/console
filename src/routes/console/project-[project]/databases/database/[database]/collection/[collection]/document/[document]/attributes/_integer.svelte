@@ -14,4 +14,5 @@
     required={attribute.required}
     minlength={attribute.min}
     maxlength={attribute.max}
-    bind:value />
+    bind:value
+    step={attribute.type === 'double' ? 'any' : 1} />

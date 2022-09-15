@@ -1,33 +1,40 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-
-    import { Button, InputNumber, InputText, InputSwitch, Form } from '$lib/elements/forms';
+    import { InputNumber, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { page } from '$app/stores';
 
+    export let key: string = null;
+    export let submitted = false;
+    export let overview = false;
+    export let selectedAttribute: Models.AttributeInteger;
+
+    const databaseId = $page.params.database;
     const dispatch = createEventDispatcher();
 
-    let key: string,
-        min: number,
+    let min: number,
         max: number,
-        def: number,
+        xdefault: number,
         required = false,
         array = false;
 
     const submit = async () => {
+        submitted = false;
         try {
-            await sdkForProject.databases.createIntegerAttribute(
+            const attribute = await sdkForProject.databases.createIntegerAttribute(
+                databaseId,
                 $collection.$id,
                 key,
                 required,
                 min,
                 max,
-                def ? def : undefined,
+                xdefault ? xdefault : undefined,
                 array
             );
-            dispatch('close');
+            dispatch('created', attribute);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -35,22 +42,22 @@
             });
         }
     };
+
+    $: if (submitted) {
+        submit();
+    }
+
+    $: if (overview) {
+        ({ required, array, min, max } = selectedAttribute);
+        xdefault = selectedAttribute.default;
+    }
 </script>
 
-<Form on:submit={submit}>
-    <Modal on:close={() => dispatch('close')} show>
-        <svelte:fragment slot="header">Create Integer Attribute</svelte:fragment>
-        <InputText id="key" label="Key" bind:value={key} required autofocus />
-        <InputNumber id="min" label="Min" bind:value={min} />
-        <InputNumber id="max" label="Max" bind:value={max} />
+<InputNumber id="min" label="Min" bind:value={min} readonly={overview} />
+<InputNumber id="max" label="Max" bind:value={max} readonly={overview} />
 
-        <InputSwitch id="required" label="Required" bind:value={required} />
-        <InputSwitch id="array" label="Array" bind:value={array} />
-        <InputNumber id="default" label="Default" bind:value={def} />
-
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => dispatch('close')}>Cancel</Button>
-            <Button submit>Create</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<InputNumber id="default" label="Default value" bind:value={xdefault} readonly={overview} />
+<InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
+    Indicate whether this is a required attribute</InputChoice>
+<InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
+    Indicate whether this attribute should act as an array</InputChoice>

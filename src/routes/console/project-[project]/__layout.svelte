@@ -1,7 +1,7 @@
 <script lang="ts">
     import { browser } from '$app/env';
     import { page } from '$app/stores';
-    import { sdkForConsole, setProject } from '$lib/stores/sdk';
+    import { sdkForConsole, sdkForProject, setProject } from '$lib/stores/sdk';
     import { collection } from './databases/database/[database]/collection/[collection]/store';
     import { UploadBox } from '$lib/components';
     import { project } from './store';
@@ -25,19 +25,19 @@
 
     if (browser) {
         sdkForConsole.client.subscribe<Attributes | Models.Index>('console', (message) => {
-            if (message.events.includes('collections.*.attributes.*.create')) {
+            if (message.events.includes('databases.*.collections.*.attributes.*.create')) {
                 collection.addAttribute(<Attributes>message.payload);
 
                 return;
             }
 
-            if (message.events.includes('collections.*.attributes.*.update')) {
+            if (message.events.includes('databases.*.collections.*.attributes.*.update')) {
                 collection.updateAttribute(<Attributes>message.payload);
 
                 return;
             }
 
-            if (message.events.includes('collections.*.attributes.*.delete')) {
+            if (message.events.includes('databases.*.collections.*.attributes.*.delete')) {
                 collection.removeAttribute(<Attributes>message.payload);
 
                 return;
@@ -49,8 +49,10 @@
 
     let loaded = false;
     async function handle(event = null) {
-        if ($project?.$id !== projectId) {
+        if (sdkForProject.client.config.project !== projectId) {
             setProject(projectId);
+        }
+        if ($project?.$id !== projectId) {
             await project.load(projectId);
             if ($organization?.$id !== $project?.teamId) {
                 await organization.load($project.teamId);
