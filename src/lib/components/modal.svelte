@@ -99,11 +99,13 @@
                 {/if}
                 <slot />
             </div>
-            <div class="modal-footer">
-                <div class="u-flex u-main-end u-gap-12">
-                    <slot name="footer" />
+            {#if $$slots.footer}
+                <div class="modal-footer">
+                    <div class="u-flex u-main-end u-gap-12">
+                        <slot name="footer" />
+                    </div>
                 </div>
-            </div>
+            {/if}
         </section>
     </div>
 {/if}

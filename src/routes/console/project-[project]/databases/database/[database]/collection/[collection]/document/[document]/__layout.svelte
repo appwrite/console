@@ -4,6 +4,7 @@
     import { doc } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -15,12 +16,14 @@
 
     async function handle(event = null) {
         if ($doc?.$id !== documentId) {
-            await doc.load(collectionId, documentId);
+            await doc.load(databaseId, collectionId, documentId);
         }
 
         updateLayout({
             navigate: event,
-            title: $doc.$id,
+            title: 'Document',
+            copy: { text: 'Document ID', value: $doc.$id },
+            back: `${base}/console/project-${$page.params.project}/databases/database/${databaseId}/collection/${collectionId}`,
             level: 6,
             breadcrumbs: {
                 title: $doc.$id,

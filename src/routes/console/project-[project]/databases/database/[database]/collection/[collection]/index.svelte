@@ -1,30 +1,30 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
     import {
-        Table,
-        TableRow,
+        TableScroll,
+        TableRowLink,
         TableBody,
         TableHeader,
         TableCellHead,
-        TableCellLink
+        TableCell
     } from '$lib/elements/table';
-    import { Empty, Pagination, Search } from '$lib/components';
-    import { collection } from './store';
+    import { Empty, Pagination, Copy } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { collection, documentList } from './store';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
+    import Create from './_create.svelte';
 
     let offset = 0;
-    let search = '';
+    let showCreate = false;
 
-    const limit = 12;
+    const limit = 5;
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
 
-    $: request = sdkForProject.databases.listDocuments($collection.$id, [], limit, offset);
+    $: documentList.load(databaseId, $collection.$id, [], limit, offset);
     $: columns = [
-        { key: '$id', title: 'ID' },
         ...$collection.attributes.map((attribute) => ({
             key: attribute.key,
             title: attribute.key
@@ -33,57 +33,68 @@
 </script>
 
 <Container>
-    {#await request}
-        <div aria-busy="true" />
-    {:then response}
-        <Search bind:search placeholder="Search by ID">
-            <Button on:click={() => console.log('showCreate = true')}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create Document</span>
-            </Button>
-        </Search>
-        {#if response.total}
-            <Table>
-                <TableHeader>
-                    {#each columns as column}
-                        <TableCellHead>{column.title}</TableCellHead>
-                    {/each}
-                </TableHeader>
-                <TableBody>
-                    {#each response.documents as document}
-                        <TableRow>
-                            {#each columns as column}
-                                <TableCellLink
-                                    href={`${base}/console/project-${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}
-                                    title={column.title}>
-                                    {document[column.key] ?? 'n/a'}
-                                </TableCellLink>
-                            {/each}
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </Table>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <h2 class="heading-level-5">Documents</h2>
 
-            <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {response.total}</p>
-                <Pagination {limit} bind:offset sum={response.total} />
-            </div>
-        {:else}
-            <Empty dashed centered>
-                <div class="u-flex u-flex-vertical u-cross-center">
-                    <div class="common-section">
-                        <Button secondary round on:click={() => console.log('showCreate = true')}>
-                            <span class="icon-plus" aria-hidden="true" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Crate your first document to get started</p>
-                    </div>
-                    <div class="common-section">
-                        <Button secondary href="#">Documentation</Button>
-                    </div>
+        <Button on:click={() => (showCreate = true)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create document</span>
+        </Button>
+    </div>
+
+    {#if $documentList?.total}
+        <TableScroll>
+            <TableHeader>
+                <TableCellHead>Document ID</TableCellHead>
+                {#each columns as column}
+                    <TableCellHead>{column.title}</TableCellHead>
+                {/each}
+            </TableHeader>
+            <TableBody>
+                {#each $documentList.documents as document}
+                    <TableRowLink
+                        href={`${base}/console/project-${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}>
+                        <TableCell width={230}>
+                            <Copy value={document.$id}>
+                                <Pill button>
+                                    <span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text u-trim-start">{document.$id}</span>
+                                </Pill>
+                            </Copy>
+                        </TableCell>
+                        {#each columns as column}
+                            <TableCell>
+                                {document[column.key] ?? 'n/a'}
+                            </TableCell>
+                        {/each}
+                    </TableRowLink>
+                {/each}
+            </TableBody>
+        </TableScroll>
+
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {$documentList.total}</p>
+            <Pagination {limit} bind:offset sum={$documentList.total} />
+        </div>
+    {:else}
+        <Empty dashed centered>
+            <div class="u-flex u-flex-vertical u-cross-center">
+                <div class="common-section">
+                    <Button secondary round on:click={() => (showCreate = true)}>
+                        <span class="icon-plus" aria-hidden="true" />
+                    </Button>
                 </div>
-            </Empty>
-        {/if}
-    {/await}
+                <div class="common-section">
+                    <p>Crate your first document to get started</p>
+                </div>
+                <div class="common-section">
+                    <Button secondary href="#">Documentation</Button>
+                </div>
+            </div>
+        </Empty>
+    {/if}
 </Container>
+
+{#if showCreate}
+    <Create bind:showCreate />
+{/if}

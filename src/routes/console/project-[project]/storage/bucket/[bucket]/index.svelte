@@ -200,8 +200,7 @@
                                             icon="pencil">Update</DropListLink>
                                         <DropListItem
                                             icon="trash"
-                                            on:click={(e) => {
-                                                e.preventDefault();
+                                            on:click={() => {
                                                 selectedFile = file;
                                                 showDelete = true;
                                             }}>Delete</DropListItem>

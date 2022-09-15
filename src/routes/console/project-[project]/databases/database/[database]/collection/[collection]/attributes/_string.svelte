@@ -1,29 +1,38 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button, InputNumber, InputText, InputSwitch, Form } from '$lib/elements/forms';
+    import { InputNumber, InputText, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { page } from '$app/stores';
 
-    let key: string,
-        def: string,
+    export let key: string;
+    export let submitted = false;
+    export let overview = false;
+    export let selectedAttribute: Models.AttributeString;
+
+    const databaseId = $page.params.database;
+
+    let xdefault: string,
         size = 255,
         required = false,
         array = false;
 
     const dispatch = createEventDispatcher();
     const submit = async () => {
+        submitted = false;
         try {
-            await sdkForProject.databases.createStringAttribute(
+            const attribute = await sdkForProject.databases.createStringAttribute(
+                databaseId,
                 $collection.$id,
                 key,
                 size,
                 required,
-                def ? def : undefined,
+                xdefault ? xdefault : undefined,
                 array
             );
-            dispatch('close');
+            dispatch('created', attribute);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -31,21 +40,20 @@
             });
         }
     };
+
+    $: if (submitted) {
+        submit();
+    }
+
+    $: if (overview) {
+        ({ required, array, size } = selectedAttribute);
+        xdefault = selectedAttribute.default;
+    }
 </script>
 
-<Form on:submit={submit}>
-    <Modal on:close={() => dispatch('close')} show>
-        <svelte:fragment slot="header">Create String Attribute</svelte:fragment>
-
-        <InputText id="key" label="Key" bind:value={key} required autofocus />
-        <InputNumber id="size" label="Size" bind:value={size} required />
-        <InputSwitch id="required" label="Required" bind:value={required} />
-        <InputSwitch id="required" label="Array" bind:value={array} />
-        <InputText id="default" label="Default" bind:value={def} />
-
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => dispatch('close')}>Cancel</Button>
-            <Button submit>Create</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<InputNumber id="size" label="Size" bind:value={size} required readonly={overview} />
+<InputText id="default" label="Default value" bind:value={xdefault} readonly={overview} />
+<InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
+    Indicate whether this is a required attribute</InputChoice>
+<InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
+    Indicate whether this attribute should act as an array</InputChoice>
