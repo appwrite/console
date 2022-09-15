@@ -15,19 +15,23 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
-        if ($collection?.$id !== collectionId) {
-            await collection.load(collectionId);
+        if ($collection?.$id !== collectionId || !event) {
+            await collection.load(databaseId, collectionId);
         }
 
         updateLayout({
             navigate: event,
             title: $collection.name,
+            back: `${base}/console/project-${$page.params.project}/databases/database/${databaseId}`,
+            copy: {
+                text: 'Collection ID',
+                value: collectionId
+            },
             level: 5,
             breadcrumbs: {
                 href: `collection/${collectionId}`,
                 title: $collection.name
             },
-            back: `${base}/console/project-${$page.params.project}/database`,
             tabs: [
                 {
                     href: path,

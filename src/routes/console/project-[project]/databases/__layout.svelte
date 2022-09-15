@@ -3,6 +3,8 @@
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
 
+    const path = 'databases';
+
     onMount(handle);
     afterNavigate(handle);
 
@@ -12,6 +14,16 @@
         updateLayout({
             navigate: event,
             title: 'Databases',
+            tabs: [
+                {
+                    href: path,
+                    title: 'Databases'
+                },
+                {
+                    href: `${path}/usage`,
+                    title: 'Usage'
+                }
+            ],
             level: 3,
             breadcrumbs: {
                 href: 'databases',
@@ -23,7 +35,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Databases</title>
+    <title>Appwrite - Database</title>
 </svelte:head>
 
 {#if loaded}

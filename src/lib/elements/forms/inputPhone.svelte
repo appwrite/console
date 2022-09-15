@@ -9,6 +9,7 @@
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
+    export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
     export let maxlength: number = null;
@@ -54,9 +55,9 @@
             {required}
             {maxlength}
             {pattern}
+            {readonly}
             type="text"
             autocomplete={autocomplete ? 'on' : 'off'}
-            class="input-text"
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />

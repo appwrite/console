@@ -1,36 +1,38 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import {
-        Button,
-        InputText,
-        InputSwitch,
-        InputSelect,
-        Form,
-        InputTags
-    } from '$lib/elements/forms';
+    import { InputChoice, InputSelect, InputTags } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { collection } from '../store';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { page } from '$app/stores';
 
-    let key: string,
-        def = '',
+    export let key: string;
+    export let submitted = false;
+    export let overview = false;
+    export let selectedAttribute: Models.AttributeEnum;
+
+    const databaseId = $page.params.database;
+    const dispatch = createEventDispatcher();
+
+    let xdefault = '',
         elements: string[],
         required = false,
         array = false;
 
-    const dispatch = createEventDispatcher();
     const submit = async () => {
+        submitted = false;
         try {
-            await sdkForProject.databases.createEnumAttribute(
+            const attribute = await sdkForProject.databases.createEnumAttribute(
+                databaseId,
                 $collection.$id,
                 key,
                 elements,
                 required,
-                def ? def : undefined,
+                xdefault ? xdefault : undefined,
                 array
             );
-            dispatch('close');
+            dispatch('created', attribute);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -44,25 +46,29 @@
             value: e,
             label: e
         })) ?? [];
+
+    $: if (submitted) {
+        submit();
+    }
+    $: if (overview) {
+        ({ required, array, elements } = selectedAttribute);
+        xdefault = selectedAttribute.default;
+    }
 </script>
 
-<Form on:submit={submit}>
-    <Modal on:close={() => dispatch('close')} show>
-        <svelte:fragment slot="header">Create Enum Attribute</svelte:fragment>
-
-        <InputText id="key" label="Key" bind:value={key} required autofocus />
-        <InputTags
-            id="elements"
-            label="Elements"
-            bind:tags={elements}
-            placeholder="Add elements here" />
-        <InputSelect id="default" label="Default" bind:options bind:value={def} />
-        <InputSwitch id="required" label="Required" bind:value={required} />
-        <InputSwitch id="required" label="Array" bind:value={array} />
-
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => dispatch('close')}>Cancel</Button>
-            <Button submit>Create</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<InputTags
+    id="elements"
+    label="Elements"
+    bind:tags={elements}
+    placeholder="Add elements here"
+    readonly={overview} />
+<InputSelect
+    id="default"
+    label="Default value"
+    bind:options
+    bind:value={xdefault}
+    disabled={overview} />
+<InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
+    Indicate whether this is a required attribute</InputChoice>
+<InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
+    Indicate whether this attribute should act as an array</InputChoice>

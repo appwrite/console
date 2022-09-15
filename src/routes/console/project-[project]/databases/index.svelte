@@ -1,62 +1,88 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { Button, InputSearch } from '$lib/elements/forms';
-    import { Card, Empty, Pagination, Tile, Tiles } from '$lib/components';
+    import { goto } from '$app/navigation';
+    import { Button } from '$lib/elements/forms';
+    import { Empty, EmptyGridItem, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { goto } from '$app/navigation';
+    import { databaseList } from './store';
 
-    let search = '';
     let showCreate = false;
+    let search = '';
     let offset = 0;
 
-    const limit = 25;
+    const limit = 6;
     const project = $page.params.project;
-    const databaseCreated = async (event: CustomEvent<Models.Database>) => {
+    const handleCreate = async (event: CustomEvent<Models.Database>) => {
+        showCreate = false;
         await goto(`${base}/console/project-${project}/databases/database/${event.detail.$id}`);
     };
-    $: request = sdkForProject.databases.list(search, limit, offset);
-    $: if (search) offset = 0;
+
+    $: databaseList.load(search, limit, offset ?? 0);
 </script>
 
 <Container>
-    <h1>Databases</h1>
-    <Card>
-        <InputSearch bind:value={search} />
-    </Card>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <h2 class="heading-level-5">Databases</h2>
 
-    {#await request}
-        <div aria-busy="true" />
-    {:then response}
-        {#if response.total}
-            <p>{response.total} databases found</p>
-            <Tiles>
-                {#each response.databases as database}
-                    <Tile
-                        href={`${base}/console/project-${project}/databases/database/${database.$id}`}
-                        title={database.name} />
-                {/each}
-            </Tiles>
+        <Button on:click={() => (showCreate = true)}>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create database</span>
+        </Button>
+    </div>
 
-            <Pagination {limit} bind:offset sum={response.total} />
-        {:else if search}
-            <Empty>
-                <svelte:fragment slot="header">
-                    No results found for <b>{search}</b>
-                </svelte:fragment>
-            </Empty>
-        {:else}
-            <Empty>
-                <svelte:fragment slot="header">No Databases Found</svelte:fragment>
-                You haven't created any database for your project yet.
-            </Empty>
-        {/if}
-    {/await}
+    {#if $databaseList?.total}
+        <div
+            class="grid-box common-section"
+            style={` --grid-item-size:${$databaseList.total > 3 ? '22rem' : '25rem'};`}>
+            {#each $databaseList.databases as database}
+                <GridItem1
+                    href={`${base}/console/project-${project}/databases/database/${database.$id}`}>
+                    <svelte:fragment slot="eyebrow">X Collections</svelte:fragment>
+                    <svelte:fragment slot="title">{database.name}</svelte:fragment>
 
-    <Button on:click={() => (showCreate = true)}>Create Database</Button>
+                    <Copy value={database.$id}>
+                        <Pill button><i class="icon-duplicate" />Database ID</Pill>
+                    </Copy>
+                </GridItem1>
+            {/each}
+            {#if ($databaseList.total % 2 !== 0 || $databaseList.total % 4 === 0) && $databaseList.total - offset <= limit}
+                <EmptyGridItem on:click={() => (showCreate = true)}>
+                    <div class="common-section">
+                        <Button secondary round>
+                            <i class="icon-plus" />
+                        </Button>
+                    </div>
+                    <div class="common-section">
+                        <p>Create a new database</p>
+                    </div>
+                </EmptyGridItem>
+            {/if}
+        </div>
+
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {$databaseList.total}</p>
+            <Pagination {limit} bind:offset sum={$databaseList.total} />
+        </div>
+    {:else}
+        <Empty dashed centered>
+            <div class="u-flex u-flex-vertical u-cross-center">
+                <div class="common-section">
+                    <Button secondary round on:click={() => (showCreate = true)}>
+                        <i class="icon-plus" />
+                    </Button>
+                </div>
+                <div class="common-section">
+                    <p>Create your first Database to get started</p>
+                </div>
+                <div class="common-section">
+                    <Button secondary href="#">Documentation</Button>
+                </div>
+            </div>
+        </Empty>
+    {/if}
 </Container>
 
-<Create bind:showCreate on:created={databaseCreated} />
+<Create bind:showCreate on:created={handleCreate} />
