@@ -96,16 +96,27 @@ export const indexList = cachedStore<
     };
 });
 
+/**
+ * TODO: Mock proper types until the SKD is fixed.
+ */
+export type AttributeResponse = Omit<Models.AttributeList, 'attributes'> & {
+    attributes: Attributes[];
+};
+
 export const attributeList = cachedStore<
-    Models.AttributeList,
+    AttributeResponse,
     {
         load: (databaseId: string, collectionId: string) => Promise<void>;
     }
 >('attributeList', function ({ set }) {
     return {
         load: async (databaseId, collectionId) => {
-            const response = await sdkForProject.databases.listAttributes(databaseId, collectionId);
-            set(response);
+            const response: unknown = await sdkForProject.databases.listAttributes(
+                databaseId,
+                collectionId
+            );
+
+            set(response as AttributeResponse);
         }
     };
 });
