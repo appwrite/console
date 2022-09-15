@@ -9,7 +9,6 @@ test('shows textarea', () => {
 
     expect(getByText('input')).toBeInTheDocument();
     expect(input).toBeInTheDocument();
-    expect(input).toHaveAttribute('type', 'text');
 });
 
 test('shows textarea - required', () => {
@@ -50,6 +49,27 @@ test('shows textarea - placeholder', () => {
     });
 
     expect(getByPlaceholderText('find me')).toBeInTheDocument();
+});
+
+test('shows textarea - hide label', () => {
+    render(InputTextarea, {
+        id: 'input',
+        label: 'label',
+        showLabel: false
+    });
+
+    const label = document.querySelector('label');
+    expect(label).toHaveClass('u-hide');
+});
+
+test('shows textarea - maxlength', () => {
+    const { getByLabelText } = render(InputTextarea, {
+        id: 'input',
+        label: 'input',
+        maxlength: 2
+    });
+
+    expect(getByLabelText('input')).toHaveAttribute('maxlength', '2');
 });
 
 test('state', async () => {
