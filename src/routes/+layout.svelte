@@ -5,7 +5,7 @@
     import { redirectTo } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
-    import { browser } from '$app/environment';
+    import { browser, dev } from '$app/environment';
     import { app } from '$lib/stores/app';
     import Notifications from '$lib/layout/notifications.svelte';
     import Loading from './_loading.svelte';
@@ -38,7 +38,7 @@
         }
     });
 
-    $: if (browser && window.VERCEL_ANALYTICS_ID) {
+    $: if (!dev && browser && window.VERCEL_ANALYTICS_ID) {
         webVitals({
             path: $page.url.pathname,
             params: $page.params,

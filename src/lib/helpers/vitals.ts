@@ -1,3 +1,4 @@
+import { dev } from '$app/environment';
 import { getCLS, getFCP, getFID, getLCP, getTTFB, type Metric } from 'web-vitals';
 
 type Options = {
@@ -45,6 +46,7 @@ function sendToAnalytics(metric: Metric, options: Options) {
         // This content type is necessary for `sendBeacon`
         type: 'application/x-www-form-urlencoded'
     });
+
     if (navigator.sendBeacon) {
         navigator.sendBeacon(vitalsUrl, blob);
     } else
