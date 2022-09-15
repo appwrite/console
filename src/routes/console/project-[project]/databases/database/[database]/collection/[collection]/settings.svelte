@@ -25,7 +25,6 @@
         arePermsDisabled = true;
 
     onMount(async () => {
-        await collection.load(databaseId, $page.params.collection);
         enabled ??= $collection.enabled;
         collectionName ??= $collection.name;
         collectionName ??= $collection.name;

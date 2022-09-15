@@ -15,7 +15,7 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
-        if ($collection?.$id !== collectionId) {
+        if ($collection?.$id !== collectionId || !event) {
             await collection.load(databaseId, collectionId);
         }
 

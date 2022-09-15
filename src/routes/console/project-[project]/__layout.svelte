@@ -25,19 +25,19 @@
 
     if (browser) {
         sdkForConsole.client.subscribe<Attributes | Models.Index>('console', (message) => {
-            if (message.events.includes('collections.*.attributes.*.create')) {
+            if (message.events.includes('databases.*.collections.*.attributes.*.create')) {
                 collection.addAttribute(<Attributes>message.payload);
 
                 return;
             }
 
-            if (message.events.includes('collections.*.attributes.*.update')) {
+            if (message.events.includes('databases.*.collections.*.attributes.*.update')) {
                 collection.updateAttribute(<Attributes>message.payload);
 
                 return;
             }
 
-            if (message.events.includes('collections.*.attributes.*.delete')) {
+            if (message.events.includes('databases.*.collections.*.attributes.*.delete')) {
                 collection.removeAttribute(<Attributes>message.payload);
 
                 return;

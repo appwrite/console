@@ -36,14 +36,18 @@ export const collection = cachedStore<
         },
         addAttribute: (attribute) =>
             update((n) => {
-                n.attributes.push(attribute);
+                if (!n.attributes.some((a) => a.key === attribute.key)) {
+                    n.attributes.push(attribute);
+                }
 
                 return n;
             }),
         updateAttribute: (attribute) =>
             update((n) => {
                 const index = n.attributes.findIndex((a) => a.key === attribute.key);
-                n.attributes[index] = attribute;
+                if (index !== -1) {
+                    n.attributes[index] = attribute;
+                }
 
                 return n;
             }),
