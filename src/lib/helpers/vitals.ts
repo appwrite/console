@@ -1,4 +1,3 @@
-import { dev } from '$app/environment';
 import { getCLS, getFCP, getFID, getLCP, getTTFB, type Metric } from 'web-vitals';
 
 type Options = {
