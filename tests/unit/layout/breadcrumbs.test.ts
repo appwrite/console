@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/svelte';
 import BreadcrumbsComponent from '../../../src/lib/layout/Breadcrumbs.svelte';
+import { render } from '@testing-library/svelte';
 import { level, updateLayout } from '../../../src/lib/stores/layout';
 import { tick } from 'svelte';
 
