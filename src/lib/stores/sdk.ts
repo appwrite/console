@@ -19,12 +19,7 @@ clientConsole.setEndpoint(endpoint).setProject('console');
 const clientProject = new Client();
 clientProject.setEndpoint(endpoint).setMode('admin');
 
-const setProject = (projectId: string): Client => {
-    clientProject.setProject(projectId);
-    console.log(clientProject.config.project);
-
-    return clientProject;
-};
+const setProject = (projectId: string): Client => clientProject.setProject(projectId);
 
 const sdkForConsole = {
     client: clientConsole,
