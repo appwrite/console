@@ -16,6 +16,7 @@
     import { user } from '$lib/stores/user';
     import { goto } from '$app/navigation';
     import { browser } from '$app/environment';
+    import { wizard } from '$lib/stores/wizard';
 
     export let isOpen = false;
     export let showSideNavigation = false;
@@ -105,7 +106,8 @@
 <main
     class:grid-with-side={showSideNavigation}
     class:grid={!showSideNavigation}
-    class:is-open={isOpen}>
+    class:is-open={isOpen}
+    class:u-hide={$wizard.show}>
     <header class="main-header">
         <button
             class:u-hide={!showSideNavigation}

@@ -9,8 +9,7 @@
     import { onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import Attribute from './document/[document]/_attribute.svelte';
-
-    export let showCreate = false;
+    import { wizard } from '$lib/stores/wizard';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -57,7 +56,7 @@
                     message: 'Document has been created',
                     type: 'success'
                 });
-                showCreate = false;
+                wizard.hide();
             } catch (error) {
                 addNotification({
                     message: error.message,
@@ -69,14 +68,14 @@
 
     $: attributeList.load(databaseId, collectionId);
 
-    $: if (!showCreate) {
+    $: if (!$wizard.show) {
         initializeDocument();
         currentStep = 0;
         read = write = [];
     }
 </script>
 
-<Wizard title="Create document" bind:show={showCreate}>
+<Wizard title="Create document">
     <svelte:fragment slot="aside">
         <Steps {steps} bind:currentStep />
     </svelte:fragment>
@@ -223,7 +222,7 @@
         <div class="form-footer">
             <div class="u-flex u-main-end u-gap-12">
                 {#if currentStep === 0}
-                    <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
+                    <Button secondary on:click={wizard.hide}>Cancel</Button>
                     <Button submit>Next</Button>
                 {:else if currentStep === steps.length - 1}
                     <Button secondary on:click={() => currentStep--}>Back</Button>
