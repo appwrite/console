@@ -22,6 +22,7 @@
     import { usersList } from './store';
     import type { Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
+    import { _ } from 'svelte-i18n';
 
     let showCreate = false;
     let search = '';
@@ -38,7 +39,7 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search by name, email, or ID">
+    <Search bind:search placeholder={$_('services.authentication.users.search')}>
         <span
             use:event={{
                 name: 'console_users',
@@ -48,49 +49,52 @@
                 }
             }}>
             <Button on:click={() => (showCreate = true)}>
-                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">{$_('services.authentication.users.create')}</span>
             </Button>
         </span>
     </Search>
     {#if $usersList?.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Email</TableCellHead>
-                <TableCellHead width={100}>Status</TableCellHead>
-                <TableCellHead width={100}>ID</TableCellHead>
-                <TableCellHead>Joined</TableCellHead>
+                <TableCellHead>{$_('models.user.name')}</TableCellHead>
+                <TableCellHead>{$_('models.user.email')}</TableCellHead>
+                <TableCellHead width={100}>{$_('models.user.status')}</TableCellHead>
+                <TableCellHead width={100}>{$_('models.user.id')}</TableCellHead>
+                <TableCellHead>{$_('models.user.joined')}</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each $usersList.users as user}
                     <TableRowLink
                         href={`${base}/console/project-${project}/authentication/user/${user.$id}`}>
-                        <TableCell title="Name">
+                        <TableCell title={$_('models.user.name')}>
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar size={32} src={getAvatar(user.name)} name={user.name} />
                                 <span class="text u-trim">{user.name ? user.name : 'n/a'}</span>
                             </div>
                         </TableCell>
-                        <TableCellText title="Email">{user.email}</TableCellText>
-                        <TableCell title="Status">
+                        <TableCellText title={$_('models.user.email')}>{user.email}</TableCellText>
+                        <TableCell title={$_('models.user.status')}>
                             {#if user.status}
-                                <Pill success={user.emailVerification || user.phoneVerification}>
-                                    {user.emailVerification || user.phoneVerification
-                                        ? 'verified'
-                                        : 'unverified'}
+                                {@const verified = user.emailVerification || user.phoneVerification}
+                                <Pill success={verified}>
+                                    {verified
+                                        ? $_('models.user.verified')
+                                        : $_('models.user.unverified')}
                                 </Pill>
                             {:else}
-                                <Pill danger>blocked</Pill>
+                                <Pill danger>{$_('models.user.blocked')}</Pill>
                             {/if}
                         </TableCell>
-                        <TableCell showOverflow title="ID">
+                        <TableCell showOverflow title={$_('models.user.id')}>
                             <Copy value={user.$id}>
-                                <Pill button
-                                    ><span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text">User ID</span></Pill>
+                                <Pill button>
+                                    <span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text">User ID</span>
+                                </Pill>
                             </Copy>
                         </TableCell>
-                        <TableCellText title="Joined">
+                        <TableCellText title={$_('models.user.joined')}>
                             {toLocaleDateTime(user.registration)}
                         </TableCellText>
                     </TableRowLink>
@@ -104,7 +108,7 @@
     {:else if search}
         <Empty>
             <div class="u-flex u-flex-vertical">
-                <b>Sorry, we couldn’t find ‘{search}’</b>
+                <b>Sorry, we couldn't find '{search}'</b>
                 <div class="common-section">
                     <p>There are no users that match your search.</p>
                 </div>

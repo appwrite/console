@@ -10,6 +10,7 @@
     import Notifications from '$lib/layout/notifications.svelte';
     import Loading from './_loading.svelte';
     import { webVitals } from '$lib/helpers/vitals';
+    import { isLoading, _ } from 'svelte-i18n';
 
     let loaded = false;
 
@@ -83,7 +84,7 @@
 
 <Notifications />
 
-{#if loaded}
+{#if loaded && !$isLoading}
     <slot />
 {:else}
     <Loading />

@@ -1,0 +1,25 @@
+{
+    "globals": {},
+    "models": {
+        "user": {
+            "name": "Name",
+            "email": "Email",
+            "status": "Status",
+            "id": "ID",
+            "joined": "Joined",
+            "verified": "verified",
+            "unverified": "unverified",
+            "blocked": "blocked"
+        }
+    },
+    "services": {
+        "authentication": {
+            "title": "Authentication",
+            "users": {
+                "title": "Users",
+                "search": "Search by name, email, or ID",
+                "create": "Create user"
+            }
+        }
+    }
+}
