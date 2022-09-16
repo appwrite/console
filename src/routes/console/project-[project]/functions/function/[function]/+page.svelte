@@ -41,41 +41,134 @@
             <span class="text">Create deployment</span>
         </Button>
     </div>
-
-    <div class="common-section">
-        <h2 class="heading-level-7">Active</h2>
-    </div>
-    {#if activeDeployment}
-        <CardGrid>
-            <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                <div class="avatar is-medium">
-                    <img
-                        src={`${base}/icons/${$app.themeInUse}/color/${
-                            $func.runtime.split('-')[0]
-                        }.svg`}
-                        alt="technology" />
-                </div>
-                <div class="">
-                    <p><b>Function ID: {$func.$id} </b></p>
-                    <p>Deployment ID: {$func.deployment}</p>
-                </div>
-            </div>
-            <svelte:fragment slot="aside">
-                <div class="u-flex u-main-space-between">
-                    <div>
-                        <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
-                        <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
-                        <p>Entrypoint: {activeDeployment?.entrypoint}</p>
+    {#if $deploymentList?.total}
+        <div class="common-section">
+            <h2 class="heading-level-7">Active</h2>
+        </div>
+        {#if activeDeployment}
+            <CardGrid>
+                <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
+                    <div class="avatar is-medium">
+                        <img
+                            src={`${base}/icons/${$app.themeInUse}/color/${
+                                $func.runtime.split('-')[0]
+                            }.svg`}
+                            alt="technology" />
                     </div>
-                    status
+                    <div class="">
+                        <p><b>Function ID: {$func.$id} </b></p>
+                        <p>Deployment ID: {$func.deployment}</p>
+                    </div>
                 </div>
-            </svelte:fragment>
+                <svelte:fragment slot="aside">
+                    <div class="u-flex u-main-space-between">
+                        <div>
+                            <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
+                            <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
+                            <p>Entrypoint: {activeDeployment?.entrypoint}</p>
+                        </div>
+                        status
+                    </div>
+                </svelte:fragment>
 
-            <svelte:fragment slot="actions">
-                <Button text on:click={() => console.log('open Logs')}>Logs</Button>
-                <Button secondary on:click={() => console.log('exnow')}>Execute now</Button>
-            </svelte:fragment>
-        </CardGrid>
+                <svelte:fragment slot="actions">
+                    <Button text on:click={() => console.log('open Logs')}>Logs</Button>
+                    <Button secondary on:click={() => console.log('exnow')}>Execute now</Button>
+                </svelte:fragment>
+            </CardGrid>
+        {:else}
+            <Empty dashed centered>
+                <div class="u-flex u-flex-vertical u-cross-center">
+                    <div class="common-section">
+                        <Button secondary round on:click={() => (showCreate = true)}>
+                            <i class="icon-plus" />
+                        </Button>
+                    </div>
+                    <div class="common-section">
+                        <p class="u-text-center">
+                            Add a new deployment, or activate an existing one to see your function
+                            in action.
+                        </p>
+                        <p class="u-text-center">
+                            Learn more about deployments in our <a
+                                class="link"
+                                href="https://appwrite.io/docs/functions#build"
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                Documentation</a
+                            >.
+                        </p>
+                    </div>
+                </div>
+            </Empty>
+        {/if}
+
+        <div class="common-section">
+            <h2 class="heading-level-7">Inactive</h2>
+        </div>
+
+        <Table>
+            <TableHeader>
+                <TableCellHead>Deployment ID</TableCellHead>
+                <TableCellHead>Created</TableCellHead>
+                <TableCellHead>Status</TableCellHead>
+                <TableCellHead>Build time</TableCellHead>
+                <TableCellHead>Size</TableCellHead>
+                <TableCellHead />
+            </TableHeader>
+            <TableBody>
+                {#each $deploymentList.deployments as deployment, index}
+                    <TableRow>
+                        <TableCell title="Deployment ID">
+                            <Copy value={deployment.$id}>
+                                <Pill button
+                                    ><span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text u-trim">{deployment.$id}</span></Pill>
+                            </Copy>
+                        </TableCell>
+                        <TableCellText title="Created">
+                            {toLocaleDateTime(deployment.$createdAt)}
+                        </TableCellText>
+                        <TableCellText title="Status">{deployment.activate}</TableCellText>
+                        <TableCellText title="Build Time">{deployment.entrypoint}</TableCellText>
+                        <TableCellText title="Size">{deployment.size}</TableCellText>
+                        <TableCell showOverflow>
+                            <DropList
+                                bind:show={showDropdown[index]}
+                                position="bottom"
+                                horizontal="left"
+                                arrow={false}>
+                                <button
+                                    class="button is-only-icon is-text"
+                                    aria-label="More options"
+                                    on:click|preventDefault={() => {
+                                        showDropdown[index] = !showDropdown[index];
+                                    }}>
+                                    <span class="icon-dots-horizontal" aria-hidden="true" />
+                                </button>
+                                <svelte:fragment slot="list">
+                                    <DropListItem
+                                        icon="lightning-bolt"
+                                        on:click={() => {
+                                            console.log('execute now');
+                                        }}>Execute now</DropListItem>
+                                    <DropListItem
+                                        icon="terminal"
+                                        on:click={() => {
+                                            console.log('output');
+                                        }}>Output</DropListItem>
+                                    <DropListItem
+                                        icon="trash"
+                                        on:click={() => {
+                                            console.log('delete');
+                                        }}>Delete</DropListItem>
+                                </svelte:fragment>
+                            </DropList>
+                        </TableCell>
+                    </TableRow>
+                {/each}
+            </TableBody>
+        </Table>
     {:else}
         <Empty dashed centered>
             <div class="u-flex u-flex-vertical u-cross-center">
@@ -85,91 +178,18 @@
                     </Button>
                 </div>
                 <div class="common-section">
-                    <p class="u-text-center">
-                        Add a new deployment, or activate an existing one to see your function in
-                        action.
-                    </p>
-                    <p class="u-text-center">
-                        Learn more about deployments in our <a
-                            class="link"
-                            href="https://appwrite.io/docs/functions#build"
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            Documentation</a
-                        >.
-                    </p>
+                    <p>Create your first deployment to get started</p>
+                </div>
+                <div class="common-section">
+                    <Button
+                        external
+                        secondary
+                        href="https://appwrite.io/docs/functions#createFunction"
+                        >Documentation</Button>
                 </div>
             </div>
         </Empty>
     {/if}
-
-    <div class="common-section">
-        <h2 class="heading-level-7">Inactive</h2>
-    </div>
-
-    <Table>
-        <TableHeader>
-            <TableCellHead>Deployment ID</TableCellHead>
-            <TableCellHead>Created</TableCellHead>
-            <TableCellHead>Status</TableCellHead>
-            <TableCellHead>Build time</TableCellHead>
-            <TableCellHead>Size</TableCellHead>
-            <TableCellHead />
-        </TableHeader>
-        <TableBody>
-            {#each $deploymentList.deployments as deployment, index}
-                <TableRow>
-                    <TableCell title="Deployment ID">
-                        <Copy value={deployment.$id}>
-                            <Pill button
-                                ><span class="icon-duplicate" aria-hidden="true" />
-                                <span class="text u-trim">{deployment.$id}</span></Pill>
-                        </Copy>
-                    </TableCell>
-                    <TableCellText title="Created">
-                        {toLocaleDateTime(deployment.$createdAt)}
-                    </TableCellText>
-                    <TableCellText title="Status">{deployment.activate}</TableCellText>
-                    <TableCellText title="Build Time">{deployment.entrypoint}</TableCellText>
-                    <TableCellText title="Size">{deployment.size}</TableCellText>
-                    <TableCell showOverflow>
-                        <DropList
-                            bind:show={showDropdown[index]}
-                            position="bottom"
-                            horizontal="left"
-                            arrow={false}>
-                            <button
-                                class="button is-only-icon is-text"
-                                aria-label="More options"
-                                on:click|preventDefault={() => {
-                                    showDropdown[index] = !showDropdown[index];
-                                }}>
-                                <span class="icon-dots-horizontal" aria-hidden="true" />
-                            </button>
-                            <svelte:fragment slot="list">
-                                <DropListItem
-                                    icon="lightning-bolt"
-                                    on:click={() => {
-                                        console.log('execute now');
-                                    }}>Execute now</DropListItem>
-                                <DropListItem
-                                    icon="terminal"
-                                    on:click={() => {
-                                        console.log('output');
-                                    }}>Output</DropListItem>
-                                <DropListItem
-                                    icon="trash"
-                                    on:click={() => {
-                                        console.log('delete');
-                                    }}>Delete</DropListItem>
-                            </svelte:fragment>
-                        </DropList>
-                    </TableCell>
-                </TableRow>
-            {/each}
-        </TableBody>
-    </Table>
-
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {$deploymentList?.total}</p>
         <Pagination limit={$pageLimit} bind:offset sum={$deploymentList?.total} />
