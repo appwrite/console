@@ -15,17 +15,3 @@ export const functionList = cachedStore<
         }
     };
 });
-
-export const runtimeList = cachedStore<
-    Models.RuntimeList,
-    {
-        load: () => Promise<void>;
-    }
->('runtimeList', function ({ set }) {
-    return {
-        load: async () => {
-            const response = await sdkForProject.functions.listRuntimes();
-            set(response);
-        }
-    };
-});

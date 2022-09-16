@@ -44,7 +44,7 @@
                 <GridItem1
                     href={`${base}/console/project-${project}/functions/function/${func.$id}`}>
                     <svelte:fragment slot="title">
-                        <div class="u-flex u-gap-12 u-cross-center">
+                        <div class="u-flex u-gap-32 u-cross-center">
                             <div class="avatar is-medium">
                                 <img
                                     src={`${base}/icons/${$app.themeInUse}/color/${
@@ -52,7 +52,7 @@
                                     }.svg`}
                                     alt="technology" />
                             </div>
-                            {func.name}
+                            <span class="text"> {func.name}</span>
                         </div>
                     </svelte:fragment>
                     <!-- <svelte:fragment slot="status">{func.status}</svelte:fragment> -->
@@ -69,18 +69,6 @@
                                     }} />
                             </li>
                         {/if}
-                        <!--                         
-                        <li>
-                            <span
-                                class:u-opacity-0-2={!func.events}
-                                class="icon-exclamation"
-                                aria-hidden="true"
-                                use:tooltip={{
-                                    content: func.events
-                                        ? 'Antivirus enabled'
-                                        : 'Antivirus disabled'
-                                }} />
-                        </li> -->
                     </svelte:fragment>
 
                     <Copy value={func.$id}>

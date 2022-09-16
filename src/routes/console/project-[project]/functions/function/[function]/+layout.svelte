@@ -1,5 +1,6 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
@@ -20,6 +21,11 @@
             navigate: event,
             title: $func.name,
             level: 4,
+            back: `${base}/console/project-${$page.params.project}/functions`,
+            copy: {
+                text: 'ID Details',
+                value: functionId
+            },
             breadcrumbs: {
                 title: $func.name,
                 href: `function/${functionId}`
@@ -27,15 +33,15 @@
             tabs: [
                 {
                     href: path,
-                    title: 'Overview'
+                    title: 'Deployments'
                 },
                 {
-                    href: `${path}/monitors`,
-                    title: 'Monitors'
+                    href: `${path}/usage`,
+                    title: 'Usage'
                 },
                 {
-                    href: `${path}/logs`,
-                    title: 'Logs'
+                    href: `${path}/executions`,
+                    title: 'Executions'
                 },
                 {
                     href: `${path}/settings`,
