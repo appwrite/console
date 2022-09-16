@@ -3,6 +3,8 @@
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
 
+    let loaded = false;
+
     onMount(handle);
     afterNavigate(handle);
 
@@ -16,6 +18,7 @@
                 title: 'Functions'
             }
         });
+        loaded = true;
     }
 </script>
 
@@ -23,4 +26,6 @@
     <title>Appwrite - Functions</title>
 </svelte:head>
 
-<slot />
+{#if loaded}
+    <slot />
+{/if}

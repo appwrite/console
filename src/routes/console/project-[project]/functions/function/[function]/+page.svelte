@@ -19,17 +19,24 @@
     import { app } from '$lib/stores/app';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { pageLimit } from '$lib/stores/layout';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import Execute from './_execute.svelte';
+    import Delete from './_delete.svelte';
 
     let search = '';
-    let showCreate = false;
     let offset = 0;
+    let showCreate = false;
     let showDropdown = [];
+    let showDelete = false;
+    let showExecute = false;
+
+    let selectedDeployment: Models.Deployment = null;
 
     const functionId = $page.params.function;
 
     $: deploymentList.load(functionId, search, $pageLimit, offset ?? 0);
     $: if (search) offset = 0;
-    $: activeDeployment = $deploymentList.deployments.find((d) => d.status === 'active');
+    $: activeDeployment = $deploymentList.deployments.find((d) => d.status);
 </script>
 
 <Container>
@@ -73,7 +80,7 @@
 
                 <svelte:fragment slot="actions">
                     <Button text on:click={() => console.log('open Logs')}>Logs</Button>
-                    <Button secondary on:click={() => console.log('exnow')}>Execute now</Button>
+                    <Button secondary on:click={() => (showExecute = true)}>Execute now</Button>
                 </svelte:fragment>
             </CardGrid>
         {:else}
@@ -150,17 +157,23 @@
                                     <DropListItem
                                         icon="lightning-bolt"
                                         on:click={() => {
-                                            console.log('execute now');
+                                            selectedDeployment = deployment;
+                                            showDropdown = [];
+                                            showExecute = true;
                                         }}>Execute now</DropListItem>
                                     <DropListItem
                                         icon="terminal"
                                         on:click={() => {
+                                            selectedDeployment = deployment;
+                                            showDropdown = [];
                                             console.log('output');
                                         }}>Output</DropListItem>
                                     <DropListItem
                                         icon="trash"
                                         on:click={() => {
-                                            console.log('delete');
+                                            selectedDeployment = deployment;
+                                            showDropdown = [];
+                                            showDelete = true;
                                         }}>Delete</DropListItem>
                                 </svelte:fragment>
                             </DropList>
@@ -197,3 +210,8 @@
 </Container>
 
 <Create bind:showCreate />
+
+{#if selectedDeployment}
+    <Execute {selectedDeployment} bind:showExecute />
+    <Delete {functionId} {selectedDeployment} bind:showDelete />
+{/if}
