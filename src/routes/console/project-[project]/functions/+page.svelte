@@ -1,57 +1,132 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { Button, InputSearch } from '$lib/elements/forms';
-    import { Card, Empty, Pagination, Tile, Tiles } from '$lib/components';
+    import { goto } from '$app/navigation';
+    import { Button } from '$lib/elements/forms';
+    import { Empty, EmptyGridItem, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { functionList } from './store';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { app } from '$lib/stores/app';
 
-    let search = '';
     let showCreate = false;
+    let search = '';
     let offset = 0;
 
-    const limit = 25;
+    const limit = 6;
     const project = $page.params.project;
+    const handleCreate = async (event: CustomEvent<Models.Function>) => {
+        showCreate = false;
+        await goto(`${base}/console/project-${project}/functions/function/${event.detail.$id}`);
+    };
 
-    $: request = sdkForProject.functions.list(search, limit, offset);
-    $: if (search) offset = 0;
+    $: functionList.load(search, limit, offset ?? 0);
 </script>
 
 <Container>
-    <h1>Functions</h1>
-    <Card>
-        <InputSearch bind:value={search} />
-    </Card>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <h2 class="heading-level-5">Functions</h2>
 
-    {#await request}
-        <div aria-busy="true" />
-    {:then response}
-        {#if response.total}
-            <p>{response.total} functions found</p>
-            <Tiles>
-                {#each response.functions as func}
-                    <Tile
-                        href={`${base}/console/project-${project}/functions/function/${func.$id}`}
-                        title={func.name} />
-                {/each}
-            </Tiles>
+        <Button on:click={() => (showCreate = true)}>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create function</span>
+        </Button>
+    </div>
 
-            <Pagination {limit} bind:offset sum={response.total} />
-        {:else if search}
-            <Empty>
-                <svelte:fragment slot="header"
-                    >No results found for <b>{search}</b></svelte:fragment>
-            </Empty>
-        {:else}
-            <Empty>
-                <svelte:fragment slot="header">No Functions Found</svelte:fragment>
-                You haven't created any functions for your project yet.
-            </Empty>
-        {/if}
-    {/await}
+    {#if $functionList?.total}
+        <div
+            class="grid-box common-section"
+            style={` --grid-item-size:${$functionList.total > 3 ? '22rem' : '25rem'};`}>
+            {#each $functionList.functions as func}
+                <GridItem1
+                    href={`${base}/console/project-${project}/functions/function/${func.$id}`}>
+                    <svelte:fragment slot="title">
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <div class="avatar is-medium">
+                                <img
+                                    src={`${base}/icons/${$app.themeInUse}/color/${
+                                        func.runtime.split('-')[0]
+                                    }.svg`}
+                                    alt="technology" />
+                            </div>
+                            {func.name}
+                        </div>
+                    </svelte:fragment>
+                    <!-- <svelte:fragment slot="status">{func.status}</svelte:fragment> -->
+                    <svelte:fragment slot="icons">
+                        {#if func.scheduleNext}
+                            <li>
+                                <span
+                                    class="icon-clock"
+                                    aria-hidden="true"
+                                    use:tooltip={{
+                                        content: `Next execution: ${toLocaleDateTime(
+                                            func.scheduleNext
+                                        )}`
+                                    }} />
+                            </li>
+                        {/if}
+                        <!--                         
+                        <li>
+                            <span
+                                class:u-opacity-0-2={!func.events}
+                                class="icon-exclamation"
+                                aria-hidden="true"
+                                use:tooltip={{
+                                    content: func.events
+                                        ? 'Antivirus enabled'
+                                        : 'Antivirus disabled'
+                                }} />
+                        </li> -->
+                    </svelte:fragment>
 
-    <Button on:click={() => (showCreate = true)}>Create Function</Button>
+                    <Copy value={func.$id}>
+                        <Pill button><i class="icon-duplicate" />Function ID</Pill>
+                    </Copy>
+                </GridItem1>
+            {/each}
+            {#if ($functionList.total % 2 !== 0 || $functionList.total % 4 === 0) && $functionList.total - offset <= limit}
+                <EmptyGridItem on:click={() => (showCreate = true)}>
+                    <div class="common-section">
+                        <Button secondary round>
+                            <i class="icon-plus" />
+                        </Button>
+                    </div>
+                    <div class="common-section">
+                        <p>Create a new function</p>
+                    </div>
+                </EmptyGridItem>
+            {/if}
+        </div>
+
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {$functionList.total}</p>
+            <Pagination {limit} bind:offset sum={$functionList.total} />
+        </div>
+    {:else}
+        <Empty dashed centered>
+            <div class="u-flex u-flex-vertical u-cross-center">
+                <div class="common-section">
+                    <Button secondary round on:click={() => (showCreate = true)}>
+                        <i class="icon-plus" />
+                    </Button>
+                </div>
+                <div class="common-section">
+                    <p>Create your first function to get started</p>
+                </div>
+                <div class="common-section">
+                    <Button
+                        external
+                        secondary
+                        href="https://appwrite.io/docs/functions#createFunction"
+                        >Documentation</Button>
+                </div>
+            </div>
+        </Empty>
+    {/if}
 </Container>
 
-<Create bind:showCreate />
+<Create bind:showCreate on:created={handleCreate} />

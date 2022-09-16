@@ -10,7 +10,7 @@
         'flutter',
         'apple',
         'android',
-        'node_js',
+        'node',
         'php',
         'python',
         'ruby',
