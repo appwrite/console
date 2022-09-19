@@ -1,3 +1,3 @@
-<form class="form common-section" on:submit|preventDefault>
+<form class="form" on:submit|preventDefault>
     <slot />
 </form>

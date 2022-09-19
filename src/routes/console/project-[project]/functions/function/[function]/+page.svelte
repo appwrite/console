@@ -22,6 +22,8 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import Execute from './_execute.svelte';
     import Delete from './_delete.svelte';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
+    import Activate from './_activate.svelte';
 
     let search = '';
     let offset = 0;
@@ -29,14 +31,19 @@
     let showDropdown = [];
     let showDelete = false;
     let showExecute = false;
+    let showActivate = false;
 
     let selectedDeployment: Models.Deployment = null;
 
     const functionId = $page.params.function;
 
+    const handleActivate = () => {
+        func.load(functionId);
+    };
+
     $: deploymentList.load(functionId, search, $pageLimit, offset ?? 0);
     $: if (search) offset = 0;
-    $: activeDeployment = $deploymentList.deployments.find((d) => d.status);
+    $: activeDeployment = $deploymentList?.deployments?.find((d) => d.$id === $func?.deployment);
 </script>
 
 <Container>
@@ -62,7 +69,7 @@
                             }.svg`}
                             alt="technology" />
                     </div>
-                    <div class="">
+                    <div>
                         <p><b>Function ID: {$func.$id} </b></p>
                         <p>Deployment ID: {$func.deployment}</p>
                     </div>
@@ -74,13 +81,18 @@
                             <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
                             <p>Entrypoint: {activeDeployment?.entrypoint}</p>
                         </div>
-                        status
+                        {activeDeployment.status}
                     </div>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
                     <Button text on:click={() => console.log('open Logs')}>Logs</Button>
-                    <Button secondary on:click={() => (showExecute = true)}>Execute now</Button>
+                    <Button
+                        secondary
+                        on:click={() => {
+                            showExecute = true;
+                            selectedDeployment = activeDeployment;
+                        }}>Execute now</Button>
                 </svelte:fragment>
             </CardGrid>
         {:else}
@@ -122,63 +134,78 @@
                 <TableCellHead>Build time</TableCellHead>
                 <TableCellHead>Size</TableCellHead>
                 <TableCellHead />
+                <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
                 {#each $deploymentList.deployments as deployment, index}
-                    <TableRow>
-                        <TableCell title="Deployment ID">
-                            <Copy value={deployment.$id}>
-                                <Pill button
-                                    ><span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text u-trim">{deployment.$id}</span></Pill>
-                            </Copy>
-                        </TableCell>
-                        <TableCellText title="Created">
-                            {toLocaleDateTime(deployment.$createdAt)}
-                        </TableCellText>
-                        <TableCellText title="Status">{deployment.activate}</TableCellText>
-                        <TableCellText title="Build Time">{deployment.entrypoint}</TableCellText>
-                        <TableCellText title="Size">{deployment.size}</TableCellText>
-                        <TableCell showOverflow>
-                            <DropList
-                                bind:show={showDropdown[index]}
-                                position="bottom"
-                                horizontal="left"
-                                arrow={false}>
-                                <button
-                                    class="button is-only-icon is-text"
-                                    aria-label="More options"
-                                    on:click|preventDefault={() => {
-                                        showDropdown[index] = !showDropdown[index];
+                    {#if deployment.$id !== $func.deployment}
+                        <TableRow>
+                            <TableCell title="Deployment ID">
+                                <Copy value={deployment.$id}>
+                                    <Pill button
+                                        ><span class="icon-duplicate" aria-hidden="true" />
+                                        <span class="text u-trim">{deployment.$id}</span></Pill>
+                                </Copy>
+                            </TableCell>
+                            <TableCellText title="Created">
+                                {toLocaleDateTime(deployment.$createdAt)}
+                            </TableCellText>
+                            <TableCellText title="Status">{deployment.status}</TableCellText>
+                            <TableCellText title="Build Time"
+                                >{deployment.entrypoint}</TableCellText>
+                            <TableCellText title="Size"
+                                >{calculateSize(deployment.size)}</TableCellText>
+                            <TableCell>
+                                <Button
+                                    secondary
+                                    on:click={() => {
+                                        selectedDeployment = deployment;
+                                        showActivate = true;
                                     }}>
-                                    <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
-                                <svelte:fragment slot="list">
-                                    <DropListItem
-                                        icon="lightning-bolt"
-                                        on:click={() => {
-                                            selectedDeployment = deployment;
-                                            showDropdown = [];
-                                            showExecute = true;
-                                        }}>Execute now</DropListItem>
-                                    <DropListItem
-                                        icon="terminal"
-                                        on:click={() => {
-                                            selectedDeployment = deployment;
-                                            showDropdown = [];
-                                            console.log('output');
-                                        }}>Output</DropListItem>
-                                    <DropListItem
-                                        icon="trash"
-                                        on:click={() => {
-                                            selectedDeployment = deployment;
-                                            showDropdown = [];
-                                            showDelete = true;
-                                        }}>Delete</DropListItem>
-                                </svelte:fragment>
-                            </DropList>
-                        </TableCell>
-                    </TableRow>
+                                    <span class="text">Activate</span>
+                                </Button>
+                            </TableCell>
+                            <TableCell showOverflow>
+                                <DropList
+                                    bind:show={showDropdown[index]}
+                                    position="bottom"
+                                    horizontal="left"
+                                    arrow={false}>
+                                    <button
+                                        class="button is-only-icon is-text"
+                                        aria-label="More options"
+                                        on:click|preventDefault={() => {
+                                            showDropdown[index] = !showDropdown[index];
+                                        }}>
+                                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                                    </button>
+                                    <svelte:fragment slot="list">
+                                        <DropListItem
+                                            icon="lightning-bolt"
+                                            on:click={() => {
+                                                selectedDeployment = deployment;
+                                                showDropdown = [];
+                                                showExecute = true;
+                                            }}>Execute now</DropListItem>
+                                        <DropListItem
+                                            icon="terminal"
+                                            on:click={() => {
+                                                selectedDeployment = deployment;
+                                                showDropdown = [];
+                                                console.log('output');
+                                            }}>Output</DropListItem>
+                                        <DropListItem
+                                            icon="trash"
+                                            on:click={() => {
+                                                selectedDeployment = deployment;
+                                                showDropdown = [];
+                                                showDelete = true;
+                                            }}>Delete</DropListItem>
+                                    </svelte:fragment>
+                                </DropList>
+                            </TableCell>
+                        </TableRow>
+                    {/if}
                 {/each}
             </TableBody>
         </Table>
@@ -214,4 +241,5 @@
 {#if selectedDeployment}
     <Execute {selectedDeployment} bind:showExecute />
     <Delete {functionId} {selectedDeployment} bind:showDelete />
+    <Activate {functionId} {selectedDeployment} bind:showActivate on:activated={handleActivate} />
 {/if}

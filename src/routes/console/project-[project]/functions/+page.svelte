@@ -19,6 +19,7 @@
 
     const limit = 6;
     const project = $page.params.project;
+
     const handleCreate = async (event: CustomEvent<Models.Function>) => {
         showCreate = false;
         await goto(`${base}/console/project-${project}/functions/function/${event.detail.$id}`);
@@ -55,7 +56,17 @@
                             <span class="text"> {func.name}</span>
                         </div>
                     </svelte:fragment>
-                    <!-- <svelte:fragment slot="status">{func.status}</svelte:fragment> -->
+                    <svelte:fragment slot="status"
+                        >{#await functionList.getDeployment(func.$id, func.deployment)}
+                            status...
+                        {:then deployment}
+                            {#if deployment && deployment.$id}
+                                {deployment.status}
+                            {:else}
+                                No deployment
+                            {/if}
+                        {/await}
+                    </svelte:fragment>
                     <svelte:fragment slot="icons">
                         {#if func.scheduleNext}
                             <li>
