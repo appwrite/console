@@ -19,8 +19,9 @@ export const deploymentList = cachedStore<
     Models.DeploymentList,
     {
         load: (functionId: string, search: string, limit: number, offset: number) => Promise<void>;
+        updateDeployment: (deployment: Models.Deployment) => void;
     }
->('deploymentList', function ({ set }) {
+>('deploymentList', function ({ set, update }) {
     return {
         load: async (functionId, search, limit, offset) => {
             const response = await sdkForProject.functions.listDeployments(
@@ -30,6 +31,15 @@ export const deploymentList = cachedStore<
                 offset
             );
             set(response);
-        }
+        },
+        updateDeployment: (deployment) =>
+            update((n) => {
+                const index = n.deployments.findIndex((a) => a.$id === deployment.$id);
+                if (index !== -1) {
+                    n.deployments[index] = deployment;
+                }
+
+                return n;
+            })
     };
 });

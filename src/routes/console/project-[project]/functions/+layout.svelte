@@ -1,10 +1,25 @@
-<script>
+<script lang="ts">
+    import { browser } from '$app/environment';
     import { afterNavigate } from '$app/navigation';
     import { updateLayout } from '$lib/stores/layout';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { deploymentList } from './function/[function]/store';
 
     let loaded = false;
 
+    if (browser) {
+        sdkForConsole.client.subscribe<Models.Deployment>('console', (message) => {
+            console.log(message);
+
+            if (message.events.includes('functions.*.deployments.*.update')) {
+                deploymentList.updateDeployment(<Models.Deployment>message.payload);
+
+                return;
+            }
+        });
+    }
     onMount(handle);
     afterNavigate(handle);
 

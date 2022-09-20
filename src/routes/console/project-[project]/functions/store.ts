@@ -14,6 +14,7 @@ export const functionList = cachedStore<
             const response = await sdkForProject.functions.list(search, limit, offset);
             set(response);
         },
+
         getDeployment: async (functionId, deploymentId) => {
             return await sdkForProject.functions.getDeployment(functionId, deploymentId);
         }
