@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button, InputText, Form, FormList, InputSelect } from '$lib/elements/forms';
-    import { collection } from './store';
-    import type { Attributes } from './store';
+    import { collection } from '../store';
+    import type { Attributes } from '../store';
     import { onMount } from 'svelte';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';

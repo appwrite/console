@@ -6,10 +6,10 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import Delete from '../_delete.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { difference } from '$lib/helpers/array';
+    import Delete from './deleteCollection.svelte';
 
     const databaseId = $page.params.database;
 

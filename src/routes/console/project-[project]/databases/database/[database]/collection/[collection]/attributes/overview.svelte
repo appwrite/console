@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { option, options } from './attributes/store';
+    import { option, options } from './store';
     import { InputText, FormList } from '$lib/elements/forms';
-    import type { Attributes } from './store';
+    import type { Attributes } from '../store';
 
     export let showOverview = false;
     export let selectedAttribute: Attributes;

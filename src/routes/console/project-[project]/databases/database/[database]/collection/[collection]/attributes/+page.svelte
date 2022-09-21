@@ -14,10 +14,10 @@
     import type { Attributes } from '../store';
     import { Container } from '$lib/layout';
     import { Pill } from '$lib/elements';
-    import Create from '../_createAttribute.svelte';
-    import CreateIndex from '../_createIndex.svelte';
-    import Delete from '../_deleteAttribute.svelte';
-    import Overview from '../_overview.svelte';
+    import Create from './createAttribute.svelte';
+    import CreateIndex from '../indexes/createIndex.svelte';
+    import Delete from './deleteAttribute.svelte';
+    import Overview from './overview.svelte';
 
     let offset = 0;
     const limit = 5;
