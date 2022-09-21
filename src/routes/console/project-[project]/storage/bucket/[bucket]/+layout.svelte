@@ -8,6 +8,8 @@
     const bucketId = $page.params.bucket;
     const path = `storage/bucket/${bucketId}`;
 
+    let loaded = false;
+
     onMount(handle);
     afterNavigate(handle);
 
@@ -43,6 +45,7 @@
                 }
             ]
         });
+        loaded = true;
     }
 </script>
 
@@ -50,6 +53,6 @@
     <title>Appwrite - Bucket</title>
 </svelte:head>
 
-{#if $bucket}
+{#if $bucket && loaded}
     <slot />
 {/if}

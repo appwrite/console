@@ -14,10 +14,10 @@
     import type { Attributes } from '../store';
     import { Container } from '$lib/layout';
     import { Pill } from '$lib/elements';
-    import Create from '../_createAttribute.svelte';
-    import CreateIndex from '../_createIndex.svelte';
-    import Delete from '../_deleteAttribute.svelte';
-    import Overview from '../_overview.svelte';
+    import Create from './createAttribute.svelte';
+    import CreateIndex from '../indexes/createIndex.svelte';
+    import Delete from './deleteAttribute.svelte';
+    import Overview from './overview.svelte';
 
     let offset = 0;
     const limit = 5;
@@ -118,12 +118,12 @@
         <Empty dashed centered>
             <div class="u-flex u-flex-vertical u-cross-center">
                 <div class="common-section">
-                    <Button secondary round on:click={() => console.log('showCreate = true')}>
+                    <Button secondary round on:click={() => (showCreate = true)}>
                         <span class="icon-plus" aria-hidden="true" />
                     </Button>
                 </div>
                 <div class="common-section">
-                    <p>Crate your first document to get started</p>
+                    <p>Crate your first attribute to get started</p>
                 </div>
                 <div class="common-section">
                     <Button secondary href="#">Documentation</Button>

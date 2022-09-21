@@ -66,9 +66,9 @@ export const documentList = cachedStore<
         load: (
             databaseId: string,
             collectionId: string,
-            queries: [],
-            limit: number,
-            offset: number
+            queries?: [],
+            limit?: number,
+            offset?: number
         ) => Promise<void>;
     }
 >('documentList', function ({ set }) {

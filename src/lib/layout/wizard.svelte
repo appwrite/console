@@ -1,59 +1,93 @@
-<script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+<script context="module" lang="ts">
+    export type WizardStepsType = Map<
+        number,
+        {
+            label: string;
+            component: typeof SvelteComponent;
+        }
+    >;
+</script>
 
-    export let show = false;
+<script lang="ts">
+    import { Steps } from '$lib/components';
+    import { Button, Form } from '$lib/elements/forms';
+    import { wizard } from '$lib/stores/wizard';
+    import { createEventDispatcher, type SvelteComponent } from 'svelte';
+
     export let title: string;
+    export let steps: WizardStepsType;
+    export let finalAction = 'Create';
 
     const dispatch = createEventDispatcher();
 
-    const handleKeydown = (event: KeyboardEvent) => {
+    let currentStep = 1;
+
+    function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
             event.preventDefault();
-            closeModal();
+            wizard.hide();
         }
-    };
+    }
 
-    const closeModal = () => {
-        show = false;
-        dispatch('close');
-    };
+    function submit() {
+        if (isLastStep) {
+            dispatch('finish');
+        } else {
+            currentStep++;
+        }
+    }
+
+    $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
+    $: isLastStep = currentStep === steps.size;
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
-{#if show}
-    <section class="wizard">
-        <div class="wizard-header-strip" />
-        <div class="wizard-start-bg" />
-        <div class="wizard-end-bg" />
+<section class="wizard">
+    <div class="wizard-header-strip" />
+    <div class="wizard-start-bg" />
+    <div class="wizard-end-bg" />
 
-        <header class="wizard-header">
-            <div class="body-text-1">{title}</div>
+    <header class="wizard-header">
+        <div class="body-text-1">{title}</div>
 
-            <slot name="header" />
-            <button class="x-button" aria-label="close wizard" on:click={closeModal}>
-                <span class="icon-x" aria-hidden="true" />
-            </button>
-        </header>
+        <slot name="header" />
+        <button class="x-button" aria-label="close wizard" on:click={wizard.hide}>
+            <span class="icon-x" aria-hidden="true" />
+        </button>
+    </header>
 
-        <aside class="wizard-side">
-            <slot name="aside" />
-        </aside>
-        <div class="wizard-media">
-            <slot name="media" />
-        </div>
-        <div class="wizard-main">
-            <slot />
-        </div>
-    </section>
-{/if}
-
-<style>
-    .wizard {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-    }
-</style>
+    <aside class="wizard-side">
+        <Steps
+            steps={sortedSteps.map(([, { label }]) => ({
+                text: label
+            }))}
+            {currentStep} />
+    </aside>
+    <div class="wizard-media">
+        <slot name="media" />
+    </div>
+    <div class="wizard-main">
+        <Form on:submit={submit}>
+            {#each sortedSteps as [step, { component }]}
+                {#if currentStep === step}
+                    <svelte:component this={component} />
+                {/if}
+            {/each}
+            <div class="form-footer">
+                <div class="u-flex u-main-end u-gap-12">
+                    {#if currentStep === 1}
+                        <Button secondary on:click={wizard.hide}>Cancel</Button>
+                        <Button submit>Next</Button>
+                    {:else if isLastStep}
+                        <Button secondary on:click={() => currentStep--}>Back</Button>
+                        <Button submit>{finalAction}</Button>
+                    {:else}
+                        <Button secondary on:click={() => currentStep--}>Back</Button>
+                        <Button submit>Next</Button>
+                    {/if}
+                </div>
+            </div>
+        </Form>
+    </div>
+</section>
