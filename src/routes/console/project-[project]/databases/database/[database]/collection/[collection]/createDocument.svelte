@@ -1,9 +1,9 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { attributeList } from './store';
+    import { attributeList, documentList } from './store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { page } from '$app/stores';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
     import Step1 from './wizard/step1.svelte';
@@ -46,6 +46,7 @@
                 message: 'Document has been created',
                 type: 'success'
             });
+            documentList.load(databaseId, collectionId);
             wizard.hide();
         } catch (error) {
             addNotification({
@@ -55,13 +56,11 @@
         }
     };
 
-    $: attributeList.load(databaseId, collectionId);
-
-    $: if (!$wizard.show) {
-        initializeDocument();
+    onDestroy(() => {
+        $createDocument.document = {};
         $createDocument.read = [];
         $createDocument.write = [];
-    }
+    });
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
@@ -74,4 +73,4 @@
     });
 </script>
 
-<Wizard title="Create document" steps={stepsComponents} on:submit={create} />
+<Wizard title="Create document" steps={stepsComponents} on:finish={create} />

@@ -12,22 +12,33 @@
     import { Steps } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import type { SvelteComponent } from 'svelte';
+    import { createEventDispatcher, type SvelteComponent } from 'svelte';
 
     export let title: string;
     export let steps: WizardStepsType;
     export let finalAction = 'Create';
 
+    const dispatch = createEventDispatcher();
+
     let currentStep = 1;
 
-    const handleKeydown = (event: KeyboardEvent) => {
+    function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
             event.preventDefault();
             wizard.hide();
         }
-    };
+    }
+
+    function submit() {
+        if (isLastStep) {
+            dispatch('finish');
+        } else {
+            currentStep++;
+        }
+    }
 
     $: prepared = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
+    $: isLastStep = currentStep === steps.size;
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -57,8 +68,8 @@
         <slot name="media" />
     </div>
     <div class="wizard-main">
-        <Form on:submit>
-            {#each [...steps] as [step, { component }]}
+        <Form on:submit={submit}>
+            {#each prepared as [step, { component }]}
                 {#if currentStep === step}
                     <svelte:component this={component} />
                 {/if}
@@ -67,13 +78,13 @@
                 <div class="u-flex u-main-end u-gap-12">
                     {#if currentStep === 1}
                         <Button secondary on:click={wizard.hide}>Cancel</Button>
-                        <Button on:click={() => currentStep++}>Next</Button>
-                    {:else if currentStep === steps.size}
+                        <Button submit>Next</Button>
+                    {:else if isLastStep}
                         <Button secondary on:click={() => currentStep--}>Back</Button>
                         <Button submit>{finalAction}</Button>
                     {:else}
                         <Button secondary on:click={() => currentStep--}>Back</Button>
-                        <Button on:click={() => currentStep++}>Next</Button>
+                        <Button submit>Next</Button>
                     {/if}
                 </div>
             </div>
