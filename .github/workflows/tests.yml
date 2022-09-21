@@ -10,26 +10,42 @@ env:
     VITE_APPWRITE_ENDPOINT: http://appwrite.test/v1
 
 jobs:
+    audit:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: ./prepare.yml
+            - name: Audit dependencies
+              run: npm audit --audit-level high
     build:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-            - name: Use Node.js
-              uses: actions/setup-node@v2
-              with:
-                  node-version: 16
-            - name: Audit dependencies
-              run: npm audit --audit-level high
+            - uses: ./prepare.yml
             - name: Install dependencies
               run: npm ci
             - name: Build Console
               run: npm run build
+    diagnostics:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: ./prepare.yml
             - name: Svelte Diagnostics
               run: npm run check
+    linter:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: ./prepare.yml
             - name: Linter
               run: npm run lint
+    unit-tests:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: ./prepare.yml
             - name: Unit Tests
               run: npm test
+    e2e-tests:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: ./prepare.yml
             - name: E2E Tests
               run: |
                   npx playwright install
