@@ -15,9 +15,9 @@
     import { Container } from '$lib/layout';
     import { indexList, collection } from '../store';
     import { onMount } from 'svelte';
-    import Delete from '../_deleteIndex.svelte';
-    import Create from '../_createIndex.svelte';
-    import Overview from '../_overviewIndex.svelte';
+    import Delete from './deleteIndex.svelte';
+    import Create from './createIndex.svelte';
+    import Overview from './overviewIndex.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
 
     let showDropdown = [];

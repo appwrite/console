@@ -1,9 +1,9 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { option, options } from './attributes/store';
+    import { option, options } from './store';
     import { Button, InputText, Form, FormList, InputSelect } from '$lib/elements/forms';
-    import { collection } from './store';
-    import type { Attributes } from './store';
+    import { collection } from '../store';
+    import type { Attributes } from '../store';
 
     export let showCreate = false;
 

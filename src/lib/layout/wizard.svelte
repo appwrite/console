@@ -1,7 +1,24 @@
+<script context="module" lang="ts">
+    export type WizardStepsType = Map<
+        number,
+        {
+            label: string;
+            component: typeof SvelteComponent;
+        }
+    >;
+</script>
+
 <script lang="ts">
+    import { Steps } from '$lib/components';
+    import { Button, Form } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
+    import type { SvelteComponent } from 'svelte';
 
     export let title: string;
+    export let steps: WizardStepsType;
+    export let finalAction = 'Create';
+
+    let currentStep = 1;
 
     const handleKeydown = (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
@@ -9,6 +26,8 @@
             wizard.hide();
         }
     };
+
+    $: prepared = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -28,12 +47,36 @@
     </header>
 
     <aside class="wizard-side">
-        <slot name="aside" />
+        <Steps
+            steps={prepared.map(([, { label }]) => ({
+                text: label
+            }))}
+            {currentStep} />
     </aside>
     <div class="wizard-media">
         <slot name="media" />
     </div>
     <div class="wizard-main">
-        <slot />
+        <Form on:submit>
+            {#each [...steps] as [step, { component }]}
+                {#if currentStep === step}
+                    <svelte:component this={component} />
+                {/if}
+            {/each}
+            <div class="form-footer">
+                <div class="u-flex u-main-end u-gap-12">
+                    {#if currentStep === 1}
+                        <Button secondary on:click={wizard.hide}>Cancel</Button>
+                        <Button on:click={() => currentStep++}>Next</Button>
+                    {:else if currentStep === steps.size}
+                        <Button secondary on:click={() => currentStep--}>Back</Button>
+                        <Button submit>{finalAction}</Button>
+                    {:else}
+                        <Button secondary on:click={() => currentStep--}>Back</Button>
+                        <Button on:click={() => currentStep++}>Next</Button>
+                    {/if}
+                </div>
+            </div>
+        </Form>
     </div>
 </section>

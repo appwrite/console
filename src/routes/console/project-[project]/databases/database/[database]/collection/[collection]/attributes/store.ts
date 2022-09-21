@@ -1,13 +1,13 @@
 import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
-import Boolean from './_boolean.svelte';
-import Email from './_email.svelte';
-import Enum from './_enum.svelte';
-import Float from './_float.svelte';
-import Integer from './_integer.svelte';
-import Ip from './_ip.svelte';
-import String from './_string.svelte';
-import Url from './_url.svelte';
+import Boolean from './boolean.svelte';
+import Email from './email.svelte';
+import Enum from './enum.svelte';
+import Float from './float.svelte';
+import Integer from './integer.svelte';
+import Ip from './ip.svelte';
+import String from './string.svelte';
+import Url from './url.svelte';
 
 export type Option = {
     name: string;

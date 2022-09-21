@@ -14,8 +14,8 @@
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
-    import Create from './_create.svelte';
     import { wizard } from '$lib/stores/wizard';
+    import Create from './createDocument.svelte';
 
     let offset = 0;
 
