@@ -40,6 +40,37 @@ test('shows text input - placeholder', () => {
     expect(getByPlaceholderText('find me')).toBeInTheDocument();
 });
 
+test('shows text input - hide label', () => {
+    render(InputText, {
+        id: 'input',
+        label: 'label',
+        showLabel: false
+    });
+
+    const label = document.querySelector('label');
+    expect(label).toHaveClass('u-hide');
+});
+
+test('shows text input - autocomplete', () => {
+    const { getByLabelText } = render(InputText, {
+        id: 'input',
+        label: 'input',
+        autocomplete: true
+    });
+
+    expect(getByLabelText('input')).toHaveAttribute('autocomplete', 'on');
+});
+
+test('shows text input - maxlength', () => {
+    const { getByLabelText } = render(InputText, {
+        id: 'input',
+        label: 'input',
+        maxlength: 2
+    });
+
+    expect(getByLabelText('input')).toHaveAttribute('maxlength', '2');
+});
+
 test('state', async () => {
     const { component, getByLabelText } = render(InputText, {
         id: 'input',

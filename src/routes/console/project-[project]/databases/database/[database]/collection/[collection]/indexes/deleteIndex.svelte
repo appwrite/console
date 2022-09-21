@@ -1,30 +1,28 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { Modal } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { collection } from './store';
-    import type { Attributes } from './store';
+    import { collection } from '../store';
     import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { createEventDispatcher } from 'svelte';
+    import { page } from '$app/stores';
 
     export let showDelete = false;
-    export let selectedAttribute: Attributes;
+    export let selectedIndex: Models.Index;
     const databaseId = $page.params.database;
+
+    const dispatch = createEventDispatcher();
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteAttribute(
+            await sdkForProject.databases.deleteIndex(
                 databaseId,
                 $collection.$id,
-                selectedAttribute.key
+                selectedIndex.key
             );
-            collection.removeAttribute(selectedAttribute);
             showDelete = false;
-            await goto(
-                `${base}/console/project-${$page.params.project}/databases/database/${databaseId}/collection/${$page.params.collection}/attributes`
-            );
+            dispatch('deleted');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -36,11 +34,10 @@
 
 <Form on:submit={handleDelete}>
     <Modal warning={true} bind:show={showDelete}>
-        <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
+        <svelte:fragment slot="header">Delete Index</svelte:fragment>
 
         <p>
-            Are you sure you want to delete <b>'{selectedAttribute.key}' from {$collection.name}</b
-            >?
+            Are you sure you want to delete <b>'{selectedIndex.key}' from {$collection.name}</b>?
         </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>

@@ -138,19 +138,19 @@
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputPassword
-                        id="newPassword"
-                        label="New password"
-                        placeholder="Enter password"
-                        autocomplete={false}
-                        showPasswordButton={true}
-                        bind:value={newPassword} />
-                    <InputPassword
                         id="oldPassword"
                         label="Old password"
                         placeholder="Enter password"
                         autocomplete={false}
                         showPasswordButton={true}
                         bind:value={oldPassword} />
+                    <InputPassword
+                        id="newPassword"
+                        label="New password"
+                        placeholder="Enter password"
+                        autocomplete={false}
+                        showPasswordButton={true}
+                        bind:value={newPassword} />
                 </FormList>
             </svelte:fragment>
 

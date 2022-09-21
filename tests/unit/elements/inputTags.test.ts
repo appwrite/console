@@ -15,6 +15,17 @@ test('shows input - autofocus', () => {
     expect(getByLabelText('Tags')).toHaveFocus();
 });
 
+test('shows input - hide label', () => {
+    render(InputTags, {
+        id: 'input',
+        label: 'label',
+        showLabel: false
+    });
+
+    const label = document.querySelector('label');
+    expect(label).toHaveClass('u-hide');
+});
+
 test('shows tags', () => {
     const { getByText } = render(InputTags, {
         id: 'input',

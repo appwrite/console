@@ -14,10 +14,10 @@
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
-    import Create from './_create.svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import Create from './createDocument.svelte';
 
     let offset = 0;
-    let showCreate = false;
 
     const limit = 5;
     const projectId = $page.params.project;
@@ -30,13 +30,17 @@
             title: attribute.key
         }))
     ];
+
+    function openWizard() {
+        wizard.start(Create);
+    }
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <h2 class="heading-level-5">Documents</h2>
 
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={openWizard}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create document</span>
         </Button>
@@ -80,7 +84,7 @@
         <Empty dashed centered>
             <div class="u-flex u-flex-vertical u-cross-center">
                 <div class="common-section">
-                    <Button secondary round on:click={() => (showCreate = true)}>
+                    <Button secondary round on:click={openWizard}>
                         <span class="icon-plus" aria-hidden="true" />
                     </Button>
                 </div>
@@ -94,7 +98,3 @@
         </Empty>
     {/if}
 </Container>
-
-{#if showCreate}
-    <Create bind:showCreate />
-{/if}
