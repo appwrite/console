@@ -57,7 +57,7 @@
     };
 
     onDestroy(() => {
-        $createDocument.document = {};
+        initializeDocument();
         $createDocument.read = [];
         $createDocument.write = [];
     });

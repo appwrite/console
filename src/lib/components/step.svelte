@@ -4,7 +4,6 @@
     export let currentSub = 0;
     export let isSub = false;
     export let step: { text: string; substeps?: { text: string }[] };
-    console.log({ step, completed, current });
 </script>
 
 <li
