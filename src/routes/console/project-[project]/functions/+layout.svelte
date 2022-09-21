@@ -11,9 +11,7 @@
 
     if (browser) {
         sdkForConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            console.log(message);
-
-            if (message.events.includes('functions.*.deployments.*.update')) {
+            if (message.events.includes('deployments.*.update')) {
                 deploymentList.updateDeployment(<Models.Deployment>message.payload);
 
                 return;

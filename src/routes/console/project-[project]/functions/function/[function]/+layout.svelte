@@ -4,7 +4,8 @@
     import { page } from '$app/stores';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
-    import { func } from './store';
+    import { func, execute } from './store';
+    import Execute from './_execute.svelte';
 
     const functionId = $page.params.function;
     const path = `functions/function/${functionId}`;
@@ -54,4 +55,8 @@
 
 {#if $func}
     <slot />
+{/if}
+
+{#if $execute?.selected}
+    <Execute selectedDeployment={$execute.selected} bind:showExecute={$execute.show} />
 {/if}

@@ -12,6 +12,7 @@
     import { functionList } from './store';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
+    import { onMount } from 'svelte';
 
     let showCreate = false;
     let search = '';
@@ -19,6 +20,11 @@
 
     const limit = 6;
     const project = $page.params.project;
+
+    let deployments: Record<string, Models.Deployment> = null;
+    onMount(async () => {
+        deployments = await functionList.getDeployments($functionList.functions);
+    });
 
     const handleCreate = async (event: CustomEvent<Models.Function>) => {
         showCreate = false;
@@ -56,18 +62,22 @@
                             <span class="text"> {func.name}</span>
                         </div>
                     </svelte:fragment>
-                    <svelte:fragment slot="status"
-                        >{#await functionList.getDeployment(func.$id, func.deployment)}
-                            status...
-                        {:then deployment}
-                            {#if deployment && deployment.$id}
-                                {deployment.status}
-                            {:else}
-                                No deployment
-                            {/if}
-                        {/await}
+                    <svelte:fragment slot="status">
+                        {#if deployments && deployments[func.$id]}
+                            {deployments[func.$id].status ?? 'No deployment'}
+                        {/if}
                     </svelte:fragment>
                     <svelte:fragment slot="icons">
+                        {#if deployments && deployments[func.$id] && deployments[func.$id].status === 'failed'}
+                            <li>
+                                <span
+                                    class="icon-exclamation"
+                                    aria-hidden="true"
+                                    use:tooltip={{
+                                        content: 'Build error'
+                                    }} />
+                            </li>
+                        {/if}
                         {#if func.scheduleNext}
                             <li>
                                 <span

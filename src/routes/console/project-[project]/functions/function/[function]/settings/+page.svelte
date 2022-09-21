@@ -1,14 +1,60 @@
-<script>
-    import { CardGrid } from '$lib/components';
+<script lang="ts">
+    import { CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { func } from '../store';
-    // import { page } from '$app/stores';
+    import { execute, func } from '../store';
+    import Delete from './_delete.svelte';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    import type { Models } from '@aw-labs/appwrite-console';
 
-    // const functionId = $page.params.function;
+    const functionId = $page.params.function;
+    let showDelete = false;
+    let timeout = 0;
+    let deployment: Models.Deployment = null;
+
+    onMount(async () => {
+        if ($func?.$id !== functionId) {
+            await func.load(functionId);
+        }
+        deployment = await func.getDeployment(functionId, $func.deployment);
+        timeout = $func.timeout;
+    });
+
+    let options = [
+        { label: 'seconds', value: 'seconds' },
+        { label: 'minutes', value: 'minutes' },
+        { label: 'hours', value: 'hours' }
+    ];
+
+    const updateTimeout = async () => {
+        try {
+            await sdkForProject.functions.update(
+                functionId,
+                $func.name,
+                $func.execute,
+                $func.vars,
+                $func.events,
+                $func.schedule,
+                timeout
+            );
+
+            addNotification({
+                type: 'success',
+                message: 'Updated project users limit successfully'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    };
 </script>
 
 <Container>
@@ -41,8 +87,52 @@
             <Button
                 secondary
                 on:click={() => {
-                    console.log(`showExecute = true`);
+                    $execute.selected = deployment;
+                    $execute.show = true;
                 }}>Execute now</Button>
         </svelte:fragment>
     </CardGrid>
+
+    <CardGrid>
+        <h2 class="heading-level-6">Update Timeout</h2>
+        <p>Limit the execution time of your function. Maximum value is 900 seconds (15 minutes).</p>
+        <svelte:fragment slot="aside">
+            <form class="form u-grid u-gap-16">
+                <ul class="form-list is-multiple">
+                    <InputNumber id="length" label="Time" value={timeout} />
+                    <InputSelect
+                        id="Increment"
+                        {options}
+                        label="Time Period"
+                        value={options[0].value} />
+                </ul>
+            </form>
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button disabled={true} on:click={updateTimeout}>Update</Button>
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <h6 class="heading-level-7">Delete Function</h6>
+        <p>
+            The function will be permanently deleted, including all deployments associated with it.
+            This action is irreversible.
+        </p>
+        <svelte:fragment slot="aside">
+            <Box>
+                <svelte:fragment slot="title">
+                    <h6 class="u-bold">{$func.name}</h6>
+                </svelte:fragment>
+                <p>Last Updated: {toLocaleDateTime($func.$updatedAt)}</p>
+            </Box>
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </CardGrid>
 </Container>
+
+<Delete bind:showDelete />

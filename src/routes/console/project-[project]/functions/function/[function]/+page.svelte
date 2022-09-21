@@ -12,7 +12,7 @@
         TableCell,
         TableCellText
     } from '$lib/elements/table';
-    import { deploymentList, func } from './store';
+    import { deploymentList, execute, func } from './store';
     import { Container } from '$lib/layout';
     import Create from './_create.svelte';
     import { base } from '$app/paths';
@@ -20,7 +20,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { pageLimit } from '$lib/stores/layout';
     import type { Models } from '@aw-labs/appwrite-console';
-    import Execute from './_execute.svelte';
     import Delete from './_delete.svelte';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import Activate from './_activate.svelte';
@@ -30,7 +29,6 @@
     let showCreate = false;
     let showDropdown = [];
     let showDelete = false;
-    let showExecute = false;
     let showActivate = false;
 
     let selectedDeployment: Models.Deployment = null;
@@ -90,7 +88,7 @@
                     <Button
                         secondary
                         on:click={() => {
-                            showExecute = true;
+                            $execute.show = true;
                             selectedDeployment = activeDeployment;
                         }}>Execute now</Button>
                 </svelte:fragment>
@@ -183,9 +181,9 @@
                                         <DropListItem
                                             icon="lightning-bolt"
                                             on:click={() => {
-                                                selectedDeployment = deployment;
+                                                $execute.selected = deployment;
                                                 showDropdown = [];
-                                                showExecute = true;
+                                                $execute.show = true;
                                             }}>Execute now</DropListItem>
                                         <DropListItem
                                             icon="terminal"
@@ -239,7 +237,6 @@
 <Create bind:showCreate />
 
 {#if selectedDeployment}
-    <Execute {selectedDeployment} bind:showExecute />
     <Delete {functionId} {selectedDeployment} bind:showDelete />
     <Activate {functionId} {selectedDeployment} bind:showActivate on:activated={handleActivate} />
 {/if}

@@ -1,16 +1,21 @@
 import { cachedStore } from '$lib/helpers/cache';
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
+import { writable, type Writable } from 'svelte/store';
 
 export const func = cachedStore<
     Models.Function,
     {
         load: (functionId: string) => Promise<void>;
+        getDeployment: (functionId: string, deploymentId: string) => Promise<Models.Deployment>;
     }
 >('func', function ({ set }) {
     return {
         load: async (functionId) => {
             set(await sdkForProject.functions.get(functionId));
+        },
+        getDeployment: async (functionId, deploymentId) => {
+            return await sdkForProject.functions.getDeployment(functionId, deploymentId);
         }
     };
 });
@@ -43,3 +48,10 @@ export const deploymentList = cachedStore<
             })
     };
 });
+
+export type Execute = {
+    show: boolean;
+    selected: Models.Deployment;
+};
+
+export const execute: Writable<Execute> = writable({ show: false, selected: null });

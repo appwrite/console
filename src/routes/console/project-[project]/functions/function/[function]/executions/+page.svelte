@@ -44,11 +44,7 @@
             </TableHeader>
             <TableBody>
                 {#each $executionList.executions as execution}
-                    <TableRow
-                        on:click={() => {
-                            // selectedExecution = execution;
-                            // showExecute = true;
-                        }}>
+                    <TableRow>
                         <TableCell title="Deployment ID">
                             <Copy value={execution.$id}>
                                 <Pill button
