@@ -3,7 +3,6 @@ name: 'Prepare Node.js'
 runs:
     using: 'composite'
     steps:
-        - uses: actions/checkout@v2
         - name: Use Node.js
           uses: actions/setup-node@v2
           with:

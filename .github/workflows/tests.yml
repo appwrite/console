@@ -13,12 +13,14 @@ jobs:
     audit:
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v2
             - uses: ./.github/workflows/prepare.yml
             - name: Audit dependencies
               run: npm audit --audit-level high
     build:
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v2
             - uses: ./.github/workflows/prepare.yml
             - name: Install dependencies
               run: npm ci
@@ -27,24 +29,28 @@ jobs:
     diagnostics:
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v2
             - uses: ./.github/workflows/prepare.yml
             - name: Svelte Diagnostics
               run: npm run check
     linter:
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v2
             - uses: ./.github/workflows/prepare.yml
             - name: Linter
               run: npm run lint
     unit-tests:
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v2
             - uses: ./.github/workflows/prepare.yml
             - name: Unit Tests
               run: npm test
     e2e-tests:
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v2
             - uses: ./.github/workflows/prepare.yml
             - name: E2E Tests
               run: |
