@@ -37,7 +37,7 @@
         }
     }
 
-    $: prepared = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
+    $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
     $: isLastStep = currentStep === steps.size;
 </script>
 
@@ -59,7 +59,7 @@
 
     <aside class="wizard-side">
         <Steps
-            steps={prepared.map(([, { label }]) => ({
+            steps={sortedSteps.map(([, { label }]) => ({
                 text: label
             }))}
             {currentStep} />
@@ -69,7 +69,7 @@
     </div>
     <div class="wizard-main">
         <Form on:submit={submit}>
-            {#each prepared as [step, { component }]}
+            {#each sortedSteps as [step, { component }]}
                 {#if currentStep === step}
                     <svelte:component this={component} />
                 {/if}
