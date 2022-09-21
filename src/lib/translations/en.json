@@ -5,6 +5,7 @@
             "name": "Name",
             "email": "Email",
             "status": "Status",
+            "password": "Password",
             "id": "ID",
             "joined": "Joined",
             "verified": "verified",
@@ -19,6 +20,13 @@
                 "title": "Users",
                 "search": "Search by name, email, or ID",
                 "create": "Create user"
+            },
+            "create": {
+                "users": {
+                    "name": "Enter $t(models.user.name)",
+                    "email": "Enter $t(models.user.email)",
+                    "password": "Enter $t(models.user.password)"
+                }
             }
         }
     }

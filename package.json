@@ -22,6 +22,8 @@
         "@aw-labs/icons": "0.0.0-54",
         "@aw-labs/ui": "0.0.0-54",
         "echarts": "^5.3.3",
+        "i18next": "^21.9.2",
+        "i18next-resources-to-backend": "^1.0.0",
         "tippy.js": "^6.3.7",
         "web-vitals": "^2.1.4"
     },
@@ -47,7 +49,6 @@
         "sass": "^1.54.9",
         "svelte": "^3.50.1",
         "svelte-check": "^2.9.0",
-        "svelte-i18n": "^3.4.0",
         "svelte-jester": "^2.3.2",
         "svelte-preprocess": "^4.10.7",
         "tslib": "^2.4.0",

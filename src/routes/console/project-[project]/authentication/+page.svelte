@@ -22,7 +22,7 @@
     import { usersList } from './store';
     import type { Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
-    import { _ } from 'svelte-i18n';
+    import { _ } from '$lib/i18n';
 
     let showCreate = false;
     let search = '';
@@ -39,7 +39,7 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder={$_('services.authentication.users.search')}>
+    <Search bind:search placeholder={$_.t('services.authentication.users.search')}>
         <span
             use:event={{
                 name: 'console_users',
@@ -50,43 +50,44 @@
             }}>
             <Button on:click={() => (showCreate = true)}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">{$_('services.authentication.users.create')}</span>
+                <span class="text">{$_.t('services.authentication.users.create')}</span>
             </Button>
         </span>
     </Search>
     {#if $usersList?.total}
         <Table>
             <TableHeader>
-                <TableCellHead>{$_('models.user.name')}</TableCellHead>
-                <TableCellHead>{$_('models.user.email')}</TableCellHead>
-                <TableCellHead width={100}>{$_('models.user.status')}</TableCellHead>
-                <TableCellHead width={100}>{$_('models.user.id')}</TableCellHead>
-                <TableCellHead>{$_('models.user.joined')}</TableCellHead>
+                <TableCellHead>{$_.t('models.user.name')}</TableCellHead>
+                <TableCellHead>{$_.t('models.user.email')}</TableCellHead>
+                <TableCellHead width={100}>{$_.t('models.user.status')}</TableCellHead>
+                <TableCellHead width={100}>{$_.t('models.user.id')}</TableCellHead>
+                <TableCellHead>{$_.t('models.user.joined')}</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each $usersList.users as user}
                     <TableRowLink
                         href={`${base}/console/project-${project}/authentication/user/${user.$id}`}>
-                        <TableCell title={$_('models.user.name')}>
+                        <TableCell title={$_.t('models.user.name')}>
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar size={32} src={getAvatar(user.name)} name={user.name} />
                                 <span class="text u-trim">{user.name ? user.name : 'n/a'}</span>
                             </div>
                         </TableCell>
-                        <TableCellText title={$_('models.user.email')}>{user.email}</TableCellText>
-                        <TableCell title={$_('models.user.status')}>
+                        <TableCellText title={$_.t('models.user.email')}
+                            >{user.email}</TableCellText>
+                        <TableCell title={$_.t('models.user.status')}>
                             {#if user.status}
                                 {@const verified = user.emailVerification || user.phoneVerification}
                                 <Pill success={verified}>
                                     {verified
-                                        ? $_('models.user.verified')
-                                        : $_('models.user.unverified')}
+                                        ? $_.t('models.user.verified')
+                                        : $_.t('models.user.unverified')}
                                 </Pill>
                             {:else}
-                                <Pill danger>{$_('models.user.blocked')}</Pill>
+                                <Pill danger>{$_.t('models.user.blocked')}</Pill>
                             {/if}
                         </TableCell>
-                        <TableCell showOverflow title={$_('models.user.id')}>
+                        <TableCell showOverflow title={$_.t('models.user.id')}>
                             <Copy value={user.$id}>
                                 <Pill button>
                                     <span class="icon-duplicate" aria-hidden="true" />
@@ -94,7 +95,7 @@
                                 </Pill>
                             </Copy>
                         </TableCell>
-                        <TableCellText title={$_('models.user.joined')}>
+                        <TableCellText title={$_.t('models.user.joined')}>
                             {toLocaleDateTime(user.registration)}
                         </TableCellText>
                     </TableRowLink>

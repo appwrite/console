@@ -5,6 +5,7 @@
             "name": "Name",
             "email": "Email",
             "status": "Status",
+            "password": "Passwort",
             "id": "ID",
             "joined": "Beigetreten",
             "verified": "verifiziert",
@@ -19,6 +20,13 @@
                 "title": "Benutzer",
                 "search": "Suche nach Name, Email oder ID",
                 "create": "Benutzer erstellen"
+            },
+            "create": {
+                "users": {
+                    "name": "$t(models.user.name) eingeben",
+                    "email": "$t(models.user.email) eingeben",
+                    "password": "$t(models.user.password) eingeben"
+                }
             }
         }
     }

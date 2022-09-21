@@ -9,6 +9,7 @@
         Form,
         FormList
     } from '$lib/elements/forms';
+    import { _ } from '$lib/i18n';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -52,20 +53,20 @@
         <FormList>
             <InputText
                 id="name"
-                label="Name"
-                placeholder="Enter name"
+                label={$_.t('models.user.name')}
+                placeholder={$_.t('services.authentication.create.users.name')}
                 autofocus={true}
                 bind:value={name} />
             <InputEmail
                 id="email"
-                label="Email"
-                placeholder="Enter email"
+                label={$_.t('models.user.email')}
+                placeholder={$_.t('services.authentication.create.users.email')}
                 required={true}
                 bind:value={mail} />
             <InputPassword
                 id="password"
-                label="Password"
-                placeholder="Enter password"
+                label={$_.t('models.user.password')}
+                placeholder={$_.t('services.authentication.create.users.password')}
                 required={true}
                 showPasswordButton={true}
                 bind:value={pass} />
