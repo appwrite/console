@@ -2,11 +2,11 @@
     "globals": {},
     "models": {
         "user": {
+            "id": "ID",
             "name": "Name",
             "email": "Email",
             "status": "Status",
             "password": "Passwort",
-            "id": "ID",
             "joined": "Beigetreten",
             "verified": "verifiziert",
             "unverified": "unverifiziert",
@@ -18,7 +18,7 @@
             "title": "Authentifizierung",
             "users": {
                 "title": "Benutzer",
-                "search": "Suche nach Name, Email oder ID",
+                "search": "Suche nach $t(models.user.name), $t(models.user.email) oder $t(models.user.id)",
                 "create": "Benutzer erstellen"
             },
             "create": {

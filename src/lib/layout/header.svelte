@@ -11,6 +11,7 @@
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
+    import { _ } from '$lib/i18n';
 
     let showDropdown = false;
 
@@ -86,6 +87,14 @@
                                     showDropdown = false;
                                     newOrgModal.set(true);
                                 }}>New organization</DropListItem>
+                            <DropListItem
+                                on:click={() => {
+                                    $_.changeLanguage('en');
+                                }}>🇬🇧</DropListItem>
+                            <DropListItem
+                                on:click={() => {
+                                    $_.changeLanguage('de');
+                                }}>🇩🇪</DropListItem>
                             <DropListLink
                                 href={`${base}/console/account`}
                                 on:click={() => (showDropdown = false)}>Your Account</DropListLink>
