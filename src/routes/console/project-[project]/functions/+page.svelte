@@ -5,7 +5,7 @@
     import { Empty, EmptyGridItem, Pagination, Copy, GridItem1 } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
-    import Create from './_create.svelte';
+    import Create from './createFunction.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { tooltip } from '$lib/actions/tooltip';
@@ -13,6 +13,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import { onMount } from 'svelte';
+    import { wizard } from '$lib/stores/wizard';
 
     let showCreate = false;
     let search = '';
@@ -31,6 +32,10 @@
         await goto(`${base}/console/project-${project}/functions/function/${event.detail.$id}`);
     };
 
+    function openWizard() {
+        wizard.start(Create);
+    }
+
     $: functionList.load(search, limit, offset ?? 0);
 </script>
 
@@ -38,7 +43,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <h2 class="heading-level-5">Functions</h2>
 
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={openWizard}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create function</span>
         </Button>
     </div>
