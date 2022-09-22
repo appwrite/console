@@ -70,7 +70,7 @@
                     level: 0
                 },
                 {
-                    href: `project-${$project.$id}`,
+                    href: `project-${$project.$id}/overview`,
                     title: $project.name
                 }
             ]

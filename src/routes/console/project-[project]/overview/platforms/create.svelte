@@ -3,7 +3,7 @@
     import { InputText, Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { project } from './store';
+    import { project } from '../../.../../store';
 
     export let show = false;
 
