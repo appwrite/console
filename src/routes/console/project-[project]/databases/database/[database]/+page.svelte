@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, EmptyGridItem, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1 } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -63,9 +63,9 @@
                 </GridItem1>
             {/each}
             {#if ($collections.total % 2 !== 0 || $collections.total % 4 === 0) && $collections.total - offset <= limit}
-                <EmptyGridItem on:click={() => (showCreate = true)}>
+                <Empty isButton on:click={() => (showCreate = true)}>
                     <p>Create a new collection</p>
-                </EmptyGridItem>
+                </Empty>
             {/if}
         </div>
 
@@ -90,20 +90,8 @@
             <Pagination {limit} bind:offset sum={$collections?.total} />
         </div>
     {:else}
-        <Empty dashed centered>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <Button secondary round on:click={() => (showCreate = true)}>
-                        <i class="icon-plus" />
-                    </Button>
-                </div>
-                <div class="common-section">
-                    <p>Create your first collection to get started</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary href="#">Documentation</Button>
-                </div>
-            </div>
+        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+            <p>Create your first collection to get started</p>
         </Empty>
     {/if}
 </Container>

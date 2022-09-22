@@ -195,20 +195,8 @@
             <Pagination limit={$pageLimit} bind:offset sum={$files?.total} />
         </div>
     {:else}
-        <Empty dashed centered>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <Button secondary round on:click={() => (showCreate = true)}>
-                        <i class="icon-plus" />
-                    </Button>
-                </div>
-                <div class="common-section">
-                    <p>Upload some files to get started</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary href="#">Documentation</Button>
-                </div>
-            </div>
+        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+            <p>Upload some files to get started</p>
         </Empty>
     {/if}
 </Container>

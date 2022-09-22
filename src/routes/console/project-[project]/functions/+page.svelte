@@ -40,13 +40,18 @@
             <Pagination {limit} bind:offset sum={response.total} />
         {:else if search}
             <Empty>
-                <svelte:fragment slot="header"
-                    >No results found for <b>{search}</b></svelte:fragment>
+                <div class="u-flex u-flex-vertical">
+                    No results found for <b>{search}</b>
+                </div>
             </Empty>
         {:else}
             <Empty>
-                <svelte:fragment slot="header">No Functions Found</svelte:fragment>
-                You haven't created any functions for your project yet.
+                <div class="u-flex u-flex-vertical">
+                    <div class="common-section">No Functions Found</div>
+                    <div class="common-section">
+                        You haven't created any functions for your project yet.
+                    </div>
+                </div>
             </Empty>
         {/if}
     {/await}

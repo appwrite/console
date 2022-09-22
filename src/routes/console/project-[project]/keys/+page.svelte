@@ -48,8 +48,12 @@
             </Table>
         {:else}
             <Empty>
-                <svelte:fragment slot="header">No API Keys Found</svelte:fragment>
-                You haven't created any API keys for your project yet.
+                <div class="u-flex u-flex-vertical">
+                    <div class="common-section">No API Keys Found</div>
+                    <div class="common-section">
+                        You haven't created any API keys for your project yet.
+                    </div>
+                </div>
             </Empty>
         {/if}
         <Button on:click={() => (showCreate = true)}>Add API Key</Button>

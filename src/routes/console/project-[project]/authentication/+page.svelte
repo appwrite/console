@@ -118,27 +118,17 @@
             <Pagination limit={$pageLimit} bind:offset sum={$usersList.total} />
         </div>
     {:else}
-        <Empty dashed centered>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div
-                    class="common-section"
-                    use:event={{
-                        name: 'console_users',
-                        action: 'click_create',
-                        parameters: {
-                            type: 'user'
-                        }
-                    }}>
-                    <Button secondary round on:click={() => (showCreate = true)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                    </Button>
-                </div>
-                <div class="common-section">
-                    <p>Add Your First User To Get Started</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary href="#">Documentation</Button>
-                </div>
+        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+            <div
+                class="common-section"
+                use:event={{
+                    name: 'console_users',
+                    action: 'click_create',
+                    parameters: {
+                        type: 'user'
+                    }
+                }}>
+                <p>Add Your First User To Get Started</p>
             </div>
         </Empty>
     {/if}

@@ -97,7 +97,7 @@
             <Pagination {limit} bind:offset sum={$teamsList.total} />
         </div>
     {:else}
-        <Empty dashed centered>
+        <Empty isButton commonSection on:click={() => (showCreate = true)}>
             <div
                 class="common-section"
                 use:event={{
@@ -107,15 +107,7 @@
                         type: 'team'
                     }
                 }}>
-                <Button secondary round on:click={() => (showCreate = true)}>
-                    <span class="icon-plus" aria-hidden="true" />
-                </Button>
-            </div>
-            <div class="common-section">
                 <p>Create your first team to get started</p>
-            </div>
-            <div class="common-section">
-                <Button secondary href="#">Documentation</Button>
             </div>
         </Empty>
     {/if}

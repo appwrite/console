@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
-    import { GridItem1, EmptyGridItem, Empty, Pagination } from '$lib/components';
+    import { GridItem1, Empty, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -106,9 +106,9 @@
                 {/if}
             {/each}
             {#if projects.length < limit + offset && (projects.length % 2 !== 0 || projects.length % 4 === 0)}
-                <EmptyGridItem on:click={() => (showCreate = true)}>
+                <Empty isButton on:click={() => (showCreate = true)}>
                     <p>Create a new project</p>
-                </EmptyGridItem>
+                </Empty>
             {/if}
         </ul>
 
@@ -117,19 +117,8 @@
             <Pagination {limit} bind:offset sum={projects.length} />
         </div>
     {:else}
-        <Empty dashed centered>
-            <div class="grid-item-1">
-                <div class="u-flex u-flex-vertical u-cross-center ">
-                    <div class="common-section">
-                        <Button secondary round on:click={() => (showCreate = true)}>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Create a new project</p>
-                    </div>
-                </div>
-            </div>
+        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+            <p>Create a new project</p>
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {projects?.length}</p>

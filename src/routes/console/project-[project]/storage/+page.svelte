@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, GridItem1, EmptyGridItem } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1 } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -82,9 +82,9 @@
                 </GridItem1>
             {/each}
             {#if $bucketList.total % 2 !== 0}
-                <EmptyGridItem on:click={() => (showCreate = true)}>
+                <Empty isButton on:click={() => (showCreate = true)}>
                     <p>Add a new bucket</p>
-                </EmptyGridItem>
+                </Empty>
             {/if}
         </ul>
 
@@ -109,22 +109,8 @@
             <Pagination limit={$pageLimit} bind:offset sum={$bucketList?.total} />
         </div>
     {:else}
-        <Empty dashed centered>
-            <div class="grid-item-1">
-                <div class="u-flex u-flex-vertical u-cross-center">
-                    <div class="common-section">
-                        <Button secondary round on:click={() => (showCreate = true)}>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Add your first bucket to get started</p>
-                    </div>
-                    <div class="common-section">
-                        <Button secondary href="#">Documentation</Button>
-                    </div>
-                </div>
-            </div>
+        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+            <p>Add your first bucket to get started</p>
         </Empty>
     {/if}
 </Container>
