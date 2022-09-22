@@ -50,14 +50,7 @@
             {/each}
             {#if ($databaseList.total % 2 !== 0 || $databaseList.total % 4 === 0) && $databaseList.total - offset <= limit}
                 <EmptyGridItem on:click={() => (showCreate = true)}>
-                    <div class="common-section">
-                        <Button secondary round>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Create a new database</p>
-                    </div>
+                    <p>Create a new database</p>
                 </EmptyGridItem>
             {/if}
         </div>

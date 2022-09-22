@@ -64,14 +64,7 @@
             {/each}
             {#if ($collections.total % 2 !== 0 || $collections.total % 4 === 0) && $collections.total - offset <= limit}
                 <EmptyGridItem on:click={() => (showCreate = true)}>
-                    <div class="common-section">
-                        <Button secondary round>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Create a new collection</p>
-                    </div>
+                    <p>Create a new collection</p>
                 </EmptyGridItem>
             {/if}
         </div>

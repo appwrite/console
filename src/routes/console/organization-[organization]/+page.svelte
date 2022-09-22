@@ -107,14 +107,7 @@
             {/each}
             {#if projects.length < limit + offset && (projects.length % 2 !== 0 || projects.length % 4 === 0)}
                 <EmptyGridItem on:click={() => (showCreate = true)}>
-                    <div class="common-section">
-                        <Button secondary round>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Create a new project</p>
-                    </div>
+                    <p>Create a new project</p>
                 </EmptyGridItem>
             {/if}
         </ul>

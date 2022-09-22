@@ -69,14 +69,7 @@
             {/each}
             {#if $organizationList?.total < limit + offset && ($organizationList?.total % 2 !== 0 || $organizationList?.total % 4 === 0)}
                 <EmptyGridItem on:click={() => (addOrganization = true)}>
-                    <div class="common-section">
-                        <Button secondary round>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Create a new organization</p>
-                    </div>
+                    <p>Create a new organization</p>
                 </EmptyGridItem>
             {/if}
         </ul>

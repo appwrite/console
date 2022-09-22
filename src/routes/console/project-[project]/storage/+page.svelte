@@ -83,14 +83,7 @@
             {/each}
             {#if $bucketList.total % 2 !== 0}
                 <EmptyGridItem on:click={() => (showCreate = true)}>
-                    <div class="common-section">
-                        <Button secondary round>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Add a new bucket</p>
-                    </div>
+                    <p>Add a new bucket</p>
                 </EmptyGridItem>
             {/if}
         </ul>
