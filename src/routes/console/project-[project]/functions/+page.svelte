@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
     import { Empty, EmptyGridItem, Pagination, Copy, GridItem1 } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -15,7 +14,6 @@
     import { onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
 
-    let showCreate = false;
     let search = '';
     let offset = 0;
 
@@ -26,11 +24,6 @@
     onMount(async () => {
         deployments = await functionList.getDeployments($functionList.functions);
     });
-
-    const handleCreate = async (event: CustomEvent<Models.Function>) => {
-        showCreate = false;
-        await goto(`${base}/console/project-${project}/functions/function/${event.detail.$id}`);
-    };
 
     function openWizard() {
         wizard.start(Create);
@@ -103,7 +96,7 @@
                 </GridItem1>
             {/each}
             {#if ($functionList.total % 2 !== 0 || $functionList.total % 4 === 0) && $functionList.total - offset <= limit}
-                <EmptyGridItem on:click={() => (showCreate = true)}>
+                <EmptyGridItem on:click={openWizard}>
                     <div class="common-section">
                         <Button secondary round>
                             <i class="icon-plus" />
@@ -124,7 +117,7 @@
         <Empty dashed centered>
             <div class="u-flex u-flex-vertical u-cross-center">
                 <div class="common-section">
-                    <Button secondary round on:click={() => (showCreate = true)}>
+                    <Button secondary round on:click={openWizard}>
                         <i class="icon-plus" />
                     </Button>
                 </div>
@@ -142,5 +135,3 @@
         </Empty>
     {/if}
 </Container>
-
-<Create bind:showCreate on:created={handleCreate} />
