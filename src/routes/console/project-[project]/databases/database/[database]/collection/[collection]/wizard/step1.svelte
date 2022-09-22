@@ -90,7 +90,7 @@
                 </div>
             {:else}
                 <InnerModal bind:show={showCustomId}>
-                    <svelte:fragment slot="title">User ID</svelte:fragment>
+                    <svelte:fragment slot="title">Document ID</svelte:fragment>
                     Enter a custom document ID. Leave blank for a randomly generated one.
                     <svelte:fragment slot="content">
                         <div class="form">
