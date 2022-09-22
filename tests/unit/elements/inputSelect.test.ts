@@ -67,6 +67,18 @@ test('shows select input - disabled', () => {
     expect(getByLabelText('select')).toBeDisabled();
 });
 
+test('shows select input - hide label', () => {
+    render(InputSelect, {
+        id: 'select',
+        options,
+        label: 'label',
+        showLabel: false
+    });
+
+    const label = document.querySelector('label');
+    expect(label).toHaveClass('u-hide');
+});
+
 test('state', async () => {
     const { component, getByLabelText } = render(InputSelect, {
         id: 'select',

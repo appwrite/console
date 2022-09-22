@@ -9,12 +9,17 @@
 <li
     class:steps-item={!isSub}
     class:steps-sub-item={isSub}
-    class:is-done={completed}
-    class:is-current={current}
     aria-label={` ${completed ? 'done' : current ? 'current' : ''} step`}>
     {#if isSub}
         <span class="text">{step.text}</span>
     {:else}
+        {#if completed}
+            <div class="bullet is-done">
+                <span class="icon-check" aria-hidden="true" />
+            </div>
+        {:else}
+            <div class="bullet" class:is-current={current} />
+        {/if}
         <div class="step-item-content">
             <span class="text">{step.text}</span>
             {#if step?.substeps}

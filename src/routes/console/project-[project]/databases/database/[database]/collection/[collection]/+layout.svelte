@@ -8,8 +8,9 @@
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
-
     const path = `databases/database/${databaseId}/collection/${collectionId}`;
+
+    let loaded = false;
 
     onMount(handle);
     afterNavigate(handle);
@@ -51,6 +52,8 @@
                 }
             ]
         });
+
+        loaded = true;
     }
 </script>
 
@@ -58,6 +61,6 @@
     <title>Appwrite - {$collection?.name ?? 'Collection'}</title>
 </svelte:head>
 
-{#if $collection}
+{#if $collection && loaded}
     <slot />
 {/if}

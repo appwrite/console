@@ -40,6 +40,27 @@ test('shows email input - placeholder', () => {
     expect(getByPlaceholderText('find me')).toBeInTheDocument();
 });
 
+test('shows email input - hide label', () => {
+    render(InputEmail, {
+        id: 'input',
+        label: 'label',
+        showLabel: false
+    });
+
+    const label = document.querySelector('label');
+    expect(label).toHaveClass('u-hide');
+});
+
+test('shows email input - autocomplete', () => {
+    const { getByLabelText } = render(InputEmail, {
+        id: 'input',
+        label: 'input',
+        autocomplete: true
+    });
+
+    expect(getByLabelText('input')).toHaveAttribute('autocomplete', 'on');
+});
+
 test('state', async () => {
     const { component, getByLabelText } = render(InputEmail, {
         id: 'input',

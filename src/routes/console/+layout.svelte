@@ -13,6 +13,7 @@
     import { page } from '$app/stores';
     import { afterNavigate } from '$app/navigation';
     import { onMount } from 'svelte';
+    import { wizard } from '$lib/stores/wizard';
 
     updateLayout({
         title: $organization?.name ?? '',
@@ -49,6 +50,10 @@
     <slot />
     <footer class="main-footer" />
 </Shell>
+
+{#if $wizard.show && $wizard.component}
+    <svelte:component this={$wizard.component} />
+{/if}
 
 {#if $newOrgModal}
     <Create bind:show={$newOrgModal} closable={!!$organizationList?.total} />
