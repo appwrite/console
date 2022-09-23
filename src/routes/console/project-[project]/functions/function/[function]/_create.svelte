@@ -62,8 +62,8 @@
             <InputSwitch id="active" label="Activate Deployment after build" bind:value={active} />
         {/if}
         <svelte:fragment slot="footer">
-            <Button submit>Create</Button>
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
+            <Button submit>Create</Button>
         </svelte:fragment>
     </Modal>
 </Form>
