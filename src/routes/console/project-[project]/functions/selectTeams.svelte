@@ -81,6 +81,6 @@
     {/if}
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showTeams = false)}>Cancel</Button>
-        <Button submit>Add</Button>
+        <Button on:click={() => (showTeams = false)}>Add</Button>
     </svelte:fragment>
 </Modal>
