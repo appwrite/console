@@ -1,10 +1,12 @@
 <script lang="ts">
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
-    import { project } from '../store';
+    import type { Models } from '@aw-labs/appwrite-console';
     import { Container } from '$lib/layout';
     import { page } from '$app/stores';
+    import { browser } from '$app/environment';
+    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { project } from '../store';
+
     title.set($project.name);
     tabs.set([]);
     backButton.set('');
@@ -15,22 +17,33 @@
     });
 
     $: path = `/console/project-${$project.$id}/overview`;
-    $: usage = sdkForConsole.projects.getUsage($project.$id, '30d');
 
-    function last(set: Array<unknown>): Models.Metric | null {
-        return (set as Models.Metric[]).slice(-1)[0] ?? null;
-    }
-
-    function total(set: Array<unknown>): number {
-        return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
-    }
-
+    const usage = sdkForConsole.projects.getUsage($project.$id, '30d');
     const formatter = Intl.NumberFormat('en', {
         notation: 'compact'
     });
 
+    // TODO: metric type is wrong
+    function last(set: Array<unknown>): Models.Metric | null {
+        return (set as Models.Metric[]).slice(-1)[0] ?? null;
+    }
+
+    // TODO: metric type is wrong
+    function total(set: Array<unknown>): number {
+        return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
+    }
+
     function format(number: number): string {
         return formatter.format(number);
+    }
+
+    if (browser) {
+        sdkForConsole.client.subscribe<unknown>('console', (message) => {
+            if (message.events.includes('stats.connections')) {
+                // TODO: take care of realtime connections
+                return;
+            }
+        });
     }
 </script>
 

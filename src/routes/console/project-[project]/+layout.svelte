@@ -56,7 +56,11 @@
             await project.load(projectId);
             if ($organization?.$id !== $project?.teamId) {
                 await organization.load($project.teamId);
+            } else {
+                organization.load($project.teamId);
             }
+        } else {
+            project.load(projectId);
         }
 
         updateLayout({

@@ -1,0 +1,59 @@
+<script lang="ts">
+    import { CardGrid } from '$lib/components';
+    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import { project } from '../../../store';
+    import { platform } from './store';
+
+    let hostname: string = null;
+
+    onMount(() => {
+        hostname ??= $platform.hostname;
+    });
+
+    const updateHostname = async () => {
+        try {
+            await sdkForConsole.projects.updatePlatform(
+                $project.$id,
+                $platform.$id,
+                $platform.name,
+                undefined,
+                undefined,
+                hostname
+            );
+            project.load($project.$id);
+            addNotification({
+                type: 'success',
+                message: 'Platform hostname has been updated'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    };
+</script>
+
+<Form on:submit={updateHostname}>
+    <CardGrid>
+        <h6 class="heading-level-7">Update Hostname</h6>
+        <p class="text">You can use * to allow wildcard hostnames or subdomains.</p>
+        <svelte:fragment slot="aside">
+            <FormList>
+                <InputText
+                    id="hostname"
+                    label="Hostname"
+                    bind:value={hostname}
+                    required
+                    placeholder="myapp.com" />
+            </FormList>
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button disabled={hostname === $platform.hostname} submit>Update</Button>
+        </svelte:fragment>
+    </CardGrid>
+</Form>

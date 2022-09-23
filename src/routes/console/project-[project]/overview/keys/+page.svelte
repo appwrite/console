@@ -1,5 +1,6 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -12,6 +13,9 @@
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { project } from '../../store';
+    import Create from './create.svelte';
+
+    let show = false;
 
     onMount(handle);
     afterNavigate(handle);
@@ -30,6 +34,15 @@
 </script>
 
 <h3 class="heading-level-7">API Keys</h3>
+<div class="common-section u-flex u-gap-12">
+    <h3 class="heading-level-7">Platforms</h3>
+    <span class="u-margin-inline-start-auto">
+        <Button on:click={() => (show = true)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create API Key</span>
+        </Button>
+    </span>
+</div>
 
 <Table>
     <TableHeader>
@@ -55,3 +68,5 @@
         {/each}
     </TableBody>
 </Table>
+
+<Create bind:show />
