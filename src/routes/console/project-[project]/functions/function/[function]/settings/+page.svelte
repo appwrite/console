@@ -1,7 +1,14 @@
 <script lang="ts">
     import { CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
+    import {
+        Button,
+        InputNumber,
+        InputSelect,
+        InputCron,
+        Form,
+        FormList
+    } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -28,8 +35,7 @@
 
     let options = [
         { label: 'seconds', value: 'seconds' },
-        { label: 'minutes', value: 'minutes' },
-        { label: 'hours', value: 'hours' }
+        { label: 'minutes', value: 'minutes' }
     ];
 
     const updateTimeout = async () => {
@@ -93,26 +99,57 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
-        <h2 class="heading-level-6">Update Timeout</h2>
-        <p>Limit the execution time of your function. Maximum value is 900 seconds (15 minutes).</p>
-        <svelte:fragment slot="aside">
-            <form class="form u-grid u-gap-16">
-                <ul class="form-list is-multiple">
-                    <InputNumber id="length" label="Time" value={timeout} />
-                    <InputSelect
-                        id="Increment"
-                        {options}
-                        label="Time Period"
-                        value={options[0].value} />
-                </ul>
-            </form>
-        </svelte:fragment>
+    <Form commonSection on:submit={() => console.log($func.schedule)}>
+        <CardGrid>
+            <h2 class="heading-level-6">Update CRON Schedule</h2>
+            <p>
+                Set a CRON schedule to trigger your function. Leave blank for no schedule. <a
+                    href="#/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link">
+                    More details on CRON syntax here.</a>
+            </p>
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputCron
+                        bind:value={$func.schedule}
+                        label="Schedule (CRON Syntax)"
+                        id="schedule" />
+                </FormList>
+            </svelte:fragment>
 
-        <svelte:fragment slot="actions">
-            <Button disabled={true} on:click={updateTimeout}>Update</Button>
-        </svelte:fragment>
-    </CardGrid>
+            <svelte:fragment slot="actions">
+                <Button disabled={false} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+
+    <Form commonSection on:submit={updateTimeout}>
+        <CardGrid>
+            <h2 class="heading-level-6">Update Timeout</h2>
+            <p>
+                Limit the execution time of your function. Maximum value is 900 seconds (15
+                minutes).
+            </p>
+            <svelte:fragment slot="aside">
+                <div class="form u-grid u-gap-16">
+                    <ul class="form-list is-multiple">
+                        <InputNumber id="length" label="Time" value={timeout} />
+                        <InputSelect
+                            id="Increment"
+                            {options}
+                            label="Time Period"
+                            value={options[0].value} />
+                    </ul>
+                </div>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={true} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
 
     <CardGrid>
         <h6 class="heading-level-7">Delete Function</h6>

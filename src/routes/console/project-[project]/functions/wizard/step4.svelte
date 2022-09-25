@@ -1,6 +1,7 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
-    // import { createFunction } from './store';
+    import { FormList, InputCron } from '$lib/elements/forms';
+    import { createFunction } from './store';
 </script>
 
 <WizardStep>
@@ -12,7 +13,11 @@
             rel="noopener noreferrer"
             class="link">More details on CRON syntax here</a
         >.
+        <FormList>
+            <InputCron
+                bind:value={$createFunction.schedule}
+                label="Schedule (CRON Syntax)"
+                id="schedule" />
+        </FormList>
     </svelte:fragment>
-
-    EVENT
 </WizardStep>
