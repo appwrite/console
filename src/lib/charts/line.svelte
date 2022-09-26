@@ -3,7 +3,7 @@
     import { onDestroy, onMount } from 'svelte';
     import { app } from '$lib/stores/app';
     import type { ECharts } from 'echarts/core';
-    import type { BarSeriesOption } from 'echarts/charts';
+    import type { LineSeriesOption } from 'echarts/charts';
     import light from './echartLight.json';
     import dark from './echartDark.json';
 
@@ -11,7 +11,7 @@
     registerTheme('dark', dark);
 
     export let title: string;
-    export let series: BarSeriesOption[];
+    export let series: LineSeriesOption[];
 
     let chart: ECharts;
     let container: HTMLDivElement;
@@ -56,7 +56,7 @@
 
     onMount(async () => {
         use([
-            (await import('echarts/charts')).BarChart,
+            (await import('echarts/charts')).LineChart,
             (await import('echarts/components')).TitleComponent,
             (await import('echarts/components')).TooltipComponent,
             (await import('echarts/components')).GridComponent,
@@ -89,13 +89,10 @@
     const makeChart = () => {
         destroyChart();
         chart = init(container, $app.themeInUse);
-        series.forEach((s: BarSeriesOption) => {
-            s.type = 'bar';
+        series.forEach((s: LineSeriesOption) => {
+            s.type = 'line';
             s.stack = 'total';
-            s.barMaxWidth = 6;
-            s.itemStyle = {
-                borderRadius: [10, 10, 0, 0]
-            };
+            s.showSymbol = false;
         });
     };
 

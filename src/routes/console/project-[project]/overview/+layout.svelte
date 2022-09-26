@@ -10,6 +10,7 @@
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { DropList, DropListItem } from '$lib/components';
+    import { BarChart, LineChart } from '$lib/charts';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -116,6 +117,14 @@
                                 </svelte:fragment>
                             </DropList>
                         </div>
+                        <BarChart
+                            title="Bandwith"
+                            series={[
+                                {
+                                    name: 'User',
+                                    data: [...$usage.network.map((e) => [e.date * 1000, e.value])]
+                                }
+                            ]} />
                     </div>
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
                         <div class="u-flex u-gap-16 u-main-space-between">
@@ -150,6 +159,14 @@
                                 </svelte:fragment>
                             </DropList>
                         </div>
+                        <LineChart
+                            title="Users"
+                            series={[
+                                {
+                                    name: 'Requests',
+                                    data: [...$usage.requests.map((e) => [e.date * 1000, e.value])]
+                                }
+                            ]} />
                     </div>
                     <div class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
@@ -185,7 +202,7 @@
 
                             <div class="grid-item-1-end-start">
                                 <div class="heading-level-4">
-                                    8.0 <span class="body-text-2">MB</span>
+                                    {last($usage.storage).value} <span class="body-text-2">KB</span>
                                 </div>
                                 <div>Users</div>
                             </div>
