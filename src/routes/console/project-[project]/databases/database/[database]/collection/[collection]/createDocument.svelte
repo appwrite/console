@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
+    import { beforeNavigate } from '$app/navigation';
     import { attributeList, documentList } from './store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { page } from '$app/stores';
@@ -60,6 +61,10 @@
         initializeDocument();
         $createDocument.read = [];
         $createDocument.write = [];
+    });
+
+    beforeNavigate(() => {
+        wizard.hide();
     });
 
     const stepsComponents: WizardStepsType = new Map();

@@ -9,7 +9,6 @@
 </script>
 
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
     import { Steps } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
@@ -40,10 +39,6 @@
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
     $: isLastStep = currentStep === steps.size;
-
-    beforeNavigate(() => {
-        wizard.hide();
-    });
 </script>
 
 <svelte:window on:keydown={handleKeydown} />

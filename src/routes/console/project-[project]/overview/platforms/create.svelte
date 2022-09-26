@@ -1,16 +1,16 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { InputText, Button, Form } from '$lib/elements/forms';
+    import { InputText, Button, Form, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { project } from './store';
+    import { project } from '../../.../../store';
 
     export let show = false;
 
     let name: string;
     let hostname: string;
 
-    const create = async () => {
+    async function create() {
         try {
             await sdkForConsole.projects.createPlatform(
                 $project.$id,
@@ -29,14 +29,16 @@
                 message: error.message
             });
         }
-    };
+    }
 </script>
 
 <Form on:submit={create}>
     <Modal bind:show>
         <svelte:fragment slot="header">Add Platform</svelte:fragment>
-        <InputText id="name" label="Name" bind:value={name} required />
-        <InputText id="host" label="Hostname" bind:value={hostname} required />
+        <FormList>
+            <InputText id="name" label="Name" bind:value={name} autofocus required />
+            <InputText id="host" label="Hostname" bind:value={hostname} required />
+        </FormList>
         <svelte:fragment slot="footer">
             <Button submit>Register</Button>
             <Button secondary on:click={() => (show = false)}>Cancel</Button>
