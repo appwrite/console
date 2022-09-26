@@ -18,6 +18,7 @@
         TableCellText
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { calculateTime } from '$lib/helpers/timeConversion';
 
     let search = '';
     let offset = 0;
@@ -62,7 +63,8 @@
                             </Pill>
                         </TableCellText>
                         <TableCellText title="Type">{execution.trigger}</TableCellText>
-                        <TableCellText title="Build Time">{execution.time}</TableCellText>
+                        <TableCellText title="Build Time">
+                            {calculateTime(execution.time)}</TableCellText>
                     </TableRow>
                 {/each}
             </TableBody>
