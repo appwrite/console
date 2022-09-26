@@ -124,7 +124,6 @@
                             series={[
                                 {
                                     name: 'Bandwith',
-                                    //@ts-ignore
                                     data: [...$usage.network.map((e) => [e.date * 1000, e.value])]
                                 }
                             ]} />
@@ -166,7 +165,6 @@
                             series={[
                                 {
                                     name: 'Requests',
-                                    //@ts-ignore
                                     data: [...$usage.requests.map((e) => [e.date * 1000, e.value])]
                                 }
                             ]} />
