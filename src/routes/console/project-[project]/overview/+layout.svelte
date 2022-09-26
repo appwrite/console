@@ -123,12 +123,30 @@
                                 </div>
                                 <div>Requests</div>
                             </div>
-                            <div class="drop-wrapper u-cross-child-start">
-                                <button class="transparent-button">
+                            <DropList
+                                bind:show={showPeriod}
+                                position="bottom"
+                                horizontal="left"
+                                arrowPosition="end"
+                                childStart>
+                                <button
+                                    class="transparent-button"
+                                    on:click={() => (showPeriod = !showPeriod)}>
                                     <span class="text">{period}</span>
                                     <span class="icon-cheveron-down" aria-hidden="true" />
                                 </button>
-                            </div>
+                                <svelte:fragment slot="list">
+                                    <DropListItem on:click={() => changePeriod('24h')}>
+                                        24h
+                                    </DropListItem>
+                                    <DropListItem on:click={() => changePeriod('30d')}>
+                                        30d
+                                    </DropListItem>
+                                    <DropListItem on:click={() => changePeriod('90d')}>
+                                        90d
+                                    </DropListItem>
+                                </svelte:fragment>
+                            </DropList>
                         </div>
                     </div>
                     <div class="card is-2-columns-large-screen">
