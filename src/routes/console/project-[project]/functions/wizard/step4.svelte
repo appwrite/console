@@ -13,11 +13,11 @@
             rel="noopener noreferrer"
             class="link">More details on CRON syntax here</a
         >.
-        <FormList>
-            <InputCron
-                bind:value={$createFunction.schedule}
-                label="Schedule (CRON Syntax)"
-                id="schedule" />
-        </FormList>
     </svelte:fragment>
+    <FormList>
+        <InputCron
+            bind:value={$createFunction.schedule}
+            label="Schedule (CRON Syntax)"
+            id="schedule" />
+    </FormList>
 </WizardStep>

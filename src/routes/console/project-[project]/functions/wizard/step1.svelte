@@ -9,10 +9,10 @@
     let showCustomId = false;
 
     let options = [
-        { label: 'Node.js 16.0', value: 'nodejs' },
-        { label: 'PHP 8.0', value: 'php' },
-        { label: 'Ruby 3.0', value: 'ruby' },
-        { label: 'Python 3.9', value: 'python' }
+        { label: 'Node.js 16.0', value: 'node-16.0' },
+        { label: 'PHP 8.0', value: 'php-8.0' },
+        { label: 'Ruby 3.0', value: 'ruby-3.0' },
+        { label: 'Python 3.9', value: 'python-3.9' }
     ];
 </script>
 
