@@ -33,8 +33,8 @@
         backButton.set('');
 
         copyData.set({
-            text: '',
-            value: ''
+            text: 'Project ID',
+            value: $project.$id
         });
     }
 

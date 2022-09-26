@@ -58,6 +58,10 @@
             back: `${base}/console/project-${$page.params.project}/overview/keys`,
             title: $key.name,
             level: 4,
+            copy: {
+                text: 'API Key Secret',
+                value: $key.secret
+            },
             breadcrumbs: [
                 {
                     level: 3,
