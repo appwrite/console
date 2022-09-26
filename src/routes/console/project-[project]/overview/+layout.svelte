@@ -15,7 +15,8 @@
     $: path = `/console/project-${projectId}/overview`;
 
     let period: UsagePeriods = '30d';
-    let showPeriod = false;
+    let showPeriodBandwith = false;
+    let showPerioRequests = false;
 
     onMount(handle);
     afterNavigate(handle);
@@ -90,14 +91,14 @@
                                 <div>Bandwidth</div>
                             </div>
                             <DropList
-                                bind:show={showPeriod}
+                                bind:show={showPeriodBandwith}
                                 position="bottom"
                                 horizontal="left"
                                 arrowPosition="end"
                                 childStart>
                                 <button
                                     class="transparent-button"
-                                    on:click={() => (showPeriod = !showPeriod)}>
+                                    on:click={() => (showPeriodBandwith = !showPeriodBandwith)}>
                                     <span class="text">{period}</span>
                                     <span class="icon-cheveron-down" aria-hidden="true" />
                                 </button>
@@ -124,14 +125,14 @@
                                 <div>Requests</div>
                             </div>
                             <DropList
-                                bind:show={showPeriod}
+                                bind:show={showPerioRequests}
                                 position="bottom"
                                 horizontal="left"
                                 arrowPosition="end"
                                 childStart>
                                 <button
                                     class="transparent-button"
-                                    on:click={() => (showPeriod = !showPeriod)}>
+                                    on:click={() => (showPerioRequests = !showPerioRequests)}>
                                     <span class="text">{period}</span>
                                     <span class="icon-cheveron-down" aria-hidden="true" />
                                 </button>
