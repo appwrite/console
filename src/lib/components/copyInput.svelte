@@ -4,6 +4,8 @@
     import { addNotification } from '$lib/stores/notifications';
 
     export let value: string;
+    export let label: string = null;
+    export let showLabel = false;
 
     let content = 'Click to copy';
 
@@ -21,17 +23,20 @@
 </script>
 
 <div class="input-text-wrapper is-with-end-button">
-    <input {value} type="text" class="input-text" readonly />
-    <button
-        type="button"
-        class="input-button"
-        aria-label="Click to copy."
-        on:click={copy}
-        on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
-        use:tooltip={{
-            content,
-            hideOnClick: false
-        }}>
-        <span class="icon-duplicate" aria-hidden="true" />
-    </button>
+    <label class:u-hide={!showLabel} class="label" for={label}>{label}</label>
+    <div class="input-text-wrapper">
+        <input {value} id={label} type="text" class="input-text" readonly />
+        <button
+            type="button"
+            class="input-button"
+            aria-label="Click to copy."
+            on:click={copy}
+            on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
+            use:tooltip={{
+                content,
+                hideOnClick: false
+            }}>
+            <span class="icon-duplicate" aria-hidden="true" />
+        </button>
+    </div>
 </div>

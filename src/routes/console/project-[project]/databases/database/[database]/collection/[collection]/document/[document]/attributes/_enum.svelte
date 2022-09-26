@@ -15,4 +15,10 @@
     });
 </script>
 
-<InputSelect bind:value {options} {id} {label} />
+<InputSelect
+    bind:value
+    {options}
+    {id}
+    {label}
+    placeholder="Select a value"
+    showLabel={!!label?.length} />

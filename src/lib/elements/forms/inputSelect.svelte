@@ -4,11 +4,12 @@
     export let label: string;
     export let showLabel = true;
     export let id: string;
-    export let value: string;
+    export let value: string | number | boolean;
+    export let placeholder = '';
     export let required = false;
     export let disabled = false;
     export let options: {
-        value: string;
+        value: string | boolean | number;
         label: string;
     }[];
 
@@ -40,6 +41,9 @@
             bind:this={element}
             bind:value
             on:invalid={handleInvalid}>
+            {#if placeholder}
+                <option value={null} disabled selected hidden>{placeholder}</option>
+            {/if}
             {#each options as option}
                 <option value={option.value} selected={option.value === value}>
                     {option.label}

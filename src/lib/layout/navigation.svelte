@@ -14,7 +14,7 @@
                     <li class="drop-list-item">
                         <a
                             class="drop-button"
-                            class:is-selected={$page.url.pathname === path}
+                            class:is-selected={$page.url.pathname.startsWith(`${path}/overview`)}
                             href={path}>
                             <span class="icon-chart-bar" aria-hidden="true" />
                             <span class="text">Overview</span>

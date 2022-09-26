@@ -52,6 +52,57 @@ test('shows password input - placeholder', () => {
     expect(getByPlaceholderText('find me')).toBeInTheDocument();
 });
 
+test('shows password input - meter', () => {
+    render(InputPassword, {
+        id: 'input',
+        label: 'input',
+        meter: true
+    });
+
+    const meter = document.querySelector('meter');
+    expect(meter).toBeInTheDocument();
+});
+
+test('shows password input - show password button', () => {
+    const { getByRole } = render(InputPassword, {
+        id: 'input',
+        label: 'input',
+        showPasswordButton: true
+    });
+
+    expect(getByRole('button')).toBeInTheDocument();
+});
+
+test('shows password input - maxlength', () => {
+    const { getByLabelText } = render(InputPassword, {
+        id: 'input',
+        label: 'input',
+        maxlength: 2
+    });
+
+    expect(getByLabelText('input')).toHaveAttribute('maxlength', '2');
+});
+test('shows password input - minlength', () => {
+    const { getByLabelText } = render(InputPassword, {
+        id: 'input',
+        label: 'input',
+        minlength: 2
+    });
+
+    expect(getByLabelText('input')).toHaveAttribute('minlength', '2');
+});
+
+test('shows password input - hide label', () => {
+    render(InputPassword, {
+        id: 'input',
+        label: 'label',
+        showLabel: false
+    });
+
+    const label = document.querySelector('label');
+    expect(label).toHaveClass('u-hide');
+});
+
 test('state', async () => {
     const { component, getByLabelText } = render(InputPassword, {
         id: 'input',

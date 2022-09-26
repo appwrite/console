@@ -9,6 +9,7 @@
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
+    export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
 
@@ -47,6 +48,7 @@
             {placeholder}
             {disabled}
             {required}
+            {readonly}
             type="email"
             class="input-text"
             autocomplete={autocomplete ? 'on' : 'off'}

@@ -13,9 +13,6 @@ const config = {
         adapter: adapter(),
         paths: {
             base: ''
-        },
-        prerender: {
-            default: false
         }
     }
 };

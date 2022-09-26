@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { browser } from '$app/env';
+    import { browser } from '$app/environment';
     import { createEventDispatcher } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
     import { Alert } from '$lib/components';
@@ -10,6 +10,7 @@
     export let error: string = null;
     export let closable = true;
 
+    let alert: HTMLElement;
     const dispatch = createEventDispatcher();
     const transitionFly: FlyParams = {
         duration: 150,
@@ -48,6 +49,10 @@
             document.body.classList.remove('u-overflow-hidden');
         }
     }
+
+    $: if (error) {
+        alert?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+    }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -81,22 +86,26 @@
             </header>
             <div class="modal-content">
                 {#if error}
-                    <Alert
-                        dismissible
-                        type="warning"
-                        on:dismiss={() => {
-                            error = null;
-                        }}>
-                        {error}
-                    </Alert>
+                    <div bind:this={alert}>
+                        <Alert
+                            dismissible
+                            type="warning"
+                            on:dismiss={() => {
+                                error = null;
+                            }}>
+                            {error}
+                        </Alert>
+                    </div>
                 {/if}
                 <slot />
             </div>
-            <div class="modal-footer">
-                <div class="u-flex u-main-end u-gap-12">
-                    <slot name="footer" />
+            {#if $$slots.footer}
+                <div class="modal-footer">
+                    <div class="u-flex u-main-end u-gap-12">
+                        <slot name="footer" />
+                    </div>
                 </div>
-            </div>
+            {/if}
         </section>
     </div>
 {/if}
