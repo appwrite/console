@@ -59,7 +59,8 @@
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
         usage.load(projectId, period);
-        showPeriod = false;
+        showPeriodBandwith = false;
+        showPerioRequests = false;
     }
 
     if (browser) {
