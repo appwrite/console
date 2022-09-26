@@ -6,7 +6,7 @@
     export let showLabel = true;
     export let id: string;
     export let value: string = null;
-    export let placeholder = '';
+    export let placeholder = '* * * * *';
     export let required = false;
     export let disabled = false;
     export let readonly = false;
@@ -17,10 +17,6 @@
 
     let element: HTMLInputElement;
     let error: string;
-
-    let pattern = new RegExp(
-        /^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/
-    );
 
     onMount(() => {
         if (element && autofocus) {
@@ -63,7 +59,6 @@
             {step}
             type="text"
             class="input-text"
-            {pattern}
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
