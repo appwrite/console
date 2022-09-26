@@ -16,7 +16,7 @@
 
     let period: UsagePeriods = '30d';
     let showPeriodBandwith = false;
-    let showPerioRequests = false;
+    let showPeriodRequests = false;
 
     onMount(handle);
     afterNavigate(handle);
@@ -60,7 +60,7 @@
         period = newPeriod;
         usage.load(projectId, period);
         showPeriodBandwith = false;
-        showPerioRequests = false;
+        showPeriodRequests = false;
     }
 
     if (browser) {
@@ -126,14 +126,14 @@
                                 <div>Requests</div>
                             </div>
                             <DropList
-                                bind:show={showPerioRequests}
+                                bind:show={showPeriodRequests}
                                 position="bottom"
                                 horizontal="left"
                                 arrowPosition="end"
                                 childStart>
                                 <button
                                     class="transparent-button"
-                                    on:click={() => (showPerioRequests = !showPerioRequests)}>
+                                    on:click={() => (showPeriodRequests = !showPeriodRequests)}>
                                     <span class="text">{period}</span>
                                     <span class="icon-cheveron-down" aria-hidden="true" />
                                 </button>
