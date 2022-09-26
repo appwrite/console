@@ -46,7 +46,6 @@
             <h6 class="heading-level-6">Users</h6>
             <p>Count of users over time</p>
             <BarChart
-                title="Users"
                 series={[
                     {
                         name: 'User',
@@ -58,7 +57,6 @@
             <h6 class="heading-level-6">Operations</h6>
             <p>Count of users create, read, update and delete operations over time</p>
             <BarChart
-                title="Create"
                 series={[
                     {
                         name: 'Create',
@@ -70,7 +68,6 @@
             <h6 class="heading-level-6">Operations</h6>
             <p>Count of users create, read, update and delete operations over time</p>
             <BarChart
-                title="Read"
                 series={[
                     {
                         name: 'Read',
@@ -82,7 +79,6 @@
             <h6 class="heading-level-6">Operations</h6>
             <p>Count of users create, read, update and delete operations over time</p>
             <BarChart
-                title="Update"
                 series={[
                     {
                         name: 'Update',
@@ -94,7 +90,6 @@
             <h6 class="heading-level-6">Operations</h6>
             <p>Count of users create, read, update and delete operations over time</p>
             <BarChart
-                title="Delete"
                 series={[
                     {
                         name: 'Delete',

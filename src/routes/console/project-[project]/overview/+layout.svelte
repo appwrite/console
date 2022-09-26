@@ -11,6 +11,7 @@
     import { afterNavigate } from '$app/navigation';
     import { DropList, DropListItem } from '$lib/components';
     import { BarChart, LineChart } from '$lib/charts';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -81,14 +82,16 @@
 {#if $project}
     <Container overlapCover>
         {#if $usage}
+            {@const bandwith = humanFileSize(total($usage.network))}
+            {@const storage = humanFileSize(last($usage.storage).value)}
             <section class="common-section">
                 <div class="grid-dashboard-1s-2m-6l">
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
                         <div class="u-flex u-gap-16 u-main-space-between">
                             <div>
                                 <div class="heading-level-4">
-                                    {total($usage.network)}
-                                    <span class="body-text-2">KB</span>
+                                    {bandwith.value}
+                                    <span class="body-text-2">{bandwith.unit}</span>
                                 </div>
                                 <div>Bandwidth</div>
                             </div>
@@ -118,10 +121,10 @@
                             </DropList>
                         </div>
                         <BarChart
-                            title="Bandwith"
                             series={[
                                 {
-                                    name: 'User',
+                                    name: 'Bandwith',
+                                    //@ts-ignore
                                     data: [...$usage.network.map((e) => [e.date * 1000, e.value])]
                                 }
                             ]} />
@@ -160,10 +163,10 @@
                             </DropList>
                         </div>
                         <LineChart
-                            title="Users"
                             series={[
                                 {
                                     name: 'Requests',
+                                    //@ts-ignore
                                     data: [...$usage.requests.map((e) => [e.date * 1000, e.value])]
                                 }
                             ]} />
@@ -202,9 +205,10 @@
 
                             <div class="grid-item-1-end-start">
                                 <div class="heading-level-4">
-                                    {last($usage.storage).value} <span class="body-text-2">KB</span>
+                                    {storage.value}
+                                    <span class="body-text-2">{storage.unit}</span>
                                 </div>
-                                <div>Users</div>
+                                <div>Storage</div>
                             </div>
 
                             <div class="grid-item-1-end-end">

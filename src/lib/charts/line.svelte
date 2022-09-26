@@ -10,7 +10,6 @@
     registerTheme('light', light);
     registerTheme('dark', dark);
 
-    export let title: string;
     export let series: LineSeriesOption[];
 
     let chart: ECharts;
@@ -18,9 +17,6 @@
 
     $: option = {
         animationDuration: 400,
-        title: {
-            text: ''
-        },
         animation: false,
         tooltip: {
             trigger: 'axis'
