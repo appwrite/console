@@ -81,7 +81,7 @@
     async function updateName() {
         try {
             await sdkForConsole.projects.updateKey($project.$id, $key.$id, name, $key.scopes);
-            project.load($project.$id);
+            $key.name = name;
             addNotification({
                 type: 'success',
                 message: 'API Key name has been updated'
@@ -103,7 +103,7 @@
                 $key.scopes,
                 expire
             );
-            project.load($project.$id);
+            $key.expire = expire;
             addNotification({
                 type: 'success',
                 message: 'API Key expiration has been updated'
@@ -125,7 +125,6 @@
                 $key.name,
                 scopes.filter((scope) => activeScopes[scope])
             );
-            project.load($project.$id);
             addNotification({
                 type: 'success',
                 message: 'API Key scopes has been updated'
