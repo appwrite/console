@@ -13,6 +13,7 @@
     import { app } from '$lib/stores/app';
     import { onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
+    import { beforeNavigate } from '$app/navigation';
 
     let search = '';
     let offset = 0;
@@ -28,6 +29,10 @@
     function openWizard() {
         wizard.start(Create);
     }
+
+    beforeNavigate(() => {
+        wizard.hide();
+    });
 
     $: functionList.load(search, limit, offset ?? 0);
 </script>
