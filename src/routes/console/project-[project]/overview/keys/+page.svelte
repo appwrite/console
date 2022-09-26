@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { afterNavigate } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -10,27 +9,10 @@
         TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { updateLayout } from '$lib/stores/layout';
-    import { onMount } from 'svelte';
     import { project } from '../../store';
     import Create from './create.svelte';
 
     let show = false;
-
-    onMount(handle);
-    afterNavigate(handle);
-
-    function handle(navigate = null) {
-        updateLayout({
-            navigate,
-            title: $project.name,
-            level: 3,
-            breadcrumbs: {
-                href: 'keys',
-                title: 'API Keys'
-            }
-        });
-    }
 </script>
 
 <div class="common-section u-flex u-gap-12">

@@ -6,19 +6,37 @@
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
+    import { usage, type UsagePeriods } from './store';
+    import { onMount } from 'svelte';
+    import { afterNavigate } from '$app/navigation';
+    import { DropList, DropListItem } from '$lib/components';
 
-    title.set($project.name);
-    tabs.set([]);
-    backButton.set('');
+    $: projectId = $page.params.project;
+    $: path = `/console/project-${projectId}/overview`;
 
-    copyData.set({
-        text: '',
-        value: ''
-    });
+    let period: UsagePeriods = '30d';
+    let showPeriod = false;
 
-    $: path = `/console/project-${$project.$id}/overview`;
+    onMount(handle);
+    afterNavigate(handle);
 
-    const usage = sdkForConsole.projects.getUsage($project.$id, '30d');
+    async function handle() {
+        if ($usage) {
+            await usage.load(projectId, period);
+        } else {
+            usage.load(projectId, period);
+        }
+
+        title.set($project.name);
+        tabs.set([]);
+        backButton.set('');
+
+        copyData.set({
+            text: '',
+            value: ''
+        });
+    }
+
     const formatter = Intl.NumberFormat('en', {
         notation: 'compact'
     });
@@ -37,6 +55,12 @@
         return formatter.format(number);
     }
 
+    function changePeriod(newPeriod: UsagePeriods) {
+        period = newPeriod;
+        usage.load(projectId, period);
+        showPeriod = false;
+    }
+
     if (browser) {
         sdkForConsole.client.subscribe<unknown>('console', (message) => {
             if (message.events.includes('stats.connections')) {
@@ -53,37 +77,55 @@
 
 {#if $project}
     <Container overlapCover>
-        {#await usage then response}
+        {#if $usage}
             <section class="common-section">
                 <div class="grid-dashboard-1s-2m-6l">
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
                         <div class="u-flex u-gap-16 u-main-space-between">
                             <div>
                                 <div class="heading-level-4">
-                                    {total(response.network)}
+                                    {total($usage.network)}
                                     <span class="body-text-2">KB</span>
                                 </div>
                                 <div>Bandwidth</div>
                             </div>
-                            <div class="drop-wrapper u-cross-child-start">
-                                <button class="transparent-button">
-                                    <span class="text">30d</span>
+                            <DropList
+                                bind:show={showPeriod}
+                                position="bottom"
+                                horizontal="left"
+                                arrowPosition="end"
+                                childStart>
+                                <button
+                                    class="transparent-button"
+                                    on:click={() => (showPeriod = !showPeriod)}>
+                                    <span class="text">{period}</span>
                                     <span class="icon-cheveron-down" aria-hidden="true" />
                                 </button>
-                            </div>
+                                <svelte:fragment slot="list">
+                                    <DropListItem on:click={() => changePeriod('24h')}>
+                                        24h
+                                    </DropListItem>
+                                    <DropListItem on:click={() => changePeriod('30d')}>
+                                        30d
+                                    </DropListItem>
+                                    <DropListItem on:click={() => changePeriod('90d')}>
+                                        90d
+                                    </DropListItem>
+                                </svelte:fragment>
+                            </DropList>
                         </div>
                     </div>
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
                         <div class="u-flex u-gap-16 u-main-space-between">
                             <div>
                                 <div class="heading-level-4">
-                                    {format(total(response.requests))}
+                                    {format(total($usage.requests))}
                                 </div>
                                 <div>Requests</div>
                             </div>
                             <div class="drop-wrapper u-cross-child-start">
                                 <button class="transparent-button">
-                                    <span class="text">30d</span>
+                                    <span class="text">{period}</span>
                                     <span class="icon-cheveron-down" aria-hidden="true" />
                                 </button>
                             </div>
@@ -106,7 +148,7 @@
                             </div>
 
                             <div class="grid-item-1-end-end">
-                                <div class="text">Documents: {last(response.documents).value}</div>
+                                <div class="text">Documents: {last($usage.documents).value}</div>
                             </div>
                         </div>
                     </div>
@@ -146,7 +188,7 @@
 
                             <div class="grid-item-1-end-start">
                                 <div class="heading-level-4">
-                                    {format(last(response.users).value)}
+                                    {format(last($usage.users).value)}
                                 </div>
                                 <div>Users</div>
                             </div>
@@ -169,7 +211,7 @@
 
                             <div class="grid-item-1-end-start">
                                 <div class="heading-level-4">
-                                    {format(last(response.functions).value)}
+                                    {format(last($usage.functions).value)}
                                 </div>
                                 <div>Executions</div>
                             </div>
@@ -186,7 +228,7 @@
                     </div>
                 </div>
             </section>
-        {/await}
+        {/if}
 
         <section class="common-section u-margin-block-start-100">
             <h2 class="heading-level-5">Integrations</h2>

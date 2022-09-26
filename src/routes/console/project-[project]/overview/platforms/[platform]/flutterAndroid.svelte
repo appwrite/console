@@ -21,7 +21,7 @@
                 $platform.name,
                 key
             );
-            project.load($project.$id);
+            $platform.key = key;
             addNotification({
                 type: 'success',
                 message: 'Platform Package Name has been updated'

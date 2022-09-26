@@ -1,32 +1,14 @@
 <script lang="ts">
-    import { afterNavigate } from '$app/navigation';
     import { page } from '$app/stores';
     import { GridItem1 } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { updateLayout } from '$lib/stores/layout';
-    import { onMount } from 'svelte';
     import { project } from '../../store';
     import Create from './create.svelte';
 
     let show = false;
 
     const path = `/console/project-${$page.params.project}/overview/platforms`;
-
-    onMount(handle);
-    afterNavigate(handle);
-
-    function handle(navigate = null) {
-        updateLayout({
-            navigate,
-            title: $project.name,
-            level: 3,
-            breadcrumbs: {
-                href: 'platforms',
-                title: 'Platforms'
-            }
-        });
-    }
 </script>
 
 <div class="common-section u-flex u-gap-12">

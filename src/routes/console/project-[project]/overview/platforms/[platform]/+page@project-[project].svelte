@@ -77,7 +77,7 @@
     const updateName = async () => {
         try {
             await sdkForConsole.projects.updatePlatform($project.$id, $platform.$id, name);
-            project.load($project.$id);
+            $platform.name = name;
             addNotification({
                 type: 'success',
                 message: 'Platform name has been updated'
