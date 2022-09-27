@@ -130,13 +130,15 @@
                                 </svelte:fragment>
                             </DropList>
                         </div>
-                        <BarChart
-                            series={[
-                                {
-                                    name: 'Bandwith',
-                                    data: [...network.map((e) => [e.date * 1000, e.value])]
-                                }
-                            ]} />
+                        {#if network}
+                            <BarChart
+                                series={[
+                                    {
+                                        name: 'Bandwith',
+                                        data: [...network.map((e) => [e.date * 1000, e.value])]
+                                    }
+                                ]} />
+                        {/if}
                     </div>
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
                         <div class="u-flex u-gap-16 u-main-space-between">
@@ -171,13 +173,15 @@
                                 </svelte:fragment>
                             </DropList>
                         </div>
-                        <LineChart
-                            series={[
-                                {
-                                    name: 'Requests',
-                                    data: [...requests.map((e) => [e.date * 1000, e.value])]
-                                }
-                            ]} />
+                        {#if requests}
+                            <LineChart
+                                series={[
+                                    {
+                                        name: 'Requests',
+                                        data: [...requests.map((e) => [e.date * 1000, e.value])]
+                                    }
+                                ]} />
+                        {/if}
                     </div>
                     <div class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
