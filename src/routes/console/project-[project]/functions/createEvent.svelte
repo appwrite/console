@@ -1,28 +1,21 @@
 <script lang="ts">
     import { Button, Form } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
-    import { createEventDispatcher } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
     import { Pill } from '$lib/elements';
+    import { createFunction } from './wizard/store';
 
     export let showCreate = false;
     let selectedService: typeof services[0] = null;
-    let selectedRequest: any;
+    let selectedRequest: typeof selectedService['requests'][0] = null;
     let selectedEvent: string = null;
     let selectedAttribute: string = null;
+    let showInfo: string = null;
 
-    const dispatch = createEventDispatcher();
-
-    const create = async () => {
-        try {
-            showCreate = false;
-            dispatch('created');
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
+    const create = () => {
+        showCreate = false;
+        const data = eventString.map((d) => d.value).join('.');
+        $createFunction.events.push(data);
+        $createFunction = $createFunction;
     };
 
     const events = ['create', 'update', 'delete'];
@@ -65,6 +58,51 @@
             attributes: ['email', 'name', 'password', 'status', 'prefs']
         }
     ];
+
+    //TODO: add types
+    function createEventString(service, request, event, attribute) {
+        let data = [];
+        //SERVICE
+        if (service) {
+            data.push({ value: service.name, description: 'service' });
+            data.push({ value: '*', description: `event` });
+        }
+
+        //REQUEST
+        if (request) {
+            data.push({ value: request.name, description: 'request' });
+            data[1].description = `ID of ${service?.name.slice(0, -1)}`;
+            data.push({ value: '*', description: `event` });
+        }
+
+        //EVENT
+        if ((event && request?.events?.includes(event)) ?? service?.events?.includes(event)) {
+            data[data.length - 1] = { value: event, description: 'event' };
+        } else if (service) {
+            data[data.length - 1] = { value: '*', description: 'event' };
+        }
+
+        //ATTRIBUTE
+        if (attribute && !request) {
+            data.push({ value: attribute, description: 'attribute' });
+        }
+        return data;
+    }
+
+    $: eventString = createEventString(
+        selectedService,
+        selectedRequest,
+        selectedEvent,
+        selectedAttribute
+    );
+
+    $: if (selectedService) {
+        selectedRequest = null;
+        selectedEvent = null;
+        selectedAttribute = null;
+    }
+
+    $: console.log(eventString);
 </script>
 
 <Form on:submit={create}>
@@ -130,7 +168,19 @@
                     </div>
                 </div>
             {/if}
-            {selectedService?.name}.{selectedRequest?.name}.{selectedEvent}
+            <div class="u-flex">
+                {#each eventString as route, i}
+                    <button
+                        on:click|preventDefault={() => {
+                            showInfo === route.description
+                                ? (showInfo = null)
+                                : (showInfo = route.description);
+                        }}>{route.value}{i + 1 < eventString?.length ? '.' : ''}</button>
+                {/each}
+            </div>
+            {#if showInfo}
+                <span>{showInfo}</span>
+            {/if}
         {/if}
 
         <svelte:fragment slot="footer">

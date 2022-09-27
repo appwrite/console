@@ -9,7 +9,6 @@
     export let href: string = null;
     export let fullWidth = false;
     export let ariaLabel: string = null;
-    //TODO: add option to add aria-label to buttons that are only icons
 </script>
 
 {#if href}

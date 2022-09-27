@@ -26,7 +26,7 @@
                 $createFunction.timeout
             );
             addNotification({
-                message: 'Document has been created',
+                message: 'Function has been created',
                 type: 'success'
             });
             functionList.load('', 12, 0);
