@@ -73,6 +73,16 @@
             }
         });
     }
+
+    //TODO: workaround for broken types
+    $: network = $usage.network as unknown as Array<{
+        date: number;
+        value: number;
+    }>;
+    $: requests = $usage.requests as unknown as Array<{
+        date: number;
+        value: number;
+    }>;
 </script>
 
 <svelte:head>
@@ -124,7 +134,7 @@
                             series={[
                                 {
                                     name: 'Bandwith',
-                                    data: [...$usage.network.map((e) => [e.date * 1000, e.value])]
+                                    data: [...network.map((e) => [e.date * 1000, e.value])]
                                 }
                             ]} />
                     </div>
@@ -165,7 +175,7 @@
                             series={[
                                 {
                                     name: 'Requests',
-                                    data: [...$usage.requests.map((e) => [e.date * 1000, e.value])]
+                                    data: [...requests.map((e) => [e.date * 1000, e.value])]
                                 }
                             ]} />
                     </div>
