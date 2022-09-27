@@ -1,0 +1,169 @@
+{
+    "color": ["#f02e65", "#a1c4ff", "#cbb1fc", "#94dbd1", "#fdc584", "#f02e65", "#ffa1a1"],
+    "backgroundColor": "rgba(0,0,0,0)",
+    "title": {
+        "textStyle": {
+            "color": "#eeeeee"
+        },
+        "subtextStyle": {
+            "color": "#aaaaaa"
+        }
+    },
+    "bar": {
+        "itemStyle": {
+            "barBorderColor": "#444444"
+        }
+    },
+    "categoryAxis": {
+        "axisLine": {
+            "lineStyle": {
+                "color": "#333333"
+            }
+        },
+        "axisTick": {
+            "lineStyle": {
+                "color": "#333333"
+            }
+        },
+        "axisLabel": {
+            "color": "#444444"
+        },
+        "splitLine": {
+            "lineStyle": {
+                "color": ["#444444"]
+            }
+        },
+        "splitArea": {
+            "areaStyle": {
+                "color": ["#eeeeee"]
+            }
+        }
+    },
+    "valueAxis": {
+        "axisTick": {
+            "lineStyle": {
+                "color": "#333333"
+            }
+        },
+        "axisLabel": {
+            "color": "#666666"
+        },
+        "splitLine": {
+            "lineStyle": {
+                "color": ["#333333"]
+            }
+        },
+        "splitArea": {
+            "show": false
+        }
+    },
+    "logAxis": {
+        "axisLine": {
+            "lineStyle": {
+                "color": "#333333"
+            }
+        },
+        "axisTick": {
+            "lineStyle": {
+                "color": "#333333"
+            }
+        },
+        "axisLabel": {
+            "color": "#666666"
+        },
+        "splitLine": {
+            "lineStyle": {
+                "color": ["#333333"]
+            }
+        }
+    },
+    "timeAxis": {
+        "axisLine": {
+            "lineStyle": {
+                "color": "#333333"
+            }
+        },
+        "axisTick": {
+            "lineStyle": {
+                "color": "#333333"
+            }
+        },
+        "axisLabel": {
+            "color": "#666666"
+        },
+        "splitLine": {
+            "lineStyle": {
+                "color": ["#333333"]
+            }
+        }
+    },
+    "toolbox": {
+        "iconStyle": {
+            "borderColor": "#999999"
+        },
+        "emphasis": {
+            "iconStyle": {
+                "borderColor": "#444444"
+            }
+        }
+    },
+    "legend": {
+        "textStyle": {
+            "color": "#eeeeee"
+        }
+    },
+    "tooltip": {
+        "axisPointer": {
+            "lineStyle": {
+                "color": "#444444"
+            },
+            "crossStyle": {
+                "color": "#444444"
+            }
+        }
+    },
+    "timeline": {
+        "lineStyle": {
+            "color": "#444444"
+        },
+        "itemStyle": {
+            "color": "#dd6b66"
+        },
+        "controlStyle": {
+            "color": "#444444",
+            "borderColor": "#444444"
+        },
+        "checkpointStyle": {
+            "color": "#e43c59",
+            "borderColor": "#c23531"
+        },
+        "label": {
+            "color": "#eeeeee"
+        },
+        "emphasis": {
+            "itemStyle": {
+                "color": "#a9334c"
+            },
+            "controlStyle": {
+                "color": "#444444",
+                "borderColor": "#444444"
+            },
+            "label": {
+                "color": "#eeeeee"
+            }
+        }
+    },
+    "visualMap": {
+        "color": ["#bf444c", "#d88273", "#f6efa6"]
+    },
+    "markPoint": {
+        "label": {
+            "color": "#444444"
+        },
+        "emphasis": {
+            "label": {
+                "color": "#444444"
+            }
+        }
+    }
+}
