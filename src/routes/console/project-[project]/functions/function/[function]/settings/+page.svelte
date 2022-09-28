@@ -91,6 +91,29 @@
             });
         }
     }
+
+    function downloadVariables() {
+        let data = Object.keys($func.vars)
+            .map((key) => {
+                return `${key}=${$func.vars[key]}`;
+            })
+            .join('\n');
+        const file = new File([data], '.env', {
+            type: 'application/x-envoy'
+        });
+
+        console.log(file);
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(file);
+
+        link.href = url;
+        link.download = file.name;
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    }
 </script>
 
 <Container>
@@ -185,6 +208,16 @@
         <h2 class="heading-level-6">Update Function Variables</h2>
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
+            <div class="u-flex u-margin-inline-start-auto u-gap-16">
+                <Button secondary on:click={downloadVariables}>
+                    <span class="icon-download" />
+                    <span class="text">Download .env file</span>
+                </Button>
+                <Button secondary>
+                    <span class="icon-upload" />
+                    <span class="text">Import .env file</span>
+                </Button>
+            </div>
             <table class="table is-remove-outer-styles">
                 <thead class="table-thead">
                     <tr class="table-row">
