@@ -79,7 +79,7 @@
             <Pagination {limit} bind:offset sum={$organizationList?.total} />
         </div>
     {:else}
-        <Empty isButton commonSection on:click={() => (addOrganization = true)}>
+        <Empty isButton single on:click={() => (addOrganization = true)}>
             <p>Create a new organization</p>
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">

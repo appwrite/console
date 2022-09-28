@@ -115,7 +115,7 @@
             <Pagination {limit} bind:offset sum={$collection?.attributes?.length} />
         </div>
     {:else}
-        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+        <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Crate your first attribute to get started</p>
         </Empty>
     {/if}

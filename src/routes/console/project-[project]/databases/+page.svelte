@@ -60,7 +60,7 @@
             <Pagination {limit} bind:offset sum={$databaseList.total} />
         </div>
     {:else}
-        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+        <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Create your first Database to get started</p>
         </Empty>
     {/if}

@@ -115,7 +115,7 @@
             <Pagination limit={$pageLimit} bind:offset sum={$memberships.total} />
         </div>
     {:else}
-        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+        <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Add your first member to get started</p>
         </Empty>
     {/if}

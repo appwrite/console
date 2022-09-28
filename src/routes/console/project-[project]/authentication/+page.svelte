@@ -118,7 +118,7 @@
             <Pagination limit={$pageLimit} bind:offset sum={$usersList.total} />
         </div>
     {:else}
-        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+        <Empty isButton single on:click={() => (showCreate = true)}>
             <div
                 class="common-section"
                 use:event={{

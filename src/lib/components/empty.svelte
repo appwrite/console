@@ -4,14 +4,14 @@
     import EmptyDark from '$lib/images/empty-dark.svg';
 
     export let isButton = false;
-    export let commonSection = false;
+    export let single = false;
 </script>
 
 {#if isButton}
     <button
         on:click
         class="card u-grid u-cross-center u-width-full-line dashed"
-        class:common-section={commonSection}>
+        class:common-section={single}>
         <div class="u-flex u-flex-vertical u-cross-center">
             {#if $app.themeInUse === 'dark'}
                 <img src={EmptyDark} alt="create" aria-hidden="true" />
@@ -22,9 +22,7 @@
         </div>
     </button>
 {:else}
-    <article
-        class="card u-grid u-cross-center u-width-full-line"
-        class:common-section={commonSection}>
+    <article class="card u-grid u-cross-center u-width-full-line" class:common-section={single}>
         <slot />
     </article>
 {/if}

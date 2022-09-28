@@ -117,7 +117,7 @@
             <Pagination {limit} bind:offset sum={projects.length} />
         </div>
     {:else}
-        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+        <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Create a new project</p>
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">

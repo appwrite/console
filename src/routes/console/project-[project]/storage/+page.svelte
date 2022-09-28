@@ -109,7 +109,7 @@
             <Pagination limit={$pageLimit} bind:offset sum={$bucketList?.total} />
         </div>
     {:else}
-        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+        <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Add your first bucket to get started</p>
         </Empty>
     {/if}

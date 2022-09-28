@@ -195,7 +195,7 @@
             <Pagination limit={$pageLimit} bind:offset sum={$files?.total} />
         </div>
     {:else}
-        <Empty isButton commonSection on:click={() => (showCreate = true)}>
+        <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Upload some files to get started</p>
         </Empty>
     {/if}

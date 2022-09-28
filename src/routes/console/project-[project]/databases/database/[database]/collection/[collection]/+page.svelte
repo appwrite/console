@@ -81,7 +81,7 @@
             <Pagination {limit} bind:offset sum={$documentList.total} />
         </div>
     {:else}
-        <Empty isButton commonSection on:click={openWizard}>
+        <Empty isButton single on:click={openWizard}>
             <p>Crate your first document to get started</p>
         </Empty>
     {/if}

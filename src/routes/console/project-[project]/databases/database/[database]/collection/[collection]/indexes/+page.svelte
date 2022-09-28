@@ -157,11 +157,11 @@
             <Pagination {limit} bind:offset sum={$indexList?.total} />
         </div>
     {:else if $collection.indexes?.length}
-        <Empty isButton commonSection on:click={() => (showCreateIndex = true)}>
+        <Empty isButton single on:click={() => (showCreateIndex = true)}>
             <p>Create your first attribute to get started</p>
         </Empty>
     {:else}
-        <Empty isButton commonSection on:click={() => (showCreateIndex = true)}>
+        <Empty isButton single on:click={() => (showCreateIndex = true)}>
             <p>Create your first index to get started</p>
         </Empty>
     {/if}
