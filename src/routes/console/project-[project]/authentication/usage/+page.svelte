@@ -49,7 +49,7 @@
                 series={[
                     {
                         name: 'User',
-                        data: [...data.usersCount.map((e) => [e.date * 1000, e.value])]
+                        data: [...data.usersCount.map((e) => [e.date, e.value])]
                     }
                 ]} />
         </Card>
@@ -60,7 +60,7 @@
                 series={[
                     {
                         name: 'Create',
-                        data: [...data.usersCreate.map((e) => [e.date * 1000, e.value])]
+                        data: [...data.usersCreate.map((e) => [e.date, e.value])]
                     }
                 ]} />
         </Card>
@@ -71,7 +71,7 @@
                 series={[
                     {
                         name: 'Read',
-                        data: [...data.usersRead.map((e) => [e.date * 1000, e.value])]
+                        data: [...data.usersRead.map((e) => [e.date, e.value])]
                     }
                 ]} />
         </Card>
@@ -82,7 +82,7 @@
                 series={[
                     {
                         name: 'Update',
-                        data: [...data.usersUpdate.map((e) => [e.date * 1000, e.value])]
+                        data: [...data.usersUpdate.map((e) => [e.date, e.value])]
                     }
                 ]} />
         </Card>
@@ -93,7 +93,7 @@
                 series={[
                     {
                         name: 'Delete',
-                        data: [...data.usersDelete.map((e) => [e.date * 1000, e.value])]
+                        data: [...data.usersDelete.map((e) => [e.date, e.value])]
                     }
                 ]} />
         </Card>

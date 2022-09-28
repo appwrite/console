@@ -135,7 +135,7 @@
                                 series={[
                                     {
                                         name: 'Bandwith',
-                                        data: [...network.map((e) => [e.date * 1000, e.value])]
+                                        data: [...network.map((e) => [e.date, e.value])]
                                     }
                                 ]} />
                         {/if}
@@ -178,7 +178,7 @@
                                 series={[
                                     {
                                         name: 'Requests',
-                                        data: [...requests.map((e) => [e.date * 1000, e.value])]
+                                        data: [...requests.map((e) => [e.date, e.value])]
                                     }
                                 ]} />
                         {/if}

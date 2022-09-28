@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
     import { GridItem1, EmptyGridItem, Empty, Pagination } from '$lib/components';
@@ -16,13 +16,16 @@
     let projects: Models.Project[] = [];
     $: organizationId = $page.params.organization;
 
-    onMount(async () => {
+    onMount(handle);
+    afterNavigate(handle);
+
+    async function handle() {
         await projectList.load([
             Query.offset(offset),
             Query.limit(limit),
             Query.equal('teamId', organizationId)
         ]);
-    });
+    }
 
     let showCreate = false;
     let addOrganization = false;
@@ -59,7 +62,7 @@
     };
 
     // $: projectList.load('', limit, offset);
-    $: projects = $projectList?.projects?.filter((a) => a.teamId === organizationId);
+    // $: projects = $projectList?.projects?.filter((a) => a.teamId === organizationId);
 </script>
 
 <Container>
@@ -74,17 +77,18 @@
         </Button>
     </div>
 
-    {#if projects?.length}
+    {#if $projectList.total}
         <ul
             class="grid-box common-section u-margin-block-start-32"
             style={`--grid-gap:1.5rem; --grid-item-size:${
                 projects.length > 3 ? '22rem' : '25rem'
             };`}>
-            {#each projects as project, index}
+            {#each $projectList.projects as project, index}
                 {#if index >= offset && index < limit + offset}
                     <GridItem1 href={`${base}/console/project-${project.$id}`}>
-                        <svelte:fragment slot="eyebrow"
-                            >{project?.platforms?.length ? project?.platforms?.length : 'No'} apps</svelte:fragment>
+                        <svelte:fragment slot="eyebrow">
+                            {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
+                        </svelte:fragment>
                         <svelte:fragment slot="title">
                             {project.name}
                         </svelte:fragment>
