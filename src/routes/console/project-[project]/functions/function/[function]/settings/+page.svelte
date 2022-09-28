@@ -99,7 +99,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form commonSection on:submit={() => console.log($func.schedule)}>
+    <Form single on:submit={() => console.log($func.schedule)}>
         <CardGrid>
             <h2 class="heading-level-6">Update CRON Schedule</h2>
             <p>
@@ -125,7 +125,7 @@
         </CardGrid>
     </Form>
 
-    <Form commonSection on:submit={updateTimeout}>
+    <Form single on:submit={updateTimeout}>
         <CardGrid>
             <h2 class="heading-level-6">Update Timeout</h2>
             <p>

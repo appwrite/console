@@ -24,7 +24,7 @@
     };
 </script>
 
-<Form on:submit={create}>
+<Form single on:submit={create}>
     <Modal bind:show={showCreate} size="big">
         <svelte:fragment slot="header"
             >{selectedKey ? 'Update' : 'Create'} Variable</svelte:fragment>

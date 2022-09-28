@@ -109,7 +109,7 @@
     $: console.log(eventString);
 </script>
 
-<Form on:submit={create}>
+<Form single on:submit={create}>
     <Modal bind:show={showCreate} size="big">
         <svelte:fragment slot="header">Create Event</svelte:fragment>
 

@@ -31,7 +31,7 @@
     };
 </script>
 
-<Form on:submit={create}>
+<Form single on:submit={create}>
     <Modal bind:show={showCreate}>
         <svelte:fragment slot="header">Create Deployment</svelte:fragment>
         <ul class="tabs">

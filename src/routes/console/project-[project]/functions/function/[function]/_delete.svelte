@@ -30,7 +30,7 @@
     };
 </script>
 
-<Form on:submit={handleSubmit}>
+<Form single on:submit={handleSubmit}>
     <Modal bind:show={showDelete} warning>
         <svelte:fragment slot="header">Delete Deployment</svelte:fragment>
         <p>Are you sure you want to delete this deployment?</p>

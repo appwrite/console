@@ -29,7 +29,7 @@
     };
 </script>
 
-<Form on:submit={handleSubmit}>
+<Form single on:submit={handleSubmit}>
     <Modal bind:show={showExecute} size="big">
         <svelte:fragment slot="header">Execute Function</svelte:fragment>
         <FormList>
