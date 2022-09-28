@@ -19,8 +19,8 @@
     },
     "dependencies": {
         "@aw-labs/appwrite-console": "^5.0.5",
-        "@aw-labs/icons": "0.0.0-55",
-        "@aw-labs/ui": "0.0.0-55",
+        "@aw-labs/icons": "0.0.0-56",
+        "@aw-labs/ui": "0.0.0-56",
         "echarts": "^5.3.3",
         "tippy.js": "^6.3.7",
         "web-vitals": "^2.1.4"
