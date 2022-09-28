@@ -57,4 +57,4 @@
     </Button>
 </WizardStep>
 
-<Create {showCreate} />
+<Create bind:showCreate />
