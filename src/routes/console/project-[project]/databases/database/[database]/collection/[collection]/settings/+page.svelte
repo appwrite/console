@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Alert, CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { Button, InputText, InputTags, InputSwitch, Helper } from '$lib/elements/forms';
+    import { Button, InputText, InputSwitch, Helper } from '$lib/elements/forms';
     import { collection } from '../store';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -10,6 +10,7 @@
     import { page } from '$app/stores';
     import { difference } from '$lib/helpers/array';
     import Delete from './deleteCollection.svelte';
+    import Permissions from '$lib/components/permissions/permissions.svelte';
 
     const databaseId = $page.params.database;
 
@@ -20,10 +21,10 @@
     let enabled: boolean = null,
         collectionName: string = null,
         collectionDocumentSecurity: boolean = null,
-        collectionPermissions: string[] = [],
+        collectionPermissions: string[] = null,
         arePermsDisabled = true;
 
-    onMount(async () => {
+    onMount(() => {
         enabled ??= $collection.enabled;
         collectionName ??= $collection.name;
         collectionPermissions ??= $collection.$permissions;
@@ -129,8 +130,9 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={enabled === $collection.enabled} on:click={togglecollection}
-                    >Update</Button>
+                <Button disabled={enabled === $collection.enabled} on:click={togglecollection}>
+                    Update
+                </Button>
             </svelte:fragment>
         </CardGrid>
 
@@ -173,7 +175,7 @@
                                 class="is-small"
                                 name="level"
                                 bind:group={collectionDocumentSecurity}
-                                value={true} />
+                                value={false} />
                             <span>Collection Level</span>
                         </label>
                     </li>
@@ -184,7 +186,7 @@
                                 class="is-small"
                                 name="level"
                                 bind:group={collectionDocumentSecurity}
-                                value={false} />
+                                value={true} />
                             <span>Document Level</span>
                         </label>
                     </li>
@@ -206,13 +208,9 @@
                             documentation for more on <a class="link" href="/#">Permissions</a>
                         </p>
                     </Alert>
-                    <ul class="form-list">
-                        <InputTags
-                            id="permissions"
-                            label="Permissions"
-                            placeholder="User ID, Team ID, or Role"
-                            bind:tags={collectionPermissions} />
-                    </ul>
+                    {#if collectionPermissions}
+                        <Permissions permissions={collectionPermissions} withCreate />
+                    {/if}
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
