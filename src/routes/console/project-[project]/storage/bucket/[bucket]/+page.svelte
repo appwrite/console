@@ -29,7 +29,7 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { files } from './store';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
     import { pageLimit } from '$lib/stores/layout';
@@ -49,20 +49,20 @@
 
     const fileCreated = () => {
         showCreate = false;
-        files.load(bucket, search, $pageLimit, offset);
+        files.load(bucket, [Query.limit($pageLimit), Query.offset(offset)], search);
     };
 
     const fileDeleted = (event: CustomEvent<Models.File>) => {
         showDelete = false;
         uploader.removeFile(event.detail);
-        files.load(bucket, search, $pageLimit, offset);
+        files.load(bucket, [Query.limit($pageLimit), Query.offset(offset)], search);
     };
 
     const deleteFile = async (file: Models.File) => {
         try {
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
-            files.load(bucket, search, $pageLimit, offset);
+            files.load(bucket, [Query.limit($pageLimit), Query.offset(offset)], search);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -71,7 +71,7 @@
         }
     };
 
-    $: files.load(bucket, search, $pageLimit, offset);
+    $: files.load(bucket, [Query.limit($pageLimit), Query.offset(offset)], search);
     $: if (search) offset = 0;
 </script>
 

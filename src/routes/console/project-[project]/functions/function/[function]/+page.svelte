@@ -16,6 +16,7 @@
     import { Container } from '$lib/layout';
     import Create from './_create.svelte';
     import { base } from '$app/paths';
+    import { Query } from '@aw-labs/appwrite-console';
 
     let search = '';
     let showCreate = false;
@@ -25,7 +26,11 @@
     const project = $page.params.project;
     const functionId = $page.params.function;
 
-    $: request = sdkForProject.functions.listDeployments(functionId, search, limit, offset);
+    $: request = sdkForProject.functions.listDeployments(
+        functionId,
+        [Query.offset(offset), Query.limit(limit)],
+        search
+    );
     $: if (search) offset = 0;
 </script>
 

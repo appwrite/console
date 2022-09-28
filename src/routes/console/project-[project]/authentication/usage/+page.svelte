@@ -1,6 +1,6 @@
 <script>
     import { Container } from '$lib/layout';
-    import { Chart } from '$lib/charts';
+    import { BarChart } from '$lib/charts';
     import { Card } from '$lib/components';
     import { usersUsage } from '../store';
 
@@ -45,51 +45,55 @@
         <Card>
             <h6 class="heading-level-6">Users</h6>
             <p>Count of users over time</p>
-            <Chart
-                title="Users"
+            <BarChart
                 series={[
                     {
                         name: 'User',
-                        data: [...data.usersCount.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
+                        data: [...data.usersCount.map((e) => [e.date, e.value])]
                     }
                 ]} />
         </Card>
         <Card>
             <h6 class="heading-level-6">Operations</h6>
             <p>Count of users create, read, update and delete operations over time</p>
-            <Chart
-                title="Operations"
+            <BarChart
                 series={[
                     {
                         name: 'Create',
-                        data: [...data.usersCreate.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
-                    },
+                        data: [...data.usersCreate.map((e) => [e.date, e.value])]
+                    }
+                ]} />
+        </Card>
+        <Card>
+            <h6 class="heading-level-6">Operations</h6>
+            <p>Count of users create, read, update and delete operations over time</p>
+            <BarChart
+                series={[
                     {
                         name: 'Read',
-                        data: [...data.usersRead.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
-                    },
+                        data: [...data.usersRead.map((e) => [e.date, e.value])]
+                    }
+                ]} />
+        </Card>
+        <Card>
+            <h6 class="heading-level-6">Operations</h6>
+            <p>Count of users create, read, update and delete operations over time</p>
+            <BarChart
+                series={[
                     {
                         name: 'Update',
-                        data: [...data.usersUpdate.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
-                    },
+                        data: [...data.usersUpdate.map((e) => [e.date, e.value])]
+                    }
+                ]} />
+        </Card>
+        <Card>
+            <h6 class="heading-level-6">Operations</h6>
+            <p>Count of users create, read, update and delete operations over time</p>
+            <BarChart
+                series={[
                     {
                         name: 'Delete',
-                        data: [...data.usersDelete.map((e) => [e.date * 1000, e.value])],
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {}
+                        data: [...data.usersDelete.map((e) => [e.date, e.value])]
                     }
                 ]} />
         </Card>

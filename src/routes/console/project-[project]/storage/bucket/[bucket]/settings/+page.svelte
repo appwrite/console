@@ -19,14 +19,14 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import Pill from '$lib/elements/pill.svelte';
+    import { difference } from '$lib/helpers/array';
 
     let showDelete = false;
 
     let enabled: boolean = null,
         bucketName: string = null,
-        bucketPermissions: string = null,
-        bucketRead: string[] = null,
-        bucketWrite: string[] = null,
+        bucketFileSecurity: boolean = null,
+        bucketPermissions: string[] = null,
         arePermsDisabled = true,
         encryption: boolean = null,
         antivirus: boolean = null,
@@ -47,22 +47,17 @@
         enabled ??= $bucket.enabled;
         bucketName ??= $bucket.name;
         bucketName ??= $bucket.name;
-        bucketPermissions ??= $bucket.permission;
-        bucketRead ??= $bucket.$read;
-        bucketWrite ??= $bucket.$write;
+        bucketFileSecurity ??= $bucket.fileSecurity;
+        bucketPermissions ??= $bucket.$permissions;
         encryption ??= $bucket.encryption;
         antivirus ??= $bucket.antivirus;
     });
     $: maxSizePlaceholder = bytesToSize($bucket.maximumFileSize, byteUnit);
-    $: if (bucketPermissions || bucketRead || bucketWrite) {
-        if (bucketPermissions !== $bucket.permission) {
+    $: if (bucketFileSecurity || bucketPermissions) {
+        if (bucketFileSecurity !== $bucket.fileSecurity) {
             arePermsDisabled = false;
-        } else if (bucketRead) {
-            if (JSON.stringify(bucketRead) !== JSON.stringify($bucket.$read)) {
-                arePermsDisabled = false;
-            } else arePermsDisabled = true;
-        } else if (bucketWrite) {
-            if (JSON.stringify(bucketWrite) !== JSON.stringify($bucket.$write)) {
+        } else if (bucketPermissions) {
+            if (difference(bucketPermissions, $bucket.$permissions).length) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
@@ -78,9 +73,8 @@
             await sdkForProject.storage.updateBucket(
                 $bucket.$id,
                 $bucket.name,
-                $bucket.permission,
-                $bucket.$read,
-                $bucket.$write,
+                undefined,
+                undefined,
                 enabled
             );
             $bucket.enabled = enabled;
@@ -97,7 +91,7 @@
     }
     async function updateName() {
         try {
-            await sdkForProject.storage.updateBucket($bucket.$id, $bucket.name, $bucket.permission);
+            await sdkForProject.storage.updateBucket($bucket.$id, bucketName);
             $bucket.name = bucketName;
             addNotification({
                 message: 'Name has been updated',
@@ -115,13 +109,11 @@
             await sdkForProject.storage.updateBucket(
                 $bucket.$id,
                 $bucket.name,
-                bucketPermissions,
-                bucketPermissions === 'bucket' ? bucketRead : $bucket.$read,
-                bucketPermissions === 'bucket' ? bucketWrite : $bucket.$write
+                bucketFileSecurity ? bucketPermissions : undefined,
+                bucketFileSecurity
             );
-            $bucket.permission = bucketPermissions;
-            $bucket.$read = bucketRead;
-            $bucket.$write = bucketWrite;
+            $bucket.fileSecurity = bucketFileSecurity;
+            $bucket.$permissions = bucketPermissions;
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -140,12 +132,12 @@
             await sdkForProject.storage.updateBucket(
                 $bucket.$id,
                 $bucket.name,
-                $bucket.permission,
-                $bucket.$read,
-                $bucket.$write,
-                $bucket.enabled,
-                $bucket.maximumFileSize,
-                $bucket.allowedFileExtensions,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
                 encryption,
                 antivirus
             );
@@ -169,10 +161,9 @@
             await sdkForProject.storage.updateBucket(
                 $bucket.$id,
                 $bucket.name,
-                $bucket.permission,
-                $bucket.$read,
-                $bucket.$write,
-                $bucket.enabled,
+                undefined,
+                undefined,
+                undefined,
                 size
             );
             $bucket.maximumFileSize = maxSize;
@@ -193,11 +184,10 @@
             await sdkForProject.storage.updateBucket(
                 $bucket.$id,
                 $bucket.name,
-                $bucket.permission,
-                $bucket.$read,
-                $bucket.$write,
-                $bucket.enabled,
-                $bucket.maximumFileSize,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
                 extensions
             );
             $bucket.allowedFileExtensions = extensions;
@@ -274,8 +264,8 @@
                                     type="radio"
                                     class="is-small"
                                     name="level"
-                                    bind:group={bucketPermissions}
-                                    value="bucket" />
+                                    bind:group={bucketFileSecurity}
+                                    value={true} />
                                 <span>Bucket Level</span>
                             </label>
                         </li>
@@ -285,8 +275,8 @@
                                     type="radio"
                                     class="is-small"
                                     name="level"
-                                    bind:group={bucketPermissions}
-                                    value="file" />
+                                    bind:group={bucketFileSecurity}
+                                    value={false} />
                                 <span>File Level</span>
                             </label>
                         </li>
@@ -297,18 +287,13 @@
                             documentation for more on <a href="/#">Permissions</a>
                         </p>
                     </Alert>
-                    {#if bucketPermissions === 'bucket'}
+                    {#if bucketFileSecurity}
                         <ul class="common-section">
                             <InputTags
-                                id="read"
-                                label="Read Access"
+                                id="permissions"
+                                label="Permissions"
                                 placeholder="User ID, Team ID, or Role"
-                                bind:tags={bucketRead} />
-                            <InputTags
-                                id="write"
-                                label="Write Access"
-                                placeholder="User ID, Team ID, or Role"
-                                bind:tags={bucketWrite} />
+                                bind:tags={bucketPermissions} />
                         </ul>
                     {/if}
                 </svelte:fragment>

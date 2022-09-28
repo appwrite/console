@@ -18,20 +18,12 @@ export const team = cachedStore<
 export const memberships = cachedStore<
     Models.MembershipList,
     {
-        load: (teamId: string, search: string, limit: number, offset: number) => Promise<void>;
+        load: (teamId: string, queries: string[], search: string) => Promise<void>;
     }
 >('memberships', function ({ set }) {
     return {
-        load: async (teamId, search, limit, offset) => {
-            const response = await sdkForProject.teams.getMemberships(
-                teamId,
-                search,
-                limit,
-                offset,
-                undefined,
-                undefined,
-                'DESC'
-            );
+        load: async (teamId, queries, search) => {
+            const response = await sdkForProject.teams.listMemberships(teamId, queries, search);
             set(response);
         }
     };

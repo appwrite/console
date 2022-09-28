@@ -16,14 +16,15 @@
     import { pageLimit } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { accountActivity } from '../store';
+    import { Query } from '@aw-labs/appwrite-console';
 
     let offset = 0;
 
     onMount(async () => {
-        await accountActivity.load($pageLimit, offset);
+        await accountActivity.load([Query.offset(offset), Query.limit($pageLimit)]);
     });
 
-    $: accountActivity.load($pageLimit, offset);
+    $: accountActivity.load([Query.offset(offset), Query.limit($pageLimit)]);
 
     const getBrowser = (clientCode: string) => {
         return sdkForConsole.avatars.getBrowser(clientCode, 40, 40);

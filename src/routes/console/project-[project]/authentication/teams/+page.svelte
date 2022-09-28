@@ -19,7 +19,7 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { teamsList } from '../store';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
 
     let search = '';
     let showCreate = false;
@@ -33,7 +33,7 @@
     };
 
     $: if (search) offset = 0;
-    $: teamsList.load(search, limit, offset);
+    $: teamsList.load([Query.limit(limit), Query.offset(offset)], search);
 </script>
 
 <Container>

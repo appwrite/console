@@ -11,7 +11,7 @@
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -22,21 +22,30 @@
     import { pageLimit } from '$lib/stores/layout';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
-    const deleted = () => memberships.load($page.params.team, search, $pageLimit, offset ?? 0);
+    const deleted = () =>
+        memberships.load(
+            $page.params.team,
+            [Query.limit($pageLimit), Query.offset(offset)],
+            search
+        );
 
     const project = $page.params.project;
 
     let showCreate = false;
     let showDelete = false;
     let search = '';
-    let offset: number = null;
+    let offset = 0;
     let selectedMembership: Models.Membership;
 
     $: if (search) offset = 0;
-    $: memberships.load($page.params.team, search, $pageLimit, offset ?? 0);
+    $: memberships.load($page.params.team, [Query.limit($pageLimit), Query.offset(offset)], search);
 
     const memberCreated = async (event: CustomEvent<Models.Membership>) => {
-        memberships.load($page.params.team, search, $pageLimit, offset ?? 0);
+        memberships.load(
+            $page.params.team,
+            [Query.limit($pageLimit), Query.offset(offset)],
+            search
+        );
         await goto(
             `${base}/console/project-${project}/authentication/teams/${event.detail.teamId}/members`
         );

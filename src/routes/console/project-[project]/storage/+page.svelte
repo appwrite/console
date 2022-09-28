@@ -4,7 +4,7 @@
     import { Button } from '$lib/elements/forms';
     import { Empty, Pagination, Copy, GridItem1, EmptyGridItem } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -22,7 +22,7 @@
         await goto(`${base}/console/project-${project}/storage/bucket/${event.detail.$id}`);
     };
 
-    $: bucketList.load(search, $pageLimit, offset ?? 0);
+    $: bucketList.load([Query.limit($pageLimit), Query.offset(offset)], search);
     $: if (search) offset = 0;
 </script>
 

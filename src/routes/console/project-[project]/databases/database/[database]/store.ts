@@ -6,17 +6,16 @@ import { cachedStore } from '$lib/helpers/cache';
 export const collections = cachedStore<
     Models.CollectionList,
     {
-        load: (databaseId: string, search: string, limit: number, offset: number) => Promise<void>;
+        load: (databaseId: string, queries: string[], search: string) => Promise<void>;
         total: (databaseId: string, id: string) => Promise<Record<string, unknown>>;
     }
 >('collections', function ({ set }) {
     return {
-        load: async (databaseId, search, limit, offset) => {
+        load: async (databaseId, queries, search) => {
             const response = await sdkForProject.databases.listCollections(
                 databaseId,
-                search,
-                limit,
-                offset
+                queries,
+                search
             );
             set(response);
         },

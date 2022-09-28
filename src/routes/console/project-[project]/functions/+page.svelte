@@ -6,6 +6,7 @@
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
+    import { Query } from '@aw-labs/appwrite-console';
 
     let search = '';
     let showCreate = false;
@@ -14,7 +15,7 @@
     const limit = 25;
     const project = $page.params.project;
 
-    $: request = sdkForProject.functions.list(search, limit, offset);
+    $: request = sdkForProject.functions.list([Query.limit(0), Query.offset(0)], search);
     $: if (search) offset = 0;
 </script>
 
