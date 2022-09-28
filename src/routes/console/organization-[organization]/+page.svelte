@@ -77,7 +77,7 @@
         </Button>
     </div>
 
-    {#if $projectList.total}
+    {#if $projectList?.total}
         <ul
             class="grid-box common-section u-margin-block-start-32"
             style={`--grid-gap:1.5rem; --grid-item-size:${
