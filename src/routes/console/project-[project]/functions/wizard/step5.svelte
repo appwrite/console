@@ -118,5 +118,5 @@
 </WizardStep>
 
 {#if showCreate}
-    <Create bind:selectedKey bind:showCreate />
+    <Create bind:selectedKey bind:showCreate bind:variables={$createFunction.vars} />
 {/if}

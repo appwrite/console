@@ -2,24 +2,28 @@
     import { Button, Form } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
     import { InputText, InputPassword, FormList } from '$lib/elements/forms';
-    import { createFunction } from './wizard/store';
+    import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
+    export let variables: object;
 
     export let selectedKey: string = null;
     let key = selectedKey;
-    let value = $createFunction?.vars[key];
+    let value = variables[key];
+
+    const dispatch = createEventDispatcher();
 
     const create = () => {
         if (selectedKey) {
-            delete Object.assign($createFunction.vars, {
-                [key]: $createFunction.vars[selectedKey]
+            delete Object.assign(variables, {
+                [key]: variables[selectedKey]
             })[selectedKey];
-            $createFunction.vars[key] = value;
+            variables[key] = value;
             selectedKey = null;
         } else {
-            $createFunction.vars[key] = value;
+            variables[key] = value;
         }
+        dispatch('created');
         showCreate = false;
     };
 </script>

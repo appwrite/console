@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box } from '$lib/components';
+    import { CardGrid, Box, DropList, DropListItem, Copy } from '$lib/components';
     import { Container } from '$lib/layout';
     import {
         Button,
@@ -19,9 +19,14 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import type { Models } from '@aw-labs/appwrite-console';
+    import Variable from '../../../createVariable.svelte';
 
     const functionId = $page.params.function;
     let showDelete = false;
+    let showVariablesModal = false;
+    let showVariablesValue = [];
+    let showVariablesDropdown = [];
+    let selectedKey: string = null;
     let timeout = 0;
     let deployment: Models.Deployment = null;
 
@@ -38,7 +43,7 @@
         { label: 'minutes', value: 'minutes' }
     ];
 
-    const updateTimeout = async () => {
+    async function updateTimeout() {
         try {
             await sdkForProject.functions.update(
                 functionId,
@@ -60,7 +65,32 @@
                 message: error.message
             });
         }
-    };
+    }
+
+    async function handleVariableCreated() {
+        try {
+            console.log($func);
+            await sdkForProject.functions.update(
+                functionId,
+                $func.name,
+                $func.execute,
+                $func.vars,
+                $func.events,
+                $func.schedule,
+                timeout
+            );
+            showVariablesModal = false;
+            addNotification({
+                type: 'success',
+                message: `${$func.name} variables have been updated`
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
 </script>
 
 <Container>
@@ -152,6 +182,115 @@
     </Form>
 
     <CardGrid>
+        <h2 class="heading-level-6">Update Function Variables</h2>
+        <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
+        <svelte:fragment slot="aside">
+            <table class="table is-remove-outer-styles">
+                <thead class="table-thead">
+                    <tr class="table-row">
+                        <th class="table-thead-col">
+                            <span class="eyebrow-heading-3">Key</span>
+                        </th>
+                        <th class="table-thead-col">
+                            <span class="eyebrow-heading-3">Value</span>
+                        </th>
+                        <th class="table-thead-col" style="--p-col-width:40" />
+                    </tr>
+                </thead>
+                <tbody class="table-tbody">
+                    {#if $func.vars}
+                        {#each Object.entries($func.vars) as [key, value], i}
+                            <tr class="table-row">
+                                <td class="table-col" data-title="Key">
+                                    <span class="text">{key}</span>
+                                </td>
+                                <td class="table-col u-overflow-visible" data-title="value">
+                                    <div class="interactive-text-output">
+                                        {#if showVariablesValue[i]}
+                                            <span class="text">{value}</span>
+                                        {:else}
+                                            <span class="text">••••••••</span>
+                                        {/if}
+                                        <div class="u-flex u-cross-child-start u-gap-8">
+                                            <button
+                                                on:click|preventDefault={() =>
+                                                    (showVariablesValue[i] =
+                                                        !showVariablesValue[i])}
+                                                class="interactive-text-output-button"
+                                                aria-label="show hidden text">
+                                                {#if showVariablesValue[i]}
+                                                    <span class="icon-eye-off" aria-hidden="true" />
+                                                {:else}
+                                                    <span class="icon-eye" aria-hidden="true" />
+                                                {/if}
+                                            </button>
+                                            <Copy {value}>
+                                                <button
+                                                    class="interactive-text-output-button"
+                                                    aria-label="copy text">
+                                                    <span
+                                                        class="icon-duplicate"
+                                                        aria-hidden="true" />
+                                                </button>
+                                            </Copy>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="table-col u-overflow-visible" data-title="options">
+                                    <DropList
+                                        bind:show={showVariablesDropdown[i]}
+                                        position="bottom"
+                                        horizontal="left"
+                                        arrow={false}>
+                                        <button
+                                            class="button is-text is-only-icon"
+                                            aria-label="more options"
+                                            on:click|preventDefault={() =>
+                                                (showVariablesDropdown[i] =
+                                                    !showVariablesDropdown[i])}>
+                                            <span class="icon-dots-horizontal" aria-hidden="true" />
+                                        </button>
+                                        <svelte:fragment slot="list">
+                                            <DropListItem
+                                                icon="pencil"
+                                                on:click={() => {
+                                                    selectedKey = key;
+                                                    showVariablesDropdown[i] = false;
+                                                    showVariablesModal = true;
+                                                }}>
+                                                Edit
+                                            </DropListItem>
+                                            <DropListItem
+                                                icon="trash"
+                                                on:click={() => {
+                                                    delete $func.vars[key];
+                                                    showVariablesDropdown[i] = false;
+                                                }}>
+                                                Delete
+                                            </DropListItem>
+                                        </svelte:fragment>
+                                    </DropList>
+                                </td>
+                            </tr>
+                        {/each}
+                    {/if}
+                </tbody>
+            </table>
+            <div class="u-flex u-margin-block-start-16">
+                <button
+                    class="button is-text u-padding-inline-0"
+                    type="button"
+                    on:click={() => {
+                        showVariablesModal = true;
+                    }}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create variable</span>
+                </button>
+            </div>
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
         <h6 class="heading-level-7">Delete Function</h6>
         <p>
             The function will be permanently deleted, including all deployments associated with it.
@@ -173,3 +312,10 @@
 </Container>
 
 <Delete bind:showDelete />
+{#if showVariablesModal}
+    <Variable
+        bind:showCreate={showVariablesModal}
+        bind:selectedKey
+        bind:variables={$func.vars}
+        on:created={handleVariableCreated} />
+{/if}
