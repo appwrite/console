@@ -6,18 +6,28 @@
 
     export let showCreate = false;
 
-    export let key: string = null;
-    let value = $createFunction.vars[key];
+    export let selectedKey: string = null;
+    let key = selectedKey;
+    let value = $createFunction?.vars[key];
 
-    const create = async () => {
+    const create = () => {
+        if (selectedKey) {
+            delete Object.assign($createFunction.vars, {
+                [key]: $createFunction.vars[selectedKey]
+            })[selectedKey];
+            $createFunction.vars[key] = value;
+            selectedKey = null;
+        } else {
+            $createFunction.vars[key] = value;
+        }
         showCreate = false;
-        $createFunction.vars[key] = value;
     };
 </script>
 
 <Form on:submit={create}>
     <Modal bind:show={showCreate} size="big">
-        <svelte:fragment slot="header">Create Variable</svelte:fragment>
+        <svelte:fragment slot="header"
+            >{selectedKey ? 'Update' : 'Create'} Variable</svelte:fragment>
         <FormList>
             <InputText id="key" label="Key" placeholder="Enter key" bind:value={key} required />
             <InputPassword
@@ -31,7 +41,7 @@
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-            <Button submit>Create</Button>
+            <Button submit>{selectedKey ? 'Update' : 'Create'}</Button>
         </svelte:fragment>
     </Modal>
 </Form>

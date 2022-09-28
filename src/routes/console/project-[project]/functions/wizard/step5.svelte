@@ -2,12 +2,13 @@
     import { WizardStep } from '$lib/layout';
     import { createFunction } from './store';
     import Create from '../createVariable.svelte';
-    import { DropList, DropListItem } from '$lib/components';
+    import { DropList, DropListItem, Copy } from '$lib/components';
 
     let showCreate = false;
 
     let selectedKey: string = null;
     let showDropdown = [];
+    let showValue = [];
 </script>
 
 <WizardStep>
@@ -36,14 +37,32 @@
                             <span class="text">{key}</span>
                         </td>
                         <td class="table-col u-overflow-visible" data-title="value">
-                            <div class="transparent-password-input">
-                                <button
-                                    on:click|preventDefault={() =>
-                                        (showDropdown[i] = !showDropdown[i])}
-                                    aria-label="show password">
-                                    <span class="icon-eye" aria-hidden="true" />
-                                </button>
-                                <input type="password" class="input-text" {value} />
+                            <div class="interactive-text-output">
+                                {#if showValue[i]}
+                                    <span class="text">{value}</span>
+                                {:else}
+                                    <span class="text">••••••••</span>
+                                {/if}
+                                <div class="u-flex u-cross-child-start u-gap-8">
+                                    <button
+                                        on:click|preventDefault={() =>
+                                            (showValue[i] = !showValue[i])}
+                                        class="interactive-text-output-button"
+                                        aria-label="show hidden text">
+                                        {#if showValue[i]}
+                                            <span class="icon-eye-off" aria-hidden="true" />
+                                        {:else}
+                                            <span class="icon-eye" aria-hidden="true" />
+                                        {/if}
+                                    </button>
+                                    <Copy {value}>
+                                        <button
+                                            class="interactive-text-output-button"
+                                            aria-label="copy text">
+                                            <span class="icon-duplicate" aria-hidden="true" />
+                                        </button>
+                                    </Copy>
+                                </div>
                             </div>
                         </td>
                         <td class="table-col u-overflow-visible" data-title="options">
@@ -55,7 +74,8 @@
                                 <button
                                     class="button is-text is-only-icon"
                                     aria-label="more options"
-                                    on:click|preventDefault={() => (showDropdown[i] = true)}>
+                                    on:click|preventDefault={() =>
+                                        (showDropdown[i] = !showDropdown[i])}>
                                     <span class="icon-dots-horizontal" aria-hidden="true" />
                                 </button>
                                 <svelte:fragment slot="list">
@@ -63,6 +83,7 @@
                                         icon="pencil"
                                         on:click={() => {
                                             selectedKey = key;
+                                            showDropdown[i] = false;
                                             showCreate = true;
                                         }}>
                                         Edit
@@ -71,6 +92,7 @@
                                         icon="trash"
                                         on:click={() => {
                                             delete $createFunction.vars[key];
+                                            showDropdown[i] = false;
                                         }}>
                                         Delete
                                     </DropListItem>
@@ -95,4 +117,6 @@
     </div>
 </WizardStep>
 
-<Create key={selectedKey} {showCreate} />
+{#if showCreate}
+    <Create bind:selectedKey bind:showCreate />
+{/if}
