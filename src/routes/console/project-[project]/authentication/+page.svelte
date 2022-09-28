@@ -20,7 +20,7 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { usersList } from './store';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
 
     let showCreate = false;
@@ -34,7 +34,7 @@
     };
 
     $: if (search) offset = 0;
-    $: usersList.load(search, $pageLimit, offset ?? 0);
+    $: usersList.load([Query.limit($pageLimit), Query.offset(offset)], search);
 </script>
 
 <Container>

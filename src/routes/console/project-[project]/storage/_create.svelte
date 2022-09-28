@@ -16,11 +16,7 @@
 
     const create = async () => {
         try {
-            const bucket = await sdkForProject.storage.createBucket(
-                id ? id : 'unique()',
-                name,
-                'bucket'
-            );
+            const bucket = await sdkForProject.storage.createBucket(id ? id : 'unique()', name);
             name = null;
             showCreate = false;
             dispatch('created', bucket);

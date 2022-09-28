@@ -5,19 +5,12 @@ import { cachedStore } from '$lib/helpers/cache';
 export const usersList = cachedStore<
     Models.UserList<Record<string, unknown>>,
     {
-        load: (search: string, limit: number, offset: number) => Promise<void>;
+        load: (queries: string[], search: string) => Promise<void>;
     }
 >('users', function ({ set }) {
     return {
-        load: async (search, limit, offset) => {
-            const response = await sdkForProject.users.list(
-                search,
-                limit,
-                offset,
-                undefined,
-                undefined,
-                'DESC'
-            );
+        load: async (queries, search) => {
+            const response = await sdkForProject.users.list(queries, search);
             set(response);
         }
     };
@@ -26,19 +19,12 @@ export const usersList = cachedStore<
 export const teamsList = cachedStore<
     Models.TeamList,
     {
-        load: (search: string, limit: number, offset: number) => Promise<void>;
+        load: (queries: string[], search: string) => Promise<void>;
     }
 >('teams', function ({ set }) {
     return {
-        load: async (search, limit, offset) => {
-            const response = await sdkForProject.teams.list(
-                search,
-                limit,
-                offset,
-                undefined,
-                undefined,
-                'DESC'
-            );
+        load: async (queries, search) => {
+            const response = await sdkForProject.teams.list(queries, search);
             set(response);
         }
     };

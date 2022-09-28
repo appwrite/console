@@ -26,7 +26,7 @@
     let selectedSessionId: string = null;
     let sessionList: Models.SessionList = null;
     onMount(async () => {
-        sessionList = await sdkForProject.users.getSessions($page.params.user);
+        sessionList = await sdkForProject.users.listSessions($page.params.user);
     });
 
     const getBrowser = (clientCode: string) => {

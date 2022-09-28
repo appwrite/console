@@ -40,19 +40,12 @@ export const organization = cachedStore<
 export const projectList = cachedStore<
     Models.ProjectList,
     {
-        load: (search: string, limit: number, offset: number) => Promise<void>;
+        load: (queries: string[], search?: string) => Promise<void>;
     }
 >('projectList', function ({ set }) {
     return {
-        load: async (search, limit, offset) => {
-            const response = await sdkForConsole.projects.list(
-                search,
-                limit,
-                offset,
-                undefined,
-                undefined,
-                'ASC'
-            );
+        load: async (queries, search) => {
+            const response = await sdkForConsole.projects.list(queries, search);
             set(response);
         }
     };
@@ -61,17 +54,12 @@ export const projectList = cachedStore<
 export const memberList = cachedStore<
     Models.MembershipList,
     {
-        load: (teamId: string, search: string, limit: number, offset: number) => Promise<void>;
+        load: (teamId: string, queries?: string[], search?: string) => Promise<void>;
     }
 >('memberList', function ({ set }) {
     return {
-        load: async (teamId, search, limit, offset) => {
-            const response = await sdkForConsole.teams.getMemberships(
-                teamId,
-                search,
-                limit,
-                offset
-            );
+        load: async (teamId, queries, search) => {
+            const response = await sdkForConsole.teams.listMemberships(teamId, queries, search);
             set(response);
         }
     };

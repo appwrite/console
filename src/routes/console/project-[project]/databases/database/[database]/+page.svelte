@@ -4,7 +4,7 @@
     import { Button } from '$lib/elements/forms';
     import { Empty, EmptyGridItem, Pagination, Copy, GridItem1 } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -24,7 +24,7 @@
         );
     };
 
-    $: collections.load(databaseId, search, limit, offset ?? 0);
+    $: collections.load(databaseId, [Query.limit(limit), Query.offset(offset)], search);
     $: if (search) offset = 0;
 </script>
 

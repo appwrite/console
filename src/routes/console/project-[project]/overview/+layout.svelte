@@ -75,11 +75,11 @@
     }
 
     //TODO: workaround for broken types
-    $: network = $usage.network as unknown as Array<{
+    $: network = $usage?.network as unknown as Array<{
         date: number;
         value: number;
     }>;
-    $: requests = $usage.requests as unknown as Array<{
+    $: requests = $usage?.requests as unknown as Array<{
         date: number;
         value: number;
     }>;
@@ -130,7 +130,7 @@
                                 </svelte:fragment>
                             </DropList>
                         </div>
-                        {#if network}
+                        {#if network.length}
                             <BarChart
                                 series={[
                                     {
@@ -173,7 +173,7 @@
                                 </svelte:fragment>
                             </DropList>
                         </div>
-                        {#if requests}
+                        {#if network.length}
                             <LineChart
                                 series={[
                                     {
@@ -264,7 +264,7 @@
 
                             <div class="grid-item-1-end-start">
                                 <div class="heading-level-4">
-                                    {format(last($usage.functions).value)}
+                                    {format(last($usage.executions).value)}
                                 </div>
                                 <div>Executions</div>
                             </div>

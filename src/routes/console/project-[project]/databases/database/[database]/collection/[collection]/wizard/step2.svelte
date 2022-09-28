@@ -24,14 +24,9 @@
 
     <ul class="common-section">
         <InputTags
-            id="read"
-            label="Read Access"
+            id="permissions"
+            label="Permissions"
             placeholder="User ID, Team ID, or Role"
-            bind:tags={$createDocument.read} />
-        <InputTags
-            id="write"
-            label="Write Access"
-            placeholder="User ID, Team ID, or Role"
-            bind:tags={$createDocument.write} />
+            bind:tags={$createDocument.permissions} />
     </ul>
 </WizardStep>

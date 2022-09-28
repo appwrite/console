@@ -63,23 +63,15 @@ export const collection = cachedStore<
 export const documentList = cachedStore<
     Models.DocumentList<Models.Document>,
     {
-        load: (
-            databaseId: string,
-            collectionId: string,
-            queries?: [],
-            limit?: number,
-            offset?: number
-        ) => Promise<void>;
+        load: (databaseId: string, collectionId: string, queries?: string[]) => Promise<void>;
     }
 >('documentList', function ({ set }) {
     return {
-        load: async (databaseId, collectionId, queries, limit, offset) => {
+        load: async (databaseId, collectionId, queries) => {
             const response = await sdkForProject.databases.listDocuments(
                 databaseId,
                 collectionId,
-                queries,
-                limit,
-                offset
+                queries
             );
             set(response);
         }

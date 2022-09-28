@@ -15,13 +15,13 @@
     import Delete from '../_deleteMember.svelte';
     import { organization, memberList, newMemberModal } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
 
     let search = '';
-    let offset: number = null;
+    let offset = 0;
 
     let selectedMember: Models.Membership;
     let showDelete = false;
@@ -29,7 +29,8 @@
 
     const getAvatar = (name: string) =>
         sdkForConsole.avatars.getInitials(name, 120, 120).toString();
-    const deleted = () => memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
+    const deleted = () =>
+        memberList.load($organization.$id, [Query.limit($pageLimit), Query.offset(offset)], search);
     const resend = async (member: Models.Membership) => {
         try {
             await sdkForConsole.teams.createMembership(
@@ -52,7 +53,7 @@
     };
 
     $: if (search) offset = 0;
-    $: memberList.load($organization.$id, search, $pageLimit, offset ?? 0);
+    $: memberList.load($organization.$id, [Query.limit($pageLimit), Query.offset(offset)], search);
 </script>
 
 <Container>

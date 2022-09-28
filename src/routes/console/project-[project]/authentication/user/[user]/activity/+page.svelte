@@ -15,10 +15,14 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
     import { pageLimit } from '$lib/stores/layout';
+    import { Query } from '@aw-labs/appwrite-console';
 
     let offset = 0;
 
-    $: request = sdkForProject.users.getLogs($page.params.user, $pageLimit, offset);
+    $: request = sdkForProject.users.listLogs($page.params.user, [
+        Query.limit($pageLimit),
+        Query.offset(offset)
+    ]);
 
     const getBrowser = (clientCode: string) => {
         return sdkForProject.avatars.getBrowser(clientCode, 80, 80);

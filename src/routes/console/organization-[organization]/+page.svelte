@@ -5,20 +5,23 @@
     import { GridItem1, EmptyGridItem, Empty, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import type { Models } from '@aw-labs/appwrite-console';
-    import CreateOrganization from '../_createOrganization.svelte';
-    import CreateProject from './_createProject.svelte';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import { projectList } from '$lib/stores/organization';
     import { project } from '../project-[project]/store';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import CreateOrganization from '../_createOrganization.svelte';
+    import CreateProject from './_createProject.svelte';
 
     let projects: Models.Project[] = [];
     $: organizationId = $page.params.organization;
 
     onMount(async () => {
-        await projectList.load('', undefined, offset);
-        projects = $projectList?.projects?.filter((n) => n.teamId === organizationId);
+        await projectList.load([
+            Query.offset(offset),
+            Query.limit(limit),
+            Query.equal('teamId', organizationId)
+        ]);
     });
 
     let showCreate = false;

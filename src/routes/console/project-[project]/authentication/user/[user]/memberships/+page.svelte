@@ -19,7 +19,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
-    const deleted = () => (request = sdkForProject.users.getMemberships($page.params.user));
+    const deleted = () => (request = sdkForProject.users.listMemberships($page.params.user));
     const project = $page.params.project;
 
     let offset = 0;
@@ -29,7 +29,7 @@
 
     const limit = 25;
 
-    $: request = sdkForProject.users.getMemberships($page.params.user);
+    $: request = sdkForProject.users.listMemberships($page.params.user);
 </script>
 
 <Container>
