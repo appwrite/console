@@ -13,16 +13,18 @@
     import { app } from '$lib/stores/app';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { execute, func } from '../store';
-    import Delete from './_delete.svelte';
+    import Delete from './delete.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import type { Models } from '@aw-labs/appwrite-console';
     import Variable from '../../../createVariable.svelte';
+    import Upload from './uploadVariables.svelte';
 
     const functionId = $page.params.function;
     let showDelete = false;
+    let showVariablesUpload = false;
     let showVariablesModal = false;
     let showVariablesValue = [];
     let showVariablesDropdown = [];
@@ -213,7 +215,7 @@
                     <span class="icon-download" />
                     <span class="text">Download .env file</span>
                 </Button>
-                <Button secondary>
+                <Button secondary on:click={() => (showVariablesUpload = true)}>
                     <span class="icon-upload" />
                     <span class="text">Import .env file</span>
                 </Button>
@@ -352,3 +354,5 @@
         bind:variables={$func.vars}
         on:created={handleVariableCreated} />
 {/if}
+
+<Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />
