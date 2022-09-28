@@ -59,8 +59,12 @@
         }
     ];
 
-    //TODO: add types
-    function createEventString(service, request, event, attribute) {
+    function createEventString(
+        service: typeof selectedService,
+        request: typeof selectedRequest,
+        event: string,
+        attribute: string
+    ) {
         let data = [];
         //SERVICE
         if (service) {
