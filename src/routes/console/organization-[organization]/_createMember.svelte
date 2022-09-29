@@ -22,7 +22,7 @@
             const team = await sdkForConsole.teams.createMembership(
                 $organization.$id,
                 email,
-                [],
+                ['owner'],
                 url,
                 name
             );
