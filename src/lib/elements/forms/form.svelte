@@ -3,6 +3,6 @@
 </script>
 
 <!-- svelte-ignore a11y-no-redundant-roles -->
-<form role="form" class="form" class:common-section={single} on:submit|preventDefault>
+<form role="form" class="form" class:common-section={!single} on:submit|preventDefault>
     <slot />
 </form>

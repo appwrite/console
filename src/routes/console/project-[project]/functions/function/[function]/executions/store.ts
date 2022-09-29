@@ -5,15 +5,14 @@ import { cachedStore } from '$lib/helpers/cache';
 export const executionList = cachedStore<
     Models.ExecutionList,
     {
-        load: (functionId: string, limit: number, offset: number, search: string) => Promise<void>;
+        load: (functionId: string, queries?: string[], search?: string) => Promise<void>;
     }
 >('executionList', function ({ set }) {
     return {
-        load: async (functionId, limit, offset, search) => {
+        load: async (functionId, queries, search) => {
             const response = await sdkForProject.functions.listExecutions(
                 functionId,
-                limit,
-                offset,
+                queries,
                 search
             );
             set(response);

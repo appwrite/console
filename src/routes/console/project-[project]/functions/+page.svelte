@@ -14,6 +14,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { beforeNavigate } from '$app/navigation';
     import { Query } from '@aw-labs/appwrite-console';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     let search = '';
     let offset = 0;
@@ -34,7 +35,7 @@
         wizard.hide();
     });
 
-    $: functionList.load([Query.limit(0), Query.offset(0)], search);
+    $: functionList.load([Query.limit(6), Query.offset(0)], search);
     $: if (search) offset = 0;
 </script>
 
@@ -89,7 +90,7 @@
                                     aria-hidden="true"
                                     use:tooltip={{
                                         content: `Next execution: 
-                                        ${func.scheduleNext}`
+                                        ${toLocaleDateTime(func.scheduleNext)}`
                                     }} />
                             </li>
                         {/if}

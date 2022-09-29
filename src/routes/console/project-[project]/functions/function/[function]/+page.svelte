@@ -23,6 +23,7 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import Activate from './_activate.svelte';
     import { Query } from '@aw-labs/appwrite-console';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     let search = '';
     let offset = 0;
@@ -75,8 +76,8 @@
                 <svelte:fragment slot="aside">
                     <div class="u-flex u-main-space-between">
                         <div>
-                            <p>Created at: {$func.$createdAt}</p>
-                            <p>Updated at: {$func.$updatedAt}</p>
+                            <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
+                            <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
                             <p>Entrypoint: {activeDeployment?.entrypoint}</p>
                         </div>
                         {activeDeployment.status}
@@ -146,7 +147,7 @@
                                 </Copy>
                             </TableCell>
                             <TableCellText title="Created">
-                                {deployment.$createdAt}
+                                {toLocaleDateTime(deployment.$createdAt)}
                             </TableCellText>
                             <TableCellText title="Status">{deployment.status}</TableCellText>
                             <TableCellText title="Build Time"

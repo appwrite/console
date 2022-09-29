@@ -20,6 +20,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import Variable from '../../../createVariable.svelte';
     import Upload from './uploadVariables.svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     const functionId = $page.params.function;
     let showDelete = false;
@@ -136,8 +137,8 @@
             <div class="u-flex u-main-space-between">
                 <div>
                     <p>Function ID: {$func.$id}</p>
-                    <p>Created at: {$func.$createdAt}</p>
-                    <p>Updated at: {$func.$updatedAt}</p>
+                    <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
+                    <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
                 </div>
             </div>
         </svelte:fragment>
@@ -153,7 +154,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form single on:submit={() => console.log($func.schedule)}>
+    <Form on:submit={() => console.log($func.schedule)}>
         <CardGrid>
             <h2 class="heading-level-6">Update CRON Schedule</h2>
             <p>
@@ -179,7 +180,7 @@
         </CardGrid>
     </Form>
 
-    <Form single on:submit={updateTimeout}>
+    <Form on:submit={updateTimeout}>
         <CardGrid>
             <h2 class="heading-level-6">Update Timeout</h2>
             <p>
@@ -335,7 +336,7 @@
                 <svelte:fragment slot="title">
                     <h6 class="u-bold">{$func.name}</h6>
                 </svelte:fragment>
-                <p>Last Updated: {$func.$updatedAt}</p>
+                <p>Last Updated: {toLocaleDateTime($func.$updatedAt)}</p>
             </Box>
         </svelte:fragment>
 

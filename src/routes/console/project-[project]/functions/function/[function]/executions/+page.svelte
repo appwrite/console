@@ -7,7 +7,6 @@
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Pagination, Copy, Empty } from '$lib/components';
-
     import {
         Table,
         TableHeader,
@@ -19,6 +18,7 @@
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { Query } from '@aw-labs/appwrite-console';
 
     let search = '';
     let offset = 0;
@@ -26,7 +26,7 @@
     // let selectedExecution: Models.Execution = null;
     const functionId = $page.params.function;
 
-    $: executionList.load(functionId, $pageLimit, offset ?? 0, search);
+    $: executionList.load(functionId, [Query.offset(offset), Query.limit($pageLimit)], search);
 </script>
 
 <Container>
