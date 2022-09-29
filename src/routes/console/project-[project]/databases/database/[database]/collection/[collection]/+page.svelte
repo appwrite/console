@@ -16,6 +16,7 @@
     import { base } from '$app/paths';
     import { wizard } from '$lib/stores/wizard';
     import Create from './createDocument.svelte';
+    import { Query } from '@aw-labs/appwrite-console';
 
     let offset = 0;
 
@@ -23,7 +24,7 @@
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
 
-    $: documentList.load(databaseId, $collection.$id, [], limit, offset);
+    $: documentList.load(databaseId, $collection.$id, [Query.limit(5), Query.offset(offset)]);
     $: columns = [
         ...$collection.attributes.map((attribute) => ({
             key: attribute.key,

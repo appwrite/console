@@ -19,28 +19,22 @@
         errorType: 'error' | 'warning' | 'success' = 'error';
     let enabled: boolean = null,
         collectionName: string = null,
-        collectionPermissions: string = null,
-        collectionRead: string[] = null,
-        collectionWrite: string[] = null,
+        collectionDocumentSecurity: boolean = null,
+        collectionPermissions: string[] = [],
         arePermsDisabled = true;
 
     onMount(async () => {
         enabled ??= $collection.enabled;
         collectionName ??= $collection.name;
-        collectionName ??= $collection.name;
-        collectionPermissions ??= $collection.permission;
-        collectionRead ??= $collection.$read;
-        collectionWrite ??= $collection.$write;
+        collectionPermissions ??= $collection.$permissions;
+        collectionDocumentSecurity ??= $collection.documentSecurity;
     });
 
-    $: if (collectionPermissions || collectionRead || collectionWrite) {
-        if (collectionPermissions !== $collection.permission) {
+    $: if (collectionDocumentSecurity || collectionPermissions) {
+        if (collectionDocumentSecurity !== $collection.documentSecurity) {
             arePermsDisabled = false;
-        } else if (collectionRead || collectionWrite) {
-            if (
-                difference(collectionRead, $collection.$read).length ||
-                difference(collectionWrite, $collection.$write).length
-            ) {
+        } else if (collectionPermissions) {
+            if (difference(collectionPermissions, $collection.$permissions).length) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
@@ -58,9 +52,8 @@
                 databaseId,
                 $collection.$id,
                 $collection.name,
-                $collection.permission,
-                $collection.$read,
-                $collection.$write,
+                $collection.$permissions,
+                $collection.documentSecurity,
                 enabled
             );
             $collection.enabled = enabled;
@@ -81,7 +74,7 @@
                 databaseId,
                 $collection.$id,
                 $collection.name,
-                $collection.permission
+                $collection.$permissions
             );
             $collection.name = collectionName;
             showError = false;
@@ -99,13 +92,10 @@
                 databaseId,
                 $collection.$id,
                 $collection.name,
-                collectionPermissions,
-                collectionPermissions === 'collection' ? collectionRead : $collection.$read,
-                collectionPermissions === 'collection' ? collectionWrite : $collection.$write
+                collectionDocumentSecurity ? collectionPermissions : $collection.$permissions
             );
-            $collection.permission = collectionPermissions;
-            $collection.$read = collectionRead;
-            $collection.$write = collectionWrite;
+            $collection.$permissions = collectionPermissions;
+            $collection.documentSecurity = collectionDocumentSecurity;
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -139,11 +129,8 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button
-                    disabled={enabled === $collection.enabled}
-                    on:click={() => {
-                        togglecollection();
-                    }}>Update</Button>
+                <Button disabled={enabled === $collection.enabled} on:click={togglecollection}
+                    >Update</Button>
             </svelte:fragment>
         </CardGrid>
 
@@ -167,9 +154,7 @@
             <svelte:fragment slot="actions">
                 <Button
                     disabled={collectionName === $collection.name || !collectionName}
-                    on:click={() => {
-                        updateName();
-                    }}>Update</Button>
+                    on:click={updateName}>Update</Button>
             </svelte:fragment>
         </CardGrid>
         <CardGrid>
@@ -187,8 +172,8 @@
                                 type="radio"
                                 class="is-small"
                                 name="level"
-                                bind:group={collectionPermissions}
-                                value="collection" />
+                                bind:group={collectionDocumentSecurity}
+                                value={true} />
                             <span>Collection Level</span>
                         </label>
                     </li>
@@ -198,33 +183,14 @@
                                 type="radio"
                                 class="is-small"
                                 name="level"
-                                bind:group={collectionPermissions}
-                                value="file" />
+                                bind:group={collectionDocumentSecurity}
+                                value={false} />
                             <span>Document Level</span>
                         </label>
                     </li>
                 </ul>
 
-                {#if collectionPermissions === 'collection'}
-                    <Alert type="info">
-                        <p>
-                            Tip: Add <b>role:all</b> for wildcards access. Check out our
-                            documentation for more on <a class="link" href="/#">Permissions</a>
-                        </p>
-                    </Alert>
-                    <ul class="form-list">
-                        <InputTags
-                            id="read"
-                            label="Read Access"
-                            placeholder="User ID, Team ID, or Role"
-                            bind:tags={collectionRead} />
-                        <InputTags
-                            id="write"
-                            label="Write Access"
-                            placeholder="User ID, Team ID, or Role"
-                            bind:tags={collectionWrite} />
-                    </ul>
-                {:else}
+                {#if collectionDocumentSecurity}
                     <Alert type="info">
                         <p>
                             Manage permissions at the <b>Document Level</b> to control access over
@@ -233,6 +199,20 @@
                             <a class="link" href="/#">Permissions</a>
                         </p>
                     </Alert>
+                {:else}
+                    <Alert type="info">
+                        <p>
+                            Tip: Add <b>role:all</b> for wildcards access. Check out our
+                            documentation for more on <a class="link" href="/#">Permissions</a>
+                        </p>
+                    </Alert>
+                    <ul class="form-list">
+                        <InputTags
+                            id="permissions"
+                            label="Permissions"
+                            placeholder="User ID, Team ID, or Role"
+                            bind:tags={collectionPermissions} />
+                    </ul>
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">

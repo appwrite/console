@@ -36,8 +36,7 @@
                 collectionId,
                 documentId,
                 $doc,
-                $doc.$read,
-                $doc.$write
+                $doc.$permissions
             );
 
             currentDoc = JSON.stringify($doc);

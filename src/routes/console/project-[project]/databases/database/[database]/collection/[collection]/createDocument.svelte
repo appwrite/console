@@ -40,8 +40,7 @@
                 collectionId,
                 $createDocument.id ?? 'unique()',
                 $createDocument.document,
-                $createDocument.read,
-                $createDocument.write
+                $createDocument.permissions
             );
             addNotification({
                 message: 'Document has been created',
@@ -59,8 +58,7 @@
 
     onDestroy(() => {
         initializeDocument();
-        $createDocument.read = [];
-        $createDocument.write = [];
+        $createDocument.permissions = [];
     });
 
     beforeNavigate(() => {

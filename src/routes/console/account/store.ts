@@ -10,7 +10,7 @@ export const accountSession = cachedStore<
 >('accountSession', function ({ set }) {
     return {
         load: async () => {
-            const response = await sdkForConsole.account.getSessions();
+            const response = await sdkForConsole.account.listSessions();
             set(response);
         }
     };
@@ -18,12 +18,12 @@ export const accountSession = cachedStore<
 export const accountActivity = cachedStore<
     Models.LogList,
     {
-        load: (limit: number, offset: number) => Promise<void>;
+        load: (queries: string[]) => Promise<void>;
     }
 >('accountActivity', function ({ set }) {
     return {
-        load: async (limit, offset) => {
-            const response = await sdkForConsole.account.getLogs(limit, offset);
+        load: async (queries) => {
+            const response = await sdkForConsole.account.listLogs(queries);
             set(response);
         }
     };

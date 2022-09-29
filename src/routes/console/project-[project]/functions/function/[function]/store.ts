@@ -23,17 +23,16 @@ export const func = cachedStore<
 export const deploymentList = cachedStore<
     Models.DeploymentList,
     {
-        load: (functionId: string, search: string, limit: number, offset: number) => Promise<void>;
+        load: (functionId: string, queries?: string[], search?: string) => Promise<void>;
         updateDeployment: (deployment: Models.Deployment) => void;
     }
 >('deploymentList', function ({ set, update }) {
     return {
-        load: async (functionId, search, limit, offset) => {
+        load: async (functionId, queries, search) => {
             const response = await sdkForProject.functions.listDeployments(
                 functionId,
-                search,
-                limit,
-                offset
+                queries,
+                search
             );
             set(response);
         },

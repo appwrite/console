@@ -22,10 +22,7 @@
             const collection = await sdkForProject.databases.createCollection(
                 databaseId,
                 id ? id : 'unique()',
-                name,
-                'collection',
-                [],
-                []
+                name
             );
             name = id = null;
             showCreate = false;

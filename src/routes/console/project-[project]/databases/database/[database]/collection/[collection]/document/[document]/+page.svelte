@@ -12,8 +12,7 @@
     import { page } from '$app/stores';
 
     let showDelete = false;
-    let read = $doc?.$read;
-    let write = $doc?.$write;
+    let permissions = $doc?.$permissions;
     let arePermsDisabled = true;
     const databaseId = $page.params.database;
 
@@ -24,11 +23,9 @@
                 $doc.collectionId,
                 $doc.$id,
                 $doc.data,
-                read,
-                write
+                permissions
             );
-            $doc.$read = read;
-            $doc.$write = write;
+            $doc.$permissions = permissions;
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -42,8 +39,8 @@
         }
     }
 
-    $: if (read || write) {
-        if (difference(read, $doc.$read).length || difference(write, $doc.$write).length) {
+    $: if (permissions) {
+        if (difference(permissions, $doc.$permissions).length) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
     }
@@ -82,15 +79,10 @@
                 </Alert>
                 <ul class="common-section">
                     <InputTags
-                        id="read"
-                        label="Read Access"
+                        id="permissions"
+                        label="Permissions"
                         placeholder="User ID, Team ID, or Role"
-                        bind:tags={read} />
-                    <InputTags
-                        id="write"
-                        label="Write Access"
-                        placeholder="User ID, Team ID, or Role"
-                        bind:tags={write} />
+                        bind:tags={permissions} />
                 </ul>
             </svelte:fragment>
 

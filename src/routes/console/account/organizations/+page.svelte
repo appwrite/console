@@ -17,7 +17,7 @@
     };
 
     const getMemberships = async (teamId: string) => {
-        const memberships = await sdkForConsole.teams.getMemberships(teamId);
+        const memberships = await sdkForConsole.teams.listMemberships(teamId);
         return memberships.memberships.map((team) => {
             return {
                 name: team.userName,

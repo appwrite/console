@@ -9,11 +9,11 @@
     import { base } from '$app/paths';
     import { tooltip } from '$lib/actions/tooltip';
     import { functionList } from './store';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import { onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
     import { beforeNavigate } from '$app/navigation';
+    import { Query } from '@aw-labs/appwrite-console';
 
     let search = '';
     let offset = 0;
@@ -34,7 +34,8 @@
         wizard.hide();
     });
 
-    $: functionList.load(search, limit, offset ?? 0);
+    $: functionList.load([Query.limit(0), Query.offset(0)], search);
+    $: if (search) offset = 0;
 </script>
 
 <Container>
@@ -87,9 +88,8 @@
                                     class="icon-clock"
                                     aria-hidden="true"
                                     use:tooltip={{
-                                        content: `Next execution: ${toLocaleDateTime(
-                                            func.scheduleNext
-                                        )}`
+                                        content: `Next execution: 
+                                        ${func.scheduleNext}`
                                     }} />
                             </li>
                         {/if}

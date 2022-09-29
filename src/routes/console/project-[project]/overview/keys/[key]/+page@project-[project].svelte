@@ -9,7 +9,6 @@
         Form,
         FormList,
         InputCheckbox,
-        InputNumber,
         InputPassword,
         InputText
     } from '$lib/elements/forms';
@@ -35,7 +34,7 @@
     let showDelete = false;
     let name: string = null;
     let secret: string = null;
-    let expire: number = null;
+    let expire: string = null;
 
     onMount(handle);
     afterNavigate(handle);
@@ -229,7 +228,7 @@
                 <p class="text">Choose any name that will help you distinguish between API keys.</p>
                 <svelte:fragment slot="aside">
                     <FormList>
-                        <InputNumber
+                        <InputText
                             id="expire"
                             label="Expiration Date"
                             bind:value={expire}

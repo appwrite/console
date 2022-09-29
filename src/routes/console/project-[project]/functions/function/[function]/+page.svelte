@@ -17,12 +17,12 @@
     import Create from './_create.svelte';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { pageLimit } from '$lib/stores/layout';
     import type { Models } from '@aw-labs/appwrite-console';
     import Delete from './_delete.svelte';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import Activate from './_activate.svelte';
+    import { Query } from '@aw-labs/appwrite-console';
 
     let search = '';
     let offset = 0;
@@ -39,7 +39,7 @@
         func.load(functionId);
     };
 
-    $: deploymentList.load(functionId, search, $pageLimit, offset ?? 0);
+    $: deploymentList.load(functionId, [Query.offset(offset), Query.limit($pageLimit)], search);
     $: if (search) offset = 0;
     $: activeDeployment = $deploymentList?.deployments?.find((d) => d.$id === $func?.deployment);
 </script>
@@ -75,8 +75,8 @@
                 <svelte:fragment slot="aside">
                     <div class="u-flex u-main-space-between">
                         <div>
-                            <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
-                            <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
+                            <p>Created at: {$func.$createdAt}</p>
+                            <p>Updated at: {$func.$updatedAt}</p>
                             <p>Entrypoint: {activeDeployment?.entrypoint}</p>
                         </div>
                         {activeDeployment.status}
@@ -146,7 +146,7 @@
                                 </Copy>
                             </TableCell>
                             <TableCellText title="Created">
-                                {toLocaleDateTime(deployment.$createdAt)}
+                                {deployment.$createdAt}
                             </TableCellText>
                             <TableCellText title="Status">{deployment.status}</TableCellText>
                             <TableCellText title="Build Time"

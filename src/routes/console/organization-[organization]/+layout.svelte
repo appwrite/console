@@ -12,6 +12,7 @@
     import CreateMember from './_createMember.svelte';
     import Create from '../_createOrganization.svelte';
     import { page } from '$app/stores';
+    import { Query } from '@aw-labs/appwrite-console';
 
     $: organizationId = $page.params.organization;
     $: path = `console/organization-${organizationId}`;
@@ -22,7 +23,7 @@
     async function handle(event = null) {
         if ($organization?.$id !== organizationId) {
             await organization.load(organizationId);
-            await memberList.load(organizationId, '', 12, 0);
+            await memberList.load(organizationId, [Query.limit(12)]);
         }
         updateLayout({
             navigate: event,

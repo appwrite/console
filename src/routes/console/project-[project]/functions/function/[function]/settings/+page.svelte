@@ -11,7 +11,6 @@
     } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { execute, func } from '../store';
     import Delete from './delete.svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -137,8 +136,8 @@
             <div class="u-flex u-main-space-between">
                 <div>
                     <p>Function ID: {$func.$id}</p>
-                    <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
-                    <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
+                    <p>Created at: {$func.$createdAt}</p>
+                    <p>Updated at: {$func.$updatedAt}</p>
                 </div>
             </div>
         </svelte:fragment>
@@ -336,7 +335,7 @@
                 <svelte:fragment slot="title">
                     <h6 class="u-bold">{$func.name}</h6>
                 </svelte:fragment>
-                <p>Last Updated: {toLocaleDateTime($func.$updatedAt)}</p>
+                <p>Last Updated: {$func.$updatedAt}</p>
             </Box>
         </svelte:fragment>
 

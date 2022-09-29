@@ -6,15 +6,15 @@ import { browser } from '$app/environment';
 export const functionList = cachedStore<
     Models.FunctionList,
     {
-        load: (search: string, limit: number, offset: number) => Promise<void>;
+        load: (queries?: string[], search?: string) => Promise<void>;
         getDeployments: (
             functions: Models.Function[]
         ) => Promise<Record<string, Models.Deployment>>;
     }
 >('functionList', function ({ set }) {
     return {
-        load: async (search, limit, offset) => {
-            const response = await sdkForProject.functions.list(search, limit, offset);
+        load: async (queries, search) => {
+            const response = await sdkForProject.functions.list(queries, search);
             set(response);
         },
 

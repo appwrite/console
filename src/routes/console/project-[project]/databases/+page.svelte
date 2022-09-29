@@ -4,7 +4,7 @@
     import { Button } from '$lib/elements/forms';
     import { Empty, EmptyGridItem, Pagination, Copy, GridItem1 } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -21,7 +21,7 @@
         await goto(`${base}/console/project-${project}/databases/database/${event.detail.$id}`);
     };
 
-    $: databaseList.load(search, limit, offset ?? 0);
+    $: databaseList.load([Query.limit(limit), Query.offset(offset)], search);
 </script>
 
 <Container>

@@ -10,6 +10,8 @@
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { DropList, DropListItem } from '$lib/components';
+    import { BarChart, LineChart } from '$lib/charts';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -71,6 +73,16 @@
             }
         });
     }
+
+    //TODO: workaround for broken types
+    $: network = $usage?.network as unknown as Array<{
+        date: number;
+        value: number;
+    }>;
+    $: requests = $usage?.requests as unknown as Array<{
+        date: number;
+        value: number;
+    }>;
 </script>
 
 <svelte:head>
@@ -80,14 +92,16 @@
 {#if $project}
     <Container overlapCover>
         {#if $usage}
+            {@const bandwith = humanFileSize(total($usage.network))}
+            {@const storage = humanFileSize(last($usage.storage).value)}
             <section class="common-section">
                 <div class="grid-dashboard-1s-2m-6l">
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
                         <div class="u-flex u-gap-16 u-main-space-between">
                             <div>
                                 <div class="heading-level-4">
-                                    {total($usage.network)}
-                                    <span class="body-text-2">KB</span>
+                                    {bandwith.value}
+                                    <span class="body-text-2">{bandwith.unit}</span>
                                 </div>
                                 <div>Bandwidth</div>
                             </div>
@@ -116,6 +130,15 @@
                                 </svelte:fragment>
                             </DropList>
                         </div>
+                        {#if network.length}
+                            <BarChart
+                                series={[
+                                    {
+                                        name: 'Bandwith',
+                                        data: [...network.map((e) => [e.date, e.value])]
+                                    }
+                                ]} />
+                        {/if}
                     </div>
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
                         <div class="u-flex u-gap-16 u-main-space-between">
@@ -150,6 +173,15 @@
                                 </svelte:fragment>
                             </DropList>
                         </div>
+                        {#if network.length}
+                            <LineChart
+                                series={[
+                                    {
+                                        name: 'Requests',
+                                        data: [...requests.map((e) => [e.date, e.value])]
+                                    }
+                                ]} />
+                        {/if}
                     </div>
                     <div class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
@@ -185,9 +217,10 @@
 
                             <div class="grid-item-1-end-start">
                                 <div class="heading-level-4">
-                                    8.0 <span class="body-text-2">MB</span>
+                                    {storage.value}
+                                    <span class="body-text-2">{storage.unit}</span>
                                 </div>
-                                <div>Users</div>
+                                <div>Storage</div>
                             </div>
 
                             <div class="grid-item-1-end-end">
@@ -231,7 +264,7 @@
 
                             <div class="grid-item-1-end-start">
                                 <div class="heading-level-4">
-                                    {format(last($usage.functions).value)}
+                                    {format(last($usage.executions).value)}
                                 </div>
                                 <div>Executions</div>
                             </div>

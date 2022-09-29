@@ -11,18 +11,17 @@
     import Delete from './_deleteFile.svelte';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
+    import { difference } from '$lib/helpers/array';
 
     onMount(async () => {
         let bucketId = $page.params.bucket;
         let fileId = $page.params.file;
         await file.load(bucketId, fileId);
-        fileRead = $file?.$read;
-        fileWrite = $file?.$write;
+        filePermissions = $file?.$permissions;
     });
 
     let showDelete = false;
-    let fileRead = $file?.$read;
-    let fileWrite = $file?.$write;
+    let filePermissions = $file?.$permissions;
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
@@ -31,16 +30,10 @@
     const getView = (fileId: string) =>
         sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
 
-    $: if (fileRead || fileWrite) {
-        if (fileRead) {
-            if (JSON.stringify(fileRead) !== JSON.stringify($file.$read)) {
-                arePermsDisabled = false;
-            } else arePermsDisabled = true;
-        } else if (fileWrite) {
-            if (JSON.stringify(fileWrite) !== JSON.stringify($file.$write)) {
-                arePermsDisabled = false;
-            } else arePermsDisabled = true;
-        }
+    $: if (filePermissions) {
+        if (difference(filePermissions, $file.$permissions).length) {
+            arePermsDisabled = false;
+        } else arePermsDisabled = true;
     }
 
     function downloadFile() {
@@ -52,9 +45,8 @@
 
     async function updatePermissions() {
         try {
-            await sdkForProject.storage.updateFile($file.bucketId, $file.$id, fileRead, fileWrite);
-            $file.$read = fileRead;
-            $file.$write = fileWrite;
+            await sdkForProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
+            $file.$permissions = filePermissions;
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -133,15 +125,10 @@
                 </Alert>
                 <ul class="common-section">
                     <InputTags
-                        id="read"
-                        label="Read Access"
+                        id="permissions"
+                        label="Permissions"
                         placeholder="User ID, Team ID, or Role"
-                        bind:tags={fileRead} />
-                    <InputTags
-                        id="write"
-                        label="Write Access"
-                        placeholder="User ID, Team ID, or Role"
-                        bind:tags={fileWrite} />
+                        bind:tags={filePermissions} />
                 </ul>
             </svelte:fragment>
 
