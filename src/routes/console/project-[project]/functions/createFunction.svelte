@@ -12,6 +12,7 @@
     import Step5 from './wizard/step5.svelte';
     import { createFunction } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import { Query } from '@aw-labs/appwrite-console';
 
     const create = async () => {
         try {
@@ -29,7 +30,7 @@
                 message: 'Function has been created',
                 type: 'success'
             });
-            functionList.load('', 12, 0);
+            functionList.load([Query.limit(6), Query.offset(0)]);
             wizard.hide();
         } catch (error) {
             addNotification({

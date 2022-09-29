@@ -4,6 +4,7 @@
     import { usersList } from '../authentication/store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createFunction } from './wizard/store';
+    import { Query } from '@aw-labs/appwrite-console';
 
     export let showUsers = false;
 
@@ -24,7 +25,7 @@
         $createFunction = $createFunction;
     }
 
-    $: usersList.load(search, limit, offset ?? 0);
+    $: usersList.load([Query.limit(limit), Query.offset(offset)], search);
     $: if (search) offset = 0;
 </script>
 

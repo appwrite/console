@@ -4,6 +4,7 @@
     import { teamsList } from '../authentication/store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createFunction } from './wizard/store';
+    import { Query } from '@aw-labs/appwrite-console';
 
     export let showTeams = false;
 
@@ -24,7 +25,7 @@
         $createFunction = $createFunction;
     }
 
-    $: teamsList.load(search, limit, offset ?? 0);
+    $: teamsList.load([Query.limit(limit), Query.offset(offset)], search);
     $: if (search) offset = 0;
 </script>
 
