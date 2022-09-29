@@ -40,3 +40,34 @@ export const functionList = cachedStore<
         }
     };
 });
+
+export const variableList = cachedStore<
+    Models.VariableList,
+    {
+        load: (functionId: string) => Promise<void>;
+        delete: (functionId: string, variableId: string) => Promise<void>;
+        create: (functionId: string, key: string, value: string) => Promise<void>;
+        update: (
+            functionId: string,
+            variableId: string,
+            key: string,
+            value: string
+        ) => Promise<void>;
+    }
+>('variableList', function ({ set }) {
+    return {
+        load: async (functionId) => {
+            const response = await sdkForProject.functions.listVariables(functionId);
+            set(response);
+        },
+        delete: async (functionId, variableId) => {
+            await sdkForProject.functions.deleteVariable(functionId, variableId);
+        },
+        create: async (functionId, key, value) => {
+            await sdkForProject.functions.createVariable(functionId, key, value);
+        },
+        update: async (functionId, variableId, key, value) => {
+            await sdkForProject.functions.updateVariable(functionId, variableId, key, value);
+        }
+    };
+});

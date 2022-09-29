@@ -3,12 +3,28 @@
     import { createFunction } from './store';
     import Create from '../createVariable.svelte';
     import { DropList, DropListItem, Copy } from '$lib/components';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let showCreate = false;
 
-    let selectedKey: string = null;
+    let selectedVar: Partial<Models.Variable> = null;
     let showDropdown = [];
     let showValue = [];
+
+    function handleCreated(dispatchEvent: CustomEvent) {
+        $createFunction.vars.push(dispatchEvent.detail);
+        $createFunction = $createFunction;
+    }
+    function handleUpdated(dispatchEvent: CustomEvent) {
+        $createFunction.vars = $createFunction.vars.map((v) => {
+            if (v.key === selectedVar.key) {
+                v.key = dispatchEvent.detail.key;
+                v.value = dispatchEvent.detail.value;
+            }
+            return v;
+        });
+        $createFunction = $createFunction;
+    }
 </script>
 
 <WizardStep>
@@ -31,15 +47,15 @@
         </thead>
         <tbody class="table-tbody">
             {#if $createFunction.vars}
-                {#each Object.entries($createFunction.vars) as [key, value], i}
+                {#each $createFunction.vars as variable, i}
                     <tr class="table-row">
                         <td class="table-col" data-title="Key">
-                            <span class="text">{key}</span>
+                            <span class="text">{variable.key}</span>
                         </td>
                         <td class="table-col u-overflow-visible" data-title="value">
                             <div class="interactive-text-output">
                                 {#if showValue[i]}
-                                    <span class="text">{value}</span>
+                                    <span class="text">{variable.value}</span>
                                 {:else}
                                     <span class="text">••••••••</span>
                                 {/if}
@@ -55,7 +71,7 @@
                                             <span class="icon-eye" aria-hidden="true" />
                                         {/if}
                                     </button>
-                                    <Copy {value}>
+                                    <Copy bind:value={variable.value}>
                                         <button
                                             class="interactive-text-output-button"
                                             aria-label="copy text">
@@ -82,7 +98,7 @@
                                     <DropListItem
                                         icon="pencil"
                                         on:click={() => {
-                                            selectedKey = key;
+                                            selectedVar = $createFunction.vars[i];
                                             showDropdown[i] = false;
                                             showCreate = true;
                                         }}>
@@ -91,7 +107,8 @@
                                     <DropListItem
                                         icon="trash"
                                         on:click={() => {
-                                            delete $createFunction.vars[key];
+                                            $createFunction.vars.splice(i, 1);
+                                            $createFunction = $createFunction;
                                             showDropdown[i] = false;
                                         }}>
                                         Delete
@@ -118,5 +135,9 @@
 </WizardStep>
 
 {#if showCreate}
-    <Create bind:selectedKey bind:showCreate bind:variables={$createFunction.vars} />
+    <Create
+        bind:selectedVar
+        bind:showCreate
+        on:created={handleCreated}
+        on:updated={handleUpdated} />
 {/if}

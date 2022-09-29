@@ -21,14 +21,15 @@
     import Variable from '../../../createVariable.svelte';
     import Upload from './uploadVariables.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { variableList } from '../../../store';
 
     const functionId = $page.params.function;
     let showDelete = false;
+    let selectedVar: Models.Variable = null;
     let showVariablesUpload = false;
     let showVariablesModal = false;
     let showVariablesValue = [];
     let showVariablesDropdown = [];
-    let selectedKey: string = null;
     let timeout = 0;
     let deployment: Models.Deployment = null;
 
@@ -36,6 +37,7 @@
         if ($func?.$id !== functionId) {
             await func.load(functionId);
         }
+        await variableList.load(functionId);
         deployment = await func.getDeployment(functionId, $func.deployment);
         timeout = $func.timeout;
     });
@@ -51,7 +53,6 @@
                 functionId,
                 $func.name,
                 $func.execute,
-                $func.vars,
                 $func.events,
                 $func.schedule,
                 timeout
@@ -69,23 +70,51 @@
         }
     }
 
-    async function handleVariableCreated() {
+    async function handleVariableCreated(dispatcedData: CustomEvent) {
+        const variable = dispatcedData.detail;
+
         try {
-            console.log($func);
-            await sdkForProject.functions.update(
-                functionId,
-                $func.name,
-                $func.execute,
-                $func.vars,
-                $func.events,
-                $func.schedule,
-                timeout
-            );
+            await variableList.create(functionId, variable.key, variable.value);
             showVariablesModal = false;
             addNotification({
                 type: 'success',
                 message: `${$func.name} variables have been updated`
             });
+            variableList.load(functionId);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
+    async function handleVariableUpdated(dispatcedData: CustomEvent) {
+        const variable = dispatcedData.detail;
+        try {
+            await variableList.update(functionId, variable.$id, variable.key, variable.value);
+            selectedVar = null;
+            showVariablesModal = false;
+            addNotification({
+                type: 'success',
+                message: `${$func.name} variables have been updated`
+            });
+            variableList.load(functionId);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+    async function handleVariableDeleted(variableId) {
+        try {
+            await variableList.delete(functionId, variableId);
+            addNotification({
+                type: 'success',
+                message: `Variable has been deleted`
+            });
+            variableList.load(functionId);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -95,26 +124,27 @@
     }
 
     function downloadVariables() {
-        let data = Object.keys($func.vars)
-            .map((key) => {
-                return `${key}=${$func.vars[key]}`;
-            })
-            .join('\n');
-        const file = new File([data], '.env', {
-            type: 'application/x-envoy'
-        });
+        if ($variableList?.total) {
+            let data = $variableList.variables
+                .map((variable) => {
+                    return `${variable.key}=${variable.value}`;
+                })
+                .join('\n');
+            const file = new File([data], '.env', {
+                type: 'application/x-envoy'
+            });
 
-        console.log(file);
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(file);
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(file);
 
-        link.href = url;
-        link.download = file.name;
-        document.body.appendChild(link);
-        link.click();
+            link.href = url;
+            link.download = file.name;
+            document.body.appendChild(link);
+            link.click();
 
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
     }
 </script>
 
@@ -233,16 +263,16 @@
                     </tr>
                 </thead>
                 <tbody class="table-tbody">
-                    {#if $func.vars}
-                        {#each Object.entries($func.vars) as [key, value], i}
+                    {#if $variableList?.total}
+                        {#each $variableList.variables as variable, i}
                             <tr class="table-row">
                                 <td class="table-col" data-title="Key">
-                                    <span class="text">{key}</span>
+                                    <span class="text">{variable.key}</span>
                                 </td>
                                 <td class="table-col u-overflow-visible" data-title="value">
                                     <div class="interactive-text-output">
                                         {#if showVariablesValue[i]}
-                                            <span class="text">{value}</span>
+                                            <span class="text">{variable.value}</span>
                                         {:else}
                                             <span class="text">••••••••</span>
                                         {/if}
@@ -259,7 +289,7 @@
                                                     <span class="icon-eye" aria-hidden="true" />
                                                 {/if}
                                             </button>
-                                            <Copy {value}>
+                                            <Copy bind:value={variable.value}>
                                                 <button
                                                     class="interactive-text-output-button"
                                                     aria-label="copy text">
@@ -289,7 +319,7 @@
                                             <DropListItem
                                                 icon="pencil"
                                                 on:click={() => {
-                                                    selectedKey = key;
+                                                    selectedVar = variable;
                                                     showVariablesDropdown[i] = false;
                                                     showVariablesModal = true;
                                                 }}>
@@ -297,8 +327,8 @@
                                             </DropListItem>
                                             <DropListItem
                                                 icon="trash"
-                                                on:click={() => {
-                                                    delete $func.vars[key];
+                                                on:click={async () => {
+                                                    handleVariableDeleted(variable.$id);
                                                     showVariablesDropdown[i] = false;
                                                 }}>
                                                 Delete
@@ -350,9 +380,9 @@
 {#if showVariablesModal}
     <Variable
         bind:showCreate={showVariablesModal}
-        bind:selectedKey
-        bind:variables={$func.vars}
-        on:created={handleVariableCreated} />
+        bind:selectedVar
+        on:created={handleVariableCreated}
+        on:updated={handleVariableUpdated} />
 {/if}
 
 <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />

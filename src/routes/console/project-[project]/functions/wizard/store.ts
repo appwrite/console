@@ -1,3 +1,4 @@
+import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
 
 export const createFunction = writable<{
@@ -5,7 +6,7 @@ export const createFunction = writable<{
     name: string;
     execute: string[];
     runtime: string;
-    vars?: object;
+    vars?: Partial<Models.Variable>[];
     events?: string[];
     schedule?: string;
     timeout?: number;
@@ -14,7 +15,7 @@ export const createFunction = writable<{
     name: null,
     execute: [],
     runtime: null,
-    vars: {},
+    vars: [],
     events: [],
     schedule: null,
     timeout: null

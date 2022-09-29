@@ -3,49 +3,54 @@
     import { Modal } from '$lib/components';
     import { InputText, InputPassword, FormList } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export let showCreate = false;
-    export let variables: object;
 
-    export let selectedKey: string = null;
-    let key = selectedKey;
-    let value = variables[key];
+    export let selectedVar: Partial<Models.Variable> = null;
+
+    let pair = {
+        $id: selectedVar?.$id,
+        key: selectedVar?.key,
+        value: selectedVar?.value
+    };
 
     const dispatch = createEventDispatcher();
 
-    const create = () => {
-        if (selectedKey) {
-            delete Object.assign(variables, {
-                [key]: variables[selectedKey]
-            })[selectedKey];
-            variables[key] = value;
-            selectedKey = null;
+    const handleVariable = () => {
+        if (selectedVar) {
+            dispatch('updated', pair);
         } else {
-            variables[key] = value;
+            dispatch('created', pair);
         }
-        dispatch('created');
         showCreate = false;
     };
 </script>
 
-<Form single on:submit={create}>
+<Form single on:submit={handleVariable}>
     <Modal bind:show={showCreate} size="big">
         <svelte:fragment slot="header"
-            >{selectedKey ? 'Update' : 'Create'} Variable</svelte:fragment>
+            >{selectedVar ? 'Update' : 'Create'} Variable</svelte:fragment>
         <FormList>
-            <InputText id="key" label="Key" placeholder="Enter key" bind:value={key} required />
+            <InputText
+                id="key"
+                label="Key"
+                placeholder="Enter key"
+                bind:value={pair.key}
+                required
+                autofocus />
             <InputPassword
                 id="value"
                 label="Value"
                 minlength={0}
                 showPasswordButton
                 placeholder="Enter value"
-                bind:value
+                bind:value={pair.value}
                 required />
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-            <Button submit>{selectedKey ? 'Update' : 'Create'}</Button>
+            <Button submit>{selectedVar ? 'Update' : 'Create'}</Button>
         </svelte:fragment>
     </Modal>
 </Form>
