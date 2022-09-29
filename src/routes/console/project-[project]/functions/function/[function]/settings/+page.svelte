@@ -5,6 +5,7 @@
         Button,
         InputNumber,
         InputSelect,
+        InputText,
         InputCron,
         Form,
         FormList
@@ -22,6 +23,7 @@
     import Upload from './uploadVariables.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { variableList } from '../../../store';
+    import { breadcrumbs, title } from '$lib/stores/layout';
 
     const functionId = $page.params.function;
     let showDelete = false;
@@ -32,6 +34,7 @@
     let showVariablesDropdown = [];
     let timeout = 0;
     let deployment: Models.Deployment = null;
+    let functionName: string = null;
 
     onMount(async () => {
         if ($func?.$id !== functionId) {
@@ -39,13 +42,34 @@
         }
         await variableList.load(functionId);
         deployment = await func.getDeployment(functionId, $func.deployment);
-        timeout = $func.timeout;
+        timeout ??= $func.timeout;
+        functionName ??= $func.name;
     });
 
     let options = [
         { label: 'seconds', value: 'seconds' },
         { label: 'minutes', value: 'minutes' }
     ];
+
+    async function updateName() {
+        try {
+            await sdkForProject.functions.update(functionId, functionName, $func.execute);
+            $func.name = functionName;
+            title.set(functionName);
+            const breadcrumb = $breadcrumbs.get($breadcrumbs.size);
+            breadcrumb.title = functionName;
+            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
+            addNotification({
+                message: 'Name has been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
 
     async function updateTimeout() {
         try {
@@ -183,6 +207,28 @@
                 }}>Execute now</Button>
         </svelte:fragment>
     </CardGrid>
+
+    <Form on:submit={updateName}>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Name</h6>
+
+            <svelte:fragment slot="aside">
+                <ul>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        placeholder="Enter name"
+                        autocomplete={false}
+                        bind:value={functionName} />
+                </ul>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={functionName === $func.name || !functionName} submit
+                    >Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
 
     <Form on:submit={() => console.log($func.schedule)}>
         <CardGrid>

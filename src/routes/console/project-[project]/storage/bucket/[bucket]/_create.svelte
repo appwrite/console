@@ -88,7 +88,7 @@
                         <div class="u-grid u-gap-16">
                             <p>Drag and drop files here to upload</p>
                             <div>
-                                <Button secondary on:click={input.click}>
+                                <Button secondary on:click={() => input.click()}>
                                     <span class="icon-upload" aria-hidden="true" />
                                     <span class="text">Choose File</span>
                                 </Button>
