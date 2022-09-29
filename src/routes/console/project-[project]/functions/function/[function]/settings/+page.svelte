@@ -107,7 +107,7 @@
             });
         }
     }
-    async function handleVariableDeleted(variableId) {
+    async function handleVariableDeleted(variableId: string) {
         try {
             await variableList.delete(functionId, variableId);
             addNotification({

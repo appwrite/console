@@ -21,10 +21,13 @@
                 $createFunction.name,
                 $createFunction.execute,
                 $createFunction.runtime,
-                $createFunction.vars,
                 $createFunction.events,
                 $createFunction.schedule,
                 $createFunction.timeout
+            );
+            $createFunction.vars.forEach(
+                async (v) =>
+                    await sdkForProject.functions.createVariable($createFunction.id, v.key, v.value)
             );
             addNotification({
                 message: 'Function has been created',

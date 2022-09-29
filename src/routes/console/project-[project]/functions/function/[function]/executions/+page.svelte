@@ -63,8 +63,8 @@
                             </Pill>
                         </TableCellText>
                         <TableCellText title="Type">{execution.trigger}</TableCellText>
-                        <TableCellText title="Build Time">
-                            {calculateTime(execution.time)}</TableCellText>
+                        <TableCellText title="Duration">
+                            {calculateTime(execution.duration)}</TableCellText>
                     </TableRow>
                 {/each}
             </TableBody>
