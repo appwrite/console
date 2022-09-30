@@ -59,7 +59,7 @@
 </script>
 
 <Form on:submit={create}>
-    <Modal bind:show on:close={reset}>
+    <Modal bind:show on:close={reset} size="big">
         <svelte:fragment slot="header">Select users</svelte:fragment>
         <InputSearch bind:value={search} />
         {#if results?.users}
