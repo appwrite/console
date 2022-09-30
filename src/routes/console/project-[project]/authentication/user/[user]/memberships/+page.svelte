@@ -78,7 +78,7 @@
                 </TableBody>
             </Table>
         {:else}
-            <Empty centered>
+            <Empty>
                 <div class="u-flex u-flex-vertical u-cross-center">
                     <div class="common-section">
                         <p>No memberships available</p>

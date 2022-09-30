@@ -46,8 +46,12 @@
             </Table>
         {:else}
             <Empty>
-                <svelte:fragment slot="header">No Webhooks Found</svelte:fragment>
-                You haven't created any webhooks for your project yet.
+                <div class="u-flex u-flex-vertical">
+                    <div class="common-section">No Webhooks Found</div>
+                    <div class="common-section">
+                        You haven't created any webhooks for your project yet.
+                    </div>
+                </div>
             </Empty>
         {/if}
     {/await}

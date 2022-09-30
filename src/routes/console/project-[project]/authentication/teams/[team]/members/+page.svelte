@@ -124,20 +124,8 @@
             <Pagination limit={$pageLimit} bind:offset sum={$memberships.total} />
         </div>
     {:else}
-        <Empty dashed centered>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <Button secondary round on:click={() => (showCreate = true)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                    </Button>
-                </div>
-                <div class="common-section">
-                    <p>Add your first member to get started</p>
-                </div>
-                <div class="common-section">
-                    <Button external secondary href="#">Documentation</Button>
-                </div>
-            </div>
+        <Empty isButton single on:click={() => (showCreate = true)}>
+            <p>Add your first member to get started</p>
         </Empty>
     {/if}
 </Container>

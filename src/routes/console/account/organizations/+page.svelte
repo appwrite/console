@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { GridItem1, EmptyGridItem, Empty, Pagination, AvatarGroup } from '$lib/components';
+    import { GridItem1, Empty, Pagination, AvatarGroup } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateOrganization from '../../_createOrganization.svelte';
@@ -68,16 +68,9 @@
                 {/if}
             {/each}
             {#if $organizationList?.total < limit + offset && ($organizationList?.total % 2 !== 0 || $organizationList?.total % 4 === 0)}
-                <EmptyGridItem on:click={() => (addOrganization = true)}>
-                    <div class="common-section">
-                        <Button secondary round>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Create a new organization</p>
-                    </div>
-                </EmptyGridItem>
+                <Empty isButton on:click={() => (addOrganization = true)}>
+                    <p>Create a new organization</p>
+                </Empty>
             {/if}
         </ul>
 
@@ -86,19 +79,8 @@
             <Pagination {limit} bind:offset sum={$organizationList?.total} />
         </div>
     {:else}
-        <Empty dashed centered>
-            <div class="grid-item-1">
-                <div class="u-flex u-flex-vertical u-cross-center ">
-                    <div class="common-section">
-                        <Button secondary round on:click={() => (addOrganization = true)}>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Create a new organization</p>
-                    </div>
-                </div>
-            </div>
+        <Empty isButton single on:click={() => (addOrganization = true)}>
+            <p>Create a new organization</p>
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$organizationList?.total}</p>
