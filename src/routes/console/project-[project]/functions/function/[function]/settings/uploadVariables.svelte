@@ -1,20 +1,56 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { Modal } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
-    // import { addNotification } from '$lib/stores/notifications';
+    import { addNotification } from '$lib/stores/notifications';
     import { createEventDispatcher } from 'svelte';
+    import { variableList } from '../../../store';
 
     export let show = false;
     const dispatch = createEventDispatcher();
 
+    const functionId = $page.params.function;
     let list = new DataTransfer();
     let files: FileList;
     let input: HTMLInputElement;
-    let variables: object = {};
 
     const handleSubmit = async () => {
-        dispatch('uploaded', variables);
+        if (files?.length) {
+            const variables = await parseFile(files[0]);
+            for (const variable of variables) {
+                try {
+                    await variableList.create(functionId, variable.key, variable.value);
+                    addNotification({
+                        type: 'success',
+                        message: 'Variable uploaded'
+                    });
+                } catch (error) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                }
+            }
+            dispatch('uploaded', variables);
+        } else {
+            addNotification({
+                type: 'error',
+                message: 'No file uploaded'
+            });
+        }
     };
+
+    async function parseFile(file: File) {
+        if (file) {
+            let variables = [];
+            let text = await file.text();
+            text.split('\n').forEach((line) => {
+                const [key, value] = line.split('=');
+                variables.push({ key, value });
+            });
+            return variables;
+        }
+    }
 
     function dropHandler(ev: DragEvent) {
         ev.preventDefault();
@@ -34,22 +70,6 @@
     function dragOverHandler(ev: DragEvent) {
         ev.preventDefault();
     }
-
-    async function parseFile(file: File) {
-        if (file) {
-            let text = await file.text();
-
-            text.split('\n').forEach((line) => {
-                const [key, value] = line.split('=');
-                variables[key] = value;
-            });
-
-            return variables;
-        }
-    }
-
-    $: console.log(parseFile(files?.length ? files[0] : null));
-    $: console.log(variables);
 </script>
 
 <input bind:files bind:this={input} type="file" style="display: none" />
