@@ -63,7 +63,9 @@
             </div>
         </div>
     {:else}
-        <Empty single>Add a role to get started</Empty>
+        <Empty isButton single on:click={() => (showDropdown = !showDropdown)}>
+            Add a role to get started
+        </Empty>
     {/if}
 
     <DropList bind:show={showDropdown} position="bottom" arrow={false}>

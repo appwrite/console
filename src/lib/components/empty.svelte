@@ -9,7 +9,7 @@
 
 {#if isButton}
     <button
-        on:click
+        on:click|preventDefault
         class="card u-grid u-cross-center u-width-full-line dashed"
         class:common-section={single}>
         <div class="u-flex u-flex-vertical u-cross-center">

@@ -102,7 +102,7 @@
                 </GridItem1>
             {/each}
             {#if ($functionList.total % 2 !== 0 || $functionList.total % 4 === 0) && $functionList.total - offset <= limit}
-                <Empty on:click={openWizard}>
+                <Empty isButton on:click={openWizard}>
                     <p>Create a new function</p>
                 </Empty>
             {/if}
