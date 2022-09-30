@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { onDestroy } from 'svelte';
 
     export let value = '';
     export let placeholder = '';
@@ -15,6 +16,13 @@
     onMount(() => {
         if (element && autofocus) {
             element.focus();
+        }
+    });
+
+    onDestroy(() => {
+        value = '';
+        if (timer) {
+            clearTimeout(timer);
         }
     });
 

@@ -16,6 +16,7 @@
     import { writable } from 'svelte/store';
     import { DropList, DropListItem } from '..';
     import Custom from './custom.svelte';
+    import Row from './row.svelte';
     import Team from './team.svelte';
     import User from './user.svelte';
 
@@ -24,6 +25,7 @@
 
     let showUser = false;
     let showTeam = false;
+    let showCustom = false;
     let showDropdown = false;
 
     const groups = writable<Map<string, Permission>>(new Map());
@@ -39,24 +41,28 @@
     });
 
     function create(event: CustomEvent<string[]>) {
-        groups.update((n) => {
-            for (const role of event.detail) {
-                if (n.has(role)) {
-                    return n;
-                }
+        for (const role of event.detail) {
+            addRole(role);
+        }
 
-                n.set(role, {
-                    create: false,
-                    read: false,
-                    update: false,
-                    delete: false
-                });
-            }
+        showTeam = showUser = false;
+    }
+
+    function addRole(role: string) {
+        if ($groups.has(role)) {
+            return;
+        }
+
+        groups.update((n) => {
+            n.set(role, {
+                create: false,
+                read: false,
+                update: false,
+                delete: false
+            });
 
             return n;
         });
-
-        showTeam = showUser = false;
     }
 
     function fromPermissionString(permission: string): void {
@@ -136,7 +142,7 @@
                 {#each [...$groups] as [role, permission]}
                     <tr class="table-row">
                         <td class="table-col" data-title="Role">
-                            <Custom {role} {permission} />
+                            <Row {role} {permission} />
                         </td>
                         {#if withCreate}
                             <td class="table-col" data-title="Create">
@@ -200,10 +206,21 @@
         <span class="text">Add role</span>
     </Button>
     <svelte:fragment slot="list">
+        <DropListItem disabled={$groups.has('any')} on:click={() => addRole('any')}>
+            Any
+        </DropListItem>
+        <DropListItem disabled={$groups.has('guests')} on:click={() => addRole('guests')}>
+            All guests
+        </DropListItem>
+        <DropListItem disabled={$groups.has('users')} on:click={() => addRole('users')}>
+            All users
+        </DropListItem>
         <DropListItem on:click={() => (showUser = true)}>Select users</DropListItem>
         <DropListItem on:click={() => (showTeam = true)}>Select teams</DropListItem>
+        <DropListItem on:click={() => (showCustom = true)}>Custom permission</DropListItem>
     </svelte:fragment>
 </DropList>
 
 <User bind:show={showUser} on:create={create} {groups} />
 <Team bind:show={showTeam} on:create={create} {groups} />
+<Custom bind:show={showCustom} on:create={create} {groups} />

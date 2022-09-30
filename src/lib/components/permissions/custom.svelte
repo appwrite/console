@@ -1,20 +1,46 @@
 <script lang="ts">
+    import { Button, Form, FormList, Helper } from '$lib/elements/forms';
+    import { createEventDispatcher } from 'svelte';
+    import { Modal } from '..';
+    import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
+    import InputText from '$lib/elements/forms/inputText.svelte';
 
-    export let role: string;
-    export let permission: Permission;
+    export let show: boolean;
+    export let groups: Writable<Map<string, Permission>>;
+
+    const dispatch = createEventDispatcher();
+
+    let value = '';
+
+    function reset() {
+        value = '';
+    }
+
+    function create() {
+        dispatch('create', [value]);
+        reset();
+    }
 </script>
 
-<div class="u-flex u-cross-center u-gap-8">
-    <div>
-        {#if role === 'users'}
-            <div>Users</div>
-        {:else if role === 'guests'}
-            <div>Guests</div>
-        {:else if role === 'any'}
-            <div>Any</div>
-        {:else}
-            <div>{role}</div>
-        {/if}
-    </div>
-</div>
+<Form on:submit={create}>
+    <Modal bind:show on:close={reset}>
+        <svelte:fragment slot="header">Custom permission</svelte:fragment>
+
+        <FormList>
+            <InputText
+                showLabel={false}
+                id="custom-permission"
+                label="Custom permission"
+                placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
+                {value} />
+            <Helper type="neutral">
+                A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸
+            </Helper>
+        </FormList>
+
+        <svelte:fragment slot="footer">
+            <Button submit disabled={!value}>Create</Button>
+        </svelte:fragment>
+    </Modal>
+</Form>
