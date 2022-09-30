@@ -48,7 +48,7 @@
             </div>
         </div>
     {:else}
-        <Empty dashed centered>Add a role to get started</Empty>
+        <Empty single>Add a role to get started</Empty>
     {/if}
 
     <Button text on:click={() => (showCreate = !showCreate)}>

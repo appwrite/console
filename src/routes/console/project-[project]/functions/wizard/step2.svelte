@@ -63,7 +63,7 @@
             </div>
         </div>
     {:else}
-        <Empty dashed centered>Add a role to get started</Empty>
+        <Empty single>Add a role to get started</Empty>
     {/if}
 
     <DropList bind:show={showDropdown} position="bottom" arrow={false}>

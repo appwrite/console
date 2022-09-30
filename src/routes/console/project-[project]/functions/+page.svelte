@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
-    import { Empty, EmptyGridItem, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1 } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './createFunction.svelte';
@@ -102,16 +102,9 @@
                 </GridItem1>
             {/each}
             {#if ($functionList.total % 2 !== 0 || $functionList.total % 4 === 0) && $functionList.total - offset <= limit}
-                <EmptyGridItem on:click={openWizard}>
-                    <div class="common-section">
-                        <Button secondary round>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p>Create a new function</p>
-                    </div>
-                </EmptyGridItem>
+                <Empty on:click={openWizard}>
+                    <p>Create a new function</p>
+                </Empty>
             {/if}
         </div>
 
@@ -120,24 +113,10 @@
             <Pagination {limit} bind:offset sum={$functionList.total} />
         </div>
     {:else}
-        <Empty dashed centered>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <Button secondary round on:click={openWizard}>
-                        <i class="icon-plus" />
-                    </Button>
-                </div>
-                <div class="common-section">
-                    <p>Create your first function to get started</p>
-                </div>
-                <div class="common-section">
-                    <Button
-                        external
-                        secondary
-                        href="https://appwrite.io/docs/functions#createFunction"
-                        >Documentation</Button>
-                </div>
-            </div>
+        <Empty isButton on:click={openWizard}>
+            <p>Create your first function to get started</p>
+            <Button external secondary href="https://appwrite.io/docs/functions#createFunction"
+                >Documentation</Button>
         </Empty>
     {/if}
 </Container>

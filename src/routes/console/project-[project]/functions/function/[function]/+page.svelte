@@ -95,29 +95,20 @@
                 </svelte:fragment>
             </CardGrid>
         {:else}
-            <Empty dashed centered>
-                <div class="u-flex u-flex-vertical u-cross-center">
-                    <div class="common-section">
-                        <Button secondary round on:click={() => (showCreate = true)}>
-                            <i class="icon-plus" />
-                        </Button>
-                    </div>
-                    <div class="common-section">
-                        <p class="u-text-center">
-                            Add a new deployment, or activate an existing one to see your function
-                            in action.
-                        </p>
-                        <p class="u-text-center">
-                            Learn more about deployments in our <a
-                                class="link"
-                                href="https://appwrite.io/docs/functions#build"
-                                target="_blank"
-                                rel="noopener noreferrer">
-                                Documentation</a
-                            >.
-                        </p>
-                    </div>
-                </div>
+            <Empty isButton on:click={() => (showCreate = true)}>
+                <p class="u-text-center">
+                    Add a new deployment, or activate an existing one to see your function in
+                    action.
+                </p>
+                <p class="u-text-center">
+                    Learn more about deployments in our <a
+                        class="link"
+                        href="https://appwrite.io/docs/functions#build"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        Documentation</a
+                    >.
+                </p>
             </Empty>
         {/if}
 
@@ -210,24 +201,10 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty dashed centered>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <Button secondary round on:click={() => (showCreate = true)}>
-                        <i class="icon-plus" />
-                    </Button>
-                </div>
-                <div class="common-section">
-                    <p>Create your first deployment to get started</p>
-                </div>
-                <div class="common-section">
-                    <Button
-                        external
-                        secondary
-                        href="https://appwrite.io/docs/functions#createFunction"
-                        >Documentation</Button>
-                </div>
-            </div>
+        <Empty isButton single>
+            <p>Create your first deployment to get started</p>
+            <Button external secondary href="https://appwrite.io/docs/functions#createFunction"
+                >Documentation</Button>
         </Empty>
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">

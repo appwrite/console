@@ -70,20 +70,9 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty dashed centered>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <Button secondary round on:click={() => console.log('showCreate = true')}>
-                        <i class="icon-plus" />
-                    </Button>
-                </div>
-                <div class="common-section">
-                    <p>Execute your function to view execution logs</p>
-                </div>
-                <div class="common-section">
-                    <Button external secondary href="#">Documentation</Button>
-                </div>
-            </div>
+        <Empty isButton on:click={() => console.log('showCreate = true')}>
+            <p>Execute your function to view execution logs</p>
+            <Button external secondary href="#">Documentation</Button>
         </Empty>
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
