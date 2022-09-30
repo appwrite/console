@@ -123,7 +123,7 @@
                 <TableCellHead>Status</TableCellHead>
                 <TableCellHead>Build time</TableCellHead>
                 <TableCellHead>Size</TableCellHead>
-                <TableCellHead />
+                <TableCellHead width={90} />
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
