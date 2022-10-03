@@ -57,7 +57,7 @@
             await sdkForProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
             $user.emailVerification = !$user.emailVerification;
             addNotification({
-                message: `The account has been ${
+                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.emailVerification ? 'verified' : 'unverified'
                 }`,
                 type: 'success'
@@ -75,7 +75,7 @@
             await sdkForProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             $user.phoneVerification = !$user.phoneVerification;
             addNotification({
-                message: `The account has been ${
+                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.phoneVerification ? 'verified' : 'unverified'
                 }`,
                 type: 'success'
@@ -92,7 +92,9 @@
             await sdkForProject.users.updateStatus($user.$id, !$user.status);
             $user.status = !$user.status;
             addNotification({
-                message: `The account has been ${$user.status ? 'unblocked' : 'blocked'}`,
+                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
+                    $user.status ? 'unblocked' : 'blocked'
+                }`,
                 type: 'success'
             });
         } catch (error) {

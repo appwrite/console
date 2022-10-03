@@ -60,7 +60,7 @@
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
                 <TableCellHead>Identifier</TableCellHead>
-                <TableCellHead width={100}>Status</TableCellHead>
+                <TableCellHead width={130}>Status</TableCellHead>
                 <TableCellHead width={100}>ID</TableCellHead>
                 <TableCellHead>Joined</TableCellHead>
             </TableHeader>
@@ -98,8 +98,12 @@
                         <TableCell title="Status">
                             {#if user.status}
                                 <Pill success={user.emailVerification || user.phoneVerification}>
-                                    {user.emailVerification || user.phoneVerification
+                                    {user.emailVerification && user.phoneVerification
                                         ? 'verified'
+                                        : user.emailVerification
+                                        ? 'verified email'
+                                        : user.phoneVerification
+                                        ? 'verified phone'
                                         : 'unverified'}
                                 </Pill>
                             {:else}
