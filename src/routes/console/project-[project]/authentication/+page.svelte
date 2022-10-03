@@ -34,7 +34,10 @@
     };
 
     $: if (search) offset = 0;
-    $: usersList.load([Query.limit($pageLimit), Query.offset(offset)], search);
+    $: usersList.load(
+        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search
+    );
 </script>
 
 <Container>
@@ -56,7 +59,7 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Email</TableCellHead>
+                <TableCellHead>Identifier</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
                 <TableCellHead width={100}>ID</TableCellHead>
                 <TableCellHead>Joined</TableCellHead>
@@ -67,11 +70,31 @@
                         href={`${base}/console/project-${project}/authentication/user/${user.$id}`}>
                         <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <Avatar size={32} src={getAvatar(user.name)} name={user.name} />
-                                <span class="text u-trim">{user.name ? user.name : 'n/a'}</span>
+                                {#if user.email || user.phone}
+                                    {#if user.name}
+                                        <Avatar
+                                            size={32}
+                                            src={getAvatar(user.name)}
+                                            name={user.name} />
+                                        <span class="text u-trim">{user.name}</span>
+                                    {:else}
+                                        <div class="avatar is-size-small ">
+                                            <span class="icon-minus-sm" aria-hidden="true" />
+                                        </div>
+                                    {/if}
+                                {:else}
+                                    <div class="avatar is-size-small ">
+                                        <span class="icon-anonymous" aria-hidden="true" />
+                                    </div>
+                                    <span class="text u-trim">{user.name}</span>
+                                {/if}
                             </div>
                         </TableCell>
-                        <TableCellText title="Email">{user.email}</TableCellText>
+                        <TableCellText title="Identifier">
+                            {user.email && user.phone
+                                ? [user.email, user.phone].join(',')
+                                : user.email || user.phone}
+                        </TableCellText>
                         <TableCell title="Status">
                             {#if user.status}
                                 <Pill success={user.emailVerification || user.phoneVerification}>
@@ -102,7 +125,7 @@
             <Pagination limit={$pageLimit} bind:offset sum={$usersList.total} />
         </div>
     {:else if search}
-        <Empty>
+        <Empty single>
             <div class="u-flex u-flex-vertical">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
                 <div class="common-section">
@@ -128,7 +151,14 @@
                         type: 'user'
                     }
                 }}>
-                <p>Add Your First User To Get Started</p>
+                <div class="u-text-center common-section">
+                    <p>Create your first User to get started.</p>
+                    <p>Need a hand? Check out our documentation.</p>
+                </div>
+                <div class="u-flex u-gap-16 common-section u-main-center">
+                    <Button external href="#/" text>Documentation</Button>
+                    <Button secondary>Create User</Button>
+                </div>
             </div>
         </Empty>
     {/if}

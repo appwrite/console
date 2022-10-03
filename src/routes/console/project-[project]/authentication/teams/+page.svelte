@@ -33,7 +33,10 @@
     };
 
     $: if (search) offset = 0;
-    $: teamsList.load([Query.limit(limit), Query.offset(offset)], search);
+    $: teamsList.load(
+        [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search
+    );
 </script>
 
 <Container>
@@ -81,7 +84,7 @@
             <Pagination {limit} bind:offset sum={$teamsList.total} />
         </div>
     {:else if search}
-        <Empty>
+        <Empty single>
             <div class="common-section ">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
             </div>
@@ -107,7 +110,14 @@
                         type: 'team'
                     }
                 }}>
-                <p>Create your first team to get started</p>
+                <div class="u-text-center common-section">
+                    <p>Create your first Tser to get started.</p>
+                    <p>Need a hand? Check out our documentation.</p>
+                </div>
+                <div class="u-flex u-gap-16 common-section u-main-center">
+                    <Button external href="#/" text>Documentation</Button>
+                    <Button secondary>Create team</Button>
+                </div>
             </div>
         </Empty>
     {/if}

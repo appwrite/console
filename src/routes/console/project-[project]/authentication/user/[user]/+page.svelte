@@ -292,7 +292,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={userName === $user.name || !userName} submit>Update</Button>
+                    <Button disabled={userName === $user.name} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -312,9 +312,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={userEmail === $user.email || !userEmail} submit>
-                        Update
-                    </Button>
+                    <Button disabled={userEmail === $user.email} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -334,9 +332,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={userPhone === $user.phone || !userPhone} submit>
-                        Update
-                    </Button>
+                    <Button disabled={userPhone === $user.phone} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -459,9 +455,15 @@
                         <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$user.name}</h6>
+                        <h6 class="u-bold">
+                            {$user.email || $user.phone || $user.name ? $user.name : 'Anonymous'}
+                        </h6>
                     </svelte:fragment>
-                    <p>{$user.email}</p>
+                    <p>
+                        {$user.email && $user.phone
+                            ? [$user.email, $user.phone].join(',')
+                            : $user.email || $user.phone}
+                    </p>
                 </Box>
             </svelte:fragment>
 

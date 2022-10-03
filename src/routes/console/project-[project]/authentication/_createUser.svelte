@@ -6,6 +6,7 @@
         InputPassword,
         InputEmail,
         InputText,
+        InputPhone,
         Form,
         FormList
     } from '$lib/elements/forms';
@@ -18,18 +19,24 @@
     const dispatch = createEventDispatcher();
 
     let showDropdown = false;
-    let name: string, mail: string, pass: string, id: string;
+    let name: string, mail: string, pass: string, id: string, phone: string;
     let error: string;
 
     const create = async () => {
         try {
-            const user = await sdkForProject.users.create(id ?? 'unique()', mail, pass, name);
+            const user = await sdkForProject.users.create(
+                id ?? 'unique()',
+                mail,
+                phone,
+                pass,
+                name
+            );
             mail = pass = name = '';
             showCreate = false;
             showDropdown = false;
             addNotification({
                 type: 'success',
-                message: `${user.name} has been created`
+                message: `${user.name ?? 'User'} has been created`
             });
             dispatch('created', user);
         } catch ({ message }) {
@@ -56,17 +63,12 @@
                 placeholder="Enter name"
                 autofocus={true}
                 bind:value={name} />
-            <InputEmail
-                id="email"
-                label="Email"
-                placeholder="Enter email"
-                required={true}
-                bind:value={mail} />
+            <InputEmail id="email" label="Email" placeholder="Enter email" bind:value={mail} />
+            <InputPhone id="phone" label="Phone" placeholder="Enter phone" bind:value={phone} />
             <InputPassword
                 id="password"
                 label="Password"
                 placeholder="Enter password"
-                required={true}
                 showPasswordButton={true}
                 bind:value={pass} />
 
