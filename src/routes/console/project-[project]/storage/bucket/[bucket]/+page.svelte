@@ -85,9 +85,9 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
-                <TableCellHead>Type</TableCellHead>
-                <TableCellHead>Size</TableCellHead>
-                <TableCellHead>Date Created</TableCellHead>
+                <TableCellHead width={140}>Type</TableCellHead>
+                <TableCellHead width={100}>Size</TableCellHead>
+                <TableCellHead width={120}>Date Created</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -95,11 +95,13 @@
                     {#if file.chunksTotal / file.chunksUploaded !== 1}
                         <TableRow>
                             <TableCell title="Name">
-                                <div class="u-flex u-gap-12">
-                                    <div class="avatar is-color-empty" />
+                                <div class="u-flex u-gap-12 u-main-space-between">
+                                    <span class="avatar is-size-small is-color-empty" />
 
                                     <span class="text u-trim"> {file.name}</span>
-                                    <Pill warning>Pending</Pill>
+                                    <div>
+                                        <Pill warning>Pending</Pill>
+                                    </div>
                                 </div>
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
