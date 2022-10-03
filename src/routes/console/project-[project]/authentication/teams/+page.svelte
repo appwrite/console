@@ -20,12 +20,12 @@
     import { base } from '$app/paths';
     import { teamsList } from '../store';
     import { Query, type Models } from '@aw-labs/appwrite-console';
+    import { pageLimit } from '$lib/stores/layout';
 
     let search = '';
     let showCreate = false;
     let offset = 0;
 
-    const limit = 25;
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
@@ -34,7 +34,7 @@
 
     $: if (search) offset = 0;
     $: teamsList.load(
-        [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
         search
     );
 </script>
@@ -81,7 +81,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$teamsList.total}</p>
-            <Pagination {limit} bind:offset sum={$teamsList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$teamsList.total} />
         </div>
     {:else if search}
         <Empty single>
@@ -97,7 +97,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$teamsList.total}</p>
-            <Pagination {limit} bind:offset sum={$teamsList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$teamsList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

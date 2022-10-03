@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { updateLayout } from '$lib/stores/layout';
+    import { pageLimit, updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import {
@@ -24,7 +24,7 @@
         if ($organization?.$id !== organizationId) {
             await organization.load(organizationId);
         }
-        await memberList.load(organizationId, [Query.limit(12)]);
+        await memberList.load(organizationId, [Query.limit($pageLimit)]);
         updateLayout({
             navigate: event,
             title: $organization?.name,

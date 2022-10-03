@@ -7,6 +7,7 @@
     import { organizationList } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { cardLimit } from '$lib/stores/layout';
 
     onMount(async () => {
         await organizationList.load();
@@ -28,7 +29,6 @@
 
     let addOrganization = false;
     let offset = 0;
-    const limit = 6;
 </script>
 
 <Container>
@@ -52,7 +52,7 @@
             };`}>
             {#each $organizationList.teams as organization, index}
                 {@const avatarList = getMemberships(organization.$id)}
-                {#if index >= offset && index < limit + offset}
+                {#if index >= offset && index < $cardLimit + offset}
                     <GridItem1 href={`${base}/console/organization-${organization.$id}`}>
                         <svelte:fragment slot="eyebrow"
                             >{organization?.total ? organization?.total : 'No'} projects</svelte:fragment>
@@ -67,7 +67,7 @@
                     </GridItem1>
                 {/if}
             {/each}
-            {#if $organizationList?.total < limit + offset && ($organizationList?.total % 2 !== 0 || $organizationList?.total % 4 === 0)}
+            {#if $organizationList?.total < $cardLimit + offset && ($organizationList?.total % 2 !== 0 || $organizationList?.total % 4 === 0)}
                 <Empty isButton on:click={() => (addOrganization = true)}>
                     <p>Create a new organization</p>
                 </Empty>
@@ -76,7 +76,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$organizationList?.total}</p>
-            <Pagination {limit} bind:offset sum={$organizationList?.total} />
+            <Pagination limit={$cardLimit} bind:offset sum={$organizationList?.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (addOrganization = true)}>
@@ -84,7 +84,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$organizationList?.total}</p>
-            <Pagination {limit} bind:offset sum={$organizationList?.total} />
+            <Pagination limit={$cardLimit} bind:offset sum={$organizationList?.total} />
         </div>
     {/if}
 </Container>

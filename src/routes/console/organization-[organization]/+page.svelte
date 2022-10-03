@@ -12,6 +12,7 @@
     import { page } from '$app/stores';
     import CreateOrganization from '../_createOrganization.svelte';
     import CreateProject from './_createProject.svelte';
+    import { cardLimit } from '$lib/stores/layout';
 
     let projects: Models.Project[] = [];
     $: organizationId = $page.params.organization;
@@ -22,7 +23,7 @@
     async function handle() {
         await projectList.load([
             Query.offset(offset),
-            Query.limit(limit),
+            Query.limit($cardLimit),
             Query.equal('teamId', organizationId)
         ]);
     }
@@ -30,7 +31,6 @@
     let showCreate = false;
     let addOrganization = false;
     let offset = 0;
-    const limit = 6;
 
     const projectCreated = async (event: CustomEvent<Models.Project>) => {
         await project.load(event.detail.$id);
@@ -84,7 +84,7 @@
                 projects.length > 3 ? '22rem' : '25rem'
             };`}>
             {#each $projectList.projects as project, index}
-                {#if index >= offset && index < limit + offset}
+                {#if index >= offset && index < $cardLimit + offset}
                     <GridItem1 href={`${base}/console/project-${project.$id}`}>
                         <svelte:fragment slot="eyebrow">
                             {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
@@ -112,7 +112,7 @@
                     </GridItem1>
                 {/if}
             {/each}
-            {#if projects.length < limit + offset && (projects.length % 2 !== 0 || projects.length % 4 === 0)}
+            {#if projects.length < $cardLimit + offset && (projects.length % 2 !== 0 || projects.length % 4 === 0)}
                 <Empty isButton on:click={() => (showCreate = true)}>
                     <p>Create a new project</p>
                 </Empty>
@@ -121,7 +121,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {projects.length}</p>
-            <Pagination {limit} bind:offset sum={projects.length} />
+            <Pagination limit={$cardLimit} bind:offset sum={projects.length} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
@@ -129,7 +129,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {projects?.length}</p>
-            <Pagination {limit} bind:offset sum={projects?.length} />
+            <Pagination limit={$cardLimit} bind:offset sum={projects?.length} />
         </div>
     {/if}
 </Container>
