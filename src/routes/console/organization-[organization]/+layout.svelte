@@ -23,8 +23,8 @@
     async function handle(event = null) {
         if ($organization?.$id !== organizationId) {
             await organization.load(organizationId);
-            await memberList.load(organizationId, [Query.limit(12)]);
         }
+        await memberList.load(organizationId, [Query.limit(12)]);
         updateLayout({
             navigate: event,
             title: $organization?.name,
