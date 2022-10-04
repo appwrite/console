@@ -194,7 +194,20 @@
     <Container>
         <CardGrid>
             <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
+                {#if $user.email || $user.phone}
+                    {#if $user.name}
+                        <Avatar size={48} src={getAvatar($user.name)} name={$user.name} />
+                        <span class="text u-trim">{$user.name}</span>
+                    {:else}
+                        <div class="avatar">
+                            <span class="icon-minus-sm" aria-hidden="true" />
+                        </div>
+                    {/if}
+                {:else}
+                    <div class="avatar">
+                        <span class="icon-anonymous" aria-hidden="true" />
+                    </div>
+                {/if}
                 <h6 class="heading-level-7">{$user.name}</h6>
             </div>
             <svelte:fragment slot="aside">
@@ -454,11 +467,24 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
-                        <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
+                        {#if $user.email || $user.phone}
+                            {#if $user.name}
+                                <Avatar size={48} src={getAvatar($user.name)} name={$user.name} />
+                                <span class="text u-trim">{$user.name}</span>
+                            {:else}
+                                <div class="avatar">
+                                    <span class="icon-minus-sm" aria-hidden="true" />
+                                </div>
+                            {/if}
+                        {:else}
+                            <div class="avatar">
+                                <span class="icon-anonymous" aria-hidden="true" />
+                            </div>
+                        {/if}
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold">
-                            {$user.email || $user.phone || $user.name ? $user.name : 'Anonymous'}
+                            {$user.name || $user.email || $user.phone || 'Anonymous'}
                         </h6>
                     </svelte:fragment>
                     <p>
