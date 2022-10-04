@@ -2,6 +2,7 @@
     import { Alert, CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, InputSwitch, Helper } from '$lib/elements/forms';
+    import { Permissions } from '$lib/components/permissions';
     import { collection } from '../store';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -10,7 +11,6 @@
     import { page } from '$app/stores';
     import { difference } from '$lib/helpers/array';
     import Delete from './deleteCollection.svelte';
-    import Permissions from '$lib/components/permissions/permissions.svelte';
 
     const databaseId = $page.params.database;
 

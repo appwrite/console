@@ -26,7 +26,7 @@
     $: disabled = !value || $groups.has(value);
 </script>
 
-<Form on:submit={create}>
+<Form on:submit={create} noMargin>
     <Modal bind:show on:close={reset}>
         <svelte:fragment slot="header">Custom permission</svelte:fragment>
 

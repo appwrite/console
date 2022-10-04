@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { CardGrid, Box, Alert } from '$lib/components';
+    import { CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { Button, InputTags } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
     import { doc } from './store';
     import { addNotification } from '$lib/stores/notifications';
@@ -9,18 +9,18 @@
     import Document from './_document.svelte';
     import Delete from './_delete.svelte';
     import { difference } from '$lib/helpers/array';
-    import { page } from '$app/stores';
+    import { Permissions } from '$lib/components/permissions';
 
     let showDelete = false;
     let permissions = $doc?.$permissions;
     let arePermsDisabled = true;
-    const databaseId = $page.params.database;
 
     async function updatePermissions() {
+        console.log($doc);
         try {
             await sdkForProject.databases.updateDocument(
-                databaseId,
-                $doc.collectionId,
+                $doc.$databaseId,
+                $doc.$collectionId,
                 $doc.$id,
                 $doc.data,
                 permissions
@@ -70,20 +70,9 @@
                 <b> Document Level</b>. If collection Level permissions are assigned, permissions
                 applied to individual documents are ignored.
             </p>
+
             <svelte:fragment slot="aside">
-                <Alert type="info">
-                    <p>
-                        Tip: Add role:all for wildcard access. Check out our documentation for more
-                        on <a href="#?"> Permissions</a>
-                    </p>
-                </Alert>
-                <ul class="common-section">
-                    <InputTags
-                        id="permissions"
-                        label="Permissions"
-                        placeholder="User ID, Team ID, or Role"
-                        bind:tags={permissions} />
-                </ul>
+                <Permissions bind:permissions />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

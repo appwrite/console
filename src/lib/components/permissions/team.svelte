@@ -58,7 +58,7 @@
     }
 </script>
 
-<Form on:submit={create}>
+<Form on:submit={create} noMargin>
     <Modal bind:show on:close={reset} size="big">
         <svelte:fragment slot="header">Select teams</svelte:fragment>
         <InputSearch bind:value={search} />

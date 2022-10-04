@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, CardGrid, Box } from '$lib/components';
+    import { CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
     import {
         Form,
@@ -20,6 +20,7 @@
     import { page } from '$app/stores';
     import Pill from '$lib/elements/pill.svelte';
     import { difference } from '$lib/helpers/array';
+    import { Permissions } from '$lib/components/permissions';
 
     let showDelete = false;
 
@@ -281,20 +282,8 @@
                             </label>
                         </li>
                     </ul>
-                    <Alert type="info">
-                        <p>
-                            Tip: Add <b>role:all</b> for wildcards access. Check out our
-                            documentation for more on <a href="/#">Permissions</a>
-                        </p>
-                    </Alert>
                     {#if bucketFileSecurity}
-                        <ul class="common-section">
-                            <InputTags
-                                id="permissions"
-                                label="Permissions"
-                                placeholder="User ID, Team ID, or Role"
-                                bind:tags={bucketPermissions} />
-                        </ul>
+                        <Permissions bind:permissions={bucketPermissions} />
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
