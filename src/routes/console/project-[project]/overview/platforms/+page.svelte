@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { GridItem1 } from '$lib/components';
+    import Code from '$lib/components/code.svelte';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { project } from '../../store';
@@ -11,6 +12,14 @@
     const path = `/console/project-${$page.params.project}/overview/platforms`;
 </script>
 
+<Code
+    >{`
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.querySelectorAll('pre code').forEach((el) => {
+    hljs.highlightElement(el);
+  });
+});
+`}</Code>
 <div class="common-section u-flex u-gap-12">
     <h3 class="heading-level-7">Platforms</h3>
     <span class="u-margin-inline-start-auto">
