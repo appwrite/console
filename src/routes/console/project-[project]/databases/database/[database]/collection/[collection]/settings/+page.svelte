@@ -204,16 +204,8 @@
                             <a class="link" href="/#">Permissions</a>
                         </p>
                     </Alert>
-                {:else}
-                    <Alert type="info">
-                        <p>
-                            Tip: Add <b>role:all</b> for wildcards access. Check out our
-                            documentation for more on <a class="link" href="/#">Permissions</a>
-                        </p>
-                    </Alert>
-                    {#if collectionPermissions !== null}
-                        <Permissions bind:permissions={collectionPermissions} withCreate />
-                    {/if}
+                {:else if collectionPermissions !== null}
+                    <Permissions bind:permissions={collectionPermissions} withCreate />
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
