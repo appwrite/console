@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Form } from '$lib/elements/forms';
-    import { Modal } from '$lib/components';
+    import { Modal, Copy } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { createFunction } from './wizard/store';
 
@@ -10,11 +10,12 @@
     let selectedEvent: string = null;
     let selectedAttribute: string = null;
     let showInfo: string = null;
+    let inputData: string = null;
+    let showInput = false;
 
     const create = () => {
         showCreate = false;
-        const data = eventString.map((d) => d.value).join('.');
-        $createFunction.events.push(data);
+        $createFunction.events.push(copyValue);
         $createFunction = $createFunction;
     };
 
@@ -99,11 +100,16 @@
         selectedEvent,
         selectedAttribute
     );
+    $: copyValue = inputData ?? eventString.map((d) => d.value).join('.');
 
     $: if (selectedService) {
         selectedRequest = null;
         selectedEvent = null;
         selectedAttribute = null;
+    }
+
+    $: if (!showInput) {
+        showInfo = null;
     }
 
     $: console.log(eventString);
@@ -172,18 +178,59 @@
                     </div>
                 </div>
             {/if}
-            <div class="u-flex">
-                {#each eventString as route, i}
-                    <button
-                        on:click|preventDefault={() => {
-                            showInfo === route.description
-                                ? (showInfo = null)
-                                : (showInfo = route.description);
-                        }}>{route.value}{i + 1 < eventString?.length ? '.' : ''}</button>
-                {/each}
-            </div>
-            {#if showInfo}
-                <span>{showInfo}</span>
+            {#if showInput}
+                <div class="input-text-wrapper" style="--amount-of-buttons:2">
+                    <input type="text" placeholder="Enter custom event" bind:value={inputData} />
+                    <div class="options-list">
+                        <button class="options-list-button" aria-label="confirm">
+                            <span class="icon-check" aria-hidden="true" />
+                        </button>
+                        <button
+                            on:click={() => {
+                                showInput = false;
+                            }}
+                            class="options-list-button"
+                            aria-label="cancel">
+                            <span class="icon-x" aria-hidden="true" />
+                        </button>
+                    </div>
+                </div>
+            {:else}
+                <div class="input-text-wrapper" style="--amount-of-buttons:2">
+                    <div type="text" placeholder="Place Holder text" value="" readonly>
+                        <div class="u-flex">
+                            {#each eventString as route, i}
+                                <button
+                                    on:click|preventDefault={() => {
+                                        showInfo === route.description
+                                            ? (showInfo = null)
+                                            : (showInfo = route.description);
+                                    }}>
+                                    {route.value}{i + 1 < eventString?.length ? '.' : ''}
+                                </button>
+                            {/each}
+                        </div>
+                    </div>
+                    <div class="options-list">
+                        <button
+                            on:click|preventDefault={() => {
+                                inputData = copyValue;
+                                showInput = true;
+                            }}
+                            class="options-list-button"
+                            aria-label="edit event">
+                            <span class="icon-pencil" aria-hidden="true" />
+                        </button>
+                        <button class="options-list-button" aria-label="copy text">
+                            <Copy value={copyValue}>
+                                <span class="icon-duplicate" aria-hidden="true" />
+                            </Copy>
+                        </button>
+                    </div>
+                    {#if showInfo}
+                        <span>{showInfo}</span>
+                    {/if}
+                </div>
             {/if}
         {/if}
 
