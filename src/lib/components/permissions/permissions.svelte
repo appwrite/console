@@ -12,8 +12,8 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { difference } from '$lib/helpers/array';
-    import { onMount } from 'svelte';
-    import { writable } from 'svelte/store';
+    import { onDestroy, onMount } from 'svelte';
+    import { writable, type Unsubscriber } from 'svelte/store';
     import { DropList, DropListItem } from '..';
     import Custom from './custom.svelte';
     import Row from './row.svelte';
@@ -27,12 +27,13 @@
     let showTeam = false;
     let showCustom = false;
     let showDropdown = false;
+    let unsubscribe: Unsubscriber;
 
     const groups = writable<Map<string, Permission>>(new Map());
 
     onMount(() => {
         permissions.forEach(fromPermissionString);
-        groups.subscribe(() => {
+        unsubscribe = groups.subscribe(() => {
             const current = exportRoles();
             if (
                 difference(current, permissions).length ||
@@ -41,6 +42,12 @@
                 permissions = current;
             }
         });
+    });
+
+    onDestroy(() => {
+        if (unsubscribe) {
+            unsubscribe();
+        }
     });
 
     function create(event: CustomEvent<string[]>) {

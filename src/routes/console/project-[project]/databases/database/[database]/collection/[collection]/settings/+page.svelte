@@ -35,7 +35,10 @@
         if (collectionDocumentSecurity !== $collection.documentSecurity) {
             arePermsDisabled = false;
         } else if (collectionPermissions) {
-            if (difference(collectionPermissions, $collection.$permissions).length) {
+            if (
+                difference(collectionPermissions, $collection.$permissions).length ||
+                difference($collection.$permissions, collectionPermissions).length
+            ) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
@@ -119,8 +122,8 @@
             <svelte:fragment slot="aside">
                 <ul>
                     <InputSwitch
-                        label={enabled ? 'Enabled' : 'Disabled'}
                         id="toggle"
+                        label={enabled ? 'Enabled' : 'Disabled'}
                         bind:value={enabled} />
                 </ul>
                 <div>
@@ -214,11 +217,7 @@
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <Button
-                    disabled={arePermsDisabled}
-                    on:click={() => {
-                        updatePermissions();
-                    }}>Update</Button>
+                <Button disabled={arePermsDisabled} on:click={updatePermissions}>Update</Button>
             </svelte:fragment>
         </CardGrid>
 
