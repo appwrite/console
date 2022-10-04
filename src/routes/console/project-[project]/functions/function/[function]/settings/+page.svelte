@@ -1,15 +1,7 @@
 <script lang="ts">
     import { CardGrid, Box, DropList, DropListItem, Copy } from '$lib/components';
     import { Container } from '$lib/layout';
-    import {
-        Button,
-        InputNumber,
-        InputSelect,
-        InputText,
-        InputCron,
-        Form,
-        FormList
-    } from '$lib/elements/forms';
+    import { Button, InputNumber, InputText, InputCron, Form, FormList } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { execute, func } from '../store';
@@ -32,7 +24,7 @@
     let showVariablesModal = false;
     let showVariablesValue = [];
     let showVariablesDropdown = [];
-    let timeout = 0;
+    let timeout: number = null;
     let deployment: Models.Deployment = null;
     let functionName: string = null;
 
@@ -45,11 +37,6 @@
         timeout ??= $func.timeout;
         functionName ??= $func.name;
     });
-
-    let options = [
-        { label: 'seconds', value: 'seconds' },
-        { label: 'minutes', value: 'minutes' }
-    ];
 
     async function updateName() {
         try {
@@ -264,20 +251,18 @@
                 minutes).
             </p>
             <svelte:fragment slot="aside">
-                <div class="form u-grid u-gap-16">
-                    <ul class="form-list is-multiple">
-                        <InputNumber id="length" label="Time" value={timeout} />
-                        <InputSelect
-                            id="Increment"
-                            {options}
-                            label="Time Period"
-                            value={options[0].value} />
-                    </ul>
-                </div>
+                <FormList>
+                    <InputNumber
+                        min={1}
+                        max={900}
+                        id="time"
+                        label="Time (in seconds)"
+                        bind:value={timeout} />
+                </FormList>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={true} submit>Update</Button>
+                <Button disabled={$func.timeout === timeout || timeout < 1} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>

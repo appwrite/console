@@ -55,14 +55,14 @@ test('shows number input - hide label', () => {
     expect(label).toHaveClass('u-hide');
 });
 
-test('shows number input - maxlength', () => {
+test('shows number input - max', () => {
     const { getByLabelText } = render(InputNumber, {
         id: 'input',
         label: 'input',
-        maxlength: 2
+        max: 2
     });
 
-    expect(getByLabelText('input')).toHaveAttribute('maxlength', '2');
+    expect(getByLabelText('input')).toHaveAttribute('max', '2');
 });
 
 test('state', async () => {
