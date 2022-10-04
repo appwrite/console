@@ -47,6 +47,9 @@
     $: if (!showDropdown) {
         id = null;
     }
+    $: if (!id?.length) {
+        id = null;
+    }
     $: if (!showCreate) {
         showDropdown = false;
         error = null;
