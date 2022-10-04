@@ -24,3 +24,10 @@
         </div>
     </div>
 </a>
+
+<style>
+    /* TODO: remove this when ui library is updated*/
+    .grid-item-1 {
+        min-block-size: calc(182 / 16 * 1rem);
+    }
+</style>
