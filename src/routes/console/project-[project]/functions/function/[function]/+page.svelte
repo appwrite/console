@@ -119,10 +119,10 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Deployment ID</TableCellHead>
-                <TableCellHead>Created</TableCellHead>
-                <TableCellHead>Status</TableCellHead>
-                <TableCellHead>Build time</TableCellHead>
-                <TableCellHead>Size</TableCellHead>
+                <TableCellHead width={140}>Created</TableCellHead>
+                <TableCellHead width={100}>Status</TableCellHead>
+                <TableCellHead width={100}>Build time</TableCellHead>
+                <TableCellHead width={100}>Size</TableCellHead>
                 <TableCellHead width={90} />
                 <TableCellHead width={30} />
             </TableHeader>

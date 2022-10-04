@@ -37,11 +37,11 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Deployment ID</TableCellHead>
-                <TableCellHead>Created</TableCellHead>
-                <TableCellHead>Status</TableCellHead>
-                <TableCellHead>Trigger</TableCellHead>
-                <TableCellHead>Type</TableCellHead>
-                <TableCellHead>Build Time</TableCellHead>
+                <TableCellHead width={140}>Created</TableCellHead>
+                <TableCellHead width={70}>Status</TableCellHead>
+                <TableCellHead width={90}>Trigger</TableCellHead>
+                <TableCellHead width={70}>Type</TableCellHead>
+                <TableCellHead width={100}>Build Time</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each $executionList.executions as execution}
