@@ -17,7 +17,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$user.name ?? 'User'} has been deleted`
+                message: `${$user.name ? $user.name : 'User'} has been deleted`
             });
             await goto(`${base}/console/project-${$page.params.project}/authentication`);
         } catch (error) {
