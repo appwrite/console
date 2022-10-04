@@ -168,7 +168,7 @@
                 {#each [...$groups].sort(sortRoles) as [role, permission]}
                     <tr class="table-row">
                         <td class="table-col" data-title="Role">
-                            <Row {role} {permission} />
+                            <Row {role} />
                         </td>
                         {#if withCreate}
                             <td class="table-col" data-title="Create">
