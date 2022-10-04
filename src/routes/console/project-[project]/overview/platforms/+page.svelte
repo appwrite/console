@@ -13,13 +13,50 @@
 </script>
 
 <Code
-    >{`
-document.addEventListener('DOMContentLoaded', (event) => {
-  document.querySelectorAll('pre code').forEach((el) => {
-    hljs.highlightElement(el);
+    language="js"
+    code={`import { Client, Account } from "appwrite";
+
+const client = new Client();
+
+const account = new Account(client);
+
+client
+    .setEndpoint('https://[HOSTNAME_OR_IP]/v1') // Your API Endpoint
+    .setProject('5df5acd0d48c2') // Your project ID
+;
+
+const promise = account.createEmailSession('email@example.com', 'password');
+
+promise.then(function (response) {
+    console.log(response); // Success
+}, function (error) {
+    console.log(error); // Failure
+});`} />
+<Code
+    language="dart"
+    code={`import 'package:appwrite/appwrite.dart';
+
+void main() { // Init SDK
+  Client client = Client();
+  Account account = Account(client);
+
+  client
+    .setEndpoint('https://[HOSTNAME_OR_IP]/v1') // Your API Endpoint
+    .setProject('5df5acd0d48c2') // Your project ID
+  ;
+  Future result = account.create(
+    userId: '[USER_ID]',
+    email: 'email@example.com',
+    password: 'password',
+  );
+
+  result
+    .then((response) {
+      print(response);
+    }).catchError((error) {
+      print(error.response);
   });
-});
-`}</Code>
+}`} />
 <div class="common-section u-flex u-gap-12">
     <h3 class="heading-level-7">Platforms</h3>
     <span class="u-margin-inline-start-auto">
