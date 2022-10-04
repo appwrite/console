@@ -22,6 +22,10 @@
             );
             showDelete = false;
             dispatch('deleted');
+            addNotification({
+                type: 'success',
+                message: `Membership has been deleted`
+            });
             await goto(
                 `${base}/console/project-${$page.params.project}/authentication/user/${selectedMembership.userId}/memberships`
             );
