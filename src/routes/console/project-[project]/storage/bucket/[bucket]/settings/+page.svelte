@@ -157,7 +157,6 @@
     }
     async function updateMaxSize() {
         let size = sizeToBytes(maxSize, byteUnit);
-        console.log(size);
         try {
             await sdkForProject.storage.updateBucket(
                 $bucket.$id,

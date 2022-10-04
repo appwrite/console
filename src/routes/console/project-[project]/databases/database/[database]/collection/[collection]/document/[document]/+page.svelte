@@ -16,7 +16,6 @@
     let arePermsDisabled = true;
 
     async function updatePermissions() {
-        console.log($doc);
         try {
             await sdkForProject.databases.updateDocument(
                 $doc.$databaseId,
