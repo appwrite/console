@@ -15,12 +15,15 @@
 
     function reset() {
         value = '';
+        show = false;
     }
 
     function create() {
         dispatch('create', [value]);
         reset();
     }
+
+    $: disabled = !value || $groups.has(value);
 </script>
 
 <Form on:submit={create}>
@@ -33,14 +36,14 @@
                 id="custom-permission"
                 label="Custom permission"
                 placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
-                {value} />
+                bind:value />
             <Helper type="neutral">
                 A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸
             </Helper>
         </FormList>
 
         <svelte:fragment slot="footer">
-            <Button submit disabled={!value}>Create</Button>
+            <Button submit {disabled}>Create</Button>
         </svelte:fragment>
     </Modal>
 </Form>

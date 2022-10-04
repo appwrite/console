@@ -93,7 +93,7 @@
                 databaseId,
                 $collection.$id,
                 $collection.name,
-                collectionDocumentSecurity ? collectionPermissions : $collection.$permissions
+                collectionDocumentSecurity ? $collection.$permissions : collectionPermissions
             );
             $collection.$permissions = collectionPermissions;
             $collection.documentSecurity = collectionDocumentSecurity;
@@ -208,8 +208,8 @@
                             documentation for more on <a class="link" href="/#">Permissions</a>
                         </p>
                     </Alert>
-                    {#if collectionPermissions}
-                        <Permissions permissions={collectionPermissions} withCreate />
+                    {#if collectionPermissions !== null}
+                        <Permissions bind:permissions={collectionPermissions} withCreate />
                     {/if}
                 {/if}
             </svelte:fragment>

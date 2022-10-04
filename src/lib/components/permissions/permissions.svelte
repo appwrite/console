@@ -33,9 +33,12 @@
     onMount(() => {
         permissions.forEach(fromPermissionString);
         groups.subscribe(() => {
-            const a = exportRoles();
-            if (difference(a, permissions).length || difference(permissions, a).length) {
-                permissions = a;
+            const current = exportRoles();
+            if (
+                difference(current, permissions).length ||
+                difference(permissions, current).length
+            ) {
+                permissions = current;
             }
         });
     });
@@ -63,6 +66,8 @@
 
             return n;
         });
+
+        showDropdown = false;
     }
 
     function fromPermissionString(permission: string): void {
@@ -111,6 +116,20 @@
             return prev;
         }, []);
     }
+
+    function sortRoles([a]: [string, Permission], [b]: [string, Permission]) {
+        if ((a === 'any') !== (b === 'any')) {
+            return a === 'any' ? -1 : 1;
+        }
+        if ((a === 'users') !== (b === 'users')) {
+            return a === 'users' ? -1 : 1;
+        }
+        if ((a === 'guests') !== (b === 'guests')) {
+            return a === 'guests' ? -1 : 1;
+        }
+
+        return a.localeCompare(b);
+    }
 </script>
 
 <div class="table-with-scroll">
@@ -139,7 +158,7 @@
                 </tr>
             </thead>
             <tbody class="table-tbody">
-                {#each [...$groups] as [role, permission]}
+                {#each [...$groups].sort(sortRoles) as [role, permission]}
                     <tr class="table-row">
                         <td class="table-col" data-title="Role">
                             <Row {role} {permission} />
