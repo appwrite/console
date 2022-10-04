@@ -8,13 +8,15 @@
 
     export let code = '';
     export let language: 'js' | 'html' | 'dart' | 'json';
+    export let showLineNumbers = false;
 
     afterUpdate(async () => {
         Prism.highlightAll();
     });
 </script>
 
-<pre class={`language-${language} line-numbers`}><code>{@html code}</code></pre>
+<pre class={`language-${language}`} class:line-numbers={showLineNumbers}><code
+        >{@html code}</code></pre>
 
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
