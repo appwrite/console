@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormList, InputText, InputPassword } from '$lib/elements/forms';
+    import { FormList, InputText, InputPassword, InputChoice } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { createWebhook } from './store';
 </script>
@@ -16,16 +16,24 @@
             <p class="text">Use to secure your endpoint from untrusted sources.</p>
         </div>
         <InputText
-            label="Name"
-            id="name"
+            label="User"
+            id="user"
             placeholder="Enter username"
-            bind:value={$createWebhook.httpUser}
-            required />
+            bind:value={$createWebhook.httpUser} />
         <InputPassword
             label="Password"
             id="password"
             placeholder="Enter password"
-            bind:value={$createWebhook.httpPass}
-            required />
+            bind:value={$createWebhook.httpPass} />
+
+        <InputChoice
+            id="Security"
+            label="Certificate verification (SSL/TLS)"
+            bind:value={$createWebhook.security}>
+            <span class="u-error">Warning:</span> Untrusted or self-signed certificates may not be
+            secure.
+            <a href="#/" target="_blank" rel="noopener noreferrer" class="link">
+                Learn more</a
+            ></InputChoice>
     </FormList>
 </WizardStep>
