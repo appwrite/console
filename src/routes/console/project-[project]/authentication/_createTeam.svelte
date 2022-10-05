@@ -29,9 +29,6 @@
         }
     };
 
-    $: if (!showCustomId) {
-        id = null;
-    }
     $: if (!showCreate) {
         showCustomId = false;
         error = null;

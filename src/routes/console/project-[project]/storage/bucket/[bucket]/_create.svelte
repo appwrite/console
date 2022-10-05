@@ -64,10 +64,6 @@
         list = new DataTransfer();
         permissions = [];
     }
-
-    $: if (!showCustomId) {
-        id = null;
-    }
 </script>
 
 <input bind:files bind:this={input} type="file" style="display: none" />
