@@ -2,9 +2,10 @@
     import { Button, Form } from '$lib/elements/forms';
     import { Modal, Copy } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { createFunction } from './wizard/store';
+    import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
+    let eventArray = [];
     let selectedService: typeof services[0] = null;
     let selectedRequest: typeof selectedService['requests'][0] = null;
     let selectedEvent: string = null;
@@ -13,10 +14,12 @@
     let inputData: string = null;
     let showInput = false;
 
+    const dispatch = createEventDispatcher();
+
     function create() {
         showCreate = false;
-        $createFunction.events.push(copyValue);
-        $createFunction = $createFunction;
+        eventArray.push(copyValue);
+        dispatch('created', eventArray);
     }
 
     const events = ['create', 'update', 'delete'];

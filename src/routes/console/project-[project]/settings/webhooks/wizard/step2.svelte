@@ -2,29 +2,30 @@
     import { WizardStep } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { Empty } from '$lib/components';
-    import { createFunction } from './store';
+    import { createWebhook } from './store';
     import { EventModal } from '$lib/components';
 
     let showCreate = false;
 
     function handleCreated(event: CustomEvent) {
-        $createFunction.events = event.detail;
+        console.log('test');
+        $createWebhook.events = event.detail;
     }
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Events (optional)</svelte:fragment>
+    <svelte:fragment slot="title">Webhook events</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Set the events that will trigger your function. Maximum 100 events allowed.
     </svelte:fragment>
 
     EVENT
-    {#if $createFunction?.events?.length}
+    {#if $createWebhook?.events?.length}
         <div class="table-with-scroll u-height-100-percents">
             <div class="table-wrapper">
                 <div class="table is-remove-outer-styles">
                     <ul class="table-thead">
-                        {#each $createFunction.events as id}
+                        {#each $createWebhook.events as id}
                             <li class="table-row">
                                 <div class="table-col" data-title="id">
                                     <span class="text">{id}</span>
@@ -37,10 +38,10 @@
                                         class="button is-text is-only-icon"
                                         aria-label="delete id"
                                         on:click|preventDefault={() => {
-                                            $createFunction.events = $createFunction.events.filter(
+                                            $createWebhook.events = $createWebhook.events.filter(
                                                 (item) => item !== id
                                             );
-                                            $createFunction = $createFunction;
+                                            $createWebhook = $createWebhook;
                                         }}>
                                         <span class="icon-x" aria-hidden="true" />
                                     </button>

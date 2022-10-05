@@ -1,8 +1,7 @@
 <script lang="ts">
     import { InnerModal } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { InputText, InputSelect } from '$lib/elements/forms';
-    import FormList from '$lib/elements/forms/formList.svelte';
+    import { InputText, InputSelect, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { createFunction } from './store';
 

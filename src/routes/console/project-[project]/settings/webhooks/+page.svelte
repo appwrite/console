@@ -1,8 +1,9 @@
 <script lang="ts">
+    import { beforeNavigate } from '$app/navigation';
     import { base } from '$app/paths';
-
     import { page } from '$app/stores';
     import { Empty } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -13,6 +14,16 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
+    import Create from './createWebhook.svelte';
+
+    function openWizard() {
+        wizard.start(Create);
+    }
+
+    beforeNavigate(() => {
+        wizard.hide();
+    });
 
     const projectId = $page.params.project;
     const request = sdkForConsole.projects.listWebhooks(projectId);
@@ -22,6 +33,14 @@
     <title>Appwrite - Webhooks</title>
 </svelte:head>
 <Container>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <h2 class="heading-level-5">Webhooks</h2>
+
+        <Button on:click={openWizard}>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create webhook</span>
+        </Button>
+    </div>
+
     {#await request}
         <div aria-busy="true" />
     {:then response}
@@ -45,12 +64,16 @@
                 </TableBody>
             </Table>
         {:else}
-            <Empty>
-                <div class="u-flex u-flex-vertical">
-                    <div class="common-section">No Webhooks Found</div>
-                    <div class="common-section">
-                        You haven't created any webhooks for your project yet.
-                    </div>
+            <Empty isButton single>
+                <div class="common-section u-text-center">
+                    <p class="text">Create your first Webhook to get startedNeed a hand?</p>
+                    <p class="text">Check out our documentation.</p>
+                </div>
+                <div class="u-flex u-gap-12 common-section">
+                    <Button text href="#/">Documentation</Button>
+                    <Button secondary on:click={openWizard}>
+                        <span class="text">Create Webhook</span>
+                    </Button>
                 </div>
             </Empty>
         {/if}
