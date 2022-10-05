@@ -9,7 +9,7 @@
     {#if show}
         <span class="text u-line-height-1-5 u-break-word">{value}</span>
     {:else}
-        <span class="text">••••••</span>
+        <span class="text">••••••••••••</span>
     {/if}
     <div class="u-flex u-cross-child-start u-gap-8">
         <button
