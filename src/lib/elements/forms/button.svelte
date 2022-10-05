@@ -9,6 +9,7 @@
     export let href: string = null;
     export let fullWidth = false;
     export let ariaLabel: string = null;
+    export let noMargin = false;
 </script>
 
 {#if href}
@@ -23,6 +24,7 @@
         class:is-text={text}
         class:is-danger={danger}
         class:is-full-width={fullWidth}
+        class:u-padding-inline-0={noMargin}
         aria-label={ariaLabel}>
         <slot />
     </a>
@@ -36,6 +38,7 @@
         class:is-danger={danger}
         class:is-text={text}
         class:is-full-width={fullWidth}
+        class:u-padding-inline-0={noMargin}
         type={submit ? 'submit' : 'button'}
         aria-label={ariaLabel}>
         <slot />

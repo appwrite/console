@@ -74,7 +74,7 @@
 
 <input bind:files bind:this={input} type="file" style="display: none" />
 
-<Form single on:submit={handleSubmit}>
+<Form noMargin on:submit={handleSubmit}>
     <Modal bind:show>
         <svelte:fragment slot="header">Upload Variables</svelte:fragment>
         <p>

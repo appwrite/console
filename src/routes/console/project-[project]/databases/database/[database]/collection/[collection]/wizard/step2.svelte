@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Alert } from '$lib/components';
-    import { InputTags } from '$lib/elements/forms';
+    import { Permissions } from '$lib/components/permissions';
     import { WizardStep } from '$lib/layout';
     import { createDocument } from './store';
 </script>
@@ -12,21 +11,7 @@
         <b> Document Level</b>. If collection Level permissions are assigned, permissions applied to
         individual documents are ignored.
     </svelte:fragment>
-    <Alert type="info">
-        <svelte:fragment slot="title">
-            You have Collection Level permissions enabled
-        </svelte:fragment>
-        <p>
-            If you want to assign permissions specific to this document, you will need to update
-            your Collection Settings to enable Document Level permissions.
-        </p>
-    </Alert>
-
-    <ul class="common-section">
-        <InputTags
-            id="permissions"
-            label="Permissions"
-            placeholder="User ID, Team ID, or Role"
-            bind:tags={$createDocument.permissions} />
-    </ul>
+    <div class="common-section">
+        <Permissions bind:permissions={$createDocument.permissions} />
+    </div>
 </WizardStep>

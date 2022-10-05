@@ -30,7 +30,7 @@
     };
 </script>
 
-<Form single on:submit={handleSubmit}>
+<Form noMargin on:submit={handleSubmit}>
     <Modal bind:show={showActivate}>
         <svelte:fragment slot="header">Activate Deployment</svelte:fragment>
         <p>Are you sure you want to activate this deployment?</p>

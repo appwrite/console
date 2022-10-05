@@ -34,8 +34,8 @@
     };
     const closeModal = () => {
         if (closable) {
-            show = false;
             dispatch('close');
+            show = false;
         }
     };
 

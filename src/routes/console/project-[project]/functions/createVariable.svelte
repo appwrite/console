@@ -27,7 +27,7 @@
     };
 </script>
 
-<Form single on:submit={handleVariable}>
+<Form noMargin on:submit={handleVariable}>
     <Modal bind:show={showCreate} size="big">
         <svelte:fragment slot="header"
             >{selectedVar ? 'Update' : 'Create'} Variable</svelte:fragment>

@@ -28,7 +28,7 @@
     };
 </script>
 
-<Form single on:submit={handleSubmit}>
+<Form noMargin on:submit={handleSubmit}>
     <Modal bind:show={showDelete} warning>
         <svelte:fragment slot="header">Delete Function</svelte:fragment>
         <p>

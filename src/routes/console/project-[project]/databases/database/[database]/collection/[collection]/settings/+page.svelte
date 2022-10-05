@@ -1,7 +1,8 @@
 <script lang="ts">
     import { Alert, CardGrid, Box } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { Button, InputText, InputTags, InputSwitch, Helper } from '$lib/elements/forms';
+    import { Button, InputText, InputSwitch, Helper } from '$lib/elements/forms';
+    import { Permissions } from '$lib/components/permissions';
     import { collection } from '../store';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -20,10 +21,10 @@
     let enabled: boolean = null,
         collectionName: string = null,
         collectionDocumentSecurity: boolean = null,
-        collectionPermissions: string[] = [],
+        collectionPermissions: string[] = null,
         arePermsDisabled = true;
 
-    onMount(async () => {
+    onMount(() => {
         enabled ??= $collection.enabled;
         collectionName ??= $collection.name;
         collectionPermissions ??= $collection.$permissions;
@@ -34,7 +35,10 @@
         if (collectionDocumentSecurity !== $collection.documentSecurity) {
             arePermsDisabled = false;
         } else if (collectionPermissions) {
-            if (difference(collectionPermissions, $collection.$permissions).length) {
+            if (
+                difference(collectionPermissions, $collection.$permissions).length ||
+                difference($collection.$permissions, collectionPermissions).length
+            ) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
@@ -92,7 +96,7 @@
                 databaseId,
                 $collection.$id,
                 $collection.name,
-                collectionDocumentSecurity ? collectionPermissions : $collection.$permissions
+                collectionDocumentSecurity ? $collection.$permissions : collectionPermissions
             );
             $collection.$permissions = collectionPermissions;
             $collection.documentSecurity = collectionDocumentSecurity;
@@ -118,8 +122,8 @@
             <svelte:fragment slot="aside">
                 <ul>
                     <InputSwitch
-                        label={enabled ? 'Enabled' : 'Disabled'}
                         id="toggle"
+                        label={enabled ? 'Enabled' : 'Disabled'}
                         bind:value={enabled} />
                 </ul>
                 <div>
@@ -129,8 +133,9 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={enabled === $collection.enabled} on:click={togglecollection}
-                    >Update</Button>
+                <Button disabled={enabled === $collection.enabled} on:click={togglecollection}>
+                    Update
+                </Button>
             </svelte:fragment>
         </CardGrid>
 
@@ -173,7 +178,7 @@
                                 class="is-small"
                                 name="level"
                                 bind:group={collectionDocumentSecurity}
-                                value={true} />
+                                value={false} />
                             <span>Collection Level</span>
                         </label>
                     </li>
@@ -184,7 +189,7 @@
                                 class="is-small"
                                 name="level"
                                 bind:group={collectionDocumentSecurity}
-                                value={false} />
+                                value={true} />
                             <span>Document Level</span>
                         </label>
                     </li>
@@ -199,28 +204,12 @@
                             <a class="link" href="/#">Permissions</a>
                         </p>
                     </Alert>
-                {:else}
-                    <Alert type="info">
-                        <p>
-                            Tip: Add <b>role:all</b> for wildcards access. Check out our
-                            documentation for more on <a class="link" href="/#">Permissions</a>
-                        </p>
-                    </Alert>
-                    <ul class="form-list">
-                        <InputTags
-                            id="permissions"
-                            label="Permissions"
-                            placeholder="User ID, Team ID, or Role"
-                            bind:tags={collectionPermissions} />
-                    </ul>
+                {:else if collectionPermissions !== null}
+                    <Permissions bind:permissions={collectionPermissions} withCreate />
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <Button
-                    disabled={arePermsDisabled}
-                    on:click={() => {
-                        updatePermissions();
-                    }}>Update</Button>
+                <Button disabled={arePermsDisabled} on:click={updatePermissions}>Update</Button>
             </svelte:fragment>
         </CardGrid>
 
