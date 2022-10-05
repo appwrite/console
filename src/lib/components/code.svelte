@@ -1,32 +1,60 @@
 <script lang="ts">
+    import { Pill } from '$lib/elements';
     import Prism from 'prismjs';
     import 'prismjs/components/prism-dart';
+    import 'prismjs/components/prism-kotlin';
     import 'prismjs/plugins/autoloader/prism-autoloader';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
     import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
     import { afterUpdate } from 'svelte';
+    import { Copy } from '.';
 
+    export let label: string = null;
     export let code = '';
-    export let language: 'js' | 'html' | 'dart' | 'json';
+    export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json';
     export let showLineNumbers = false;
+    export let showCopy = false;
 
     afterUpdate(async () => {
         Prism.highlightAll();
     });
 </script>
 
-<pre class={`language-${language}`} class:line-numbers={showLineNumbers}><code
-        >{@html code}</code></pre>
+<div class="code">
+    <div class="controls">
+        {#if label}
+            <Pill>{label}</Pill>
+        {/if}
+        {#if showCopy}
+            <Copy value={code}>
+                <span class="icon-duplicate" aria-hidden="true" style="cursor: pointer;" />
+            </Copy>
+        {/if}
+    </div>
+    <pre class={`language-${language}`} class:line-numbers={showLineNumbers}><code
+            >{code}</code></pre>
+</div>
 
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
+
+    div.code {
+        position: relative;
+
+        div.controls {
+            position: absolute;
+            right: 0.5rem;
+            top: 0.5rem;
+            z-index: 1;
+        }
+    }
 
     code,
     pre {
         &[class*='language-'] {
             color: #fcfcff;
             text-shadow: none;
-            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-family: 'Source Code Pro';
             body.theme-light & {
                 color: #373b4d;
             }
@@ -35,6 +63,14 @@
         &::selection {
             text-shadow: none;
             background: #b3d4fc;
+        }
+
+        &.line-numbers .line-numbers-rows {
+            border: none;
+
+            > span::before {
+                color: #868ea3;
+            }
         }
     }
 
@@ -50,11 +86,15 @@
         &.prolog,
         &.doctype,
         &.cdata {
-            color: slategray;
+            color: #868ea3;
         }
 
         &.punctuation {
-            color: #999;
+            color: #fcfcff;
+
+            body.theme-light & {
+                color: #373b4d;
+            }
         }
         &.property,
         &.tag,
@@ -79,7 +119,7 @@
         &.url,
         .language-css &.string,
         .style &.string {
-            color: #9a6e3a;
+            color: #fcfcff;
             background: none;
             body.theme-light & {
                 color: #373b4d;
@@ -94,11 +134,16 @@
                 color: #6a6af7;
             }
         }
-        &.function,
-        &.class-name {
+        &.function {
             color: #ffa1ce;
             body.theme-light & {
                 color: #f02e7f;
+            }
+        }
+        &.class-name {
+            color: #a1c4ff;
+            body.theme-light & {
+                color: #62aed2;
             }
         }
         &.regex,
