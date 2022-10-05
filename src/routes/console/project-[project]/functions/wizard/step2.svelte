@@ -46,7 +46,7 @@
                                     <button
                                         class="button is-text is-only-icon"
                                         aria-label="delete id"
-                                        on:click={() => {
+                                        on:click|preventDefault={() => {
                                             $createFunction.execute =
                                                 $createFunction.execute.filter(
                                                     (item) => item !== id

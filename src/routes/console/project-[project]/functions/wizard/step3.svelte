@@ -16,7 +16,7 @@
 
     EVENT
     {#if $createFunction?.events?.length}
-        <div class="table-with-scroll">
+        <div class="table-with-scroll u-height-100-percents">
             <div class="table-wrapper">
                 <div class="table is-remove-outer-styles">
                     <ul class="table-thead">
@@ -32,7 +32,7 @@
                                     <button
                                         class="button is-text is-only-icon"
                                         aria-label="delete id"
-                                        on:click={() => {
+                                        on:click|preventDefault={() => {
                                             $createFunction.events = $createFunction.events.filter(
                                                 (item) => item !== id
                                             );

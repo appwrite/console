@@ -13,11 +13,12 @@
     let inputData: string = null;
     let showInput = false;
 
-    const create = () => {
+    function create() {
         showCreate = false;
         $createFunction.events.push(copyValue);
         $createFunction = $createFunction;
-    };
+        console.log($createFunction);
+    }
 
     const events = ['create', 'update', 'delete'];
 
@@ -70,27 +71,46 @@
         //SERVICE
         if (service) {
             data.set('service', { value: service.name, description: 'service' });
+            data.set('serviceId', {
+                value: '*',
+                description: `ID of ${service?.name.slice(0, -1)}`
+            });
         }
 
         //REQUEST
         if (request) {
             if (request.name === 'documents') {
-                data.set('collection', {
-                    value: 'collections.*.documents',
+                data.set('request', {
+                    value: 'collections',
                     description: 'request'
                 });
-            } else
+                data.set('requestId', {
+                    value: '*',
+                    description: `ID of collection`
+                });
+                data.set('secondaryRequest', {
+                    value: 'documents',
+                    description: 'secondary request'
+                });
+                data.set('secondaryRequestId', {
+                    value: '*',
+                    description: `ID of document`
+                });
+            } else {
                 data.set('request', {
                     value: request.name,
                     description: `ID of ${service?.name.slice(0, -1)}`
                 });
-        } else if (service) data.set('request', { value: '*', description: 'request' });
+                data.set('requestId', {
+                    value: '*',
+                    description: `ID of ${request?.name.slice(0, -1)}`
+                });
+            }
+        }
 
         //EVENT
         if ((event && request?.events?.includes(event)) ?? service?.events?.includes(event)) {
             data.set('event', { value: event, description: 'event' });
-        } else if (request) {
-            data.set('event', { value: '*', description: `event` });
         }
 
         //ATTRIBUTE
@@ -118,6 +138,7 @@
         selectedRequest = null;
         selectedEvent = null;
         selectedAttribute = null;
+        helper = null;
     }
     $: if (!showInput) {
         helper = null;
