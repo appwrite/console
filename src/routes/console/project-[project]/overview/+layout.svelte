@@ -24,10 +24,10 @@
     afterNavigate(handle);
 
     async function handle() {
+        const promise = usage.load(projectId, period);
+
         if ($usage) {
-            await usage.load(projectId, period);
-        } else {
-            usage.load(projectId, period);
+            await promise;
         }
 
         title.set($project.name);
