@@ -15,6 +15,7 @@
     import { Query } from '@aw-labs/appwrite-console';
 
     const create = async () => {
+        console.log($createFunction);
         try {
             await sdkForProject.functions.create(
                 $createFunction.id ?? 'unique()',
@@ -44,8 +45,16 @@
     };
 
     onDestroy(() => {
-        $createFunction.execute = [];
-        $createFunction.events = [];
+        $createFunction = {
+            id: null,
+            name: '',
+            execute: [],
+            runtime: '',
+            vars: [],
+            events: [],
+            schedule: '',
+            timeout: 0
+        };
     });
 
     const stepsComponents: WizardStepsType = new Map();

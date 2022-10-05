@@ -77,19 +77,19 @@
         <svelte:fragment slot="list">
             <DropListItem
                 on:click={() => {
-                    addRole('role:any');
+                    addRole('any');
                 }}>
                 Any
             </DropListItem>
             <DropListItem
                 on:click={() => {
-                    addRole('role:guest');
+                    addRole('guest');
                 }}>
                 All guests
             </DropListItem>
             <DropListItem
                 on:click={() => {
-                    addRole('role:member');
+                    addRole('member');
                 }}>
                 All users
             </DropListItem>

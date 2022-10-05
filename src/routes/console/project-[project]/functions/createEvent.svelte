@@ -17,7 +17,6 @@
         showCreate = false;
         $createFunction.events.push(copyValue);
         $createFunction = $createFunction;
-        console.log($createFunction);
     }
 
     const events = ['create', 'update', 'delete'];
