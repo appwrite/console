@@ -114,9 +114,7 @@
                                     <button
                                         class="button is-only-icon is-text"
                                         aria-label="Delete item"
-                                        on:click|preventDefault={() => {
-                                            console.log('Feel refreshed?');
-                                        }}>
+                                        on:click|preventDefault>
                                         <span class="icon-refresh" aria-hidden="true" />
                                     </button>
                                     <button

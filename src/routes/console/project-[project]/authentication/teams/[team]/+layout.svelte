@@ -13,8 +13,10 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promise = team.load(teamId);
+
         if ($team?.$id !== teamId) {
-            await team.load(teamId);
+            await promise;
         }
 
         updateLayout({

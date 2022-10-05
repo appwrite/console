@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputTags, Button, Form, FormList } from '$lib/elements/forms';
+    import { InputText, Button, Form, FormList } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Modal, Alert, CustomId } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -8,6 +8,7 @@
     import { uploader } from '$lib/stores/uploader';
     import { bucket } from './store';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
+    import { Permissions } from '$lib/components/permissions';
 
     export let showCreate = false;
 
@@ -119,19 +120,7 @@
                 <CustomId bind:show={showCustomId} name="File" bind:id />
             {/if}
             <p class="heading-level-7">Permissions</p>
-            <Alert type="info">
-                <p>
-                    Tip: Add role:all for wildcard access. Check out our documentation for more on <a
-                        class="link"
-                        href="#?">
-                        Permissions</a>
-                </p>
-            </Alert>
-            <InputTags
-                id="permissions"
-                label="Permissions"
-                bind:tags={permissions}
-                placeholder="User ID, Team ID or Role" />
+            <Permissions bind:permissions />
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

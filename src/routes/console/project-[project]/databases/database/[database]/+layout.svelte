@@ -15,8 +15,9 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promise = database.load(databaseId);
         if ($database?.$id !== databaseId) {
-            await database.load(databaseId);
+            await promise;
         }
 
         updateLayout({
