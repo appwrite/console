@@ -116,7 +116,6 @@
     }
 
     async function updateScopes() {
-        console.log(scopes.filter((scope) => activeScopes[scope]));
         try {
             await sdkForConsole.projects.updateKey(
                 $project.$id,

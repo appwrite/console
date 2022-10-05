@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Alert, CardGrid, Box, Copy } from '$lib/components';
+    import { CardGrid, Box, Copy } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { Button, InputTags } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { file } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
@@ -12,6 +12,7 @@
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { difference } from '$lib/helpers/array';
+    import { Permissions } from '$lib/components/permissions';
 
     onMount(async () => {
         let bucketId = $page.params.bucket;
@@ -113,23 +114,7 @@
                 permissions are enabled, file permissions will be ignored.
             </p>
             <svelte:fragment slot="aside">
-                <Alert type="info">
-                    <svelte:fragment slot="title">
-                        You have Bucket Level permissions enabled
-                    </svelte:fragment>
-                    <p>
-                        If you want to assign permissions specific to this file, you will need to
-                        update your <a class="link" href="#/"> Bucket Settings</a> to enable File Level
-                        permissions.
-                    </p>
-                </Alert>
-                <ul class="common-section">
-                    <InputTags
-                        id="permissions"
-                        label="Permissions"
-                        placeholder="User ID, Team ID, or Role"
-                        bind:tags={filePermissions} />
-                </ul>
+                <Permissions bind:permissions={filePermissions} />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
