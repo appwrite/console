@@ -2,16 +2,18 @@
     import { afterNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { CardGrid } from '$lib/components';
+    import { CardGrid, Collapsible, CollapsibleItem } from '$lib/components';
     import { scopes } from '$lib/constants';
     import {
         Button,
         Form,
         FormList,
-        InputCheckbox,
+        InputChoice,
         InputPassword,
         InputText
     } from '$lib/elements/forms';
+    import InputDateTime from '$lib/elements/forms/inputDateTime.svelte';
+    import { difference } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { updateLayout } from '$lib/stores/layout';
@@ -25,7 +27,7 @@
     const projectId = $page.params.project;
     const keyId = $page.params.key;
     const activeScopes = scopes.reduce((prev, next) => {
-        prev[next] = false;
+        prev[next.scope] = false;
 
         return prev;
     }, {});
@@ -40,8 +42,9 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promise = key.load(projectId, keyId);
         if ($key?.$id !== keyId) {
-            await key.load(projectId, keyId);
+            await promise;
         }
 
         name ??= $key.name;
@@ -121,8 +124,9 @@
                 $project.$id,
                 $key.$id,
                 $key.name,
-                scopes.filter((scope) => activeScopes[scope])
+                selectedScoped
             );
+            $key.scopes = selectedScoped;
             addNotification({
                 type: 'success',
                 message: 'API Key scopes has been updated'
@@ -135,11 +139,21 @@
         }
     }
 
+    function selectAll() {
+        for (const scope in activeScopes) {
+            activeScopes[scope] = true;
+        }
+    }
+
     function unselectAll() {
         for (const scope in activeScopes) {
             activeScopes[scope] = false;
         }
     }
+
+    $: selectedScoped = scopes
+        .filter((scope) => activeScopes[scope.scope])
+        .map(({ scope }) => scope);
 </script>
 
 <svelte:head>
@@ -154,7 +168,7 @@
             </div>
             <svelte:fragment slot="aside">
                 <p>
-                    Last accessed: {toLocaleDateTime($key.$updatedAt)}<br />
+                    Last accessed: {toLocaleDateTime($key.accessedAt)}<br />
                     Scopes granted: {$key.scopes.length}
                 </p>
             </svelte:fragment>
@@ -206,18 +220,36 @@
                     practice to allow only the permissions you need to meet your project goals.
                 </p>
                 <svelte:fragment slot="aside">
-                    <FormList>
-                        {#each scopes as scope}
-                            <InputCheckbox
-                                id={scope}
-                                label={scope}
-                                bind:value={activeScopes[scope]} />
+                    <div class="u-flex u-cross-center u-main-end">
+                        <Button text on:click={unselectAll}>Unselect all</Button>
+                        <Button text on:click={selectAll}>Select all</Button>
+                    </div>
+                    <Collapsible>
+                        {#each ['Authentication', 'Database', 'Functions', 'Storage', 'Other'] as category}
+                            <CollapsibleItem>
+                                <svelte:fragment slot="title">{category}</svelte:fragment>
+                                <FormList>
+                                    {#each scopes.filter((s) => s.category === category) as scope}
+                                        <InputChoice
+                                            id={scope.scope}
+                                            label={scope.scope}
+                                            bind:value={activeScopes[scope.scope]}>
+                                            {scope.description}
+                                        </InputChoice>
+                                    {/each}
+                                </FormList>
+                            </CollapsibleItem>
                         {/each}
-                    </FormList>
+                    </Collapsible>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button submit>Update</Button>
+                    <Button
+                        submit
+                        disabled={!(
+                            difference(selectedScoped, $key.scopes).length !== 0 ||
+                            difference($key.scopes, selectedScoped).length !== 0
+                        )}>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -227,11 +259,7 @@
                 <p class="text">Choose any name that will help you distinguish between API keys.</p>
                 <svelte:fragment slot="aside">
                     <FormList>
-                        <InputText
-                            id="expire"
-                            label="Expiration Date"
-                            bind:value={expire}
-                            required />
+                        <InputDateTime id="expire" label="Expiration Date" bind:value={expire} />
                     </FormList>
                 </svelte:fragment>
 
@@ -250,7 +278,7 @@
                     <div class="u-flex u-gap-16">
                         <div class="u-cross-child-center u-line-height-1-5">
                             <h6 class="u-bold">{$key.name}</h6>
-                            <p>Last accessed: {toLocaleDateTime($key.$updatedAt)}</p>
+                            <p>Last accessed: {toLocaleDateTime($key.accessedAt)}</p>
                         </div>
                     </div>
                 </div>
