@@ -21,10 +21,15 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promises = Promise.all([
+            organization.load(organizationId),
+            memberList.load(organizationId, [Query.limit(12)])
+        ]);
+
         if ($organization?.$id !== organizationId) {
-            await organization.load(organizationId);
-            await memberList.load(organizationId, [Query.limit(12)]);
+            await promises;
         }
+
         updateLayout({
             navigate: event,
             title: $organization?.name,

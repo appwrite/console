@@ -13,8 +13,9 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promise = file.load(bucketId, fileId);
         if ($file?.$id !== fileId) {
-            await file.load(bucketId, fileId);
+            await promise;
         }
 
         updateLayout({

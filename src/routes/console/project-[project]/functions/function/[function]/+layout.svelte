@@ -12,8 +12,9 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promise = func.load(functionId);
         if ($func?.$id !== functionId) {
-            await func.load(functionId);
+            await promise;
         }
 
         updateLayout({

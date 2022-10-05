@@ -14,8 +14,9 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promise = bucket.load(bucketId);
         if ($bucket?.$id !== bucketId) {
-            await bucket.load(bucketId);
+            await promise;
         }
 
         updateLayout({
