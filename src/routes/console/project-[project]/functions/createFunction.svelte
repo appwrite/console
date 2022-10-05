@@ -15,7 +15,6 @@
     import { Query } from '@aw-labs/appwrite-console';
 
     const create = async () => {
-        console.log($createFunction);
         try {
             await sdkForProject.functions.create(
                 $createFunction.id ?? 'unique()',
@@ -47,13 +46,13 @@
     onDestroy(() => {
         $createFunction = {
             id: null,
-            name: '',
+            name: null,
             execute: [],
-            runtime: '',
+            runtime: null,
             vars: [],
             events: [],
-            schedule: '',
-            timeout: 0
+            schedule: null,
+            timeout: null
         };
     });
 

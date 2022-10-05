@@ -83,13 +83,13 @@
             </DropListItem>
             <DropListItem
                 on:click={() => {
-                    addRole('guest');
+                    addRole('guests');
                 }}>
                 All guests
             </DropListItem>
             <DropListItem
                 on:click={() => {
-                    addRole('member');
+                    addRole('users');
                 }}>
                 All users
             </DropListItem>
