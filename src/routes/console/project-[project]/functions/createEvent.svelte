@@ -9,7 +9,7 @@
     let selectedRequest: typeof selectedService['requests'][0] = null;
     let selectedEvent: string = null;
     let selectedAttribute: string = null;
-    let showInfo: string = null;
+    let helper: string = null;
     let inputData: string = null;
     let showInput = false;
 
@@ -66,30 +66,38 @@
         event: string,
         attribute: string
     ) {
-        let data = [];
+        let data = new Map();
         //SERVICE
         if (service) {
-            data.push({ value: service.name, description: 'service' });
-            data.push({ value: '*', description: `event` });
+            data.set('service', { value: service.name, description: 'service' });
         }
 
         //REQUEST
         if (request) {
-            data.push({ value: request.name, description: 'request' });
-            data[1].description = `ID of ${service?.name.slice(0, -1)}`;
-            data.push({ value: '*', description: `event` });
-        }
+            if (request.name === 'documents') {
+                data.set('collection', {
+                    value: 'collections.*.documents',
+                    description: 'request'
+                });
+            } else
+                data.set('request', {
+                    value: request.name,
+                    description: `ID of ${service?.name.slice(0, -1)}`
+                });
+        } else if (service) data.set('request', { value: '*', description: 'request' });
 
         //EVENT
         if ((event && request?.events?.includes(event)) ?? service?.events?.includes(event)) {
-            data[data.length - 1] = { value: event, description: 'event' };
-        } else if (service) {
-            data[data.length - 1] = { value: '*', description: 'event' };
+            data.set('event', { value: event, description: 'event' });
+        } else if (request) {
+            data.set('event', { value: '*', description: `event` });
         }
 
         //ATTRIBUTE
         if (attribute && !request) {
-            data.push({ value: attribute, description: 'attribute' });
+            data.set('attribute', { value: attribute, description: 'attribute' });
+        } else if (event && service.name === 'users' && !request) {
+            data.set('attribute', { value: '*', description: `attribute` });
         }
         return data;
     }
@@ -100,19 +108,34 @@
         selectedEvent,
         selectedAttribute
     );
-    $: copyValue = inputData ?? eventString.map((d) => d.value).join('.');
+    $: copyValue =
+        inputData ??
+        Array.from(eventString.values())
+            .map((d) => d.value)
+            .join('.');
 
     $: if (selectedService) {
         selectedRequest = null;
         selectedEvent = null;
         selectedAttribute = null;
     }
-
     $: if (!showInput) {
-        showInfo = null;
+        helper = null;
+    }
+
+    $: if (!showCreate) {
+        selectedService = null;
+        selectedRequest = null;
+        selectedEvent = null;
+        selectedAttribute = null;
+        helper = null;
+        inputData = null;
+        showInput = false;
     }
 
     $: console.log(eventString);
+
+    //TODO: remove inline style
 </script>
 
 <Form single on:submit={create}>
@@ -124,6 +147,7 @@
             <div class="u-flex u-gap-8 u-margin-block-start-8">
                 {#each services as service}
                     <Pill
+                        disabled={showInput}
                         selected={service.name === selectedService?.name}
                         button
                         on:click={() => (selectedService = service)}>{service.name}</Pill>
@@ -136,6 +160,7 @@
                 <div class="u-flex u-gap-8 u-margin-block-start-8">
                     {#each selectedService.requests as request}
                         <Pill
+                            disabled={showInput}
                             selected={request.name === selectedRequest?.name}
                             button
                             on:click={() => {
@@ -151,6 +176,7 @@
                 <div class="u-flex u-gap-8 u-margin-block-start-8">
                     {#each selectedRequest?.events ?? selectedService?.events as event}
                         <Pill
+                            disabled={showInput}
                             selected={selectedEvent === event}
                             button
                             on:click={() => {
@@ -167,6 +193,7 @@
                     <div class="u-flex u-gap-8 u-margin-block-start-8">
                         {#each selectedService?.attributes as attribute}
                             <Pill
+                                disabled={showInput}
                                 selected={selectedAttribute === attribute}
                                 button
                                 on:click={() => {
@@ -178,60 +205,71 @@
                     </div>
                 </div>
             {/if}
-            {#if showInput}
-                <div class="input-text-wrapper" style="--amount-of-buttons:2">
-                    <input type="text" placeholder="Enter custom event" bind:value={inputData} />
-                    <div class="options-list">
-                        <button class="options-list-button" aria-label="confirm">
-                            <span class="icon-check" aria-hidden="true" />
-                        </button>
-                        <button
-                            on:click={() => {
-                                showInput = false;
-                            }}
-                            class="options-list-button"
-                            aria-label="cancel">
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
+        {/if}
+        {#if showInput}
+            <div class="input-text-wrapper" style="--amount-of-buttons:2">
+                <input type="text" placeholder="Enter custom event" bind:value={inputData} />
+                <div class="options-list">
+                    <button
+                        on:click|preventDefault={() => {
+                            showInput = false;
+                        }}
+                        class="options-list-button"
+                        aria-label="confirm">
+                        <span class="icon-check" aria-hidden="true" />
+                    </button>
+                    <button
+                        on:click|preventDefault={() => {
+                            inputData = null;
+                            showInput = false;
+                        }}
+                        class="options-list-button"
+                        aria-label="cancel">
+                        <span class="icon-x" aria-hidden="true" />
+                    </button>
+                </div>
+            </div>
+        {:else}
+            <div class="input-text-wrapper" style="--amount-of-buttons:2">
+                <div type="text" readonly>
+                    <div class="u-flex" style="min-height: 1.2rem;">
+                        {#each Array.from(eventString.values()) as route, i}
+                            <button
+                                class:u-opacity-0-5={helper !== route.description}
+                                class:u-bold={helper === route.description}
+                                on:click|preventDefault={() => {
+                                    helper === route.description
+                                        ? (helper = null)
+                                        : (helper = route.description);
+                                }}>
+                                {route.value}{i + 1 < eventString?.size ? '.' : ''}
+                            </button>
+                        {/each}
                     </div>
                 </div>
-            {:else}
-                <div class="input-text-wrapper" style="--amount-of-buttons:2">
-                    <div type="text" placeholder="Place Holder text" value="" readonly>
-                        <div class="u-flex">
-                            {#each eventString as route, i}
-                                <button
-                                    on:click|preventDefault={() => {
-                                        showInfo === route.description
-                                            ? (showInfo = null)
-                                            : (showInfo = route.description);
-                                    }}>
-                                    {route.value}{i + 1 < eventString?.length ? '.' : ''}
-                                </button>
-                            {/each}
-                        </div>
-                    </div>
-                    <div class="options-list">
-                        <button
-                            on:click|preventDefault={() => {
-                                inputData = copyValue;
-                                showInput = true;
-                            }}
-                            class="options-list-button"
-                            aria-label="edit event">
-                            <span class="icon-pencil" aria-hidden="true" />
-                        </button>
-                        <button class="options-list-button" aria-label="copy text">
-                            <Copy value={copyValue}>
-                                <span class="icon-duplicate" aria-hidden="true" />
-                            </Copy>
-                        </button>
-                    </div>
-                    {#if showInfo}
-                        <span>{showInfo}</span>
-                    {/if}
+                <div class="options-list">
+                    <button
+                        on:click|preventDefault={() => {
+                            inputData = copyValue;
+                            showInput = true;
+                        }}
+                        class="options-list-button"
+                        aria-label="edit event">
+                        <span class="icon-pencil" aria-hidden="true" />
+                    </button>
+                    <button
+                        disabled={!copyValue}
+                        class="options-list-button"
+                        aria-label="copy text">
+                        <Copy value={copyValue}>
+                            <span class="icon-duplicate" aria-hidden="true" />
+                        </Copy>
+                    </button>
                 </div>
-            {/if}
+                {#if helper}
+                    <span>{helper}</span>
+                {/if}
+            </div>
         {/if}
 
         <svelte:fragment slot="footer">
