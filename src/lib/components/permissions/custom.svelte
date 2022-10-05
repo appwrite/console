@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { Button, Form, FormList, Helper } from '$lib/elements/forms';
+    import { Button, Form, FormList, Helper, InputText } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { Modal } from '..';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
-    import InputText from '$lib/elements/forms/inputText.svelte';
 
     export let show: boolean;
     export let groups: Writable<Map<string, Permission>>;
