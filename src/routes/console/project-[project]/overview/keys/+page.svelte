@@ -39,7 +39,7 @@
                     {key.name}
                 </TableCellText>
                 <TableCellText title="Last Accessed">
-                    {toLocaleDateTime(key.$createdAt)}
+                    {key.accessedAt ? toLocaleDateTime(key.accessedAt) : 'never'}
                 </TableCellText>
                 <TableCellText title="Expiration Date">
                     {toLocaleDateTime(key.$updatedAt)}

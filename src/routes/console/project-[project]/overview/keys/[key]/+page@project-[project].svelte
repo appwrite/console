@@ -2,16 +2,8 @@
     import { afterNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { CardGrid, Collapsible, CollapsibleItem } from '$lib/components';
-    import { scopes } from '$lib/constants';
-    import {
-        Button,
-        Form,
-        FormList,
-        InputChoice,
-        InputPassword,
-        InputText
-    } from '$lib/elements/forms';
+    import { CardGrid, Secret } from '$lib/components';
+    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import InputDateTime from '$lib/elements/forms/inputDateTime.svelte';
     import { difference } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -21,39 +13,30 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../../../store';
+    import Scopes from '../scopes.svelte';
     import Delete from './delete.svelte';
     import { key } from './store';
 
     const projectId = $page.params.project;
     const keyId = $page.params.key;
-    const activeScopes = scopes.reduce((prev, next) => {
-        prev[next.scope] = false;
-
-        return prev;
-    }, {});
 
     let loaded = false;
     let showDelete = false;
     let name: string = null;
     let secret: string = null;
     let expire: string = null;
+    let scopes: string[] = null;
 
     onMount(handle);
     afterNavigate(handle);
 
     async function handle(event = null) {
-        const promise = key.load(projectId, keyId);
-        if ($key?.$id !== keyId) {
-            await promise;
-        }
+        await key.load(projectId, keyId);
 
         name ??= $key.name;
         secret ??= $key.secret;
         expire ??= $key.expire;
-        unselectAll();
-        $key.scopes.forEach((scope) => {
-            activeScopes[scope] = true;
-        });
+        scopes ??= $key.scopes;
 
         updateLayout({
             navigate: event,
@@ -120,13 +103,8 @@
 
     async function updateScopes() {
         try {
-            await sdkForConsole.projects.updateKey(
-                $project.$id,
-                $key.$id,
-                $key.name,
-                selectedScoped
-            );
-            $key.scopes = selectedScoped;
+            await sdkForConsole.projects.updateKey($project.$id, $key.$id, $key.name, scopes);
+            $key.scopes = scopes;
             addNotification({
                 type: 'success',
                 message: 'API Key scopes has been updated'
@@ -138,22 +116,6 @@
             });
         }
     }
-
-    function selectAll() {
-        for (const scope in activeScopes) {
-            activeScopes[scope] = true;
-        }
-    }
-
-    function unselectAll() {
-        for (const scope in activeScopes) {
-            activeScopes[scope] = false;
-        }
-    }
-
-    $: selectedScoped = scopes
-        .filter((scope) => activeScopes[scope.scope])
-        .map(({ scope }) => scope);
 </script>
 
 <svelte:head>
@@ -162,13 +124,14 @@
 
 <Container>
     {#if loaded}
+        {@const accessedAt = $key.accessedAt ? toLocaleDateTime($key.accessedAt) : 'never'}
         <CardGrid>
             <div>
                 <h6 class="heading-level-7">{$key.name}</h6>
             </div>
             <svelte:fragment slot="aside">
                 <p>
-                    Last accessed: {toLocaleDateTime($key.accessedAt)}<br />
+                    Last accessed: {accessedAt}<br />
                     Scopes granted: {$key.scopes.length}
                 </p>
             </svelte:fragment>
@@ -178,17 +141,8 @@
                 <h6 class="heading-level-7">API Key Secret</h6>
                 <svelte:fragment slot="aside">
                     <FormList>
-                        <InputPassword
-                            id="secret"
-                            label="API Key Secret"
-                            bind:value={secret}
-                            showPasswordButton
-                            required />
+                        <Secret bind:value={secret} />
                     </FormList>
-                </svelte:fragment>
-
-                <svelte:fragment slot="actions">
-                    <Button disabled submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -220,35 +174,15 @@
                     practice to allow only the permissions you need to meet your project goals.
                 </p>
                 <svelte:fragment slot="aside">
-                    <div class="u-flex u-cross-center u-main-end">
-                        <Button text on:click={unselectAll}>Unselect all</Button>
-                        <Button text on:click={selectAll}>Select all</Button>
-                    </div>
-                    <Collapsible>
-                        {#each ['Authentication', 'Database', 'Functions', 'Storage', 'Other'] as category}
-                            <CollapsibleItem>
-                                <svelte:fragment slot="title">{category}</svelte:fragment>
-                                <FormList>
-                                    {#each scopes.filter((s) => s.category === category) as scope}
-                                        <InputChoice
-                                            id={scope.scope}
-                                            label={scope.scope}
-                                            bind:value={activeScopes[scope.scope]}>
-                                            {scope.description}
-                                        </InputChoice>
-                                    {/each}
-                                </FormList>
-                            </CollapsibleItem>
-                        {/each}
-                    </Collapsible>
+                    <Scopes bind:scopes />
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
                     <Button
                         submit
                         disabled={!(
-                            difference(selectedScoped, $key.scopes).length !== 0 ||
-                            difference($key.scopes, selectedScoped).length !== 0
+                            difference(scopes, $key.scopes).length !== 0 ||
+                            difference($key.scopes, scopes).length !== 0
                         )}>Update</Button>
                 </svelte:fragment>
             </CardGrid>
@@ -278,7 +212,7 @@
                     <div class="u-flex u-gap-16">
                         <div class="u-cross-child-center u-line-height-1-5">
                             <h6 class="u-bold">{$key.name}</h6>
-                            <p>Last accessed: {toLocaleDateTime($key.accessedAt)}</p>
+                            <p>Last accessed: {accessedAt}</p>
                         </div>
                     </div>
                 </div>
