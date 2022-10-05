@@ -2,7 +2,6 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import { Secret } from '../../../src/lib/components';
-import { tick } from 'svelte';
 
 const value = 'This is a secret';
 
@@ -20,12 +19,15 @@ test('shows Secret component', () => {
 test('toggle secret', async () => {
     const { container } = render(Secret, { value });
     const toggle = container.querySelector('[aria-label="show hidden text"]');
+
     let secret = container.querySelector('span.text');
     expect(secret).not.toContainEqual(value);
     await fireEvent.click(toggle);
+
     secret = container.querySelector('span.text');
     expect(secret.textContent).toEqual(value);
     await fireEvent.click(toggle);
+
     secret = container.querySelector('span.text');
     expect(secret.textContent).not.toEqual(value);
 });
