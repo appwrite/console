@@ -13,8 +13,10 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promise = user.load(userId);
+
         if ($user?.$id !== userId) {
-            await user.load(userId);
+            await promise;
         }
 
         updateLayout({

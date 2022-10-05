@@ -15,8 +15,9 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promise = doc.load(databaseId, collectionId, documentId);
         if ($doc?.$id !== documentId) {
-            await doc.load(databaseId, collectionId, documentId);
+            await promise;
         }
 
         updateLayout({
