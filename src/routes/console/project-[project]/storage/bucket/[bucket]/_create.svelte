@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { InputText, Button, Form, FormList } from '$lib/elements/forms';
+    import { Button, Form, FormList } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { Modal, Alert, CustomId } from '$lib/components';
+    import { Modal, CustomId } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';

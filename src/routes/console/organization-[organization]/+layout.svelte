@@ -23,7 +23,7 @@
     async function handle(event = null) {
         const promises = Promise.all([
             organization.load(organizationId),
-            memberList.load(organizationId, [Query.limit(12)])
+            memberList.load(organizationId, [Query.limit($pageLimit)])
         ]);
 
         if ($organization?.$id !== organizationId) {
