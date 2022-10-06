@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1, CardContainer } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -36,11 +36,7 @@
     </div>
 
     {#if $bucketList?.total}
-        <ul
-            class="grid-box common-section u-margin-block-start-32"
-            style={`--grid-gap:1.5rem; --grid-item-size:${
-                $bucketList.total > 3 ? '22rem' : '25rem'
-            };`}>
+        <CardContainer total={$bucketList.total} {offset} on:click={() => (showCreate = true)}>
             {#each $bucketList.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket/${bucket.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
@@ -81,12 +77,10 @@
                     </svelte:fragment>
                 </GridItem1>
             {/each}
-            {#if $bucketList?.total < $cardLimit + offset && ($bucketList?.total % 2 !== 0 || $bucketList?.total % 4 === 0)}
-                <Empty isButton on:click={() => (showCreate = true)}>
-                    <p>Add a new bucket</p>
-                </Empty>
-            {/if}
-        </ul>
+            <svelte:fragment slot="empty">
+                <p>Add a new bucket</p>
+            </svelte:fragment>
+        </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.total}</p>

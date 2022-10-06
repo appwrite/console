@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1, CardContainer } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -39,9 +39,7 @@
     </div>
 
     {#if $collections?.total}
-        <div
-            class="grid-box common-section"
-            style={` --grid-item-size:${$collections.total > 3 ? '22rem' : '25rem'};`}>
+        <CardContainer total={$collections.total} {offset} on:click={() => (showCreate = true)}>
             {#each $collections.collections as collection}
                 <GridItem1
                     href={`${base}/console/project-${project}/databases/database/${databaseId}/collection/${collection.$id}`}>
@@ -62,12 +60,10 @@
                     </Copy>
                 </GridItem1>
             {/each}
-            {#if ($collections.total % 2 !== 0 || $collections.total % 4 === 0) && $collections.total - offset <= $cardLimit}
-                <Empty isButton on:click={() => (showCreate = true)}>
-                    <p>Create a new collection</p>
-                </Empty>
-            {/if}
-        </div>
+            <svelte:fragment slot="empty">
+                <p>Create a new collection</p>
+            </svelte:fragment>
+        </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$collections.total}</p>

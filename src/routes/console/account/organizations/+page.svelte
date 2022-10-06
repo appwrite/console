@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { GridItem1, Empty, Pagination, AvatarGroup } from '$lib/components';
+    import { GridItem1, Empty, Pagination, AvatarGroup, CardContainer } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateOrganization from '../../_createOrganization.svelte';
@@ -45,11 +45,10 @@
     </div>
 
     {#if $organizationList?.teams?.length}
-        <ul
-            class="grid-box common-section u-margin-block-start-32"
-            style={`--grid-gap:1.5rem; --grid-item-size:${
-                $organizationList.total > 3 ? '22rem' : '25rem'
-            };`}>
+        <CardContainer
+            total={$organizationList.total}
+            {offset}
+            on:click={() => (addOrganization = true)}>
             {#each $organizationList.teams as organization, index}
                 {@const avatarList = getMemberships(organization.$id)}
                 {#if index >= offset && index < $cardLimit + offset}
@@ -67,12 +66,10 @@
                     </GridItem1>
                 {/if}
             {/each}
-            {#if $organizationList?.total < $cardLimit + offset && ($organizationList?.total % 2 !== 0 || $organizationList?.total % 4 === 0)}
-                <Empty isButton on:click={() => (addOrganization = true)}>
-                    <p>Create a new organization</p>
-                </Empty>
-            {/if}
-        </ul>
+            <svelte:fragment slot="empty">
+                <p>Create a new organization</p>
+            </svelte:fragment>
+        </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$organizationList?.total}</p>
