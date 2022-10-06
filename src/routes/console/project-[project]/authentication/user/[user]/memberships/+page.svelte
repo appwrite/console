@@ -17,6 +17,7 @@
     import DeleteMembership from '../_deleteMembership.svelte';
     import DeleteAllMemberships from '../_deleteAllMemberships.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { pageLimit } from '$lib/stores/layout';
 
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const deleted = () => (request = sdkForProject.users.listMemberships($page.params.user));
@@ -26,8 +27,6 @@
     let selectedMembership: Models.Membership;
     let showDelete = false;
     let showDeleteAll = false;
-
-    const limit = 25;
 
     $: request = sdkForProject.users.listMemberships($page.params.user);
 </script>
@@ -97,7 +96,7 @@
             class="u-flex u-margin-block-start-32
  u-main-space-between">
             <p class="text">Total results: {response.total}</p>
-            <Pagination {limit} bind:offset sum={response.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={response.total} />
         </div>
     {/await}
 </Container>

@@ -9,19 +9,19 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { databaseList } from './store';
+    import { cardLimit } from '$lib/stores/layout';
 
     let showCreate = false;
     let search = '';
     let offset = 0;
 
-    const limit = 6;
     const project = $page.params.project;
     const handleCreate = async (event: CustomEvent<Models.Database>) => {
         showCreate = false;
         await goto(`${base}/console/project-${project}/databases/database/${event.detail.$id}`);
     };
 
-    $: databaseList.load([Query.limit(limit), Query.offset(offset)], search);
+    $: databaseList.load([Query.limit($cardLimit), Query.offset(offset)], search);
 </script>
 
 <Container>
@@ -48,7 +48,7 @@
                     </Copy>
                 </GridItem1>
             {/each}
-            {#if ($databaseList.total % 2 !== 0 || $databaseList.total % 4 === 0) && $databaseList.total - offset <= limit}
+            {#if ($databaseList.total % 2 !== 0 || $databaseList.total % 4 === 0) && $databaseList.total - offset <= $cardLimit}
                 <Empty isButton on:click={() => (showCreate = true)}>
                     <p>Create a new database</p>
                 </Empty>
@@ -57,7 +57,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$databaseList.total}</p>
-            <Pagination {limit} bind:offset sum={$databaseList.total} />
+            <Pagination limit={$cardLimit} bind:offset sum={$databaseList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

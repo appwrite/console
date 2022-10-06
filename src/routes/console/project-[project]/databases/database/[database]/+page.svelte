@@ -9,12 +9,12 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { collections } from './store';
+    import { cardLimit } from '$lib/stores/layout';
 
     let showCreate = false;
     let search = '';
     let offset = 0;
 
-    const limit = 6;
     const project = $page.params.project;
     const databaseId = $page.params.database;
     const handleCreate = async (event: CustomEvent<Models.Collection>) => {
@@ -24,7 +24,7 @@
         );
     };
 
-    $: collections.load(databaseId, [Query.limit(limit), Query.offset(offset)], search);
+    $: collections.load(databaseId, [Query.limit($cardLimit), Query.offset(offset)], search);
     $: if (search) offset = 0;
 </script>
 
@@ -62,7 +62,7 @@
                     </Copy>
                 </GridItem1>
             {/each}
-            {#if ($collections.total % 2 !== 0 || $collections.total % 4 === 0) && $collections.total - offset <= limit}
+            {#if ($collections.total % 2 !== 0 || $collections.total % 4 === 0) && $collections.total - offset <= $cardLimit}
                 <Empty isButton on:click={() => (showCreate = true)}>
                     <p>Create a new collection</p>
                 </Empty>
@@ -71,7 +71,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$collections.total}</p>
-            <Pagination {limit} bind:offset sum={$collections.total} />
+            <Pagination limit={$cardLimit} bind:offset sum={$collections.total} />
         </div>
     {:else if search}
         <Empty>
@@ -87,7 +87,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$collections?.total}</p>
-            <Pagination {limit} bind:offset sum={$collections?.total} />
+            <Pagination limit={$cardLimit} bind:offset sum={$collections?.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

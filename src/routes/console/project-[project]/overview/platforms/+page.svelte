@@ -21,7 +21,7 @@
     </span>
 </div>
 
-<div class="grid-box u-margin-block-start-32" style="--grid-gap:2rem; --grid-item-size:25rem;">
+<div class="grid-box u-margin-block-start-32" style="--grid-gap:1.5rem; --grid-item-size:25rem;">
     {#each $project.platforms as platform}
         <GridItem1 href={`${path}/${platform.$id}`}>
             <svelte:fragment slot="title">{platform.name}</svelte:fragment>

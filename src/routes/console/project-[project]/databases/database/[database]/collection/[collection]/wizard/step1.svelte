@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { InnerModal } from '$lib/components';
+    import { CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button, InputText } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { createDocument } from './store';
     import Attribute from '../document/[document]/_attribute.svelte';
@@ -89,31 +89,7 @@
                     </Pill>
                 </div>
             {:else}
-                <InnerModal bind:show={showCustomId}>
-                    <svelte:fragment slot="title">Document ID</svelte:fragment>
-                    Enter a custom document ID. Leave blank for a randomly generated one.
-                    <svelte:fragment slot="content">
-                        <div class="form">
-                            <InputText
-                                id="id"
-                                label="Custom ID"
-                                showLabel={false}
-                                placeholder="Enter ID"
-                                autofocus={true}
-                                bind:value={$createDocument.id} />
-
-                            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-                                <span
-                                    class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-                                    aria-hidden="true" />
-                                <span class="text u-line-height-1-5">
-                                    Allowed characters: alphanumeric, hyphen, non-leading
-                                    underscore, period
-                                </span>
-                            </div>
-                        </div>
-                    </svelte:fragment>
-                </InnerModal>
+                <CustomId bind:show={showCustomId} name="Document" bind:id={$createDocument.id} />
             {/if}
         </ul>
     {/if}

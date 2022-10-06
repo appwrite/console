@@ -19,6 +19,7 @@
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { pageLimit } from '$lib/stores/layout';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -27,8 +28,6 @@
     let showDelete = false;
     let search = '';
     let offset: number = null;
-
-    const limit = 5;
     const collectionId = $page.params.collection;
     const databaseId = $page.params.database;
 
@@ -138,7 +137,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$indexList?.total}</p>
-            <Pagination {limit} bind:offset sum={$indexList?.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$indexList?.total} />
         </div>
     {:else if search}
         <Empty>
@@ -154,7 +153,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$indexList?.total}</p>
-            <Pagination {limit} bind:offset sum={$indexList?.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$indexList?.total} />
         </div>
     {:else if $collection.indexes?.length}
         <Empty isButton single on:click={() => (showCreateIndex = true)}>

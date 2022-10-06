@@ -20,12 +20,12 @@
     import { base } from '$app/paths';
     import { teamsList } from '../store';
     import { Query, type Models } from '@aw-labs/appwrite-console';
+    import { pageLimit } from '$lib/stores/layout';
 
     let search = '';
     let showCreate = false;
     let offset = 0;
 
-    const limit = 25;
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
@@ -33,7 +33,10 @@
     };
 
     $: if (search) offset = 0;
-    $: teamsList.load([Query.limit(limit), Query.offset(offset)], search);
+    $: teamsList.load(
+        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$internalId')],
+        search
+    );
 </script>
 
 <Container>
@@ -78,10 +81,10 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$teamsList.total}</p>
-            <Pagination {limit} bind:offset sum={$teamsList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$teamsList.total} />
         </div>
     {:else if search}
-        <Empty>
+        <Empty single>
             <div class="common-section ">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
             </div>
@@ -94,7 +97,7 @@
         </Empty>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$teamsList.total}</p>
-            <Pagination {limit} bind:offset sum={$teamsList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$teamsList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
@@ -107,7 +110,14 @@
                         type: 'team'
                     }
                 }}>
-                <p>Create your first team to get started</p>
+                <div class="u-text-center common-section">
+                    <p>Create your first Team to get started.</p>
+                    <p>Need a hand? Check out our documentation.</p>
+                </div>
+                <div class="u-flex u-gap-16 common-section u-main-center">
+                    <Button external href="#/" text>Documentation</Button>
+                    <Button secondary>Create team</Button>
+                </div>
             </div>
         </Empty>
     {/if}
