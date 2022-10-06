@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { CardGrid, Box, Secret } from '$lib/components';
+    import { CardGrid, Box, Secret, Empty, EventModal } from '$lib/components';
     import {
         Button,
         Form,
@@ -17,6 +17,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     // import Delete from './delete.svelte';
     import Regenerate from './regenerate.svelte';
+    import { difference } from '$lib/helpers/array';
 
     const projectId = $page.params.project;
     let name: string = null;
@@ -26,6 +27,8 @@
     let httpPass: string = null;
     let security = false;
     let showDelete = false;
+    let showCreateEvent = false;
+    let areEventsDisabled = true;
     let showRegenerate = false;
 
     onMount(async () => {
@@ -81,6 +84,29 @@
             });
         }
     }
+    async function updateEvents() {
+        try {
+            await sdkForConsole.projects.updateWebhook(
+                projectId,
+                $webhook.$id,
+                $webhook.name,
+                events,
+                $webhook.url,
+                $webhook.security
+            );
+            $webhook.events = events;
+            areEventsDisabled = true;
+            addNotification({
+                type: 'success',
+                message: 'Webhook events have been updated'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
     async function updateSecurity() {
         try {
             await sdkForConsole.projects.updateWebhook(
@@ -107,8 +133,10 @@
             });
         }
     }
-
     $: signatureKey = $webhook?.signatureKey;
+    $: if (difference(events, $webhook.events).length > 0) {
+        areEventsDisabled = false;
+    }
 </script>
 
 <Container>
@@ -146,6 +174,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
+
     <Form on:submit={updateUrl}>
         <CardGrid>
             <h6 class="heading-level-7">Update Url</h6>
@@ -166,6 +195,62 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
+
+    <Form on:submit={updateEvents}>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Events</h6>
+            <p class="text">
+                Set the events that will trigger your webhook. Maximum 100 events allowed.
+            </p>
+            <svelte:fragment slot="aside">
+                {#if events?.length}
+                    <div class="table-with-scroll u-height-100-percents">
+                        <div class="table-wrapper">
+                            <div class="table is-remove-outer-styles">
+                                <ul class="table-thead">
+                                    {#each events as id}
+                                        <li class="table-row">
+                                            <div class="table-col" data-title="id">
+                                                <span class="text">{id}</span>
+                                            </div>
+                                            <div
+                                                class="table-col u-overflow-visible"
+                                                data-title="options"
+                                                style="--p-col-width:40">
+                                                <button
+                                                    class="button is-text is-only-icon"
+                                                    aria-label="delete id"
+                                                    on:click|preventDefault={() => {
+                                                        events = events.filter(
+                                                            (item) => item !== id
+                                                        );
+                                                    }}>
+                                                    <span class="icon-x" aria-hidden="true" />
+                                                </button>
+                                            </div>
+                                        </li>
+                                    {/each}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {:else}
+                    <Empty isButton single on:click={() => (showCreateEvent = !showCreateEvent)}
+                        >Add a event to get started</Empty>
+                {/if}
+
+                <Button text on:click={() => (showCreateEvent = !showCreateEvent)}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="u-text">Add event</span>
+                </Button>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={areEventsDisabled} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+
     <Form on:submit={updateSecurity}>
         <CardGrid>
             <h6 class="heading-level-7">Security</h6>
@@ -235,3 +320,9 @@
 </Container>
 
 <Regenerate bind:show={showRegenerate} />
+<EventModal
+    bind:showCreate={showCreateEvent}
+    on:created={(e) => {
+        events.push(e.detail[0]);
+        events = events;
+    }} />
