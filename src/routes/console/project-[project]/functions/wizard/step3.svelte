@@ -4,6 +4,7 @@
     import { Empty } from '$lib/components';
     import { createFunction } from './store';
     import { EventModal } from '$lib/components';
+    import { TableList, TableCellText, TableCell } from '$lib/elements/table';
 
     let showCreate = false;
 
@@ -20,37 +21,28 @@
 
     EVENT
     {#if $createFunction?.events?.length}
-        <div class="table-with-scroll u-height-100-percents">
-            <div class="table-wrapper">
-                <div class="table is-remove-outer-styles">
-                    <ul class="table-thead">
-                        {#each $createFunction.events as id}
-                            <li class="table-row">
-                                <div class="table-col" data-title="id">
-                                    <span class="text">{id}</span>
-                                </div>
-                                <div
-                                    class="table-col u-overflow-visible"
-                                    data-title="options"
-                                    style="--p-col-width:40">
-                                    <button
-                                        class="button is-text is-only-icon"
-                                        aria-label="delete id"
-                                        on:click|preventDefault={() => {
-                                            $createFunction.events = $createFunction.events.filter(
-                                                (item) => item !== id
-                                            );
-                                            $createFunction = $createFunction;
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </button>
-                                </div>
-                            </li>
-                        {/each}
-                    </ul>
-                </div>
-            </div>
-        </div>
+        <TableList>
+            {#each $createFunction.events as id}
+                <li class="table-row">
+                    <TableCellText title="id">
+                        {id}
+                    </TableCellText>
+                    <TableCell showOverflow title="options" width={30}>
+                        <button
+                            class="button is-text is-only-icon"
+                            aria-label="delete id"
+                            on:click|preventDefault={() => {
+                                $createFunction.events = $createFunction.events.filter(
+                                    (item) => item !== id
+                                );
+                                $createFunction = $createFunction;
+                            }}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </button>
+                    </TableCell>
+                </li>
+            {/each}
+        </TableList>
     {:else}
         <Empty isButton single on:click={() => (showCreate = !showCreate)}
             >Add a event to get started</Empty>

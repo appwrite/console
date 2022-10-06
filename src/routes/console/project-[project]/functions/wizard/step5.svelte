@@ -4,6 +4,15 @@
     import Create from '../createVariable.svelte';
     import { DropList, DropListItem, Copy } from '$lib/components';
     import type { Models } from '@aw-labs/appwrite-console';
+    import {
+        Table,
+        TableBody,
+        TableCell,
+        TableCellHead,
+        TableCellText,
+        TableHeader,
+        TableRow
+    } from '$lib/elements/table';
 
     let showCreate = false;
 
@@ -33,26 +42,21 @@
         Create a variable (or secret key) that will be passed to your function at runtime.
     </svelte:fragment>
 
-    <table class="table is-remove-outer-styles">
-        <thead class="table-thead">
-            <tr class="table-row">
-                <th class="table-thead-col">
-                    <span class="eyebrow-heading-3">Key</span>
-                </th>
-                <th class="table-thead-col">
-                    <span class="eyebrow-heading-3">Value</span>
-                </th>
-                <th class="table-thead-col" style="--p-col-width:40" />
-            </tr>
-        </thead>
-        <tbody class="table-tbody">
+    <Table noOuterStyles>
+        <TableHeader>
+            <TableCellHead>Key</TableCellHead>
+            <TableCellHead>Value</TableCellHead>
+            <TableCellHead width={30} />
+        </TableHeader>
+
+        <TableBody>
             {#if $createFunction.vars}
                 {#each $createFunction.vars as variable, i}
-                    <tr class="table-row">
-                        <td class="table-col" data-title="Key">
-                            <span class="text">{variable.key}</span>
-                        </td>
-                        <td class="table-col u-overflow-visible" data-title="value">
+                    <TableRow>
+                        <TableCellText title="key">
+                            {variable.key}
+                        </TableCellText>
+                        <TableCell showOverflow title="value">
                             <div class="interactive-text-output">
                                 {#if showValue[i]}
                                     <span class="text">{variable.value}</span>
@@ -80,8 +84,8 @@
                                     </Copy>
                                 </div>
                             </div>
-                        </td>
-                        <td class="table-col u-overflow-visible" data-title="options">
+                        </TableCell>
+                        <TableCell showOverflow title="options">
                             <DropList
                                 bind:show={showDropdown[i]}
                                 position="bottom"
@@ -115,12 +119,12 @@
                                     </DropListItem>
                                 </svelte:fragment>
                             </DropList>
-                        </td>
-                    </tr>
+                        </TableCell>
+                    </TableRow>
                 {/each}
             {/if}
-        </tbody>
-    </table>
+        </TableBody>
+    </Table>
     <div class="u-flex u-margin-block-start-16">
         <button
             class="button is-text u-padding-inline-0"

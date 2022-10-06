@@ -5,6 +5,7 @@
     import { createFunction } from './store';
     import SelectUsers from '../selectUsers.svelte';
     import SelectTeams from '../selectTeams.svelte';
+    import { TableList, TableCellText, TableCell } from '$lib/elements/table';
 
     let showDropdown = false;
     let showUsers = false;
@@ -30,38 +31,28 @@
 
     ROLE
     {#if $createFunction?.execute?.length}
-        <div class="table-with-scroll">
-            <div class="table-wrapper">
-                <div class="table is-remove-outer-styles">
-                    <ul class="table-thead">
-                        {#each $createFunction.execute as id}
-                            <li class="table-row">
-                                <div class="table-col" data-title="id">
-                                    <span class="text">{id}</span>
-                                </div>
-                                <div
-                                    class="table-col u-overflow-visible"
-                                    data-title="options"
-                                    style="--p-col-width:40">
-                                    <button
-                                        class="button is-text is-only-icon"
-                                        aria-label="delete id"
-                                        on:click|preventDefault={() => {
-                                            $createFunction.execute =
-                                                $createFunction.execute.filter(
-                                                    (item) => item !== id
-                                                );
-                                            $createFunction = $createFunction;
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </button>
-                                </div>
-                            </li>
-                        {/each}
-                    </ul>
-                </div>
-            </div>
-        </div>
+        <TableList>
+            {#each $createFunction.execute as id}
+                <li class="table-row">
+                    <TableCellText title="id">
+                        {id}
+                    </TableCellText>
+                    <TableCell showOverflow title="options" width={40}>
+                        <button
+                            class="button is-text is-only-icon"
+                            aria-label="delete role"
+                            on:click|preventDefault={() => {
+                                $createFunction.execute = $createFunction.execute.filter(
+                                    (item) => item !== id
+                                );
+                                $createFunction = $createFunction;
+                            }}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </button>
+                    </TableCell>
+                </li>
+            {/each}
+        </TableList>
     {:else}
         <Empty isButton single on:click={() => (showDropdown = !showDropdown)}>
             Add a role to get started

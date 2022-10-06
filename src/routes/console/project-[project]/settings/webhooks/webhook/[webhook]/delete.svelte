@@ -6,6 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../../store';
+    import { webhookList } from '../../store';
     import { webhook } from './store';
 
     export let showDelete = false;
@@ -13,6 +14,7 @@
     async function handleDelete() {
         try {
             await sdkForConsole.projects.deleteWebhook($project.$id, $webhook.$id);
+            await webhookList.load($project.$id);
             showDelete = false;
             addNotification({
                 type: 'success',

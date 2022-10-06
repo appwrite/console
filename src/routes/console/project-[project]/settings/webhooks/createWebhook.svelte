@@ -10,6 +10,7 @@
     import { createWebhook } from './wizard/store';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
+    import { webhookList } from './store';
 
     const projectId = $page.params.project;
     const create = async () => {
@@ -23,6 +24,7 @@
                 $createWebhook.httpUser,
                 $createWebhook.httpPass
             );
+            await webhookList.load(projectId);
             addNotification({
                 message: 'Webhook has been created',
                 type: 'success'
