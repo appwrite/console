@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Avatar, CardGrid, Box, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -38,6 +39,7 @@
     let showVerifcationDropdown = false;
 
     onMount(async () => {
+        await user.load($page.params.user);
         prefs = Object.entries($user.prefs);
         if (!prefs?.length) {
             prefs.push(['', '']);
@@ -55,7 +57,7 @@
             await sdkForProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
             $user.emailVerification = !$user.emailVerification;
             addNotification({
-                message: `The account has been ${
+                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.emailVerification ? 'verified' : 'unverified'
                 }`,
                 type: 'success'
@@ -73,7 +75,7 @@
             await sdkForProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             $user.phoneVerification = !$user.phoneVerification;
             addNotification({
-                message: `The account has been ${
+                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.phoneVerification ? 'verified' : 'unverified'
                 }`,
                 type: 'success'
@@ -90,7 +92,9 @@
             await sdkForProject.users.updateStatus($user.$id, !$user.status);
             $user.status = !$user.status;
             addNotification({
-                message: `The account has been ${$user.status ? 'unblocked' : 'blocked'}`,
+                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
+                    $user.status ? 'unblocked' : 'blocked'
+                }`,
                 type: 'success'
             });
         } catch (error) {
@@ -189,7 +193,20 @@
 <Container>
     <CardGrid>
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-            <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
+            {#if $user.email || $user.phone}
+                {#if $user.name}
+                    <Avatar size={48} src={getAvatar($user.name)} name={$user.name} />
+                    <span class="text u-trim">{$user.name}</span>
+                {:else}
+                    <div class="avatar">
+                        <span class="icon-minus-sm" aria-hidden="true" />
+                    </div>
+                {/if}
+            {:else}
+                <div class="avatar">
+                    <span class="icon-anonymous" aria-hidden="true" />
+                </div>
+            {/if}
             <h6 class="heading-level-7">{$user.name}</h6>
         </div>
         <svelte:fragment slot="aside">
@@ -281,7 +298,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={userName === $user.name || !userName} submit>Update</Button>
+                <Button disabled={userName === $user.name} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -301,7 +318,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={userEmail === $user.email || !userEmail} submit>Update</Button>
+                <Button disabled={userEmail === $user.email} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -321,7 +338,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={userPhone === $user.phone || !userPhone} submit>Update</Button>
+                <Button disabled={userPhone === $user.phone} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -439,12 +456,31 @@
         <svelte:fragment slot="aside">
             <Box>
                 <svelte:fragment slot="image">
-                    <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
+                    {#if $user.email || $user.phone}
+                        {#if $user.name}
+                            <Avatar size={48} src={getAvatar($user.name)} name={$user.name} />
+                            <span class="text u-trim">{$user.name}</span>
+                        {:else}
+                            <div class="avatar">
+                                <span class="icon-minus-sm" aria-hidden="true" />
+                            </div>
+                        {/if}
+                    {:else}
+                        <div class="avatar">
+                            <span class="icon-anonymous" aria-hidden="true" />
+                        </div>
+                    {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$user.name}</h6>
+                    <h6 class="u-bold">
+                        {$user.name || $user.email || $user.phone || 'Anonymous'}
+                    </h6>
                 </svelte:fragment>
-                <p>{$user.email}</p>
+                <p>
+                    {$user.email && $user.phone
+                        ? [$user.email, $user.phone].join(',')
+                        : $user.email || $user.phone}
+                </p>
             </Box>
         </svelte:fragment>
 
@@ -453,4 +489,5 @@
         </svelte:fragment>
     </CardGrid>
 </Container>
+
 <DeleteUser bind:showDelete />

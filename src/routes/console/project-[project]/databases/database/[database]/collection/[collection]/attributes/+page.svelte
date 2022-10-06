@@ -18,9 +18,9 @@
     import CreateIndex from '../indexes/createIndex.svelte';
     import Delete from './deleteAttribute.svelte';
     import Overview from './overview.svelte';
+    import { pageLimit } from '$lib/stores/layout';
 
     let offset = 0;
-    const limit = 5;
     let showDropdown = [];
     let selectedAttribute: Attributes = null;
     let showCreate = false;
@@ -112,7 +112,7 @@
         </Table>
         <div class="u-flex common-section u-main-space-between">
             <p class="text">Total results: {$collection?.attributes?.length}</p>
-            <Pagination {limit} bind:offset sum={$collection?.attributes?.length} />
+            <Pagination limit={$pageLimit} bind:offset sum={$collection?.attributes?.length} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

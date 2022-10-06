@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { InputText, Button, Form, FormList } from '$lib/elements/forms';
+    import { Button, Form, FormList } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { Modal, InnerModal } from '$lib/components';
+    import { Modal, CustomId } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
@@ -21,7 +21,7 @@
     let permissions: string[] = [];
     let id: string = null;
     let error: string;
-    let showDropdown = false;
+    let showCustomId = false;
 
     async function create() {
         try {
@@ -33,7 +33,7 @@
             );
             files = null;
             showCreate = false;
-            showDropdown = false;
+            showCustomId = false;
             uploader.addFile(file);
             dispatch('created');
         } catch ({ message }) {
@@ -64,10 +64,6 @@
         id = files = error = null;
         list = new DataTransfer();
         permissions = [];
-    }
-
-    $: if (!showDropdown) {
-        id = null;
     }
 </script>
 
@@ -112,41 +108,16 @@
                 <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
             </div>
 
-            {#if !showDropdown}
+            {#if !showCustomId}
                 <div>
-                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
+                    <Pill button on:click={() => (showCustomId = !showCustomId)}>
                         <span class="icon-pencil" aria-hidden="true" /><span class="text">
                             File ID
                         </span>
                     </Pill>
                 </div>
             {:else}
-                <InnerModal bind:show={showDropdown}>
-                    <svelte:fragment slot="title">File ID</svelte:fragment>
-                    <svelte:fragment slot="subtitle">
-                        Enter a custom file ID. Leave blank for a randomly generated one.
-                    </svelte:fragment>
-                    <svelte:fragment slot="content">
-                        <div class="form">
-                            <InputText
-                                id="id"
-                                label="Custom ID"
-                                showLabel={false}
-                                placeholder="Enter ID"
-                                autofocus={true}
-                                bind:value={id} />
-
-                            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-                                <span
-                                    class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-                                    aria-hidden="true" />
-                                <span class="text u-line-height-1-5"
-                                    >Allowed characters: alphanumeric, hyphen, non-leading
-                                    underscore, period</span>
-                            </div>
-                        </div>
-                    </svelte:fragment>
-                </InnerModal>
+                <CustomId bind:show={showCustomId} name="File" bind:id />
             {/if}
             <p class="heading-level-7">Permissions</p>
             <Permissions bind:permissions />

@@ -17,10 +17,10 @@
     import { wizard } from '$lib/stores/wizard';
     import Create from './createDocument.svelte';
     import { Query } from '@aw-labs/appwrite-console';
+    import { pageLimit } from '$lib/stores/layout';
 
     let offset = 0;
 
-    const limit = 5;
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
 
@@ -79,7 +79,7 @@
 
         <div class="u-flex common-section u-main-space-between">
             <p class="text">Total results: {$documentList.total}</p>
-            <Pagination {limit} bind:offset sum={$documentList.total} />
+            <Pagination limit={$pageLimit} bind:offset sum={$documentList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={openWizard}>

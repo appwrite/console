@@ -180,7 +180,7 @@
                     </div>
                 {:else}
                     <h1 class="heading-level-4">
-                        <span class="text"> {$title}</span>
+                        <span class="text">{$title ? $title : '-'}</span>
                     </h1>
                 {/if}
                 {#if $page.url.pathname.includes('/console/account')}
