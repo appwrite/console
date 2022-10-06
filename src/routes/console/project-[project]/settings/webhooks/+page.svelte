@@ -44,7 +44,7 @@
         </Button>
     </div>
 
-    {#if $webhookList.total}
+    {#if $webhookList?.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>

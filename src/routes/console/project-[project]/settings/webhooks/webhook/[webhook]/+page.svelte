@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { CardGrid, Box } from '$lib/components';
+    import { CardGrid, Box, Secret } from '$lib/components';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -8,6 +8,8 @@
     import { webhook } from './store';
     import { page } from '$app/stores';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    // import Delete from './delete.svelte';
+    import Regenerate from './regenerate.svelte';
 
     const projectId = $page.params.project;
     let name: string = null;
@@ -17,6 +19,7 @@
     let httpPass: string = null;
     let security = false;
     let showDelete = false;
+    let showRegenerate = false;
 
     onMount(async () => {
         name ??= $webhook.name;
@@ -62,7 +65,7 @@
             $webhook.url = url;
             addNotification({
                 type: 'success',
-                message: 'Webhook name has been updated'
+                message: 'Webhook url has been updated'
             });
         } catch (error) {
             addNotification({
@@ -71,9 +74,25 @@
             });
         }
     }
+
+    $: signatureKey = $webhook?.signatureKey;
 </script>
 
 <Container>
+    <CardGrid>
+        <h6 class="heading-level-7">Signature Key</h6>
+        <p>You can use the Signature Key to validate your webhooks.</p>
+        <svelte:fragment slot="aside">
+            <div>
+                <p>Key</p>
+                <Secret bind:value={signatureKey} />
+            </div>
+        </svelte:fragment>
+        <svelte:fragment slot="actions">
+            <Button on:click={() => (showRegenerate = true)} secondary submit
+                >Regenerate Key</Button>
+        </svelte:fragment>
+    </CardGrid>
     <Form on:submit={updateName}>
         <CardGrid>
             <h6 class="heading-level-7">Update Name</h6>
@@ -90,7 +109,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={name === $webhook.name} submit>Update</Button>
+                <Button disabled={name === $webhook.name || !name} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -101,16 +120,16 @@
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputText
-                        id="name"
-                        label="Name"
-                        bind:value={name}
+                        id="url"
+                        label="POST URL"
+                        bind:value={url}
                         required
-                        placeholder="Enter name" />
+                        placeholder="https://example.com/callback" />
                 </FormList>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={name === $webhook.name} submit>Update</Button>
+                <Button disabled={url === $webhook.url || !url} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -134,3 +153,5 @@
         </svelte:fragment>
     </CardGrid>
 </Container>
+
+<Regenerate bind:show={showRegenerate} />
