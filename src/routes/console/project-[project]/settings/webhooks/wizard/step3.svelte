@@ -23,6 +23,7 @@
         <InputPassword
             label="Password"
             id="password"
+            showPasswordButton
             placeholder="Enter password"
             bind:value={$createWebhook.httpPass} />
 

@@ -1,7 +1,14 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { CardGrid, Box, Secret } from '$lib/components';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputText,
+        InputChoice,
+        InputPassword
+    } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -74,6 +81,32 @@
             });
         }
     }
+    async function updateSecurity() {
+        try {
+            await sdkForConsole.projects.updateWebhook(
+                projectId,
+                $webhook.$id,
+                $webhook.name,
+                $webhook.events,
+                $webhook.url,
+                security,
+                httpUser,
+                httpPass
+            );
+            $webhook.security = security;
+            $webhook.httpUser = httpUser;
+            $webhook.httpPass = httpPass;
+            addNotification({
+                type: 'success',
+                message: 'Webhook security has been updated'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
 
     $: signatureKey = $webhook?.signatureKey;
 </script>
@@ -130,6 +163,53 @@
 
             <svelte:fragment slot="actions">
                 <Button disabled={url === $webhook.url || !url} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+    <Form on:submit={updateSecurity}>
+        <CardGrid>
+            <h6 class="heading-level-7">Security</h6>
+            <p class="text">
+                Set an optional basic HTTP authentication username and password to protect your
+                endpoint from unauthorized access.
+            </p>
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <div>
+                        <h2 class="heading-level-7">HTTP Authentication</h2>
+                        <p class="text">Use to secure your endpoint from untrusted sources.</p>
+                    </div>
+                    <InputText
+                        label="User"
+                        id="user"
+                        placeholder="Enter username"
+                        bind:value={httpUser} />
+                    <InputPassword
+                        label="Password"
+                        id="password"
+                        showPasswordButton
+                        placeholder="Enter password"
+                        bind:value={httpPass} />
+
+                    <InputChoice
+                        id="Security"
+                        label="Certificate verification (SSL/TLS)"
+                        bind:value={security}>
+                        <span class="u-error">Warning:</span> Untrusted or self-signed certificates
+                        may not be secure.
+                        <a href="#/" target="_blank" rel="noopener noreferrer" class="link">
+                            Learn more</a
+                        ></InputChoice>
+                </FormList>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button
+                    disabled={httpUser === $webhook.httpUser ||
+                        httpPass === $webhook.httpPass ||
+                        !httpUser ||
+                        !httpPass}
+                    submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
