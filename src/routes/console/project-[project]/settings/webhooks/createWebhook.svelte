@@ -8,13 +8,13 @@
     import { wizard } from '$lib/stores/wizard';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { createWebhook } from './wizard/store';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
 
     const projectId = $page.params.project;
     const create = async () => {
         try {
-            await sdkForProject.projects.createWebhook(
+            await sdkForConsole.projects.createWebhook(
                 projectId,
                 $createWebhook.name,
                 $createWebhook.events,

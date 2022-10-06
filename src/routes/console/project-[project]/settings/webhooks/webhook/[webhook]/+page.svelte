@@ -1,10 +1,136 @@
 <script lang="ts">
-    import { Card } from '$lib/components';
+    import { onMount } from 'svelte';
+    import { CardGrid, Box } from '$lib/components';
+    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { webhook } from './store';
+    import { page } from '$app/stores';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+
+    const projectId = $page.params.project;
+    let name: string = null;
+    let url: string = null;
+    let events = [];
+    let httpUser: string = null;
+    let httpPass: string = null;
+    let security = false;
+    let showDelete = false;
+
+    onMount(async () => {
+        name ??= $webhook.name;
+        url ??= $webhook.url;
+        events = $webhook.events;
+        httpUser ??= $webhook.httpUser;
+        httpPass ??= $webhook.httpPass;
+        security = $webhook.security;
+    });
+
+    async function updateName() {
+        try {
+            await sdkForConsole.projects.updateWebhook(
+                projectId,
+                $webhook.$id,
+                name,
+                $webhook.events,
+                $webhook.url,
+                $webhook.security
+            );
+            $webhook.name = name;
+            addNotification({
+                type: 'success',
+                message: 'Webhook name has been updated'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+    async function updateUrl() {
+        try {
+            await sdkForConsole.projects.updateWebhook(
+                projectId,
+                $webhook.$id,
+                $webhook.name,
+                $webhook.events,
+                url,
+                $webhook.security
+            );
+            $webhook.url = url;
+            addNotification({
+                type: 'success',
+                message: 'Webhook name has been updated'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
 </script>
 
 <Container>
-    <Card>
-        <p>TBD</p>
-    </Card>
+    <Form on:submit={updateName}>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Name</h6>
+            <p>Choose any name that will help you distinguish between Webhooks.</p>
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        bind:value={name}
+                        required
+                        placeholder="Enter name" />
+                </FormList>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={name === $webhook.name} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+    <Form on:submit={updateUrl}>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Url</h6>
+
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        bind:value={name}
+                        required
+                        placeholder="Enter name" />
+                </FormList>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={name === $webhook.name} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+
+    <CardGrid>
+        <div>
+            <h6 class="heading-level-7">Delete Webhook</h6>
+        </div>
+        <p>The webhook will be permanently deleted. This action is irreversible.</p>
+        <svelte:fragment slot="aside">
+            <Box>
+                <svelte:fragment slot="title">
+                    <h6 class="u-bold">{$webhook.name}</h6>
+                </svelte:fragment>
+                <p>Last updated: {toLocaleDateTime($webhook.$updatedAt)}</p>
+            </Box>
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </CardGrid>
 </Container>

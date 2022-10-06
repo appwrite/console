@@ -1,9 +1,12 @@
 <script>
     import { afterNavigate } from '$app/navigation';
+    import { page } from '$app/stores';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
 
     const path = 'settings';
+    const projectId = $page.params.project;
+    let loaded = false;
 
     onMount(handle);
     afterNavigate(handle);
@@ -16,6 +19,10 @@
             breadcrumbs: {
                 title: 'Settings',
                 href: 'settings'
+            },
+            copy: {
+                text: 'Project ID',
+                value: projectId
             },
             tabs: [
                 {
@@ -33,6 +40,7 @@
                 }
             ]
         });
+        loaded = true;
     }
 </script>
 
@@ -40,4 +48,6 @@
     <title>Appwrite - Settings</title>
 </svelte:head>
 
-<slot />
+{#if loaded}
+    <slot />
+{/if}
