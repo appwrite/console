@@ -276,7 +276,7 @@
                     </div>
                     <div
                         class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
-                        <div class="heading-level-4">10</div>
+                        <div class="heading-level-4">XX</div>
                         <div>Realtime Connections</div>
                     </div>
                 </div>
