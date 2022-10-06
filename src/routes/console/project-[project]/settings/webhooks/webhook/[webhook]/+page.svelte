@@ -15,7 +15,7 @@
     import { webhook } from './store';
     import { page } from '$app/stores';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    // import Delete from './delete.svelte';
+    import Delete from './delete.svelte';
     import Regenerate from './regenerate.svelte';
     import { difference } from '$lib/helpers/array';
 
@@ -319,6 +319,7 @@
     </CardGrid>
 </Container>
 
+<Delete bind:showDelete />
 <Regenerate bind:show={showRegenerate} />
 <EventModal
     bind:showCreate={showCreateEvent}
