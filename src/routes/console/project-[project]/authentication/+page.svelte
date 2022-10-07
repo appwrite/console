@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { Empty, Pagination, Avatar, Copy, Search } from '$lib/components';
+    import { Empty, EmptySearch, Pagination, Avatar, Copy, Search } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -35,7 +35,7 @@
 
     $: if (search) offset = 0;
     $: usersList.load(
-        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$internalId')],
+        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
         search
     );
 </script>
@@ -129,21 +129,13 @@
             <Pagination limit={$pageLimit} bind:offset sum={$usersList.total} />
         </div>
     {:else if search}
-        <Empty single>
-            <div class="u-flex u-flex-vertical">
+        <EmptySearch>
+            <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
-                <div class="common-section">
-                    <p>There are no users that match your search.</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-                </div>
+                <p>There are no users that match your search.</p>
             </div>
-        </Empty>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$usersList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$usersList.total} />
-        </div>
+            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+        </EmptySearch>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
             <div

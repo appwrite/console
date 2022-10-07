@@ -5,6 +5,7 @@
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
+        EmptySearch,
         Pagination,
         Avatar,
         Search,
@@ -179,21 +180,13 @@
             <Pagination limit={$pageLimit} bind:offset sum={$files.total} />
         </div>
     {:else if search}
-        <Empty>
-            <div class="u-flex u-flex-vertical">
+        <EmptySearch>
+            <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
-                <div class="common-section">
-                    <p>There are no files that match your search.</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-                </div>
+                <p>There are no files that match your search.</p>
             </div>
-        </Empty>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$files?.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$files?.total} />
-        </div>
+            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+        </EmptySearch>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Upload some files to get started</p>

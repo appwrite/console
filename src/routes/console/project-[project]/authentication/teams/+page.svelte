@@ -11,7 +11,7 @@
         TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Avatar, Search } from '$lib/components';
+    import { Empty, EmptySearch, Pagination, Avatar, Search } from '$lib/components';
     import Create from '../_createTeam.svelte';
     import { goto } from '$app/navigation';
     import { event } from '$lib/actions/analytics';
@@ -34,7 +34,7 @@
 
     $: if (search) offset = 0;
     $: teamsList.load(
-        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$internalId')],
+        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
         search
     );
 </script>
@@ -84,21 +84,13 @@
             <Pagination limit={$pageLimit} bind:offset sum={$teamsList.total} />
         </div>
     {:else if search}
-        <Empty single>
-            <div class="common-section ">
+        <EmptySearch>
+            <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
-            </div>
-            <div class="common-section">
                 <p>There are no teams that match your search.</p>
             </div>
-            <div class="common-section">
-                <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-            </div>
-        </Empty>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$teamsList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$teamsList.total} />
-        </div>
+            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+        </EmptySearch>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
             <div

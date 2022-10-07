@@ -1,6 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Empty, Pagination, Search, DropList, DropListItem } from '$lib/components';
+    import {
+        Empty,
+        EmptySearch,
+        Pagination,
+        Search,
+        DropList,
+        DropListItem
+    } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import {
@@ -140,21 +147,13 @@
             <Pagination limit={$pageLimit} bind:offset sum={$indexList?.total} />
         </div>
     {:else if search}
-        <Empty>
-            <div class="u-flex u-flex-vertical">
+        <EmptySearch>
+            <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
-                <div class="common-section">
-                    <p>There are no indexes that match your search.</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-                </div>
+                <p>There are no indexes that match your search.</p>
             </div>
-        </Empty>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$indexList?.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$indexList?.total} />
-        </div>
+            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+        </EmptySearch>
     {:else if $collection.indexes?.length}
         <Empty isButton single on:click={() => (showCreateIndex = true)}>
             <p>Create your first attribute to get started</p>

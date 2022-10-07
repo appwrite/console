@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1, CardContainer } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -34,9 +34,7 @@
     </div>
 
     {#if $databaseList?.total}
-        <div
-            class="grid-box common-section"
-            style={` --grid-item-size:${$databaseList.total > 3 ? '22rem' : '25rem'};`}>
+        <CardContainer total={$databaseList.total} {offset} on:click={() => (showCreate = true)}>
             {#each $databaseList.databases as database}
                 <GridItem1
                     href={`${base}/console/project-${project}/databases/database/${database.$id}`}>
@@ -48,12 +46,10 @@
                     </Copy>
                 </GridItem1>
             {/each}
-            {#if ($databaseList.total % 2 !== 0 || $databaseList.total % 4 === 0) && $databaseList.total - offset <= $cardLimit}
-                <Empty isButton on:click={() => (showCreate = true)}>
-                    <p>Create a new database</p>
-                </Empty>
-            {/if}
-        </div>
+            <svelte:fragment slot="empty">
+                <p>Create a new database</p>
+            </svelte:fragment>
+        </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$databaseList.total}</p>
