@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Empty, CardContainer, Pagination, Copy, GridItem1 } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './createFunction.svelte';
@@ -15,11 +15,11 @@
     import { beforeNavigate } from '$app/navigation';
     import { Query } from '@aw-labs/appwrite-console';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { cardLimit } from '$lib/stores/layout';
 
     let search = '';
     let offset = 0;
 
-    const limit = 6;
     const project = $page.params.project;
 
     let deployments: Record<string, Models.Deployment> = null;
@@ -35,7 +35,7 @@
         wizard.hide();
     });
 
-    $: functionList.load([Query.limit(6), Query.offset(0)], search);
+    $: functionList.load([Query.limit($cardLimit), Query.offset(offset)], search);
     $: if (search) offset = 0;
 </script>
 
@@ -49,9 +49,7 @@
     </div>
 
     {#if $functionList?.total}
-        <div
-            class="grid-box common-section"
-            style={` --grid-item-size:${$functionList.total > 3 ? '22rem' : '25rem'};`}>
+        <CardContainer total={$functionList.total} {offset} on:click={openWizard}>
             {#each $functionList.functions as func}
                 <GridItem1
                     href={`${base}/console/project-${project}/functions/function/${func.$id}`}>
@@ -101,16 +99,13 @@
                     </Copy>
                 </GridItem1>
             {/each}
-            {#if ($functionList.total % 2 !== 0 || $functionList.total % 4 === 0) && $functionList.total - offset <= limit}
-                <Empty isButton on:click={openWizard}>
-                    <p>Create a new function</p>
-                </Empty>
-            {/if}
-        </div>
-
+            <svelte:fragment slot="empty">
+                <p>Create a new function</p>
+            </svelte:fragment>
+        </CardContainer>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$functionList.total}</p>
-            <Pagination {limit} bind:offset sum={$functionList.total} />
+            <Pagination limit={$cardLimit} bind:offset sum={$functionList.total} />
         </div>
     {:else}
         <Empty isButton on:click={openWizard}>

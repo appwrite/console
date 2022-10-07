@@ -25,9 +25,9 @@
             level: 4,
             breadcrumbs: {
                 title: $webhook.name,
-                href: `settings/webhook/${webhookId}`
+                href: `webhooks/webhook/${webhookId}`
             },
-            back: `${base}/console/project-${projectId}/settings`,
+            back: `${base}/console/project-${projectId}/settings/webhooks`,
             copy: {
                 text: 'Webhook ID',
                 value: webhookId
