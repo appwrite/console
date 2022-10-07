@@ -12,7 +12,6 @@
     import { cardLimit } from '$lib/stores/layout';
 
     let showCreate = false;
-    let search = '';
     let offset = 0;
 
     const project = $page.params.project;
@@ -24,8 +23,7 @@
         );
     };
 
-    $: collections.load(databaseId, [Query.limit($cardLimit), Query.offset(offset)], search);
-    $: if (search) offset = 0;
+    $: collections.load(databaseId, [Query.limit($cardLimit), Query.offset(offset)]);
 </script>
 
 <Container>
@@ -68,22 +66,6 @@
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$collections.total}</p>
             <Pagination limit={$cardLimit} bind:offset sum={$collections.total} />
-        </div>
-    {:else if search}
-        <Empty>
-            <div class="u-flex u-flex-vertical">
-                <b>Sorry, we couldn’t find ‘{search}’</b>
-                <div class="common-section">
-                    <p>There are no collections that match your search.</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-                </div>
-            </div>
-        </Empty>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$collections?.total}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={$collections?.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
