@@ -35,7 +35,7 @@
 
     $: if (search) offset = 0;
     $: usersList.load(
-        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$internalId')],
+        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
         search
     );
 </script>
