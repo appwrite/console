@@ -13,6 +13,7 @@
     import CreateOrganization from '../_createOrganization.svelte';
     import CreateProject from './_createProject.svelte';
     import { cardLimit } from '$lib/stores/layout';
+    import CardContainer from '$lib/components/cardContainer.svelte';
 
     let projects: Models.Project[] = [];
     $: organizationId = $page.params.organization;
@@ -78,11 +79,7 @@
     </div>
 
     {#if $projectList?.total}
-        <ul
-            class="grid-box common-section u-margin-block-start-32"
-            style={`--grid-gap:1.5rem; --grid-item-size:${
-                projects.length > 3 ? '22rem' : '25rem'
-            };`}>
+        <CardContainer total={projects.length} {offset} on:click={() => (showCreate = true)}>
             {#each $projectList.projects as project, index}
                 {#if index >= offset && index < $cardLimit + offset}
                     <GridItem1 href={`${base}/console/project-${project.$id}`}>
@@ -112,12 +109,10 @@
                     </GridItem1>
                 {/if}
             {/each}
-            {#if projects.length < $cardLimit + offset && (projects.length % 2 !== 0 || projects.length % 4 === 0)}
-                <Empty isButton on:click={() => (showCreate = true)}>
-                    <p>Create a new project</p>
-                </Empty>
-            {/if}
-        </ul>
+            <svelte:fragment slot="empty">
+                <p>Create a new project</p>
+            </svelte:fragment>
+        </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {projects.length}</p>

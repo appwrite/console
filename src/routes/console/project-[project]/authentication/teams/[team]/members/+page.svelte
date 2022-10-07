@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Pagination, Empty, Avatar, Search } from '$lib/components';
+    import { Pagination, Empty, EmptySearch, Avatar, Search } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -106,23 +106,13 @@
             <Pagination limit={$pageLimit} bind:offset sum={$memberships.total} />
         </div>
     {:else if search}
-        <Empty>
-            <div class="u-flex u-flex-vertical">
+        <EmptySearch>
+            <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
-                <div class="common-section">
-                    <p>There are no members that match your search.</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-                </div>
+                <p>There are no members that match your search.</p>
             </div>
-        </Empty>
-        <div
-            class="u-flex u-margin-block-start-32
- u-main-space-between">
-            <p class="text">Total results: {$memberships.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$memberships.total} />
-        </div>
+            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+        </EmptySearch>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Add your first member to get started</p>
