@@ -26,7 +26,7 @@
             title: $bucket.name,
             level: 4,
             breadcrumbs: {
-                title: $bucket.name + 'test',
+                title: $bucket.name,
                 href: `storage/bucket/${bucketId}`
             },
             copy: {
