@@ -136,16 +136,14 @@
                 </p>
             </svelte:fragment>
         </CardGrid>
-        <Form>
-            <CardGrid>
-                <h6 class="heading-level-7">API Key Secret</h6>
-                <svelte:fragment slot="aside">
-                    <FormList>
-                        <Secret bind:value={secret} />
-                    </FormList>
-                </svelte:fragment>
-            </CardGrid>
-        </Form>
+
+        <CardGrid>
+            <h6 class="heading-level-7">API Key Secret</h6>
+            <svelte:fragment slot="aside">
+                <Secret bind:value={secret} />
+            </svelte:fragment>
+        </CardGrid>
+
         <Form on:submit={updateName}>
             <CardGrid>
                 <h6 class="heading-level-7">Update Name</h6>
