@@ -14,7 +14,7 @@
         class="card u-grid u-cross-center u-width-full-line dashed"
         class:common-section={single}>
         {#if single}
-            <div class="u-flex u-flex-vertical u-cross-center">
+            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
                 {#if $app.themeInUse === 'dark'}
                     <img src={EmptyDark} alt="create" aria-hidden="true" />
                 {:else}
@@ -38,7 +38,7 @@
 {:else}
     <article class="card u-grid u-cross-center u-width-full-line" class:common-section={single}>
         {#if single}
-            <div class="u-flex u-flex-vertical u-cross-center">
+            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
                 {#if $app.themeInUse === 'dark'}
                     <img src={EmptyDark} alt="create" aria-hidden="true" />
                 {:else}
