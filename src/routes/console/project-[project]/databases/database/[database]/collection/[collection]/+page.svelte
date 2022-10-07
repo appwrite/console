@@ -39,55 +39,62 @@
     function openWizard() {
         wizard.start(Create);
     }
+    $: console.log($collection);
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <h2 class="heading-level-5">Documents</h2>
 
-        <Button on:click={openWizard}>
+        <Button disabled={!$collection?.attributes?.length} on:click={openWizard}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create document</span>
         </Button>
     </div>
 
-    {#if $documentList?.total}
-        <TableScroll>
-            <TableHeader>
-                <TableCellHead>Document ID</TableCellHead>
-                {#each columns as column}
-                    <TableCellHead>{column.title}</TableCellHead>
-                {/each}
-            </TableHeader>
-            <TableBody>
-                {#each $documentList.documents as document}
-                    <TableRowLink
-                        href={`${base}/console/project-${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}>
-                        <TableCell width={230}>
-                            <Copy value={document.$id}>
-                                <Pill button>
-                                    <span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text u-trim-start">{document.$id}</span>
-                                </Pill>
-                            </Copy>
-                        </TableCell>
-                        {#each columns as column}
-                            <TableCell>
-                                {document[column.key] ?? 'n/a'}
+    {#if $collection?.attributes?.length}
+        {#if $documentList?.total}
+            <TableScroll>
+                <TableHeader>
+                    <TableCellHead>Document ID</TableCellHead>
+                    {#each columns as column}
+                        <TableCellHead>{column.title}</TableCellHead>
+                    {/each}
+                </TableHeader>
+                <TableBody>
+                    {#each $documentList.documents as document}
+                        <TableRowLink
+                            href={`${base}/console/project-${projectId}/databases/database/${databaseId}/collection/${$collection.$id}/document/${document.$id}`}>
+                            <TableCell width={230}>
+                                <Copy value={document.$id}>
+                                    <Pill button>
+                                        <span class="icon-duplicate" aria-hidden="true" />
+                                        <span class="text u-trim-start">{document.$id}</span>
+                                    </Pill>
+                                </Copy>
                             </TableCell>
-                        {/each}
-                    </TableRowLink>
-                {/each}
-            </TableBody>
-        </TableScroll>
+                            {#each columns as column}
+                                <TableCell>
+                                    {document[column.key] ?? 'n/a'}
+                                </TableCell>
+                            {/each}
+                        </TableRowLink>
+                    {/each}
+                </TableBody>
+            </TableScroll>
 
-        <div class="u-flex common-section u-main-space-between">
-            <p class="text">Total results: {$documentList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$documentList.total} />
-        </div>
+            <div class="u-flex common-section u-main-space-between">
+                <p class="text">Total results: {$documentList.total}</p>
+                <Pagination limit={$pageLimit} bind:offset sum={$documentList.total} />
+            </div>
+        {:else}
+            <Empty isButton single on:click={openWizard}>
+                <p>Create your first document to get started</p>
+            </Empty>
+        {/if}
     {:else}
-        <Empty isButton single on:click={openWizard}>
-            <p>Crate your first document to get started</p>
+        <Empty single>
+            <p>Create your first attribute to get started</p>
         </Empty>
     {/if}
 </Container>
