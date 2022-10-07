@@ -21,7 +21,10 @@
         await goto(`${base}/console/project-${project}/databases/database/${event.detail.$id}`);
     };
 
-    $: databaseList.load([Query.limit($cardLimit), Query.offset(offset)], search);
+    $: databaseList.load(
+        [Query.limit($cardLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search
+    );
 </script>
 
 <Container>

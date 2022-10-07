@@ -24,7 +24,11 @@
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
 
-    $: documentList.load(databaseId, $collection.$id, [Query.limit(5), Query.offset(offset)]);
+    $: documentList.load(databaseId, $collection.$id, [
+        Query.limit($pageLimit),
+        Query.offset(offset),
+        Query.orderDesc('$createdAt')
+    ]);
     $: columns = [
         ...$collection.attributes.map((attribute) => ({
             key: attribute.key,
