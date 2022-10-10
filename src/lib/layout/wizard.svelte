@@ -4,6 +4,7 @@
         {
             label: string;
             component: typeof SvelteComponent;
+            optional?: boolean;
         }
     >;
 </script>
@@ -70,8 +71,10 @@
 
     <aside class="wizard-side">
         <Steps
-            steps={sortedSteps.map(([, { label }]) => ({
-                text: label
+            on:step={submit}
+            steps={sortedSteps.map(([, { label, optional }]) => ({
+                text: label,
+                optional
             }))}
             {currentStep} />
     </aside>
@@ -87,6 +90,10 @@
             {/each}
             <div class="form-footer">
                 <div class="u-flex u-main-end u-gap-12">
+                    {#if sortedSteps[currentStep - 1][1].optional}
+                        <Button text on:click={() => (isLastStep = true)} submit
+                            >Skip optional steps</Button>
+                    {/if}
                     {#if currentStep === 1}
                         <Button secondary on:click={wizard.hide}>Cancel</Button>
                         <Button submit>Next</Button>

@@ -9,7 +9,7 @@
 <li
     class:steps-item={!isSub}
     class:steps-sub-item={isSub}
-    aria-label={` ${completed ? 'done' : current ? 'current' : ''} step`}>
+    aria-label={`${completed ? 'done' : current ? 'current' : ''} step`}>
     {#if isSub}
         <span class="text">{step.text}</span>
     {:else}
