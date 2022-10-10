@@ -10,15 +10,11 @@
 </script>
 
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
     import { difference } from '$lib/helpers/array';
     import { onDestroy, onMount } from 'svelte';
     import { writable, type Unsubscriber } from 'svelte/store';
-    import { DropList, DropListItem } from '..';
-    import Custom from './custom.svelte';
+    import Actions from './actions.svelte';
     import Row from './row.svelte';
-    import Team from './team.svelte';
-    import User from './user.svelte';
 
     export let withCreate = false;
     export let permissions: string[] = [];
@@ -221,32 +217,11 @@
         </table>
     </div>
 </div>
-<DropList
-    bind:show={showDropdown}
-    position="bottom"
-    horizontal="right"
-    arrow={true}
-    arrowPosition="start">
-    <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
-        <span class="icon-plus" aria-hidden="true" />
-        <span class="text">Add role</span>
-    </Button>
-    <svelte:fragment slot="list">
-        <DropListItem disabled={$groups.has('any')} on:click={() => addRole('any')}>
-            Any
-        </DropListItem>
-        <DropListItem disabled={$groups.has('guests')} on:click={() => addRole('guests')}>
-            All guests
-        </DropListItem>
-        <DropListItem disabled={$groups.has('users')} on:click={() => addRole('users')}>
-            All users
-        </DropListItem>
-        <DropListItem on:click={() => (showUser = true)}>Select users</DropListItem>
-        <DropListItem on:click={() => (showTeam = true)}>Select teams</DropListItem>
-        <DropListItem on:click={() => (showCustom = true)}>Custom permission</DropListItem>
-    </svelte:fragment>
-</DropList>
 
-<User bind:show={showUser} on:create={create} {groups} />
-<Team bind:show={showTeam} on:create={create} {groups} />
-<Custom bind:show={showCustom} on:create={create} {groups} />
+<Actions
+    bind:showCustom
+    bind:showDropdown
+    bind:showTeam
+    bind:showUser
+    {groups}
+    on:create={create} />
