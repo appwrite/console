@@ -63,19 +63,17 @@
                 id="appID"
                 label="Application (client) ID"
                 autofocus={true}
-                autocomplete={false}
                 placeholder="Enter ID"
                 bind:value={provider.id} />
             <InputPassword
                 id="secret"
                 label="Client Secret"
                 placeholder="Enter Client Secret"
-                meter={false}
+                showPasswordButton
                 bind:value={clientSecret} />
             <InputText
                 id="tenant"
                 label="Target Tenant"
-                autocomplete={false}
                 placeholder="'common','organizations','consumers' or your TenantID"
                 bind:value={tenantID} />
             <Alert type="info">

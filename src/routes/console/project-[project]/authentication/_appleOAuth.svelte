@@ -61,21 +61,10 @@
                 id="bundleID"
                 label="Bundle ID"
                 autofocus={true}
-                autocomplete={false}
                 placeholder="com.company.appname"
                 bind:value={provider.id} />
-            <InputText
-                id="keyID"
-                label="Key ID"
-                autocomplete={false}
-                placeholder="SHAB13ROFN"
-                bind:value={keyID} />
-            <InputText
-                id="teamID"
-                label="Team ID"
-                autocomplete={false}
-                placeholder="ELA2CD3AED"
-                bind:value={teamID} />
+            <InputText id="keyID" label="Key ID" placeholder="SHAB13ROFN" bind:value={keyID} />
+            <InputText id="teamID" label="Team ID" placeholder="ELA2CD3AED" bind:value={teamID} />
             <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={p8} />
             <Alert type="info">
                 To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.

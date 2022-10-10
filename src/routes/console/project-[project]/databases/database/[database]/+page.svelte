@@ -23,7 +23,11 @@
         );
     };
 
-    $: collections.load(databaseId, [Query.limit($cardLimit), Query.offset(offset)]);
+    $: collections.load(databaseId, [
+        Query.limit($cardLimit),
+        Query.offset(offset),
+        Query.orderDesc('$createdAt')
+    ]);
 </script>
 
 <Container>

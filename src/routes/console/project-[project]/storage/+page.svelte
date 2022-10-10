@@ -21,7 +21,11 @@
         await goto(`${base}/console/project-${project}/storage/bucket/${event.detail.$id}`);
     };
 
-    $: bucketList.load([Query.limit($cardLimit), Query.offset(offset)]);
+    $: bucketList.load([
+        Query.limit($cardLimit),
+        Query.offset(offset),
+        Query.orderDesc('$createdAt')
+    ]);
 </script>
 
 <Container>

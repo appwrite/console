@@ -79,7 +79,7 @@
     </div>
 
     {#if $projectList?.total}
-        <CardContainer total={projects.length} {offset} on:click={() => (showCreate = true)}>
+        <CardContainer total={$projectList.total} {offset} on:click={() => (showCreate = true)}>
             {#each $projectList.projects as project, index}
                 {#if index >= offset && index < $cardLimit + offset}
                     <GridItem1 href={`${base}/console/project-${project.$id}`}>
@@ -115,8 +115,8 @@
         </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {projects.length}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={projects.length} />
+            <p class="text">Total results: {$projectList.total}</p>
+            <Pagination limit={$cardLimit} bind:offset sum={$projectList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

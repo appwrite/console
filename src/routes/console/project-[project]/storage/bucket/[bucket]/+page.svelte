@@ -72,7 +72,11 @@
         }
     };
 
-    $: files.load(bucket, [Query.limit($pageLimit), Query.offset(offset)], search);
+    $: files.load(
+        bucket,
+        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search
+    );
     $: if (search) offset = 0;
 </script>
 

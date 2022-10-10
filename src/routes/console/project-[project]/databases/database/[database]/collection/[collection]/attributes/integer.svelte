@@ -35,6 +35,10 @@
                 array
             );
             dispatch('created', attribute);
+            addNotification({
+                type: 'success',
+                message: `${key} has been created`
+            });
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -56,7 +60,12 @@
 <InputNumber id="min" label="Min" bind:value={min} readonly={overview} />
 <InputNumber id="max" label="Max" bind:value={max} readonly={overview} />
 
-<InputNumber id="default" label="Default value" bind:value={xdefault} readonly={overview} />
+<InputNumber
+    id="default"
+    label="Default value"
+    bind:value={xdefault}
+    disabled={required}
+    readonly={overview} />
 <InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
     Indicate whether this is a required attribute</InputChoice>
 <InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
