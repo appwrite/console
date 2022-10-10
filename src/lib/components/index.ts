@@ -29,5 +29,7 @@ export { default as Search } from './search.svelte';
 export { default as GridItem1 } from './gridItem1.svelte';
 export { default as Steps } from './steps.svelte';
 export { default as Step } from './step.svelte';
+export { default as Code } from './code.svelte';
+export { default as Json } from './json.svelte';
 export { default as CustomId } from './customId.svelte';
 export { default as Secret } from './secret.svelte';
