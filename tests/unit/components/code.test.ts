@@ -3,6 +3,15 @@ import { fireEvent, render } from '@testing-library/svelte';
 import { vi } from 'vitest';
 import { Code } from '../../../src/lib/components';
 
+test('default props', async () => {
+    const { container } = render(Code, {
+        code: 'console.log("test");',
+        language: 'js'
+    });
+
+    expect(container.querySelector('.controls').children.length).toEqual(0);
+});
+
 test('shows label', async () => {
     const { container } = render(Code, {
         code: 'console.log("test");',

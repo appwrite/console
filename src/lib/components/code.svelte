@@ -11,7 +11,7 @@
     import { Copy } from '.';
 
     export let label: string = null;
-    export let code = '';
+    export let code: string;
     export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json';
     export let showLineNumbers = false;
     export let showCopy = false;
