@@ -3,6 +3,7 @@
     import Prism from 'prismjs';
     import 'prismjs/components/prism-dart';
     import 'prismjs/components/prism-kotlin';
+    import 'prismjs/components/prism-json';
     import 'prismjs/plugins/autoloader/prism-autoloader';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
     import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
