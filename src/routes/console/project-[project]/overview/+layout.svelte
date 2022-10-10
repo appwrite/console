@@ -17,7 +17,7 @@
     $: path = `/console/project-${projectId}/overview`;
 
     let period: UsagePeriods = '30d';
-    let showPeriodBandwith = false;
+    let showPeriodBandwidth = false;
     let showPeriodRequests = false;
 
     onMount(handle);
@@ -61,7 +61,7 @@
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
         usage.load(projectId, period);
-        showPeriodBandwith = false;
+        showPeriodBandwidth = false;
         showPeriodRequests = false;
     }
 
@@ -106,14 +106,14 @@
                                 <div>Bandwidth</div>
                             </div>
                             <DropList
-                                bind:show={showPeriodBandwith}
+                                bind:show={showPeriodBandwidth}
                                 position="bottom"
                                 horizontal="left"
                                 arrowPosition="end"
                                 childStart>
                                 <button
                                     class="transparent-button"
-                                    on:click={() => (showPeriodBandwith = !showPeriodBandwith)}>
+                                    on:click={() => (showPeriodBandwidth = !showPeriodBandwidth)}>
                                     <span class="text">{period}</span>
                                     <span class="icon-cheveron-down" aria-hidden="true" />
                                 </button>
@@ -134,7 +134,7 @@
                             <BarChart
                                 series={[
                                     {
-                                        name: 'Bandwith',
+                                        name: 'Bandwidth',
                                         data: [...network.map((e) => [e.date, e.value])]
                                     }
                                 ]} />
