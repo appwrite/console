@@ -32,7 +32,6 @@
             {id}
             {disabled}
             {required}
-            on:change
             type="checkbox"
             bind:this={element}
             bind:checked={value}
