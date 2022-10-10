@@ -3,6 +3,27 @@ import { fireEvent, render } from '@testing-library/svelte';
 import { vi } from 'vitest';
 import { Code } from '../../../src/lib/components';
 
+test('shows label', async () => {
+    const { container } = render(Code, {
+        code: 'console.log("test");',
+        language: 'js',
+        label: 'My Label'
+    });
+
+    expect(container).toContainHTML('My Label');
+});
+
+test('shows line numbers', async () => {
+    const { container } = render(Code, {
+        code: 'a\nb;\nc;',
+        language: 'js',
+        showLineNumbers: true
+    });
+
+    expect(container.querySelectorAll('.line-numbers').length).toEqual(1);
+    expect(container.querySelectorAll('.line-numbers-rows').length).toEqual(1);
+});
+
 test('shows code highlighted javascript', async () => {
     const { container } = render(Code, {
         code: 'console.log("test");',
@@ -19,7 +40,7 @@ test('shows code highlighted json', async () => {
         code: JSON.stringify({ key: 'value' }),
         language: 'json'
     });
-    console.log(container.innerHTML);
+
     expect(container.querySelectorAll('.token.property').length).toEqual(1);
     expect(container.querySelectorAll('.token.operator').length).toEqual(1);
     expect(container.querySelectorAll('.token.string').length).toEqual(1);
