@@ -10,11 +10,11 @@
     $: usersUsage.load(currentRange);
 
     // TODO: metric type is wrong
-    $: usersCount = $usersUsage.usersCount as unknown as Models.Metric[];
-    $: usersCreate = $usersUsage.usersCreate as unknown as Models.Metric[];
-    $: usersRead = $usersUsage.usersRead as unknown as Models.Metric[];
-    $: usersUpdate = $usersUsage.usersUpdate as unknown as Models.Metric[];
-    $: usersDelete = $usersUsage.usersDelete as unknown as Models.Metric[];
+    $: usersCount = $usersUsage?.usersCount as unknown as Models.Metric[];
+    $: usersCreate = $usersUsage?.usersCreate as unknown as Models.Metric[];
+    $: usersRead = $usersUsage?.usersRead as unknown as Models.Metric[];
+    $: usersUpdate = $usersUsage?.usersUpdate as unknown as Models.Metric[];
+    $: usersDelete = $usersUsage?.usersDelete as unknown as Models.Metric[];
 
     function last(set: Array<unknown>): Models.Metric | null {
         return (set as Models.Metric[]).slice(-1)[0] ?? null;
@@ -56,76 +56,78 @@
             </li>
         </ul>
     </div>
-    <Card>
-        {#if usersCount}
-            <h6 class="heading-level-6">{last(usersCount).value}</h6>
-            <p>Registered users</p>
-            <div class="u-margin-block-start-16" />
-            <BarChart
-                series={[
-                    {
-                        name: 'User',
-                        data: [...usersCount.map((e) => [e.date, e.value])]
-                    }
-                ]} />
-        {/if}
-    </Card>
-    <Tiles>
-        <Card isTile>
-            {#if usersCreate}
-                <h6 class="heading-level-6">{total(usersCreate)}</h6>
-                <p>Users created</p>
+    {#if $usersUsage}
+        <Card>
+            {#if usersCount}
+                <h6 class="heading-level-6">{last(usersCount).value}</h6>
+                <p>Registered users</p>
                 <div class="u-margin-block-start-16" />
-                <LineChart
+                <BarChart
                     series={[
                         {
-                            name: 'Create',
-                            data: [...usersCreate.map((e) => [e.date, e.value])]
+                            name: 'User',
+                            data: [...usersCount.map((e) => [e.date, e.value])]
                         }
                     ]} />
             {/if}
         </Card>
-        <Card isTile>
-            {#if usersRead}
-                <h6 class="heading-level-6">{total(usersRead)}</h6>
-                <p>Users read</p>
-                <div class="u-margin-block-start-16" />
-                <LineChart
-                    series={[
-                        {
-                            name: 'Read',
-                            data: [...usersRead.map((e) => [e.date, e.value])]
-                        }
-                    ]} />
-            {/if}
-        </Card>
-        <Card isTile>
-            {#if usersUpdate}
-                <h6 class="heading-level-6">{total(usersUpdate)}</h6>
-                <p>Users updated</p>
-                <div class="u-margin-block-start-16" />
-                <LineChart
-                    series={[
-                        {
-                            name: 'Update',
-                            data: [...usersUpdate.map((e) => [e.date, e.value])]
-                        }
-                    ]} />
-            {/if}
-        </Card>
-        <Card isTile>
-            {#if usersDelete}
-                <h6 class="heading-level-6">{total(usersDelete)}</h6>
-                <p>Users deleted</p>
-                <div class="u-margin-block-start-16" />
-                <LineChart
-                    series={[
-                        {
-                            name: 'Delete',
-                            data: [...usersDelete.map((e) => [e.date, e.value])]
-                        }
-                    ]} />
-            {/if}
-        </Card>
-    </Tiles>
+        <Tiles>
+            <Card isTile>
+                {#if usersCreate}
+                    <h6 class="heading-level-6">{total(usersCreate)}</h6>
+                    <p>Users created</p>
+                    <div class="u-margin-block-start-16" />
+                    <LineChart
+                        series={[
+                            {
+                                name: 'Create',
+                                data: [...usersCreate.map((e) => [e.date, e.value])]
+                            }
+                        ]} />
+                {/if}
+            </Card>
+            <Card isTile>
+                {#if usersRead}
+                    <h6 class="heading-level-6">{total(usersRead)}</h6>
+                    <p>Users read</p>
+                    <div class="u-margin-block-start-16" />
+                    <LineChart
+                        series={[
+                            {
+                                name: 'Read',
+                                data: [...usersRead.map((e) => [e.date, e.value])]
+                            }
+                        ]} />
+                {/if}
+            </Card>
+            <Card isTile>
+                {#if usersUpdate}
+                    <h6 class="heading-level-6">{total(usersUpdate)}</h6>
+                    <p>Users updated</p>
+                    <div class="u-margin-block-start-16" />
+                    <LineChart
+                        series={[
+                            {
+                                name: 'Update',
+                                data: [...usersUpdate.map((e) => [e.date, e.value])]
+                            }
+                        ]} />
+                {/if}
+            </Card>
+            <Card isTile>
+                {#if usersDelete}
+                    <h6 class="heading-level-6">{total(usersDelete)}</h6>
+                    <p>Users deleted</p>
+                    <div class="u-margin-block-start-16" />
+                    <LineChart
+                        series={[
+                            {
+                                name: 'Delete',
+                                data: [...usersDelete.map((e) => [e.date, e.value])]
+                            }
+                        ]} />
+                {/if}
+            </Card>
+        </Tiles>
+    {/if}
 </Container>
