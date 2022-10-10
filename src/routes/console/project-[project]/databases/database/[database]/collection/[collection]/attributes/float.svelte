@@ -35,6 +35,10 @@
                 array
             );
             dispatch('created', attribute);
+            addNotification({
+                type: 'success',
+                message: `${key} has been created`
+            });
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -60,6 +64,7 @@
     id="default"
     label="Default value"
     bind:value={xdefault}
+    disabled={required}
     readonly={overview}
     step="any" />
 <InputChoice id="required" label="Required" bind:value={required} disabled={overview}>

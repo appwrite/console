@@ -2,26 +2,29 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1, CardContainer } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { databaseList } from './store';
+    import { cardLimit } from '$lib/stores/layout';
 
     let showCreate = false;
     let search = '';
     let offset = 0;
 
-    const limit = 6;
     const project = $page.params.project;
     const handleCreate = async (event: CustomEvent<Models.Database>) => {
         showCreate = false;
         await goto(`${base}/console/project-${project}/databases/database/${event.detail.$id}`);
     };
 
-    $: databaseList.load([Query.limit(limit), Query.offset(offset)], search);
+    $: databaseList.load(
+        [Query.limit($cardLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search
+    );
 </script>
 
 <Container>
@@ -34,9 +37,7 @@
     </div>
 
     {#if $databaseList?.total}
-        <div
-            class="grid-box common-section"
-            style={` --grid-item-size:${$databaseList.total > 3 ? '22rem' : '25rem'};`}>
+        <CardContainer total={$databaseList.total} {offset} on:click={() => (showCreate = true)}>
             {#each $databaseList.databases as database}
                 <GridItem1
                     href={`${base}/console/project-${project}/databases/database/${database.$id}`}>
@@ -48,16 +49,14 @@
                     </Copy>
                 </GridItem1>
             {/each}
-            {#if ($databaseList.total % 2 !== 0 || $databaseList.total % 4 === 0) && $databaseList.total - offset <= limit}
-                <Empty isButton on:click={() => (showCreate = true)}>
-                    <p>Create a new database</p>
-                </Empty>
-            {/if}
-        </div>
+            <svelte:fragment slot="empty">
+                <p>Create a new database</p>
+            </svelte:fragment>
+        </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$databaseList.total}</p>
-            <Pagination {limit} bind:offset sum={$databaseList.total} />
+            <Pagination limit={$cardLimit} bind:offset sum={$databaseList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1, CardContainer } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -10,10 +10,9 @@
     import { base } from '$app/paths';
     import { bucketList } from './store';
     import { tooltip } from '$lib/actions/tooltip';
-    import { pageLimit } from '$lib/stores/layout';
+    import { cardLimit } from '$lib/stores/layout';
 
     let showCreate = false;
-    let search = '';
     let offset = 0;
 
     const project = $page.params.project;
@@ -22,8 +21,11 @@
         await goto(`${base}/console/project-${project}/storage/bucket/${event.detail.$id}`);
     };
 
-    $: bucketList.load([Query.limit($pageLimit), Query.offset(offset)], search);
-    $: if (search) offset = 0;
+    $: bucketList.load([
+        Query.limit($cardLimit),
+        Query.offset(offset),
+        Query.orderDesc('$createdAt')
+    ]);
 </script>
 
 <Container>
@@ -36,11 +38,7 @@
     </div>
 
     {#if $bucketList?.total}
-        <ul
-            class="grid-box common-section u-margin-block-start-32"
-            style={`--grid-gap:2rem; --grid-item-size:${
-                $bucketList.total > 3 ? '22rem' : '25rem'
-            };`}>
+        <CardContainer total={$bucketList.total} {offset} on:click={() => (showCreate = true)}>
             {#each $bucketList.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket/${bucket.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
@@ -81,32 +79,14 @@
                     </svelte:fragment>
                 </GridItem1>
             {/each}
-            {#if $bucketList.total % 2 !== 0}
-                <Empty isButton on:click={() => (showCreate = true)}>
-                    <p>Add a new bucket</p>
-                </Empty>
-            {/if}
-        </ul>
+            <svelte:fragment slot="empty">
+                <p>Add a new bucket</p>
+            </svelte:fragment>
+        </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$bucketList.total} />
-        </div>
-    {:else if search}
-        <Empty>
-            <div class="u-flex u-flex-vertical">
-                <b>Sorry, we couldn’t find ‘{search}’</b>
-                <div class="common-section">
-                    <p>There are no buckets that match your search.</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-                </div>
-            </div>
-        </Empty>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$bucketList?.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$bucketList?.total} />
+            <Pagination limit={$cardLimit} bind:offset sum={$bucketList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

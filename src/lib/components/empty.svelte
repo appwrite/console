@@ -1,5 +1,6 @@
 <script lang="ts">
     import { app } from '$lib/stores/app';
+    import { Button } from '$lib/elements/forms';
     import EmptyLight from '$lib/images/empty-light.svg';
     import EmptyDark from '$lib/images/empty-dark.svg';
 
@@ -12,17 +13,48 @@
         on:click
         class="card u-grid u-cross-center u-width-full-line dashed"
         class:common-section={single}>
-        <div class="u-flex u-flex-vertical u-cross-center">
-            {#if $app.themeInUse === 'dark'}
-                <img src={EmptyDark} alt="create" aria-hidden="true" />
-            {:else}
-                <img src={EmptyLight} alt="create" aria-hidden="true" />
-            {/if}
-            <slot />
-        </div>
+        {#if single}
+            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
+                {#if $app.themeInUse === 'dark'}
+                    <img src={EmptyDark} alt="create" aria-hidden="true" />
+                {:else}
+                    <img src={EmptyLight} alt="create" aria-hidden="true" />
+                {/if}
+                <slot />
+            </div>
+        {:else}
+            <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                <div class="common-section">
+                    <Button secondary round>
+                        <i class="icon-plus" />
+                    </Button>
+                </div>
+                <div class="common-section">
+                    <slot />
+                </div>
+            </div>
+        {/if}
     </button>
 {:else}
     <article class="card u-grid u-cross-center u-width-full-line" class:common-section={single}>
-        <slot />
+        {#if single}
+            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
+                {#if $app.themeInUse === 'dark'}
+                    <img src={EmptyDark} alt="create" aria-hidden="true" />
+                {:else}
+                    <img src={EmptyLight} alt="create" aria-hidden="true" />
+                {/if}
+                <slot />
+            </div>
+        {:else}
+            <div class="common-section u-main-center u-flex">
+                <Button secondary round>
+                    <i class="icon-plus" />
+                </Button>
+            </div>
+            <div class="common-section">
+                <slot />
+            </div>
+        {/if}
     </article>
 {/if}

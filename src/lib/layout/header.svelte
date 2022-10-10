@@ -37,9 +37,9 @@
             href="https://appwrite.io/support"
             target="_blank"
             rel="noopener noreferrer"
-            class="button is-small is-text u-margin-inline-end-16"
-            ><span class="text">Support</span></a>
-        <button class="button is-small is-secondary"><span class="text">Upgrade</span></button>
+            class="button is-small is-text">
+            <span class="text">Support</span>
+        </a>
     </nav>
     <nav class="user-profile">
         {#if $user}

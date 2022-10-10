@@ -5,6 +5,7 @@
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
+        EmptySearch,
         Pagination,
         Avatar,
         Search,
@@ -71,7 +72,11 @@
         }
     };
 
-    $: files.load(bucket, [Query.limit($pageLimit), Query.offset(offset)], search);
+    $: files.load(
+        bucket,
+        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search
+    );
     $: if (search) offset = 0;
 </script>
 
@@ -85,9 +90,9 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
-                <TableCellHead>Type</TableCellHead>
-                <TableCellHead>Size</TableCellHead>
-                <TableCellHead>Date Created</TableCellHead>
+                <TableCellHead width={140}>Type</TableCellHead>
+                <TableCellHead width={100}>Size</TableCellHead>
+                <TableCellHead width={120}>Date Created</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -95,11 +100,13 @@
                     {#if file.chunksTotal / file.chunksUploaded !== 1}
                         <TableRow>
                             <TableCell title="Name">
-                                <div class="u-flex u-gap-12">
-                                    <div class="avatar is-color-empty" />
+                                <div class="u-flex u-gap-12 u-main-space-between">
+                                    <span class="avatar is-size-small is-color-empty" />
 
                                     <span class="text u-trim"> {file.name}</span>
-                                    <Pill warning>Pending</Pill>
+                                    <div>
+                                        <Pill warning>Pending</Pill>
+                                    </div>
                                 </div>
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
@@ -112,9 +119,7 @@
                                     <button
                                         class="button is-only-icon is-text"
                                         aria-label="Delete item"
-                                        on:click|preventDefault={() => {
-                                            console.log('Feel refreshed?');
-                                        }}>
+                                        on:click|preventDefault>
                                         <span class="icon-refresh" aria-hidden="true" />
                                     </button>
                                     <button
@@ -179,21 +184,13 @@
             <Pagination limit={$pageLimit} bind:offset sum={$files.total} />
         </div>
     {:else if search}
-        <Empty>
-            <div class="u-flex u-flex-vertical">
+        <EmptySearch>
+            <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{search}’</b>
-                <div class="common-section">
-                    <p>There are no files that match your search.</p>
-                </div>
-                <div class="common-section">
-                    <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-                </div>
+                <p>There are no files that match your search.</p>
             </div>
-        </Empty>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$files?.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$files?.total} />
-        </div>
+            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+        </EmptySearch>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Upload some files to get started</p>

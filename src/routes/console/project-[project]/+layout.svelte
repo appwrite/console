@@ -52,15 +52,15 @@
         if (sdkForProject.client.config.project !== projectId) {
             setProject(projectId);
         }
+
+        const promiseProject = project.load(projectId);
         if ($project?.$id !== projectId) {
-            await project.load(projectId);
+            await promiseProject;
+
+            const promiseOrganization = organization.load($project.teamId);
             if ($organization?.$id !== $project?.teamId) {
-                await organization.load($project.teamId);
-            } else {
-                organization.load($project.teamId);
+                await promiseOrganization;
             }
-        } else {
-            project.load(projectId);
         }
 
         updateLayout({
@@ -74,7 +74,7 @@
                     level: 0
                 },
                 {
-                    href: `project-${$project.$id}/overview`,
+                    href: `project-${$project.$id}`,
                     title: $project.name
                 }
             ]

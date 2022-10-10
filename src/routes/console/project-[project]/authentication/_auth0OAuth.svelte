@@ -60,19 +60,17 @@
                 id="clientID"
                 label="Client ID"
                 autofocus={true}
-                autocomplete={false}
                 placeholder="Enter ID"
                 bind:value={provider.id} />
             <InputPassword
                 id="secret"
                 label="Client Secret"
                 placeholder="Enter Client Secret"
-                meter={false}
+                showPasswordButton
                 bind:value={clientSecret} />
             <InputText
                 id="domain"
                 label="Auth0 Domain"
-                autocomplete={false}
                 placeholder="Your Auth0 domain"
                 bind:value={auth0Domain} />
             <Alert type="info">

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { updateLayout } from '$lib/stores/layout';
+    import { pageLimit, updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import {
@@ -21,10 +21,15 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
+        const promises = Promise.all([
+            organization.load(organizationId),
+            memberList.load(organizationId, [Query.limit($pageLimit)])
+        ]);
+
         if ($organization?.$id !== organizationId) {
-            await organization.load(organizationId);
-            await memberList.load(organizationId, [Query.limit(12)]);
+            await promises;
         }
+
         updateLayout({
             navigate: event,
             title: $organization?.name,

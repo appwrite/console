@@ -75,3 +75,4 @@ export function updateLayout(args: updateLayoutArguments) {
 }
 
 export const pageLimit = readable(12); // default page limit
+export const cardLimit = readable(6); // default page limit

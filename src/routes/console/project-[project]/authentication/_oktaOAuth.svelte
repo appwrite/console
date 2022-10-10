@@ -61,25 +61,22 @@
                 id="appID"
                 label="Client ID"
                 autofocus={true}
-                autocomplete={false}
                 placeholder="Enter ID"
                 bind:value={provider.id} />
             <InputPassword
                 id="secret"
                 label="Client Secret"
                 placeholder="Enter Client Secret"
-                meter={false}
+                showPasswordButton
                 bind:value={clientSecret} />
             <InputText
                 id="domain"
                 label="Okta Domain"
-                autocomplete={false}
                 placeholder="dev-1337.okta.com"
                 bind:value={oktaDomain} />
             <InputText
                 id="serverID"
                 label="Authorization Server ID"
-                autocomplete={false}
                 placeholder="default"
                 bind:value={authorizationServerId} />
 
