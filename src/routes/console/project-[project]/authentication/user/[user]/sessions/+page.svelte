@@ -91,19 +91,13 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <p>No session available</p>
-                </div>
-                <div class="common-section">
-                    <Button
-                        external
-                        secondary
-                        href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetSessions"
-                        >Documentation</Button>
-                </div>
-            </div>
+        <Empty single>
+            <p>No session available</p>
+            <Button
+                external
+                secondary
+                href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetSessions"
+                >Documentation</Button>
         </Empty>
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">

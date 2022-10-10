@@ -77,19 +77,13 @@
                 </TableBody>
             </Table>
         {:else}
-            <Empty>
-                <div class="u-flex u-flex-vertical u-cross-center">
-                    <div class="common-section">
-                        <p>No memberships available</p>
-                    </div>
-                    <div class="common-section">
-                        <Button
-                            external
-                            secondary
-                            href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetMemberships"
-                            >Documentation</Button>
-                    </div>
-                </div>
+            <Empty single>
+                <p>No memberships available</p>
+                <Button
+                    external
+                    secondary
+                    href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetMemberships"
+                    >Documentation</Button>
             </Empty>
         {/if}
         <div

@@ -23,7 +23,7 @@
                 <slot />
             </div>
         {:else}
-            <div class="u-flex u-cross-center u-flex-vertical">
+            <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
                 <div class="common-section">
                     <Button secondary round>
                         <i class="icon-plus" />
@@ -47,7 +47,7 @@
                 <slot />
             </div>
         {:else}
-            <div class="common-section">
+            <div class="common-section u-main-center u-flex">
                 <Button secondary round>
                     <i class="icon-plus" />
                 </Button>

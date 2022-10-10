@@ -39,7 +39,6 @@
     function openWizard() {
         wizard.start(Create);
     }
-    $: console.log($collection);
 </script>
 
 <Container>
