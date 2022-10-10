@@ -196,7 +196,7 @@
             {#if $user.email || $user.phone}
                 {#if $user.name}
                     <Avatar size={48} src={getAvatar($user.name)} name={$user.name} />
-                    <span class="text u-trim">{$user.name}</span>
+                    <h6 class="heading-level-7">{$user.name}</h6>
                 {:else}
                     <div class="avatar">
                         <span class="icon-minus-sm" aria-hidden="true" />
@@ -207,7 +207,6 @@
                     <span class="icon-anonymous" aria-hidden="true" />
                 </div>
             {/if}
-            <h6 class="heading-level-7">{$user.name}</h6>
         </div>
         <svelte:fragment slot="aside">
             <div class="u-flex u-main-space-between">
@@ -459,7 +458,6 @@
                     {#if $user.email || $user.phone}
                         {#if $user.name}
                             <Avatar size={48} src={getAvatar($user.name)} name={$user.name} />
-                            <span class="text u-trim">{$user.name}</span>
                         {:else}
                             <div class="avatar">
                                 <span class="icon-minus-sm" aria-hidden="true" />

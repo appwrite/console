@@ -24,9 +24,13 @@
                 id ? id : 'unique()',
                 name
             );
-            name = id = null;
             showCreate = false;
             dispatch('created', collection);
+            addNotification({
+                type: 'success',
+                message: `${name} has been created`
+            });
+            name = id = null;
         } catch (error) {
             addNotification({
                 type: 'error',

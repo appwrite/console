@@ -1,10 +1,12 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { bucket } from './store';
 
+    const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
     const path = `storage/bucket/${bucketId}`;
 
@@ -25,12 +27,14 @@
             level: 4,
             breadcrumbs: {
                 title: $bucket.name,
-                href: `bucket/${bucketId}`
+                href: `storage/bucket/${bucketId}`
             },
             copy: {
                 text: 'Bucket ID',
                 value: bucketId
             },
+            back: `${base}/console/project-${projectId}/storage`,
+
             tabs: [
                 {
                     href: path,
