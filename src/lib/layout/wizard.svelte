@@ -13,18 +13,29 @@
     import { Button, Form } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import { createEventDispatcher, type SvelteComponent } from 'svelte';
+    import WizardExitModal from './wizardExitModal.svelte';
 
     export let title: string;
     export let steps: WizardStepsType;
+    export let confirmExit = false;
     export let finalAction = 'Create';
 
     const dispatch = createEventDispatcher();
 
     let currentStep = 1;
+    let showExitModal = false;
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
             event.preventDefault();
+            wizard.hide();
+        }
+    }
+
+    function handleExit() {
+        if (confirmExit) {
+            showExitModal = true;
+        } else {
             wizard.hide();
         }
     }
@@ -52,7 +63,7 @@
         <div class="body-text-1">{title}</div>
 
         <slot name="header" />
-        <button class="x-button" aria-label="close wizard" on:click={wizard.hide}>
+        <button class="x-button" aria-label="close wizard" on:click={handleExit}>
             <span class="icon-x" aria-hidden="true" />
         </button>
     </header>
@@ -91,3 +102,9 @@
         </Form>
     </div>
 </section>
+
+{#if showExitModal}
+    <WizardExitModal bind:show={showExitModal} on:exit={() => wizard.hide()}>
+        <slot name="exit">this process</slot>
+    </WizardExitModal>
+{/if}

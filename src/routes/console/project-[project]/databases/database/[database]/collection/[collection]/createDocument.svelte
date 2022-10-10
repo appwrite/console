@@ -76,4 +76,4 @@
     });
 </script>
 
-<Wizard title="Create document" steps={stepsComponents} on:finish={create} />
+<Wizard confirmExit title="Create document" steps={stepsComponents} on:finish={create} />
