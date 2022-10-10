@@ -1,4 +1,12 @@
 <script lang="ts">
+    import {
+        Table,
+        TableBody,
+        TableCellHead,
+        TableCellText,
+        TableHeader,
+        TableRow
+    } from '$lib/elements/table';
     import { difference } from '$lib/helpers/array';
     import { onDestroy, onMount } from 'svelte';
     import { writable, type Unsubscriber } from 'svelte/store';
@@ -63,41 +71,32 @@
     }
 </script>
 
-<div class="table-with-scroll">
-    <div class="table-wrapper">
-        <table class="table is-table-layout-auto is-remove-outer-styles">
-            <thead class="table-thead">
-                <tr class="table-row">
-                    <th class="table-thead-col">
-                        <span class="eyebrow-heading-3">Role</span>
-                    </th>
-                    <th class="table-thead-col" style="--p-col-width:40" />
-                </tr>
-            </thead>
-            <tbody class="table-tbody">
-                {#each [...$groups.keys()] as role}
-                    <tr class="table-row">
-                        <td class="table-col" data-title="Role">
-                            <Row {role} />
-                        </td>
-
-                        <td class="table-col u-overflow-visible">
-                            <div class="u-flex">
-                                <button
-                                    class="button is-text is-only-icon"
-                                    type="button"
-                                    aria-label="delete"
-                                    on:click={() => deleteRole(role)}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                {/each}
-            </tbody>
-        </table>
-    </div>
-</div>
+<Table noMargin noStyles noMobile>
+    <TableHeader>
+        <TableCellHead>Role</TableCellHead>
+        <TableCellHead width={40} />
+    </TableHeader>
+    <TableBody>
+        {#each [...$groups.keys()] as role}
+            <TableRow>
+                <TableCellText title="Role">
+                    <Row {role} />
+                </TableCellText>
+                <TableCellText title="Remove">
+                    <div class="u-flex">
+                        <button
+                            class="button is-text is-only-icon"
+                            type="button"
+                            aria-label="delete"
+                            on:click={() => deleteRole(role)}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </button>
+                    </div>
+                </TableCellText>
+            </TableRow>
+        {/each}
+    </TableBody>
+</Table>
 
 <Actions
     bind:showCustom
