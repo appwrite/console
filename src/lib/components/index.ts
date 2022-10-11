@@ -33,5 +33,6 @@ export { default as Code } from './code.svelte';
 export { default as Json } from './json.svelte';
 export { default as CustomId } from './customId.svelte';
 export { default as Secret } from './secret.svelte';
+export { default as Trim } from './trim.svelte';
 export { default as Tabs } from './tabs.svelte';
 export { default as Tab } from './tab.svelte';
