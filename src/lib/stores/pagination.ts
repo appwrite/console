@@ -21,7 +21,7 @@ export function createPersistenPagination(limit: number) {
 
         let target = pathname;
 
-        const hasParams = Array.from(searchParams.keys()).length > 0;
+        const hasParams = searchParams.toString() !== '';
 
         if (hasParams) {
             target += `?${searchParams.toString()}`;
