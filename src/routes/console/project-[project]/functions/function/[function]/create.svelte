@@ -37,7 +37,8 @@
         <svelte:fragment slot="header">Create Deployment</svelte:fragment>
         <Tabs>
             <Tab on:click={() => (mode = 'cli')} selected={mode === 'cli'}>CLI</Tab>
-            <Tab on:click={() => (mode = 'github')} selected={mode === 'github'}>GitHub</Tab>
+            <Tab on:click={() => (mode = 'github')} selected={mode === 'github'}
+                >GitHub - Soon!</Tab>
             <Tab on:click={() => (mode = 'manual')} selected={mode === 'manual'}>Manual</Tab>
         </Tabs>
         {#if mode === 'cli'}
@@ -70,7 +71,7 @@
                     id="entrypoint"
                     bind:value={entrypoint}
                     required />
-                <InputFile label="Gzipped code (tar.gz)" bind:value={code} required />
+                <!-- <InputFile label="Gzipped code (tar.gz)" id="file" required /> -->
                 <InputChoice
                     label="Activate Deployment after build"
                     id="activate"
