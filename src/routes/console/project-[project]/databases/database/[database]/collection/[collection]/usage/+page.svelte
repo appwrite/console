@@ -20,6 +20,7 @@
 </script>
 
 <Usage
+    title="Documents"
     bind:range
     {count}
     {created}

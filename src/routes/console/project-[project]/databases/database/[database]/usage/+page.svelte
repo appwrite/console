@@ -19,6 +19,7 @@
 </script>
 
 <Usage
+    title="Collections"
     bind:range
     {count}
     {created}

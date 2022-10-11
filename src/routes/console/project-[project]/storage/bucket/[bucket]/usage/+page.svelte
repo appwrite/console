@@ -19,6 +19,7 @@
 </script>
 
 <Usage
+    title="Files"
     bind:range
     {count}
     {created}
