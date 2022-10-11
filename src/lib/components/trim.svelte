@@ -44,6 +44,6 @@
 
 <svelte:window on:resize={throttle(setTooltip, 250)} />
 
-<span bind:this={data} class="text u-trim">
+<span bind:this={data} class="text u-trim" title={data?.innerText}>
     <slot />
 </span>
