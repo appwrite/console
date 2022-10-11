@@ -42,9 +42,18 @@ export function createPersistenPagination(limit: number) {
     };
 
     afterNavigate(({ type, to }) => {
+        const target = +(to.url.searchParams.get('page') ?? 1);
+
+        /**
+         * Listens to back/forward of the browser.
+         */
         if (type === 'popstate') {
-            const target = +(to.url.searchParams.get('page') ?? 1);
+            /**
+             * Keep the history state of the browser.
+             */
             keepHistory = true;
+            set(target * limit - limit);
+        } else if (type === 'link') {
             set(target * limit - limit);
         }
     });
