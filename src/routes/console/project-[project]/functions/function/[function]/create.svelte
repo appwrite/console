@@ -1,14 +1,15 @@
 <script lang="ts">
-    import { InputSwitch, Button, InputFile, InputText, Form } from '$lib/elements/forms';
-    import { Modal } from '$lib/components';
+    import { InputChoice, Button, InputFile, InputText, Form } from '$lib/elements/forms';
+    import { Modal, Collapsible, CollapsibleItem } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
+    import FormList from '$lib/elements/forms/formList.svelte';
 
     export let showCreate = false;
 
-    let showCli = true;
+    let mode: 'cli' | 'github' | 'manual' = 'cli';
     let entrypoint: string;
     let code: FileList;
     let active: boolean;
@@ -32,38 +33,81 @@
 </script>
 
 <Form noMargin on:submit={create}>
-    <Modal bind:show={showCreate}>
+    <Modal size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Deployment</svelte:fragment>
-        <ul class="tabs">
-            <li class="tabs-item">
-                <span
-                    class="tabs-button"
-                    on:click={() => (showCli = true)}
-                    class:is-selected={showCli}>
-                    <span class="text">Files</span>
-                </span>
-            </li>
-            <li class="tabs-item">
-                <span
-                    class="tabs-button"
-                    on:click={() => (showCli = false)}
-                    class:is-selected={!showCli}>
-                    <span class="text">Usage</span>
-                </span>
-            </li>
-        </ul>
-        {#if showCli}
-            <p>Unix</p>
-            <p>Powershell</p>
-            <p>Learn more about creating deployments, installing and using the Appwrite CLI.</p>
-        {:else}
-            <InputText id="entrypoint" label="Entrypoint" bind:value={entrypoint} required />
-            <InputFile id="file" label="File" bind:files={code} required />
-            <InputSwitch id="active" label="Activate Deployment after build" bind:value={active} />
+        <div class="tabs">
+            <ul class="tabs-list">
+                <li class="tabs-item">
+                    <span
+                        class="tabs-button"
+                        on:click={() => (mode = 'cli')}
+                        class:is-selected={mode === 'cli'}>
+                        <span class="text">CLI</span>
+                    </span>
+                </li>
+                <li class="tabs-item">
+                    <span
+                        class="tabs-button"
+                        on:click={() => (mode = 'github')}
+                        class:is-selected={mode === 'github'}>
+                        <span class="text">GitHub - Soon!</span>
+                    </span>
+                </li>
+                <li class="tabs-item">
+                    <span
+                        class="tabs-button"
+                        on:click={() => (mode = 'manual')}
+                        class:is-selected={mode === 'manual'}>
+                        <span class="text">Manual</span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        {#if mode === 'cli'}
+            <p class="text">
+                You can deploy your function from the Appwrite CLI using Unix, CMD, or PowerShell.
+                Check out our Documentation to learn more about <a
+                    href="#/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link">deploying your functions</a
+                >, or how to install and use the
+                <a href="#/" target="_blank" rel="noopener noreferrer" class="link">Appwrite CLI</a
+                >.
+            </p>
+            <Collapsible>
+                {#each ['Unix', 'CMD', 'PowerShell'] as category}
+                    <CollapsibleItem>
+                        <svelte:fragment slot="title">{category}</svelte:fragment>
+                        Code
+                    </CollapsibleItem>
+                {/each}
+            </Collapsible>
+        {:else if mode === 'github'}
+            <p>Coming Soon</p>
+        {:else if mode === 'manual'}
+            <FormList>
+                <InputText
+                    label="Entrypoint"
+                    placeholder="main.py"
+                    id="entrypoint"
+                    bind:value={entrypoint}
+                    required />
+                <InputFile label="Gzipped code (tar.gz)" bind:value={code} required />
+                <InputChoice
+                    label="Activate Deployment after build"
+                    id="activate"
+                    bind:value={active}>
+                    This deployment will be activated after the build is completed.</InputChoice>
+            </FormList>
         {/if}
         <svelte:fragment slot="footer">
-            <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-            <Button submit>Create</Button>
+            {#if mode === 'manual'}
+                <Button secondary on:click={() => (showCreate = false)}>Close</Button>
+                <Button submit>Create</Button>
+            {:else}
+                <Button secondary on:click={() => (showCreate = false)}>Close</Button>
+            {/if}
         </svelte:fragment>
     </Modal>
 </Form>
