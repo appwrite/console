@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputChoice, Button, InputFile, InputText, Form } from '$lib/elements/forms';
+    import { InputChoice, Button, InputText, Form } from '$lib/elements/forms';
     import { Modal, Collapsible, CollapsibleItem, Tabs, Tab } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
