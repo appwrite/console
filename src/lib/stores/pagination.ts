@@ -11,7 +11,7 @@ export function createPersistenPagination(limit: number) {
     subscribe((n) => {
         const { pathname, searchParams } = get(page).url;
         const newPage = n / limit + 1;
-        if (newPage > 0) {
+        if (newPage > 1) {
             searchParams.set('page', newPage.toString());
         } else {
             searchParams.delete('page');
