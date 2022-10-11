@@ -16,6 +16,7 @@
 </script>
 
 <Usage
+    title="Buckets"
     bind:range
     {count}
     {created}

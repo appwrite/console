@@ -12,7 +12,7 @@
         title: string;
         legend: string;
     };
-
+    export let title: string;
     export let count: Models.Metric[];
     export let created: Models.Metric[];
     export let read: Models.Metric[];
@@ -38,7 +38,7 @@
 
 <Container>
     <div class="u-flex u-main-space-between common-section">
-        <h2 class="heading-level-5">Users</h2>
+        <h2 class="heading-level-5">{title}</h2>
         <DropTabs>
             <DropTabsItem on:click={() => (range = '24h')} disabled={range === '24h'}>
                 24h
@@ -83,7 +83,7 @@
         <Card isTile>
             {#if read}
                 <h6 class="heading-level-6">{total(read)}</h6>
-                <p>{createdMetadata.title}</p>
+                <p>{readMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
                 <LineChart
                     series={[
