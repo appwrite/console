@@ -29,7 +29,7 @@
         >.
     </svelte:fragment>
 
-    ROLE
+    <span class="u-sep-block-end">ROLE</span>
     {#if $createFunction?.execute?.length}
         <TableList>
             {#each $createFunction.execute as id}

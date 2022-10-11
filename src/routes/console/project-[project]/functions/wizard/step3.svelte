@@ -19,7 +19,8 @@
         Set the events that will trigger your function. Maximum 100 events allowed.
     </svelte:fragment>
 
-    EVENT
+    <span class="u-sep-block-end">EVENT</span>
+
     {#if $createFunction?.events?.length}
         <TableList>
             {#each $createFunction.events as id}
