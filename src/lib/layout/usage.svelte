@@ -5,7 +5,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { BarChart, LineChart } from '$lib/charts';
-    import { Card, Tiles } from '$lib/components';
+    import { Card, DropTabs, DropTabsItem, Tiles } from '$lib/components';
     import type { Models } from '@aw-labs/appwrite-console';
 
     type MetricMetadata = {
@@ -39,32 +39,17 @@
 <Container>
     <div class="u-flex u-main-space-between common-section">
         <h2 class="heading-level-5">Users</h2>
-        <ul class="drop-tabs">
-            <li class="drop-tabs-item">
-                <button
-                    class="drop-tabs-button"
-                    on:click={() => (range = '24h')}
-                    disabled={range === '24h'}>
-                    <span class="text">24h</span>
-                </button>
-            </li>
-            <li class="drop-tabs-item">
-                <button
-                    class="drop-tabs-button"
-                    on:click={() => (range = '30d')}
-                    disabled={range === '30d'}>
-                    <span class="text">30d</span>
-                </button>
-            </li>
-            <li class="drop-tabs-item">
-                <button
-                    class="drop-tabs-button"
-                    on:click={() => (range = '90d')}
-                    disabled={range === '90d'}>
-                    <span class="text">90d</span>
-                </button>
-            </li>
-        </ul>
+        <DropTabs>
+            <DropTabsItem on:click={() => (range = '24h')} disabled={range === '24h'}>
+                24h
+            </DropTabsItem>
+            <DropTabsItem on:click={() => (range = '30d')} disabled={range === '30d'}>
+                30d
+            </DropTabsItem>
+            <DropTabsItem on:click={() => (range = '90d')} disabled={range === '90d'}>
+                90d
+            </DropTabsItem>
+        </DropTabs>
     </div>
     <Card>
         {#if count}
