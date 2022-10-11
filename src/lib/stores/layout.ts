@@ -1,6 +1,7 @@
 import { project } from '../../routes/console/project-[project]/store';
 import { get, writable, readable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
+import type { Navigation } from '@sveltejs/kit';
 
 export type Tab = {
     href: string;
@@ -25,10 +26,7 @@ export type updateLayoutArguments = {
         value: string;
     };
     customBase?: string;
-    navigate?: {
-        from: URL | null;
-        to: URL;
-    };
+    navigate?: Navigation;
 };
 
 export const level = writable<number>();
@@ -54,7 +52,7 @@ export function updateLayout(args: updateLayoutArguments) {
 
     if (args?.navigate?.to) {
         const previousTabs = get(tabs);
-        if (previousTabs.some((t) => `${base}/${t.href}` === args.navigate.to.pathname)) {
+        if (previousTabs.some((t) => `${base}/${t.href}` === args.navigate.to.url.pathname)) {
             return;
         }
     }
@@ -77,3 +75,4 @@ export function updateLayout(args: updateLayoutArguments) {
 }
 
 export const pageLimit = readable(12); // default page limit
+export const cardLimit = readable(6); // default page limit

@@ -1,7 +1,7 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 
 function createBucketStore() {
     const { subscribe, set } = writable<Models.Bucket>(
@@ -26,23 +26,8 @@ function createFilesStore() {
     return {
         subscribe,
         set,
-        load: async (
-            bucketId: string,
-            search?: string,
-            limit?: number,
-            offset?: number,
-            cursor?: string,
-            cursorDirection?: string
-        ) => {
-            const response = await sdkForProject.storage.listFiles(
-                bucketId,
-                search,
-                limit,
-                offset,
-                cursor,
-                cursorDirection,
-                'DESC'
-            );
+        load: async (bucketId: string, queries?: string[], search?: string) => {
+            const response = await sdkForProject.storage.listFiles(bucketId, queries, search);
             set(response);
         }
     };

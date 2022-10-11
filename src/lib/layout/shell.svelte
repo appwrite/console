@@ -13,7 +13,10 @@
     } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { base } from '$app/paths';
-    import { browser } from '$app/env';
+    import { user } from '$lib/stores/user';
+    import { goto } from '$app/navigation';
+    import { browser } from '$app/environment';
+    import { wizard } from '$lib/stores/wizard';
 
     export let isOpen = false;
     export let showSideNavigation = false;
@@ -57,6 +60,11 @@
         }
     });
 
+    const logout = async () => {
+        await user.logout();
+        await goto(`${base}/login`);
+    };
+
     const onScroll = () => {
         if (!tabsList) {
             return;
@@ -98,7 +106,8 @@
 <main
     class:grid-with-side={showSideNavigation}
     class:grid={!showSideNavigation}
-    class:is-open={isOpen}>
+    class:is-open={isOpen}
+    class:u-hide={$wizard.show}>
     <header class="main-header">
         <button
             class:u-hide={!showSideNavigation}
@@ -171,9 +180,15 @@
                     </div>
                 {:else}
                     <h1 class="heading-level-4">
-                        <span class="text"> {$title}</span>
+                        <span class="text">{$title ? $title : '-'}</span>
                     </h1>
                 {/if}
+                {#if $page.url.pathname.includes('/console/account')}
+                    <div class="u-margin-inline-start-auto">
+                        <Button secondary on:click={logout}>Logout</Button>
+                    </div>
+                {/if}
+
                 {#if $copyData?.value}
                     <Copy value={$copyData.value}>
                         <Pill button>

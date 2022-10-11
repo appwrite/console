@@ -1,23 +1,22 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button, Form, InputText } from '$lib/elements/forms';
-    import InputCustomId from '$lib/elements/forms/inputCustomId.svelte';
+    import { Modal, CustomId } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { Button, InputText, Form, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-
-    import { sdkForProject, setDatabase } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
 
     const dispatch = createEventDispatcher();
 
-    let id = '';
     let name = '';
+    let id: string = null;
+    let showCustomId = false;
 
     const create = async () => {
         try {
-            setDatabase(id);
-            const database = await sdkForProject.databases.create(name);
+            const database = await sdkForProject.databases.create(id ? id : 'unique()', name);
             name = id = null;
             showCreate = false;
             dispatch('created', database);
@@ -31,13 +30,31 @@
 </script>
 
 <Form on:submit={create}>
-    <Modal bind:show={showCreate}>
-        <svelte:fragment slot="header">Create Function</svelte:fragment>
-        <InputCustomId id="id" label="ID" bind:value={id} required />
-        <InputText id="name" label="Name" bind:value={name} required />
+    <Modal size="big" bind:show={showCreate}>
+        <svelte:fragment slot="header">Create Database</svelte:fragment>
+        <FormList>
+            <InputText
+                id="name"
+                label="Name"
+                placeholder="Enter database name"
+                bind:value={name}
+                autofocus
+                required />
+
+            {#if !showCustomId}
+                <div>
+                    <Pill button on:click={() => (showCustomId = !showCustomId)}
+                        ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                            Database ID
+                        </span></Pill>
+                </div>
+            {:else}
+                <CustomId bind:show={showCustomId} name="Database" bind:id />
+            {/if}
+        </FormList>
         <svelte:fragment slot="footer">
-            <Button submit>Create</Button>
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
+            <Button submit>Create</Button>
         </svelte:fragment>
     </Modal>
 </Form>

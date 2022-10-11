@@ -1,25 +1,17 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { writable } from 'svelte/store';
-import { browser } from '$app/env';
+import { cachedStore } from '$lib/helpers/cache';
 
-function createUserStore() {
-    const { subscribe, set } = writable<Models.User<Record<string, unknown>>>(
-        browser ? JSON.parse(sessionStorage.getItem('selectedUser')) : null
-    );
-
+export const user = cachedStore<
+    Models.User<Record<string, unknown>>,
+    {
+        load: (userId: string) => Promise<void>;
+    }
+>('selectedUser', function ({ set }) {
     return {
-        subscribe,
-        set,
         load: async (userId: string) => {
             const response = await sdkForProject.users.get(userId);
             set(response);
         }
     };
-}
-
-export const user = createUserStore();
-
-if (browser) {
-    user.subscribe((n) => sessionStorage?.setItem('selectedUser', JSON.stringify(n ?? '')));
-}
+});

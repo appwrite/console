@@ -20,9 +20,10 @@ const config = {
     },
     test: {
         include: ['tests/**/*.test.ts'],
-        globals: true,
         environment: 'jsdom',
-        threads: true
+        globals: true,
+        threads: true,
+        setupFiles: ['./tests/unit/setup.ts']
     }
 };
 

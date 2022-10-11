@@ -7,6 +7,8 @@
     export let arrowPosition: 'start' | 'center' | 'end' = 'start';
     export let arrow = true;
     export let scrollable = false;
+    export let childStart = false;
+
     let parentElement: HTMLDivElement;
 
     const onBlur = (event: MouseEvent) => {
@@ -21,7 +23,11 @@
 
 <svelte:window on:click={onBlur} />
 
-<div class="drop-wrapper" class:is-open={show} bind:this={parentElement}>
+<div
+    class="drop-wrapper"
+    class:is-open={show}
+    class:u-cross-child-start={childStart}
+    bind:this={parentElement}>
     <slot />
     {#if show}
         <div

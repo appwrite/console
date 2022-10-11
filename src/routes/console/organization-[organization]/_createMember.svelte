@@ -8,20 +8,21 @@
     import { createEventDispatcher } from 'svelte';
     import { organization, memberList } from '$lib/stores/organization';
     import { pageLimit } from '$lib/stores/layout';
+    import { Query } from '@aw-labs/appwrite-console';
 
     export let showCreate = false;
 
     const dispatch = createEventDispatcher();
 
     let email: string, name: string, error: string;
-    const url = `${$page.url.origin}/console/`;
+    const url = `${$page.url.origin}/invite`;
 
     const create = async () => {
         try {
             const team = await sdkForConsole.teams.createMembership(
                 $organization.$id,
                 email,
-                [],
+                ['owner'],
                 url,
                 name
             );
@@ -30,7 +31,7 @@
                 type: 'success',
                 message: `Invite has been sent to ${email}`
             });
-            memberList.load($organization.$id, '', $pageLimit, 0);
+            memberList.load($organization.$id, [Query.limit($pageLimit)], '');
             dispatch('created', team);
         } catch ({ message }) {
             error = message;

@@ -35,6 +35,7 @@
                 type="checkbox"
                 class="switch"
                 role="switch"
+                aria-checked={value}
                 bind:this={element}
                 bind:checked={value}
                 on:change

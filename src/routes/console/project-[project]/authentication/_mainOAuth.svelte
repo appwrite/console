@@ -59,14 +59,13 @@
                 id="appID"
                 label="App ID"
                 autofocus={true}
-                autocomplete={false}
                 placeholder="Enter ID"
                 bind:value={provider.id} />
             <InputPassword
                 id="secret"
                 label="App Secret"
                 placeholder="Enter App Secret"
-                meter={false}
+                showPasswordButton
                 bind:value={provider.secret} />
             <Alert type="info">
                 To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.

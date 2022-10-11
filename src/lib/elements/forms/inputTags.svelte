@@ -8,6 +8,8 @@
     export let tags: string[] = [];
     export let placeholder = '';
     export let autofocus = false;
+    export let disabled = false;
+    export let readonly = false;
 
     let value = '';
     let element: HTMLInputElement;
@@ -89,6 +91,8 @@
             <input
                 {id}
                 placeholder={!tags.length ? placeholder : ''}
+                {disabled}
+                {readonly}
                 type="text"
                 class="tags-input-text"
                 bind:value

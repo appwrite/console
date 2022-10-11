@@ -8,6 +8,8 @@
     export let external = false;
     export let href: string = null;
     export let fullWidth = false;
+    export let ariaLabel: string = null;
+    export let noMargin = false;
     //TODO: add option to add aria-label to buttons that are only icons
 </script>
 
@@ -22,7 +24,9 @@
         class:is-secondary={secondary}
         class:is-text={text}
         class:is-danger={danger}
-        class:is-full-width={fullWidth}>
+        class:is-full-width={fullWidth}
+        class:u-padding-inline-0={noMargin}
+        aria-label={ariaLabel}>
         <slot />
     </a>
 {:else}
@@ -35,7 +39,9 @@
         class:is-danger={danger}
         class:is-text={text}
         class:is-full-width={fullWidth}
-        type={submit ? 'submit' : 'button'}>
+        class:u-padding-inline-0={noMargin}
+        type={submit ? 'submit' : 'button'}
+        aria-label={ariaLabel}>
         <slot />
     </button>
 {/if}
