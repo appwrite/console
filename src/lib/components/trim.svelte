@@ -1,49 +1,29 @@
 <script lang="ts">
+    import { tooltip } from '$lib/actions/tooltip';
+    import { throttle } from '$lib/helpers/functions';
     import { onMount } from 'svelte';
-    import tippy, { type PopperElement } from 'tippy.js';
 
-    let data: HTMLSpanElement & Partial<PopperElement>;
+    let showTooltip = false;
+    let container: HTMLSpanElement | null;
 
-    onMount(() => {
-        setTooltip();
-    });
+    onMount(onResize);
 
-    const setTooltip = () => {
-        if (data.innerText) {
-            const content = data.innerText;
-            let tool = data?._tippy;
-
-            if (data.offsetWidth < data.scrollWidth) {
-                if (tool) {
-                    if (!tool?.props?.content) tool.setContent(content);
-                    if (!tool.state.isEnabled) tool.enable();
-                } else {
-                    tippy(data, { content });
-                }
-            } else {
-                if (tool) {
-                    tool.disable();
-                }
-            }
-        }
-    };
-
-    const throttle = (fn: () => void, delay: number) => {
-        let timeout = false;
-        return () => {
-            if (!timeout) {
-                timeout = true;
-                fn.apply(this);
-                setTimeout(() => {
-                    timeout = false;
-                }, delay);
-            }
-        };
-    };
+    function onResize() {
+        showTooltip = container.offsetWidth < container.scrollWidth;
+    }
 </script>
 
-<svelte:window on:resize={throttle(setTooltip, 250)} />
+<svelte:window on:resize={throttle(onResize, 250)} />
 
-<span bind:this={data} class="text u-trim" title={data?.innerText}>
-    <slot />
+<span class="text u-trim" bind:this={container}>
+    {#if showTooltip}
+        <span
+            use:tooltip={{
+                content: container.innerText
+            }}>
+            <slot />
+        </span>
+    {:else}
+        <span><slot /></span>
+    {/if}
 </span>

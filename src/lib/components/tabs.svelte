@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { throttle } from '$lib/helpers/functions';
+
     let showLeft = false;
     let showRight = false;
     let tabsList: HTMLUListElement;
 
-    const slide = (direction: 'left' | 'right') => {
+    function slide(direction: 'left' | 'right') {
         let scrollCompleted = 0;
         let slideVar = setInterval(() => {
             if (direction == 'left') {
@@ -16,30 +18,16 @@
                 clearInterval(slideVar);
             }
         }, 10);
-    };
+    }
 
-    //TODO: implement this directly into onScroll
-    const throttle = (fn: () => void, delay: number) => {
-        let timeout = false;
-        return () => {
-            if (!timeout) {
-                timeout = true;
-                fn.apply(this);
-                setTimeout(() => {
-                    timeout = false;
-                }, delay);
-            }
-        };
-    };
-
-    const onScroll = () => {
+    function onScroll() {
         if (!tabsList) {
             return;
         }
         const { offsetWidth, scrollLeft, scrollWidth } = tabsList;
         showLeft = scrollLeft > 10;
         showRight = scrollLeft < scrollWidth - offsetWidth - 10;
-    };
+    }
 </script>
 
 <svelte:window on:resize={throttle(onScroll, 25)} />
