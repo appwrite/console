@@ -9,7 +9,7 @@
     import { usage, type UsagePeriods } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
-    import { DropList, DropListItem } from '$lib/components';
+    import { Code, DropList, DropListItem } from '$lib/components';
     import { BarChart, LineChart } from '$lib/charts';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
 

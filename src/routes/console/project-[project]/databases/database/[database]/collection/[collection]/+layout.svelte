@@ -47,6 +47,10 @@
                     title: 'Indexes'
                 },
                 {
+                    href: `${path}/usage`,
+                    title: 'Usage'
+                },
+                {
                     href: `${path}/settings`,
                     title: 'Settings'
                 }
