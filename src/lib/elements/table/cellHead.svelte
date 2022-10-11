@@ -2,7 +2,7 @@
     export let width: number = null;
 </script>
 
-<div style={`width: ${width?.toString() + 'px' ?? ''}`} class="table-thead-col" role="columnheader">
+<div style={`--p-col-width:${width?.toString() ?? ''}`} class="table-thead-col" role="columnheader">
     <span class="eyebrow-heading-3">
         <slot />
     </span>

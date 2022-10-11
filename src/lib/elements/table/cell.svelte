@@ -6,7 +6,7 @@
 </script>
 
 <div
-    width={width?.toString() ?? ''}
+    style={`--p-col-width:${width?.toString() ?? ''}`}
     class="table-col"
     class:u-overflow-visible={showOverflow}
     class:is-only-desktop={onlyDesktop}
