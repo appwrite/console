@@ -1,6 +1,6 @@
 <script lang="ts">
     import { InputChoice, Button, InputFile, InputText, Form } from '$lib/elements/forms';
-    import { Modal, Collapsible, CollapsibleItem } from '$lib/components';
+    import { Modal, Collapsible, CollapsibleItem, Tabs, Tab } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -35,34 +35,11 @@
 <Form noMargin on:submit={create}>
     <Modal size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Deployment</svelte:fragment>
-        <div class="tabs">
-            <ul class="tabs-list">
-                <li class="tabs-item">
-                    <span
-                        class="tabs-button"
-                        on:click={() => (mode = 'cli')}
-                        class:is-selected={mode === 'cli'}>
-                        <span class="text">CLI</span>
-                    </span>
-                </li>
-                <li class="tabs-item">
-                    <span
-                        class="tabs-button"
-                        on:click={() => (mode = 'github')}
-                        class:is-selected={mode === 'github'}>
-                        <span class="text">GitHub - Soon!</span>
-                    </span>
-                </li>
-                <li class="tabs-item">
-                    <span
-                        class="tabs-button"
-                        on:click={() => (mode = 'manual')}
-                        class:is-selected={mode === 'manual'}>
-                        <span class="text">Manual</span>
-                    </span>
-                </li>
-            </ul>
-        </div>
+        <Tabs>
+            <Tab on:click={() => (mode = 'cli')} selected={mode === 'cli'}>CLI</Tab>
+            <Tab on:click={() => (mode = 'github')} selected={mode === 'github'}>GitHub</Tab>
+            <Tab on:click={() => (mode = 'manual')} selected={mode === 'manual'}>Manual</Tab>
+        </Tabs>
         {#if mode === 'cli'}
             <p class="text">
                 You can deploy your function from the Appwrite CLI using Unix, CMD, or PowerShell.

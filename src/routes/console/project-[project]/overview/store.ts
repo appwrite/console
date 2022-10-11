@@ -2,11 +2,10 @@ import { sdkForConsole } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
 import type { Models } from '@aw-labs/appwrite-console';
 
-export type UsagePeriods = '24h' | '30d' | '90d';
 export const usage = cachedStore<
     Models.UsageProject,
     {
-        load: (projectId: string, range: UsagePeriods) => Promise<void>;
+        load: (projectId: string, range: string) => Promise<void>;
     }
 >('projectUsage', function ({ set }) {
     return {
