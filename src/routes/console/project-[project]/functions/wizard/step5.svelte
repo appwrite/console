@@ -42,7 +42,7 @@
         Create a variable (or secret key) that will be passed to your function at runtime.
     </svelte:fragment>
 
-    <Table noOuterStyles>
+    <Table noStyles>
         <TableHeader>
             <TableCellHead>Key</TableCellHead>
             <TableCellHead>Value</TableCellHead>

@@ -1,10 +1,14 @@
 <script lang="ts">
-    export let noOuterStyles = false;
+    export let noMargin = false;
+    export let noStyles = false;
+    export let noMobile = false;
 </script>
 
 <div
-    class="table is-vertical u-margin-block-start-32"
-    class:is-remove-outer-styles={noOuterStyles}
+    class="table is-vertical"
+    class:is-vertical={!noMobile}
+    class:u-margin-block-start-32={!noMargin}
+    class:is-remove-outer-styles={noStyles}
     role="table">
     <slot />
 </div>
