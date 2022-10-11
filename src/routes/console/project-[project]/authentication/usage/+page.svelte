@@ -17,6 +17,7 @@
 </script>
 
 <Usage
+    title="Users"
     bind:range
     {count}
     {created}

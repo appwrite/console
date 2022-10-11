@@ -16,6 +16,7 @@
 </script>
 
 <Usage
+    title="Databases"
     bind:range
     {count}
     {created}
