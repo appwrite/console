@@ -62,7 +62,7 @@
                                     }.svg`}
                                     alt="technology" />
                             </div>
-                            <span class="text"> {func.name}</span>
+                            <span class="text">{func.name}</span>
                         </div>
                     </svelte:fragment>
                     <svelte:fragment slot="status">

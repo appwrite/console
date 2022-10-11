@@ -95,20 +95,20 @@
                 </svelte:fragment>
             </CardGrid>
         {:else}
-            <Empty isButton on:click={() => (showCreate = true)}>
-                <p class="u-text-center">
-                    Add a new deployment, or activate an existing one to see your function in
-                    action.
-                </p>
-                <p class="u-text-center">
-                    Learn more about deployments in our <a
-                        class="link"
-                        href="https://appwrite.io/docs/functions#build"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Documentation</a
-                    >.
-                </p>
+            <Empty single isButton on:click={() => (showCreate = true)}>
+                <div class="u-text-center">
+                    <p>
+                        Create a new deployment, or activate an existing one to see your function in
+                        action.
+                    </p>
+                    <p>Need a hand? Check out our documentation.</p>
+                </div>
+                <div class="u-flex u-gap-12">
+                    <Button text external href="https://appwrite.io/docs/functions#createFunction"
+                        >Documentation</Button>
+                    <Button secondary on:click={() => (showCreate = true)}
+                        >Create Deployment</Button>
+                </div>
             </Empty>
         {/if}
 
@@ -201,10 +201,19 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton single>
-            <p>Create your first deployment to get started</p>
-            <Button external secondary href="https://appwrite.io/docs/functions#createFunction"
-                >Documentation</Button>
+        <Empty isButton single on:click={() => (showCreate = true)}>
+            <div class="u-text-center">
+                <p>
+                    Create a new deployment, or activate an existing one to see your function in
+                    action.
+                </p>
+                <p>Need a hand? Check out our documentation.</p>
+            </div>
+            <div class="u-flex u-gap-12">
+                <Button text external href="https://appwrite.io/docs/functions#createFunction"
+                    >Documentation</Button>
+                <Button secondary on:click={() => (showCreate = true)}>Create Deployment</Button>
+            </div>
         </Empty>
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
