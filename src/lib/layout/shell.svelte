@@ -2,7 +2,15 @@
     import { navigating, page } from '$app/stores';
     import { tabs, title, backButton, copyData, titleDropdown } from '$lib/stores/layout';
     import { Cover } from '.';
-    import { Copy, DropList, DropListItem, DropListLink, AvatarGroup } from '$lib/components';
+    import {
+        Copy,
+        DropList,
+        DropListItem,
+        DropListLink,
+        AvatarGroup,
+        Tabs,
+        Tab
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -22,29 +30,12 @@
     export let showSideNavigation = false;
 
     let y: number;
-    let tabsList: HTMLUListElement;
-    let showLeft = false;
-    let showRight = false;
     let showDropdown = false;
 
     navigating.subscribe(() => {
         if (isOpen) isOpen = false;
     });
 
-    const slide = (direction: 'left' | 'right') => {
-        let scrollCompleted = 0;
-        let slideVar = setInterval(() => {
-            if (direction == 'left') {
-                tabsList.scrollLeft -= 10;
-            } else {
-                tabsList.scrollLeft += 10;
-            }
-            scrollCompleted += 10;
-            if (scrollCompleted >= 100) {
-                clearInterval(slideVar);
-            }
-        }, 10);
-    };
     let avatars = [];
     let avatarsTotal = 0;
 
@@ -65,29 +56,6 @@
         await goto(`${base}/login`);
     };
 
-    const onScroll = () => {
-        if (!tabsList) {
-            return;
-        }
-        const { offsetWidth, scrollLeft, scrollWidth } = tabsList;
-        showLeft = scrollLeft > 10;
-        showRight = scrollLeft < scrollWidth - offsetWidth - 10;
-    };
-
-    //TODO: implement this directly into onScroll
-    const throttle = (fn: () => void, delay: number) => {
-        let timeout = false;
-        return () => {
-            if (!timeout) {
-                timeout = true;
-                fn.apply(this);
-                setTimeout(() => {
-                    timeout = false;
-                }, delay);
-            }
-        };
-    };
-
     const toggleMenu = () => {
         y = 0;
         isOpen = !isOpen;
@@ -101,7 +69,7 @@
     };
 </script>
 
-<svelte:window bind:scrollY={y} on:resize={throttle(onScroll, 25)} />
+<svelte:window bind:scrollY={y} />
 
 <main
     class:grid-with-side={showSideNavigation}
@@ -200,39 +168,13 @@
             </svelte:fragment>
 
             {#if $tabs.length}
-                <div class="tabs">
-                    {#if showLeft}
-                        <button
-                            class="tabs-button-scroll is-start"
-                            aria-label="Show items in start side"
-                            on:click={() => slide('left')}>
-                            <span class="icon-cheveron-left" aria-hidden="true" />
-                        </button>
-                    {/if}
-                    {#if showRight}
-                        <button
-                            class="tabs-button-scroll is-end"
-                            aria-label="Show items in end side"
-                            on:click={() => slide('right')}>
-                            <span class="icon-cheveron-right" aria-hidden="true" />
-                        </button>
-                    {/if}
-                    <ul
-                        class="tabs-list scroll-shadow-horizontal"
-                        bind:this={tabsList}
-                        on:scroll={throttle(onScroll, 25)}>
-                        {#each $tabs as tab}
-                            <li class="tabs-item">
-                                <a
-                                    class="tabs-button"
-                                    href={tab.href}
-                                    class:is-selected={$page.url.pathname === tab.href}>
-                                    <span class="text">{tab.title}</span>
-                                </a>
-                            </li>
-                        {/each}
-                    </ul>
-                </div>
+                <Tabs>
+                    {#each $tabs as tab}
+                        <Tab href={tab.href} selected={$page.url.pathname === tab.href}>
+                            {tab.title}
+                        </Tab>
+                    {/each}
+                </Tabs>
             {/if}
         </Cover>
         <slot />
