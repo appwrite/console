@@ -45,14 +45,19 @@
             {/each}
         </TableList>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = !showCreate)}
-            >Add a event to get started</Empty>
+        <Empty isButton on:click={() => (showCreate = !showCreate)}
+            >Add a event to get started
+        </Empty>
     {/if}
 
-    <Button text on:click={() => (showCreate = !showCreate)}>
-        <span class="icon-plus" aria-hidden="true" />
-        <span class="u-text">Add event</span>
-    </Button>
+    <div class="u-flex u-margin-block-start-16">
+        <Button text noMargin on:click={() => (showCreate = !showCreate)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="u-text">Add event</span>
+        </Button>
+    </div>
 </WizardStep>
 
-<EventModal bind:showCreate on:created={handleCreated} />
+{#if showCreate}
+    <EventModal bind:showCreate on:created={handleCreated} />
+{/if}

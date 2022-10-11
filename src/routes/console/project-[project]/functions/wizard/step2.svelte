@@ -54,17 +54,18 @@
             {/each}
         </TableList>
     {:else}
-        <Empty isButton single on:click={() => (showDropdown = !showDropdown)}>
+        <Empty isButton on:click={() => (showDropdown = !showDropdown)}>
             Add a role to get started
         </Empty>
     {/if}
 
     <DropList bind:show={showDropdown} position="bottom" arrow={false}>
-        <Button text on:click={() => (showDropdown = !showDropdown)}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="u-text">Add role</span>
-        </Button>
-
+        <div class="u-flex u-margin-block-start-16">
+            <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="u-text">Add role</span>
+            </Button>
+        </div>
         <svelte:fragment slot="list">
             <DropListItem
                 on:click={() => {

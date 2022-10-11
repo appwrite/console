@@ -2,7 +2,7 @@
     import { WizardStep } from '$lib/layout';
     import { createFunction } from './store';
     import Create from '../createVariable.svelte';
-    import { DropList, DropListItem, Secret } from '$lib/components';
+    import { DropList, DropListItem, Secret, Empty } from '$lib/components';
     import type { Models } from '@aw-labs/appwrite-console';
     import {
         Table,
@@ -13,6 +13,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
+    import { Button } from '$lib/elements/forms';
 
     let showCreate = false;
 
@@ -40,16 +41,15 @@
     <svelte:fragment slot="subtitle">
         Create a variable (or secret key) that will be passed to your function at runtime.
     </svelte:fragment>
+    {#if $createFunction.vars.length}
+        <Table noStyles>
+            <TableHeader>
+                <TableCellHead>Key</TableCellHead>
+                <TableCellHead>Value</TableCellHead>
+                <TableCellHead width={30} />
+            </TableHeader>
 
-    <Table noStyles>
-        <TableHeader>
-            <TableCellHead>Key</TableCellHead>
-            <TableCellHead>Value</TableCellHead>
-            <TableCellHead width={30} />
-        </TableHeader>
-
-        <TableBody>
-            {#if $createFunction.vars}
+            <TableBody>
                 {#each $createFunction.vars as variable, i}
                     <TableRow>
                         <TableCellText title="key">
@@ -95,19 +95,20 @@
                         </TableCell>
                     </TableRow>
                 {/each}
-            {/if}
-        </TableBody>
-    </Table>
+            </TableBody>
+        </Table>
+    {:else}
+        <span class="u-sep-block-end">VARIABLES</span>
+
+        <Empty isButton on:click={() => (showCreate = !showCreate)}
+            >Create a variable to get started
+        </Empty>
+    {/if}
     <div class="u-flex u-margin-block-start-16">
-        <button
-            class="button is-text u-padding-inline-0"
-            type="button"
-            on:click={() => {
-                showCreate = true;
-            }}>
+        <Button text noMargin on:click={() => (showCreate = !showCreate)}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create variable</span>
-        </button>
+            <span class="u-text">Create variable</span>
+        </Button>
     </div>
 </WizardStep>
 
