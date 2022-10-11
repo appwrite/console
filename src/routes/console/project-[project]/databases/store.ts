@@ -1,6 +1,6 @@
 import { sdkForProject } from '$lib/stores/sdk';
-import type { Models } from '@aw-labs/appwrite-console';
 import { cachedStore } from '$lib/helpers/cache';
+import type { Models } from '@aw-labs/appwrite-console';
 
 export const databaseList = cachedStore<
     Models.DatabaseList,
@@ -12,6 +12,20 @@ export const databaseList = cachedStore<
         load: async (queries, search) => {
             const response = await sdkForProject.databases.list(queries, search);
             set(response);
+        }
+    };
+});
+
+export const databasesUsage = cachedStore<
+    Models.UsageDatabases,
+    {
+        load: (range: string) => Promise<void>;
+    }
+>('databasesUsage', function ({ set }) {
+    return {
+        load: async (range) => {
+            const usages = await sdkForProject.databases.getUsage(range);
+            set(usages);
         }
     };
 });

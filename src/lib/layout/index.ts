@@ -10,3 +10,4 @@ export { default as Wizard } from './wizard.svelte';
 export { default as WizardStep } from './wizardStep.svelte';
 export { default as Breadcrumbs } from './breadcrumbs.svelte';
 export { default as Unauthenticated } from './unauthenticated.svelte';
+export { default as Usage, type UsagePeriods } from './usage.svelte';
