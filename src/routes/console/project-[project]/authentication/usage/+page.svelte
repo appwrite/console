@@ -1,101 +1,45 @@
-<script>
-    import { Container } from '$lib/layout';
-    import { BarChart } from '$lib/charts';
-    import { Card } from '$lib/components';
+<script lang="ts">
+    import { Usage } from '$lib/layout';
     import { usersUsage } from '../store';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import type { UsagePeriods } from '$lib/layout/usage.svelte';
 
-    let currentRange = '30d';
+    let range: UsagePeriods = '30d';
 
-    $: usersUsage.load(currentRange);
-    $: data = $usersUsage;
+    $: usersUsage.load(range);
 
-    //TODO: add types once they are fixed
+    // TODO: metric type is wrong
+    $: count = $usersUsage?.usersCount as unknown as Models.Metric[];
+    $: created = $usersUsage?.usersCreate as unknown as Models.Metric[];
+    $: read = $usersUsage?.usersRead as unknown as Models.Metric[];
+    $: updated = $usersUsage?.usersUpdate as unknown as Models.Metric[];
+    $: deleted = $usersUsage?.usersDelete as unknown as Models.Metric[];
 </script>
 
-<Container>
-    {#if data}
-        <div class="u-flex u-main-end common-section">
-            <ul class="drop-tabs">
-                <li class="drop-tabs-item">
-                    <button
-                        class="drop-tabs-button"
-                        on:click={() => (currentRange = '24h')}
-                        disabled={currentRange === '24h'}>
-                        <span class="text">24h</span>
-                    </button>
-                </li>
-                <li class="drop-tabs-item">
-                    <button
-                        class="drop-tabs-button"
-                        on:click={() => (currentRange = '30d')}
-                        disabled={currentRange === '30d'}>
-                        <span class="text">30d</span>
-                    </button>
-                </li>
-                <li class="drop-tabs-item">
-                    <button
-                        class="drop-tabs-button"
-                        on:click={() => (currentRange = '90d')}
-                        disabled={currentRange === '90d'}>
-                        <span class="text">90d</span>
-                    </button>
-                </li>
-            </ul>
-        </div>
-        <Card>
-            <h6 class="heading-level-6">Users</h6>
-            <p>Count of users over time</p>
-            <BarChart
-                series={[
-                    {
-                        name: 'User',
-                        data: [...data.usersCount.map((e) => [e.date, e.value])]
-                    }
-                ]} />
-        </Card>
-        <Card>
-            <h6 class="heading-level-6">Operations</h6>
-            <p>Count of users create, read, update and delete operations over time</p>
-            <BarChart
-                series={[
-                    {
-                        name: 'Create',
-                        data: [...data.usersCreate.map((e) => [e.date, e.value])]
-                    }
-                ]} />
-        </Card>
-        <Card>
-            <h6 class="heading-level-6">Operations</h6>
-            <p>Count of users create, read, update and delete operations over time</p>
-            <BarChart
-                series={[
-                    {
-                        name: 'Read',
-                        data: [...data.usersRead.map((e) => [e.date, e.value])]
-                    }
-                ]} />
-        </Card>
-        <Card>
-            <h6 class="heading-level-6">Operations</h6>
-            <p>Count of users create, read, update and delete operations over time</p>
-            <BarChart
-                series={[
-                    {
-                        name: 'Update',
-                        data: [...data.usersUpdate.map((e) => [e.date, e.value])]
-                    }
-                ]} />
-        </Card>
-        <Card>
-            <h6 class="heading-level-6">Operations</h6>
-            <p>Count of users create, read, update and delete operations over time</p>
-            <BarChart
-                series={[
-                    {
-                        name: 'Delete',
-                        data: [...data.usersDelete.map((e) => [e.date, e.value])]
-                    }
-                ]} />
-        </Card>
-    {/if}
-</Container>
+<Usage
+    bind:range
+    {count}
+    {created}
+    {read}
+    {updated}
+    {deleted}
+    countMetadata={{
+        legend: 'Users',
+        title: 'Registered users'
+    }}
+    createdMetadata={{
+        legend: 'Create',
+        title: 'Users created'
+    }}
+    readMetadata={{
+        legend: 'Read',
+        title: 'Users read'
+    }}
+    updatedMetadata={{
+        legend: 'Update',
+        title: 'Users updated'
+    }}
+    deletedMetadata={{
+        legend: 'Delete',
+        title: 'Users deleted'
+    }} />

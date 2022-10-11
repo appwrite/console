@@ -1,12 +1,12 @@
 <script lang="ts">
     import type { Models } from '@aw-labs/appwrite-console';
-    import { Container } from '$lib/layout';
+    import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
     import { browser } from '$app/environment';
     import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
-    import { usage, type UsagePeriods } from './store';
+    import { usage } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { DropList, DropListItem } from '$lib/components';

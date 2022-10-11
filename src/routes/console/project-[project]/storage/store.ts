@@ -15,3 +15,17 @@ export const bucketList = cachedStore<
         }
     };
 });
+
+export const storageUsage = cachedStore<
+    Models.UsageStorage,
+    {
+        load: (range: string) => Promise<void>;
+    }
+>('storageUsage', function ({ set }) {
+    return {
+        load: async (range) => {
+            const response = await sdkForProject.storage.getUsage(range);
+            set(response);
+        }
+    };
+});
