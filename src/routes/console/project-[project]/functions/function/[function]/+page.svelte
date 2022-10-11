@@ -14,14 +14,14 @@
     } from '$lib/elements/table';
     import { deploymentList, execute, func } from './store';
     import { Container } from '$lib/layout';
-    import Create from './_create.svelte';
+    import Create from './create.svelte';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { pageLimit } from '$lib/stores/layout';
     import type { Models } from '@aw-labs/appwrite-console';
-    import Delete from './_delete.svelte';
+    import Delete from './delete.svelte';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import Activate from './_activate.svelte';
+    import Activate from './activate.svelte';
     import { Query } from '@aw-labs/appwrite-console';
     import { toLocaleDateTime } from '$lib/helpers/date';
 

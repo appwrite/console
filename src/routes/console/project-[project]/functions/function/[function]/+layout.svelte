@@ -5,7 +5,7 @@
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import { func, execute } from './store';
-    import Execute from './_execute.svelte';
+    import Execute from './execute.svelte';
 
     const functionId = $page.params.function;
     const path = `functions/function/${functionId}`;
