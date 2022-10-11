@@ -38,3 +38,17 @@ export const database = cachedStore<
         }
     };
 });
+
+export const databaseUsage = cachedStore<
+    Models.UsageDatabase,
+    {
+        load: (databaseId: string, range: string) => Promise<void>;
+    }
+>('databaseUsage', function ({ set }) {
+    return {
+        load: async (databaseId, range) => {
+            const usages = await sdkForProject.databases.getDatabaseUsage(databaseId, range);
+            set(usages);
+        }
+    };
+});

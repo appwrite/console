@@ -116,3 +116,17 @@ export const attributeList = cachedStore<
         }
     };
 });
+
+export const collectionUsage = cachedStore<
+    Models.UsageCollection,
+    {
+        load: (databaseId: string, collectionId: string, range: string) => Promise<void>;
+    }
+>('collectionUsage', function ({ set }) {
+    return {
+        load: async (databaseId, range) => {
+            const usages = await sdkForProject.databases.getCollectionUsage(databaseId, range);
+            set(usages);
+        }
+    };
+});

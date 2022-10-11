@@ -1,42 +1,45 @@
 import { sdkForProject } from '$lib/stores/sdk';
 import type { Models } from '@aw-labs/appwrite-console';
-import { writable } from 'svelte/store';
-import { browser } from '$app/environment';
+import { cachedStore } from '$lib/helpers/cache';
 
-function createBucketStore() {
-    const { subscribe, set } = writable<Models.Bucket>(
-        browser ? JSON.parse(sessionStorage.getItem('bucket')) : null
-    );
-
+export const bucket = cachedStore<
+    Models.Bucket,
+    {
+        load: (bucketId: string) => Promise<void>;
+    }
+>('bucket', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (bucketId: string) => {
+        load: async (bucketId) => {
             const response = await sdkForProject.storage.getBucket(bucketId);
             set(response);
         }
     };
-}
+});
 
-function createFilesStore() {
-    const { subscribe, set } = writable<Models.FileList>(
-        browser ? JSON.parse(sessionStorage.getItem('files')) : null
-    );
-
+export const files = cachedStore<
+    Models.FileList,
+    {
+        load: (bucketId: string, queries: string[], search: string) => Promise<void>;
+    }
+>('files', function ({ set }) {
     return {
-        subscribe,
-        set,
-        load: async (bucketId: string, queries?: string[], search?: string) => {
+        load: async (bucketId, queries, search) => {
             const response = await sdkForProject.storage.listFiles(bucketId, queries, search);
             set(response);
         }
     };
-}
+});
 
-export const bucket = createBucketStore();
-export const files = createFilesStore();
-
-if (browser) {
-    bucket.subscribe((n) => sessionStorage?.setItem('bucket', JSON.stringify(n ?? '')));
-    files.subscribe((n) => sessionStorage?.setItem('files', JSON.stringify(n ?? '')));
-}
+export const bucketUsage = cachedStore<
+    Models.UsageBuckets,
+    {
+        load: (bucketId: string, range: string) => Promise<void>;
+    }
+>('bucketsUsage', function ({ set }) {
+    return {
+        load: async (bucketId, range) => {
+            const response = await sdkForProject.storage.getBucketUsage(bucketId, range);
+            set(response);
+        }
+    };
+});
