@@ -53,6 +53,9 @@
         ({ required, array, size } = selectedAttribute);
         xdefault = selectedAttribute.default;
     }
+    $: if (required) {
+        xdefault = null;
+    }
 </script>
 
 <InputNumber id="size" label="Size" bind:value={size} required readonly={overview} />
