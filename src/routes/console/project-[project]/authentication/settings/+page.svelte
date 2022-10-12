@@ -70,6 +70,7 @@
             <ul class="grid-box common-section">
                 {#each $OAuthProviders.providers as provider}
                     <button
+                        class="card u-flex u-flex-vertical u-cross-center"
                         on:click={() => {
                             selectedProvider = provider;
                             showModal = true;
@@ -81,8 +82,7 @@
                             parameters: {
                                 provider: provider.name
                             }
-                        }}
-                        class="card u-flex u-flex-vertical u-cross-center">
+                        }}>
                         <div class="image-item">
                             <img
                                 height="20"
