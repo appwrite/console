@@ -8,9 +8,9 @@
     import { createPlatform } from './wizard/store';
     import { project } from '../../store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import Step1 from './wizard/web/step1.svelte';
-    import Step2 from './wizard/web/step2.svelte';
-    import Step3 from './wizard/web/step3.svelte';
+    import Step1 from './wizard/flutter/step1.svelte';
+    import Step2 from './wizard/flutter/step2.svelte';
+    import Step3 from './wizard/flutter/step3.svelte';
     import Step4 from './wizard/step4.svelte';
 
     const projectId = $page.params.project;
@@ -63,7 +63,7 @@
 </script>
 
 <Wizard
-    title="Add a Web Project"
+    title="Add a Flutter Project"
     steps={stepsComponents}
     on:finish={create}
     finalAction="Take me to my Dashboard" />

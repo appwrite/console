@@ -1,5 +1,5 @@
-import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
+import type { Models } from '@aw-labs/appwrite-console';
 
 export const createPlatform = writable<Partial<Models.Platform>>({
     name: null,

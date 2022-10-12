@@ -11,6 +11,7 @@
 <script lang="ts">
     import { Steps } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
     import { createEventDispatcher, type SvelteComponent } from 'svelte';
 
@@ -29,15 +30,20 @@
         }
     }
 
-    function submit() {
+    async function submit() {
         if ($wizard.interceptor) {
             try {
-                $wizard.interceptor();
+                console.log($wizard.interceptor);
+                await $wizard.interceptor();
             } catch (error) {
-                console.log('hold');
+                addNotification({
+                    message: error.message,
+                    type: 'error'
+                });
                 return;
             }
         }
+
         wizard.setInterceptor(null);
         if (isLastStep) {
             dispatch('finish');

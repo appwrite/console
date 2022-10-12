@@ -4,7 +4,7 @@
     /**
      * Pass callback that is run before the Form submit, can be canceled with throwing an exception.
      */
-    export let beforeSubmit: () => void = null;
+    export let beforeSubmit: () => Promise<void> = null;
 
     if (beforeSubmit) {
         wizard.setInterceptor(beforeSubmit);

@@ -2,6 +2,7 @@
     import { Code } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { WizardStep } from '$lib/layout';
+
     enum Method {
         NPM,
         CDN

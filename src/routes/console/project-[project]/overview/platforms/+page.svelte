@@ -5,6 +5,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import { project } from '../../store';
+    import CreateFlutter from './createFlutter.svelte';
     import CreateWeb from './createWeb.svelte';
 
     let showDropdown = false;
@@ -19,7 +20,7 @@
 
     const platforms = {
         [Platform.Web]: CreateWeb,
-        [Platform.Flutter]: CreateWeb,
+        [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateWeb,
         [Platform.Apple]: CreateWeb
     };
