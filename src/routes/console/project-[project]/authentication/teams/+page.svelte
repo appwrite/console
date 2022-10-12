@@ -21,10 +21,11 @@
     import { teamsList } from '../store';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
+    import { createPersistenPagination } from '$lib/stores/pagination';
 
     let search = '';
     let showCreate = false;
-    let offset = 0;
+    const offset = createPersistenPagination($pageLimit);
 
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
@@ -32,9 +33,9 @@
         await goto(`${base}/console/project-${project}/authentication/teams/${event.detail.$id}`);
     };
 
-    $: if (search) offset = 0;
+    $: if (search) $offset = 0;
     $: teamsList.load(
-        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        [Query.limit($pageLimit), Query.offset($offset), Query.orderDesc('$createdAt')],
         search
     );
 </script>
@@ -81,7 +82,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$teamsList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$teamsList.total} />
+            <Pagination limit={$pageLimit} bind:offset={$offset} sum={$teamsList.total} />
         </div>
     {:else if search}
         <EmptySearch>

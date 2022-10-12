@@ -11,19 +11,21 @@
     import { bucketList } from './store';
     import { tooltip } from '$lib/actions/tooltip';
     import { cardLimit } from '$lib/stores/layout';
+    import { createPersistenPagination } from '$lib/stores/pagination';
 
     let showCreate = false;
-    let offset = 0;
 
     const project = $page.params.project;
-    const bucketCreated = async (event: CustomEvent<Models.Bucket>) => {
+    const offset = createPersistenPagination($cardLimit);
+
+    async function bucketCreated(event: CustomEvent<Models.Bucket>) {
         showCreate = false;
         await goto(`${base}/console/project-${project}/storage/bucket/${event.detail.$id}`);
-    };
+    }
 
     $: bucketList.load([
         Query.limit($cardLimit),
-        Query.offset(offset),
+        Query.offset($offset),
         Query.orderDesc('$createdAt')
     ]);
 </script>
@@ -38,7 +40,10 @@
     </div>
 
     {#if $bucketList?.total}
-        <CardContainer total={$bucketList.total} {offset} on:click={() => (showCreate = true)}>
+        <CardContainer
+            total={$bucketList.total}
+            offset={$offset}
+            on:click={() => (showCreate = true)}>
             {#each $bucketList.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket/${bucket.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
@@ -86,7 +91,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.total}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={$bucketList.total} />
+            <Pagination limit={$cardLimit} bind:offset={$offset} sum={$bucketList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

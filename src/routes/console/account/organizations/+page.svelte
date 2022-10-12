@@ -8,6 +8,7 @@
     import { onMount } from 'svelte';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { cardLimit } from '$lib/stores/layout';
+    import { createPersistenPagination } from '$lib/stores/pagination';
 
     onMount(async () => {
         await organizationList.load();
@@ -28,7 +29,7 @@
     };
 
     let addOrganization = false;
-    let offset = 0;
+    const offset = createPersistenPagination($cardLimit);
 </script>
 
 <Container>
@@ -47,11 +48,11 @@
     {#if $organizationList?.teams?.length}
         <CardContainer
             total={$organizationList.total}
-            {offset}
+            offset={$offset}
             on:click={() => (addOrganization = true)}>
             {#each $organizationList.teams as organization, index}
                 {@const avatarList = getMemberships(organization.$id)}
-                {#if index >= offset && index < $cardLimit + offset}
+                {#if index >= $offset && index < $cardLimit + $offset}
                     <GridItem1 href={`${base}/console/organization-${organization.$id}`}>
                         <svelte:fragment slot="eyebrow"
                             >{organization?.total ? organization?.total : 'No'} projects</svelte:fragment>
@@ -70,20 +71,15 @@
                 <p>Create a new organization</p>
             </svelte:fragment>
         </CardContainer>
-
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$organizationList?.total}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={$organizationList?.total} />
-        </div>
     {:else}
         <Empty isButton single on:click={() => (addOrganization = true)}>
             <p>Create a new organization</p>
         </Empty>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$organizationList?.total}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={$organizationList?.total} />
-        </div>
     {/if}
+    <div class="u-flex u-margin-block-start-32 u-main-space-between">
+        <p class="text">Total results: {$organizationList?.total}</p>
+        <Pagination limit={$cardLimit} bind:offset={$offset} sum={$organizationList?.total} />
+    </div>
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />

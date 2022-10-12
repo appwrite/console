@@ -19,14 +19,16 @@
     import Delete from './deleteAttribute.svelte';
     import Overview from './overview.svelte';
     import { pageLimit } from '$lib/stores/layout';
+    import { createPersistenPagination } from '$lib/stores/pagination';
 
-    let offset = 0;
     let showDropdown = [];
     let selectedAttribute: Attributes = null;
     let showCreate = false;
     let showDelete = false;
     let showOverview = false;
     let showCreateIndex = false;
+
+    const offset = createPersistenPagination($pageLimit);
 </script>
 
 <Container>
@@ -112,7 +114,10 @@
         </Table>
         <div class="u-flex common-section u-main-space-between">
             <p class="text">Total results: {$collection?.attributes?.length}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$collection?.attributes?.length} />
+            <Pagination
+                limit={$pageLimit}
+                bind:offset={$offset}
+                sum={$collection?.attributes?.length} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

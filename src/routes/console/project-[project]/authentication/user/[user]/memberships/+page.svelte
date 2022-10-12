@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { base } from '$app/paths';
     import { Pagination, Empty, Avatar } from '$lib/components';
     import {
         Table,
@@ -12,23 +13,26 @@
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { pageLimit } from '$lib/stores/layout';
+    import { createPersistenPagination } from '$lib/stores/pagination';
     import DeleteMembership from '../_deleteMembership.svelte';
     import DeleteAllMemberships from '../_deleteAllMemberships.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
-    import { pageLimit } from '$lib/stores/layout';
 
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
-    const deleted = () => (request = sdkForProject.users.listMemberships($page.params.user));
-    const project = $page.params.project;
-
-    let offset = 0;
     let selectedMembership: Models.Membership;
     let showDelete = false;
     let showDeleteAll = false;
 
+    const project = $page.params.project;
+    const offset = createPersistenPagination($pageLimit);
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
+
     $: request = sdkForProject.users.listMemberships($page.params.user);
+
+    function deleted() {
+        request = sdkForProject.users.listMemberships($page.params.user);
+    }
 </script>
 
 <Container>
@@ -86,11 +90,9 @@
                     >Documentation</Button>
             </Empty>
         {/if}
-        <div
-            class="u-flex u-margin-block-start-32
- u-main-space-between">
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {response.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={response.total} />
+            <Pagination limit={$pageLimit} bind:offset={$offset} sum={response.total} />
         </div>
     {/await}
 </Container>

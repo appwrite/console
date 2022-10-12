@@ -34,50 +34,54 @@
     import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
     import { pageLimit } from '$lib/stores/layout';
+    import { createPersistenPagination } from '$lib/stores/pagination';
 
     let search = '';
     let showCreate = false;
-    let showDropdown = [];
     let showDelete = false;
+    let showDropdown = [];
     let selectedFile: Models.File = null;
-    let offset = 0;
 
     const project = $page.params.project;
     const bucket = $page.params.bucket;
-
+    const offset = createPersistenPagination($pageLimit);
     const getPreview = (fileId: string) =>
         sdkForProject.storage.getFilePreview(bucket, fileId, 32, 32).toString() + '&mode=admin';
 
-    const fileCreated = () => {
-        showCreate = false;
-        files.load(bucket, [Query.limit($pageLimit), Query.offset(offset)], search);
-    };
+    async function loadFiles() {
+        files.load(bucket, [Query.limit($pageLimit), Query.offset($offset)], search);
+    }
 
-    const fileDeleted = (event: CustomEvent<Models.File>) => {
+    function fileCreated() {
+        showCreate = false;
+        loadFiles();
+    }
+
+    function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
         uploader.removeFile(event.detail);
-        files.load(bucket, [Query.limit($pageLimit), Query.offset(offset)], search);
-    };
+        loadFiles();
+    }
 
-    const deleteFile = async (file: Models.File) => {
+    async function deleteFile(file: Models.File) {
         try {
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
-            files.load(bucket, [Query.limit($pageLimit), Query.offset(offset)], search);
+            loadFiles();
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
         }
-    };
+    }
 
     $: files.load(
         bucket,
-        [Query.limit($pageLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        [Query.limit($pageLimit), Query.offset($offset), Query.orderDesc('$createdAt')],
         search
     );
-    $: if (search) offset = 0;
+    $: if (search) $offset = 0;
 </script>
 
 <Container>
@@ -181,7 +185,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$files.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$files.total} />
+            <Pagination limit={$pageLimit} bind:offset={$offset} sum={$files.total} />
         </div>
     {:else if search}
         <EmptySearch>

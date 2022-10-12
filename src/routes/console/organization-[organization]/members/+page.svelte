@@ -19,18 +19,22 @@
     import { pageLimit } from '$lib/stores/layout';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
+    import { createPersistenPagination } from '$lib/stores/pagination';
 
     let search = '';
-    let offset = 0;
-
     let selectedMember: Models.Membership;
     let showDelete = false;
     const url = `${$page.url.origin}/console/`;
+    const offset = createPersistenPagination($pageLimit);
 
     const getAvatar = (name: string) =>
         sdkForConsole.avatars.getInitials(name, 120, 120).toString();
     const deleted = () =>
-        memberList.load($organization.$id, [Query.limit($pageLimit), Query.offset(offset)], search);
+        memberList.load(
+            $organization.$id,
+            [Query.limit($pageLimit), Query.offset($offset)],
+            search
+        );
     const resend = async (member: Models.Membership) => {
         try {
             await sdkForConsole.teams.createMembership(
@@ -52,8 +56,8 @@
         }
     };
 
-    $: if (search) offset = 0;
-    $: memberList.load($organization.$id, [Query.limit($pageLimit), Query.offset(offset)], search);
+    $: if (search) $offset = 0;
+    $: memberList.load($organization.$id, [Query.limit($pageLimit), Query.offset($offset)], search);
 </script>
 
 <Container>
@@ -61,10 +65,7 @@
         <div class="u-flex u-gap-12 common-section u-main-space-between">
             <h2 class="heading-level-5">Members</h2>
 
-            <Button
-                on:click={() => {
-                    newMemberModal.set(true);
-                }}>
+            <Button on:click={() => newMemberModal.set(true)}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Invite</span>
             </Button>
@@ -86,8 +87,9 @@
                                     size={40}
                                     src={getAvatar(member.userName)}
                                     name={member.userName} />
-                                <span class="text u-trim"
-                                    >{member.userName ? member.userName : 'n/a'}</span>
+                                <span class="text u-trim">
+                                    {member.userName ? member.userName : 'n/a'}
+                                </span>
                                 {#if member.invited && !member.joined}
                                     <Pill warning>Pending</Pill>
                                 {/if}
@@ -120,7 +122,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$memberList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$memberList.total} />
+            <Pagination limit={$pageLimit} bind:offset={$offset} sum={$memberList.total} />
         </div>
     {/if}
 </Container>

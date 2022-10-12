@@ -16,17 +16,16 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { pageLimit } from '$lib/stores/layout';
     import { Query } from '@aw-labs/appwrite-console';
+    import { createPersistenPagination } from '$lib/stores/pagination';
 
-    let offset = 0;
+    const offset = createPersistenPagination($pageLimit);
 
     $: request = sdkForProject.users.listLogs($page.params.user, [
         Query.limit($pageLimit),
-        Query.offset(offset)
+        Query.offset($offset)
     ]);
 
-    const getBrowser = (clientCode: string) => {
-        return sdkForProject.avatars.getBrowser(clientCode, 80, 80);
-    };
+    const getBrowser = (clientCode: string) => sdkForProject.avatars.getBrowser(clientCode, 80, 80);
 </script>
 
 <Container>
@@ -99,7 +98,7 @@
         {/if}
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {response.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={response.total} />
+            <Pagination limit={$pageLimit} bind:offset={$offset} sum={response.total} />
         </div>
     {/await}
 </Container>

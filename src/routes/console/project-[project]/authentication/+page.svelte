@@ -26,7 +26,7 @@
 
     let showCreate = false;
     let search = '';
-    let offset = createPersistenPagination($pageLimit);
+    const offset = createPersistenPagination($pageLimit);
 
     const project = $page.params.project;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
