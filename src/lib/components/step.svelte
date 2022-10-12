@@ -4,11 +4,15 @@
     export let currentSub = 0;
     export let isSub = false;
     export let step: { text: string; substeps?: { text: string }[] };
+
+    //TODO: remove inline styling
 </script>
 
 <li
+    on:click|preventDefault
     class:steps-item={!isSub}
     class:steps-sub-item={isSub}
+    style={`cursor: ${completed ? 'pointer' : 'default'};`}
     aria-label={`${completed ? 'done' : current ? 'current' : ''} step`}>
     {#if isSub}
         <span class="text">{step.text}</span>

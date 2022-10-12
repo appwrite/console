@@ -41,6 +41,13 @@
         }
     }
 
+    function handleStepClick(e: CustomEvent<number>) {
+        const step = e.detail;
+        if (step < currentStep) {
+            currentStep = step;
+        }
+    }
+
     function submit() {
         if (isLastStep) {
             dispatch('finish');
@@ -71,7 +78,7 @@
 
     <aside class="wizard-side">
         <Steps
-            on:step={submit}
+            on:step={handleStepClick}
             steps={sortedSteps.map(([, { label, optional }]) => ({
                 text: label,
                 optional
