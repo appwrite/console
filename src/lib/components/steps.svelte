@@ -15,8 +15,6 @@
     const dispatch = createEventDispatcher();
 
     $: firstOptional = steps.findIndex((step) => step.optional);
-
-    //TODO: remove inline styling
 </script>
 
 <ol class="steps">
@@ -24,7 +22,9 @@
         {#each steps as step, index}
             {@const stepNumber = index + 1}
             {#if firstOptional === index}
-                <h3 class="eyebrow-heading-3" style="margin-block: 1.5rem;">OPTIONAL</h3>
+                <li class="steps-item">
+                    <h3 class="eyebrow-heading-3">OPTIONAL</h3>
+                </li>
             {/if}
             <Step
                 on:click={() => dispatch('step', stepNumber)}
