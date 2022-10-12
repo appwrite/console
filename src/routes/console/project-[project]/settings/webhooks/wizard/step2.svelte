@@ -8,9 +8,11 @@
 
     let showCreate = false;
 
+    let eventSet = new Set<string>();
+
     function handleCreated(event: CustomEvent) {
-        console.log('test');
-        $createWebhook.events = event.detail;
+        eventSet.add(event.detail);
+        $createWebhook.events = Array.from(eventSet);
     }
 </script>
 
@@ -23,20 +25,18 @@
     EVENT
     {#if $createWebhook?.events?.length}
         <TableList>
-            {#each $createWebhook.events as id}
+            {#each $createWebhook.events as event}
                 <li class="table-row">
                     <TableCellText title="id">
-                        {id}
+                        {event}
                     </TableCellText>
-                    <TableCell showOverflow title="options" width={30}>
+                    <TableCell showOverflow title="options" width={40}>
                         <button
                             class="button is-text is-only-icon"
                             aria-label="delete id"
                             on:click|preventDefault={() => {
-                                $createWebhook.events = $createWebhook.events.filter(
-                                    (item) => item !== id
-                                );
-                                $createWebhook = $createWebhook;
+                                eventSet.delete(event);
+                                $createWebhook.events = Array.from(eventSet);
                             }}>
                             <span class="icon-x" aria-hidden="true" />
                         </button>
@@ -45,14 +45,18 @@
             {/each}
         </TableList>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = !showCreate)}
-            >Add a event to get started</Empty>
+        <Empty isButton on:click={() => (showCreate = !showCreate)}>
+            Add a event to get started
+        </Empty>
     {/if}
-
-    <Button text on:click={() => (showCreate = !showCreate)}>
-        <span class="icon-plus" aria-hidden="true" />
-        <span class="u-text">Add event</span>
-    </Button>
+    <div class="u-flex u-margin-block-start-16">
+        <Button text on:click={() => (showCreate = !showCreate)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="u-text">Add event</span>
+        </Button>
+    </div>
 </WizardStep>
 
-<EventModal bind:showCreate on:created={handleCreated} />
+{#if showCreate}
+    <EventModal bind:showCreate on:created={handleCreated} />
+{/if}

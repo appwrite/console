@@ -111,10 +111,15 @@
             <Pagination limit={$cardLimit} bind:offset sum={$functionList.total} />
         </div>
     {:else}
-        <Empty isButton on:click={openWizard}>
-            <p>Create your first function to get started</p>
-            <Button external secondary href="https://appwrite.io/docs/functions#createFunction"
-                >Documentation</Button>
+        <Empty isButton single on:click={openWizard}>
+            <div class="u-text-center">
+                <p class="text">Create your first function to get started</p>
+                <p class="text">Need a hand? Check out our documentation.</p>
+            </div>
+            <div class="u-flex u-gap-12">
+                <Button external text>Documentation</Button>
+                <Button secondary on:click={openWizard}>Create function</Button>
+            </div>
         </Empty>
     {/if}
 </Container>

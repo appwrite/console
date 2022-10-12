@@ -26,20 +26,18 @@
 
     {#if $createFunction?.events?.length}
         <TableList>
-            {#each $createFunction.events as id}
+            {#each $createFunction.events as event}
                 <li class="table-row">
                     <TableCellText title="id">
-                        {id}
+                        {event}
                     </TableCellText>
                     <TableCell showOverflow title="options" width={40}>
                         <button
                             class="button is-text is-only-icon"
                             aria-label="delete id"
                             on:click|preventDefault={() => {
-                                $createFunction.events = $createFunction.events.filter(
-                                    (item) => item !== id
-                                );
-                                $createFunction = $createFunction;
+                                eventSet.delete(event);
+                                $createFunction.events = Array.from(eventSet);
                             }}>
                             <span class="icon-x" aria-hidden="true" />
                         </button>
