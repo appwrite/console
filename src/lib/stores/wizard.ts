@@ -4,12 +4,14 @@ import { writable } from 'svelte/store';
 export type WizardStore = {
     show: boolean;
     component?: typeof SvelteComponent;
+    interceptor?: () => void;
 };
 
 function createWizardStore() {
     const { subscribe, update } = writable<WizardStore>({
         show: false,
-        component: null
+        component: null,
+        interceptor: null
     });
 
     return {
@@ -21,6 +23,13 @@ function createWizardStore() {
 
                 return n;
             }),
+        setInterceptor: (callback: () => void) => {
+            update((n) => {
+                n.interceptor = callback;
+
+                return n;
+            });
+        },
         hide: () =>
             update((n) => {
                 n.show = false;

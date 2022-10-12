@@ -30,6 +30,15 @@
     }
 
     function submit() {
+        if ($wizard.interceptor) {
+            try {
+                $wizard.interceptor();
+            } catch (error) {
+                console.log('hold');
+                return;
+            }
+        }
+        wizard.setInterceptor(null);
         if (isLastStep) {
             dispatch('finish');
         } else {
