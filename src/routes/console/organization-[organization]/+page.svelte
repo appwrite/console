@@ -14,7 +14,7 @@
     import CreateProject from './_createProject.svelte';
     import { cardLimit } from '$lib/stores/layout';
     import CardContainer from '$lib/components/cardContainer.svelte';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     $: organizationId = $page.params.organization;
 
@@ -31,7 +31,7 @@
 
     let showCreate = false;
     let addOrganization = false;
-    const offset = createPersistenPagination($cardLimit);
+    const offset = createPersistentPagination($cardLimit);
 
     const projectCreated = async (event: CustomEvent<Models.Project>) => {
         await project.load(event.detail.$id);

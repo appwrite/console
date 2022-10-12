@@ -19,13 +19,13 @@
     import { pageLimit } from '$lib/stores/layout';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let search = '';
     let selectedMember: Models.Membership;
     let showDelete = false;
     const url = `${$page.url.origin}/console/`;
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
 
     const getAvatar = (name: string) =>
         sdkForConsole.avatars.getInitials(name, 120, 120).toString();

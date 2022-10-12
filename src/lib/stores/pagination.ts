@@ -2,7 +2,7 @@ import { afterNavigate, goto } from '$app/navigation';
 import { page } from '$app/stores';
 import { get, writable } from 'svelte/store';
 
-export function createPersistenPagination(limit: number) {
+export function createPersistentPagination(limit: number) {
     const url = get(page).url;
     const current = +(url.searchParams.get('page') ?? 1);
     const offset = current * limit - limit;

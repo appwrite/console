@@ -17,9 +17,9 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { accountSession } from '../store';
     import { onMount } from 'svelte';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
 
     onMount(async () => {
         await accountSession.load();

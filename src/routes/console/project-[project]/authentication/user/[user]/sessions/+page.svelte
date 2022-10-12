@@ -19,14 +19,14 @@
     import { pageLimit } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import type { Models } from '@aw-labs/appwrite-console';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let showDelete = false;
     let showDeleteAll = false;
     let selectedSessionId: string = null;
     let sessionList: Models.SessionList = null;
 
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
 
     onMount(async () => {
         sessionList = await sdkForProject.users.listSessions($page.params.user);

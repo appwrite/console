@@ -17,9 +17,9 @@
     import { onMount } from 'svelte';
     import { accountActivity } from '../store';
     import { Query } from '@aw-labs/appwrite-console';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
 
     onMount(async () => {
         await accountActivity.load([Query.offset($offset), Query.limit($pageLimit)]);

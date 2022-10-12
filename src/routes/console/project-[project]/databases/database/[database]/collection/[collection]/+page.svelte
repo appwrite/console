@@ -18,11 +18,11 @@
     import Create from './createDocument.svelte';
     import { Query } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
 
     function openWizard() {
         wizard.start(Create);

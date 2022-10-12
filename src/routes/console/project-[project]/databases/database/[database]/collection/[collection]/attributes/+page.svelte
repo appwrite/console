@@ -19,7 +19,7 @@
     import Delete from './deleteAttribute.svelte';
     import Overview from './overview.svelte';
     import { pageLimit } from '$lib/stores/layout';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let showDropdown = [];
     let selectedAttribute: Attributes = null;
@@ -28,7 +28,7 @@
     let showOverview = false;
     let showCreateIndex = false;
 
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
 </script>
 
 <Container>

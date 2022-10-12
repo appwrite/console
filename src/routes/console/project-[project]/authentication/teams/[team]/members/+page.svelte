@@ -20,7 +20,7 @@
     import CreateMember from '../_createMembership.svelte';
     import DeleteMembership from '../_deleteMembership.svelte';
     import { pageLimit } from '$lib/stores/layout';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let showCreate = false;
     let showDelete = false;
@@ -28,7 +28,7 @@
     let selectedMembership: Models.Membership;
 
     const project = $page.params.project;
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
 
     $: if (search) $offset = 0;

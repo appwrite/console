@@ -16,9 +16,9 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { pageLimit } from '$lib/stores/layout';
     import { Query } from '@aw-labs/appwrite-console';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
 
     $: request = sdkForProject.teams.listLogs($page.params.team, [
         Query.limit($pageLimit),

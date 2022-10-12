@@ -34,7 +34,7 @@
     import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
     import { pageLimit } from '$lib/stores/layout';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let search = '';
     let showCreate = false;
@@ -44,7 +44,7 @@
 
     const project = $page.params.project;
     const bucket = $page.params.bucket;
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
     const getPreview = (fileId: string) =>
         sdkForProject.storage.getFilePreview(bucket, fileId, 32, 32).toString() + '&mode=admin';
 

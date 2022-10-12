@@ -11,12 +11,12 @@
     import { bucketList } from './store';
     import { tooltip } from '$lib/actions/tooltip';
     import { cardLimit } from '$lib/stores/layout';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let showCreate = false;
 
     const project = $page.params.project;
-    const offset = createPersistenPagination($cardLimit);
+    const offset = createPersistentPagination($cardLimit);
 
     async function bucketCreated(event: CustomEvent<Models.Bucket>) {
         showCreate = false;

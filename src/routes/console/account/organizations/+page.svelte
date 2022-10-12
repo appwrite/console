@@ -8,7 +8,7 @@
     import { onMount } from 'svelte';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { cardLimit } from '$lib/stores/layout';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     onMount(async () => {
         await organizationList.load();
@@ -29,7 +29,7 @@
     };
 
     let addOrganization = false;
-    const offset = createPersistenPagination($cardLimit);
+    const offset = createPersistentPagination($cardLimit);
 </script>
 
 <Container>

@@ -10,13 +10,13 @@
     import { base } from '$app/paths';
     import { collections } from './store';
     import { cardLimit } from '$lib/stores/layout';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let showCreate = false;
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
-    const offset = createPersistenPagination($cardLimit);
+    const offset = createPersistentPagination($cardLimit);
 
     async function handleCreate(event: CustomEvent<Models.Collection>) {
         showCreate = false;

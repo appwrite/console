@@ -15,7 +15,7 @@
     import { Container } from '$lib/layout';
     import { sdkForProject } from '$lib/stores/sdk';
     import { pageLimit } from '$lib/stores/layout';
-    import { createPersistenPagination } from '$lib/stores/pagination';
+    import { createPersistentPagination } from '$lib/stores/pagination';
     import DeleteMembership from '../_deleteMembership.svelte';
     import DeleteAllMemberships from '../_deleteAllMemberships.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -25,7 +25,7 @@
     let showDeleteAll = false;
 
     const project = $page.params.project;
-    const offset = createPersistenPagination($pageLimit);
+    const offset = createPersistentPagination($pageLimit);
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
 
     $: request = sdkForProject.users.listMemberships($page.params.user);
