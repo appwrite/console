@@ -8,6 +8,7 @@
     import { database } from '../store';
     import Delete from '../_delete.svelte';
     import { onMount } from 'svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     const databaseId = $page.params.database;
     const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
@@ -54,8 +55,8 @@
                     </div>
                 </div>
                 <div class="grid-1-2-col-2">
-                    <p>Created: TO IMPLEMENT</p>
-                    <p>Last Updated: TO IMPLEMENT</p>
+                    <p>Created: {toLocaleDateTime($database.$createdAt)}</p>
+                    <p>Last Updated: {toLocaleDateTime($database.$updatedAt)}</p>
                 </div>
             </div>
         </Card>
