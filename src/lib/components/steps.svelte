@@ -21,7 +21,7 @@
         {#each steps as step, index}
             {@const stepNumber = index + 1}
             {#if firstOptional === index}
-                <span style="margin-block: 1.5rem;">OPTIONAL</span>
+                <h3 class="eyebrow-heading-3">OPTIONAL</h3>
             {/if}
             <Step
                 bind:currentSub
