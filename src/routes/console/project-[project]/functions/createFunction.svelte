@@ -16,7 +16,7 @@
 
     const create = async () => {
         try {
-            await sdkForProject.functions.create(
+            const response = await sdkForProject.functions.create(
                 $createFunction.id ?? 'unique()',
                 $createFunction.name,
                 $createFunction.execute,
@@ -27,7 +27,7 @@
             );
             $createFunction.vars.forEach(
                 async (v) =>
-                    await sdkForProject.functions.createVariable($createFunction.id, v.key, v.value)
+                    await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
             );
             addNotification({
                 message: 'Function has been created',

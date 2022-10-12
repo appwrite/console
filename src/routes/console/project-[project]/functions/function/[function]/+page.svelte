@@ -141,9 +141,8 @@
                                 {toLocaleDateTime(deployment.$createdAt)}
                             </TableCellText>
                             <TableCellText title="Status">{deployment.status}</TableCellText>
-                            <!-- TODO: replace entrypoin with build time, when implemented -->
-                            <TableCellText title="Build Time"
-                                >{deployment.entrypoint}</TableCellText>
+                            <!-- TODO: replace with build time, when implemented -->
+                            <TableCellText title="Build Time">TBI</TableCellText>
                             <TableCellText title="Size"
                                 >{calculateSize(deployment.size)}</TableCellText>
                             <TableCell>

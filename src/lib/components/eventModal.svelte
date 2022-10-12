@@ -5,7 +5,6 @@
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
-    let eventArray = [];
     let selectedService: typeof services[0] = null;
     let selectedRequest: typeof selectedService['requests'][0] = null;
     let selectedEvent: string = null;
@@ -18,8 +17,7 @@
 
     function create() {
         showCreate = false;
-        eventArray.push(copyValue);
-        dispatch('created', eventArray);
+        dispatch('created', copyValue);
     }
 
     const events = ['create', 'update', 'delete'];
@@ -101,7 +99,7 @@
             } else {
                 data.set('request', {
                     value: request.name,
-                    description: `ID of ${service?.name.slice(0, -1)}`
+                    description: `request`
                 });
                 data.set('requestId', {
                     value: '*',
@@ -173,7 +171,10 @@
                         disabled={showInput}
                         selected={service.name === selectedService?.name}
                         button
-                        on:click={() => (selectedService = service)}>{service.name}</Pill>
+                        on:click={() => {
+                            selectedService = service;
+                            inputData = null;
+                        }}>{service.name}</Pill>
                 {/each}
             </div>
         </div>
@@ -190,6 +191,7 @@
                                 selectedRequest === request
                                     ? (selectedRequest = null)
                                     : (selectedRequest = request);
+                                inputData = null;
                             }}>{request.name}</Pill>
                     {/each}
                 </div>
@@ -206,6 +208,7 @@
                                 selectedEvent === event
                                     ? (selectedEvent = null)
                                     : (selectedEvent = event);
+                                inputData = null;
                             }}>{event}</Pill>
                     {/each}
                 </div>
@@ -223,6 +226,7 @@
                                     selectedAttribute === attribute
                                         ? (selectedAttribute = null)
                                         : (selectedAttribute = attribute);
+                                    inputData = null;
                                 }}>{attribute}</Pill>
                         {/each}
                     </div>
@@ -254,21 +258,26 @@
             </div>
         {:else}
             <div class="input-text-wrapper" style="--amount-of-buttons:2">
-                <div type="text" readonly>
-                    <div class="u-flex" style="min-height: 1.2rem;">
+                <div type="text" readonly style="min-height: 2.5rem;">
+                    {#if inputData}
+                        <span>{inputData}</span>
+                    {:else}
                         {#each Array.from(eventString.values()) as route, i}
                             <button
                                 class:u-opacity-0-5={helper !== route.description}
-                                class:u-bold={helper === route.description}
-                                on:click|preventDefault={() => {
-                                    helper === route.description
-                                        ? (helper = null)
-                                        : (helper = route.description);
+                                on:mouseenter={() => {
+                                    helper = route.description;
+                                }}
+                                on:mouseleave={() => {
+                                    helper = null;
                                 }}>
-                                {route.value}{i + 1 < eventString?.size ? '.' : ''}
+                                {route.value}
                             </button>
+                            <span class="u-opacity-0-5">
+                                {i + 1 < eventString?.size ? '.' : ''}
+                            </span>
                         {/each}
-                    </div>
+                    {/if}
                 </div>
                 <div class="options-list">
                     <button
@@ -289,15 +298,13 @@
                         </Copy>
                     </button>
                 </div>
-                {#if helper}
-                    <span>{helper}</span>
-                {/if}
+                <p style="height: 2rem;">{helper ?? ''}</p>
             </div>
         {/if}
 
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-            <Button submit>Create</Button>
+            <Button disabled={showInput || !copyValue} submit>Create</Button>
         </svelte:fragment>
     </Modal>
 </Form>

@@ -35,7 +35,10 @@
         wizard.hide();
     });
 
-    $: functionList.load([Query.limit($cardLimit), Query.offset(offset)], search);
+    $: functionList.load(
+        [Query.limit($cardLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search
+    );
     $: if (search) offset = 0;
 </script>
 

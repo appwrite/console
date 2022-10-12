@@ -8,8 +8,11 @@
 
     let showCreate = false;
 
+    let eventSet = new Set<string>();
+
     function handleCreated(event: CustomEvent) {
-        $createFunction.events = event.detail;
+        eventSet.add(event.detail);
+        $createFunction.events = Array.from(eventSet);
     }
 </script>
 
@@ -28,7 +31,7 @@
                     <TableCellText title="id">
                         {id}
                     </TableCellText>
-                    <TableCell showOverflow title="options" width={30}>
+                    <TableCell showOverflow title="options" width={40}>
                         <button
                             class="button is-text is-only-icon"
                             aria-label="delete id"
