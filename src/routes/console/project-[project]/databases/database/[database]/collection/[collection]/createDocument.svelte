@@ -72,7 +72,8 @@
     });
     stepsComponents.set(2, {
         label: 'Set permissions',
-        component: Step2
+        component: Step2,
+        optional: true
     });
 </script>
 

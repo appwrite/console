@@ -4,6 +4,7 @@
         {
             label: string;
             component: typeof SvelteComponent;
+            optional?: boolean;
         }
     >;
 </script>
@@ -13,19 +14,37 @@
     import { Button, Form } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import { createEventDispatcher, type SvelteComponent } from 'svelte';
+    import WizardExitModal from './wizardExitModal.svelte';
 
     export let title: string;
     export let steps: WizardStepsType;
+    export let confirmExit = false;
     export let finalAction = 'Create';
 
     const dispatch = createEventDispatcher();
 
     let currentStep = 1;
+    let showExitModal = false;
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Escape') {
+        if (event.key === 'Escape' && !showExitModal) {
             event.preventDefault();
             wizard.hide();
+        }
+    }
+
+    function handleExit() {
+        if (confirmExit) {
+            showExitModal = true;
+        } else {
+            wizard.hide();
+        }
+    }
+
+    function handleStepClick(e: CustomEvent<number>) {
+        const step = e.detail;
+        if (step < currentStep) {
+            currentStep = step;
         }
     }
 
@@ -52,15 +71,17 @@
         <div class="body-text-1">{title}</div>
 
         <slot name="header" />
-        <button class="x-button" aria-label="close wizard" on:click={wizard.hide}>
+        <button class="x-button" aria-label="close wizard" on:click={handleExit}>
             <span class="icon-x" aria-hidden="true" />
         </button>
     </header>
 
     <aside class="wizard-side">
         <Steps
-            steps={sortedSteps.map(([, { label }]) => ({
-                text: label
+            on:step={handleStepClick}
+            steps={sortedSteps.map(([, { label, optional }]) => ({
+                text: label,
+                optional
             }))}
             {currentStep} />
     </aside>
@@ -76,6 +97,10 @@
             {/each}
             <div class="form-footer">
                 <div class="u-flex u-main-end u-gap-12">
+                    {#if sortedSteps[currentStep - 1][1].optional}
+                        <Button text on:click={() => (isLastStep = true)} submit
+                            >Skip optional steps</Button>
+                    {/if}
                     {#if currentStep === 1}
                         <Button secondary on:click={wizard.hide}>Cancel</Button>
                         <Button submit>Next</Button>
@@ -91,3 +116,9 @@
         </Form>
     </div>
 </section>
+
+{#if showExitModal}
+    <WizardExitModal bind:show={showExitModal} on:exit={() => wizard.hide()}>
+        <slot name="exit">this process</slot>
+    </WizardExitModal>
+{/if}
