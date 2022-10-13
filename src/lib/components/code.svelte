@@ -24,10 +24,9 @@
     });
 </script>
 
-<section class="box u-overflow-hidden u-min-height-100">
+<section class="box u-overflow-hidden common-section">
     <div
-        data-testid="controls"
-        class="u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
+        class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
             <Pill>{label}</Pill>
         {/if}
@@ -47,12 +46,20 @@
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
 
+    .controls {
+        z-index: 2;
+    }
+
     code,
     pre {
         &[class*='language-'] {
             color: #fcfcff;
             text-shadow: none;
             font-family: 'Source Code Pro';
+
+            &.line-numbers {
+                padding-left: 2.5em;
+            }
             body.theme-light & {
                 color: #373b4d;
             }
@@ -75,6 +82,8 @@
     :not(pre) > code[class*='language-'],
     pre[class*='language-'] {
         background: hsl(var(--p-box-background-color));
+        padding: 0;
+        margin: 0;
     }
     .token {
         &.comment,

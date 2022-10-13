@@ -25,7 +25,7 @@
             {:else}
                 <div class="bullet" class:is-current={current} />
             {/if}
-            <div class="step-item-content">
+            <div class="steps-item-content">
                 <span class="text">{step.text}</span>
                 {#if step?.substeps}
                     <ul class="steps-sub">

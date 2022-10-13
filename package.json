@@ -19,8 +19,8 @@
     },
     "dependencies": {
         "@aw-labs/appwrite-console": "^6.0.0",
-        "@aw-labs/icons": "0.0.0-62",
-        "@aw-labs/ui": "0.0.0-62",
+        "@aw-labs/icons": "0.0.0-63",
+        "@aw-labs/ui": "0.0.0-63",
         "echarts": "^5.4.0",
         "prismjs": "^1.29.0",
         "tippy.js": "^6.3.7",
