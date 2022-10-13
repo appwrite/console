@@ -1,6 +1,14 @@
 import type { EChartsOption } from 'echarts';
 
+export enum Colors {
+    Primary = '#F02E65',
+    Secondary = '#94DBD1',
+    Tertiary = '#A1C4FF',
+    Quaternary = '#CBB1FC',
+    Quinary = '#FDC584'
+}
 export const defaultConfig: EChartsOption = {
+    color: Object.values(Colors),
     animation: false,
     tooltip: {
         trigger: 'axis'

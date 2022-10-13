@@ -6,6 +6,7 @@
     import { Container } from '$lib/layout';
     import { BarChart, LineChart } from '$lib/charts';
     import { Card, DropTabs, DropTabsItem, Tiles } from '$lib/components';
+    import { Colors } from '$lib/charts/config';
     import type { Models } from '@aw-labs/appwrite-console';
 
     type MetricMetadata = {
@@ -76,7 +77,7 @@
                         {
                             name: createdMetadata.legend,
                             data: [...created.map((e) => [e.date, e.value])],
-                            color: '#94DBD1'
+                            color: Colors.Secondary
                         }
                     ]} />
             {/if}
@@ -91,7 +92,7 @@
                         {
                             name: readMetadata.legend,
                             data: [...read.map((e) => [e.date, e.value])],
-                            color: '#A1C4FF'
+                            color: Colors.Tertiary
                         }
                     ]} />
             {/if}
@@ -106,7 +107,7 @@
                         {
                             name: updatedMetadata.legend,
                             data: [...updated.map((e) => [e.date, e.value])],
-                            color: '#CBB1FC'
+                            color: Colors.Quaternary
                         }
                     ]} />
             {/if}
@@ -121,7 +122,7 @@
                         {
                             name: deletedMetadata.legend,
                             data: [...deleted.map((e) => [e.date, e.value])],
-                            color: '#FDC584'
+                            color: Colors.Quinary
                         }
                     ]} />
             {/if}
