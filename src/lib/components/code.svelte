@@ -25,7 +25,9 @@
 </script>
 
 <section class="box u-overflow-hidden u-min-height-100">
-    <div class="u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
+    <div
+        data-testid="controls"
+        class="u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
             <Pill>{label}</Pill>
         {/if}
