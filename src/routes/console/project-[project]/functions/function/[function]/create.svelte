@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { InputChoice, Button, InputText, Form } from '$lib/elements/forms';
-    import { Modal, Collapsible, CollapsibleItem, Tabs, Tab } from '$lib/components';
+    import { InputChoice, Button, InputText, InputFile, Form } from '$lib/elements/forms';
+    import { Modal, Collapsible, CollapsibleItem, Tabs, Tab, Code } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -13,13 +13,19 @@
     let entrypoint: string;
     let code: FileList;
     let active: boolean;
+    let files: FileList;
 
     const functionId = $page.params.function;
     const dispatch = createEventDispatcher();
 
     const create = async () => {
         try {
-            await sdkForProject.functions.createDeployment(functionId, entrypoint, code[0], active);
+            await sdkForProject.functions.createDeployment(
+                functionId,
+                entrypoint,
+                files[0],
+                active
+            );
             code = entrypoint = active = null;
             showCreate = false;
             dispatch('created');
@@ -28,6 +34,40 @@
                 type: 'error',
                 message: error.message
             });
+        }
+    };
+
+    const codeSnippets = {
+        Unix: {
+            code: `
+appwrite functions createDeployment \\ \n
+    --functionId=${functionId} \\ \n
+    --entrypoint='index.js' \\ \n
+    --code="." \\ \n
+    --activate=true
+    `,
+            language: 'bash'
+        },
+
+        CMD: {
+            code: `
+appwrite functions createDeployment ^ \n
+    --functionId=${functionId} ^ \n
+    --entrypoint='index.js' ^ \n
+    --code="." ^ \n
+    --activate=true
+    `,
+            language: 'CMD'
+        },
+        PowerShell: {
+            code: `
+appwrite functions createDeployment , \n
+    --functionId=${functionId} , \n
+    --entrypoint='index.js' , \n
+    --code="." , \n
+    --activate=true
+    `,
+            language: 'PowerShell'
         }
     };
 </script>
@@ -45,7 +85,7 @@
             <p class="text">
                 You can deploy your function from the Appwrite CLI using Unix, CMD, or PowerShell.
                 Check out our Documentation to learn more about <a
-                    href="#/"
+                    href="https://appwrite.io/docs/functions#deployFunction"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">deploying your functions</a
@@ -57,7 +97,12 @@
                 {#each ['Unix', 'CMD', 'PowerShell'] as category}
                     <CollapsibleItem>
                         <svelte:fragment slot="title">{category}</svelte:fragment>
-                        Code
+                        <Code
+                            showLineNumbers
+                            showCopy
+                            language="sh"
+                            label={codeSnippets[category].language}
+                            code={codeSnippets[category].code} />
                     </CollapsibleItem>
                 {/each}
             </Collapsible>
@@ -71,7 +116,7 @@
                     id="entrypoint"
                     bind:value={entrypoint}
                     required />
-                <!-- <InputFile label="Gzipped code (tar.gz)" id="file" required /> -->
+                <InputFile label="Gzipped code (tar.gz)" bind:files />
                 <InputChoice
                     label="Activate Deployment after build"
                     id="activate"
