@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Card, Avatar, CardGrid, Box } from '$lib/components';
+    import { Card, Avatar, CardGrid, Box, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, Helper } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -51,7 +51,7 @@
                 <div class="grid-1-2-col-1">
                     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
                         <Avatar size={48} name={$database.name} src={getAvatar($database.name)} />
-                        <h6 class="heading-level-7">{$database.name}</h6>
+                        <Heading tag="h6" size="7">{$database.name}</Heading>
                     </div>
                 </div>
                 <div class="grid-1-2-col-2">
@@ -62,7 +62,7 @@
         </Card>
 
         <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+            <Heading tag="h6" size="7">Update Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -89,7 +89,7 @@
 
         <CardGrid>
             <div>
-                <h6 class="heading-level-7">Danger Zone</h6>
+                <Heading tag="h6" size="7">Danger Zone</Heading>
             </div>
 
             <p>

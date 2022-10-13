@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, Copy } from '$lib/components';
+    import { CardGrid, Box, Copy, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
@@ -86,7 +86,7 @@
                     </div>
                 </a>
                 <div>
-                    <h2 class="heading-level-7">{$file.name}</h2>
+                    <Heading tag="h2" size="7">{$file.name}</Heading>
                     <Copy value={getView($file.$id)}>
                         <Pill button><i class="icon-duplicate" />File URL</Pill>
                     </Copy>
@@ -109,7 +109,7 @@
         </CardGrid>
 
         <CardGrid>
-            <h6 class="heading-level-7">Update Permissions</h6>
+            <Heading tag="h6" size="7">Update Permissions</Heading>
             <p>
                 Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
                 permissions are enabled, file permissions will be ignored.
@@ -128,7 +128,7 @@
         </CardGrid>
 
         <CardGrid>
-            <h6 class="heading-level-7">Delete file</h6>
+            <Heading tag="h6" size="7">Delete file</Heading>
             <p>
                 The file will be permanently deleted, including all the files within it. This action
                 is irreversible.

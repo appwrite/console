@@ -8,7 +8,7 @@
         TableCellText,
         TableRow
     } from '$lib/elements/table';
-    import { Avatar, Pagination } from '$lib/components';
+    import { Avatar, Heading, Pagination } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -63,7 +63,7 @@
 <Container>
     {#if $memberList?.total}
         <div class="u-flex u-gap-12 common-section u-main-space-between">
-            <h2 class="heading-level-5">Members</h2>
+            <Heading tag="h2" size="5">Members</Heading>
 
             <Button on:click={() => newMemberModal.set(true)}>
                 <span class="icon-plus" aria-hidden="true" />

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, AvatarGroup } from '$lib/components';
+    import { CardGrid, Box, AvatarGroup, Heading } from '$lib/components';
     import { InputText, Form, Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -55,7 +55,7 @@
     {#if $organization}
         <Form on:submit={updateName}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Name</h6>
+                <Heading tag="h6" size="7">Update Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <ul>
@@ -76,7 +76,7 @@
 
         <CardGrid>
             <div>
-                <h6 class="heading-level-7">Delete Organization</h6>
+                <Heading tag="h6" size="7">Delete Organization</Heading>
             </div>
             <p>
                 The organization will be permanently deleted, including all projects and data

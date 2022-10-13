@@ -2,7 +2,7 @@
     import { afterNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { CardGrid } from '$lib/components';
+    import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { updateLayout } from '$lib/stores/layout';
@@ -95,7 +95,7 @@
     {#if loaded}
         <Form on:submit={updateName}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Name</h6>
+                <Heading tag="h6" size="7">Update Name</Heading>
                 <p class="text">
                     Choose any name that will help you distinguish between platforms.
                 </p>
@@ -120,7 +120,7 @@
 
         <CardGrid>
             <div>
-                <h6 class="heading-level-7">Delete Platform</h6>
+                <Heading tag="h6" size="7">Delete Platform</Heading>
             </div>
             <p>The Platform will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box } from '$lib/components';
+    import { CardGrid, Box, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import {
         Form,
@@ -208,7 +208,7 @@
     {#if $bucket}
         <Form on:submit={toggleBucket}>
             <CardGrid>
-                <h2 class="heading-level-7">{$bucket.name}</h2>
+                <Heading tag="h2" size="7">{$bucket.name}</Heading>
 
                 <svelte:fragment slot="aside">
                     <ul>
@@ -229,7 +229,7 @@
 
         <Form on:submit={updateName}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Name</h6>
+                <Heading tag="h6" size="7">Update Name</Heading>
                 <svelte:fragment slot="aside">
                     <ul>
                         <InputText
@@ -250,7 +250,7 @@
 
         <Form on:submit={updatePermissions}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Permissions</h6>
+                <Heading tag="h6" size="7">Update Permissions</Heading>
                 <p>
                     Assign read or write permissions at the <b>Bucket Level</b> or
                     <b>File Level</b>. If Bucket Level permissions are assigned, file permissions
@@ -293,7 +293,7 @@
 
         <Form on:submit={updateSecurity}>
             <CardGrid>
-                <h2 class="heading-level-7">Update Security Settings</h2>
+                <Heading tag="h2" size="7">Update Security Settings</Heading>
                 <p>
                     Enable or disable security services for the bucket including <b>Ecryption</b>
                     and <b>Antivirus scanning.</b>
@@ -362,7 +362,7 @@
 
         <Form on:submit={updateMaxSize}>
             <CardGrid>
-                <h2 class="heading-level-6">Update Maximum File Size</h2>
+                <Heading tag="h2" size="6">Update Maximum File Size</Heading>
                 <p>Set the maximum file size allowed in the bucket.</p>
                 <svelte:fragment slot="aside">
                     <ul class="u-flex u-gap-12">
@@ -383,7 +383,7 @@
 
         <Form on:submit={updateAllowedExtensions}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Allowed File Extensions</h6>
+                <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
                 <p>
                     A maxiumum of 100 file extensions can be added. Leave blank to allow all file
                     types.
@@ -419,7 +419,7 @@
         </Form>
 
         <CardGrid>
-            <h6 class="heading-level-7">Delete Bucket</h6>
+            <Heading tag="h6" size="7">Delete Bucket</Heading>
             <p>
                 The bucket will be permanently deleted, including all the files within it. This
                 action is irreversible.

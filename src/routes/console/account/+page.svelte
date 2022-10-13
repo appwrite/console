@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Form, FormList, InputText, InputPassword } from '$lib/elements/forms';
-    import { CardGrid, Box, Avatar } from '$lib/components';
+    import { CardGrid, Box, Avatar, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { onMount } from 'svelte';
     import { user } from '$lib/stores/user';
@@ -78,7 +78,7 @@
 <Container>
     <Form on:submit={updateName}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+            <Heading tag="h6" size="7">Update Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -99,7 +99,7 @@
     </Form>
     <Form on:submit={updateEmail}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Email</h6>
+            <Heading tag="h6" size="7">Update Email</Heading>
 
             <svelte:fragment slot="aside">
                 <FormList>
@@ -129,7 +129,7 @@
     </Form>
     <Form on:submit={updatePassword}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Password</h6>
+            <Heading tag="h6" size="7">Update Password</Heading>
             <p class="text">
                 Forgot your password? <a class="link" href={`${base}/recover`}
                     >Recover your password</a>
@@ -161,7 +161,7 @@
     </Form>
     <CardGrid>
         <div>
-            <h6 class="heading-level-7">Delete Account</h6>
+            <Heading tag="h6" size="7">Delete Account</Heading>
         </div>
         <p>
             Your account will be permanently deleted and access will be lost to any of your teams

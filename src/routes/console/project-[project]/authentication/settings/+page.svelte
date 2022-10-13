@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid } from '$lib/components';
+    import { CardGrid, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -47,7 +47,7 @@
 {#if $authMethods && $OAuthProviders}
     <Container>
         <CardGrid>
-            <h2 class="heading-level-7">Authentication Methods</h2>
+            <Heading tag="h2" size="7">Authentication Methods</Heading>
             <p>Enable the authentication methods you wish to use.</p>
             <svelte:fragment slot="aside">
                 <form class="form">
