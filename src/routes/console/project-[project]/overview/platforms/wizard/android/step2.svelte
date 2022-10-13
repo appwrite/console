@@ -12,7 +12,7 @@
     <svelte:fragment slot="title">Get the SDK</svelte:fragment>
     <p>First, add this to your root level build.gradle file:</p>
     <Code label="Groovy" language="kotlin" code={example1} showCopy />
-    <p>And add this to your project's build.gradle file:</p>
+    <p class="common-section">And add this to your project's build.gradle file:</p>
     <Code
         label="Groovy"
         language="kotlin"

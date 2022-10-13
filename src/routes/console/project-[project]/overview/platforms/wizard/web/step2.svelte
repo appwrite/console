@@ -32,7 +32,7 @@
                 >NPM (node package manager)</a> from your command line to add Appwrite SDK to your project.
         </p>
         <Code label="Bash" language="sh" code="npm install appwrite" showCopy />
-        <p>
+        <p class="common-section">
             When you're using a bundler (like <a
                 href="https://vitejs.dev"
                 target="_blank"
