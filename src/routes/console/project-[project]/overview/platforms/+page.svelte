@@ -5,8 +5,11 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import { project } from '../../store';
+    import CreateAndroid from './createAndroid.svelte';
+    import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateWeb from './createWeb.svelte';
+    import { versions } from './wizard/store';
 
     let showDropdown = false;
     const path = `/console/project-${$page.params.project}/overview/platforms`;
@@ -21,11 +24,12 @@
     const platforms = {
         [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
-        [Platform.Android]: CreateWeb,
-        [Platform.Apple]: CreateWeb
+        [Platform.Android]: CreateAndroid,
+        [Platform.Apple]: CreateApple
     };
 
-    function addPlatform(type: Platform) {
+    async function addPlatform(type: Platform) {
+        await versions.load();
         wizard.start(platforms[type]);
     }
 </script>
@@ -61,7 +65,6 @@
     {#each $project.platforms as platform}
         <GridItem1 href={`${path}/${platform.$id}`}>
             <svelte:fragment slot="title">{platform.name}</svelte:fragment>
-
             <div class="grid-item-1-end-start">
                 <p>Last Updated</p>
                 <p>{toLocaleDateTime(platform.$updatedAt)}</p>

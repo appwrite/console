@@ -1,11 +1,8 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
     import { beforeNavigate } from '$app/navigation';
-    import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
-    import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
-    import { createPlatform } from './wizard/store';
     import { project } from '../../store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/web/step1.svelte';
@@ -15,29 +12,10 @@
 
     const projectId = $page.params.project;
 
-    const create = async () => {
-        try {
-            await sdkForConsole.projects.createPlatform(
-                projectId,
-                $createPlatform.type,
-                $createPlatform.name,
-                $createPlatform.key ?? undefined,
-                $createPlatform.store ?? undefined,
-                $createPlatform.hostname ?? undefined
-            );
-            addNotification({
-                message: 'Platform has been added',
-                type: 'success'
-            });
-            project.load(projectId);
-            wizard.hide();
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    };
+    async function create() {
+        project.load(projectId);
+        wizard.hide();
+    }
 
     beforeNavigate(() => {
         wizard.hide();

@@ -5,9 +5,9 @@
     import { wizard } from '$lib/stores/wizard';
     import { project } from '../../store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import Step1 from './wizard/flutter/step1.svelte';
-    import Step2 from './wizard/flutter/step2.svelte';
-    import Step3 from './wizard/flutter/step3.svelte';
+    import Step1 from './wizard/apple/step1.svelte';
+    import Step2 from './wizard/apple/step2.svelte';
+    import Step3 from './wizard/apple/step3.svelte';
     import Step4 from './wizard/step4.svelte';
 
     const projectId = $page.params.project;
@@ -41,7 +41,7 @@
 </script>
 
 <Wizard
-    title="Add a Flutter Project"
+    title="Add an Apple Project"
     steps={stepsComponents}
     on:finish={create}
     finalAction="Take me to my Dashboard" />

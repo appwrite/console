@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { versions } from '../store';
+
     import { Code } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { WizardStep } from '$lib/layout';
@@ -51,7 +53,7 @@
         <Code
             label="HTML"
             language="html"
-            code={`<script src="https://cdn.jsdelivr.net/npm/appwrite"></script>`}
+            code={`<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}"></script>`}
             showCopy />
     {/if}
 </WizardStep>
