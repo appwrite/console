@@ -73,6 +73,7 @@
                 <div class="u-margin-block-start-16" />
                 <LineChart
                     series={[
+                        {},
                         {
                             name: createdMetadata.legend,
                             data: [...created.map((e) => [e.date, e.value])]
@@ -87,6 +88,8 @@
                 <div class="u-margin-block-start-16" />
                 <LineChart
                     series={[
+                        {},
+                        {},
                         {
                             name: readMetadata.legend,
                             data: [...read.map((e) => [e.date, e.value])]
@@ -101,6 +104,9 @@
                 <div class="u-margin-block-start-16" />
                 <LineChart
                     series={[
+                        {},
+                        {},
+                        {},
                         {
                             name: updatedMetadata.legend,
                             data: [...updated.map((e) => [e.date, e.value])]
@@ -115,9 +121,14 @@
                 <div class="u-margin-block-start-16" />
                 <LineChart
                     series={[
+                        {},
+                        {},
+                        {},
+                        {},
                         {
                             name: deletedMetadata.legend,
-                            data: [...deleted.map((e) => [e.date, e.value])]
+                            data: [...deleted.map((e) => [e.date, e.value])],
+                            zlevel: 2
                         }
                     ]} />
             {/if}
