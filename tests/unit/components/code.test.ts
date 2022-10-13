@@ -4,12 +4,12 @@ import { vi } from 'vitest';
 import { Code } from '../../../src/lib/components';
 
 test('default props', async () => {
-    const { getByTestId } = render(Code, {
+    const { container } = render(Code, {
         code: 'console.log("test");',
         language: 'js'
     });
 
-    expect(getByTestId('controls').children.length).toEqual(0);
+    expect(container.querySelector('.controls').children.length).toEqual(0);
 });
 
 test('shows label', async () => {
