@@ -30,6 +30,7 @@
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape' && !showExitModal) {
             event.preventDefault();
+            dispatch('exit');
             wizard.hide();
         }
     }
@@ -38,6 +39,7 @@
         if (confirmExit) {
             showExitModal = true;
         } else {
+            dispatch('exit');
             wizard.hide();
         }
     }
@@ -52,7 +54,6 @@
     async function submit() {
         if ($wizard.interceptor) {
             try {
-                console.log($wizard.interceptor);
                 await $wizard.interceptor();
             } catch (error) {
                 addNotification({

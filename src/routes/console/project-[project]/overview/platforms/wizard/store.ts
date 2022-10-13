@@ -3,11 +3,30 @@ import { sdkForConsole } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
 import type { Models } from '@aw-labs/appwrite-console';
 
-export const createPlatform = writable<Partial<Models.Platform>>({
-    name: null,
-    hostname: null,
-    type: null
-});
+function createPlatformStore() {
+    const { subscribe, update, set } = writable<Partial<Models.Platform>>({
+        $id: null,
+        name: null,
+        hostname: null,
+        type: null
+    });
+
+    return {
+        subscribe,
+        update,
+        set,
+        reset() {
+            set({
+                $id: null,
+                name: null,
+                hostname: null,
+                type: null
+            });
+        }
+    };
+}
+
+export const createPlatform = createPlatformStore();
 
 export const versions = cachedStore<
     {

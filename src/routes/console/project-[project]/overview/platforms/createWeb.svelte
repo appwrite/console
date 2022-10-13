@@ -9,6 +9,7 @@
     import Step2 from './wizard/web/step2.svelte';
     import Step3 from './wizard/web/step3.svelte';
     import Step4 from './wizard/step4.svelte';
+    import { createPlatform } from './wizard/store';
 
     const projectId = $page.params.project;
 
@@ -44,4 +45,5 @@
     title="Add a Web Project"
     steps={stepsComponents}
     on:finish={create}
+    on:exit={createPlatform.reset}
     finalAction="Take me to my Dashboard" />

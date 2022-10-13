@@ -9,6 +9,7 @@
     import Step2 from './wizard/android/step2.svelte';
     import Step3 from './wizard/android/step3.svelte';
     import Step4 from './wizard/step4.svelte';
+    import { createPlatform } from './wizard/store';
 
     const projectId = $page.params.project;
 
@@ -44,4 +45,5 @@
     title="Add an Android Project"
     steps={stepsComponents}
     on:finish={create}
+    on:exit={createPlatform.reset}
     finalAction="Take me to my Dashboard" />
