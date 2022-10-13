@@ -17,14 +17,15 @@
     import { onMount } from 'svelte';
     import { accountActivity } from '../store';
     import { Query } from '@aw-labs/appwrite-console';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
-    let offset = 0;
+    const offset = createPersistentPagination($pageLimit);
 
     onMount(async () => {
-        await accountActivity.load([Query.offset(offset), Query.limit($pageLimit)]);
+        await accountActivity.load([Query.offset($offset), Query.limit($pageLimit)]);
     });
 
-    $: accountActivity.load([Query.offset(offset), Query.limit($pageLimit)]);
+    $: accountActivity.load([Query.offset($offset), Query.limit($pageLimit)]);
 
     const getBrowser = (clientCode: string) => {
         return sdkForConsole.avatars.getBrowser(clientCode, 40, 40);
@@ -104,6 +105,6 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {$accountActivity?.total}</p>
-        <Pagination limit={$pageLimit} bind:offset sum={$accountActivity?.total} />
+        <Pagination limit={$pageLimit} bind:offset={$offset} sum={$accountActivity?.total} />
     </div>
 </Container>

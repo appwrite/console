@@ -10,22 +10,24 @@
     import { base } from '$app/paths';
     import { collections } from './store';
     import { cardLimit } from '$lib/stores/layout';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let showCreate = false;
-    let offset = 0;
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
-    const handleCreate = async (event: CustomEvent<Models.Collection>) => {
+    const offset = createPersistentPagination($cardLimit);
+
+    async function handleCreate(event: CustomEvent<Models.Collection>) {
         showCreate = false;
         await goto(
             `${base}/console/project-${project}/databases/database/${databaseId}/collection/${event.detail.$id}`
         );
-    };
+    }
 
     $: collections.load(databaseId, [
         Query.limit($cardLimit),
-        Query.offset(offset),
+        Query.offset($offset),
         Query.orderDesc('$createdAt')
     ]);
 </script>
@@ -41,7 +43,10 @@
     </div>
 
     {#if $collections?.total}
-        <CardContainer total={$collections.total} {offset} on:click={() => (showCreate = true)}>
+        <CardContainer
+            total={$collections.total}
+            offset={$offset}
+            on:click={() => (showCreate = true)}>
             {#each $collections.collections as collection}
                 <GridItem1
                     href={`${base}/console/project-${project}/databases/database/${databaseId}/collection/${collection.$id}`}>
@@ -69,7 +74,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$collections.total}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={$collections.total} />
+            <Pagination limit={$cardLimit} bind:offset={$offset} sum={$collections.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

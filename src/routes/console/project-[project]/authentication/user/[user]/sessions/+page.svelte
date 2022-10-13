@@ -19,19 +19,20 @@
     import { pageLimit } from '$lib/stores/layout';
     import { onMount } from 'svelte';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
-    let offset = 0;
     let showDelete = false;
     let showDeleteAll = false;
     let selectedSessionId: string = null;
     let sessionList: Models.SessionList = null;
+
+    const offset = createPersistentPagination($pageLimit);
+
     onMount(async () => {
         sessionList = await sdkForProject.users.listSessions($page.params.user);
     });
 
-    const getBrowser = (clientCode: string) => {
-        return sdkForProject.avatars.getBrowser(clientCode, 40, 40);
-    };
+    const getBrowser = (clientCode: string) => sdkForProject.avatars.getBrowser(clientCode, 40, 40);
 </script>
 
 <Container>
@@ -102,7 +103,7 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {sessionList?.total}</p>
-        <Pagination limit={$pageLimit} bind:offset sum={sessionList?.total} />
+        <Pagination limit={$pageLimit} bind:offset={$offset} sum={sessionList?.total} />
     </div>
 </Container>
 
