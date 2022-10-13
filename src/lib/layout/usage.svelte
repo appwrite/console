@@ -73,10 +73,10 @@
                 <div class="u-margin-block-start-16" />
                 <LineChart
                     series={[
-                        {},
                         {
                             name: createdMetadata.legend,
-                            data: [...created.map((e) => [e.date, e.value])]
+                            data: [...created.map((e) => [e.date, e.value])],
+                            color: '#94DBD1'
                         }
                     ]} />
             {/if}
@@ -88,11 +88,10 @@
                 <div class="u-margin-block-start-16" />
                 <LineChart
                     series={[
-                        {},
-                        {},
                         {
                             name: readMetadata.legend,
-                            data: [...read.map((e) => [e.date, e.value])]
+                            data: [...read.map((e) => [e.date, e.value])],
+                            color: '#A1C4FF'
                         }
                     ]} />
             {/if}
@@ -104,12 +103,10 @@
                 <div class="u-margin-block-start-16" />
                 <LineChart
                     series={[
-                        {},
-                        {},
-                        {},
                         {
                             name: updatedMetadata.legend,
-                            data: [...updated.map((e) => [e.date, e.value])]
+                            data: [...updated.map((e) => [e.date, e.value])],
+                            color: '#CBB1FC'
                         }
                     ]} />
             {/if}
@@ -121,14 +118,10 @@
                 <div class="u-margin-block-start-16" />
                 <LineChart
                     series={[
-                        {},
-                        {},
-                        {},
-                        {},
                         {
                             name: deletedMetadata.legend,
                             data: [...deleted.map((e) => [e.date, e.value])],
-                            zlevel: 2
+                            color: '#FDC584'
                         }
                     ]} />
             {/if}
