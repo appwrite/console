@@ -49,6 +49,10 @@
         xdefault = selectedAttribute.default;
     }
 
+    $: if (required) {
+        xdefault = null;
+    }
+
     //TODO: refactor to use context module instead of submitted
 </script>
 

@@ -14,8 +14,8 @@
     import CreateProject from './_createProject.svelte';
     import { cardLimit } from '$lib/stores/layout';
     import CardContainer from '$lib/components/cardContainer.svelte';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
-    let projects: Models.Project[] = [];
     $: organizationId = $page.params.organization;
 
     onMount(handle);
@@ -23,7 +23,7 @@
 
     async function handle() {
         await projectList.load([
-            Query.offset(offset),
+            Query.offset($offset),
             Query.limit($cardLimit),
             Query.equal('teamId', organizationId)
         ]);
@@ -31,7 +31,7 @@
 
     let showCreate = false;
     let addOrganization = false;
-    let offset = 0;
+    const offset = createPersistentPagination($cardLimit);
 
     const projectCreated = async (event: CustomEvent<Models.Project>) => {
         await project.load(event.detail.$id);
@@ -79,9 +79,12 @@
     </div>
 
     {#if $projectList?.total}
-        <CardContainer total={$projectList.total} {offset} on:click={() => (showCreate = true)}>
+        <CardContainer
+            total={$projectList.total}
+            offset={$offset}
+            on:click={() => (showCreate = true)}>
             {#each $projectList.projects as project, index}
-                {#if index >= offset && index < $cardLimit + offset}
+                {#if index >= $offset && index < $cardLimit + $offset}
                     <GridItem1 href={`${base}/console/project-${project.$id}`}>
                         <svelte:fragment slot="eyebrow">
                             {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
@@ -113,20 +116,15 @@
                 <p>Create a new project</p>
             </svelte:fragment>
         </CardContainer>
-
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$projectList.total}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={$projectList.total} />
-        </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
             <p>Create a new project</p>
         </Empty>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {projects?.length}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={projects?.length} />
-        </div>
     {/if}
+    <div class="u-flex u-margin-block-start-32 u-main-space-between">
+        <p class="text">Total results: {$projectList?.total}</p>
+        <Pagination limit={$cardLimit} bind:offset={$offset} sum={$projectList?.total} />
+    </div>
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />

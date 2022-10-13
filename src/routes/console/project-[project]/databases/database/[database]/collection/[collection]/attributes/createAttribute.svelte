@@ -19,6 +19,12 @@
     $: if (selectedOption) {
         $option = options.find((option) => option.name === selectedOption);
     }
+
+    $: if (!showCreate) {
+        key = null;
+        selectedOption = null;
+        submitted = false;
+    }
 </script>
 
 <Form on:submit={() => (submitted = true)}>

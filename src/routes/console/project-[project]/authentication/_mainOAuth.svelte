@@ -12,12 +12,22 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { addNotification } from '$lib/stores/notifications';
+    import { onMount } from 'svelte';
 
     export let showModal = false;
     export let provider: Provider;
 
     const projectId = $page.params.project;
 
+    let active = false;
+    let id: string = null;
+    let secret: string = null;
+
+    onMount(() => {
+        active ??= provider.active;
+        id ??= provider.id;
+        secret ??= provider.secret;
+    });
     let error: string;
 
     const update = async () => {
@@ -25,9 +35,12 @@
             await sdkForConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
-                provider.id,
-                provider.secret
+                id,
+                secret
             );
+            provider.active = active;
+            provider.id = id;
+            provider.secret = secret;
             showModal = false;
             addNotification({
                 type: 'success',
@@ -41,7 +54,7 @@
     };
 </script>
 
-<Form on:submit={update}>
+<Form noMargin on:submit={update}>
     <Modal {error} size="big" bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
         <FormList>
@@ -51,22 +64,20 @@
                 <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
                     >visit the docs.</a>
             </p>
-            <InputSwitch
-                id="state"
-                bind:value={provider.active}
-                label={provider.active ? 'Enabled' : 'Disabled'} />
+            <InputSwitch id="state" bind:value={active} label={active ? 'Enabled' : 'Disabled'} />
             <InputText
                 id="appID"
                 label="App ID"
                 autofocus={true}
                 placeholder="Enter ID"
-                bind:value={provider.id} />
+                bind:value={id} />
             <InputPassword
                 id="secret"
                 label="App Secret"
                 placeholder="Enter App Secret"
+                minlength={0}
                 showPasswordButton
-                bind:value={provider.secret} />
+                bind:value={secret} />
             <Alert type="info">
                 To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
             </Alert>
@@ -80,7 +91,13 @@
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showModal = false)}>Cancel</Button>
-            <Button submit>Update</Button>
+            <Button
+                disabled={!id ||
+                    !secret ||
+                    (id === provider.id &&
+                        secret === provider.secret &&
+                        active === provider.active)}
+                submit>Update</Button>
         </svelte:fragment>
     </Modal>
 </Form>

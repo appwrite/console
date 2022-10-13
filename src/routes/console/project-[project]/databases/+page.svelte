@@ -10,19 +10,21 @@
     import { base } from '$app/paths';
     import { databaseList } from './store';
     import { cardLimit } from '$lib/stores/layout';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let showCreate = false;
     let search = '';
-    let offset = 0;
 
     const project = $page.params.project;
-    const handleCreate = async (event: CustomEvent<Models.Database>) => {
+    const offset = createPersistentPagination($cardLimit);
+
+    async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;
         await goto(`${base}/console/project-${project}/databases/database/${event.detail.$id}`);
-    };
+    }
 
     $: databaseList.load(
-        [Query.limit($cardLimit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        [Query.limit($cardLimit), Query.offset($offset), Query.orderDesc('$createdAt')],
         search
     );
 </script>
@@ -37,7 +39,10 @@
     </div>
 
     {#if $databaseList?.total}
-        <CardContainer total={$databaseList.total} {offset} on:click={() => (showCreate = true)}>
+        <CardContainer
+            total={$databaseList.total}
+            offset={$offset}
+            on:click={() => (showCreate = true)}>
             {#each $databaseList.databases as database}
                 <GridItem1
                     href={`${base}/console/project-${project}/databases/database/${database.$id}`}>
@@ -56,11 +61,18 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$databaseList.total}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={$databaseList.total} />
+            <Pagination limit={$cardLimit} bind:offset={$offset} sum={$databaseList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
-            <p>Create your first Database to get started</p>
+            <div class="u-text-center">
+                <p class="text u-line-height-1-5">Create your first Database to get started</p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
+            </div>
+            <div class="u-flex u-gap-12">
+                <Button external href="#/" text>Documentation</Button>
+                <Button secondary>Create Database</Button>
+            </div>
         </Empty>
     {/if}
 </Container>

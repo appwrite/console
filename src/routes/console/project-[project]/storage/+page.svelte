@@ -11,19 +11,21 @@
     import { bucketList } from './store';
     import { tooltip } from '$lib/actions/tooltip';
     import { cardLimit } from '$lib/stores/layout';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let showCreate = false;
-    let offset = 0;
 
     const project = $page.params.project;
-    const bucketCreated = async (event: CustomEvent<Models.Bucket>) => {
+    const offset = createPersistentPagination($cardLimit);
+
+    async function bucketCreated(event: CustomEvent<Models.Bucket>) {
         showCreate = false;
         await goto(`${base}/console/project-${project}/storage/bucket/${event.detail.$id}`);
-    };
+    }
 
     $: bucketList.load([
         Query.limit($cardLimit),
-        Query.offset(offset),
+        Query.offset($offset),
         Query.orderDesc('$createdAt')
     ]);
 </script>
@@ -38,7 +40,10 @@
     </div>
 
     {#if $bucketList?.total}
-        <CardContainer total={$bucketList.total} {offset} on:click={() => (showCreate = true)}>
+        <CardContainer
+            total={$bucketList.total}
+            offset={$offset}
+            on:click={() => (showCreate = true)}>
             {#each $bucketList.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket/${bucket.$id}`}>
                     <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
@@ -86,11 +91,18 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$bucketList.total}</p>
-            <Pagination limit={$cardLimit} bind:offset sum={$bucketList.total} />
+            <Pagination limit={$cardLimit} bind:offset={$offset} sum={$bucketList.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
-            <p>Add your first bucket to get started</p>
+            <div class="u-text-center">
+                <p class="text u-line-height-1-5">Create your first bucket to get started</p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
+            </div>
+            <div class="u-flex u-gap-12">
+                <Button external href="#/" text>Documentation</Button>
+                <Button secondary>Create bucket</Button>
+            </div>
         </Empty>
     {/if}
 </Container>

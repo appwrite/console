@@ -257,8 +257,8 @@
                     will be ignored.
                 </p>
                 <svelte:fragment slot="aside">
-                    <ul class="u-flex u-gap-12 common-section">
-                        <li>
+                    <ul class="checkboxes-list">
+                        <li class="checkboxes-item">
                             <label class="label">
                                 <input
                                     type="radio"
@@ -269,7 +269,7 @@
                                 <span>Bucket Level</span>
                             </label>
                         </li>
-                        <li>
+                        <li class="checkboxes-item">
                             <label class="label">
                                 <input
                                     type="radio"
@@ -295,8 +295,8 @@
             <CardGrid>
                 <h2 class="heading-level-7">Update Security Settings</h2>
                 <p>
-                    Enable or disable security services for the bucket including <b> Ecryption</b>
-                    and <b> Antivirus scanning.</b>
+                    Enable or disable security services for the bucket including <b>Ecryption</b>
+                    and <b>Antivirus scanning.</b>
                 </p>
                 <svelte:fragment slot="aside">
                     <ul class="form-list">

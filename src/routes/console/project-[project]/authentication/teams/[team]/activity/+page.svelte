@@ -16,12 +16,13 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { pageLimit } from '$lib/stores/layout';
     import { Query } from '@aw-labs/appwrite-console';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
-    let offset = 0;
+    const offset = createPersistentPagination($pageLimit);
 
     $: request = sdkForProject.teams.listLogs($page.params.team, [
         Query.limit($pageLimit),
-        Query.offset(offset)
+        Query.offset($offset)
     ]);
 
     const getBrowser = (clientCode: string) => {
@@ -66,14 +67,12 @@
                                     <div class="u-flex u-cross-center u-gap-12">
                                         <p class="text u-trim">
                                             <span class="avatar  is-color-empty" />
-
                                             Unknown
                                         </p>
                                     </div>
                                 {/if}
                             </TableCell>
                             <TableCellText title="Event">{log.event}</TableCellText>
-
                             <TableCellText title="Location">
                                 {#if log.countryCode !== '--'}
                                     {log.countryName}
@@ -94,15 +93,16 @@
                         <p>No logs available</p>
                     </div>
                     <div class="common-section">
-                        <Button external secondary href="https://appwrite.io/docs/server/teams"
-                            >Documentation</Button>
+                        <Button external secondary href="https://appwrite.io/docs/server/teams">
+                            Documentation
+                        </Button>
                     </div>
                 </div>
             </Empty>
         {/if}
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {response.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={response.total} />
+            <Pagination limit={$pageLimit} bind:offset={$offset} sum={response.total} />
         </div>
     {/await}
 </Container>
