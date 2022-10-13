@@ -55,7 +55,7 @@
         }
     };
 
-    $: secret = (keyID && teamID && p8) ? JSON.stringify({ keyID, teamID, p8 }) : provider.secret;
+    $: secret = keyID && teamID && p8 ? JSON.stringify({ keyID, teamID, p8 }) : provider.secret;
 </script>
 
 <Form noMargin on:submit={update}>
