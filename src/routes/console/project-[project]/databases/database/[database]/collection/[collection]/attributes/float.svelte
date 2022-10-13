@@ -55,6 +55,10 @@
         ({ required, array, min, max } = selectedAttribute);
         xdefault = selectedAttribute.default;
     }
+
+    $: if (required) {
+        xdefault = null;
+    }
 </script>
 
 <InputNumber id="min" label="Min" bind:value={min} readonly={overview} />

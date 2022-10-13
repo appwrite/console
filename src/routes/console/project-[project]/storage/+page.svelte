@@ -90,7 +90,14 @@
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
-            <p>Add your first bucket to get started</p>
+            <div class="u-text-center">
+                <p class="text u-line-height-1-5">Create your first bucket to get started</p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
+            </div>
+            <div class="u-flex u-gap-12">
+                <Button external href="#/" text>Documentation</Button>
+                <Button secondary>Create bucket</Button>
+            </div>
         </Empty>
     {/if}
 </Container>

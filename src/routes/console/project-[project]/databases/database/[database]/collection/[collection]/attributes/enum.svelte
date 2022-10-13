@@ -58,6 +58,9 @@
         ({ required, array, elements } = selectedAttribute);
         xdefault = selectedAttribute.default;
     }
+    $: if (required) {
+        xdefault = null;
+    }
 </script>
 
 <InputTags

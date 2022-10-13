@@ -51,6 +51,10 @@
         ({ required, array } = selectedAttribute);
         xdefault = selectedAttribute.default;
     }
+
+    $: if (required) {
+        xdefault = null;
+    }
 </script>
 
 <InputText
