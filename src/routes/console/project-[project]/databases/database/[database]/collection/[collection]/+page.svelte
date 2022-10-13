@@ -18,27 +18,28 @@
     import Create from './createDocument.svelte';
     import { Query } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
-
-    let offset = 0;
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
+    const offset = createPersistentPagination($pageLimit);
+
+    function openWizard() {
+        wizard.start(Create);
+    }
 
     $: documentList.load(databaseId, $collection.$id, [
         Query.limit($pageLimit),
-        Query.offset(offset),
+        Query.offset($offset),
         Query.orderDesc('$createdAt')
     ]);
+
     $: columns = [
         ...$collection.attributes.map((attribute) => ({
             key: attribute.key,
             title: attribute.key
         }))
     ];
-
-    function openWizard() {
-        wizard.start(Create);
-    }
 </script>
 
 <Container>
@@ -84,7 +85,7 @@
 
             <div class="u-flex common-section u-main-space-between">
                 <p class="text">Total results: {$documentList.total}</p>
-                <Pagination limit={$pageLimit} bind:offset sum={$documentList.total} />
+                <Pagination limit={$pageLimit} bind:offset={$offset} sum={$documentList.total} />
             </div>
         {:else}
             <Empty isButton single on:click={openWizard}>

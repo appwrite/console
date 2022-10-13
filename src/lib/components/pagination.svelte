@@ -69,7 +69,7 @@
                             <button
                                 type="button"
                                 class="button"
-                                on:click={() => handleOptionClick(page)}
+                                on:click={() => handleOptionClick(+page)}
                                 class:is-disabled={currentPage === page}
                                 class:is-text={currentPage !== page}
                                 aria-label="page">

@@ -20,36 +20,42 @@
     import CreateMember from '../_createMembership.svelte';
     import DeleteMembership from '../_deleteMembership.svelte';
     import { pageLimit } from '$lib/stores/layout';
-
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
-    const deleted = () =>
-        memberships.load(
-            $page.params.team,
-            [Query.limit($pageLimit), Query.offset(offset)],
-            search
-        );
-
-    const project = $page.params.project;
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let showCreate = false;
     let showDelete = false;
     let search = '';
-    let offset = 0;
     let selectedMembership: Models.Membership;
 
-    $: if (search) offset = 0;
-    $: memberships.load($page.params.team, [Query.limit($pageLimit), Query.offset(offset)], search);
+    const project = $page.params.project;
+    const offset = createPersistentPagination($pageLimit);
+    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
 
-    const memberCreated = async (event: CustomEvent<Models.Membership>) => {
+    $: if (search) $offset = 0;
+    $: memberships.load(
+        $page.params.team,
+        [Query.limit($pageLimit), Query.offset($offset)],
+        search
+    );
+
+    async function memberCreated(event: CustomEvent<Models.Membership>) {
         memberships.load(
             $page.params.team,
-            [Query.limit($pageLimit), Query.offset(offset)],
+            [Query.limit($pageLimit), Query.offset($offset)],
             search
         );
         await goto(
             `${base}/console/project-${project}/authentication/teams/${event.detail.teamId}/members`
         );
-    };
+    }
+
+    function deleted() {
+        memberships.load(
+            $page.params.team,
+            [Query.limit($pageLimit), Query.offset($offset)],
+            search
+        );
+    }
 </script>
 
 <Container>
@@ -77,7 +83,6 @@
                                     size={32}
                                     src={getAvatar(membership.userName)}
                                     name={membership.userName} />
-
                                 <span>{membership.userName ? membership.userName : 'n/a'}</span>
                             </div>
                         </TableCellText>
@@ -99,11 +104,9 @@
                 {/each}
             </TableBody>
         </Table>
-        <div
-            class="u-flex u-margin-block-start-32
- u-main-space-between">
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$memberships.total}</p>
-            <Pagination limit={$pageLimit} bind:offset sum={$memberships.total} />
+            <Pagination limit={$pageLimit} bind:offset={$offset} sum={$memberships.total} />
         </div>
     {:else if search}
         <EmptySearch>

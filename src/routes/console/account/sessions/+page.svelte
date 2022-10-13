@@ -17,8 +17,9 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { accountSession } from '../store';
     import { onMount } from 'svelte';
+    import { createPersistentPagination } from '$lib/stores/pagination';
 
-    let offset = 0;
+    const offset = createPersistentPagination($pageLimit);
 
     onMount(async () => {
         await accountSession.load();
@@ -112,14 +113,15 @@
                     <Button
                         external
                         secondary
-                        href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetsessions"
-                        >Documentation</Button>
+                        href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetsessions">
+                        Documentation
+                    </Button>
                 </div>
             </div>
         </Empty>
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {$accountSession?.total}</p>
-        <Pagination limit={$pageLimit} bind:offset sum={$accountSession?.total} />
+        <Pagination limit={$pageLimit} bind:offset={$offset} sum={$accountSession?.total} />
     </div>
 </Container>
