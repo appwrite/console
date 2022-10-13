@@ -37,3 +37,4 @@ export { default as Trim } from './trim.svelte';
 export { default as Tabs } from './tabs.svelte';
 export { default as Tab } from './tab.svelte';
 export { default as EventModal } from './eventModal.svelte';
+export { default as Status } from './status.svelte';

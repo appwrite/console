@@ -2,7 +2,15 @@
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { CardGrid, Pagination, Copy, DropList, DropListItem, Empty } from '$lib/components';
+    import {
+        CardGrid,
+        Pagination,
+        Copy,
+        DropList,
+        DropListItem,
+        Empty,
+        Status
+    } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -140,7 +148,11 @@
                             <TableCellText title="Created">
                                 {toLocaleDateTime(deployment.$createdAt)}
                             </TableCellText>
-                            <TableCellText title="Status">{deployment.status}</TableCellText>
+
+                            <TableCell title="Status">
+                                <Status status={deployment.status}>
+                                    {deployment.status ?? 'No deployment'}
+                                </Status></TableCell>
                             <!-- TODO: replace with build time, when implemented -->
                             <TableCellText title="Build Time">TBI</TableCellText>
                             <TableCellText title="Size"

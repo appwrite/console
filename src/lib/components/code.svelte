@@ -4,6 +4,7 @@
     import 'prismjs/components/prism-dart';
     import 'prismjs/components/prism-kotlin';
     import 'prismjs/components/prism-json';
+    import 'prismjs/components/prism-bash';
     import 'prismjs/plugins/autoloader/prism-autoloader';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
     import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
@@ -12,7 +13,7 @@
 
     export let label: string = null;
     export let code: string;
-    export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json';
+    export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh';
     export let showLineNumbers = false;
     export let showCopy = false;
 

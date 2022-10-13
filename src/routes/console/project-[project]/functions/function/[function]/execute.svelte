@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
+    import { Code, Modal } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { InputTextarea, FormList } from '$lib/elements/forms';
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
@@ -37,19 +37,14 @@
             <InputChoice type="switchbox" id="json" label="Show example JSON" bind:value={showJson}>
                 Here's an example of some custom data.</InputChoice>
             {#if showJson}
-                <pre>
-            <code>
-{`name: 'John Doe',
-age: 42,
-    address: {
-            street: '123 Main St',
-            city: 'Anytown',
-            state: 'CA',
-            zip: '12345'
-        }
-`}
-            </code>
-        </pre>
+                <Code
+                    language="json"
+                    showLineNumbers
+                    code={`{
+    firstName: "hello", 
+    lastName:"world", 
+    age:"old"
+}`} />
             {/if}
         </FormList>
 
