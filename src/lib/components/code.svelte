@@ -24,34 +24,26 @@
     });
 </script>
 
-<div class="code">
-    <div class="controls">
+<section class="box u-overflow-hidden u-min-height-100">
+    <div class="u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
             <Pill>{label}</Pill>
         {/if}
         {#if showCopy}
             <Copy value={code}>
-                <span class="icon-duplicate" aria-hidden="true" style="cursor: pointer;" />
+                <button class="button is-small is-text is-only-icon" aria-label="copy code">
+                    <span class="icon-duplicate" aria-hidden="true" />
+                </button>
             </Copy>
         {/if}
     </div>
+
     <pre class={`language-${language}`} class:line-numbers={showLineNumbers}><code
             >{code}</code></pre>
-</div>
+</section>
 
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
-
-    div.code {
-        position: relative;
-
-        div.controls {
-            position: absolute;
-            right: 0.5rem;
-            top: 0.5rem;
-            z-index: 1;
-        }
-    }
 
     code,
     pre {
@@ -80,10 +72,7 @@
 
     :not(pre) > code[class*='language-'],
     pre[class*='language-'] {
-        background: #1b1b28;
-        body.theme-light & {
-            background: #fcfcff;
-        }
+        background: hsl(var(--p-box-background-color));
     }
     .token {
         &.comment,
