@@ -59,9 +59,12 @@
         component: Step2
     });
     stepsComponents.set(3, {
-        label: 'Security (optional)',
-        component: Step3
+        label: 'Security',
+        component: Step3,
+        optional: true
     });
 </script>
 
-<Wizard title="Create Webhook" steps={stepsComponents} on:finish={create} />
+<Wizard confirmExit title="Create Webhook" steps={stepsComponents} on:finish={create}>
+    <svelte:fragment slot="exit">webhook creation</svelte:fragment>
+</Wizard>
