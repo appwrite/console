@@ -12,6 +12,7 @@
 <script lang="ts">
     import { Steps } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
     import { createEventDispatcher, type SvelteComponent } from 'svelte';
     import WizardExitModal from './wizardExitModal.svelte';
@@ -29,6 +30,7 @@
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape' && !showExitModal) {
             event.preventDefault();
+            dispatch('exit');
             wizard.hide();
         }
     }
@@ -37,6 +39,7 @@
         if (confirmExit) {
             showExitModal = true;
         } else {
+            dispatch('exit');
             wizard.hide();
         }
     }
@@ -48,7 +51,20 @@
         }
     }
 
-    function submit() {
+    async function submit() {
+        if ($wizard.interceptor) {
+            try {
+                await $wizard.interceptor();
+            } catch (error) {
+                addNotification({
+                    message: error.message,
+                    type: 'error'
+                });
+                return;
+            }
+        }
+
+        wizard.setInterceptor(null);
         if (isLastStep) {
             dispatch('finish');
         } else {
