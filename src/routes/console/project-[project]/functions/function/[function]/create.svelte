@@ -39,34 +39,28 @@
 
     const codeSnippets = {
         Unix: {
-            code: `
-appwrite functions createDeployment \\ \n
-    --functionId=${functionId} \\ \n
-    --entrypoint='index.js' \\ \n
-    --code="." \\ \n
-    --activate=true
-    `,
+            code: `appwrite functions createDeployment \\ 
+    --functionId=${functionId} \\ 
+    --entrypoint='index.js' \\ 
+    --code="." \\ 
+    --activate=true`,
             language: 'bash'
         },
 
         CMD: {
-            code: `
-appwrite functions createDeployment ^ \n
-    --functionId=${functionId} ^ \n
-    --entrypoint='index.js' ^ \n
-    --code="." ^ \n
-    --activate=true
-    `,
+            code: `appwrite functions createDeployment ^
+    --functionId=${functionId} ^
+    --entrypoint='index.js' ^
+    --code="." ^
+    --activate=true`,
             language: 'CMD'
         },
         PowerShell: {
-            code: `
-appwrite functions createDeployment , \n
-    --functionId=${functionId} , \n
-    --entrypoint='index.js' , \n
-    --code="." , \n
-    --activate=true
-    `,
+            code: `appwrite functions createDeployment ,
+    --functionId=${functionId} ,
+    --entrypoint='index.js' ,
+    --code="." ,
+    --activate=true`,
             language: 'PowerShell'
         }
     };
