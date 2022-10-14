@@ -14,10 +14,11 @@
     import { Copy } from '.';
 
     export let label: string = null;
+    export let labelIcon: 'code' | 'android' | 'flutter' | 'apple' = null;
     export let code: string;
     export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift';
-    export let showLineNumbers = false;
-    export let showCopy = false;
+    export let withLineNumbers = false;
+    export let withCopy = false;
 
     afterUpdate(async () => {
         Prism.highlightAll();
@@ -28,9 +29,14 @@
     <div
         class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
-            <Pill>{label}</Pill>
+            <Pill>
+                {#if labelIcon}
+                    <span class={`icon-${labelIcon}`} aria-hidden="true" />
+                {/if}
+                {label}
+            </Pill>
         {/if}
-        {#if showCopy}
+        {#if withCopy}
             <Copy value={code}>
                 <button class="button is-small is-text is-only-icon" aria-label="copy code">
                     <span class="icon-duplicate" aria-hidden="true" />
@@ -39,15 +45,23 @@
         {/if}
     </div>
 
-    <pre class={`language-${language}`} class:line-numbers={showLineNumbers}><code
+    <pre class={`language-${language}`} class:line-numbers={withLineNumbers}><code
             >{code}</code></pre>
 </section>
 
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
 
-    .controls {
-        z-index: 2;
+    .box {
+        --p-box-background-color: var(--color-neutral-300) !important;
+
+        body.theme-light & {
+            --p-box-background-color: var(--color-neutral-5) !important;
+        }
+
+        .controls {
+            z-index: 2;
+        }
     }
 
     code,

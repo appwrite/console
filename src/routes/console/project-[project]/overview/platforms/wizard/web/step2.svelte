@@ -31,7 +31,7 @@
             Use <a href="https://npmjs.org" target="_blank" class="link"
                 >NPM (node package manager)</a> from your command line to add Appwrite SDK to your project.
         </p>
-        <Code label="Bash" language="sh" code="npm install appwrite" showCopy />
+        <Code label="Bash" language="sh" code="npm install appwrite" withCopy />
         <p class="common-section">
             When you're using a bundler (like <a
                 href="https://vitejs.dev"
@@ -42,9 +42,10 @@
         </p>
         <Code
             label="Web SDK"
+            labelIcon="code"
             language="js"
             code={`import { Appwrite } from 'appwrite';`}
-            showCopy />
+            withCopy />
     {:else if method === Method.CDN}
         <p>
             To install with a CDN (content delivery network) add the following scripts to the bottom
@@ -54,6 +55,6 @@
             label="HTML"
             language="html"
             code={`<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}"></script>`}
-            showCopy />
+            withCopy />
     {/if}
 </WizardStep>

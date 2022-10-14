@@ -16,15 +16,13 @@ client
 <WizardStep>
     <svelte:fragment slot="title">Let's get coding</svelte:fragment>
 
-    <div class="common-section">
-        <h2 class="heading-level-7">Init your SDK</h2>
-        <p>
-            Now that you've downloaded the SDK, it's time to initialze it. Use your project ID,
-            which can be found in your project settings page.
-        </p>
-        <Code label="Web SDK" language="js" {code} showCopy showLineNumbers />
-    </div>
+    <h2 class="heading-level-7">Init your SDK</h2>
     <p>
+        Now that you've downloaded the SDK, it's time to initialze it. Use your project ID, which
+        can be found in your project settings page.
+    </p>
+    <Code label="Flutter SDK" labelIcon="flutter" language="dart" {code} withCopy withLineNumbers />
+    <p class="common-section">
         Before sending any API calls to your new Appwrite project, make sure your device or emulator
         has network access to your Appwrite project's hostname or IP address.
     </p>

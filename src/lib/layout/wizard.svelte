@@ -113,8 +113,8 @@
             {/each}
             <div class="form-footer">
                 <div class="u-flex u-main-end u-gap-12">
-                    {#if sortedSteps[currentStep - 1][1].optional}
-                        <Button text on:click={() => (isLastStep = true)} submit
+                    {#if !isLastStep && sortedSteps[currentStep - 1][1].optional}
+                        <Button text on:click={() => dispatch('finish')}
                             >Skip optional steps</Button>
                     {/if}
                     {#if currentStep === 1}

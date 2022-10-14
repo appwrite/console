@@ -70,9 +70,9 @@
             </ol>
         {:else if method === Method.Swift}
             <p>Add this to your Package.swift file:</p>
-            <Code showCopy showLineNumbers label="Swift" language="swift" code={example1} />
+            <Code withCopy withLineNumbers label="Swift" language="swift" code={example1} />
             <p class="common-section">Then add the dependency to your target:</p>
-            <Code showCopy showLineNumbers label="Swift" language="swift" code={example2} />
+            <Code withCopy withLineNumbers label="Swift" language="swift" code={example2} />
         {/if}
     </div>
 </WizardStep>

@@ -29,15 +29,18 @@
     });
     stepsComponents.set(2, {
         label: 'Get the SDK',
-        component: Step2
+        component: Step2,
+        optional: true
     });
     stepsComponents.set(3, {
         label: "Let's get coding",
-        component: Step3
+        component: Step3,
+        optional: true
     });
     stepsComponents.set(4, {
         label: 'All set',
-        component: Step4
+        component: Step4,
+        optional: true
     });
 </script>
 
