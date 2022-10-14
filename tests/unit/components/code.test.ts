@@ -26,7 +26,7 @@ test('shows line numbers', async () => {
     const { container } = render(Code, {
         code: 'a\nb;\nc;',
         language: 'js',
-        showLineNumbers: true
+        withLineNumbers: true
     });
 
     expect(container.querySelectorAll('.line-numbers').length).toEqual(1);
@@ -60,7 +60,7 @@ test('copy to clipboard function called on click', async () => {
     const { container } = render(Code, {
         code: 'console.log("test");',
         language: 'js',
-        showCopy: true
+        withCopy: true
     });
 
     Object.assign(window.navigator, {
