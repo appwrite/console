@@ -3,13 +3,14 @@
     import { page } from '$app/stores';
     import { user } from '$lib/stores/user';
     import { redirectTo } from '$lib/stores/organization';
+    import { onCLS, onFID, onLCP, onFCP, onINP, onTTFB } from 'web-vitals';
+    import { reportWebVitals } from '$lib/helpers/vitals';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { browser, dev } from '$app/environment';
     import { app } from '$lib/stores/app';
     import Notifications from '$lib/layout/notifications.svelte';
     import Loading from './_loading.svelte';
-    import { webVitals } from '$lib/helpers/vitals';
 
     let loaded = false;
 
@@ -21,6 +22,18 @@
     const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
 
     onMount(async () => {
+        /**
+         * Reporting Web Vitals.
+         */
+        if (!dev && window.VERCEL_ANALYTICS_ID) {
+            onCLS(reportWebVitals);
+            onFID(reportWebVitals);
+            onLCP(reportWebVitals);
+            onFCP(reportWebVitals);
+            onINP(reportWebVitals);
+            onTTFB(reportWebVitals);
+        }
+
         try {
             if (!$user) {
                 await user.fetchUser();
@@ -45,14 +58,6 @@
             loaded = true;
         }
     });
-
-    $: if (!dev && browser && window.VERCEL_ANALYTICS_ID) {
-        webVitals({
-            path: $page.url.pathname,
-            params: $page.params,
-            analyticsId: window.VERCEL_ANALYTICS_ID
-        });
-    }
 
     $: {
         if (browser) {

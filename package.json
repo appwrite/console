@@ -24,7 +24,7 @@
         "echarts": "^5.4.0",
         "prismjs": "^1.29.0",
         "tippy.js": "^6.3.7",
-        "web-vitals": "^2.1.4"
+        "web-vitals": "^3.0.3"
     },
     "devDependencies": {
         "@playwright/test": "^1.26.1",
