@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { user } from '$lib/stores/user';
     import { redirectTo } from '$lib/stores/organization';
-    import { onCLS, onFID, onLCP } from 'web-vitals';
+    import { onCLS, onFID, onLCP, onFCP, onINP, onTTFB } from 'web-vitals';
     import { reportWebVitals } from '$lib/helpers/vitals';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
@@ -29,6 +29,9 @@
             onCLS(reportWebVitals);
             onFID(reportWebVitals);
             onLCP(reportWebVitals);
+            onFCP(reportWebVitals);
+            onINP(reportWebVitals);
+            onTTFB(reportWebVitals);
         }
 
         try {
