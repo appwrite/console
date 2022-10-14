@@ -45,7 +45,6 @@ test('close modal by enter key on focus', async () => {
     });
 
     expect(queryByText('Content')).toBeInTheDocument();
-    await userEvent.keyboard('[Escape]');
     await fireEvent.keyUp(container.querySelector('[data-curtain]'), {
         key: 'Enter'
     });
