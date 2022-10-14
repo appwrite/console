@@ -12,7 +12,7 @@
 
 <li
     on:click|preventDefault
-    on:keyup={clickOnEnter}
+    on:keyup|self={clickOnEnter}
     class:steps-item={!isSub}
     class:steps-sub-item={isSub}
     style={`cursor: ${completed ? 'pointer' : 'default'};`}

@@ -63,7 +63,7 @@
         class="modal-curtain"
         data-curtain
         on:click={handleBLur}
-        on:keyup={clickOnEnter}
+        on:keyup|self={clickOnEnter}
         transition:fade={transitionFade}>
         <section
             class:is-small={size === 'small'}

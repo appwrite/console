@@ -115,7 +115,7 @@
                     <div
                         class="input-text-wrapper u-stretch"
                         on:click={() => (isLimited = 'limited')}
-                        on:keyup={clickOnEnter}>
+                        on:keyup|self={clickOnEnter}>
                         <input
                             type="number"
                             name="limit"
