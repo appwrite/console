@@ -40,7 +40,6 @@
                 <span
                     class="tabs-button"
                     on:click={() => (showCli = true)}
-                    on:keyup={clickOnEnter}
                     class:is-selected={showCli}>
                     <span class="text">Files</span>
                 </span>
@@ -49,7 +48,6 @@
                 <span
                     class="tabs-button"
                     on:click={() => (showCli = false)}
-                    on:keyup={clickOnEnter}
                     class:is-selected={!showCli}>
                     <span class="text">Usage</span>
                 </span>
