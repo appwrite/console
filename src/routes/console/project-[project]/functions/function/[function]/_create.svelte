@@ -5,7 +5,6 @@
     import { createEventDispatcher } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
-    import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let showCreate = false;
 
