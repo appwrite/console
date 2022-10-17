@@ -11,6 +11,9 @@
     }
 
     let method: Method = Method.NPM;
+
+    const example1 = `import { Appwrite } from 'appwrite';`;
+    const example2 = `<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}" />`;
 </script>
 
 <WizardStep>
@@ -43,21 +46,12 @@
                 >Rollup</a
             >), import the Appwrite module when you need it:
         </p>
-        <Code
-            label="Web SDK"
-            labelIcon="code"
-            language="js"
-            code={`import { Appwrite } from 'appwrite';`}
-            withCopy />
+        <Code label="Web SDK" labelIcon="code" language="js" code={example1} withCopy />
     {:else if method === Method.CDN}
         <p>
             To install with a CDN (content delivery network) add the following scripts to the bottom
             of your tag, but before you use any Appwrite services:
         </p>
-        <Code
-            label="HTML"
-            language="html"
-            code={`<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}"></script>`}
-            withCopy />
+        <Code label="HTML" language="html" code={example2} withCopy />
     {/if}
 </WizardStep>

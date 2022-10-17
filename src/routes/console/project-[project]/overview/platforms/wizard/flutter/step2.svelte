@@ -5,6 +5,7 @@
 
     const example1 = `dependencies:
   appwrite: ^${$versions['client-flutter']}`;
+    const example2 = `pub get appwrite`;
 </script>
 
 <WizardStep>
@@ -15,5 +16,5 @@
     <p class="common-section">
         You can also install the SDK using the Dart package manager from your terminal:
     </p>
-    <Code label="Bash" language="sh" code={`pub get appwrite`} withCopy />
+    <Code label="Bash" language="sh" code={example2} withCopy />
 </WizardStep>

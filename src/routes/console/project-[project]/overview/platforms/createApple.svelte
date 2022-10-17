@@ -15,6 +15,7 @@
 
     async function create() {
         project.load(projectId);
+        createPlatform.reset();
         wizard.hide();
     }
 
