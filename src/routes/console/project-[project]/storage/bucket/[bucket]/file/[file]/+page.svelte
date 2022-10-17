@@ -70,6 +70,7 @@
                     href={downloadFile()}
                     class="file-preview is-with-image"
                     target="_blank"
+                    rel="noopener noreferrer"
                     aria-label="open file in new window">
                     <div class="file-preview-image">
                         <img

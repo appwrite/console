@@ -7,50 +7,66 @@
     import 'prismjs/components/prism-bash';
     import 'prismjs/components/prism-php';
     import 'prismjs/components/prism-python';
+    import 'prismjs/components/prism-yaml';
+    import 'prismjs/components/prism-swift';
     import 'prismjs/plugins/autoloader/prism-autoloader';
+    import 'prismjs/plugins/custom-class/prism-custom-class';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
     import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
     import { afterUpdate } from 'svelte';
     import { Copy } from '.';
 
     export let label: string = null;
+    export let labelIcon: 'code' | 'android' | 'flutter' | 'apple' = null;
     export let code: string;
-    export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'php' | 'python';
-    export let showLineNumbers = false;
-    export let showCopy = false;
+    export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift' | 'php' | 'python'''
+    export let withLineNumbers = false;
+    export let withCopy = false;
     export let scrollable = false;
+    
+    Prism.plugins.customClass.prefix('prism-');
 
     afterUpdate(async () => {
         Prism.highlightAll();
     });
 </script>
 
-<div class="code" style={scrollable ? 'overflow: auto' : ''}>
-    <div class="controls">
+<section class="box u-overflow-hidden common-section">
+    <div
+        class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
-            <Pill>{label}</Pill>
+            <Pill>
+                {#if labelIcon}
+                    <span class={`icon-${labelIcon}`} aria-hidden="true" />
+                {/if}
+                {label}
+            </Pill>
         {/if}
-        {#if showCopy}
+        {#if withCopy}
             <Copy value={code}>
-                <span class="icon-duplicate" aria-hidden="true" style="cursor: pointer;" />
+                <button class="button is-small is-text is-only-icon" aria-label="copy code">
+                    <span class="icon-duplicate" aria-hidden="true" />
+                </button>
             </Copy>
         {/if}
     </div>
-    <pre class={`language-${language}`} class:line-numbers={showLineNumbers}><code
+
+    <pre class={`language-${language}`} class:line-numbers={withLineNumbers}><code
             >{code}</code></pre>
-</div>
+</section>
 
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
 
-    div.code {
-        position: relative;
+    .box {
+        --p-box-background-color: var(--color-neutral-300) !important;
 
-        div.controls {
-            position: absolute;
-            right: 0.5rem;
-            top: 0.5rem;
-            z-index: 1;
+        body.theme-light & {
+            --p-box-background-color: var(--color-neutral-5) !important;
+        }
+
+        .controls {
+            z-index: 2;
         }
     }
 
@@ -60,6 +76,10 @@
             color: #fcfcff;
             text-shadow: none;
             font-family: 'Source Code Pro';
+
+            &.line-numbers {
+                padding-left: 2.5em;
+            }
             body.theme-light & {
                 color: #373b4d;
             }
@@ -81,49 +101,48 @@
 
     :not(pre) > code[class*='language-'],
     pre[class*='language-'] {
-        background: #1b1b28;
-        body.theme-light & {
-            background: #fcfcff;
-        }
+        background: hsl(var(--p-box-background-color));
+        padding: 0;
+        margin: 0;
     }
-    .token {
-        &.comment,
-        &.prolog,
-        &.doctype,
-        &.cdata {
+    .prism-token {
+        &.prism-comment,
+        &.prism-prolog,
+        &.prism-doctype,
+        &.prism-cdata {
             color: #868ea3;
         }
 
-        &.punctuation {
+        &.prism-punctuation {
             color: #fcfcff;
 
             body.theme-light & {
                 color: #373b4d;
             }
         }
-        &.property,
-        &.tag,
-        &.boolean,
-        &.number,
-        &.constant,
-        &.symbol,
-        &.deleted,
-        &.selector,
-        &.attr-name,
-        &.string,
-        &.char,
-        &.builtin,
-        &.inserted {
+        &.prism-property,
+        &.prism-tag,
+        &.prism-boolean,
+        &.prism-number,
+        &.prism-constant,
+        &.prism-symbol,
+        &.prism-deleted,
+        &.prism-selector,
+        &.prism-attr-name,
+        &.prism-string,
+        &.prism-char,
+        &.prism-builtin,
+        &.prism-inserted {
             color: #fdc584;
             body.theme-light & {
                 color: #e49545;
             }
         }
-        &.operator,
-        &.entity,
-        &.url,
-        .language-css &.string,
-        .style &.string {
+        &.prism-operator,
+        &.prism-entity,
+        &.prism-url,
+        .language-css &.prism-string,
+        .style &.prism-string {
             color: #fcfcff;
             background: none;
             body.theme-light & {
@@ -131,29 +150,29 @@
             }
         }
 
-        &.atrule,
-        &.attr-value,
-        &.keyword {
+        &.prism-atrule,
+        &.prism-attr-value,
+        &.prism-keyword {
             color: #cbb1fc;
             body.theme-light & {
                 color: #6a6af7;
             }
         }
-        &.function {
+        &.prism-function {
             color: #ffa1ce;
             body.theme-light & {
                 color: #f02e7f;
             }
         }
-        &.class-name {
+        &.prism-class-name {
             color: #a1c4ff;
             body.theme-light & {
                 color: #62aed2;
             }
         }
-        &.regex,
-        &.important,
-        &.variable {
+        &.prism-regex,
+        &.prism-important,
+        &.prism-variable {
             color: #a1c4ff;
             body.theme-light & {
                 color: #62aed2;

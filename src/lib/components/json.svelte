@@ -4,4 +4,4 @@
     export let code: string;
 </script>
 
-<Code showLineNumbers showCopy language="json" {code} />
+<Code withLineNumbers withCopy language="json" {code} />

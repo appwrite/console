@@ -3,6 +3,7 @@
     import { createEventDispatcher } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
     import { Alert } from '$lib/components';
+    import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
@@ -58,7 +59,12 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if show}
-    <div class="modal-curtain" data-curtain on:click={handleBLur} transition:fade={transitionFade}>
+    <div
+        class="modal-curtain"
+        data-curtain
+        on:click={handleBLur}
+        on:keyup|self={clickOnEnter}
+        transition:fade={transitionFade}>
         <section
             class:is-small={size === 'small'}
             class:is-big={size === 'big'}

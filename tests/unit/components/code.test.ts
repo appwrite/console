@@ -26,7 +26,7 @@ test('shows line numbers', async () => {
     const { container } = render(Code, {
         code: 'a\nb;\nc;',
         language: 'js',
-        showLineNumbers: true
+        withLineNumbers: true
     });
 
     expect(container.querySelectorAll('.line-numbers').length).toEqual(1);
@@ -39,9 +39,9 @@ test('shows code highlighted javascript', async () => {
         language: 'js'
     });
 
-    expect(container.querySelectorAll('.token.function').length).toEqual(1);
-    expect(container.querySelectorAll('.token.string').length).toEqual(1);
-    expect(container.querySelectorAll('.token.punctuation').length).toEqual(4);
+    expect(container.querySelectorAll('.prism-token.prism-function').length).toEqual(1);
+    expect(container.querySelectorAll('.prism-token.prism-string').length).toEqual(1);
+    expect(container.querySelectorAll('.prism-token.prism-punctuation').length).toEqual(4);
 });
 
 test('shows code highlighted json', async () => {
@@ -50,17 +50,17 @@ test('shows code highlighted json', async () => {
         language: 'json'
     });
 
-    expect(container.querySelectorAll('.token.property').length).toEqual(1);
-    expect(container.querySelectorAll('.token.operator').length).toEqual(1);
-    expect(container.querySelectorAll('.token.string').length).toEqual(1);
-    expect(container.querySelectorAll('.token.punctuation').length).toEqual(2);
+    expect(container.querySelectorAll('.prism-token.prism-property').length).toEqual(1);
+    expect(container.querySelectorAll('.prism-token.prism-operator').length).toEqual(1);
+    expect(container.querySelectorAll('.prism-token.prism-string').length).toEqual(1);
+    expect(container.querySelectorAll('.prism-token.prism-punctuation').length).toEqual(2);
 });
 
 test('copy to clipboard function called on click', async () => {
     const { container } = render(Code, {
         code: 'console.log("test");',
         language: 'js',
-        showCopy: true
+        withCopy: true
     });
 
     Object.assign(window.navigator, {
