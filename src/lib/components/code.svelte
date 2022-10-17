@@ -62,7 +62,10 @@
         {/if}
     </div>
 
-    <pre class={`language-${language}`} class:line-numbers={withLineNumbers}>
+    <pre
+        class={`language-${language}`}
+        style={scrollable ? 'overflow: auto' : ''}
+        class:line-numbers={withLineNumbers}>
         <code>{code}</code>
     </pre>
 </section>

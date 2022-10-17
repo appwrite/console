@@ -38,6 +38,8 @@
                 Here's an example of some custom data.</InputChoice>
             {#if showJson}
                 <Code
+                    scrollable
+                    noMargin
                     language="json"
                     withLineNumbers
                     code={`{
