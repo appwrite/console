@@ -1,5 +1,6 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
+    import { clickOnEnter } from '$lib/helpers/a11y';
     import { addNotification } from '$lib/stores/notifications';
 
     export let value: string;
@@ -21,6 +22,7 @@
 
 <span
     on:click|preventDefault={copy}
+    on:keyup={clickOnEnter}
     on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
     use:tooltip={{
         content,

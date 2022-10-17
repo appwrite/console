@@ -15,6 +15,10 @@
     export let groups: Writable<Map<string, Permission>>;
 
     const dispatch = createEventDispatcher();
+
+    $: if (showUser || showTeam || showCustom) {
+        showDropdown = false;
+    }
 </script>
 
 <DropList

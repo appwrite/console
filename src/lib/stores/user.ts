@@ -13,6 +13,10 @@ function createUserStore() {
         },
         logout: async () => {
             await sdkForConsole.account.deleteSession('current');
+            /**
+             * Clear cache.
+             */
+            globalThis.sessionStorage.clear();
         }
     };
 }

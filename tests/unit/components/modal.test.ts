@@ -29,12 +29,24 @@ test('close modal by click', async () => {
     expect(component.show).toStrictEqual(false);
 });
 
-test('close modal by key', async () => {
+test('close modal by escape', async () => {
     const { queryByText, component } = render(Modal, {
         show: true
     });
 
     expect(queryByText('Content')).toBeInTheDocument();
     await userEvent.keyboard('[Escape]');
+    expect(component.show).toStrictEqual(false);
+});
+
+test('close modal by enter key on focus', async () => {
+    const { container, queryByText, component } = render(Modal, {
+        show: true
+    });
+
+    expect(queryByText('Content')).toBeInTheDocument();
+    await fireEvent.keyUp(container.querySelector('[data-curtain]'), {
+        key: 'Enter'
+    });
     expect(component.show).toStrictEqual(false);
 });
