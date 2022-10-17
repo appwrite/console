@@ -59,9 +59,14 @@
                         By accepting the invitation, you agree to the <a
                             class="link"
                             href="https://appwrite.io/policy/terms"
-                            target="_blank">Terms and Conditions</a>
+                            target="_blank"
+                            rel="noopener noreferrer">Terms and Conditions</a>
                         and
-                        <a class="link" href="https://appwrite.io/policy/privacy" target="_blank">
+                        <a
+                            class="link"
+                            href="https://appwrite.io/policy/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer">
                             Privacy Policy</a
                         >.</InputChoice>
 
