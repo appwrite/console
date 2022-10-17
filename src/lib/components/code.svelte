@@ -5,6 +5,8 @@
     import 'prismjs/components/prism-kotlin';
     import 'prismjs/components/prism-json';
     import 'prismjs/components/prism-bash';
+    import 'prismjs/components/prism-php';
+    import 'prismjs/components/prism-python';
     import 'prismjs/plugins/autoloader/prism-autoloader';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
     import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
@@ -13,16 +15,17 @@
 
     export let label: string = null;
     export let code: string;
-    export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh';
+    export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'php' | 'python';
     export let showLineNumbers = false;
     export let showCopy = false;
+    export let scrollable = false;
 
     afterUpdate(async () => {
         Prism.highlightAll();
     });
 </script>
 
-<div class="code">
+<div class="code" style={scrollable ? 'overflow: auto' : ''}>
     <div class="controls">
         {#if label}
             <Pill>{label}</Pill>

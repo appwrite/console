@@ -47,7 +47,7 @@
                     <TableRow
                         on:click={() => {
                             $log.show = true;
-                            $log.deployment = execution;
+                            $log.data = execution;
                         }}>
                         <TableCell title="Deployment ID">
                             <Copy value={execution.$id}>

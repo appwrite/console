@@ -15,9 +15,7 @@
     const bucketId = $page.params.bucket;
     const dispatch = createEventDispatcher();
 
-    let list = new DataTransfer();
     let files: FileList;
-    let input: HTMLInputElement;
     let permissions: string[] = [];
     let id: string = null;
     let error: string;
@@ -43,12 +41,9 @@
 
     $: if (!showCreate) {
         id = files = error = null;
-        list = new DataTransfer();
         permissions = [];
     }
 </script>
-
-<input bind:files bind:this={input} type="file" style="display: none" />
 
 <Form on:submit={create}>
     <Modal {error} bind:show={showCreate}>

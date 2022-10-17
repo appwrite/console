@@ -2,64 +2,108 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { log } from '$lib/stores/logs';
-    import { Status } from '.';
+    import { Code, Status, Tab, Tabs } from '.';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { Button } from '$lib/elements/forms';
+    import { base } from '$app/paths';
+    import { app } from '$lib/stores/app';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
 
     console.log('test');
+
+    let selectedTab = 'response';
+    let rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
+
+    const languages = {
+        'node-16.0': 'js',
+        'php-8.0': 'php',
+        'ruby-3.0': 'ruby',
+        'python-3.9': 'python'
+    };
+
+    function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
+        selectedTab = 'logs';
+        rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${data.$id}?mode=admin&project=${$page.params.project}`;
+
+        return true;
+    }
 </script>
 
-{#if $log.deployment}
-    {@const size = humanFileSize($log.deployment.size)}
+{#if $log.data}
     <section class="cover-frame">
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
-            <h1 class="body-text-1" name="title">Function ID:</h1>
+            <h1 class="body-text-1" name="title">Function ID: {$log.func.$id}</h1>
             <button on:click={() => ($log.show = false)} class="x-button" aria-label="close popup">
                 <span class="icon-x" aria-hidden="true" />
             </button>
         </header>
-        <div class="cover-frame-content u-flex u-flex-vertical">
-            <div class="u-flex u-gap-16">
-                <div class="avatar is-size-large">
-                    <img height="28" width="28" src="" alt="Chrome" />
+        {#if isDeployment($log.data)}
+            {@const size = humanFileSize($log.data.size)}
+            <div class="cover-frame-content u-flex u-flex-vertical">
+                <div class="u-flex u-gap-16">
+                    <div class="avatar is-size-large">
+                        <img
+                            height="28"
+                            width="28"
+                            src={`${base}/icons/${$app.themeInUse}/color/${
+                                $log.func.runtime.split('-')[0]
+                            }.svg`}
+                            alt="technology" />
+                    </div>
+                    <div>
+                        <h2 class="body-text-2">Deployment ID: {$log.data.$id}</h2>
+                        <time class="u-block"
+                            >Created at: {toLocaleDateTime($log.data.$createdAt)}</time>
+                        <div>Size: {size.value} {size.unit}</div>
+                    </div>
+                    <div class="status u-margin-inline-start-auto">
+                        <Status status={$log.data.status}>{$log.data.status}</Status>
+
+                        <time>TBI</time>
+                    </div>
                 </div>
-                <div>
-                    <h2 class="body-text-2">Deployment ID: {$log.deployment.$id}</h2>
-                    <time class="u-block"
-                        >Created at: {toLocaleDateTime($log.deployment.$createdAt)}</time>
-                    <div>Size: {size.value} {size.unit}</div>
+                <div class="tabs u-margin-block-start-48 u-sep-block-end">
+                    <Tabs>
+                        <Tab
+                            selected={selectedTab === 'logs'}
+                            on:click={() => (selectedTab = 'logs')}>Logs</Tab>
+                        <Tab
+                            selected={selectedTab === 'errors'}
+                            on:click={() => (selectedTab = 'errors')}>Errors</Tab>
+                    </Tabs>
                 </div>
-                <Status status={$log.deployment.status} />
-                <div class="status u-margin-inline-start-auto">
-                    <time>TBI</time>
+                <div class="theme-dark u-stretch u-margin-block-start-32 u-overflow-hidden">
+                    <section class="code-panel">
+                        <header class="code-panel-header">
+                            <div class="u-flex u-gap-16 u-margin-inline-start-auto">
+                                <Button text external href={rawData}>
+                                    <span class="icon-external-link" aria-hidden="true" />
+                                    <span class="text">Raw data</span>
+                                </Button>
+                                <Button secondary>
+                                    <span class="text">Scroll to top</span>
+                                </Button>
+                            </div>
+                        </header>
+                        {#if selectedTab === 'logs'}
+                            <Code
+                                scrollable
+                                showLineNumbers
+                                language={languages[$log.func.runtime]}
+                                code={$log.data.buildStdout ?? 'No logs recorded'} />
+                        {:else}
+                            <Code
+                                scrollable
+                                showLineNumbers
+                                language={languages[$log.func.runtime]}
+                                code={$log.data.buildStderr ?? 'No errors recorded'} />
+                        {/if}
+                    </section>
                 </div>
             </div>
-            <div class="tabs u-margin-block-start-48 u-sep-block-end">
-                <ul class="tabs-list scroll-shadow-horizontal">
-                    <li class="tabs-item">
-                        <button class="tabs-button is-selected"
-                            ><span class="text">Overview</span></button>
-                    </li>
-                    <li class="tabs-item">
-                        <button class="tabs-button"><span class="text">Members</span></button>
-                    </li>
-                </ul>
-            </div>
-            <div class="theme-dark u-stretch u-margin-block-start-32 u-overflow-hidden">
-                <section class="code-panel">
-                    <header class="code-panel-header">
-                        <div class="u-flex u-gap-16 u-margin-inline-start-auto">
-                            <button class="button is-text">
-                                <span class="icon-external-link" aria-hidden="true" />
-                                <span class="text">Row data</span>
-                            </button>
-                            <button class="button is-secondary is-disabled">
-                                <span class="icon-external-link" aria-hidden="true" />
-                                <span class="text">Row data</span>
-                            </button>
-                        </div>
-                    </header>
-                    <code class="code-panel-content"> Code will be here </code>
-                </section>
-            </div>
-        </div>
+        {:else}
+            lol
+        {/if}
     </section>
 {/if}

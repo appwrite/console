@@ -98,13 +98,14 @@
                         text
                         on:click={() => {
                             $log.show = true;
-                            $log.deployment = activeDeployment;
+                            $log.func = $func;
+                            $log.data = activeDeployment;
                         }}>Logs</Button>
                     <Button
                         secondary
                         on:click={() => {
+                            $execute.selected = activeDeployment;
                             $execute.show = true;
-                            selectedDeployment = activeDeployment;
                         }}>Execute now</Button>
                 </svelte:fragment>
             </CardGrid>

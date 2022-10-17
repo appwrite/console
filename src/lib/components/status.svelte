@@ -1,5 +1,7 @@
 <script lang="ts">
-    export let status: 'waiting' | 'pending' | 'failed' | 'complete' | 'processing' = null;
+    export let status: 'waiting' | 'pending' | 'failed' | 'complete' | 'processing' | string = null;
+
+    //TODO: remove string type after types are fixed
 </script>
 
 <div
