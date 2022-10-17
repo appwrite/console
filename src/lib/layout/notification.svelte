@@ -13,7 +13,7 @@
     class="alert-sticky"
     class:is-success={type === 'success'}
     class:is-warning={type === 'warning'}
-    class:is-error={type === 'error'}
+    class:is-danger={type === 'error'}
     class:is-info={type === 'info'}>
     <button class="x-button" aria-label="close alert" on:click={() => dispatch('dismiss')}>
         <span class="icon-x" aria-hidden="true" />

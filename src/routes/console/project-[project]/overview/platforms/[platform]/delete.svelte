@@ -19,8 +19,8 @@
                 message: `${$platform.name} has been deleted`
             });
             project.load($project.$id);
-            platform.set(null);
             await goto(`${base}/console/project-${$project.$id}/overview/platforms`);
+            platform.set(null);
         } catch (error) {
             addNotification({
                 type: 'error',
