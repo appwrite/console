@@ -14,6 +14,8 @@
     import { afterNavigate } from '$app/navigation';
     import { onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
+    import { Logs } from '$lib/components';
+    import { log } from '$lib/stores/logs';
 
     updateLayout({
         title: $organization?.name ?? '',
@@ -57,4 +59,8 @@
 
 {#if $newOrgModal}
     <Create bind:show={$newOrgModal} closable={!!$organizationList?.total} />
+{/if}
+
+{#if $log.show}
+    <Logs />
 {/if}

@@ -6,12 +6,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
     import FormList from '$lib/elements/forms/formList.svelte';
+    import Github from '$lib/images/github-illustration.svg';
 
     export let showCreate = false;
 
     let mode: 'cli' | 'github' | 'manual' = 'cli';
     let entrypoint: string;
-    let code: FileList;
     let active: boolean;
     let files: FileList;
 
@@ -26,7 +26,7 @@
                 files[0],
                 active
             );
-            code = entrypoint = active = null;
+            files = entrypoint = active = null;
             showCreate = false;
             dispatch('created');
         } catch (error) {
@@ -101,7 +101,18 @@
                 {/each}
             </Collapsible>
         {:else if mode === 'github'}
-            <p>Coming Soon</p>
+            <div class="common-section grid-1-2">
+                <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
+                    <img src={Github} alt="github" />
+                </div>
+                <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-24">
+                    <h3 class="body-text-1">Coming Soon!</h3>
+                    <p>
+                        Creating deployments will be easier than ever with our upcoming Git
+                        Integration. Just set up a repository and we’ll do the rest.
+                    </p>
+                </div>
+            </div>
         {:else if mode === 'manual'}
             <FormList>
                 <InputText

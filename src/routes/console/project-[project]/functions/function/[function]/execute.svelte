@@ -14,7 +14,7 @@
 
     const handleSubmit = async () => {
         try {
-            await sdkForProject.functions.createExecution(selectedDeployment.$id);
+            await sdkForProject.functions.createExecution(selectedDeployment.$id, data);
             showExecute = false;
             addNotification({
                 type: 'success',

@@ -25,6 +25,7 @@
             id="password"
             showPasswordButton
             placeholder="Enter password"
+            minlength={0}
             bind:value={$createWebhook.httpPass} />
 
         <InputChoice

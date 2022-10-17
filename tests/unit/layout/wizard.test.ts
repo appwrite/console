@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { render } from '@testing-library/svelte';
 import { wizard } from '../../../src/lib/stores/wizard';
 import { tick } from 'svelte';
+import userEvent from '@testing-library/user-event';
 import WizardComponent from '../../../src/lib/mock/wizard.test.svelte';
 import WizardContainer from '../../../src/lib/mock/wizard.container.test.svelte';
 
@@ -44,15 +45,15 @@ test('shows wizard and hides it', async () => {
 });
 
 test('shows next step with submit', async () => {
-    const { getByTestId, getByRole, queryByText } = render(WizardContainer);
+    const { container, getByRole, queryByText } = render(WizardContainer);
 
     wizard.start(WizardComponent);
     await tick();
 
     const form = getByRole('form') as HTMLFormElement;
     const step1 = queryByText('step-1');
-    const step1Required = getByTestId('step-1-required');
-    const step1Optional = getByTestId('step-1-optional');
+    const step1Required = container.querySelector('#step-1-required');
+    const step1Optional = container.querySelector('#step-1-optional');
 
     expect(step1).toBeInTheDocument();
     expect(step1Required).toBeInTheDocument();
@@ -64,8 +65,53 @@ test('shows next step with submit', async () => {
     expect(step1).not.toBeInTheDocument();
 
     const step2 = queryByText('step-2');
-    const step2First = getByTestId('step-2-first');
-    const step2Second = getByTestId('step-2-second');
+    const step2First = container.querySelector('#step-2-first');
+    const step2Second = container.querySelector('#step-2-second');
+
+    expect(step2).toBeInTheDocument();
+    expect(step2First).toBeInTheDocument();
+    expect(step2Second).toBeInTheDocument();
+
+    form.submit();
+    await tick();
+
+    expect(form).not.toBeInTheDocument();
+    expect(step1).not.toBeInTheDocument();
+    expect(step2).not.toBeInTheDocument();
+});
+
+test('intercepts submit', async () => {
+    const { container, getByRole, queryByText } = render(WizardContainer);
+
+    wizard.start(WizardComponent);
+    await tick();
+
+    const form = getByRole('form') as HTMLFormElement;
+    const step1 = queryByText('step-1');
+    const step1Required = container.querySelector('#step-1-required');
+    const step1Optional = container.querySelector('#step-1-optional');
+
+    expect(step1).toBeInTheDocument();
+    expect(step1Required).toBeInTheDocument();
+    expect(step1Optional).toBeInTheDocument();
+
+    await userEvent.type(step1Required, 'fail');
+    form.submit();
+    await tick();
+
+    expect(step1).toBeInTheDocument();
+    expect(step1Required).toBeInTheDocument();
+    expect(step1Optional).toBeInTheDocument();
+
+    await userEvent.type(step1Required, 'works');
+    form.submit();
+    await tick();
+
+    expect(step1).not.toBeInTheDocument();
+
+    const step2 = queryByText('step-2');
+    const step2First = container.querySelector('#step-2-first');
+    const step2Second = container.querySelector('#step-2-second');
 
     expect(step2).toBeInTheDocument();
     expect(step2First).toBeInTheDocument();

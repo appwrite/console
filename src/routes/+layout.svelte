@@ -24,6 +24,8 @@
         try {
             if (!$user) {
                 await user.fetchUser();
+            } else {
+                user.fetchUser();
             }
 
             if (!$page.url.pathname.startsWith('/console')) {
@@ -32,7 +34,13 @@
         } catch (error) {
             if (acceptedRoutes.includes($page.url.pathname)) {
                 await goto(`${base}${$page.url.pathname}${$page.url.search}`);
-            } else await goto(`${base}/login`);
+            } else {
+                /**
+                 * Clear cache.
+                 */
+                window.sessionStorage.clear();
+                await goto(`${base}/login`);
+            }
         } finally {
             loaded = true;
         }

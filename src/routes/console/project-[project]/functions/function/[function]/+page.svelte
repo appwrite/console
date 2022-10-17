@@ -32,6 +32,7 @@
     import Activate from './activate.svelte';
     import { Query } from '@aw-labs/appwrite-console';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { log } from '$lib/stores/logs';
 
     let search = '';
     let offset = 0;
@@ -93,7 +94,12 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button text on:click={() => console.log('open Logs')}>Logs</Button>
+                    <Button
+                        text
+                        on:click={() => {
+                            $log.show = true;
+                            $log.deployment = activeDeployment;
+                        }}>Logs</Button>
                     <Button
                         secondary
                         on:click={() => {

@@ -19,11 +19,10 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Query } from '@aw-labs/appwrite-console';
+    import { log } from '$lib/stores/logs';
 
     let search = '';
     let offset = 0;
-    // let showExecute = false;
-    // let selectedExecution: Models.Execution = null;
     const functionId = $page.params.function;
 
     $: executionList.load(functionId, [Query.offset(offset), Query.limit($pageLimit)], search);
@@ -45,7 +44,11 @@
             </TableHeader>
             <TableBody>
                 {#each $executionList.executions as execution}
-                    <TableRow>
+                    <TableRow
+                        on:click={() => {
+                            $log.show = true;
+                            $log.deployment = execution;
+                        }}>
                         <TableCell title="Deployment ID">
                             <Copy value={execution.$id}>
                                 <Pill button
@@ -70,7 +73,7 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton on:click={() => console.log('showCreate = true')}>
+        <Empty isButton single>
             <p>Execute your function to view execution logs</p>
             <Button external secondary href="#">Documentation</Button>
         </Empty>

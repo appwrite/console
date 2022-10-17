@@ -10,9 +10,6 @@
     afterNavigate(handle);
 
     async function handle(event = null) {
-        if (!$user) {
-            await user.fetchUser();
-        }
         updateLayout({
             navigate: event,
             title: $user?.name,

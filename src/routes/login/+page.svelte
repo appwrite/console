@@ -19,7 +19,7 @@
     const login = async () => {
         try {
             await sdkForConsole.account.createEmailSession(mail, pass);
-            user.fetchUser();
+            await user.fetchUser();
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'
