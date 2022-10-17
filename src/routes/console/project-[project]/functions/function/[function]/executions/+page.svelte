@@ -20,6 +20,7 @@
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Query } from '@aw-labs/appwrite-console';
     import { log } from '$lib/stores/logs';
+    import { func } from '../store';
 
     let search = '';
     let offset = 0;
@@ -47,6 +48,7 @@
                     <TableRow
                         on:click={() => {
                             $log.show = true;
+                            $log.func = $func;
                             $log.data = execution;
                         }}>
                         <TableCell title="Deployment ID">
@@ -65,7 +67,7 @@
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
                         </TableCellText>
-                        <TableCellText title="Type">{execution.trigger}</TableCellText>
+                        <TableCellText title="Type">TBI</TableCellText>
                         <TableCellText title="Duration">
                             {calculateTime(execution.duration)}</TableCellText>
                     </TableRow>
