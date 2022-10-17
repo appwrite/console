@@ -1,37 +1,40 @@
-<script lang="ts">
-    import { page } from '$app/stores';
-    import { DropList, DropListItem, GridItem1 } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+<script lang="ts" context="module">
     import { wizard } from '$lib/stores/wizard';
-    import { project } from '../../store';
+    import { versions } from './wizard/store';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateWeb from './createWeb.svelte';
-    import { versions } from './wizard/store';
 
-    let showDropdown = false;
-    const path = `/console/project-${$page.params.project}/overview/platforms`;
-
-    enum Platform {
+    export enum Platform {
         Web,
         Flutter,
         Android,
         Apple
     }
 
-    const platforms = {
+    export const platforms = {
         [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
         [Platform.Apple]: CreateApple
     };
 
-    async function addPlatform(type: Platform) {
+    export async function addPlatform(type: Platform) {
         await versions.load();
         wizard.start(platforms[type]);
     }
+</script>
+
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { DropList, DropListItem, GridItem1 } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { project } from '../../store';
+
+    let showDropdown = false;
+    const path = `/console/project-${$page.params.project}/overview/platforms`;
 </script>
 
 <div class="common-section u-flex u-gap-12">

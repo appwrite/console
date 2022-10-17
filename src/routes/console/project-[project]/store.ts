@@ -11,6 +11,10 @@ export const project = cachedStore<
     return {
         load: async (projectId: string) => {
             const project = await sdkForConsole.projects.get(projectId);
+            /**
+             * Reset all cache when project changed.
+             */
+            globalThis?.sessionStorage?.clear();
             set(project);
         }
     };

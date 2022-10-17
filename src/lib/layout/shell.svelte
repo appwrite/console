@@ -22,7 +22,7 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { base } from '$app/paths';
     import { user } from '$lib/stores/user';
-    import { goto } from '$app/navigation';
+    import { beforeNavigate, goto } from '$app/navigation';
     import { browser } from '$app/environment';
     import { wizard } from '$lib/stores/wizard';
 
@@ -67,6 +67,16 @@
             }
         }
     };
+
+    beforeNavigate((n) => {
+        /**
+         * Hide wizard when navigation is triggered by popstate.
+         */
+        if (n.type === 'popstate' && $wizard.show) {
+            wizard.hide();
+            n.cancel();
+        }
+    });
 </script>
 
 <svelte:window bind:scrollY={y} />
