@@ -89,13 +89,15 @@
                         {#if selectedTab === 'logs'}
                             <Code
                                 scrollable
-                                showLineNumbers
+                                noMargin
+                                withLineNumbers
                                 language={languages[$log.func.runtime]}
                                 code={$log.data.buildStdout ?? 'No logs recorded'} />
                         {:else}
                             <Code
                                 scrollable
-                                showLineNumbers
+                                noMargin
+                                withLineNumbers
                                 language={languages[$log.func.runtime]}
                                 code={$log.data.buildStderr ?? 'No errors recorded'} />
                         {/if}

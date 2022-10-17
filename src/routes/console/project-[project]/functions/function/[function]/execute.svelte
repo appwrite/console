@@ -39,7 +39,7 @@
             {#if showJson}
                 <Code
                     language="json"
-                    showLineNumbers
+                    withLineNumbers
                     code={`{
     firstName: "hello", 
     lastName:"world", 

@@ -92,8 +92,8 @@
                     <CollapsibleItem>
                         <svelte:fragment slot="title">{category}</svelte:fragment>
                         <Code
-                            showLineNumbers
-                            showCopy
+                            withLineNumbers
+                            withCopy
                             language="sh"
                             label={codeSnippets[category].language}
                             code={codeSnippets[category].code} />
