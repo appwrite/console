@@ -6,6 +6,7 @@
     import { project } from '../../store';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { clickOnEnter } from '$lib/helpers/a11y';
 
     const projectId = $project.$id;
     let isLimited = $project.authLimit === 0 ? 'unlimited' : 'limited';
@@ -113,7 +114,8 @@
                     </div>
                     <div
                         class="input-text-wrapper u-stretch"
-                        on:click={() => (isLimited = 'limited')}>
+                        on:click={() => (isLimited = 'limited')}
+                        on:keyup|self={clickOnEnter}>
                         <input
                             type="number"
                             name="limit"

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { clickOnEnter } from '$lib/helpers/a11y';
+
     export let completed = false;
     export let current = false;
     export let currentSub = 0;
@@ -10,6 +12,7 @@
 
 <li
     on:click|preventDefault
+    on:keyup|self={clickOnEnter}
     class:steps-item={!isSub}
     class:steps-sub-item={isSub}
     style={`cursor: ${completed ? 'pointer' : 'default'};`}
