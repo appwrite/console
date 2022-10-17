@@ -8,6 +8,7 @@
     import 'prismjs/components/prism-yaml';
     import 'prismjs/components/prism-swift';
     import 'prismjs/plugins/autoloader/prism-autoloader';
+    import 'prismjs/plugins/custom-class/prism-custom-class';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
     import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
     import { afterUpdate } from 'svelte';
@@ -19,6 +20,8 @@
     export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift';
     export let withLineNumbers = false;
     export let withCopy = false;
+
+    Prism.plugins.customClass.prefix('prism-');
 
     afterUpdate(async () => {
         Prism.highlightAll();
@@ -99,44 +102,44 @@
         padding: 0;
         margin: 0;
     }
-    .token {
-        &.comment,
-        &.prolog,
-        &.doctype,
-        &.cdata {
+    .prism-token {
+        &.prism-comment,
+        &.prism-prolog,
+        &.prism-doctype,
+        &.prism-cdata {
             color: #868ea3;
         }
 
-        &.punctuation {
+        &.prism-punctuation {
             color: #fcfcff;
 
             body.theme-light & {
                 color: #373b4d;
             }
         }
-        &.property,
-        &.tag,
-        &.boolean,
-        &.number,
-        &.constant,
-        &.symbol,
-        &.deleted,
-        &.selector,
-        &.attr-name,
-        &.string,
-        &.char,
-        &.builtin,
-        &.inserted {
+        &.prism-property,
+        &.prism-tag,
+        &.prism-boolean,
+        &.prism-number,
+        &.prism-constant,
+        &.prism-symbol,
+        &.prism-deleted,
+        &.prism-selector,
+        &.prism-attr-name,
+        &.prism-string,
+        &.prism-char,
+        &.prism-builtin,
+        &.prism-inserted {
             color: #fdc584;
             body.theme-light & {
                 color: #e49545;
             }
         }
-        &.operator,
-        &.entity,
-        &.url,
-        .language-css &.string,
-        .style &.string {
+        &.prism-operator,
+        &.prism-entity,
+        &.prism-url,
+        .language-css &.prism-string,
+        .style &.prism-string {
             color: #fcfcff;
             background: none;
             body.theme-light & {
@@ -144,29 +147,29 @@
             }
         }
 
-        &.atrule,
-        &.attr-value,
-        &.keyword {
+        &.prism-atrule,
+        &.prism-attr-value,
+        &.prism-keyword {
             color: #cbb1fc;
             body.theme-light & {
                 color: #6a6af7;
             }
         }
-        &.function {
+        &.prism-function {
             color: #ffa1ce;
             body.theme-light & {
                 color: #f02e7f;
             }
         }
-        &.class-name {
+        &.prism-class-name {
             color: #a1c4ff;
             body.theme-light & {
                 color: #62aed2;
             }
         }
-        &.regex,
-        &.important,
-        &.variable {
+        &.prism-regex,
+        &.prism-important,
+        &.prism-variable {
             color: #a1c4ff;
             body.theme-light & {
                 color: #62aed2;
