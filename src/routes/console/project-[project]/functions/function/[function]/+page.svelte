@@ -228,8 +228,9 @@
                 <p>Need a hand? Check out our documentation.</p>
             </div>
             <div class="u-flex u-gap-12">
-                <Button text external href="https://appwrite.io/docs/functions#createFunction"
-                    >Documentation</Button>
+                <Button text external href="https://appwrite.io/docs/functions#createFunction">
+                    Documentation
+                </Button>
                 <Button secondary on:click={() => (showCreate = true)}>Create Deployment</Button>
             </div>
         </Empty>

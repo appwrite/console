@@ -27,6 +27,8 @@
     const functionId = $page.params.function;
 
     $: executionList.load(functionId, [Query.offset(offset), Query.limit($pageLimit)], search);
+
+    //TODO: add optional hover state to rows
 </script>
 
 <Container>
