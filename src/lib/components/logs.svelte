@@ -11,8 +11,6 @@
     import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
 
-    console.log('test');
-
     let selectedTab: string;
     let rawData: string;
 
@@ -38,8 +36,6 @@
             return true;
         }
     }
-
-    console.log(isDeployment($log.data));
 </script>
 
 {#if $log.data}
