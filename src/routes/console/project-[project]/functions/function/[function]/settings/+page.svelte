@@ -1,5 +1,13 @@
 <script lang="ts">
-    import { CardGrid, Box, DropList, DropListItem, Copy } from '$lib/components';
+    import {
+        CardGrid,
+        Box,
+        DropList,
+        DropListItem,
+        Copy,
+        Empty,
+        EventModal
+    } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputNumber, InputText, InputCron, Form, FormList } from '$lib/elements/forms';
     import { base } from '$app/paths';
@@ -18,6 +26,8 @@
     import { breadcrumbs, title } from '$lib/stores/layout';
     import { Permissions } from '$lib/components/permissions';
     import { difference } from '$lib/helpers/array';
+    import TableList from '$lib/elements/table/tableList.svelte';
+    import { TableCell, TableCellText } from '$lib/elements/table';
 
     const functionId = $page.params.function;
     let showDelete = false;
@@ -31,6 +41,9 @@
     let functionName: string = null;
     let permissions: string[] = [];
     let arePermsDisabled = true;
+    let eventSet = new Set<string>();
+    let showEvents = false;
+    let areEventsDisabled = true;
 
     onMount(async () => {
         if ($func?.$id !== functionId) {
@@ -41,6 +54,7 @@
         timeout ??= $func.timeout;
         functionName ??= $func.name;
         permissions ??= $func.execute;
+        eventSet = new Set($func.events);
     });
 
     async function updateName() {
@@ -66,6 +80,26 @@
         try {
             await sdkForProject.functions.update(functionId, $func.name, permissions);
             $func.execute = permissions;
+            addNotification({
+                message: 'Permissions have been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
+    async function updateEvents() {
+        try {
+            await sdkForProject.functions.update(
+                functionId,
+                $func.name,
+                $func.execute,
+                Array.from(eventSet)
+            );
+            $func.events = Array.from(eventSet);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'
@@ -178,10 +212,27 @@
         }
     }
 
+    function handleEvent(event: CustomEvent) {
+        eventSet.add(event.detail);
+        eventSet = eventSet;
+    }
+
     $: if (permissions) {
-        if (difference(permissions, $func.execute).length) {
+        if (
+            difference(permissions, $func.execute).length ||
+            difference($func.execute, permissions).length
+        ) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
+    }
+
+    $: if (eventSet) {
+        if (
+            difference(Array.from(eventSet), $func.events).length ||
+            difference($func.events, Array.from(eventSet)).length
+        ) {
+            areEventsDisabled = false;
+        } else areEventsDisabled = true;
     }
 </script>
 
@@ -257,6 +308,52 @@
 
             <svelte:fragment slot="actions">
                 <Button disabled={arePermsDisabled} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+
+    <Form on:submit={updateEvents}>
+        <CardGrid>
+            <h6 class="heading-level-7">Update Events</h6>
+            <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
+            <svelte:fragment slot="aside">
+                {#if eventSet.size}
+                    <TableList>
+                        {#each Array.from(eventSet) as event}
+                            <li class="table-row">
+                                <TableCellText title="id">
+                                    {event}
+                                </TableCellText>
+                                <TableCell showOverflow title="options" width={40}>
+                                    <button
+                                        class="button is-text is-only-icon"
+                                        aria-label="delete id"
+                                        on:click|preventDefault={() => {
+                                            eventSet.delete(event);
+                                            eventSet = eventSet;
+                                        }}>
+                                        <span class="icon-x" aria-hidden="true" />
+                                    </button>
+                                </TableCell>
+                            </li>
+                        {/each}
+                    </TableList>
+                {:else}
+                    <Empty isButton on:click={() => (showEvents = !showEvents)}
+                        >Add a event to get started
+                    </Empty>
+                {/if}
+
+                <div class="u-flex u-margin-block-start-16">
+                    <Button text noMargin on:click={() => (showEvents = !showEvents)}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="u-text">Add event</span>
+                    </Button>
+                </div>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={areEventsDisabled} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -460,4 +557,10 @@
         on:updated={handleVariableUpdated} />
 {/if}
 
-<Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />
+{#if showVariablesUpload}
+    <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />
+{/if}
+
+{#if showEvents}
+    <EventModal bind:showCreate={showEvents} on:created={handleEvent} />
+{/if}
