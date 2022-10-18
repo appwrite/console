@@ -4,7 +4,7 @@
     import { Pill } from '$lib/elements';
     import { createEventDispatcher } from 'svelte';
 
-    export let showCreate = false;
+    export let show = false;
     let selectedService: typeof services[0] = null;
     let selectedRequest: typeof selectedService['requests'][0] = null;
     let selectedEvent: string = null;
@@ -16,7 +16,7 @@
     const dispatch = createEventDispatcher();
 
     function create() {
-        showCreate = false;
+        show = false;
         dispatch('created', copyValue);
     }
 
@@ -144,7 +144,7 @@
         helper = null;
     }
 
-    $: if (!showCreate) {
+    $: if (!show) {
         selectedService = null;
         selectedRequest = null;
         selectedEvent = null;
@@ -154,13 +154,11 @@
         showInput = false;
     }
 
-    $: console.log(eventString);
-
     //TODO: remove inline style
 </script>
 
 <Form noMargin on:submit={create}>
-    <Modal bind:show={showCreate} size="big">
+    <Modal bind:show size="big">
         <svelte:fragment slot="header">Create Event</svelte:fragment>
 
         <div>
@@ -303,7 +301,7 @@
         {/if}
 
         <svelte:fragment slot="footer">
-            <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
+            <Button secondary on:click={() => (show = false)}>Cancel</Button>
             <Button disabled={showInput || !copyValue} submit>Create</Button>
         </svelte:fragment>
     </Modal>

@@ -312,7 +312,7 @@
 <Delete bind:showDelete />
 <Regenerate bind:show={showRegenerate} />
 <EventModal
-    bind:showCreate={showCreateEvent}
+    bind:show={showCreateEvent}
     on:created={(e) => {
         events.push(e.detail[0]);
         events = events;

@@ -339,13 +339,13 @@
                         {/each}
                     </TableList>
                 {:else}
-                    <Empty isButton on:click={() => (showEvents = !showEvents)}
+                    <Empty isButton on:click={() => (showEvents = true)}
                         >Add a event to get started
                     </Empty>
                 {/if}
 
                 <div class="u-flex u-margin-block-start-16">
-                    <Button text noMargin on:click={() => (showEvents = !showEvents)}>
+                    <Button text noMargin on:click={() => (showEvents = true)}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="u-text">Add event</span>
                     </Button>
@@ -562,5 +562,5 @@
 {/if}
 
 {#if showEvents}
-    <EventModal bind:showCreate={showEvents} on:created={handleEvent} />
+    <EventModal bind:show={showEvents} on:created={handleEvent} />
 {/if}

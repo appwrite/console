@@ -58,5 +58,5 @@
 </WizardStep>
 
 {#if showCreate}
-    <EventModal bind:showCreate on:created={handleCreated} />
+    <EventModal bind:show={showCreate} on:created={handleCreated} />
 {/if}
