@@ -1,15 +1,13 @@
 <script lang="ts">
-    export let status: 'waiting' | 'pending' | 'failed' | 'complete' | 'processing' | string = null;
-
-    //TODO: remove string type after types are fixed
+    export let status: string = null;
 </script>
 
 <div
     class="status"
     class:is-pending={status === 'pending'}
     class:is-failed={status === 'failed'}
-    class:is-complete={status === 'complete'}
-    class:is-processing={status === 'processing'}>
+    class:is-complete={status === 'complete' || status === 'ready'}
+    class:is-processing={status === 'processing' || status === 'building'}>
     {#if status}
         <span class="status-icon" />
     {/if}

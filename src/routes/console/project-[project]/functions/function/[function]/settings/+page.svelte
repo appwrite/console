@@ -262,7 +262,6 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button text on:click={() => console.log('open Logs')}>View as JSON</Button>
             <Button
                 secondary
                 on:click={() => {

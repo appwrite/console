@@ -89,7 +89,10 @@
                             <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
                             <p>Entrypoint: {activeDeployment?.entrypoint}</p>
                         </div>
-                        {activeDeployment.status}
+
+                        <Status status={activeDeployment.status}>
+                            {activeDeployment.status}
+                        </Status>
                     </div>
                 </svelte:fragment>
 
@@ -158,8 +161,9 @@
 
                             <TableCell title="Status">
                                 <Status status={deployment.status}>
-                                    {deployment.status ?? 'No deployment'}
-                                </Status></TableCell>
+                                    {deployment.status}
+                                </Status>
+                            </TableCell>
                             <!-- TODO: replace with build time, when implemented -->
                             <TableCellText title="Build Time">TBI</TableCellText>
                             <TableCellText title="Size"

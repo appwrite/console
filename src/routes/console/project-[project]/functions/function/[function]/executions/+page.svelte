@@ -6,7 +6,7 @@
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { Pagination, Copy, Empty } from '$lib/components';
+    import { Pagination, Copy, Empty, Status } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -63,7 +63,11 @@
                         <TableCellText title="Created">
                             {toLocaleDateTime(execution.$createdAt)}
                         </TableCellText>
-                        <TableCellText title="Status">{execution.status}</TableCellText>
+                        <TableCellText title="Status">
+                            <Status status={execution.status}>
+                                {execution.status}
+                            </Status>
+                        </TableCellText>
                         <TableCellText title="Trigger">
                             <Pill>
                                 <span class="text u-trim">{execution.trigger}</span>
