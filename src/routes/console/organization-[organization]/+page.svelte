@@ -2,7 +2,7 @@
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
-    import { GridItem1, Empty, Pagination } from '$lib/components';
+    import { GridItem1, Heading, Empty, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { Query, type Models } from '@aw-labs/appwrite-console';
@@ -68,8 +68,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Projects</h2>
-
+        <Heading tag="h2" size="5">Projects</Heading>
         <Button
             on:click={() => {
                 showCreate = true;

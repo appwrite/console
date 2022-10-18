@@ -8,7 +8,7 @@
         TableCellHead,
         TableCell
     } from '$lib/elements/table';
-    import { Empty, Pagination, Copy } from '$lib/components';
+    import { Empty, Pagination, Copy, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { collection, documentList } from './store';
     import { Container } from '$lib/layout';
@@ -44,7 +44,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Documents</h2>
+        <Heading tag="h2" size="5">Documents</Heading>
 
         <Button disabled={!$collection?.attributes?.length} on:click={openWizard}>
             <span class="icon-plus" aria-hidden="true" />

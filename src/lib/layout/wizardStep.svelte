@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Heading } from '$lib/components';
     import { wizard } from '$lib/stores/wizard';
 
     /**
@@ -12,9 +13,9 @@
 </script>
 
 <header class="form-header">
-    <h1 class="heading-level-6">
+    <Heading tag="h1" size="6">
         <slot name="title" />
-    </h1>
+    </Heading>
     {#if $$slots.subtitle}
         <p>
             <slot name="subtitle" />

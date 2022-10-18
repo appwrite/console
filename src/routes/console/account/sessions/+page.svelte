@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, Pagination } from '$lib/components';
+    import { Empty, Heading, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import {
@@ -41,7 +41,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Sessions</h2>
+        <Heading tag="h2" size="5">Sessions</Heading>
 
         <Button secondary on:click={logoutAll}>
             <span class="text">Logout all sessions</span>

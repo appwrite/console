@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { DropList, DropListItem, GridItem1 } from '$lib/components';
+    import { DropList, DropListItem, GridItem1, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
@@ -35,7 +35,7 @@
 </script>
 
 <div class="common-section u-flex u-gap-12">
-    <h3 class="heading-level-7">Platforms</h3>
+    <Heading tag="h3" size="7">Platforms</Heading>
     <span class="u-margin-inline-start-auto">
         <DropList
             bind:show={showDropdown}

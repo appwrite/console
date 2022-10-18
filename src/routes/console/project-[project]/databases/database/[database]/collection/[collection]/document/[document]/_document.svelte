@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { CardGrid } from '$lib/components';
+    import { CardGrid, Heading } from '$lib/components';
     import { collection } from '../../store';
     import { doc } from './store';
     import { onMount } from 'svelte';
@@ -55,7 +55,7 @@
 </script>
 
 <CardGrid>
-    <h6 class="heading-level-7">Update Data</h6>
+    <Heading tag="h6" size="7">Update Data</Heading>
     <p>Update document data based on the attributes created earlier.</p>
     <svelte:fragment slot="aside">
         <form class="form u-grid u-gap-16">

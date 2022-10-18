@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid } from '$lib/components';
+    import { CardGrid, Heading } from '$lib/components';
     import { Pill } from '$lib/elements/';
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -71,7 +71,7 @@
 
 <Container>
     <CardGrid>
-        <h2 class="heading-level-6">Users Limit</h2>
+        <Heading tag="h2" size="6">Users Limit</Heading>
         <p>
             Limit new users from signing up for your project, regardless of authentication method.
             You can still create users and team memberships from your Appwrite console. <b>
@@ -138,7 +138,7 @@
     </CardGrid>
 
     <CardGrid>
-        <h2 class="heading-level-6">Session Length (Coming Soon)</h2>
+        <Heading tag="h2" size="6">Session Length (Coming Soon)</Heading>
         <p>
             If you reduce the limit, users who are currently logged in will be logged out of the
             application.

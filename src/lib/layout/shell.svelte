@@ -9,7 +9,8 @@
         DropListLink,
         AvatarGroup,
         Tabs,
-        Tab
+        Tab,
+        Heading
     } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -106,13 +107,13 @@
                         <button
                             class="button is-text u-padding-inline-0"
                             on:click={() => (showDropdown = !showDropdown)}>
-                            <h1 class="heading-level-4">
+                            <Heading tag="h1" size="4">
                                 <span class="text"> {$organization.name}</span>
 
                                 <span
                                     class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}
                                     aria-hidden="true" />
-                            </h1>
+                            </Heading>
                         </button>
                         <svelte:fragment slot="list">
                             {#each $titleDropdown as org}
@@ -147,9 +148,9 @@
                         </div>
                     </div>
                 {:else}
-                    <h1 class="heading-level-4">
+                    <Heading tag="h1" size="4">
                         <span class="text">{$title ? $title : '-'}</span>
-                    </h1>
+                    </Heading>
                 {/if}
                 {#if $page.url.pathname.includes('/console/account')}
                     <div class="u-margin-inline-start-auto">

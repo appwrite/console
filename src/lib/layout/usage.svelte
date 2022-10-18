@@ -5,7 +5,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { BarChart, LineChart } from '$lib/charts';
-    import { Card, DropTabs, DropTabsItem, Tiles } from '$lib/components';
+    import { Card, DropTabs, DropTabsItem, Heading, Tiles } from '$lib/components';
     import { Colors } from '$lib/charts/config';
     import type { Models } from '@aw-labs/appwrite-console';
 
@@ -39,7 +39,7 @@
 
 <Container>
     <div class="u-flex u-main-space-between common-section">
-        <h2 class="heading-level-5">{title}</h2>
+        <Heading tag="h2" size="5">{title}</Heading>
         <DropTabs>
             <DropTabsItem on:click={() => (range = '24h')} disabled={range === '24h'}>
                 24h
@@ -54,7 +54,7 @@
     </div>
     <Card>
         {#if count}
-            <h6 class="heading-level-6">{last(count).value}</h6>
+            <Heading tag="h6" size="6">{last(count).value}</Heading>
             <p>{countMetadata.title}</p>
             <div class="u-margin-block-start-16" />
             <BarChart
@@ -69,7 +69,7 @@
     <Tiles>
         <Card isTile>
             {#if created}
-                <h6 class="heading-level-6">{total(created)}</h6>
+                <Heading tag="h6" size="6">{total(created)}</Heading>
                 <p>{createdMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
                 <LineChart
@@ -84,7 +84,7 @@
         </Card>
         <Card isTile>
             {#if read}
-                <h6 class="heading-level-6">{total(read)}</h6>
+                <Heading tag="h6" size="6">{total(read)}</Heading>
                 <p>{readMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
                 <LineChart
@@ -99,7 +99,7 @@
         </Card>
         <Card isTile>
             {#if updated}
-                <h6 class="heading-level-6">{total(updated)}</h6>
+                <Heading tag="h6" size="6">{total(updated)}</Heading>
                 <p>{updatedMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
                 <LineChart
@@ -114,7 +114,7 @@
         </Card>
         <Card isTile>
             {#if deleted}
-                <h6 class="heading-level-6">{total(deleted)}</h6>
+                <Heading tag="h6" size="6">{total(deleted)}</Heading>
                 <p>{deletedMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
                 <LineChart

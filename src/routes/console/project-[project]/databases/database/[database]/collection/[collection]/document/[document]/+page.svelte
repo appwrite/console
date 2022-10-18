@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box } from '$lib/components';
+    import { CardGrid, Box, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -52,7 +52,7 @@
 <Container>
     {#if $doc}
         <CardGrid>
-            <h2 class="heading-level-7">Document</h2>
+            <Heading tag="h2" size="7">Document</Heading>
             <svelte:fragment slot="aside">
                 <div>
                     <p>Created: {toLocaleDateTime($doc.$createdAt)}</p>
@@ -63,7 +63,7 @@
         <Document />
 
         <CardGrid>
-            <h6 class="heading-level-7">Update Permissions</h6>
+            <Heading tag="h6" size="7">Update Permissions</Heading>
             <p>
                 Assign read or write permissions at the <b> Collection Level</b> or
                 <b> Document Level</b>. If collection Level permissions are assigned, permissions
@@ -84,7 +84,7 @@
         </CardGrid>
 
         <CardGrid>
-            <h6 class="heading-level-7">Delete document</h6>
+            <Heading tag="h6" size="7">Delete document</Heading>
             <p>
                 The document will be permanently deleted, including all the data within it. This
                 action is irreversible.
