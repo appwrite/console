@@ -16,6 +16,8 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { variableList } from '../../../store';
     import { breadcrumbs, title } from '$lib/stores/layout';
+    import { Permissions } from '$lib/components/permissions';
+    import { difference } from '$lib/helpers/array';
 
     const functionId = $page.params.function;
     let showDelete = false;
@@ -27,6 +29,8 @@
     let timeout: number = null;
     let deployment: Models.Deployment = null;
     let functionName: string = null;
+    let permissions: string[] = [];
+    let arePermsDisabled = true;
 
     onMount(async () => {
         if ($func?.$id !== functionId) {
@@ -36,6 +40,7 @@
         deployment = await func.getDeployment(functionId, $func.deployment);
         timeout ??= $func.timeout;
         functionName ??= $func.name;
+        permissions ??= $func.execute;
     });
 
     async function updateName() {
@@ -48,6 +53,21 @@
             $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
             addNotification({
                 message: 'Name has been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
+    async function updatePermissions() {
+        try {
+            await sdkForProject.functions.update(functionId, $func.name, permissions);
+            $func.execute = permissions;
+            addNotification({
+                message: 'Permissions have been updated',
                 type: 'success'
             });
         } catch (error) {
@@ -157,6 +177,12 @@
             window.URL.revokeObjectURL(url);
         }
     }
+
+    $: if (permissions) {
+        if (difference(permissions, $func.execute).length) {
+            arePermsDisabled = false;
+        } else arePermsDisabled = true;
+    }
 </script>
 
 <Container>
@@ -211,8 +237,26 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={functionName === $func.name || !functionName} submit
-                    >Update</Button>
+                <Button disabled={functionName === $func.name || !functionName} submit>
+                    Update
+                </Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+
+    <Form on:submit={updatePermissions}>
+        <CardGrid>
+            <h6 class="heading-level-7">Execute Access</h6>
+            <p>
+                Choose who can execute this function using the client API. For more information,
+                check out the Permissions Guide in our documentation.
+            </p>
+            <svelte:fragment slot="aside">
+                <Permissions withCrud={false} {permissions} />
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={arePermsDisabled} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
