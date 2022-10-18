@@ -10,6 +10,7 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { beforeNavigate } from '$app/navigation';
 
     let selectedTab: string;
     let rawData: string;
@@ -35,6 +36,15 @@
             rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
             return true;
         }
+    }
+
+    beforeNavigate(() => {
+        $log.show = false;
+    });
+
+    $: if (!$log.show) {
+        $log.data = null;
+        $log.func = null;
     }
 </script>
 
