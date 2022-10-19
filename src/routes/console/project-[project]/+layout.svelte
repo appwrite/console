@@ -8,7 +8,6 @@
     import { organization } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
-    import { updateLayout } from '$lib/stores/layout';
     import type { Models } from '@aw-labs/appwrite-console';
 
     type Attributes =
@@ -48,7 +47,7 @@
     afterNavigate(handle);
 
     let loaded = false;
-    async function handle(event = null) {
+    async function handle() {
         if (sdkForProject.client.config.project !== projectId) {
             setProject(projectId);
         }
@@ -62,23 +61,6 @@
                 await promiseOrganization;
             }
         }
-
-        updateLayout({
-            navigate: event,
-            title: $project.name,
-            level: 1,
-            breadcrumbs: [
-                {
-                    href: 'console',
-                    title: $organization.name,
-                    level: 0
-                },
-                {
-                    href: `project-${$project.$id}`,
-                    title: $project.name
-                }
-            ]
-        });
         loaded = true;
     }
 </script>

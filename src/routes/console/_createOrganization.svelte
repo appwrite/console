@@ -6,7 +6,6 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { organization, organizationList } from '$lib/stores/organization';
-    import { titleDropdown } from '$lib/stores/layout';
     import { goto } from '$app/navigation';
 
     export let show = false;
@@ -23,7 +22,6 @@
             const team = await sdkForConsole.teams.create(id ?? 'unique()', name);
             dispatch('created');
             await organizationList.load();
-            titleDropdown.set($organizationList.teams);
             organization.set(team);
             await goto(`/console/organization-${$organization.$id}`);
             addNotification({

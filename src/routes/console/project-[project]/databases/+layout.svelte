@@ -2,33 +2,17 @@
     import { afterNavigate } from '$app/navigation';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
-
-    const path = 'databases';
+    import Breadcrumbs from './breadcrumbs.svelte';
+    import Header from './header.svelte';
 
     onMount(handle);
     afterNavigate(handle);
 
     let loaded = false;
-
-    function handle(event = null) {
+    function handle() {
         updateLayout({
-            navigate: event,
-            title: 'Databases',
-            tabs: [
-                {
-                    href: path,
-                    title: 'Databases'
-                },
-                {
-                    href: `${path}/usage`,
-                    title: 'Usage'
-                }
-            ],
-            level: 3,
-            breadcrumbs: {
-                href: 'databases',
-                title: 'Databases'
-            }
+            header: Header,
+            breadcrumb: Breadcrumbs
         });
         loaded = true;
     }

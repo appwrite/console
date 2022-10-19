@@ -3,7 +3,6 @@
     import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
     import { browser } from '$app/environment';
-    import { tabs, title, backButton, copyData } from '$lib/stores/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
     import { usage } from './store';
@@ -12,6 +11,9 @@
     import { DropList, DropListItem } from '$lib/components';
     import { BarChart, LineChart } from '$lib/charts';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { updateLayout } from '$lib/stores/layout';
+    import Header from './header.svelte';
+    import Breadcrumbs from './breadcrumbs.svelte';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -29,14 +31,9 @@
         if ($usage) {
             await promise;
         }
-
-        title.set($project.name);
-        tabs.set([]);
-        backButton.set('');
-
-        copyData.set({
-            text: 'Project ID',
-            value: $project.$id
+        updateLayout({
+            header: Header,
+            breadcrumb: Breadcrumbs
         });
     }
 

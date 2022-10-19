@@ -1,16 +1,16 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { onMount } from 'svelte';
-    import { Breadcrumbs } from '.';
     import { Avatar, DropList, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
+    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
+    import { breadcrumb } from '$lib/stores/layout';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
 
     let showDropdown = false;
 
@@ -28,7 +28,9 @@
     <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
 </a>
 
-<Breadcrumbs />
+{#if $breadcrumb}
+    <svelte:component this={$breadcrumb} />
+{/if}
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop">

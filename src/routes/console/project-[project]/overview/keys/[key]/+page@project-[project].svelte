@@ -1,6 +1,5 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { CardGrid, Secret } from '$lib/components';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
@@ -14,7 +13,9 @@
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import Scopes from '../scopes.svelte';
+    import Breadcrumbs from './breadcrumbs.svelte';
     import Delete from './delete.svelte';
+    import Header from './header.svelte';
     import { key } from './store';
 
     const projectId = $page.params.project;
@@ -30,7 +31,7 @@
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle(event = null) {
+    async function handle() {
         await key.load(projectId, keyId);
 
         name ??= $key.name;
@@ -39,26 +40,8 @@
         scopes ??= $key.scopes;
 
         updateLayout({
-            navigate: event,
-            back: `${base}/console/project-${$page.params.project}/overview/keys`,
-            title: $key.name,
-            level: 4,
-            copy: {
-                text: 'API Key Secret',
-                value: $key.secret
-            },
-            breadcrumbs: [
-                {
-                    level: 3,
-                    href: 'keys',
-                    title: 'API Keys'
-                },
-                {
-                    level: 4,
-                    href: keyId,
-                    title: $key.name
-                }
-            ]
+            header: Header,
+            breadcrumb: Breadcrumbs
         });
         loaded = true;
     }

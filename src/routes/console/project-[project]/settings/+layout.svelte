@@ -2,6 +2,8 @@
     import { afterNavigate } from '$app/navigation';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
+    import Breadcrumbs from './breadcrumbs.svelte';
+    import Header from './header.svelte';
 
     const path = 'settings';
 
@@ -10,27 +12,8 @@
 
     function handle(event = null) {
         updateLayout({
-            navigate: event,
-            title: 'Settings',
-            level: 3,
-            breadcrumbs: {
-                title: 'Settings',
-                href: 'settings'
-            },
-            tabs: [
-                {
-                    href: path,
-                    title: 'Overview'
-                },
-                {
-                    href: `${path}/services`,
-                    title: 'Services'
-                },
-                {
-                    href: `${path}/domains`,
-                    title: 'Custom Domains'
-                }
-            ]
+            header: Header,
+            breadcrumb: Breadcrumbs
         });
     }
 </script>

@@ -1,19 +1,19 @@
 <script>
+    import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { updateLayout } from '$lib/stores/layout';
-    import { onMount } from 'svelte';
+    import { breadcrumb, updateLayout } from '$lib/stores/layout';
     import { database } from './store';
+    import Breadcrumbs from './breadcrumbs.svelte';
+    import Header from './header.svelte';
 
     const databaseId = $page.params.database;
     const path = `databases/database/${databaseId}`;
 
-    let loaded = false;
-
     onMount(handle);
     afterNavigate(handle);
-
+    let loaded = false;
     async function handle(event = null) {
         const promise = database.load(databaseId);
         if ($database?.$id !== databaseId) {
@@ -21,32 +21,8 @@
         }
 
         updateLayout({
-            navigate: event,
-            back: `${base}/console/project-${$page.params.project}/databases`,
-            copy: {
-                text: 'Database ID',
-                value: databaseId
-            },
-            title: $database.name,
-            level: 4,
-            breadcrumbs: {
-                href: `database/${databaseId}`,
-                title: $database.name
-            },
-            tabs: [
-                {
-                    href: path,
-                    title: 'Collections'
-                },
-                {
-                    href: `${path}/usage`,
-                    title: 'Usage'
-                },
-                {
-                    href: `${path}/settings`,
-                    title: 'Settings'
-                }
-            ]
+            header: Header,
+            breadcrumb: Breadcrumbs
         });
         loaded = true;
     }

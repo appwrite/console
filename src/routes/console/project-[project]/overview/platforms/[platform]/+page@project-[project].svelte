@@ -1,6 +1,5 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { CardGrid } from '$lib/components';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
@@ -22,6 +21,8 @@
     import AppleMacOs from './appleMacOS.svelte';
     import AppleWatchOs from './appleWatchOS.svelte';
     import AppleTvos from './appleTvOS.svelte';
+    import Header from './header.svelte';
+    import Breadcrumbs from './breadcrumbs.svelte';
 
     const projectId = $page.params.project;
     const platformId = $page.params.platform;
@@ -46,7 +47,7 @@
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle(event = null) {
+    async function handle() {
         if ($platform?.$id !== platformId) {
             await platform.load(projectId, platformId);
         }
@@ -54,22 +55,8 @@
         name ??= $platform.name;
 
         updateLayout({
-            navigate: event,
-            back: `${base}/console/project-${projectId}/overview/platforms`,
-            title: $platform.name,
-            level: 4,
-            breadcrumbs: [
-                {
-                    level: 3,
-                    href: 'platforms',
-                    title: 'Platforms'
-                },
-                {
-                    level: 4,
-                    href: platformId,
-                    title: $platform.name
-                }
-            ]
+            header: Header,
+            breadcrumb: Breadcrumbs
         });
         loaded = true;
     }
