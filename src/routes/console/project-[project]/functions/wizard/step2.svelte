@@ -13,5 +13,5 @@
         >.
     </svelte:fragment>
 
-    <Permissions withCrud={false} permissions={$createFunction.execute} />
+    <Permissions withCrud={false} bind:executeAccess={$createFunction.execute} />
 </WizardStep>

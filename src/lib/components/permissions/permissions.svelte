@@ -29,6 +29,7 @@
     export let withCreate = false;
     export let withCrud = true;
     export let permissions: string[] = [];
+    export let executeAccess: string[] = [];
 
     let showUser = false;
     let showTeam = false;
@@ -143,6 +144,15 @@
         }
 
         return a.localeCompare(b);
+    }
+
+    $: if (executeAccess.length && !permissions.length) {
+        executeAccess.forEach((permission) => {
+            addRole(permission);
+        });
+    }
+    $: if ([...$groups]?.length && !permissions.length) {
+        executeAccess = [...$groups].sort(sortRoles).map(([role]) => role);
     }
 
     //TODO: click on Empty components opens the dropdown

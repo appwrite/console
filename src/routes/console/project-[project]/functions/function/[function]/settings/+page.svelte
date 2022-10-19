@@ -53,7 +53,7 @@
         deployment = await func.getDeployment(functionId, $func.deployment);
         timeout ??= $func.timeout;
         functionName ??= $func.name;
-        permissions ??= $func.execute;
+        permissions = $func.execute;
         eventSet = new Set($func.events);
     });
 
@@ -302,7 +302,7 @@
                 check out the Permissions Guide in our documentation.
             </p>
             <svelte:fragment slot="aside">
-                <Permissions withCrud={false} {permissions} />
+                <Permissions withCrud={false} bind:executeAccess={permissions} />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
@@ -338,8 +338,8 @@
                         {/each}
                     </TableList>
                 {:else}
-                    <Empty isButton on:click={() => (showEvents = true)}
-                        >Add a event to get started
+                    <Empty isButton on:click={() => (showEvents = true)}>
+                        Add a event to get started
                     </Empty>
                 {/if}
 
