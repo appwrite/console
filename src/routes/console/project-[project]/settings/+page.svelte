@@ -6,7 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
     import { services, type Service } from '$lib/stores/project-services';
-    import { CardGrid, CopyInput, Box } from '$lib/components';
+    import { CardGrid, CopyInput, Box, Heading } from '$lib/components';
     import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import Delete from './_deleteProject.svelte';
@@ -65,7 +65,7 @@
     {#if $project}
         <Form on:submit={updateName}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Name</h6>
+                <Heading tag="h6" size="7">Update Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <FormList>
@@ -85,7 +85,7 @@
         </Form>
 
         <CardGrid>
-            <h6 class="heading-level-7">API Credentials</h6>
+            <Heading tag="h6" size="7">API Credentials</Heading>
             <p class="text">
                 Access Appwrite services using your API Endpoint and Project ID. You can connect
                 Appwrite to your applications and server-side code by <a href="#/" class="link"
@@ -102,7 +102,7 @@
         </CardGrid>
 
         <CardGrid>
-            <h6 class="heading-level-7">Services</h6>
+            <Heading tag="h6" size="7">Services</Heading>
             <p class="text">Choose services you wish to enable or disable.</p>
             <svelte:fragment slot="aside">
                 <FormList>
@@ -125,7 +125,7 @@
 
         <CardGrid>
             <div>
-                <h6 class="heading-level-7">Delete Project</h6>
+                <Heading tag="h6" size="7">Delete Project</Heading>
             </div>
             <p>
                 The project will be permanently deleted, including all the metadata, resources and

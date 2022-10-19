@@ -39,3 +39,4 @@ export { default as Tab } from './tab.svelte';
 export { default as EventModal } from './eventModal.svelte';
 export { default as Status } from './status.svelte';
 export { default as Logs } from './logs.svelte';
+export { default as Heading } from './heading.svelte';

@@ -9,7 +9,7 @@
     import { usage } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
-    import { DropList, DropListItem } from '$lib/components';
+    import { DropList, DropListItem, Heading } from '$lib/components';
     import { BarChart, LineChart } from '$lib/charts';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
 
@@ -284,7 +284,7 @@
         {/if}
 
         <section class="common-section u-margin-block-start-100">
-            <h2 class="heading-level-5">Integrations</h2>
+            <Heading tag="h2" size="5">Integrations</Heading>
             <div class="tabs u-margin-block-start-24 u-sep-block-end">
                 <button
                     class="tabs-button-scroll is-start u-hide"

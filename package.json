@@ -14,7 +14,7 @@
         "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
         "test": "vitest run",
         "test:ui": "vitest --ui",
-        "test:watch": "vitetest watch",
+        "test:watch": "vitest watch",
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
