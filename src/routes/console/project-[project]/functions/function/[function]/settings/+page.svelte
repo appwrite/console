@@ -28,6 +28,7 @@
     import { difference } from '$lib/helpers/array';
     import TableList from '$lib/elements/table/tableList.svelte';
     import { TableCell, TableCellText } from '$lib/elements/table';
+    import Heading from '$lib/components/heading.svelte';
 
     const functionId = $page.params.function;
     let showDelete = false;
@@ -247,7 +248,8 @@
                     alt="technology" />
             </div>
             <div>
-                <h6 class="heading-level-7">{$func.name}</h6>
+                <Heading tag="h6" size="7">{$func.name}</Heading>
+
                 <p>{$func.runtime}</p>
             </div>
         </div>
@@ -273,7 +275,7 @@
 
     <Form on:submit={updateName}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+            <Heading tag="h6" size="7">Update Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -296,7 +298,7 @@
 
     <Form on:submit={updatePermissions}>
         <CardGrid>
-            <h6 class="heading-level-7">Execute Access</h6>
+            <Heading tag="h6" size="7">Execute Access</Heading>
             <p>
                 Choose who can execute this function using the client API. For more information,
                 check out the Permissions Guide in our documentation.
@@ -313,7 +315,7 @@
 
     <Form on:submit={updateEvents}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Events</h6>
+            <Heading tag="h6" size="7">Update Events</Heading>
             <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
             <svelte:fragment slot="aside">
                 {#if eventSet.size}
@@ -359,7 +361,7 @@
 
     <Form on:submit={() => console.log($func.schedule)}>
         <CardGrid>
-            <h2 class="heading-level-6">Update CRON Schedule</h2>
+            <Heading tag="h6" size="7">Update CRON Schedule</Heading>
             <p>
                 Set a CRON schedule to trigger your function. Leave blank for no schedule. <a
                     href="#/"
@@ -385,7 +387,7 @@
 
     <Form on:submit={updateTimeout}>
         <CardGrid>
-            <h2 class="heading-level-6">Update Timeout</h2>
+            <Heading tag="h6" size="7">Update Timeout</Heading>
             <p>
                 Limit the execution time of your function. Maximum value is 900 seconds (15
                 minutes).
@@ -408,7 +410,7 @@
     </Form>
 
     <CardGrid>
-        <h2 class="heading-level-6">Update Function Variables</h2>
+        <Heading tag="h6" size="7">Update Function Variables</Heading>
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
@@ -527,7 +529,7 @@
     </CardGrid>
 
     <CardGrid>
-        <h6 class="heading-level-7">Delete Function</h6>
+        <Heading tag="h6" size="7">Delete Function</Heading>
         <p>
             The function will be permanently deleted, including all deployments associated with it.
             This action is irreversible.

@@ -9,7 +9,8 @@
         DropList,
         DropListItem,
         Empty,
-        Status
+        Status,
+        Heading
     } from '$lib/components';
     import {
         Table,
@@ -56,8 +57,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Deployments</h2>
-
+        <Heading tag="h2" size="5">Deployments</Heading>
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create deployment</span>
@@ -65,7 +65,7 @@
     </div>
     {#if $deploymentList?.total}
         <div class="common-section">
-            <h2 class="heading-level-7">Active</h2>
+            <Heading tag="h3" size="7">Active</Heading>
         </div>
         {#if activeDeployment}
             <CardGrid>
@@ -131,7 +131,7 @@
         {/if}
 
         <div class="common-section">
-            <h2 class="heading-level-7">Inactive</h2>
+            <Heading tag="h3" size="7">Inactive</Heading>
         </div>
 
         <Table>

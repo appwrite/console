@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
-    import { Empty, CardContainer, Pagination, Copy, GridItem1 } from '$lib/components';
+    import { Empty, CardContainer, Pagination, Copy, GridItem1, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './createFunction.svelte';
@@ -44,8 +44,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Functions</h2>
-
+        <Heading tag="h2" size="5">Functions</Heading>
         <Button on:click={openWizard}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create function</span>
         </Button>

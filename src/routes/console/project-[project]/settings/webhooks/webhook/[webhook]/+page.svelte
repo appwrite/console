@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { CardGrid, Box, Secret, Empty, EventModal } from '$lib/components';
+    import { CardGrid, Box, Secret, Empty, EventModal, Heading } from '$lib/components';
     import {
         Button,
         Form,
@@ -142,7 +142,7 @@
 
 <Container>
     <CardGrid>
-        <h6 class="heading-level-7">Signature Key</h6>
+        <Heading tag="h2" size="7">Signature Key</Heading>
         <p>You can use the Signature Key to validate your webhooks.</p>
         <svelte:fragment slot="aside">
             <div>
@@ -157,7 +157,7 @@
     </CardGrid>
     <Form on:submit={updateName}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+            <Heading tag="h2" size="7">Update Name</Heading>
             <p>Choose any name that will help you distinguish between Webhooks.</p>
             <svelte:fragment slot="aside">
                 <FormList>
@@ -178,7 +178,7 @@
 
     <Form on:submit={updateUrl}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Url</h6>
+            <Heading tag="h2" size="7">Update Url</Heading>
 
             <svelte:fragment slot="aside">
                 <FormList>
@@ -199,7 +199,7 @@
 
     <Form on:submit={updateEvents}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Events</h6>
+            <Heading tag="h2" size="7">Update Events</Heading>
             <p class="text">
                 Set the events that will trigger your webhook. Maximum 100 events allowed.
             </p>
@@ -243,7 +243,7 @@
 
     <Form on:submit={updateSecurity}>
         <CardGrid>
-            <h6 class="heading-level-7">Security</h6>
+            <Heading tag="h2" size="7">Security</Heading>
             <p class="text">
                 Set an optional basic HTTP authentication username and password to protect your
                 endpoint from unauthorized access.
@@ -251,7 +251,7 @@
             <svelte:fragment slot="aside">
                 <FormList>
                     <div>
-                        <h2 class="heading-level-7">HTTP Authentication</h2>
+                        <Heading tag="h3" size="7">HTTP Authentication</Heading>
                         <p class="text">Use to secure your endpoint from untrusted sources.</p>
                     </div>
                     <InputText
@@ -291,7 +291,7 @@
 
     <CardGrid>
         <div>
-            <h6 class="heading-level-7">Delete Webhook</h6>
+            <Heading tag="h2" size="7">Delete Webhook</Heading>
         </div>
         <p>The webhook will be permanently deleted. This action is irreversible.</p>
         <svelte:fragment slot="aside">

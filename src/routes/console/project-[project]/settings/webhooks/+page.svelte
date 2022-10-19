@@ -18,6 +18,7 @@
     import { wizard } from '$lib/stores/wizard';
     import Create from './createWebhook.svelte';
     import { webhookList } from './store';
+    import Heading from '$lib/components/heading.svelte';
 
     function openWizard() {
         wizard.start(Create);
@@ -37,8 +38,7 @@
 </svelte:head>
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Webhooks</h2>
-
+        <Heading tag="h2" size="5">Webhooks</Heading>
         <Button on:click={openWizard}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create webhook</span>
         </Button>

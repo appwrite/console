@@ -6,7 +6,7 @@
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { Pagination, Copy, Empty, Status } from '$lib/components';
+    import { Pagination, Copy, Empty, Status, Heading } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -33,7 +33,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Logs</h2>
+        <Heading tag="h2" size="5">Logs</Heading>
     </div>
     {#if $executionList?.total}
         <Table>
