@@ -67,7 +67,7 @@
         event: string,
         attribute: string
     ) {
-        let data = new Map();
+        const data = new Map();
         //SERVICE
         if (service) {
             data.set('service', { value: service.name, description: 'service' });
@@ -157,7 +157,7 @@
     //TODO: remove inline style
 </script>
 
-<Form noMargin on:submit={create}>
+<Form noStyle noMargin on:submit={create}>
     <Modal bind:show size="big">
         <svelte:fragment slot="header">Create Event</svelte:fragment>
 

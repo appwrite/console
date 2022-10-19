@@ -11,6 +11,12 @@
     export let showExecute = false;
     let data: string = null;
     let showJson = false;
+    const example = `
+{
+    firstName: "hello", 
+    lastName:"world", 
+    age:"old"
+}`;
 
     const handleSubmit = async () => {
         try {
@@ -29,7 +35,7 @@
     };
 </script>
 
-<Form noMargin on:submit={handleSubmit}>
+<Form noStyle noMargin on:submit={handleSubmit}>
     <Modal bind:show={showExecute} size="big">
         <svelte:fragment slot="header">Execute Function</svelte:fragment>
         <FormList>
@@ -37,16 +43,7 @@
             <InputChoice type="switchbox" id="json" label="Show example JSON" bind:value={showJson}>
                 Here's an example of some custom data.</InputChoice>
             {#if showJson}
-                <Code
-                    scrollable
-                    noMargin
-                    language="json"
-                    withLineNumbers
-                    code={`{
-    firstName: "hello", 
-    lastName:"world", 
-    age:"old"
-}`} />
+                <Code noMargin language="json" withLineNumbers code={example} />
             {/if}
         </FormList>
 

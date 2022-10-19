@@ -64,6 +64,15 @@ test('shows number input - max', () => {
 
     expect(getByLabelText('input')).toHaveAttribute('max', '2');
 });
+test('shows number input - min', () => {
+    const { getByLabelText } = render(InputNumber, {
+        id: 'input',
+        label: 'input',
+        min: 2
+    });
+
+    expect(getByLabelText('input')).toHaveAttribute('min', '2');
+});
 
 test('state', async () => {
     const { component, getByLabelText } = render(InputNumber, { id: 'input', label: 'input' });

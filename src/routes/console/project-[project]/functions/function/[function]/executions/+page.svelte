@@ -2,7 +2,6 @@
     import { page } from '$app/stores';
     import { pageLimit } from '$lib/stores/layout';
     import { executionList } from './store';
-    // import type { Models } from '@aw-labs/appwrite-console';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';

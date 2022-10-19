@@ -11,7 +11,7 @@
     } from '$lib/stores/organization';
     import Create from './_createOrganization.svelte';
     import { page } from '$app/stores';
-    import { afterNavigate } from '$app/navigation';
+    import { afterNavigate, beforeNavigate } from '$app/navigation';
     import { onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
     import { Logs } from '$lib/components';
@@ -33,6 +33,15 @@
             await redirectTo();
         }
     });
+
+    beforeNavigate(() => {
+        $log.show = false;
+    });
+
+    $: if (!$log.show) {
+        $log.data = null;
+        $log.func = null;
+    }
 </script>
 
 <svelte:head>

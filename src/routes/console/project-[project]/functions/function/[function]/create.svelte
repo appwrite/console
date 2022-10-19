@@ -66,7 +66,7 @@
     };
 </script>
 
-<Form noMargin on:submit={create}>
+<Form noStyle noMargin on:submit={create}>
     <Modal size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Deployment</svelte:fragment>
         <Tabs>

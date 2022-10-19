@@ -11,6 +11,7 @@
 {#if isButton}
     <button
         on:click|preventDefault
+        type="button"
         class="card u-grid u-cross-center u-width-full-line dashed"
         class:common-section={single}>
         {#if single}

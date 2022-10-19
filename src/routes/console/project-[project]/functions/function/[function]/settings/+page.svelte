@@ -29,6 +29,7 @@
     import TableList from '$lib/elements/table/tableList.svelte';
     import { TableCell, TableCellText } from '$lib/elements/table';
     import Heading from '$lib/components/heading.svelte';
+    import { writable, type Writable } from 'svelte/store';
 
     const functionId = $page.params.function;
     let showDelete = false;
@@ -42,7 +43,8 @@
     let functionName: string = null;
     let permissions: string[] = [];
     let arePermsDisabled = true;
-    let eventSet = new Set<string>();
+
+    const eventSet: Writable<Set<string>> = writable(new Set());
     let showEvents = false;
     let areEventsDisabled = true;
 
@@ -55,7 +57,7 @@
         timeout ??= $func.timeout;
         functionName ??= $func.name;
         permissions = $func.execute;
-        eventSet = new Set($func.events);
+        $eventSet = new Set($func.events);
     });
 
     async function updateName() {
@@ -98,9 +100,9 @@
                 functionId,
                 $func.name,
                 $func.execute,
-                Array.from(eventSet)
+                Array.from($eventSet)
             );
-            $func.events = Array.from(eventSet);
+            $func.events = Array.from($eventSet);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'
@@ -214,8 +216,7 @@
     }
 
     function handleEvent(event: CustomEvent) {
-        eventSet.add(event.detail);
-        eventSet = eventSet;
+        eventSet.set($eventSet.add(event.detail));
     }
 
     $: if (permissions) {
@@ -227,10 +228,10 @@
         } else arePermsDisabled = true;
     }
 
-    $: if (eventSet) {
+    $: if ($eventSet) {
         if (
-            difference(Array.from(eventSet), $func.events).length ||
-            difference($func.events, Array.from(eventSet)).length
+            difference(Array.from($eventSet), $func.events).length ||
+            difference($func.events, Array.from($eventSet)).length
         ) {
             areEventsDisabled = false;
         } else areEventsDisabled = true;
@@ -318,9 +319,9 @@
             <Heading tag="h6" size="7">Update Events</Heading>
             <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
             <svelte:fragment slot="aside">
-                {#if eventSet.size}
+                {#if $eventSet.size}
                     <TableList>
-                        {#each Array.from(eventSet) as event}
+                        {#each Array.from($eventSet) as event}
                             <li class="table-row">
                                 <TableCellText title="id">
                                     {event}
@@ -330,8 +331,8 @@
                                         class="button is-text is-only-icon"
                                         aria-label="delete id"
                                         on:click|preventDefault={() => {
-                                            eventSet.delete(event);
-                                            eventSet = eventSet;
+                                            $eventSet.delete(event);
+                                            eventSet.set($eventSet);
                                         }}>
                                         <span class="icon-x" aria-hidden="true" />
                                     </button>

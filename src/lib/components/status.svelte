@@ -1,5 +1,15 @@
 <script lang="ts">
-    export let status: string = null;
+    export let status:
+        | 'waiting'
+        | 'pending'
+        | 'failed'
+        | 'complete'
+        | 'processing'
+        | 'ready'
+        | 'building'
+        | string = null;
+
+    //TODO: Remove type string once SDK is updated
 </script>
 
 <div

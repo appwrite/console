@@ -51,14 +51,8 @@
     </svelte:fragment>
 </DropList>
 
-{#if showUser}
-    <User bind:show={showUser} on:create {groups} />
-{/if}
+<User bind:show={showUser} on:create {groups} />
 
-{#if showTeam}
-    <Team bind:show={showTeam} on:create {groups} />
-{/if}
+<Team bind:show={showTeam} on:create {groups} />
 
-{#if showCustom}
-    <Custom bind:show={showCustom} on:create {groups} />
-{/if}
+<Custom bind:show={showCustom} on:create {groups} />

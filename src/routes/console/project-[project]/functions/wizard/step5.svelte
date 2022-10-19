@@ -21,18 +21,16 @@
     let showDropdown = [];
 
     function handleCreated(dispatchEvent: CustomEvent) {
-        $createFunction.vars.push(dispatchEvent.detail);
-        $createFunction = $createFunction;
+        createFunction.update((n) => {
+            n.vars.push(dispatchEvent.detail);
+            return n;
+        });
     }
     function handleUpdated(dispatchEvent: CustomEvent) {
-        $createFunction.vars = $createFunction.vars.map((v) => {
-            if (v.key === selectedVar.key) {
-                v.key = dispatchEvent.detail.key;
-                v.value = dispatchEvent.detail.value;
-            }
-            return v;
+        createFunction.update((n) => {
+            n.vars = n.vars.map((v) => (v.key === selectedVar.key ? dispatchEvent.detail : v));
+            return n;
         });
-        $createFunction = $createFunction;
     }
 </script>
 

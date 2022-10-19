@@ -3,16 +3,21 @@
     import { Pill } from '$lib/elements';
     import { InputText, InputSelect, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
     import { createFunction } from './store';
 
     let showCustomId = false;
 
-    let options = [
-        { label: 'Node.js 16.0', value: 'node-16.0' },
-        { label: 'PHP 8.0', value: 'php-8.0' },
-        { label: 'Ruby 3.0', value: 'ruby-3.0' },
-        { label: 'Python 3.9', value: 'python-3.9' }
-    ];
+    let options = [];
+
+    onMount(async () => {
+        let runtimes = await sdkForProject.functions.listRuntimes();
+        options = runtimes.runtimes.map((runtime) => ({
+            label: runtime.name,
+            value: runtime.$id
+        }));
+    });
 </script>
 
 <WizardStep>

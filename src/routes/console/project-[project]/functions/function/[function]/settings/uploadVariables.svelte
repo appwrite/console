@@ -51,7 +51,7 @@
     }
 </script>
 
-<Form noMargin on:submit={handleSubmit}>
+<Form noStyle noMargin on:submit={handleSubmit}>
     <Modal bind:show>
         <svelte:fragment slot="header">Upload Variables</svelte:fragment>
         <p>

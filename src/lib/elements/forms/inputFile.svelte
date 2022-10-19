@@ -10,7 +10,6 @@
 
     function dropHandler(ev: DragEvent) {
         hovering = false;
-        ev.preventDefault();
         if (ev.dataTransfer.items) {
             // Use DataTransferItemList interface to access the file(s)
             for (let i = 0; i < ev.dataTransfer.items.length; i++) {
@@ -24,9 +23,8 @@
         }
     }
 
-    function dragOverHandler(ev: DragEvent) {
+    function dragOverHandler() {
         hovering = true;
-        ev.preventDefault();
     }
 </script>
 

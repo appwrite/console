@@ -2,7 +2,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { log } from '$lib/stores/logs';
-    import { Code, Status, Tab, Tabs } from '.';
+    import { Status, Tab, Tabs } from '.';
     import type { Models } from '@aw-labs/appwrite-console';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
@@ -10,17 +10,10 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import { beforeNavigate } from '$app/navigation';
+    import { browser } from '$app/environment';
 
     let selectedTab: string;
     let rawData: string;
-
-    const languages = {
-        'node-16.0': 'js',
-        'php-8.0': 'php',
-        'ruby-3.0': 'ruby',
-        'python-3.9': 'python'
-    };
 
     function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
         if ('buildId' in data) {
@@ -38,13 +31,12 @@
         }
     }
 
-    beforeNavigate(() => {
-        $log.show = false;
-    });
-
-    $: if (!$log.show) {
-        $log.data = null;
-        $log.func = null;
+    function scrollToTop() {
+        if (browser) {
+            document
+                .getElementsByClassName('code-panel-content')[0]
+                .scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        }
     }
 </script>
 
@@ -103,25 +95,19 @@
                                     <span class="icon-external-link" aria-hidden="true" />
                                     <span class="text">Raw data</span>
                                 </Button>
-                                <Button secondary>
+                                <Button secondary on:click={scrollToTop}>
                                     <span class="text">Scroll to top</span>
                                 </Button>
                             </div>
                         </header>
                         {#if selectedTab === 'logs'}
-                            <Code
-                                scrollable
-                                noMargin
-                                withLineNumbers
-                                language={languages[$log.func.runtime]}
-                                code={$log.data.buildStdout ?? 'No logs recorded'} />
+                            <code class="code-panel-content">
+                                {$log.data.buildStdout ?? 'No logs recorded'}
+                            </code>
                         {:else}
-                            <Code
-                                scrollable
-                                noMargin
-                                withLineNumbers
-                                language={languages[$log.func.runtime]}
-                                code={$log.data.buildStderr ?? 'No errors recorded'} />
+                            <code class="code-panel-content">
+                                {$log.data.buildStderr ?? 'No errors recorded'}
+                            </code>
                         {/if}
                     </section>
                 </div>
@@ -180,32 +166,23 @@
                                     <span class="icon-external-link" aria-hidden="true" />
                                     <span class="text">Raw data</span>
                                 </Button>
-                                <Button secondary>
+                                <Button secondary on:click={scrollToTop}>
                                     <span class="text">Scroll to top</span>
                                 </Button>
                             </div>
                         </header>
                         {#if selectedTab === 'logs'}
-                            <Code
-                                scrollable
-                                noMargin
-                                withLineNumbers
-                                language={languages[$log.func.runtime]}
-                                code={$log.data.stdout ?? 'No logs recorded'} />
+                            <code class="code-panel-content">
+                                {$log.data.stdout ?? 'No logs recorded'}
+                            </code>
                         {:else if selectedTab === 'errors'}
-                            <Code
-                                scrollable
-                                noMargin
-                                withLineNumbers
-                                language={languages[$log.func.runtime]}
-                                code={$log.data.stderr ?? 'No errors recorded'} />
+                            <code class="code-panel-content">
+                                {$log.data.stderr ?? 'No errors recorded'}
+                            </code>
                         {:else}
-                            <Code
-                                scrollable
-                                noMargin
-                                withLineNumbers
-                                language={languages[$log.func.runtime]}
-                                code={$log.data.response ?? 'No response recorded'} />
+                            <code class="code-panel-content">
+                                {$log.data.response ?? 'No response recorded'}
+                            </code>
                         {/if}
                     </section>
                 </div>
