@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputText, FormList } from '$lib/elements/forms';
+    import { InputText, InputURL, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { createWebhook } from './store';
     //TODO: Create InputURL component
@@ -19,7 +19,7 @@
             placeholder="Enter name"
             bind:value={$createWebhook.name}
             required />
-        <InputText
+        <InputURL
             label="POST URL"
             id="url"
             placeholder="https://example.com/callback"

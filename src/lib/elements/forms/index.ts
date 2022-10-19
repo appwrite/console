@@ -19,4 +19,5 @@ export { default as InputCheckbox } from './inputCheckbox.svelte';
 export { default as InputChoice } from './inputChoice.svelte';
 export { default as InputPhone } from './inputPhone.svelte';
 export { default as InputCron } from './inputCron.svelte';
+export { default as InputURL } from './inputURL.svelte';
 export { default as Helper } from './helper.svelte';
