@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Avatar, CardGrid, Box, DropList, DropListItem } from '$lib/components';
+    import { Avatar, CardGrid, Box, DropList, DropListItem, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import {
         Button,
@@ -191,7 +191,7 @@
             {#if $user.email || $user.phone}
                 {#if $user.name}
                     <Avatar size={48} src={getAvatar($user.name)} name={$user.name} />
-                    <h6 class="heading-level-7">{$user.name}</h6>
+                    <Heading tag="h6" size="7">{$user.name}</Heading>
                 {:else}
                     <div class="avatar">
                         <span class="icon-minus-sm" aria-hidden="true" />
@@ -278,7 +278,7 @@
 
     <Form on:submit={updateName}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+            <Heading tag="h6" size="7">Update Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -299,7 +299,7 @@
 
     <Form on:submit={updateEmail}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Email</h6>
+            <Heading tag="h6" size="7">Update Email</Heading>
             <svelte:fragment slot="aside">
                 <ul>
                     <InputEmail
@@ -319,7 +319,7 @@
 
     <Form on:submit={updatePhone}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Phone</h6>
+            <Heading tag="h6" size="7">Update Phone</Heading>
             <svelte:fragment slot="aside">
                 <ul>
                     <InputPhone
@@ -340,7 +340,7 @@
     <Form on:submit={updatePassword}>
         <CardGrid>
             <div>
-                <h6 class="heading-level-7">Update Password</h6>
+                <Heading tag="h6" size="7">Update Password</Heading>
             </div>
 
             <p>
@@ -367,7 +367,7 @@
 
     <Form on:submit={updatePrefs}>
         <CardGrid>
-            <h6 class="heading-level-7">User Preferences</h6>
+            <Heading tag="h6" size="7">User Preferences</Heading>
             <p>
                 You can update your user preferences by storing information on the user's objects so
                 they can easily be shared across devices and sessions.
@@ -441,7 +441,7 @@
 
     <CardGrid>
         <div>
-            <h6 class="heading-level-7">Danger Zone</h6>
+            <Heading tag="h6" size="7">Danger Zone</Heading>
         </div>
         <p>
             The user will be permanently deleted, including all data associated with this user. This

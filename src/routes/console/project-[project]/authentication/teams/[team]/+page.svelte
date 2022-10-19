@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { Avatar, CardGrid, Box } from '$lib/components';
+    import { Avatar, CardGrid, Box, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, Form } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -41,7 +41,7 @@
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
             <Avatar size={48} name={$team.name} src={getAvatar($team.name)} />
             <div>
-                <h6 class="heading-level-7">{$team.name}</h6>
+                <Heading tag="h6" size="7">{$team.name}</Heading>
             </div>
         </div>
         <svelte:fragment slot="aside">
@@ -54,7 +54,7 @@
 
     <Form on:submit={updateName}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+            <Heading tag="h6" size="7">Update Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -79,7 +79,7 @@
 
     <CardGrid>
         <div>
-            <h6 class="heading-level-7">Danger Zone</h6>
+            <Heading tag="h6" size="7">Danger Zone</Heading>
         </div>
 
         <p>

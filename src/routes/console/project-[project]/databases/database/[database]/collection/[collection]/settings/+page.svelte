@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, CardGrid, Box } from '$lib/components';
+    import { Alert, CardGrid, Box, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, InputSwitch, Helper } from '$lib/elements/forms';
     import { Permissions } from '$lib/components/permissions';
@@ -117,7 +117,7 @@
 <Container>
     {#if $collection}
         <CardGrid>
-            <h2 class="heading-level-7">{$collection.name}</h2>
+            <Heading tag="h2" size="7">{$collection.name}</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -140,7 +140,7 @@
         </CardGrid>
 
         <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+            <Heading tag="h6" size="7">Update Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -163,7 +163,7 @@
             </svelte:fragment>
         </CardGrid>
         <CardGrid>
-            <h6 class="heading-level-7">Update Permissions</h6>
+            <Heading tag="h6" size="7">Update Permissions</Heading>
             <p>
                 Assign read or write permissions at the <b>Collection Level</b> or
                 <b>Document Level</b>. If collection Level permissions are assigned, permissions
@@ -214,7 +214,7 @@
         </CardGrid>
 
         <CardGrid>
-            <h6 class="heading-level-7">Delete collection</h6>
+            <Heading tag="h6" size="7">Delete collection</Heading>
             <p>
                 The collection will be permanently deleted, including all the documents within it.
                 This action is irreversible.

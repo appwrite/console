@@ -2,7 +2,7 @@
     import { browser } from '$app/environment';
     import { createEventDispatcher } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
-    import { Alert } from '$lib/components';
+    import { Alert, Heading } from '$lib/components';
     import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let show = false;
@@ -76,9 +76,9 @@
                         <span class="icon-exclamation" aria-hidden="true" />
                     </div>
                 {/if}
-                <h4 class="heading-level-5">
+                <Heading tag="h4" size="5">
                     <slot name="header" />
-                </h4>
+                </Heading>
                 {#if closable}
                     <button
                         type="button"

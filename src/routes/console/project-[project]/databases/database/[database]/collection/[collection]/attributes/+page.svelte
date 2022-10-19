@@ -9,7 +9,7 @@
         TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
-    import { DropList, DropListItem, Empty, Pagination } from '$lib/components';
+    import { DropList, DropListItem, Empty, Heading, Pagination } from '$lib/components';
     import { collection } from '../store';
     import type { Attributes } from '../store';
     import { Container } from '$lib/layout';
@@ -33,7 +33,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Attributes</h2>
+        <Heading tag="h2" size="5">Attributes</Heading>
 
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" />

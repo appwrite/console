@@ -1,6 +1,13 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { GridItem1, Empty, Pagination, AvatarGroup, CardContainer } from '$lib/components';
+    import {
+        GridItem1,
+        Empty,
+        Pagination,
+        AvatarGroup,
+        CardContainer,
+        Heading
+    } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateOrganization from '../../_createOrganization.svelte';
@@ -34,7 +41,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Organizations</h2>
+        <Heading tag="h2" size="5">Organizations</Heading>
 
         <Button
             on:click={() => {

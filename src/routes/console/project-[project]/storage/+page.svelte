@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, GridItem1, CardContainer } from '$lib/components';
+    import { Empty, Pagination, Copy, GridItem1, CardContainer, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import Create from './_create.svelte';
@@ -32,7 +32,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Buckets</h2>
+        <Heading tag="h2" size="5">Buckets</Heading>
 
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create bucket</span>

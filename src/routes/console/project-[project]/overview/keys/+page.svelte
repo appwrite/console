@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -16,7 +17,7 @@
 </script>
 
 <div class="common-section u-flex u-gap-12">
-    <h3 class="heading-level-7">API Keys</h3>
+    <Heading tag="h3" size="7">API Keys</Heading>
     <span class="u-margin-inline-start-auto">
         <Button on:click={() => (show = true)}>
             <span class="icon-plus" aria-hidden="true" />

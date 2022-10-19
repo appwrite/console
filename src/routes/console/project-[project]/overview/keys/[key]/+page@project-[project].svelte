@@ -1,7 +1,7 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { CardGrid, Secret } from '$lib/components';
+    import { CardGrid, Heading, Secret } from '$lib/components';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import InputDateTime from '$lib/elements/forms/inputDateTime.svelte';
     import { difference } from '$lib/helpers/array';
@@ -110,7 +110,7 @@
         {@const accessedAt = $key.accessedAt ? toLocaleDateTime($key.accessedAt) : 'never'}
         <CardGrid>
             <div>
-                <h6 class="heading-level-7">{$key.name}</h6>
+                <Heading tag="h6" size="7">{$key.name}</Heading>
             </div>
             <svelte:fragment slot="aside">
                 <p>
@@ -121,7 +121,7 @@
         </CardGrid>
 
         <CardGrid>
-            <h6 class="heading-level-7">API Key Secret</h6>
+            <Heading tag="h6" size="7">API Key Secret</Heading>
             <svelte:fragment slot="aside">
                 <Secret bind:value={secret} />
             </svelte:fragment>
@@ -129,7 +129,7 @@
 
         <Form on:submit={updateName}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Name</h6>
+                <Heading tag="h6" size="7">Update Name</Heading>
                 <p class="text">Choose any name that will help you distinguish between API keys.</p>
                 <svelte:fragment slot="aside">
                     <FormList>
@@ -149,7 +149,7 @@
         </Form>
         <Form on:submit={updateScopes}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Scopes</h6>
+                <Heading tag="h6" size="7">Update Scopes</Heading>
                 <p class="text">
                     You can choose which permission scope to grant your application. It is a best
                     practice to allow only the permissions you need to meet your project goals.
@@ -170,7 +170,7 @@
         </Form>
         <Form on:submit={updateExpire}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Expiration Date</h6>
+                <Heading tag="h6" size="7">Update Expiration Date</Heading>
                 <p class="text">Choose any name that will help you distinguish between API keys.</p>
                 <svelte:fragment slot="aside">
                     <FormList>
@@ -185,7 +185,7 @@
         </Form>
         <CardGrid>
             <div>
-                <h6 class="heading-level-7">Delete API Key</h6>
+                <Heading tag="h6" size="7">Delete API Key</Heading>
             </div>
             <p>The API Key will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">
