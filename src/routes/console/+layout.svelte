@@ -34,7 +34,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Console</title>
+    <title>Console - Appwrite</title>
 </svelte:head>
 
 <Shell

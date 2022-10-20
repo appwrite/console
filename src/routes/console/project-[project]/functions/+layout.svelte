@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Functions</title>
+    <title>Functions - Appwrite</title>
 </svelte:head>
 
 <slot />

@@ -45,7 +45,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Database Document</title>
+    <title>Database Document - Appwrite</title>
 </svelte:head>
 
 {#if $doc}

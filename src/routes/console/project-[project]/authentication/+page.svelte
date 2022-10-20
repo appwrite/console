@@ -58,7 +58,7 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Identifier</TableCellHead>
+                <TableCellHead>Identifiers</TableCellHead>
                 <TableCellHead width={130}>Status</TableCellHead>
                 <TableCellHead width={100}>ID</TableCellHead>
                 <TableCellHead>Joined</TableCellHead>
@@ -86,7 +86,7 @@
                                 {/if}
                             </div>
                         </TableCell>
-                        <TableCellText title="Identifier">
+                        <TableCellText title="Identifiers">
                             {user.email && user.phone
                                 ? [user.email, user.phone].join(',')
                                 : user.email || user.phone}

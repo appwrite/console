@@ -214,7 +214,7 @@
         </CardGrid>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Delete collection</Heading>
+            <Heading tag="h6" size="7">Delete Collection</Heading>
             <p>
                 The collection will be permanently deleted, including all the documents within it.
                 This action is irreversible.

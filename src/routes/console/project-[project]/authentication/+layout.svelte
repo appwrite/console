@@ -48,7 +48,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Users</title>
+    <title>Users - Appwrite</title>
 </svelte:head>
 
 {#if loaded}

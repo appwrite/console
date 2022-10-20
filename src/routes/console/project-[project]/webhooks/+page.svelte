@@ -19,7 +19,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Webhooks</title>
+    <title>Webhooks - Appwrite</title>
 </svelte:head>
 <Container>
     {#await request}

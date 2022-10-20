@@ -46,7 +46,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Document</title>
+    <title>Document - Appwrite</title>
 </svelte:head>
 
 <Container>
@@ -84,7 +84,7 @@
         </CardGrid>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Delete document</Heading>
+            <Heading tag="h6" size="7">Delete Document</Heading>
             <p>
                 The document will be permanently deleted, including all the data within it. This
                 action is irreversible.

@@ -35,7 +35,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Sign in</title>
+    <title>Sign in - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>

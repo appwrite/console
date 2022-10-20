@@ -35,7 +35,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Storage</title>
+    <title>Storage - Appwrite</title>
 </svelte:head>
 
 {#if loaded}

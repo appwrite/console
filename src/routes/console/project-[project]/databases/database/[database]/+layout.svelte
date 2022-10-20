@@ -53,7 +53,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Database</title>
+    <title>Database - Appwrite</title>
 </svelte:head>
 
 {#if loaded}
