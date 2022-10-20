@@ -3,8 +3,8 @@
 
     export let label: string = null;
     export let files: FileList;
+    export let list = new DataTransfer();
 
-    let list = new DataTransfer();
     let input: HTMLInputElement;
     let hovering = false;
 
