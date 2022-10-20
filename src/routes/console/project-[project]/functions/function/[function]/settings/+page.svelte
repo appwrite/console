@@ -39,7 +39,6 @@
     let showVariablesValue = [];
     let showVariablesDropdown = [];
     let timeout: number = null;
-    let deployment: Models.Deployment = null;
     let functionName: string = null;
     let permissions: string[] = [];
     let arePermsDisabled = true;
@@ -53,7 +52,6 @@
             await func.load(functionId);
         }
         await variableList.load(functionId);
-        deployment = await func.getDeployment(functionId, $func.deployment);
         timeout ??= $func.timeout;
         functionName ??= $func.name;
         permissions = $func.execute;
@@ -268,8 +266,7 @@
             <Button
                 secondary
                 on:click={() => {
-                    $execute.selected = deployment;
-                    $execute.show = true;
+                    $execute = $func;
                 }}>Execute now</Button>
         </svelte:fragment>
     </CardGrid>
