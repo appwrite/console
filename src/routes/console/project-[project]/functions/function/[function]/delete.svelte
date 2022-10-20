@@ -10,17 +10,21 @@
 
     export let showDelete = false;
     export let selectedDeployment: Models.Deployment = null;
-    export let functionId: string;
 
     const handleSubmit = async () => {
         try {
-            await sdkForProject.functions.deleteDeployment(functionId, selectedDeployment.$id);
+            await sdkForProject.functions.deleteDeployment(
+                selectedDeployment.resourceId,
+                selectedDeployment.$id
+            );
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `Deployment has been deleted`
             });
-            await goto(`${base}/console/project-${$page.params.project}/functions/${functionId}`);
+            await goto(
+                `${base}/console/project-${$page.params.project}/functions/${selectedDeployment.resourceId}`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',

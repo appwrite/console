@@ -10,7 +10,12 @@
 
     export let showCreate = false;
 
-    let mode: 'cli' | 'github' | 'manual' = 'cli';
+    enum Mode {
+        CLI,
+        Github,
+        Manual
+    }
+    let mode: Mode = Mode.CLI;
     let entrypoint: string;
     let active: boolean;
     let files: FileList;
@@ -70,12 +75,13 @@
     <Modal size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Deployment</svelte:fragment>
         <Tabs>
-            <Tab on:click={() => (mode = 'cli')} selected={mode === 'cli'}>CLI</Tab>
-            <Tab on:click={() => (mode = 'github')} selected={mode === 'github'}
-                >GitHub - Soon!</Tab>
-            <Tab on:click={() => (mode = 'manual')} selected={mode === 'manual'}>Manual</Tab>
+            <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI}>CLI</Tab>
+            <Tab on:click={() => (mode = Mode.Github)} selected={mode === Mode.Github}>
+                GitHub - Soon!
+            </Tab>
+            <Tab on:click={() => (mode = Mode.Manual)} selected={mode === Mode.Manual}>Manual</Tab>
         </Tabs>
-        {#if mode === 'cli'}
+        {#if mode === Mode.CLI}
             <p class="text">
                 You can deploy your function from the Appwrite CLI using Unix, CMD, or PowerShell.
                 Check out our Documentation to learn more about <a
@@ -100,7 +106,7 @@
                     </CollapsibleItem>
                 {/each}
             </Collapsible>
-        {:else if mode === 'github'}
+        {:else if mode === Mode.Github}
             <div class="common-section grid-1-2">
                 <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
                     <img src={Github} alt="github" />
@@ -113,7 +119,7 @@
                     </p>
                 </div>
             </div>
-        {:else if mode === 'manual'}
+        {:else if mode === Mode.Manual}
             <FormList>
                 <InputText
                     label="Entrypoint"
@@ -130,7 +136,7 @@
             </FormList>
         {/if}
         <svelte:fragment slot="footer">
-            {#if mode === 'manual'}
+            {#if mode === Mode.Manual}
                 <Button secondary on:click={() => (showCreate = false)}>Close</Button>
                 <Button submit>Create</Button>
             {:else}

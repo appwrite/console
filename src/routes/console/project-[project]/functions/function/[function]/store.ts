@@ -24,6 +24,7 @@ export const deploymentList = cachedStore<
     Models.DeploymentList,
     {
         load: (functionId: string, queries?: string[], search?: string) => Promise<void>;
+        createDeployment: (deployment: Models.Deployment) => void;
         updateDeployment: (deployment: Models.Deployment) => void;
     }
 >('deploymentList', function ({ set, update }) {
@@ -36,6 +37,12 @@ export const deploymentList = cachedStore<
             );
             set(response);
         },
+        createDeployment: (deployment) =>
+            update((n) => {
+                n.deployments.unshift(deployment);
+
+                return n;
+            }),
         updateDeployment: (deployment) =>
             update((n) => {
                 const index = n.deployments.findIndex((a) => a.$id === deployment.$id);
@@ -48,9 +55,4 @@ export const deploymentList = cachedStore<
     };
 });
 
-export type Execute = {
-    show: boolean;
-    selected: Models.Deployment;
-};
-
-export const execute: Writable<Execute> = writable({ show: false, selected: null });
+export const execute: Writable<Models.Function> = writable();

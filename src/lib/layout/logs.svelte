@@ -2,15 +2,14 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { log } from '$lib/stores/logs';
-    import { Status, Tab, Tabs } from '.';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Status, Tab, Tabs } from '../components';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import { browser } from '$app/environment';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let selectedTab: string;
     let rawData: string;
@@ -32,11 +31,9 @@
     }
 
     function scrollToTop() {
-        if (browser) {
-            document
-                .getElementsByClassName('code-panel-content')[0]
-                .scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-        }
+        document
+            .getElementsByClassName('code-panel-content')[0]
+            .scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
 </script>
 

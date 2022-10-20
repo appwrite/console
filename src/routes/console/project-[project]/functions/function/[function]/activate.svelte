@@ -8,13 +8,15 @@
 
     export let showActivate = false;
     export let selectedDeployment: Models.Deployment = null;
-    export let functionId: string;
 
     const dispatch = createEventDispatcher();
 
     const handleSubmit = async () => {
         try {
-            await sdkForProject.functions.updateDeployment(functionId, selectedDeployment.$id);
+            await sdkForProject.functions.updateDeployment(
+                selectedDeployment.resourceId,
+                selectedDeployment.$id
+            );
             showActivate = false;
             addNotification({
                 type: 'success',

@@ -58,6 +58,6 @@
     <slot />
 {/if}
 
-{#if $execute?.selected}
-    <Execute selectedDeployment={$execute.selected} bind:showExecute={$execute.show} />
+{#if $execute}
+    <Execute selectedFunction={$execute} />
 {/if}

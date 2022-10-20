@@ -104,12 +104,7 @@
                             $log.func = $func;
                             $log.data = activeDeployment;
                         }}>Logs</Button>
-                    <Button
-                        secondary
-                        on:click={() => {
-                            $execute.selected = activeDeployment;
-                            $execute.show = true;
-                        }}>Execute now</Button>
+                    <Button secondary on:click={() => execute.set($func)}>Execute now</Button>
                 </svelte:fragment>
             </CardGrid>
         {:else}
@@ -122,10 +117,12 @@
                     <p>Need a hand? Check out our documentation.</p>
                 </div>
                 <div class="u-flex u-gap-12">
-                    <Button text external href="https://appwrite.io/docs/functions#createFunction"
-                        >Documentation</Button>
-                    <Button secondary on:click={() => (showCreate = true)}
-                        >Create Deployment</Button>
+                    <Button text external href="https://appwrite.io/docs/functions#createFunction">
+                        Documentation
+                    </Button>
+                    <Button secondary on:click={() => (showCreate = true)}>
+                        Create Deployment
+                    </Button>
                 </div>
             </Empty>
         {/if}
@@ -150,9 +147,10 @@
                         <TableRow>
                             <TableCell title="Deployment ID">
                                 <Copy value={deployment.$id}>
-                                    <Pill button
-                                        ><span class="icon-duplicate" aria-hidden="true" />
-                                        <span class="text u-trim">{deployment.$id}</span></Pill>
+                                    <Pill button>
+                                        <span class="icon-duplicate" aria-hidden="true" />
+                                        <span class="text u-trim">{deployment.$id}</span>
+                                    </Pill>
                                 </Copy>
                             </TableCell>
                             <TableCellText title="Created">
@@ -194,18 +192,10 @@
                                     </button>
                                     <svelte:fragment slot="list">
                                         <DropListItem
-                                            icon="lightning-bolt"
-                                            on:click={() => {
-                                                $execute.selected = deployment;
-                                                showDropdown = [];
-                                                $execute.show = true;
-                                            }}>Execute now</DropListItem>
-                                        <DropListItem
                                             icon="terminal"
                                             on:click={() => {
                                                 selectedDeployment = deployment;
                                                 showDropdown = [];
-                                                console.log('output');
                                             }}>Output</DropListItem>
                                         <DropListItem
                                             icon="trash"
@@ -248,6 +238,6 @@
 <Create bind:showCreate />
 
 {#if selectedDeployment}
-    <Delete {functionId} {selectedDeployment} bind:showDelete />
-    <Activate {functionId} {selectedDeployment} bind:showActivate on:activated={handleActivate} />
+    <Delete {selectedDeployment} bind:showDelete />
+    <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
 {/if}

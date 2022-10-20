@@ -11,8 +11,18 @@
 
     if (browser) {
         sdkForConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            if (message.events.includes('deployments.*.update')) {
-                deploymentList.updateDeployment(<Models.Deployment>message.payload);
+            if (message.events.includes('functions.*.deployments.*.create')) {
+                deploymentList.createDeployment(message.payload);
+
+                return;
+            }
+            if (message.events.includes('functions.*.deployments.*.update')) {
+                deploymentList.updateDeployment(message.payload);
+
+                return;
+            }
+            if (message.events.includes('functions.*.deployments.*.delete')) {
+                //TODO: add delete method
 
                 return;
             }

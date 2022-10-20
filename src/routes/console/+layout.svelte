@@ -14,7 +14,7 @@
     import { afterNavigate, beforeNavigate } from '$app/navigation';
     import { onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
-    import { Logs } from '$lib/components';
+    import { Logs } from '$lib/layout';
     import { log } from '$lib/stores/logs';
 
     updateLayout({

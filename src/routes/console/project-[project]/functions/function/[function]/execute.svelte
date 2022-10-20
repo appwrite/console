@@ -1,16 +1,17 @@
 <script lang="ts">
     import { Code, Modal } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
-    import { InputTextarea, FormList } from '$lib/elements/forms';
-    import InputChoice from '$lib/elements/forms/inputChoice.svelte';
+    import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
 
-    export let selectedDeployment: Models.Deployment = null;
-    export let showExecute = false;
+    export let selectedFunction: Models.Function = null;
+
+    let show = false;
     let data: string = null;
     let showJson = false;
+
     const example = `
 {
     firstName: "hello", 
@@ -18,13 +19,20 @@
     age:"old"
 }`;
 
+    $: if (selectedFunction && !show) {
+        show = true;
+    }
+
     const handleSubmit = async () => {
         try {
-            await sdkForProject.functions.createExecution(selectedDeployment.$id, '{}');
-            showExecute = false;
+            await sdkForProject.functions.createExecution(
+                selectedFunction.$id,
+                data?.length ? data : undefined
+            );
+            close();
             addNotification({
                 type: 'success',
-                message: `Deployment has been executed`
+                message: `Function has been executed`
             });
         } catch (error) {
             addNotification({
@@ -33,10 +41,15 @@
             });
         }
     };
+
+    function close() {
+        selectedFunction = null;
+        show = false;
+    }
 </script>
 
 <Form noStyle noMargin on:submit={handleSubmit}>
-    <Modal bind:show={showExecute} size="big">
+    <Modal bind:show size="big" on:close={close}>
         <svelte:fragment slot="header">Execute Function</svelte:fragment>
         <FormList>
             <InputTextarea bind:value={data} id="data" label="Custom data (optional)" />
@@ -48,7 +61,7 @@
         </FormList>
 
         <svelte:fragment slot="footer">
-            <Button text on:click={() => (showExecute = false)}>Cancel</Button>
+            <Button text on:click={close}>Cancel</Button>
             <Button submit>Execute Now</Button>
         </svelte:fragment>
     </Modal>
