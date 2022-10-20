@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Pagination, Empty, EmptySearch, Avatar, Search } from '$lib/components';
+    import { Pagination, Empty, EmptySearch, Search, AvatarInitials } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -14,7 +14,6 @@
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { sdkForProject } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { memberships } from '../store';
     import CreateMember from '../_createMembership.svelte';
@@ -29,7 +28,6 @@
 
     const project = $page.params.project;
     const offset = createPersistentPagination($pageLimit);
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
 
     $: if (search) $offset = 0;
     $: memberships.load(
@@ -79,10 +77,7 @@
                         href={`${base}/console/project-${project}/authentication/user/${membership.userId}`}>
                         <TableCellText title="Name">
                             <div class="u-flex u-gap-12">
-                                <Avatar
-                                    size={32}
-                                    src={getAvatar(membership.userName)}
-                                    name={membership.userName} />
+                                <AvatarInitials size={32} name={membership.userName} />
                                 <span>{membership.userName ? membership.userName : 'n/a'}</span>
                             </div>
                         </TableCellText>

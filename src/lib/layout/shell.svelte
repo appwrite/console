@@ -20,7 +20,6 @@
         newOrgModal,
         newMemberModal
     } from '$lib/stores/organization';
-    import { sdkForConsole } from '$lib/stores/sdk';
     import { base } from '$app/paths';
     import { user } from '$lib/stores/user';
     import { goto } from '$app/navigation';
@@ -43,12 +42,7 @@
     memberList.subscribe((value) => {
         if (value?.total > 0) {
             avatarsTotal = value.total;
-            avatars = value.memberships.map((team) => {
-                return {
-                    name: team.userName,
-                    img: sdkForConsole.avatars.getInitials(team.userName, 80, 80).toString()
-                };
-            });
+            avatars = value.memberships.map((team) => team.userName);
         }
     });
 

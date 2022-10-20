@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { Empty, EmptySearch, Pagination, Avatar, Copy, Search } from '$lib/components';
+    import { Empty, EmptySearch, Pagination, Copy, Search, AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -29,7 +28,6 @@
     const offset = createPersistentPagination($pageLimit);
 
     const project = $page.params.project;
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
         await goto(`${base}/console/project-${project}/authentication/user/${event.detail.$id}`);
     };
@@ -73,10 +71,7 @@
                             <div class="u-flex u-gap-12 u-cross-center">
                                 {#if user.email || user.phone}
                                     {#if user.name}
-                                        <Avatar
-                                            size={32}
-                                            src={getAvatar(user.name)}
-                                            name={user.name} />
+                                        <AvatarInitials size={32} name={user.name} />
                                         <span class="text u-trim">{user.name}</span>
                                     {:else}
                                         <div class="avatar is-size-small ">

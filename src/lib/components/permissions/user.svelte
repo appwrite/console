@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, Form, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
-    import { Avatar, Modal, Pagination } from '..';
+    import { AvatarInitials, Modal, Pagination } from '..';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import type { Writable } from 'svelte/store';
@@ -82,12 +82,7 @@
                                 </td>
                                 <td class="table-col" data-title="User">
                                     <label class="u-flex u-cross-center u-gap-8" for={user.$id}>
-                                        <Avatar
-                                            src={sdkForProject.avatars
-                                                .getInitials(user.name, 64, 64)
-                                                .toString()}
-                                            size={32}
-                                            name={user.name} />
+                                        <AvatarInitials size={32} name={user.name} />
                                         <div class="u-line-height-1-5">
                                             <div class="body-text-2">{user.name}</div>
                                             <div class="u-x-small">{user.$id}</div>

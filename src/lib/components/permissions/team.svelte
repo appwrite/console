@@ -3,7 +3,7 @@
     import { createEventDispatcher } from 'svelte';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Query, type Models } from '@aw-labs/appwrite-console';
-    import { Avatar, Modal, Pagination } from '..';
+    import { AvatarInitials, Modal, Pagination } from '..';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
 
@@ -82,12 +82,7 @@
                                 </td>
                                 <td class="table-col" data-title="Team">
                                     <label class="u-flex u-cross-center u-gap-8" for={team.$id}>
-                                        <Avatar
-                                            src={sdkForProject.avatars
-                                                .getInitials(team.name, 64, 64)
-                                                .toString()}
-                                            size={32}
-                                            name={team.name} />
+                                        <AvatarInitials size={32} name={team.name} />
                                         <div class="u-line-height-1-5">
                                             <div class="body-text-2">{team.name}</div>
                                             <div class="u-x-small">{team.$id}</div>
