@@ -56,3 +56,17 @@ export const deploymentList = cachedStore<
 });
 
 export const execute: Writable<Models.Function> = writable();
+
+export const functionUsage = cachedStore<
+    Models.UsageFunctions,
+    {
+        load: (functionId: string, range: string) => Promise<void>;
+    }
+>('functionUsage', function ({ set }) {
+    return {
+        load: async (functionId, range) => {
+            const usages = await sdkForProject.functions.getFunctionUsage(functionId, range);
+            set(usages);
+        }
+    };
+});
