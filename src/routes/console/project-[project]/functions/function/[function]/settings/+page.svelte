@@ -40,6 +40,7 @@
     let showVariablesDropdown = [];
     let timeout: number = null;
     let functionName: string = null;
+    let functionSchedule: string = null;
     let permissions: string[] = [];
     let arePermsDisabled = true;
 
@@ -54,6 +55,7 @@
         await variableList.load(functionId);
         timeout ??= $func.timeout;
         functionName ??= $func.name;
+        functionSchedule ??= $func.schedule;
         permissions = $func.execute;
         $eventSet = new Set($func.events);
     });
@@ -113,6 +115,30 @@
         }
     }
 
+    async function updateSchedule() {
+        try {
+            await sdkForProject.functions.update(
+                functionId,
+                $func.name,
+                $func.execute,
+                $func.events,
+                functionSchedule,
+                timeout
+            );
+            $func.schedule = functionSchedule;
+
+            addNotification({
+                type: 'success',
+                message: 'CRON Schedule has been updated'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
     async function updateTimeout() {
         try {
             await sdkForProject.functions.update(
@@ -126,7 +152,7 @@
 
             addNotification({
                 type: 'success',
-                message: 'Updated project users limit successfully'
+                message: 'Timeout has been updated'
             });
         } catch (error) {
             addNotification({
@@ -357,7 +383,7 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={() => console.log($func.schedule)}>
+    <Form on:submit={updateSchedule}>
         <CardGrid>
             <Heading tag="h6" size="7">Update CRON Schedule</Heading>
             <p>
@@ -378,7 +404,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={false} submit>Update</Button>
+                <Button disabled={$func.schedule === functionSchedule} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -556,10 +582,5 @@
         on:updated={handleVariableUpdated} />
 {/if}
 
-{#if showVariablesUpload}
-    <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />
-{/if}
-
-{#if showEvents}
-    <EventModal bind:show={showEvents} on:created={handleEvent} />
-{/if}
+<Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />
+<EventModal bind:show={showEvents} on:created={handleEvent} />

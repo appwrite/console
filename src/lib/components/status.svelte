@@ -16,7 +16,7 @@
     class="status"
     class:is-pending={status === 'pending'}
     class:is-failed={status === 'failed'}
-    class:is-complete={status === 'complete' || status === 'ready'}
+    class:is-complete={status === 'completed' || status === 'ready'}
     class:is-processing={status === 'processing' || status === 'building'}>
     {#if status}
         <span class="status-icon" />

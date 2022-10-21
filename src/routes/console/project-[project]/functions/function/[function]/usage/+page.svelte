@@ -15,7 +15,6 @@
 
     // TODO: metric type is wrong
     $: count = $functionUsage?.executionsTotal as unknown as Models.Metric[];
-
     $: errors = $functionUsage?.buildsFailure as unknown as Models.Metric[];
 </script>
 
@@ -34,28 +33,32 @@
             </DropTabsItem>
         </DropTabs>
     </div>
-    <Card>
-        <Heading tag="h6" size="6">{last(count).value}</Heading>
-        <p>Executions</p>
-        <div class="u-margin-block-start-16" />
-        <BarChart
-            series={[
-                {
-                    name: 'Count of function executions over time',
-                    data: [...count.map((e) => [e.date, e.value])]
-                }
-            ]} />
-    </Card>
-    <Card>
-        <Heading tag="h6" size="6">{last(errors).value}</Heading>
-        <p>Errors</p>
-        <div class="u-margin-block-start-16" />
-        <BarChart
-            series={[
-                {
-                    name: 'Count of function errors over time',
-                    data: [...errors.map((e) => [e.date, e.value])]
-                }
-            ]} />
-    </Card>
+    {#if count}
+        <Card>
+            <Heading tag="h6" size="6">{last(count).value}</Heading>
+            <p>Executions</p>
+            <div class="u-margin-block-start-16" />
+            <BarChart
+                series={[
+                    {
+                        name: 'Count of function executions over time',
+                        data: [...count.map((e) => [e.date, e.value])]
+                    }
+                ]} />
+        </Card>
+    {/if}
+    {#if errors}
+        <Card>
+            <Heading tag="h6" size="6">{last(errors).value}</Heading>
+            <p>Errors</p>
+            <div class="u-margin-block-start-16" />
+            <BarChart
+                series={[
+                    {
+                        name: 'Count of function errors over time',
+                        data: [...errors.map((e) => [e.date, e.value])]
+                    }
+                ]} />
+        </Card>
+    {/if}
 </Container>

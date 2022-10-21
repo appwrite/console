@@ -50,7 +50,19 @@
         func.load(functionId);
     };
 
-    $: deploymentList.load(functionId, [Query.offset(offset), Query.limit($pageLimit)], search);
+    function loadDeployments() {
+        deploymentList.load(
+            functionId,
+            [Query.offset(offset), Query.limit($pageLimit), Query.orderDesc('$createdAt')],
+            search
+        );
+    }
+
+    $: deploymentList.load(
+        functionId,
+        [Query.offset(offset), Query.limit($pageLimit), Query.orderDesc('$createdAt')],
+        search
+    );
     $: if (search) offset = 0;
     $: activeDeployment = $deploymentList?.deployments?.find((d) => d.$id === $func?.deployment);
 </script>
@@ -136,10 +148,10 @@
                 <TableCellHead>Deployment ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
-                <TableCellHead width={100}>Build time</TableCellHead>
-                <TableCellHead width={100}>Size</TableCellHead>
-                <TableCellHead width={90} />
-                <TableCellHead width={30} />
+                <TableCellHead width={90}>Build time</TableCellHead>
+                <TableCellHead width={70}>Size</TableCellHead>
+                <TableCellHead width={60} />
+                <TableCellHead width={25} />
             </TableHeader>
             <TableBody>
                 {#each $deploymentList.deployments as deployment, index}
@@ -164,8 +176,9 @@
                             </TableCell>
                             <!-- TODO: replace with build time, when implemented -->
                             <TableCellText title="Build Time">TBI</TableCellText>
-                            <TableCellText title="Size"
-                                >{calculateSize(deployment.size)}</TableCellText>
+                            <TableCellText title="Size">
+                                {calculateSize(deployment.size)}
+                            </TableCellText>
                             <TableCell>
                                 <Button
                                     secondary
@@ -235,7 +248,7 @@
     </div>
 </Container>
 
-<Create bind:showCreate />
+<Create bind:showCreate on:created={loadDeployments} />
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
