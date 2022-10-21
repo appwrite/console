@@ -24,6 +24,7 @@ export function humanFileSize(value: number): {
     value: string;
     unit: string;
 } {
+    if (!value) return { value: 'No', unit: 'Bytes' };
     const length = value.toString().length;
     const unit =
         length < 7
