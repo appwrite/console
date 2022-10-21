@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createPopper, type Instance } from '@popperjs/core';
-    import { afterUpdate, onDestroy, onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
 
     export let show = false;
     export let noArrow = false;
@@ -69,10 +69,6 @@
     $: if (show) {
         instance?.update();
     }
-
-    afterUpdate(() => {
-        instance?.update();
-    });
 
     onDestroy(() => {
         instance?.destroy();
