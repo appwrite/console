@@ -21,12 +21,7 @@
     }
 </script>
 
-<DropList
-    bind:show={showDropdown}
-    position="bottom"
-    horizontal="right"
-    arrow={true}
-    arrowPosition="start">
+<DropList bind:show={showDropdown} placement="bottom-end">
     <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
         <span class="icon-plus" aria-hidden="true" />
         <span class="text">Add role</span>

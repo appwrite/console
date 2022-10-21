@@ -57,11 +57,7 @@
                             <Secret value={variable.value} />
                         </TableCell>
                         <TableCell showOverflow title="options">
-                            <DropList
-                                bind:show={showDropdown[i]}
-                                position="bottom"
-                                horizontal="left"
-                                arrow={false}>
+                            <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>
                                 <button
                                     class="button is-text is-only-icon"
                                     aria-label="more options"
