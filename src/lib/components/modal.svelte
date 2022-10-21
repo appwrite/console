@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { browser } from '$app/environment';
     import { createEventDispatcher } from 'svelte';
     import { fly, type FlyParams } from 'svelte/transition';
     import { Alert } from '$lib/components';
@@ -19,40 +18,43 @@
         y: 50
     };
 
-    //Escape key has native support. This is needed to remove class from the body
-    const handleKeydown = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            show = false;
-        }
-    };
-
-    const handleBLur = (event: MouseEvent) => {
-        const target: Partial<HTMLElement> = event.target;
-        if (target === dialog) {
+    function handleBLur(event: MouseEvent) {
+        if (event.target === dialog) {
             closeModal();
         }
-    };
-    const closeModal = () => {
-        if (closable) {
-            dispatch('close');
-            dialog.close();
-            show = false;
+    }
+    function openModal() {
+        if (dialog && !dialog.open) {
+            dialog.showModal();
+            document.body.classList.add('u-overflow-hidden');
         }
-    };
+    }
 
+    function closeModal() {
+        if (closable) {
+            if (dialog && dialog.open) {
+                dispatch('close');
+                dialog.close();
+                show = false;
+                document.body.classList.remove('u-overflow-hidden');
+            }
+        }
+    }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            closeModal();
+        }
+    }
     /**
      * Workaround until https://github.com/sveltejs/svelte/issues/3105 is resolved.
      */
 
-    $: if (browser) {
-        dialog?.addEventListener('click', handleBLur);
-        if (show) {
-            dialog.showModal();
-            document.body.classList.add('u-overflow-hidden');
-        } else {
-            dialog?.close();
-            document.body.classList.remove('u-overflow-hidden');
-        }
+    $: if (show) {
+        openModal();
+    } else {
+        closeModal();
     }
 
     $: if (error) {
@@ -60,14 +62,13 @@
     }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window on:click={handleBLur} on:keydown={handleKeydown} />
 
 <dialog
     class="modal"
     class:is-small={size === 'small'}
     class:is-big={size === 'big'}
     bind:this={dialog}
-    open={show}
     transition:fly={transitionFly}>
     <form class="modal-form" method="dialog" on:submit>
         <header class="modal-header">
