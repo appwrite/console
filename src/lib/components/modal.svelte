@@ -19,9 +19,10 @@
         y: 50
     };
 
+    //Escape key has native support. This is needed to remove class from the body
     const handleKeydown = (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-            closeModal();
+            show = false;
         }
     };
 
