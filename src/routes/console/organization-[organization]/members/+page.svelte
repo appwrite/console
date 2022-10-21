@@ -8,7 +8,7 @@
         TableCellText,
         TableRow
     } from '$lib/elements/table';
-    import { Avatar, Heading, Pagination } from '$lib/components';
+    import { AvatarInitials, Heading, Pagination } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -27,8 +27,6 @@
     const url = `${$page.url.origin}/console/`;
     const offset = createPersistentPagination($pageLimit);
 
-    const getAvatar = (name: string) =>
-        sdkForConsole.avatars.getInitials(name, 120, 120).toString();
     const deleted = () =>
         memberList.load(
             $organization.$id,
@@ -83,10 +81,7 @@
                     <TableRow>
                         <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <Avatar
-                                    size={40}
-                                    src={getAvatar(member.userName)}
-                                    name={member.userName} />
+                                <AvatarInitials size={40} name={member.userName} />
                                 <span class="text u-trim">
                                     {member.userName ? member.userName : 'n/a'}
                                 </span>

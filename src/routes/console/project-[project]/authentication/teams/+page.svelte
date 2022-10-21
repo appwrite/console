@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
     import {
         Table,
         TableHeader,
@@ -11,7 +10,7 @@
         TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
-    import { Empty, EmptySearch, Pagination, Avatar, Search } from '$lib/components';
+    import { Empty, EmptySearch, Pagination, Search, AvatarInitials } from '$lib/components';
     import Create from '../_createTeam.svelte';
     import { goto } from '$app/navigation';
     import { event } from '$lib/actions/analytics';
@@ -28,7 +27,6 @@
     const offset = createPersistentPagination($pageLimit);
 
     const project = $page.params.project;
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
         await goto(`${base}/console/project-${project}/authentication/teams/${event.detail.$id}`);
     };
@@ -68,7 +66,7 @@
                         href={`${base}/console/project-${project}/authentication/teams/${team.$id}`}>
                         <TableCell title="ID">
                             <div class="u-flex u-gap-12">
-                                <Avatar size={32} name={team.name} src={getAvatar(team.name)} />
+                                <AvatarInitials size={32} name={team.name} />
                                 <span class="text u-trim">{team.name}</span>
                             </div>
                         </TableCell>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Card, Avatar, CardGrid, Box, Heading } from '$lib/components';
+    import { Card, CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, Helper } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -11,7 +11,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
 
     const databaseId = $page.params.database;
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
@@ -50,7 +49,7 @@
             <div class="common-section grid-1-2">
                 <div class="grid-1-2-col-1">
                     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                        <Avatar size={48} name={$database.name} src={getAvatar($database.name)} />
+                        <AvatarInitials size={48} name={$database.name} />
                         <Heading tag="h6" size="7">{$database.name}</Heading>
                     </div>
                 </div>
@@ -99,7 +98,7 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
-                        <Avatar size={48} name={$database.name} src={getAvatar($database.name)} />
+                        <AvatarInitials size={48} name={$database.name} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold">{$database.name}</h6>

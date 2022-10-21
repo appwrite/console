@@ -128,7 +128,7 @@
         </CardGrid>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Delete file</Heading>
+            <Heading tag="h6" size="7">Delete File</Heading>
             <p>
                 The file will be permanently deleted, including all the files within it. This action
                 is irreversible.

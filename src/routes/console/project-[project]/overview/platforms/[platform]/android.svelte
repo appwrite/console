@@ -26,7 +26,7 @@
             project.load($project.$id);
             addNotification({
                 type: 'success',
-                message: 'Platform Hostname has been updated'
+                message: 'Platform Package Name has been updated'
             });
         } catch (error) {
             addNotification({
@@ -39,16 +39,18 @@
 
 <Form on:submit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Hostname</Heading>
-        <p class="text">You can use * to allow wildcard hostnames or subdomains.</p>
+        <Heading tag="h6" size="7">Update Package Name</Heading>
+        <p class="text">
+            Your package name is generally the applicationId in your app-level build.gradle file.
+        </p>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText
                     id="hostname"
-                    label="Hostname"
+                    label="Package Name"
                     bind:value={hostname}
                     required
-                    placeholder="myapp.com" />
+                    placeholder="com.company.appname" />
             </FormList>
         </svelte:fragment>
 

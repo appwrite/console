@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { base } from '$app/paths';
-    import { Pagination, Empty, Avatar } from '$lib/components';
+    import { Pagination, Empty, AvatarInitials } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -26,7 +26,6 @@
 
     const project = $page.params.project;
     const offset = createPersistentPagination($pageLimit);
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 32, 32).toString();
 
     $: request = sdkForProject.users.listMemberships($page.params.user);
 
@@ -57,10 +56,7 @@
                             href={`${base}/console/project-${project}/authentication/teams/${membership.teamId}`}>
                             <TableCellText title="Name">
                                 <div class="u-flex u-gap-12">
-                                    <Avatar
-                                        size={32}
-                                        src={getAvatar(membership.teamName)}
-                                        name={membership.teamName} />
+                                    <AvatarInitials size={32} name={membership.teamName} />
                                     <span>{membership.teamName ? membership.teamName : 'n/a'}</span>
                                 </div>
                             </TableCellText>

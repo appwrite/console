@@ -42,7 +42,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - User</title>
+    <title>User - Appwrite</title>
 </svelte:head>
 
 <slot />

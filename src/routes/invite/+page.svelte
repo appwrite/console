@@ -38,7 +38,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Accept invite</title>
+    <title>Accept invite - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>

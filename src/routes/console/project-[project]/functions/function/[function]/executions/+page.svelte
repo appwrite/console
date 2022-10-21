@@ -10,10 +10,10 @@
         Table,
         TableHeader,
         TableBody,
-        TableRow,
         TableCellHead,
         TableCell,
-        TableCellText
+        TableCellText,
+        TableRowButton
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
@@ -46,7 +46,7 @@
             </TableHeader>
             <TableBody>
                 {#each $executionList.executions as execution}
-                    <TableRow
+                    <TableRowButton
                         on:click={() => {
                             $log.show = true;
                             $log.func = $func;
@@ -75,7 +75,7 @@
                         <TableCellText title="Type">TBI</TableCellText>
                         <TableCellText title="Duration">
                             {calculateTime(execution.duration)}</TableCellText>
-                    </TableRow>
+                    </TableRowButton>
                 {/each}
             </TableBody>
         </Table>

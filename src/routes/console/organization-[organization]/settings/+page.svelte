@@ -41,12 +41,7 @@
     memberList.subscribe((value) => {
         if (value?.total > 0) {
             avatarsTotal = value.total;
-            avatars = value.memberships.map((team) => {
-                return {
-                    name: team.userName,
-                    img: sdkForConsole.avatars.getInitials(team.userName, 120, 120).toString()
-                };
-            });
+            avatars = value.memberships.map((team) => team.userName);
         }
     });
 </script>

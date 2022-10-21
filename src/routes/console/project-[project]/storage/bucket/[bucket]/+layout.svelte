@@ -55,7 +55,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Bucket</title>
+    <title>Bucket - Appwrite</title>
 </svelte:head>
 
 {#if $bucket && loaded}

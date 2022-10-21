@@ -105,7 +105,6 @@
     }
 
     function togglePermission(role: string, permission: PermissionsTypes): void {
-        console.log('test');
         groups.update((n) => {
             n.get(role)[permission] = !n.get(role)[permission];
 
@@ -187,7 +186,7 @@
                                     type="checkbox"
                                     class="icon-check"
                                     aria-label="Create"
-                                    bind:checked={permission.create}
+                                    checked={permission.create}
                                     on:change={() => togglePermission(role, 'create')} />
                             </TableCell>
                         {/if}
@@ -196,7 +195,7 @@
                                 type="checkbox"
                                 class="icon-check"
                                 aria-label="Read"
-                                bind:checked={permission.read}
+                                checked={permission.read}
                                 on:change={() => togglePermission(role, 'read')} />
                         </TableCell>
                         <TableCell title="Update">
@@ -204,7 +203,7 @@
                                 type="checkbox"
                                 class="icon-check"
                                 aria-label="Update"
-                                bind:checked={permission.update}
+                                checked={permission.update}
                                 on:change={() => togglePermission(role, 'update')} />
                         </TableCell>
                         <TableCell title="Delete">
@@ -212,7 +211,7 @@
                                 type="checkbox"
                                 class="icon-check"
                                 aria-label="Delete"
-                                bind:checked={permission.delete}
+                                checked={permission.delete}
                                 on:change={() => togglePermission(role, 'delete')} />
                         </TableCell>
                     {/if}

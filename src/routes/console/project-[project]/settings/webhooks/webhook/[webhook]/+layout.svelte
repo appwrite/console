@@ -37,7 +37,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Webhook</title>
+    <title>Webhook - Appwrite</title>
 </svelte:head>
 
 {#if $webhook}

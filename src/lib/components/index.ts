@@ -22,6 +22,7 @@ export { default as CollapsibleItem } from './collapsibleItem.svelte';
 export { default as DropTabs } from './dropTabs.svelte';
 export { default as DropTabsItem } from './dropTabsItem.svelte';
 export { default as Avatar } from './avatar.svelte';
+export { default as AvatarInitials } from './avatarInitials.svelte';
 export { default as AvatarGroup } from './avatarGroup.svelte';
 export { default as Alert } from './alert.svelte';
 export { default as Box } from './box.svelte';

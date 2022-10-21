@@ -12,7 +12,7 @@
     } from '$lib/elements/forms';
     import { bucket } from '../store';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { sizeToBytes, bytesToSize } from '$lib/helpers/sizeConvertion';
+    import { sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import Delete from '../_deleteBucket.svelte';
@@ -53,7 +53,6 @@
         encryption ??= $bucket.encryption;
         antivirus ??= $bucket.antivirus;
     });
-    $: maxSizePlaceholder = bytesToSize($bucket.maximumFileSize, byteUnit);
     $: if (bucketFileSecurity || bucketPermissions) {
         if (bucketFileSecurity !== $bucket.fileSecurity) {
             arePermsDisabled = false;
@@ -369,7 +368,7 @@
                         <InputNumber
                             id="size"
                             label="Size"
-                            placeholder={`${maxSizePlaceholder}`}
+                            placeholder="256"
                             bind:value={maxSize} />
                         <InputSelect id="bytes" label="Bytes" {options} bind:value={byteUnit} />
                     </ul>
