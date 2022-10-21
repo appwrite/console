@@ -211,7 +211,7 @@
                                 <TableCellText title="id">
                                     {id}
                                 </TableCellText>
-                                <TableCell showOverflow title="options" width={30}>
+                                <TableCell showOverflow title="options" width={40}>
                                     <button
                                         class="button is-text is-only-icon"
                                         aria-label="delete id"
@@ -273,18 +273,19 @@
                         <span class="u-error">Warning:</span> Untrusted or self-signed certificates
                         may not be secure.
                         <a href="#/" target="_blank" rel="noopener noreferrer" class="link">
-                            Learn more</a
-                        ></InputChoice>
+                            Learn more</a>
+                    </InputChoice>
                 </FormList>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={httpUser === $webhook.httpUser ||
-                        httpPass === $webhook.httpPass ||
-                        !httpUser ||
-                        !httpPass}
-                    submit>Update</Button>
+                    disabled={httpUser === $webhook.httpUser &&
+                        httpPass === $webhook.httpPass &&
+                        security === $webhook.security}
+                    submit>
+                    Update
+                </Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
