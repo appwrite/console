@@ -1,7 +1,6 @@
 <script lang="ts">
     import { createPopper, type Instance } from '@popperjs/core';
     import { afterUpdate, onDestroy, onMount } from 'svelte';
-    import { slide } from 'svelte/transition';
 
     export let show = false;
     export let noArrow = false;
@@ -35,6 +34,11 @@
     onMount(() => {
         instance = createPopper(element, tooltip, {
             placement,
+            onFirstUpdate(state) {
+                if (currentArrow !== state.placement) {
+                    currentArrow = state.placement as Placement;
+                }
+            },
             modifiers: [
                 {
                     name: 'offset',
@@ -96,8 +100,7 @@
             class:is-arrow-start={arrowHorizontal === 'start'}
             class:is-arrow-end={arrowHorizontal === 'end'}
             class:is-block-start={arrowPosition === 'top'}
-            class:is-block-end={arrowPosition === 'bottom'}
-            transition:slide={{ duration: 100 }}>
+            class:is-block-end={arrowPosition === 'bottom'}>
             <section
                 class:u-overflow-y-auto={scrollable}
                 class:u-max-height-200={scrollable}
