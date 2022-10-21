@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
-    import { Empty } from '$lib/components';
+    import { Empty, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -58,7 +58,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <h2 class="heading-level-5">Custom Domains</h2>
+        <Heading tag="h2" size="5">Custom Domains</Heading>
 
         <Button on:click={openWizard}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create domain</span>

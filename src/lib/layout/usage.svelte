@@ -1,5 +1,13 @@
 <script context="module" lang="ts">
     export type UsagePeriods = '24h' | '30d' | '90d';
+
+    export function last(set: Models.Metric[]): Models.Metric | null {
+        return set.slice(-1)[0] ?? null;
+    }
+
+    export function total(set: Models.Metric[]): number {
+        return set.reduce((prev, curr) => prev + curr.value, 0);
+    }
 </script>
 
 <script lang="ts">
@@ -27,14 +35,6 @@
     export let deletedMetadata: MetricMetadata;
 
     export let range: UsagePeriods;
-
-    function last(set: Models.Metric[]): Models.Metric | null {
-        return set.slice(-1)[0] ?? null;
-    }
-
-    function total(set: Models.Metric[]): number {
-        return set.reduce((prev, curr) => prev + curr.value, 0);
-    }
 </script>
 
 <Container>

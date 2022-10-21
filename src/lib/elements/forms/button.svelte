@@ -10,7 +10,6 @@
     export let fullWidth = false;
     export let ariaLabel: string = null;
     export let noMargin = false;
-    //TODO: add option to add aria-label to buttons that are only icons
 </script>
 
 {#if href}

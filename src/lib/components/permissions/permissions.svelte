@@ -22,11 +22,14 @@
     import { difference } from '$lib/helpers/array';
     import { onDestroy, onMount } from 'svelte';
     import { writable, type Unsubscriber } from 'svelte/store';
+    import { Empty } from '../';
     import Actions from './actions.svelte';
     import Row from './row.svelte';
 
     export let withCreate = false;
+    export let withCrud = true;
     export let permissions: string[] = [];
+    export let executeAccess: string[] = [];
 
     let showUser = false;
     let showTeam = false;
@@ -102,6 +105,7 @@
     }
 
     function togglePermission(role: string, permission: PermissionsTypes): void {
+        console.log('test');
         groups.update((n) => {
             n.get(role)[permission] = !n.get(role)[permission];
 
@@ -142,74 +146,99 @@
 
         return a.localeCompare(b);
     }
+
+    $: if (executeAccess.length && !permissions.length) {
+        executeAccess.forEach((permission) => {
+            addRole(permission);
+        });
+    }
+    $: if ([...$groups]?.length && !permissions.length) {
+        executeAccess = [...$groups].sort(sortRoles).map(([role]) => role);
+    }
+
+    //TODO: click on Empty components opens the dropdown
 </script>
 
-<Table noMargin noStyles noMobile>
-    <TableHeader>
-        <TableCellHead>Role</TableCellHead>
-        {#if withCreate}
-            <TableCellHead width={70}>Create</TableCellHead>
-        {/if}
-        <TableCellHead width={70}>Read</TableCellHead>
-        <TableCellHead width={70}>Update</TableCellHead>
-        <TableCellHead width={70}>Delete</TableCellHead>
-        <TableCellHead width={40} />
-    </TableHeader>
-    <TableBody>
-        {#each [...$groups].sort(sortRoles) as [role, permission]}
-            <TableRow>
-                <TableCellText title="Role">
-                    <Row {role} />
-                </TableCellText>
+{#if [...$groups]?.length}
+    <Table noMargin noStyles noMobile>
+        <TableHeader>
+            <TableCellHead>Role</TableCellHead>
+            {#if withCrud}
                 {#if withCreate}
-                    <TableCell title="Create">
-                        <input
-                            type="checkbox"
-                            class="icon-check"
-                            aria-label="Create"
-                            checked={permission.create}
-                            on:change={() => togglePermission(role, 'create')} />
-                    </TableCell>
+                    <TableCellHead width={70}>Create</TableCellHead>
                 {/if}
-                <TableCell title="Read">
-                    <input
-                        type="checkbox"
-                        class="icon-check"
-                        aria-label="Read"
-                        checked={permission.create}
-                        on:change={() => togglePermission(role, 'read')} />
-                </TableCell>
-                <TableCell title="Update">
-                    <input
-                        type="checkbox"
-                        class="icon-check"
-                        aria-label="Update"
-                        checked={permission.create}
-                        on:change={() => togglePermission(role, 'update')} />
-                </TableCell>
-                <TableCell title="Delete">
-                    <input
-                        type="checkbox"
-                        class="icon-check"
-                        aria-label="Delete"
-                        checked={permission.create}
-                        on:change={() => togglePermission(role, 'delete')} />
-                </TableCell>
-                <TableCellText title="Remove">
-                    <div class="u-flex">
-                        <button
-                            class="button is-text is-only-icon"
-                            type="button"
-                            aria-label="delete"
-                            on:click={() => deleteRole(role)}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
-                    </div>
-                </TableCellText>
-            </TableRow>
-        {/each}
-    </TableBody>
-</Table>
+                <TableCellHead width={70}>Read</TableCellHead>
+                <TableCellHead width={70}>Update</TableCellHead>
+                <TableCellHead width={70}>Delete</TableCellHead>
+            {/if}
+            <TableCellHead width={40} />
+        </TableHeader>
+        <TableBody>
+            {#each [...$groups].sort(sortRoles) as [role, permission]}
+                <TableRow>
+                    <TableCellText title="Role">
+                        <Row {role} />
+                    </TableCellText>
+
+                    {#if withCrud}
+                        {#if withCreate}
+                            <TableCell title="Create">
+                                <input
+                                    type="checkbox"
+                                    class="icon-check"
+                                    aria-label="Create"
+                                    bind:checked={permission.create}
+                                    on:change={() => togglePermission(role, 'create')} />
+                            </TableCell>
+                        {/if}
+                        <TableCell title="Read">
+                            <input
+                                type="checkbox"
+                                class="icon-check"
+                                aria-label="Read"
+                                bind:checked={permission.read}
+                                on:change={() => togglePermission(role, 'read')} />
+                        </TableCell>
+                        <TableCell title="Update">
+                            <input
+                                type="checkbox"
+                                class="icon-check"
+                                aria-label="Update"
+                                bind:checked={permission.update}
+                                on:change={() => togglePermission(role, 'update')} />
+                        </TableCell>
+                        <TableCell title="Delete">
+                            <input
+                                type="checkbox"
+                                class="icon-check"
+                                aria-label="Delete"
+                                bind:checked={permission.delete}
+                                on:change={() => togglePermission(role, 'delete')} />
+                        </TableCell>
+                    {/if}
+
+                    <TableCell title="Remove" width={40}>
+                        <div class="u-flex">
+                            <button
+                                class="button is-text is-only-icon"
+                                type="button"
+                                aria-label="delete"
+                                on:click={() => deleteRole(role)}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </TableCell>
+                </TableRow>
+            {/each}
+        </TableBody>
+    </Table>
+{:else}
+    <span class="eyebrow-heading-3 u-sep-block-end">ROLE</span>
+
+    <Empty isButton on:click={() => (showDropdown = !showDropdown)}>
+        Add a role to get started
+    </Empty>
+{/if}
 
 <Actions
     bind:showCustom

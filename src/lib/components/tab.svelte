@@ -9,7 +9,11 @@
             <span class="text"><slot /></span>
         </a>
     {:else}
-        <button class="tabs-button" on:click|preventDefault class:is-selected={selected}>
+        <button
+            type="button"
+            class="tabs-button"
+            on:click|preventDefault
+            class:is-selected={selected}>
             <span class="text"><slot /></span>
         </button>
     {/if}
