@@ -3,7 +3,7 @@
         | 'waiting'
         | 'pending'
         | 'failed'
-        | 'complete'
+        | 'completed'
         | 'processing'
         | 'ready'
         | 'building'
