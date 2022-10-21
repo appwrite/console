@@ -207,10 +207,9 @@
                                         <DropListItem
                                             icon="terminal"
                                             on:click={() => {
-                                                selectedDeployment = deployment;
                                                 $log.show = true;
                                                 $log.func = $func;
-                                                $log.data = activeDeployment;
+                                                $log.data = deployment;
                                                 showDropdown = [];
                                             }}>Output</DropListItem>
                                         <DropListItem
