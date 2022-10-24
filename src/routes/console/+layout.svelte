@@ -5,9 +5,11 @@
     import { organizationList, newOrgModal, redirectTo } from '$lib/stores/organization';
     import Create from './_createOrganization.svelte';
     import { page } from '$app/stores';
-    import { afterNavigate } from '$app/navigation';
+    import { afterNavigate, beforeNavigate } from '$app/navigation';
     import { onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
+    import { Logs } from '$lib/layout';
+    import { log } from '$lib/stores/logs';
 
     onMount(async () => {
         if ($page.url.pathname === '/console' && !$newOrgModal) {
@@ -20,10 +22,19 @@
             return await redirectTo();
         }
     });
+
+    beforeNavigate(() => {
+        $log.show = false;
+    });
+
+    $: if (!$log.show) {
+        $log.data = null;
+        $log.func = null;
+    }
 </script>
 
 <svelte:head>
-    <title>Appwrite - Console</title>
+    <title>Console - Appwrite</title>
 </svelte:head>
 
 <Shell
@@ -46,4 +57,8 @@
 
 {#if $newOrgModal}
     <Create bind:show={$newOrgModal} closable={!!$organizationList?.total} />
+{/if}
+
+{#if $log.show}
+    <Logs />
 {/if}

@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Team</title>
+    <title>Team - Appwrite</title>
 </svelte:head>
 
 {#if $team}

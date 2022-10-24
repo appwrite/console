@@ -26,7 +26,7 @@
             project.load($project.$id);
             addNotification({
                 type: 'success',
-                message: 'Platform hostname has been updated'
+                message: 'Platform Hostname has been updated'
             });
         } catch (error) {
             addNotification({

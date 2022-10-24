@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - File</title>
+    <title>File - Appwrite</title>
 </svelte:head>
 
 {#if $file}

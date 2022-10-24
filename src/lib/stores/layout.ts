@@ -1,4 +1,4 @@
-import { writable, readable, get } from 'svelte/store';
+import { writable, readable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
 
 export type Tab = {

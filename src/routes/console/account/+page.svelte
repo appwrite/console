@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Form, FormList, InputText, InputPassword } from '$lib/elements/forms';
-    import { CardGrid, Box, Avatar, Heading } from '$lib/components';
+    import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
     import { Container } from '$lib/layout';
     import { onMount } from 'svelte';
     import { user } from '$lib/stores/user';
@@ -20,8 +20,6 @@
         name ??= $user.name;
         email ??= $user.email;
     });
-
-    const getAvatar = (name: string) => sdkForConsole.avatars.getInitials(name, 96, 96).toString();
 
     async function updateName() {
         try {
@@ -165,7 +163,7 @@
         <svelte:fragment slot="aside">
             <Box>
                 <svelte:fragment slot="image">
-                    <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
+                    <AvatarInitials size={48} name={$user.name} />
                 </svelte:fragment>
                 <svelte:fragment slot="title">
                     <h6 class="u-bold">{$user.name}</h6>

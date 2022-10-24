@@ -23,12 +23,13 @@
     import AppleTvos from './appleTvOS.svelte';
     import Header from './header.svelte';
     import Breadcrumbs from './breadcrumbs.svelte';
+    import Android from './android.svelte';
 
     const projectId = $page.params.project;
     const platformId = $page.params.platform;
     const types: Record<string, typeof SvelteComponent> = {
         web: Web,
-        android: Web,
+        android: Android,
         'apple-ios': AppleiOs,
         'apple-macos': AppleMacOs,
         'apple-watchos': AppleWatchOs,
@@ -113,7 +114,6 @@
             <svelte:fragment slot="aside">
                 <div class="box">
                     <div class="u-flex u-gap-16">
-                        <!-- <img class="avatar" src="/icons/dark/color/android.svg" /> -->
                         <div class="u-cross-child-center u-line-height-1-5">
                             <h6 class="u-bold">{$platform.name}</h6>
                             <p>{$platform.hostname}</p>

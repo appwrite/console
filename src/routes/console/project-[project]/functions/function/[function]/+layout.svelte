@@ -2,7 +2,11 @@
     import { afterNavigate } from '$app/navigation';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
-    import { func } from './store';
+    import { func, execute } from './store';
+    import Execute from './execute.svelte';
+    import { updateLayout } from '$lib/stores/layout';
+    import Header from './header.svelte';
+    import Breadcrumbs from './breadcrumbs.svelte';
 
     const functionId = $page.params.function;
 
@@ -15,36 +19,17 @@
             await promise;
         }
 
-        // updateLayout({
-        //     navigate: event,
-        //     title: $func.name,
-        //     level: 4,
-        //     breadcrumbs: {
-        //         title: $func.name,
-        //         href: `function/${functionId}`
-        //     },
-        //     tabs: [
-        //         {
-        //             href: path,
-        //             title: 'Overview'
-        //         },
-        //         {
-        //             href: `${path}/monitors`,
-        //             title: 'Monitors'
-        //         },
-        //         {
-        //             href: `${path}/logs`,
-        //             title: 'Logs'
-        //         },
-        //         {
-        //             href: `${path}/settings`,
-        //             title: 'Settings'
-        //         }
-        //     ]
-        // });
+        updateLayout({
+            breadcrumb: Breadcrumbs,
+            header: Header
+        });
     }
 </script>
 
 {#if $func}
     <slot />
+{/if}
+
+{#if $execute}
+    <Execute selectedFunction={$execute} />
 {/if}

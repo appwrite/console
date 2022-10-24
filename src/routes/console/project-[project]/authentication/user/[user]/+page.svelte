@@ -1,7 +1,14 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Avatar, CardGrid, Box, DropList, DropListItem, Heading } from '$lib/components';
+    import {
+        CardGrid,
+        Box,
+        DropList,
+        DropListItem,
+        Heading,
+        AvatarInitials
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import {
         Button,
@@ -47,8 +54,6 @@
         userEmail ??= $user.email;
         userPhone ??= $user.phone;
     });
-
-    const getAvatar = (name: string) => sdkForProject.avatars.getInitials(name, 48, 48).toString();
 
     async function updateVerificationEmail() {
         showVerifcationDropdown = false;
@@ -190,7 +195,7 @@
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
             {#if $user.email || $user.phone}
                 {#if $user.name}
-                    <Avatar size={48} src={getAvatar($user.name)} name={$user.name} />
+                    <AvatarInitials size={48} name={$user.name} />
                     <Heading tag="h6" size="7">{$user.name}</Heading>
                 {:else}
                     <div class="avatar">
@@ -452,7 +457,7 @@
                 <svelte:fragment slot="image">
                     {#if $user.email || $user.phone}
                         {#if $user.name}
-                            <Avatar size={48} src={getAvatar($user.name)} name={$user.name} />
+                            <AvatarInitials size={48} name={$user.name} />
                         {:else}
                             <div class="avatar">
                                 <span class="icon-minus-sm" aria-hidden="true" />

@@ -12,7 +12,7 @@
     {id}
     {label}
     required={attribute.required}
-    minlength={attribute.min}
-    maxlength={attribute.max}
+    min={attribute.min}
+    max={attribute.max}
     bind:value
     step={attribute.type === 'double' ? 'any' : 1} />

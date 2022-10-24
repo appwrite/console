@@ -38,7 +38,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Organizations</title>
+    <title>Organizations - Appwrite</title>
 </svelte:head>
 
 {#if $organization}

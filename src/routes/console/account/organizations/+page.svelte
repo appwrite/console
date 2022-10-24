@@ -21,18 +21,9 @@
         await organizationList.load();
     });
 
-    const getAvatar = (name: string) => {
-        return sdkForConsole.avatars.getInitials(name, 80, 80).toString();
-    };
-
     const getMemberships = async (teamId: string) => {
         const memberships = await sdkForConsole.teams.listMemberships(teamId);
-        return memberships.memberships.map((team) => {
-            return {
-                name: team.userName,
-                img: getAvatar(team.userName)
-            };
-        });
+        return memberships.memberships.map((team) => team.userName);
     };
 
     let addOrganization = false;

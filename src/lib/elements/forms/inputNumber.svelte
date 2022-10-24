@@ -11,8 +11,8 @@
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
-    export let maxlength: number = null;
-    export let minlength: number = null;
+    export let min: number = null;
+    export let max: number = null;
     export let step: number | 'any' = 1;
 
     let element: HTMLInputElement;
@@ -32,6 +32,16 @@
             return;
         }
 
+        if (element.validity.rangeOverflow) {
+            error = `The value must be less than or equal to ${max}`;
+            return;
+        }
+
+        if (element.validity.rangeUnderflow) {
+            error = `The value must be greater than or equal to ${min}`;
+            return;
+        }
+
         error = element.validationMessage;
     };
 
@@ -48,8 +58,8 @@
             {placeholder}
             {disabled}
             {required}
-            {minlength}
-            {maxlength}
+            {min}
+            {max}
             {readonly}
             {step}
             type="number"

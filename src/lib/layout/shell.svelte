@@ -3,6 +3,7 @@
     import { header } from '$lib/stores/layout';
     import { browser } from '$app/environment';
     import { wizard } from '$lib/stores/wizard';
+    import { log } from '$lib/stores/logs';
 
     export let isOpen = false;
     export let showSideNavigation = false;
@@ -32,7 +33,7 @@
     class:grid-with-side={showSideNavigation}
     class:grid={!showSideNavigation}
     class:is-open={isOpen}
-    class:u-hide={$wizard.show}>
+    class:u-hide={$wizard.show || $log.show}>
     <header class="main-header">
         <button
             class:u-hide={!showSideNavigation}

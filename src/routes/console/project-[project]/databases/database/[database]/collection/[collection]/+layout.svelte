@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - {$collection?.name ?? 'Collection'}</title>
+    <title>{$collection?.name ?? 'Collection'} - Appwrite</title>
 </svelte:head>
 
 {#if $collection && loaded}

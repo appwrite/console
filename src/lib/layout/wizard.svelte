@@ -105,7 +105,7 @@
         <slot name="media" />
     </div>
     <div class="wizard-main">
-        <Form on:submit={submit}>
+        <Form noStyle on:submit={submit}>
             {#each sortedSteps as [step, { component }]}
                 {#if currentStep === step}
                     <svelte:component this={component} />

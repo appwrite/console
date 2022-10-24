@@ -1,9 +1,8 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { onMount } from 'svelte';
-    import { Avatar, DropList, DropListItem, DropListLink } from '$lib/components';
+    import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
-    import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import { breadcrumb } from '$lib/stores/layout';
@@ -52,10 +51,7 @@
                 arrow={false}
                 scrollable={true}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
-                    <Avatar
-                        size={40}
-                        name={$user.name}
-                        src={sdkForConsole.avatars.getInitials($user.name, 40, 40).toString()} />
+                    <AvatarInitials size={40} name={$user.name} />
                     <span class="user-profile-info is-only-desktop">
                         <span class="name">{$user.name}</span>
                         {#if $organization}

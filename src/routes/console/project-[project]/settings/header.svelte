@@ -11,12 +11,12 @@
             title: 'Overview'
         },
         {
-            href: `${path}/services`,
-            title: 'Services'
-        },
-        {
             href: `${path}/domains`,
             title: 'Custom Domains'
+        },
+        {
+            href: `${path}/webhooks`,
+            title: 'Webhooks'
         }
     ];
 </script>
