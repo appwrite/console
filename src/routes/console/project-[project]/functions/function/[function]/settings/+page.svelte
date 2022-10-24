@@ -496,9 +496,8 @@
                                 <td class="table-col u-overflow-visible" data-title="options">
                                     <DropList
                                         bind:show={showVariablesDropdown[i]}
-                                        position="bottom"
-                                        horizontal="left"
-                                        arrow={false}>
+                                        placement="bottom-start"
+                                        noArrow>
                                         <button
                                             class="button is-text is-only-icon"
                                             aria-label="more options"
