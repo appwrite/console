@@ -60,6 +60,7 @@
     async function updatePassword() {
         try {
             await sdkForConsole.account.updatePassword(newPassword, oldPassword);
+            newPassword = oldPassword = null;
             addNotification({
                 message: 'Password has been updated',
                 type: 'success'

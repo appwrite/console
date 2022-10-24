@@ -40,6 +40,8 @@
 
     $: if (!showCreate) {
         error = null;
+        email = null;
+        name = null;
     }
 </script>
 

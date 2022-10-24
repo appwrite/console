@@ -39,7 +39,7 @@
             <TableHeader>
                 <TableCellHead>Deployment ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
-                <TableCellHead width={70}>Status</TableCellHead>
+                <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
                 <TableCellHead width={70}>Type</TableCellHead>
                 <TableCellHead width={100}>Build Time</TableCellHead>
