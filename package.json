@@ -8,6 +8,7 @@
         "dev": "vite dev",
         "build": "vite build",
         "preview": "vite preview",
+        "sync": "svelte-kit sync",
         "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings --threshold warning",
         "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
         "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint .",
@@ -29,8 +30,8 @@
     },
     "devDependencies": {
         "@playwright/test": "^1.27.1",
-        "@sveltejs/adapter-static": "1.0.0-next.44",
-        "@sveltejs/kit": "1.0.0-next.516",
+        "@sveltejs/adapter-static": "1.0.0-next.46",
+        "@sveltejs/kit": "1.0.0-next.524",
         "@sveltejs/vite-plugin-svelte": "^1.0.9",
         "@testing-library/dom": "^8.19.0",
         "@testing-library/jest-dom": "^5.16.5",

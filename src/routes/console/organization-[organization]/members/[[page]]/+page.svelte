@@ -12,27 +12,22 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import Delete from '../_deleteMember.svelte';
+    import Delete from '../../_deleteMember.svelte';
     import { organization, memberList, newMemberModal } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
-    import { createPersistentPagination } from '$lib/stores/pagination';
 
     let search = '';
     let selectedMember: Models.Membership;
     let showDelete = false;
     const url = `${$page.url.origin}/console/`;
-    const offset = createPersistentPagination($pageLimit);
 
     const deleted = () =>
-        memberList.load(
-            $organization.$id,
-            [Query.limit($pageLimit), Query.offset($offset)],
-            search
-        );
+        memberList.load($organization.$id, [Query.limit($pageLimit), Query.offset(0)], search);
+
     const resend = async (member: Models.Membership) => {
         try {
             await sdkForConsole.teams.createMembership(
@@ -53,9 +48,6 @@
             });
         }
     };
-
-    $: if (search) $offset = 0;
-    $: memberList.load($organization.$id, [Query.limit($pageLimit), Query.offset($offset)], search);
 </script>
 
 <Container>
@@ -117,7 +109,11 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$memberList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset={$offset} sum={$memberList.total} />
+            <Pagination
+                offset={0}
+                limit={$pageLimit}
+                path={`${$page.url.origin}/console/organization-${$page.params.organization}/members`}
+                sum={$memberList.total} />
         </div>
     {/if}
 </Container>

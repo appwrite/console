@@ -11,14 +11,14 @@
         TableCellText,
         TableRowLink
     } from '$lib/elements/table';
-    import Create from './_createUser.svelte';
+    import Create from '../_createUser.svelte';
     import { goto } from '$app/navigation';
     import { event } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import { usersList } from './store';
+    import { usersList } from '../store';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
     import { createPersistentPagination } from '$lib/stores/pagination';
@@ -26,17 +26,12 @@
     let showCreate = false;
     let search = '';
     const offset = createPersistentPagination($pageLimit);
-
     const project = $page.params.project;
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
         await goto(`${base}/console/project-${project}/authentication/user/${event.detail.$id}`);
     };
-
+    $: console.log($usersList);
     $: if (search) $offset = 0;
-    $: usersList.load(
-        [Query.limit($pageLimit), Query.offset($offset), Query.orderDesc('$createdAt')],
-        search
-    );
 </script>
 
 <Container>
@@ -122,7 +117,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {$usersList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset={$offset} sum={$usersList.total} />
+            <Pagination limit={$pageLimit} bind:offset={$offset} sum={$usersList.total} path="" />
         </div>
     {:else if search}
         <EmptySearch>

@@ -5,12 +5,12 @@
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
-    import { breadcrumb } from '$lib/stores/layout';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { slide } from 'svelte/transition';
+    import { page } from '$app/stores';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
@@ -40,8 +40,8 @@
     <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
 </a>
 
-{#if $breadcrumb}
-    <svelte:component this={$breadcrumb} />
+{#if $page.data.breadcrumbs}
+    <svelte:component this={$page.data.breadcrumbs} />
 {/if}
 
 <div class="main-header-end">

@@ -4,6 +4,7 @@
     export let sum: number;
     export let limit: number;
     export let offset: number;
+    export let path: string = '';
     export let hidePages = false;
 
     const dispatch = createEventDispatcher();
@@ -52,15 +53,14 @@
 
 {#if totalPages > 1}
     <nav class="pagination">
-        <button
-            type="button"
-            on:click={() => handleButtonPage('prev')}
+        <a
             class:is-disabled={currentPage <= 1}
             class="button is-text"
-            aria-label="prev page">
+            aria-label="prev page"
+            href={`${path}/${1}`}>
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
-        </button>
+        </a>
         {#if !hidePages}
             <ol class="pagination-list is-only-desktop">
                 {#each pages as page}
@@ -84,15 +84,14 @@
                 {/each}
             </ol>
         {/if}
-        <button
-            on:click={() => handleButtonPage('next')}
+        <a
             class:is-disabled={currentPage === totalPages}
             class="button is-text"
-            type="button"
+            href={`${path}/${2}`}
             aria-label="next page">
             <span class="text">Next</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
-        </button>
+        </a>
     </nav>
 {:else}
     <nav class="pagination">

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { navigating } from '$app/stores';
+    import { navigating, page } from '$app/stores';
     import { header } from '$lib/stores/layout';
     import { browser } from '$app/environment';
     import { wizard } from '$lib/stores/wizard';
@@ -48,8 +48,8 @@
         <slot name="side" />
     </nav>
     <section class="main-content">
-        {#if $header}
-            <svelte:component this={$header} />
+        {#if $page.data?.header}
+            <svelte:component this={$page.data.header} />
         {/if}
 
         <slot />

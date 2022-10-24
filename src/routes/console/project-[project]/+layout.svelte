@@ -1,14 +1,11 @@
 <script lang="ts">
     import { browser } from '$app/environment';
-    import { page } from '$app/stores';
-    import { sdkForConsole, sdkForProject, setProject } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { collection } from './databases/database/[database]/collection/[collection]/store';
     import { UploadBox } from '$lib/components';
+    import type { Models } from '@aw-labs/appwrite-console';
     import { project } from './store';
     import { organization } from '$lib/stores/organization';
-    import { onMount } from 'svelte';
-    import { afterNavigate } from '$app/navigation';
-    import type { Models } from '@aw-labs/appwrite-console';
 
     type Attributes =
         | Models.AttributeBoolean
@@ -19,8 +16,6 @@
         | Models.AttributeIp
         | Models.AttributeString
         | Models.AttributeUrl;
-
-    $: projectId = $page.params.project;
 
     // TODO: move to database routes
     if (browser) {
@@ -44,29 +39,9 @@
             }
         });
     }
-    onMount(handle);
-    afterNavigate(handle);
-
-    let loaded = false;
-    async function handle() {
-        if (sdkForProject.client.config.project !== projectId) {
-            setProject(projectId);
-        }
-
-        const promiseProject = project.load(projectId);
-        if ($project?.$id !== projectId) {
-            await promiseProject;
-
-            const promiseOrganization = organization.load($project.teamId);
-            if ($organization?.$id !== $project?.teamId) {
-                await promiseOrganization;
-            }
-        }
-        loaded = true;
-    }
 </script>
 
-{#if loaded}
+{#if $project && $organization}
     <slot />
 {:else}
     loading

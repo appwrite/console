@@ -10,6 +10,9 @@ const config = {
         accessors: process.env.VITEST
     },
     kit: {
+        prerender: {
+            enabled: false
+        },
         adapter: adapter({
             fallback: 'index.html'
         }),

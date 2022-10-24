@@ -11,24 +11,10 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
-    import { sdkForConsole } from '$lib/stores/sdk';
 
-    let avatars = [];
-    let avatarsTotal = 0;
     let showDropdown = false;
 
-    memberList.subscribe((value) => {
-        if (value?.total > 0) {
-            avatarsTotal = value.total;
-            avatars = value.memberships.map((team) => {
-                return {
-                    name: team.userName,
-                    img: sdkForConsole.avatars.getInitials(team.userName, 80, 80).toString()
-                };
-            });
-        }
-    });
-
+    $: avatars = $memberList?.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `/console/organization-${organizationId}`;
     $: tabs = [
@@ -86,7 +72,7 @@
         </DropList>
         <div class="u-margin-inline-start-auto">
             <div class="u-flex u-gap-16">
-                <AvatarGroup size={40} {avatars} total={avatarsTotal} />
+                <AvatarGroup size={40} {avatars} total={$memberList?.total ?? 0} />
                 <Button secondary on:click={() => newMemberModal.set(true)}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Invite</span>
