@@ -14,10 +14,9 @@
     let element: HTMLButtonElement;
 
     const isOverflowing = (elem: HTMLButtonElement, iterator = 1) => {
-        if (elem) {
-            let container = elem.parentElement.parentElement;
-            if (elem.scrollWidth + 10 > container.clientWidth && trim) trimText(iterator);
-        } else return;
+        if (trim && elem && elem.scrollWidth + 10 > elem.parentElement.parentElement.clientWidth)
+            trimText(iterator);
+        else return;
     };
 
     function trimText(iterator: number) {
