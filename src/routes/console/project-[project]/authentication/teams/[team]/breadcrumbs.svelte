@@ -18,7 +18,7 @@
             title: 'Authentication'
         },
         {
-            href: `/console/project-${$project.$id}/authentication/user/${$team.$id}`,
+            href: `/console/project-${$project.$id}/authentication/teams/${$team.$id}`,
             title: $team.name
         }
     ];
