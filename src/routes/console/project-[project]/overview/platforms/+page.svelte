@@ -37,12 +37,7 @@
 <div class="common-section u-flex u-gap-12">
     <Heading tag="h3" size="7">Platforms</Heading>
     <span class="u-margin-inline-start-auto">
-        <DropList
-            bind:show={showDropdown}
-            position="bottom"
-            horizontal="right"
-            arrow={true}
-            arrowPosition="start">
+        <DropList bind:show={showDropdown} placement="bottom-start">
             <Button on:click={() => (showDropdown = !showDropdown)}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Add platform</span>

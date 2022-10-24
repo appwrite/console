@@ -254,12 +254,7 @@
             </Button>
             {#if $user.status}
                 {#if $user.phone && $user.email}
-                    <DropList
-                        bind:show={showVerifcationDropdown}
-                        position="top"
-                        horizontal="left"
-                        arrow={true}
-                        arrowPosition="end">
+                    <DropList bind:show={showVerifcationDropdown} placement="top-start">
                         <Button
                             secondary
                             on:click={() => (showVerifcationDropdown = !showVerifcationDropdown)}>

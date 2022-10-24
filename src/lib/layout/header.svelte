@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { onMount } from 'svelte';
     import { Breadcrumbs } from '.';
-    import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
+    import { AvatarInitials, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
@@ -10,8 +10,10 @@
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
+    import { slide } from 'svelte/transition';
 
     let showDropdown = false;
+    let droplistElement: HTMLDivElement;
 
     onMount(async () => {
         await organizationList.load();
@@ -19,7 +21,18 @@
             await organization.load($organizationList.teams[0].$id);
         }
     });
+
+    const onBlur = (event: MouseEvent) => {
+        if (
+            showDropdown &&
+            !(event.target === droplistElement || droplistElement.contains(event.target as Node))
+        ) {
+            showDropdown = false;
+        }
+    };
 </script>
+
+<svelte:window on:click={onBlur} />
 
 <a
     class="logo"
@@ -42,12 +55,7 @@
     </nav>
     <nav class="user-profile">
         {#if $user}
-            <DropList
-                bind:show={showDropdown}
-                position="bottom"
-                horizontal="left"
-                arrow={false}
-                scrollable={true}>
+            <div class="drop-wrapper" class:is-open={showDropdown} bind:this={droplistElement}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
                     <AvatarInitials size={40} name={$user.name} />
                     <span class="user-profile-info is-only-desktop">
@@ -62,70 +70,80 @@
                         class:icon-cheveron-up={showDropdown}
                         class:icon-cheveron-down={!showDropdown} />
                 </button>
-                <svelte:fragment slot="list">
-                    {#if $organizationList?.total}
-                        {#each $organizationList.teams as org}
-                            <DropListLink
-                                href={`${base}/console/organization-${org.$id}`}
-                                on:click={() => {
-                                    showDropdown = false;
-                                }}>{org.name}</DropListLink>
-                        {/each}
-                    {/if}
-                </svelte:fragment>
-                <svelte:fragment slot="other">
-                    <section class="drop-section">
-                        <ul class="drop-list">
-                            <DropListItem
-                                icon="plus"
-                                on:click={() => {
-                                    showDropdown = false;
-                                    newOrgModal.set(true);
-                                }}>New organization</DropListItem>
-                            <DropListLink
-                                href={`${base}/console/account`}
-                                on:click={() => (showDropdown = false)}>Your Account</DropListLink>
-                        </ul>
-                    </section>
-                    <section class="drop-section">
-                        <ul class="u-flex u-gap-12">
-                            <li>
-                                <label class="image-radio">
-                                    <img src={LightMode} alt="light mode" />
-                                    <input
-                                        type="radio"
-                                        class="is-small"
-                                        name="mode"
-                                        bind:group={$app.theme}
-                                        value="light" />
-                                </label>
-                            </li>
-                            <li>
-                                <label class="image-radio">
-                                    <img src={DarkMode} alt="dark mode" />
-                                    <input
-                                        type="radio"
-                                        class="is-small"
-                                        name="mode"
-                                        bind:group={$app.theme}
-                                        value="dark" />
-                                </label>
-                            </li>
-                            <li>
-                                <label class="image-radio">
-                                    <img src={SystemMode} alt="system mode" />
-                                    <input
-                                        type="radio"
-                                        class="is-small"
-                                        name="mode"
-                                        bind:group={$app.theme}
-                                        value="auto" />
-                                </label>
-                            </li>
-                        </ul>
-                    </section>
-                </svelte:fragment>
-            </DropList>
+                {#if showDropdown}
+                    <div
+                        class="drop is-no-arrow is-block-end is-inline-end"
+                        transition:slide={{ duration: 100 }}>
+                        <section class="drop-section u-overflow-y-auto u-max-height-200">
+                            <ul class="drop-list">
+                                {#if $organizationList?.total}
+                                    {#each $organizationList.teams as org}
+                                        <DropListLink
+                                            href={`${base}/console/organization-${org.$id}`}
+                                            on:click={() => {
+                                                showDropdown = false;
+                                            }}>{org.name}</DropListLink>
+                                    {/each}
+                                {/if}
+                            </ul>
+                        </section>
+                        <section class="drop-section">
+                            <ul class="drop-list">
+                                <DropListItem
+                                    icon="plus"
+                                    on:click={() => {
+                                        showDropdown = false;
+                                        newOrgModal.set(true);
+                                    }}>
+                                    New organization
+                                </DropListItem>
+                                <DropListLink
+                                    href={`${base}/console/account`}
+                                    on:click={() => (showDropdown = false)}>
+                                    Your Account
+                                </DropListLink>
+                            </ul>
+                        </section>
+                        <section class="drop-section">
+                            <ul class="u-flex u-gap-12">
+                                <li>
+                                    <label class="image-radio">
+                                        <img src={LightMode} alt="light mode" />
+                                        <input
+                                            type="radio"
+                                            class="is-small"
+                                            name="mode"
+                                            bind:group={$app.theme}
+                                            value="light" />
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="image-radio">
+                                        <img src={DarkMode} alt="dark mode" />
+                                        <input
+                                            type="radio"
+                                            class="is-small"
+                                            name="mode"
+                                            bind:group={$app.theme}
+                                            value="dark" />
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="image-radio">
+                                        <img src={SystemMode} alt="system mode" />
+                                        <input
+                                            type="radio"
+                                            class="is-small"
+                                            name="mode"
+                                            bind:group={$app.theme}
+                                            value="auto" />
+                                    </label>
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+                {/if}
+            </div>
         {/if}
     </nav>
 </div>

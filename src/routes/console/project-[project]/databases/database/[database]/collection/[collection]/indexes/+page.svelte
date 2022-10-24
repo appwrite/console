@@ -108,11 +108,7 @@
                             {index.orders}
                         </TableCellText>
                         <TableCell showOverflow>
-                            <DropList
-                                bind:show={showDropdown[i]}
-                                position="bottom"
-                                horizontal="left"
-                                arrow={false}>
+                            <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>
                                 <button
                                     class="button is-only-icon is-text"
                                     aria-label="More options"

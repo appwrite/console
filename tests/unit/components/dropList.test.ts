@@ -1,11 +1,10 @@
 import '@testing-library/jest-dom';
+import { tick } from 'svelte';
 import { render, fireEvent } from '@testing-library/svelte';
 import { DropList } from '../../../src/lib/components';
 
 const data = {
-    show: true,
-    position: 'top',
-    horizontal: 'right'
+    show: true
 };
 
 test('shows drop list component', () => {
@@ -31,11 +30,11 @@ test('hide drop list on wrapper click', async () => {
     expect(component.show).toStrictEqual(false);
 });
 
-test('drop list visible on list click', async () => {
-    render(DropList, { ...data });
-    const dropList = document.querySelector('ul.drop-list');
+test('hide drop list on list click', async () => {
+    const { container } = render(DropList, { ...data });
+    const dropList = container.querySelector('ul.drop-list');
 
     await fireEvent.click(dropList);
-    await new Promise((r) => setTimeout(r, 200));
-    expect(dropList).toBeInTheDocument();
+    await tick();
+    expect(dropList).not.toBeInTheDocument();
 });

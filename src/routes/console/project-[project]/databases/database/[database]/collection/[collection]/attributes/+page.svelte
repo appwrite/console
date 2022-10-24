@@ -75,9 +75,8 @@
                         <TableCell showOverflow>
                             <DropList
                                 bind:show={showDropdown[index]}
-                                position="bottom"
-                                horizontal="left"
-                                arrow={false}>
+                                placement="bottom-start"
+                                noArrow>
                                 <button
                                     class="button is-only-icon is-text"
                                     aria-label="More options"

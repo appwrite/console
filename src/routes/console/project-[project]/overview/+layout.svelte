@@ -107,9 +107,7 @@
                             </div>
                             <DropList
                                 bind:show={showPeriodBandwidth}
-                                position="bottom"
-                                horizontal="left"
-                                arrowPosition="end"
+                                placement="bottom-start"
                                 childStart>
                                 <button
                                     class="transparent-button"
@@ -150,9 +148,7 @@
                             </div>
                             <DropList
                                 bind:show={showPeriodRequests}
-                                position="bottom"
-                                horizontal="left"
-                                arrowPosition="end"
+                                placement="bottom-start"
                                 childStart>
                                 <button
                                     class="transparent-button"
