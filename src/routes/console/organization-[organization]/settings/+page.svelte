@@ -5,7 +5,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { organization, memberList } from '$lib/stores/organization';
-    import { title, breadcrumbs } from '$lib/stores/layout';
     import Delete from '../_deleteOrganization.svelte';
 
     let name: string = $organization.name;
@@ -15,10 +14,6 @@
         try {
             await sdkForConsole.teams.update($organization.$id, name);
             $organization.name = name;
-            title.set(name);
-            const breadcrumb = $breadcrumbs.get(0);
-            breadcrumb.title = name;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'

@@ -3,7 +3,6 @@
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import {
-        organizationList,
         organization,
         memberList,
         newOrgModal,
@@ -13,14 +12,15 @@
     import Create from '../_createOrganization.svelte';
     import { page } from '$app/stores';
     import { Query } from '@aw-labs/appwrite-console';
+    import Header from './header.svelte';
+    import Breadcrumbs from './breadcrumbs.svelte';
 
     $: organizationId = $page.params.organization;
-    $: path = `console/organization-${organizationId}`;
 
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle(event = null) {
+    async function handle() {
         const promises = Promise.all([
             organization.load(organizationId),
             memberList.load(organizationId, [Query.limit($pageLimit)])
@@ -31,29 +31,8 @@
         }
 
         updateLayout({
-            navigate: event,
-            title: $organization?.name,
-            titleDropdown: $organizationList.teams,
-            level: 0,
-            customBase: '',
-            breadcrumbs: {
-                title: `${$organization.name}`,
-                href: path
-            },
-            tabs: [
-                {
-                    href: path,
-                    title: 'Projects'
-                },
-                {
-                    href: `${path}/members`,
-                    title: 'Members'
-                },
-                {
-                    href: `${path}/settings`,
-                    title: 'Settings'
-                }
-            ]
+            header: Header,
+            breadcrumb: Breadcrumbs
         });
     }
 </script>

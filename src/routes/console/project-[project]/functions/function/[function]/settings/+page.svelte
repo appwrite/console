@@ -23,7 +23,6 @@
     import Upload from './uploadVariables.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { variableList } from '../../../store';
-    import { breadcrumbs, title } from '$lib/stores/layout';
     import { Permissions } from '$lib/components/permissions';
     import { difference } from '$lib/helpers/array';
     import TableList from '$lib/elements/table/tableList.svelte';
@@ -64,10 +63,6 @@
         try {
             await sdkForProject.functions.update(functionId, functionName, $func.execute);
             $func.name = functionName;
-            title.set(functionName);
-            const breadcrumb = $breadcrumbs.get($breadcrumbs.size);
-            breadcrumb.title = functionName;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -162,8 +157,8 @@
         }
     }
 
-    async function handleVariableCreated(dispatcedData: CustomEvent) {
-        const variable = dispatcedData.detail;
+    async function handleVariableCreated(dispatchedData: CustomEvent) {
+        const variable = dispatchedData.detail;
 
         try {
             await variableList.create(functionId, variable.key, variable.value);

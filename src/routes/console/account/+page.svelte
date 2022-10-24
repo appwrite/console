@@ -6,7 +6,6 @@
     import { user } from '$lib/stores/user';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import { title, breadcrumbs } from '$lib/stores/layout';
     import { base } from '$app/paths';
     import Delete from './_delete.svelte';
 
@@ -26,10 +25,6 @@
         try {
             await sdkForConsole.account.updateName(name);
             $user.name = name;
-            title.set(name);
-            const breadcrumb = $breadcrumbs.get(0);
-            breadcrumb.title = name;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'

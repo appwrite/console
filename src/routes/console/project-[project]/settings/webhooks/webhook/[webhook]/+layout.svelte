@@ -1,9 +1,10 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
+    import Breadcrumbs from './breadcrumbs.svelte';
+    import Header from './header.svelte';
     import { webhook } from './store';
 
     const webhookId = $page.params.webhook;
@@ -12,7 +13,7 @@
     onMount(handle);
     afterNavigate(handle);
 
-    async function handle(event = null) {
+    async function handle() {
         const promise = webhook.load(projectId, webhookId);
 
         if ($webhook?.$id !== webhookId) {
@@ -20,18 +21,8 @@
         }
 
         updateLayout({
-            navigate: event,
-            title: $webhook.name,
-            level: 4,
-            breadcrumbs: {
-                title: $webhook.name,
-                href: `webhooks/webhook/${webhookId}`
-            },
-            back: `${base}/console/project-${projectId}/settings/webhooks`,
-            copy: {
-                text: 'Webhook ID',
-                value: webhookId
-            }
+            breadcrumb: Breadcrumbs,
+            header: Header
         });
     }
 </script>

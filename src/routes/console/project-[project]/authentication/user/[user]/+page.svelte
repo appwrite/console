@@ -24,7 +24,6 @@
     import DeleteUser from './_deleteUser.svelte';
     import { user } from './store';
     import { onMount } from 'svelte';
-    import { title, breadcrumbs } from '$lib/stores/layout';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -113,10 +112,6 @@
         try {
             await sdkForProject.users.updateName($user.$id, userName);
             $user.name = userName;
-            title.set(userName);
-            const breadcrumb = $breadcrumbs.get($breadcrumbs.size);
-            breadcrumb.title = userName;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'

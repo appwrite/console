@@ -6,6 +6,8 @@
     import { onMount } from 'svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import { deploymentList } from './function/[function]/store';
+    import Breadcrumbs from './breadcrumbs.svelte';
+    import Header from './header.svelte';
 
     let loaded = false;
 
@@ -31,15 +33,10 @@
     onMount(handle);
     afterNavigate(handle);
 
-    function handle(event = null) {
+    function handle() {
         updateLayout({
-            navigate: event,
-            title: 'Functions',
-            level: 3,
-            breadcrumbs: {
-                href: 'functions',
-                title: 'Functions'
-            }
+            breadcrumb: Breadcrumbs,
+            header: Header
         });
         loaded = true;
     }

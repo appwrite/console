@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
     import { Container } from '$lib/layout';
@@ -7,9 +8,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { team } from './store';
-    import { title, breadcrumbs } from '$lib/stores/layout';
     import DeleteTeam from './_deleteTeam.svelte';
-    import { onMount } from 'svelte';
 
     let showDelete = false;
     let teamName: string = null;
@@ -22,10 +21,6 @@
         try {
             await sdkForProject.teams.update($page.params.team, teamName);
             $team.name = teamName;
-            title.set(teamName);
-            const breadcrumb = $breadcrumbs.get($breadcrumbs.size);
-            breadcrumb.title = teamName;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'

@@ -3,6 +3,8 @@
     import { page } from '$app/stores';
     import { updateLayout } from '$lib/stores/layout';
     import { onMount } from 'svelte';
+    import Breadcrumbs from './breadcrumbs.svelte';
+    import Header from './header.svelte';
 
     const path = 'settings';
     const projectId = $page.params.project;
@@ -13,32 +15,8 @@
 
     function handle(event = null) {
         updateLayout({
-            navigate: event,
-            title: 'Settings',
-            level: 3,
-            breadcrumbs: {
-                title: 'Settings',
-                href: 'settings'
-            },
-            copy: {
-                text: 'Project ID',
-                value: projectId
-            },
-            tabs: [
-                {
-                    href: path,
-                    title: 'Overview'
-                },
-
-                {
-                    href: `${path}/domains`,
-                    title: 'Custom Domains'
-                },
-                {
-                    href: `${path}/webhooks`,
-                    title: 'Webhooks'
-                }
-            ]
+            header: Header,
+            breadcrumb: Breadcrumbs
         });
         loaded = true;
     }
