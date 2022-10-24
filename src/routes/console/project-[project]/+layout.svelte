@@ -22,6 +22,7 @@
 
     $: projectId = $page.params.project;
 
+    // TODO: move to database routes
     if (browser) {
         sdkForConsole.client.subscribe<Attributes | Models.Index>('console', (message) => {
             if (message.events.includes('databases.*.collections.*.attributes.*.create')) {

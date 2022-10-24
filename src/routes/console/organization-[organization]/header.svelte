@@ -49,7 +49,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <DropList bind:show={showDropdown} position="bottom" arrow={false} scrollable={true}>
+        <DropList bind:show={showDropdown} placement="bottom-start" noArrow scrollable>
             <button
                 class="button is-text u-padding-inline-0"
                 on:click={() => (showDropdown = !showDropdown)}>
