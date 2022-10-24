@@ -157,8 +157,8 @@
         }
     }
 
-    async function handleVariableCreated(dispatcedData: CustomEvent) {
-        const variable = dispatcedData.detail;
+    async function handleVariableCreated(dispatchedData: CustomEvent) {
+        const variable = dispatchedData.detail;
 
         try {
             await variableList.create(functionId, variable.key, variable.value);
