@@ -145,7 +145,7 @@
 
         <Table>
             <TableHeader>
-                <TableCellHead>Deployment ID</TableCellHead>
+                <TableCellHead width={100}>Deployment ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
                 <TableCellHead width={90}>Build time</TableCellHead>
@@ -159,7 +159,7 @@
                         <TableRow>
                             <TableCell title="Deployment ID">
                                 <Copy value={deployment.$id}>
-                                    <Pill button>
+                                    <Pill button trim>
                                         <span class="icon-duplicate" aria-hidden="true" />
                                         <span class="text u-trim">{deployment.$id}</span>
                                     </Pill>
