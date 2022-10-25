@@ -14,6 +14,7 @@
     import { updateLayout } from '$lib/stores/layout';
     import Header from './header.svelte';
     import Breadcrumbs from './breadcrumbs.svelte';
+    import { base } from '$app/paths';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -176,7 +177,9 @@
                                 ]} />
                         {/if}
                     </div>
-                    <div class="card is-2-columns-large-screen">
+                    <a
+                        href={`${base}/console/project-${projectId}/databases`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -196,8 +199,10 @@
                                 <div class="text">Documents: {last($usage.documents).value}</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card is-2-columns-large-screen">
+                    </a>
+                    <a
+                        href={`${base}/console/project-${projectId}/storage`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -220,13 +225,16 @@
                                 <div class="text">Buckets: XX</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card is-2-columns-large-screen">
+                    </a>
+
+                    <a
+                        href={`${base}/console/project-${projectId}/authentication`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
                                     <span class="icon-user-group" aria-hidden="true" />
-                                    <span class="text">authentication</span>
+                                    <span class="text">Authentication</span>
                                 </div>
                             </div>
 
@@ -238,13 +246,11 @@
                                 </div>
                                 <div>Users</div>
                             </div>
-
-                            <div class="grid-item-1-end-end">
-                                <div class="text">Sessions: XX</div>
-                            </div>
                         </div>
-                    </div>
-                    <div class="card is-2-columns-large-screen">
+                    </a>
+                    <a
+                        href={`${base}/console/project-${projectId}/functions`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -266,7 +272,7 @@
                                 <div class="text" />
                             </div>
                         </div>
-                    </div>
+                    </a>
                     <div
                         class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
                         <div class="heading-level-4">XX</div>
