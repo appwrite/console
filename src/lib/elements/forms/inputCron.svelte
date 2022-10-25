@@ -18,6 +18,7 @@
     let element: HTMLInputElement;
     let error: string;
 
+    const pattern = String.raw`^[^]+\s+[^]+\s+[^]+\s+[^]+\s+[^]`;
     onMount(() => {
         if (element && autofocus) {
             element.focus();
@@ -57,6 +58,7 @@
             {maxlength}
             {readonly}
             {step}
+            {pattern}
             type="text"
             class="input-text"
             bind:value

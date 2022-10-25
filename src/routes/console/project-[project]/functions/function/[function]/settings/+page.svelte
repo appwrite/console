@@ -392,7 +392,7 @@
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputCron
-                        bind:value={$func.schedule}
+                        bind:value={functionSchedule}
                         label="Schedule (CRON Syntax)"
                         id="schedule" />
                 </FormList>
