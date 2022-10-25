@@ -32,13 +32,13 @@
 
     const getPlatformInfo = (platform: string) => {
         if (platform.includes('flutter')) {
-            return 'flutter';
+            return 'color/flutter';
         } else if (platform.includes('apple')) {
-            return 'apple';
+            return 'color/apple';
         } else if (platform.includes('android')) {
-            return 'android';
+            return 'color/android';
         } else if (platform.includes('web')) {
-            return 'code';
+            return 'grayscale/code';
         } else {
             return 'unknown';
         }
@@ -79,7 +79,7 @@
                 <div class="u-flex u-gap-8 u-cross-center">
                     <div class="avatar is-medium" aria-hidden="true">
                         <img
-                            src={`${base}/icons/${$app.themeInUse}/color/${getPlatformInfo(
+                            src={`${base}/icons/${$app.themeInUse}/${getPlatformInfo(
                                 platform.type.toLowerCase()
                             )}.svg`}
                             alt="technology" />
