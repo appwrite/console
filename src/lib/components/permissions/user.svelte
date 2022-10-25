@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, Form, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
-    import { AvatarInitials, Modal, Pagination } from '..';
+    import { AvatarInitials, EmptySearch, Modal, Pagination } from '..';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import type { Writable } from 'svelte/store';
@@ -61,8 +61,8 @@
 <Form noStyle noMargin on:submit={create}>
     <Modal bind:show on:close={reset} size="big">
         <svelte:fragment slot="header">Select users</svelte:fragment>
-        <InputSearch bind:value={search} />
-        {#if results?.users}
+        <InputSearch disabled={!results?.users?.length} bind:value={search} />
+        {#if results?.users?.length}
             <div class="table-wrapper">
                 <table class="table is-table-layout-auto is-remove-outer-styles">
                     <tbody class="table-tbody">
@@ -94,6 +94,37 @@
                     </tbody>
                 </table>
             </div>
+        {:else if search}
+            <EmptySearch>
+                <div class="common-section">
+                    <div class="u-text-center common-section">
+                        <b class="body-text-2">Sorry we couldn't find "{search}"</b>
+                        <p>There are no Users that match your search.</p>
+                    </div>
+                    <div class="u-flex u-gap-16 common-section u-main-center">
+                        <Button external href="#/" text>Documentation</Button>
+                        <Button secondary on:click={() => (search = '')}>Clear search</Button>
+                    </div>
+                </div>
+            </EmptySearch>
+        {:else}
+            <EmptySearch>
+                <div class="common-section">
+                    <div class="u-text-center common-section">
+                        <b class="body-text-2">Sorry we couldn't find "{search}"</b>
+
+                        <p>You have no Users. Create a user to see them here.</p>
+                        <p>
+                            Need a hand? Check out our <a
+                                href="#/"
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                documentation</a
+                            >.
+                        </p>
+                    </div>
+                </div>
+            </EmptySearch>
         {/if}
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {results?.total}</p>

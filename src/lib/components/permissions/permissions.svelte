@@ -10,6 +10,7 @@
 </script>
 
 <script lang="ts">
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -22,7 +23,6 @@
     import { difference } from '$lib/helpers/array';
     import { onDestroy, onMount } from 'svelte';
     import { writable, type Unsubscriber } from 'svelte/store';
-    import { Empty } from '../';
     import Actions from './actions.svelte';
     import Row from './row.svelte';
 
@@ -151,14 +151,14 @@
             addRole(permission);
         });
     }
-    $: if ([...$groups]?.length && !permissions.length) {
+    $: if (hasPermssions && !permissions.length) {
         executeAccess = [...$groups].sort(sortRoles).map(([role]) => role);
     }
 
-    //TODO: click on Empty components opens the dropdown
+    $: hasPermssions = [...$groups]?.length;
 </script>
 
-{#if [...$groups]?.length}
+{#if hasPermssions}
     <Table noMargin noStyles noMobile>
         <TableHeader>
             <TableCellHead>Role</TableCellHead>
@@ -231,18 +231,38 @@
             {/each}
         </TableBody>
     </Table>
+
+    <Actions
+        bind:showCustom
+        bind:showDropdown
+        bind:showTeam
+        bind:showUser
+        {groups}
+        on:create={create}>
+        <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Add role</span>
+        </Button>
+    </Actions>
 {:else}
-    <span class="eyebrow-heading-3 u-sep-block-end">ROLE</span>
-
-    <Empty isButton on:click={() => (showDropdown = !showDropdown)}>
-        Add a role to get started
-    </Empty>
+    <article class="card u-grid u-cross-center u-width-full-line dashed">
+        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+            <div class="common-section">
+                <Actions
+                    bind:showCustom
+                    bind:showDropdown
+                    bind:showTeam
+                    bind:showUser
+                    {groups}
+                    on:create={create}>
+                    <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
+                        <i class="icon-plus" />
+                    </Button>
+                </Actions>
+            </div>
+            <div class="common-section">
+                <span class="text"> Add a role to get started </span>
+            </div>
+        </div>
+    </article>
 {/if}
-
-<Actions
-    bind:showCustom
-    bind:showDropdown
-    bind:showTeam
-    bind:showUser
-    {groups}
-    on:create={create} />
