@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { functionList } from './store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,7 +11,8 @@
     import Step5 from './wizard/step5.svelte';
     import { createFunction } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { Query } from '@aw-labs/appwrite-console';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const create = async () => {
         try {
@@ -33,7 +33,7 @@
                 message: 'Function has been created',
                 type: 'success'
             });
-            functionList.load([Query.limit(6), Query.offset(0), Query.orderDesc('$createdAt')]);
+            invalidate(Dependencies.FUNCTIONS);
             wizard.hide();
         } catch (error) {
             addNotification({

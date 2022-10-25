@@ -1,31 +1,20 @@
-import { organization } from '$lib/stores/organization';
-import { sdkForProject, setProject } from '$lib/stores/sdk';
-import { get } from 'svelte/store';
-import { project } from './store';
+import { Dependencies } from '$lib/constants';
+import { sdkForConsole, sdkForProject, setProject } from '$lib/stores/sdk';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ params, parent }) => {
+export const load: LayoutLoad = async ({ params, parent, depends }) => {
     await parent();
-    let data = get(project);
-    let dataOrg = get(organization);
-    const projectId = params.project;
-    if (sdkForProject.client.config.project !== projectId) {
-        setProject(projectId);
-        /**
-         * Clear cache
-         */
-        globalThis.sessionStorage.clear();
+    depends(Dependencies.PROJECT);
+
+    if (sdkForProject.client.config.project !== params.project) {
+        setProject(params.project);
     }
 
-    const promiseProject = project.load(projectId);
-    if (data?.$id !== projectId) {
-        await promiseProject;
-        data = get(project);
+    const project = await sdkForConsole.projects.get(params.project);
+    const organization = await sdkForConsole.teams.get(project.teamId);
 
-        const promiseOrganization = organization.load(data.teamId);
-        if (dataOrg?.$id !== data?.teamId) {
-            await promiseOrganization;
-        }
-    }
-    return true;
+    return {
+        project,
+        organization
+    };
 };

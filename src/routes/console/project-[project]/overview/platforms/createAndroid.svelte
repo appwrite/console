@@ -1,20 +1,15 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
     import { beforeNavigate } from '$app/navigation';
-    import { page } from '$app/stores';
     import { wizard } from '$lib/stores/wizard';
-    import { project } from '../../store';
+    import { createPlatform } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/android/step1.svelte';
     import Step2 from './wizard/android/step2.svelte';
     import Step3 from './wizard/android/step3.svelte';
     import Step4 from './wizard/step4.svelte';
-    import { createPlatform } from './wizard/store';
-
-    const projectId = $page.params.project;
 
     async function create() {
-        project.load(projectId);
         createPlatform.reset();
         wizard.hide();
     }

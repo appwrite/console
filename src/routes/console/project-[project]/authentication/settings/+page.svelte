@@ -18,7 +18,6 @@
     let showModal = false;
 
     onMount(async () => {
-        await project.load(projectId);
         authMethods.load($project);
         OAuthProviders.load($project);
     });

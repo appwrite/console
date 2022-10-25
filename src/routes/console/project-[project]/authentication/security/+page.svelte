@@ -7,6 +7,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { clickOnEnter } from '$lib/helpers/a11y';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const projectId = $project.$id;
     let isLimited = $project.authLimit === 0 ? 'unlimited' : 'limited';
@@ -33,12 +35,11 @@
 
     async function updateLimit() {
         try {
-            project.set(
-                await sdkForConsole.projects.updateAuthLimit(
-                    projectId,
-                    isLimited === 'unlimited' ? 0 : newLimit
-                )
+            await sdkForConsole.projects.updateAuthLimit(
+                projectId,
+                isLimited === 'unlimited' ? 0 : newLimit
             );
+            invalidate(Dependencies.PROJECT);
             btnActive = false;
 
             addNotification({

@@ -15,7 +15,7 @@
             <span class="icon-cheveron-left" aria-hidden="true" />
         </a>
         <h1 class="heading-level-4">
-            <span class="text">{$platform.name}</span>
+            <span class="text">{$platform?.name}</span>
         </h1>
     </svelte:fragment>
 </Cover>

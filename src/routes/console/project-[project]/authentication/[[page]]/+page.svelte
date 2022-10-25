@@ -11,27 +11,25 @@
         TableCellText,
         TableRowLink
     } from '$lib/elements/table';
-    import Create from '../_createUser.svelte';
-    import { goto } from '$app/navigation';
     import { event } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import { usersList } from '../store';
-    import { Query, type Models } from '@aw-labs/appwrite-console';
     import { pageLimit } from '$lib/stores/layout';
-    import { createPersistentPagination } from '$lib/stores/pagination';
+    import { goto } from '$app/navigation';
+    import Create from '../_createUser.svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import type { PageData } from './$types';
+
+    export let data: PageData;
 
     let showCreate = false;
     let search = '';
-    const offset = createPersistentPagination($pageLimit);
-    const project = $page.params.project;
+    const projectId = $page.params.project;
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
-        await goto(`${base}/console/project-${project}/authentication/user/${event.detail.$id}`);
+        await goto(`${base}/console/project-${projectId}/authentication/user-${event.detail.$id}`);
     };
-    $: console.log($usersList);
-    $: if (search) $offset = 0;
 </script>
 
 <Container>
@@ -49,7 +47,7 @@
             </Button>
         </span>
     </Search>
-    {#if $usersList?.total}
+    {#if data.users.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
@@ -59,9 +57,9 @@
                 <TableCellHead>Joined</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each $usersList.users as user}
+                {#each data.users.users as user}
                     <TableRowLink
-                        href={`${base}/console/project-${project}/authentication/user/${user.$id}`}>
+                        href={`${base}/console/project-${projectId}/authentication/user-${user.$id}`}>
                         <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
                                 {#if user.email || user.phone}
@@ -103,9 +101,10 @@
                         </TableCell>
                         <TableCell showOverflow title="ID">
                             <Copy value={user.$id}>
-                                <Pill button
-                                    ><span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text">User ID</span></Pill>
+                                <Pill button>
+                                    <span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text">User ID</span>
+                                </Pill>
                             </Copy>
                         </TableCell>
                         <TableCellText title="Joined">
@@ -116,8 +115,12 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$usersList.total}</p>
-            <Pagination limit={$pageLimit} bind:offset={$offset} sum={$usersList.total} path="" />
+            <p class="text">Total results: {data.users.total}</p>
+            <Pagination
+                limit={$pageLimit}
+                offset={0}
+                sum={data.users.total}
+                path={`${base}/console/project-${projectId}/authentication`} />
         </div>
     {:else if search}
         <EmptySearch>

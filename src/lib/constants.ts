@@ -1,3 +1,29 @@
+export const PAGE_LIMIT = 12; // default page limit
+export const CARD_LIMIT = 6; // default card limit
+export enum Dependencies {
+    PROJECT = 'project',
+    PROJECTS = 'projects',
+    ACCOUNT = 'account',
+    USER = 'user',
+    USERS = 'users',
+    SESSIONS = 'sessions',
+    TEAM = 'team',
+    TEAMS = 'teams',
+    MEMBERSHIPS = 'memberships',
+    DATABASE = 'database',
+    COLLECTION = 'collection',
+    DOCUMENT = 'document',
+    DOCUMENTS = 'documents',
+    ATTRIBUTES = 'attributes',
+    INDEXES = 'indexes',
+    FUNCTION = 'function',
+    FUNCTIONS = 'functions',
+    VARIABLES = 'variables',
+    DEPLOYMENTS = 'deployments',
+    PLATFORM = 'platform',
+    KEY = 'key'
+}
+
 export const scopes = [
     {
         scope: 'users.read',
