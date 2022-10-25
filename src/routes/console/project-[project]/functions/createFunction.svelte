@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { functionList } from './store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,8 +11,11 @@
     import Step5 from './wizard/step5.svelte';
     import { createFunction } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { Query } from '@aw-labs/appwrite-console';
+    import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { base } from '$app/paths';
 
+    const projectId = $page.params.project;
     const create = async () => {
         try {
             const response = await sdkForProject.functions.create(
@@ -33,7 +35,7 @@
                 message: 'Function has been created',
                 type: 'success'
             });
-            functionList.load([Query.limit(6), Query.offset(0), Query.orderDesc('$createdAt')]);
+            await goto(`${base}/console/project-${projectId}/functions/function/${response.$id}`);
             wizard.hide();
         } catch (error) {
             addNotification({
