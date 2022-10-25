@@ -102,7 +102,7 @@
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold">{$database.name}</h6>
-                        <span>Last Updated: TO IMPLEMENT</span>
+                        <span>Last Updated: {toLocaleDateTime($database.$updatedAt)}</span>
                     </svelte:fragment>
                 </Box>
             </svelte:fragment>
