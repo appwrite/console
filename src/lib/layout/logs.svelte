@@ -30,12 +30,21 @@
         }
     }
 
+    const handleKeydown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            $log.show = false;
+        }
+    };
+
     function scrollToTop() {
         document
             .getElementsByClassName('code-panel-content')[0]
             .scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 {#if $log.data}
     <section class="cover-frame">
