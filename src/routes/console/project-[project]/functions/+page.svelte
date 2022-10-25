@@ -57,7 +57,7 @@
                     href={`${base}/console/project-${project}/functions/function/${func.$id}`}>
                     <svelte:fragment slot="title">
                         <div class="u-flex u-gap-32 u-cross-center">
-                            <div class="avatar is-medium">
+                            <div class="avatar is-medium" aria-hidden="true">
                                 <img
                                     src={`${base}/icons/${$app.themeInUse}/color/${
                                         func.runtime.split('-')[0]
