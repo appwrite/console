@@ -35,7 +35,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Variables (optional)</svelte:fragment>
+    <svelte:fragment slot="title">Variables</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Create a variable (or secret key) that will be passed to your function at runtime.
     </svelte:fragment>

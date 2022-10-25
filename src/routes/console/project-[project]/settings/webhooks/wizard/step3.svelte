@@ -5,7 +5,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Security (optional)</svelte:fragment>
+    <svelte:fragment slot="title">Security</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Set an optional basic HTTP authentication username and password to protect your endpoint
         from unauthorized access.
