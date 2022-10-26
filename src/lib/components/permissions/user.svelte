@@ -61,7 +61,7 @@
 <Form noStyle noMargin on:submit={create}>
     <Modal bind:show on:close={reset} size="big">
         <svelte:fragment slot="header">Select users</svelte:fragment>
-        <InputSearch disabled={!results?.users?.length} bind:value={search} />
+        <InputSearch autofocus disabled={!results?.users?.length && !search} bind:value={search} />
         {#if results?.users?.length}
             <div class="table-wrapper">
                 <table class="table is-table-layout-auto is-remove-outer-styles">
@@ -82,11 +82,39 @@
                                 </td>
                                 <td class="table-col" data-title="User">
                                     <label class="u-flex u-cross-center u-gap-8" for={user.$id}>
-                                        <AvatarInitials size={32} name={user.name} />
-                                        <div class="u-line-height-1-5">
-                                            <div class="body-text-2">{user.name}</div>
-                                            <div class="u-x-small">{user.$id}</div>
-                                        </div>
+                                        {#if user.email || user.phone}
+                                            {#if user.name}
+                                                <AvatarInitials size={32} name={user.name} />
+                                                <div class="u-line-height-1-5">
+                                                    <div class="body-text-2">
+                                                        {user.name}
+                                                    </div>
+                                                    <div class="u-x-small">{user.$id}</div>
+                                                </div>
+                                            {:else}
+                                                <div class="avatar is-size-small ">
+                                                    <span
+                                                        class="icon-minus-sm"
+                                                        aria-hidden="true" />
+                                                </div>
+                                                <div class="u-line-height-1-5">
+                                                    <div class="body-text-2">
+                                                        {user.email ? user.email : user.phone}
+                                                    </div>
+                                                    <div class="u-x-small">{user.$id}</div>
+                                                </div>
+                                            {/if}
+                                        {:else}
+                                            <div class="avatar is-size-small ">
+                                                <span class="icon-anonymous" aria-hidden="true" />
+                                            </div>
+                                            <div class="u-line-height-1-5">
+                                                <div class="body-text-2">
+                                                    {user.name ? user.name : '-'}
+                                                </div>
+                                                <div class="u-x-small">{user.$id}</div>
+                                            </div>
+                                        {/if}
                                     </label>
                                 </td>
                             </tr>

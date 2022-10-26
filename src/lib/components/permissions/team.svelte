@@ -62,7 +62,10 @@
     <Form noStyle noMargin on:submit={create}>
         <Modal bind:show on:close={reset} size="big">
             <svelte:fragment slot="header">Select teams</svelte:fragment>
-            <InputSearch disabled={!results?.teams?.length} bind:value={search} />
+            <InputSearch
+                autofocus
+                disabled={!results?.teams?.length && !search}
+                bind:value={search} />
             {#if results?.teams?.length}
                 <div class="table-wrapper">
                     <table class="table is-table-layout-auto is-remove-outer-styles">
