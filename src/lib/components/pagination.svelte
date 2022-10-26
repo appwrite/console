@@ -7,7 +7,7 @@
     $: totalPages = Math.ceil(sum / limit);
     $: currentPage = Math.floor(offset / limit + 1);
     $: pages = pagination(currentPage, totalPages);
-    $: console.log({ sum, limit, totalPages, currentPage, pages });
+
     function pagination(page: number, total: number) {
         const pagesShown = 5;
         const start = Math.max(
