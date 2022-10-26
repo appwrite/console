@@ -1,7 +1,7 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
     import { createFunction } from './store';
-    import { Permissions } from '$lib/components/permissions';
+    import { Roles } from '$lib/components/permissions';
 </script>
 
 <WizardStep>
@@ -13,5 +13,5 @@
         >.
     </svelte:fragment>
 
-    <Permissions withCrud={false} bind:executeAccess={$createFunction.execute} />
+    <Roles bind:roles={$createFunction.execute} />
 </WizardStep>
