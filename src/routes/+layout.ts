@@ -7,7 +7,7 @@ import type { LayoutLoad } from './$types';
 
 export const ssr = false;
 
-export const load: LayoutLoad = async ({ depends }) => {
+export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
     try {
         const account = await sdkForConsole.account.get();
@@ -17,6 +17,10 @@ export const load: LayoutLoad = async ({ depends }) => {
             organizations: sdkForConsole.teams.list()
         };
     } catch (error) {
-        throw redirect(303, '/login');
+        const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+
+        if (!acceptedRoutes.includes(url.pathname)) {
+            throw redirect(303, '/login');
+        }
     }
 };
