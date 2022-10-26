@@ -4,11 +4,10 @@
     export let offset: number;
     export let path: string;
     export let hidePages = false;
-
     $: totalPages = Math.ceil(sum / limit);
     $: currentPage = Math.floor(offset / limit + 1);
     $: pages = pagination(currentPage, totalPages);
-
+    $: console.log({ sum, limit, totalPages, currentPage, pages });
     function pagination(page: number, total: number) {
         const pagesShown = 5;
         const start = Math.max(
@@ -33,7 +32,7 @@
             class:is-disabled={currentPage <= 1}
             class="button is-text"
             aria-label="prev page"
-            href={`${path}/${1}`}>
+            href={`${path}/${currentPage - 1}`}>
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
         </a>
@@ -62,7 +61,7 @@
         <a
             class:is-disabled={currentPage === totalPages}
             class="button is-text"
-            href={`${path}/${2}`}
+            href={`${path}/${currentPage + 1}`}
             aria-label="next page">
             <span class="text">Next</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
