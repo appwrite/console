@@ -75,7 +75,15 @@
     });
 
     const onBlur = (event: MouseEvent) => {
-        if (show && !(event.target === element || element.contains(event.target as Node))) {
+        if (
+            show &&
+            !(
+                event.target === element ||
+                element.contains(event.target as Node) ||
+                event.target === tooltip ||
+                tooltip.contains(event.target as Node)
+            )
+        ) {
             show = false;
         }
     };
