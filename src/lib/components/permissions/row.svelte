@@ -51,15 +51,14 @@
                                         : '-'}
                                 </p>
                                 <Output value={data.$id}>{role}</Output>
-
-                                {#if data?.email || data?.phone}
-                                    <p class="text u-small">{data?.email}</p>
-                                    <p class="text u-small">{data?.phone}</p>
-                                {:else if data?.total}
-                                    <p class="text u-small">Members:{data?.total}</p>
-                                {/if}
                             </div>
                         </div>
+                        {#if data?.email || data?.phone}
+                            <p class="text u-small">{data?.email}</p>
+                            <p class="text u-small">{data?.phone}</p>
+                        {:else if data?.total}
+                            <p class="text u-small">Members:{data?.total}</p>
+                        {/if}
                     {/await}
                 </svelte:fragment>
             </DropList>
