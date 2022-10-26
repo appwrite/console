@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, fireEvent } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import { Pagination } from '../../../src/lib/components';
 
 test('shows controls', () => {
