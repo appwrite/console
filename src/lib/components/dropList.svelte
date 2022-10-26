@@ -87,33 +87,58 @@
             show = false;
         }
     };
+
+    export let isHover = false;
+    let child = false;
+    function enter() {
+        if (isHover) show = true;
+    }
+
+    function leave() {
+        if (isHover) {
+            setTimeout(() => {
+                if (!child) {
+                    show = false;
+                }
+            }, 200);
+        }
+    }
 </script>
 
 <svelte:window on:click={onBlur} />
 
-<div class="drop-wrapper" class:u-cross-child-start={childStart} bind:this={element}>
+<div
+    on:mouseover={enter}
+    on:focus={enter}
+    on:mouseout={leave}
+    on:blur={leave}
+    class:u-cross-child-start={childStart}
+    bind:this={element}>
     <slot />
-</div>
-
-<div bind:this={tooltip} style="z-index: 10">
-    {#if show}
-        <div
-            class="drop"
-            style="position: revert"
-            class:is-no-arrow={noArrow}
-            class:is-arrow-start={arrowHorizontal === 'start'}
-            class:is-arrow-end={arrowHorizontal === 'end'}
-            class:is-block-start={arrowPosition === 'top'}
-            class:is-block-end={arrowPosition === 'bottom'}>
-            <section
-                class:u-overflow-y-auto={scrollable}
-                class:u-max-height-200={scrollable}
-                class="drop-section ">
-                <ul class="drop-list">
-                    <slot name="list" />
-                </ul>
-            </section>
-            <slot name="other" />
-        </div>
-    {/if}
+    <div
+        on:mouseleave={() => (child = false)}
+        on:mouseenter={() => (child = true)}
+        bind:this={tooltip}
+        style="z-index: 10">
+        {#if show}
+            <div
+                class="drop"
+                style="position: revert"
+                class:is-no-arrow={noArrow}
+                class:is-arrow-start={arrowHorizontal === 'start'}
+                class:is-arrow-end={arrowHorizontal === 'end'}
+                class:is-block-start={arrowPosition === 'top'}
+                class:is-block-end={arrowPosition === 'bottom'}>
+                <section
+                    class:u-overflow-y-auto={scrollable}
+                    class:u-max-height-200={scrollable}
+                    class="drop-section ">
+                    <ul class="drop-list">
+                        <slot name="list" />
+                    </ul>
+                </section>
+                <slot name="other" />
+            </div>
+        {/if}
+    </div>
 </div>
