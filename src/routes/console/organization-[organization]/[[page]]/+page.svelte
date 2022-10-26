@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
-    import { GridItem1, Heading, Empty, CardContainer } from '$lib/components';
+    import { GridItem1, Heading, Empty, CardContainer, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateProject from '../createProject.svelte';
@@ -102,7 +102,11 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.projects.total}</p>
-        <!-- <Pagination limit={$cardLimit} bind:offset={$offset} sum={$projectList?.total} /> -->
+        <Pagination
+            path={`/console/organization-${$page.params.organization}`}
+            limit={CARD_LIMIT}
+            offset={data.offset}
+            sum={data.projects.total} />
     </div>
 </Container>
 

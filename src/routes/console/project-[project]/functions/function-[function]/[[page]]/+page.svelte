@@ -8,7 +8,8 @@
         DropListItem,
         Empty,
         Status,
-        Heading
+        Heading,
+        Pagination
     } from '$lib/components';
     import {
         Table,
@@ -27,7 +28,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
     import Delete from '../delete.svelte';
@@ -35,6 +36,7 @@
     import Activate from '../activate.svelte';
     import { browser } from '$app/environment';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
 
     export let data: PageData;
 
@@ -250,7 +252,11 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.deployments.total}</p>
-        <!-- <Pagination limit={$pageLimit} bind:offset sum={$deploymentList?.total} /> -->
+        <Pagination
+            limit={PAGE_LIMIT}
+            path={`/console/project-${$page.params.project}/functions/function-${$page.params.function}`}
+            offset={data.offset}
+            sum={data.deployments.total} />
     </div>
 </Container>
 

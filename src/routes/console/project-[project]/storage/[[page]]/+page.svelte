@@ -8,9 +8,9 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { tooltip } from '$lib/actions/tooltip';
-    import { cardLimit } from '$lib/stores/layout';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
+    import { CARD_LIMIT } from '$lib/constants';
 
     export let data: PageData;
     let showCreate = false;
@@ -84,7 +84,11 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.buckets.total}</p>
-            <Pagination limit={$cardLimit} bind:offset={data.offset} sum={data.buckets.total} />
+            <Pagination
+                limit={CARD_LIMIT}
+                path={`/console/project-${$page.params.project}/storage`}
+                offset={data.offset}
+                sum={data.buckets.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

@@ -12,9 +12,8 @@
     import { Container } from '$lib/layout';
     import CreateOrganization from '../../../createOrganization.svelte';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { cardLimit } from '$lib/stores/layout';
-    import type { PageData } from './$types';
     import { CARD_LIMIT } from '$lib/constants';
+    import type { PageData } from './$types';
 
     export let data: PageData;
 
@@ -73,7 +72,11 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.organizations.total}</p>
-        <Pagination limit={$cardLimit} bind:offset={data.offset} sum={data.organizations.total} />
+        <Pagination
+            limit={CARD_LIMIT}
+            path="console/account/organizations"
+            offset={data.offset}
+            sum={data.organizations.total} />
     </div>
 </Container>
 

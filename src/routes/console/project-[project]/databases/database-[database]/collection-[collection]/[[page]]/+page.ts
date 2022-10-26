@@ -11,6 +11,7 @@ export const load: PageLoad = async ({ params, parent, depends }) => {
     const offset = pageToOffset(page, PAGE_LIMIT);
 
     return {
+        offset,
         documents: await sdkForProject.databases.listDocuments(params.database, params.collection, [
             Query.limit(PAGE_LIMIT),
             Query.offset(offset),

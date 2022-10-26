@@ -111,7 +111,6 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.indexes.total}</p>
-            <!-- <Pagination limit={$pageLimit} bind:offset sum={data.indexes.total} /> -->
         </div>
     {:else if search}
         <EmptySearch>

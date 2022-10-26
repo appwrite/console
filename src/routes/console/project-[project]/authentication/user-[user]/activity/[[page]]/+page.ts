@@ -10,6 +10,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     const offset = pageToOffset(page, PAGE_LIMIT);
 
     return {
+        offset,
         logs: await sdkForProject.account.listLogs([Query.limit(PAGE_LIMIT), Query.offset(offset)])
     };
 };

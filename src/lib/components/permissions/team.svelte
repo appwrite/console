@@ -3,7 +3,7 @@
     import { createEventDispatcher } from 'svelte';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Query, type Models } from '@aw-labs/appwrite-console';
-    import { AvatarInitials, Modal, Pagination } from '..';
+    import { AvatarInitials, Modal, PaginationInline } from '..';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
 
@@ -101,7 +101,7 @@
             {/if}
             <div class="u-flex u-margin-block-start-32 u-main-space-between">
                 <p class="text">Total results: {results?.total}</p>
-                <Pagination limit={5} bind:offset sum={results?.total} hidePages />
+                <PaginationInline limit={5} bind:offset sum={results?.total} hidePages />
             </div>
             <svelte:fragment slot="footer">
                 <Button submit disabled={!hasSelection}>Create</Button>

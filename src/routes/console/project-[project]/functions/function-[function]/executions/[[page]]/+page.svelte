@@ -2,7 +2,7 @@
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { Copy, Empty, Status, Heading } from '$lib/components';
+    import { Copy, Empty, Status, Heading, Pagination } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -17,6 +17,8 @@
     import { log } from '$lib/stores/logs';
     import { func } from '../../store';
     import type { PageData } from './$types';
+    import { PAGE_LIMIT } from '$lib/constants';
+    import { page } from '$app/stores';
 
     export let data: PageData;
 
@@ -80,6 +82,10 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.executions.total}</p>
-        <!-- <Pagination limit={$pageLimit} bind:offset sum={$executionList?.total} /> -->
+        <Pagination
+            limit={PAGE_LIMIT}
+            path={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/executions`}
+            offset={data.offset}
+            sum={data.executions.total} />
     </div>
 </Container>

@@ -8,6 +8,7 @@ export const load: PageLoad = async ({ params }) => {
     const offset = page ? page * 5 - 5 : 0;
 
     return {
+        offset,
         organizationMembers: await sdkForConsole.teams.listMemberships(params.organization, [
             Query.limit(PAGE_LIMIT),
             Query.offset(offset)

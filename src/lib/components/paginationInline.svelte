@@ -1,13 +1,36 @@
 <script lang="ts">
+    import { createEventDispatcher } from 'svelte';
+
     export let sum: number;
     export let limit: number;
     export let offset: number;
-    export let path: string;
     export let hidePages = false;
+
+    const dispatch = createEventDispatcher();
 
     $: totalPages = Math.ceil(sum / limit);
     $: currentPage = Math.floor(offset / limit + 1);
     $: pages = pagination(currentPage, totalPages);
+
+    function handleOptionClick(page: number) {
+        if (currentPage !== page) {
+            offset = limit * (page - 1);
+            currentPage = page;
+            dispatch('change');
+        }
+    }
+
+    function handleButtonPage(direction: string) {
+        if (direction === 'next' && currentPage < totalPages) {
+            currentPage += 1;
+            offset = limit * (currentPage - 1);
+            dispatch('change');
+        } else if (direction === 'prev' && currentPage > 1) {
+            currentPage -= 1;
+            offset = limit * (currentPage - 1);
+            dispatch('change');
+        }
+    }
 
     function pagination(page: number, total: number) {
         const pagesShown = 5;
@@ -29,27 +52,29 @@
 
 {#if totalPages > 1}
     <nav class="pagination">
-        <a
+        <button
+            type="button"
+            on:click={() => handleButtonPage('prev')}
             class:is-disabled={currentPage <= 1}
             class="button is-text"
-            aria-label="prev page"
-            href={`${path}/${1}`}>
+            aria-label="prev page">
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
-        </a>
+        </button>
         {#if !hidePages}
             <ol class="pagination-list is-only-desktop">
                 {#each pages as page}
                     {#if typeof page === 'number'}
                         <li class="pagination-item">
-                            <a
-                                href={`${path}/${page}`}
+                            <button
+                                type="button"
                                 class="button"
+                                on:click={() => handleOptionClick(+page)}
                                 class:is-disabled={currentPage === page}
                                 class:is-text={currentPage !== page}
                                 aria-label="page">
                                 <span class="text">{page}</span>
-                            </a>
+                            </button>
                         </li>
                     {:else}
                         <li class="li is-text">
@@ -59,14 +84,15 @@
                 {/each}
             </ol>
         {/if}
-        <a
+        <button
+            on:click={() => handleButtonPage('next')}
             class:is-disabled={currentPage === totalPages}
             class="button is-text"
-            href={`${path}/${2}`}
+            type="button"
             aria-label="next page">
             <span class="text">Next</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
-        </a>
+        </button>
     </nav>
 {:else}
     <nav class="pagination">

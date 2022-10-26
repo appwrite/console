@@ -10,6 +10,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     const offset = pageToOffset(page, PAGE_LIMIT);
 
     return {
+        offset,
         executions: await sdkForProject.functions.listExecutions(params.function, [
             Query.limit(PAGE_LIMIT),
             Query.offset(offset),

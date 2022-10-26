@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
-    import { Empty, CardContainer, Copy, GridItem1, Heading } from '$lib/components';
+    import { Empty, CardContainer, Copy, GridItem1, Heading, Pagination } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -12,6 +12,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Create from '../createFunction.svelte';
     import type { PageData } from './$types';
+    import { CARD_LIMIT } from '$lib/constants';
 
     export let data: PageData;
 
@@ -93,7 +94,11 @@
         </CardContainer>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.functions.total}</p>
-            <!-- <Pagination limit={$cardLimit} bind:offset sum={$functionList.total} /> -->
+            <Pagination
+                limit={CARD_LIMIT}
+                path={`/console/project-${$page.params.project}/functions`}
+                offset={data.offset}
+                sum={data.functions.total} />
         </div>
     {:else}
         <Empty isButton single on:click={openWizard}>

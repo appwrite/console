@@ -28,7 +28,7 @@
     <svelte:fragment slot="header">
         <a
             class="back-button"
-            href={`/console/project-${projectId}/authentication`}
+            href={`/console/project-${projectId}/authentication/teams`}
             aria-label="page back">
             <span class="icon-cheveron-left" aria-hidden="true" />
         </a>

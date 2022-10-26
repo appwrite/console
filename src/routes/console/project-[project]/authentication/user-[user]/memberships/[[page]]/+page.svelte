@@ -78,7 +78,7 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.memberships.total}</p>
-        <!-- <Pagination limit={$pageLimit} bind:offset={$offset} sum={data.total} /> -->
+        <!-- <Pagination limit={PAGE_LIMIT} bind:offset={$offset} sum={data.total} /> -->
     </div>
 </Container>
 

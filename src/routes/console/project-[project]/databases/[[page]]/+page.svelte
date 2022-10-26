@@ -2,13 +2,14 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Copy, GridItem1, CardContainer, Heading } from '$lib/components';
+    import { Empty, Copy, GridItem1, CardContainer, Heading, Pagination } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import Create from '../_create.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
+    import { CARD_LIMIT } from '$lib/constants';
 
     export let data: PageData;
 
@@ -50,7 +51,11 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.databases.total}</p>
-            <!-- <Pagination limit={$cardLimit} bind:offset={$offset} sum={data.databases.total} /> -->
+            <Pagination
+                limit={CARD_LIMIT}
+                path={`/console/project-${$page.params.project}/databases`}
+                offset={data.offset}
+                sum={data.databases.total} />
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

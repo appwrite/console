@@ -8,7 +8,7 @@
         TableCellText,
         TableRow
     } from '$lib/elements/table';
-    import { AvatarInitials, Heading } from '$lib/components';
+    import { AvatarInitials, Heading, Pagination } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -17,7 +17,7 @@
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import Delete from '../../deleteMember.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
@@ -110,11 +110,11 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.organizationMembers.total}</p>
-            <!-- <Pagination
-                offset={0}
-                limit={$pageLimit}
-                path={`${$page.url.origin}/console/organization-${$page.params.organization}/members`}
-                sum={$memberList.total} /> -->
+            <Pagination
+                offset={data.offset}
+                limit={PAGE_LIMIT}
+                path={`/console/organization-${$page.params.organization}/members`}
+                sum={data.members.total} />
         </div>
     {/if}
 </Container>

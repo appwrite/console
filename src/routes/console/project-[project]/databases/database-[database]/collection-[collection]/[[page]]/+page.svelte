@@ -7,7 +7,7 @@
         TableCellHead,
         TableCell
     } from '$lib/elements/table';
-    import { Empty, Copy, Heading } from '$lib/components';
+    import { Empty, Copy, Heading, Pagination } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
@@ -17,6 +17,7 @@
     import type { PageData } from './$types';
     import { collection } from '../store';
     import { page } from '$app/stores';
+    import { PAGE_LIMIT } from '$lib/constants';
 
     export let data: PageData;
 
@@ -75,7 +76,11 @@
 
             <div class="u-flex common-section u-main-space-between">
                 <p class="text">Total results: {data.documents.total}</p>
-                <!-- <Pagination limit={$pageLimit} bind:offset={$offset} sum={data.documents.total} /> -->
+                <Pagination
+                    limit={PAGE_LIMIT}
+                    path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`}
+                    offset={data.offset}
+                    sum={data.documents.total} />
             </div>
         {:else}
             <Empty isButton single on:click={openWizard}>

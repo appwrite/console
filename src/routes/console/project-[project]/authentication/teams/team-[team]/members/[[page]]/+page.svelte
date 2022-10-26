@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Empty, EmptySearch, Search, AvatarInitials } from '$lib/components';
+    import { Empty, EmptySearch, Search, AvatarInitials, Pagination } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -18,7 +18,7 @@
     import type { PageData } from './$types';
     import CreateMember from '../../createMembership.svelte';
     import DeleteMembership from '../../deleteMembership.svelte';
-    import { Dependencies } from '$lib/constants';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 
     export let data: PageData;
 
@@ -82,7 +82,11 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.memberships.total}</p>
-            <!-- <Pagination limit={$pageLimit} bind:offset={$offset} sum={$memberships.total} /> -->
+            <Pagination
+                limit={PAGE_LIMIT}
+                path={`/console/project-${$page.params.project}/authentication/teams/team-${$page.params.team}/members`}
+                offset={data.offset}
+                sum={data.memberships.total} />
         </div>
     {:else if search}
         <EmptySearch>

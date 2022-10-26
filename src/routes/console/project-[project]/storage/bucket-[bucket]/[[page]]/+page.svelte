@@ -32,10 +32,9 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
-    import { pageLimit } from '$lib/stores/layout';
     import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 
     export let data: PageData;
 
@@ -175,7 +174,11 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.files.total}</p>
-            <Pagination limit={$pageLimit} bind:offset={data.offset} sum={data.files.total} />
+            <Pagination
+                limit={PAGE_LIMIT}
+                path={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}
+                offset={data.offset}
+                sum={data.files.total} />
         </div>
     {:else if search}
         <EmptySearch>

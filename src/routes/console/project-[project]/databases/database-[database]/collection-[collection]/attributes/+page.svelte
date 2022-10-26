@@ -110,11 +110,7 @@
             </TableBody>
         </Table>
         <div class="u-flex common-section u-main-space-between">
-            <!-- <p class="text">Total results: {data.attributes.total}</p>
-            <Pagination
-                limit={$pageLimit}
-                bind:offset={$offset}
-                sum={data.attributes.total} /> -->
+            <p class="text">Total results: {data.attributes.total}</p>
         </div>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

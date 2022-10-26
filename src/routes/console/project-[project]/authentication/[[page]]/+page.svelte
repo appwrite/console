@@ -16,8 +16,8 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import { pageLimit } from '$lib/stores/layout';
     import { goto } from '$app/navigation';
+    import { PAGE_LIMIT } from '$lib/constants';
     import Create from '../_createUser.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
@@ -117,10 +117,10 @@
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.users.total}</p>
             <Pagination
-                limit={$pageLimit}
-                offset={0}
+                offset={data.offset}
+                limit={PAGE_LIMIT}
                 sum={data.users.total}
-                path={`${base}/console/project-${projectId}/authentication`} />
+                path={`/console/project-${projectId}/authentication`} />
         </div>
     {:else if search}
         <EmptySearch>

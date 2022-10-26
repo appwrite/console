@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty } from '$lib/components';
+    import { Empty, Pagination } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -14,6 +14,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { PageData } from './$types';
+    import { PAGE_LIMIT } from '$lib/constants';
 
     export let data: PageData;
 
@@ -95,6 +96,10 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.logs.total}</p>
-        <!-- <Pagination limit={$pageLimit} bind:offset={$offset} sum={data.logs.total} /> -->
+        <Pagination
+            limit={PAGE_LIMIT}
+            path="/console/account/activity"
+            offset={data.offset}
+            sum={data.logs.total} />
     </div>
 </Container>

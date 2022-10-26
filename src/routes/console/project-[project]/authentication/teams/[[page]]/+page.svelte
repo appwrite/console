@@ -10,7 +10,7 @@
         TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
-    import { Empty, EmptySearch, Search, AvatarInitials } from '$lib/components';
+    import { Empty, EmptySearch, Search, AvatarInitials, Pagination } from '$lib/components';
     import Create from '../../_createTeam.svelte';
     import { goto } from '$app/navigation';
     import { event } from '$lib/actions/analytics';
@@ -19,6 +19,7 @@
     import { base } from '$app/paths';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
+    import { PAGE_LIMIT } from '$lib/constants';
 
     export let data: PageData;
 
@@ -73,7 +74,11 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.teams.total}</p>
-            <!-- <Pagination limit={$pageLimit} bind:offset={$offset} sum={$teamsList.total} /> -->
+            <Pagination
+                limit={PAGE_LIMIT}
+                path={`/console/project-${$page.params.project}/authentication/teams`}
+                offset={data.offset}
+                sum={data.teams.total} />
         </div>
     {:else if search}
         <EmptySearch>

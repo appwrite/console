@@ -12,6 +12,7 @@ export const load: PageLoad = async ({ params, parent, depends }) => {
     const offset = pageToOffset(page, PAGE_LIMIT);
 
     return {
+        offset,
         memberships: sdkForProject.teams.listMemberships(teamId, [
             Query.limit(PAGE_LIMIT),
             Query.offset(offset),

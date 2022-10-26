@@ -174,7 +174,7 @@
             let updatedPrefs = Object.fromEntries(prefs);
 
             await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
-            $user.prefs = updatedPrefs;
+            invalidate(Dependencies.USER);
             arePrefsDisabled = true;
 
             addNotification({
