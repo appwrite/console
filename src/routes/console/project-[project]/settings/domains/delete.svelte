@@ -1,0 +1,43 @@
+<script lang="ts">
+    import { Modal } from '$lib/components';
+    import { Button, Form } from '$lib/elements/forms';
+    import { project } from '../../store';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import type { Models } from '@aw-labs/appwrite-console';
+
+    export let showDelete = false;
+    export let selectedDomain: Models.Domain;
+
+    const deleteDomain = async () => {
+        try {
+            await sdkForConsole.projects.deleteDomain($project.$id, selectedDomain.$id);
+            invalidate(Dependencies.DOMAINS);
+            showDelete = false;
+            addNotification({
+                type: 'success',
+                message: `${selectedDomain.domain} has been deleted`
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    };
+</script>
+
+<Form on:submit={deleteDomain}>
+    <Modal bind:show={showDelete} warning>
+        <svelte:fragment slot="header">Delete Domain</svelte:fragment>
+        <p>
+            Are you sure you want to delete <b>{selectedDomain.domain}</b> from '{$project.name}'?
+        </p>
+        <svelte:fragment slot="footer">
+            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+            <Button secondary submit>Delete</Button>
+        </svelte:fragment>
+    </Modal>
+</Form>

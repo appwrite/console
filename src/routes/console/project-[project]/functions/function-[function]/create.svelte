@@ -7,6 +7,8 @@
     import { page } from '$app/stores';
     import FormList from '$lib/elements/forms/formList.svelte';
     import Github from '$lib/images/github-illustration.svg';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let showCreate = false;
 
@@ -31,6 +33,7 @@
                 files[0],
                 active
             );
+            await invalidate(Dependencies.FUNCTION);
             files = entrypoint = active = null;
             showCreate = false;
             dispatch('created');

@@ -1,16 +1,17 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import Step1 from './wizard/step1.svelte';
-    import Step2 from './wizard/step2.svelte';
-    import Step3 from './wizard/step3.svelte';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { createWebhook } from './wizard/store';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
-    import { webhookList } from './store';
+    import Step1 from './wizard/step1.svelte';
+    import Step2 from './wizard/step2.svelte';
+    import Step3 from './wizard/step3.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const projectId = $page.params.project;
     const create = async () => {
@@ -24,7 +25,7 @@
                 $createWebhook.httpUser,
                 $createWebhook.httpPass
             );
-            await webhookList.load(projectId);
+            invalidate(Dependencies.WEBHOOKS);
             addNotification({
                 message: 'Webhook has been created',
                 type: 'success'

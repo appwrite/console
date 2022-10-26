@@ -3,7 +3,7 @@
     import { organization } from '$lib/stores/organization';
     import { project } from '../../../store';
     import { key } from './store';
-    console.log('asd');
+
     $: breadcrumbs = [
         {
             href: `/console/organization-${$organization?.$id}`,

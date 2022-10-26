@@ -46,7 +46,7 @@
     let selectedDeployment: Models.Deployment = null;
 
     const handleActivate = () => {
-        invalidate(Dependencies.FUNCTION);
+        invalidate(Dependencies.DEPLOYMENTS);
     };
 
     $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);

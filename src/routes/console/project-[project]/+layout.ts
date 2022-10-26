@@ -2,7 +2,7 @@ import { Dependencies } from '$lib/constants';
 import { sdkForConsole, sdkForProject, setProject } from '$lib/stores/sdk';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ params, parent, depends }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
     await parent();
     depends(Dependencies.PROJECT);
 
@@ -11,7 +11,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     }
 
     const project = await sdkForConsole.projects.get(params.project);
-    const organization = await sdkForConsole.teams.get(project.teamId);
+    const organization = sdkForConsole.teams.get(project.teamId);
 
     return {
         project,

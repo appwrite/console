@@ -1,20 +1,16 @@
-import { organization } from '$lib/stores/organization';
-import { get } from 'svelte/store';
-import type { LayoutLoad } from './$types';
 import Header from './header.svelte';
 import Breadcrumbs from './breadcrumbs.svelte';
+import { sdkForConsole } from '$lib/stores/sdk';
+import { Dependencies } from '$lib/constants';
+import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ params }) => {
-    const organizationId = params.organization;
-    const promises = organization.load(organizationId);
-    let data = get(organization);
-
-    if (data?.$id !== organizationId) {
-        await promises;
-    }
+export const load: LayoutLoad = async ({ params, depends }) => {
+    depends(Dependencies.ORGANIZATION);
 
     return {
         header: Header,
-        breadcrumb: Breadcrumbs
+        breadcrumb: Breadcrumbs,
+        organization: sdkForConsole.teams.get(params.organization),
+        members: sdkForConsole.teams.listMemberships(params.organization)
     };
 };

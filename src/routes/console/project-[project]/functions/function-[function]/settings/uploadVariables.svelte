@@ -7,10 +7,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
 
     export let show = false;
-    export let variables: Models.VariableList;
+
     const dispatch = createEventDispatcher();
 
     const functionId = $page.params.function;

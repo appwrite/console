@@ -8,26 +8,27 @@
         TableCellText,
         TableRow
     } from '$lib/elements/table';
-    import { AvatarInitials, Heading, Pagination } from '$lib/components';
+    import { AvatarInitials, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import Delete from '../../_deleteMember.svelte';
-    import { organization, memberList, newMemberModal } from '$lib/stores/organization';
+    import { organization, members, newMemberModal } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { Query, type Models } from '@aw-labs/appwrite-console';
-    import { pageLimit } from '$lib/stores/layout';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import Delete from '../../deleteMember.svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import type { PageData } from './$types';
 
-    let search = '';
+    export let data: PageData;
+
     let selectedMember: Models.Membership;
     let showDelete = false;
+
     const url = `${$page.url.origin}/console/`;
-
-    const deleted = () =>
-        memberList.load($organization.$id, [Query.limit($pageLimit), Query.offset(0)], search);
-
+    const deleted = () => invalidate(Dependencies.ORGANIZATION);
     const resend = async (member: Models.Membership) => {
         try {
             await sdkForConsole.teams.createMembership(
@@ -51,7 +52,7 @@
 </script>
 
 <Container>
-    {#if $memberList?.total}
+    {#if data.organizationMembers.total}
         <div class="u-flex u-gap-12 common-section u-main-space-between">
             <Heading tag="h2" size="5">Members</Heading>
 
@@ -69,7 +70,7 @@
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
-                {#each $memberList.memberships as member}
+                {#each data.organizationMembers.memberships as member}
                     <TableRow>
                         <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
@@ -95,7 +96,7 @@
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
-                                disabled={$memberList.total === 1}
+                                disabled={$members.total === 1}
                                 on:click={() => {
                                     selectedMember = member;
                                     showDelete = true;
@@ -108,12 +109,12 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {$memberList.total}</p>
-            <Pagination
+            <p class="text">Total results: {data.organizationMembers.total}</p>
+            <!-- <Pagination
                 offset={0}
                 limit={$pageLimit}
                 path={`${$page.url.origin}/console/organization-${$page.params.organization}/members`}
-                sum={$memberList.total} />
+                sum={$memberList.total} /> -->
         </div>
     {/if}
 </Container>

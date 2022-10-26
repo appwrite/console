@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -18,9 +19,8 @@
                 type: 'success',
                 message: `${$platform.name} has been deleted`
             });
-            project.load($project.$id);
+            await invalidate(Dependencies.PLATFORMS);
             await goto(`${base}/console/project-${$project.$id}/overview/platforms`);
-            platform.set(null);
         } catch (error) {
             addNotification({
                 type: 'error',

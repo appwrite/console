@@ -1,6 +1,5 @@
 <script lang="ts">
     import { navigating, page } from '$app/stores';
-    import { header } from '$lib/stores/layout';
     import { browser } from '$app/environment';
     import { wizard } from '$lib/stores/wizard';
     import { log } from '$lib/stores/logs';

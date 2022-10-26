@@ -37,7 +37,7 @@
     export let deletedMetadata: MetricMetadata;
 
     export let range: UsagePeriods = '30d';
-    export let path: string = '';
+    export let path: string = null;
 </script>
 
 <Container>

@@ -16,9 +16,11 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { wizard } from '$lib/stores/wizard';
+    import type { PageData } from './$types';
     import Create from './createWebhook.svelte';
-    import { webhookList } from './store';
     import Heading from '$lib/components/heading.svelte';
+
+    export let data: PageData;
 
     function openWizard() {
         wizard.start(Create);
@@ -29,13 +31,12 @@
     });
 
     const projectId = $page.params.project;
-
-    $: webhookList.load(projectId);
 </script>
 
 <svelte:head>
     <title>Webhooks - Appwrite</title>
 </svelte:head>
+
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Webhooks</Heading>
@@ -44,7 +45,7 @@
         </Button>
     </div>
 
-    {#if $webhookList?.total}
+    {#if data.webhooks.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
@@ -52,9 +53,9 @@
                 <TableCellHead width={80}>Events</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each $webhookList.webhooks as webhook}
+                {#each data.webhooks.webhooks as webhook}
                     <TableRowLink
-                        href={`${base}/console/project-${projectId}/settings/webhooks/webhook/${webhook.$id}`}>
+                        href={`${base}/console/project-${projectId}/settings/webhooks/${webhook.$id}`}>
                         <TableCell title="Name">
                             <div class="u-flex u-main-space-between">
                                 {webhook.name}

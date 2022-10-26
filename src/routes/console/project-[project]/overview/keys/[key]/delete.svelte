@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -10,7 +11,7 @@
 
     export let showDelete = false;
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         try {
             await sdkForConsole.projects.deleteKey($project.$id, $key.$id);
             showDelete = false;
@@ -18,7 +19,7 @@
                 type: 'success',
                 message: `${$key.name} has been deleted`
             });
-            project.load($project.$id);
+            await invalidate(Dependencies.KEYS);
             await goto(`${base}/console/project-${$project.$id}/overview/keys`);
         } catch (error) {
             addNotification({
@@ -26,7 +27,7 @@
                 message: error.message
             });
         }
-    };
+    }
 </script>
 
 <Form on:submit={handleDelete}>

@@ -2,26 +2,13 @@
     import Shell from '$lib/layout/shell.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Header from '$lib/layout/header.svelte';
-    import { organizationList, newOrgModal, redirectTo } from '$lib/stores/organization';
-    import Create from './_createOrganization.svelte';
+    import { organizationList, newOrgModal } from '$lib/stores/organization';
+    import Create from './createOrganization.svelte';
     import { page } from '$app/stores';
-    import { afterNavigate, beforeNavigate } from '$app/navigation';
-    import { onMount } from 'svelte';
+    import { beforeNavigate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import { Logs } from '$lib/layout';
     import { log } from '$lib/stores/logs';
-
-    onMount(async () => {
-        if ($page.url.pathname === '/console' && !$newOrgModal) {
-            return await redirectTo();
-        }
-    });
-
-    afterNavigate(async () => {
-        if ($page.url.pathname === '/console' && !$newOrgModal) {
-            return await redirectTo();
-        }
-    });
 
     beforeNavigate(() => {
         $log.show = false;

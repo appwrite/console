@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { invalidate } from '$app/navigation';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -17,14 +16,12 @@
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );
+            await invalidate(Dependencies.FUNCTION);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `Deployment has been deleted`
             });
-            await goto(
-                `${base}/console/project-${$page.params.project}/functions/${selectedDeployment.resourceId}`
-            );
         } catch (error) {
             addNotification({
                 type: 'error',

@@ -5,7 +5,7 @@
     import { Button } from '$lib/elements/forms';
     import { Cover } from '$lib/layout';
     import {
-        memberList,
+        members,
         newMemberModal,
         newOrgModal,
         organization,
@@ -14,7 +14,7 @@
 
     let showDropdown = false;
 
-    $: avatars = $memberList?.memberships?.map((m) => m.userName) ?? [];
+    $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `/console/organization-${organizationId}`;
     $: tabs = [
@@ -51,9 +51,7 @@
                 {#each $organizationList.teams as org}
                     <DropListLink
                         href={`${base}/console/organization-${org.$id}`}
-                        on:click={() => {
-                            showDropdown = false;
-                        }}>
+                        on:click={() => (showDropdown = false)}>
                         {org.name}
                     </DropListLink>
                 {/each}
@@ -72,7 +70,7 @@
         </DropList>
         <div class="u-margin-inline-start-auto">
             <div class="u-flex u-gap-16">
-                <AvatarGroup size={40} {avatars} total={$memberList?.total ?? 0} />
+                <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
                 <Button secondary on:click={() => newMemberModal.set(true)}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Invite</span>

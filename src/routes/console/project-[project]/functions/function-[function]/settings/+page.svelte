@@ -582,8 +582,5 @@
         on:updated={handleVariableUpdated} />
 {/if}
 
-<Upload
-    bind:show={showVariablesUpload}
-    on:uploaded={handleVariableCreated}
-    variables={data.variables} />
+<Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />
 <EventModal bind:show={showEvents} on:created={handleEvent} />

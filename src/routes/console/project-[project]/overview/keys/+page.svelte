@@ -10,9 +10,9 @@
         TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { project } from '../../store';
+    import type { PageData } from './$types';
     import Create from './create.svelte';
-
+    export let data: PageData;
     let show = false;
 </script>
 
@@ -34,7 +34,7 @@
         <TableCellHead>clients</TableCellHead>
     </TableHeader>
     <TableBody>
-        {#each $project.keys as key}
+        {#each data.keys.keys as key}
             <TableRowLink href={`keys/${key.$id}`}>
                 <TableCellText title="Name">
                     {key.name}

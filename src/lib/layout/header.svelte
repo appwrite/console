@@ -1,6 +1,5 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { onMount } from 'svelte';
     import { AvatarInitials, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
@@ -14,13 +13,6 @@
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
-
-    onMount(async () => {
-        await organizationList.load();
-        if (!$organization) {
-            await organization.load($organizationList.teams[0].$id);
-        }
-    });
 
     const onBlur = (event: MouseEvent) => {
         if (

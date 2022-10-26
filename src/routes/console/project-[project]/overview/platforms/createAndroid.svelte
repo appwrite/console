@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { beforeNavigate } from '$app/navigation';
+    import { beforeNavigate, invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
@@ -8,8 +8,10 @@
     import Step2 from './wizard/android/step2.svelte';
     import Step3 from './wizard/android/step3.svelte';
     import Step4 from './wizard/step4.svelte';
+    import { Dependencies } from '$lib/constants';
 
-    async function create() {
+    async function onFinish() {
+        invalidate(Dependencies.PLATFORMS);
         createPlatform.reset();
         wizard.hide();
     }
@@ -43,6 +45,6 @@
 <Wizard
     title="Add an Android Project"
     steps={stepsComponents}
-    on:finish={create}
-    on:exit={createPlatform.reset}
+    on:finish={onFinish}
+    on:exit={onFinish}
     finalAction="Take me to my Dashboard" />

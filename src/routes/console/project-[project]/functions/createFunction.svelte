@@ -14,7 +14,12 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
 
-    const create = async () => {
+    async function onFinish() {
+        console.log(2);
+        await invalidate(Dependencies.FUNCTIONS);
+    }
+    async function create() {
+        console.log(1);
         try {
             const response = await sdkForProject.functions.create(
                 $createFunction.id ?? 'unique()',
@@ -29,11 +34,12 @@
                 async (v) =>
                     await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
             );
+            await invalidate(Dependencies.FUNCTIONS);
+
             addNotification({
                 message: 'Function has been created',
                 type: 'success'
             });
-            invalidate(Dependencies.FUNCTIONS);
             wizard.hide();
         } catch (error) {
             addNotification({
@@ -41,7 +47,7 @@
                 type: 'error'
             });
         }
-    };
+    }
 
     onDestroy(() => {
         $createFunction = {
@@ -83,4 +89,4 @@
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} />
+<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />

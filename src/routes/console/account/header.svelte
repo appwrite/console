@@ -1,8 +1,12 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Copy, Tab, Tabs } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import { Cover } from '$lib/layout';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
 
     const path = `/console/account`;
@@ -25,6 +29,11 @@
             title: 'Organizations'
         }
     ];
+
+    async function logout() {
+        await sdkForConsole.account.deleteSession('current');
+        await goto(`${base}/login`);
+    }
 </script>
 
 <Cover>
@@ -38,6 +47,9 @@
                 Project ID
             </Pill>
         </Copy>
+        <div class="u-margin-inline-start-auto">
+            <Button secondary on:click={logout}>Logout</Button>
+        </div>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
