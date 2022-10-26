@@ -17,6 +17,6 @@ export const load: LayoutLoad = async ({ depends }) => {
             organizations: sdkForConsole.teams.list()
         };
     } catch (error) {
-        return redirect(303, '/login');
+        throw redirect(303, '/login');
     }
 };

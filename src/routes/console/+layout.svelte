@@ -9,6 +9,12 @@
     import { wizard } from '$lib/stores/wizard';
     import { Logs } from '$lib/layout';
     import { log } from '$lib/stores/logs';
+    import { onMount } from 'svelte';
+    import { loading } from '../store';
+
+    onMount(() => {
+        loading.set(false);
+    });
 
     beforeNavigate(() => {
         $log.show = false;

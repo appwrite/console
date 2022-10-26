@@ -10,13 +10,12 @@
     import { app } from '$lib/stores/app';
     import Notifications from '$lib/layout/notifications.svelte';
     import Loading from './loading.svelte';
+    import { loading } from './store';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
         window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
     }
-
-    let loaded = false;
 
     onMount(async () => {
         /**
@@ -30,20 +29,23 @@
             onINP(reportWebVitals);
             onTTFB(reportWebVitals);
         }
-
         const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
         if ($user) {
             if (!$page.url.pathname.startsWith('/console')) {
-                await goto(`${base}/console`);
+                await goto(`${base}/console`, {
+                    replaceState: true
+                });
             }
         } else {
             if (acceptedRoutes.includes($page.url.pathname)) {
                 await goto(`${base}${$page.url.pathname}${$page.url.search}`);
             } else {
-                await goto(`${base}/login`);
+                await goto(`${base}/login`, {
+                    replaceState: true
+                });
             }
+            loading.set(false);
         }
-        loaded = true;
     });
 
     $: {
@@ -83,9 +85,9 @@
 
 <Notifications />
 
-{#if loaded}
-    <slot />
-{:else}
+<slot />
+
+{#if $loading}
     <Loading />
 {/if}
 
