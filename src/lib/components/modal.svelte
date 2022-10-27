@@ -1,6 +1,5 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { fly, type FlyParams } from 'svelte/transition';
     import { Alert } from '$lib/components';
 
     export let show = false;
@@ -10,13 +9,9 @@
     export let closable = true;
 
     let dialog: HTMLDialogElement;
-
     let alert: HTMLElement;
+
     const dispatch = createEventDispatcher();
-    const transitionFly: FlyParams = {
-        duration: 150,
-        y: 50
-    };
 
     function handleBLur(event: MouseEvent) {
         if (event.target === dialog) {
@@ -47,9 +42,6 @@
             closeModal();
         }
     }
-    /**
-     * Workaround until https://github.com/sveltejs/svelte/issues/3105 is resolved.
-     */
 
     $: if (show) {
         openModal();
@@ -68,8 +60,7 @@
     class="modal"
     class:is-small={size === 'small'}
     class:is-big={size === 'big'}
-    bind:this={dialog}
-    transition:fly={transitionFly}>
+    bind:this={dialog}>
     <form class="modal-form" method="dialog" on:submit>
         <header class="modal-header">
             {#if warning}
