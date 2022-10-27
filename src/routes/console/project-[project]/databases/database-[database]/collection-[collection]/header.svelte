@@ -23,6 +23,10 @@
             title: 'Indexes'
         },
         {
+            href: `${path}/activity`,
+            title: 'Activity'
+        },
+        {
             href: `${path}/usage`,
             title: 'Usage'
         },
