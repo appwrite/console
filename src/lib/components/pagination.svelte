@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { page } from '$app/stores';
+
     export let sum: number;
     export let limit: number;
     export let offset: number;
@@ -27,12 +29,13 @@
 </script>
 
 {#if totalPages > 1}
+    {@const search = $page.url.search}
     <nav class="pagination">
         <a
             class:is-disabled={currentPage <= 1}
             class="button is-text"
             aria-label="prev page"
-            href={`${path}/${currentPage - 1}`}>
+            href={`${path}/${currentPage - 1}${search}`}>
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
         </a>
@@ -42,7 +45,7 @@
                     {#if typeof page === 'number'}
                         <li class="pagination-item">
                             <a
-                                href={`${path}/${page}`}
+                                href={`${path}/${page}${search}`}
                                 class="button"
                                 class:is-disabled={currentPage === page}
                                 class:is-text={currentPage !== page}
@@ -61,7 +64,7 @@
         <a
             class:is-disabled={currentPage === totalPages}
             class="button is-text"
-            href={`${path}/${currentPage + 1}`}
+            href={`${path}/${currentPage + 1}${search}`}
             aria-label="next page">
             <span class="text">Next</span>
             <span class="icon-cheveron-right" aria-hidden="true" />

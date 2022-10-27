@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Empty, EmptySearch, Search, AvatarInitials, Pagination } from '$lib/components';
+    import { Empty, EmptySearch, AvatarInitials, Pagination, SearchQuery } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -24,7 +24,6 @@
 
     let showCreate = false;
     let showDelete = false;
-    let search = '';
     let selectedMembership: Models.Membership;
 
     const project = $page.params.project;
@@ -37,12 +36,12 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search by ID">
+    <SearchQuery search={data.search} placeholder="Search by ID">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create membership</span>
         </Button>
-    </Search>
+    </SearchQuery>
     {#if data.memberships.total}
         <Table>
             <TableHeader>
@@ -88,13 +87,16 @@
                 offset={data.offset}
                 sum={data.memberships.total} />
         </div>
-    {:else if search}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{search}’</b>
+                <b>Sorry, we couldn’t find ‘{data.search}’</b>
                 <p>There are no members that match your search.</p>
             </div>
-            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+            <Button
+                secondary
+                href={`/console/project-${$page.params.project}/authentication/teams/team-${$page.params.team}/members`}
+                >Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

@@ -8,10 +8,10 @@
         EmptySearch,
         Pagination,
         Avatar,
-        Search,
         DropList,
         DropListItem,
-        DropListLink
+        DropListLink,
+        SearchQuery
     } from '$lib/components';
     import Create from '../create.svelte';
     import Delete from '../_deleteFile.svelte';
@@ -38,7 +38,6 @@
 
     export let data: PageData;
 
-    let search = '';
     let showCreate = false;
     let showDelete = false;
     let showDropdown = [];
@@ -75,11 +74,11 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search by filename">
+    <SearchQuery search={data.search} placeholder="Search by filename">
         <Button on:click={() => (showCreate = true)}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Add File</span>
         </Button>
-    </Search>
+    </SearchQuery>
     {#if data.files.total}
         <Table>
             <TableHeader>
@@ -180,13 +179,16 @@
                 offset={data.offset}
                 sum={data.files.total} />
         </div>
-    {:else if search}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{search}’</b>
+                <b>Sorry, we couldn’t find ‘{data.search}’</b>
                 <p>There are no files that match your search.</p>
             </div>
-            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+            <Button
+                secondary
+                href={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}
+                >Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

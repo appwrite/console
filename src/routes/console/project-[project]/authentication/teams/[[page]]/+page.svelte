@@ -10,7 +10,7 @@
         TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
-    import { Empty, EmptySearch, Search, AvatarInitials, Pagination } from '$lib/components';
+    import { Empty, EmptySearch, AvatarInitials, Pagination, SearchQuery } from '$lib/components';
     import Create from '../../_createTeam.svelte';
     import { goto } from '$app/navigation';
     import { event } from '$lib/actions/analytics';
@@ -23,7 +23,6 @@
 
     export let data: PageData;
 
-    let search = '';
     let showCreate = false;
 
     const project = $page.params.project;
@@ -33,7 +32,7 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search by name">
+    <SearchQuery search={data.search} placeholder="Search by name">
         <span
             use:event={{
                 name: 'console_users',
@@ -46,7 +45,7 @@
                 <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
             </Button>
         </span>
-    </Search>
+    </SearchQuery>
     {#if data.teams.total}
         <Table>
             <TableHeader>
@@ -80,13 +79,17 @@
                 offset={data.offset}
                 sum={data.teams.total} />
         </div>
-    {:else if search}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{search}’</b>
+                <b>Sorry, we couldn’t find ‘{data.search}’</b>
                 <p>There are no teams that match your search.</p>
             </div>
-            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+            <Button
+                secondary
+                href={`/console/project-${$page.params.project}/authentication/teams`}>
+                Clear Search
+            </Button>
         </EmptySearch>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>

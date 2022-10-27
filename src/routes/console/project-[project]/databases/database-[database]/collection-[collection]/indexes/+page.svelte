@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Empty, EmptySearch, Search, DropList, DropListItem } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Empty, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
     import {
         Table,
@@ -28,7 +27,6 @@
     let showCreateIndex = false;
     let showOverview = false;
     let showDelete = false;
-    let search = '';
 
     const handleDelete = async () => {
         invalidate(Dependencies.INDEXES);
@@ -36,15 +34,6 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search by key or type">
-        <span>
-            <Button
-                disabled={!$collection.attributes?.length}
-                on:click={() => (showCreateIndex = true)}>
-                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create index</span>
-            </Button>
-        </span>
-    </Search>
     {#if data.indexes.total}
         <Table>
             <TableHeader>
@@ -112,14 +101,6 @@
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.indexes.total}</p>
         </div>
-    {:else if search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{search}’</b>
-                <p>There are no indexes that match your search.</p>
-            </div>
-            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
-        </EmptySearch>
     {:else if $collection.indexes?.length}
         <Empty isButton single on:click={() => (showCreateIndex = true)}>
             <p>Create your first attribute to get started</p>

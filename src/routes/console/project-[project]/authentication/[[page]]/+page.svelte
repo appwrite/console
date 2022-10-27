@@ -1,6 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Empty, EmptySearch, Pagination, Copy, Search, AvatarInitials } from '$lib/components';
+    import {
+        Empty,
+        EmptySearch,
+        Pagination,
+        Copy,
+        SearchQuery,
+        AvatarInitials
+    } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -25,7 +32,6 @@
     export let data: PageData;
 
     let showCreate = false;
-    let search = '';
     const projectId = $page.params.project;
     const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
         await goto(`${base}/console/project-${projectId}/authentication/user-${event.detail.$id}`);
@@ -33,7 +39,7 @@
 </script>
 
 <Container>
-    <Search bind:search placeholder="Search by name, email, or ID">
+    <SearchQuery search={data.search} placeholder="Search by name, email, or ID">
         <span
             use:event={{
                 name: 'console_users',
@@ -46,7 +52,7 @@
                 <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
             </Button>
         </span>
-    </Search>
+    </SearchQuery>
     {#if data.users.total}
         <Table>
             <TableHeader>
@@ -122,13 +128,15 @@
                 sum={data.users.total}
                 path={`/console/project-${projectId}/authentication`} />
         </div>
-    {:else if search}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{search}’</b>
+                <b>Sorry, we couldn’t find ‘{data.search}’</b>
                 <p>There are no users that match your search.</p>
             </div>
-            <Button secondary on:click={() => (search = '')}>Clear Search</Button>
+            <Button href={`/console/project-${projectId}/authentication`} secondary>
+                Clear Search
+            </Button>
         </EmptySearch>
     {:else}
         <Empty isButton single on:click={() => (showCreate = true)}>
