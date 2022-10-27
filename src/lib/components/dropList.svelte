@@ -7,12 +7,14 @@
     export let placement: Placement = 'bottom-start';
     export let scrollable = false;
     export let childStart = false;
+    export let isHover = false;
 
     type Placement = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
     let element: HTMLDivElement;
     let tooltip: HTMLDivElement;
     let instance: Instance;
     let currentArrow: Placement;
+    let childHover = false;
 
     $: [arrowHorizontal, arrowPosition] = applyArrow(currentArrow);
 
@@ -88,8 +90,6 @@
         }
     };
 
-    export let isHover = false;
-    let child = false;
     function enter() {
         if (isHover) show = true;
     }
@@ -97,7 +97,7 @@
     function leave() {
         if (isHover) {
             setTimeout(() => {
-                if (!child) {
+                if (!childHover) {
                     show = false;
                 }
             }, 200);
@@ -116,8 +116,8 @@
     bind:this={element}>
     <slot />
     <div
-        on:mouseleave={() => (child = false)}
-        on:mouseenter={() => (child = true)}
+        on:mouseleave={() => (childHover = false)}
+        on:mouseenter={() => (childHover = true)}
         bind:this={tooltip}
         style="z-index: 10">
         {#if show}
