@@ -15,6 +15,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             webhook: await sdkForConsole.projects.getWebhook(params.project, params.webhook)
         };
     } catch (e) {
-        throw error(e.code, e.message)
+        throw error(e.code, e.message);
     }
 };

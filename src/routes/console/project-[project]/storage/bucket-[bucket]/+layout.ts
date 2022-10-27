@@ -16,6 +16,6 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
             bucket: await sdkForProject.storage.getBucket(params.bucket)
         };
     } catch (e) {
-        throw error(e.code, e.message)
+        throw error(e.code, e.message);
     }
 };

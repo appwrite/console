@@ -16,6 +16,6 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
             user: await sdkForProject.users.get(params.user)
         };
     } catch (e) {
-        throw error(e.code, e.message)
+        throw error(e.code, e.message);
     }
 };

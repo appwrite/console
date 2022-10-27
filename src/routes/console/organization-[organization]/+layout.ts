@@ -16,6 +16,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             members: sdkForConsole.teams.listMemberships(params.organization)
         };
     } catch (e) {
-        throw error(e.code, e.message)
+        throw error(e.code, e.message);
     }
 };

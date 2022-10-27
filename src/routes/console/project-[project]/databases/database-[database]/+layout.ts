@@ -16,6 +16,6 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
             database: await sdkForProject.databases.get(params.database)
         };
     } catch (e) {
-        throw error(e.code, e.message)
+        throw error(e.code, e.message);
     }
 };

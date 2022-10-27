@@ -13,9 +13,12 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            collection: await sdkForProject.databases.getCollection(params.database, params.collection)
+            collection: await sdkForProject.databases.getCollection(
+                params.database,
+                params.collection
+            )
         };
     } catch (e) {
-        throw error(e.code, e.message)
+        throw error(e.code, e.message);
     }
 };

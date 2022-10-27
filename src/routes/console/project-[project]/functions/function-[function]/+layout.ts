@@ -16,6 +16,6 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
             function: await sdkForProject.functions.get(params.function)
         };
     } catch (e) {
-        throw error(e.code, e.message)
+        throw error(e.code, e.message);
     }
 };
