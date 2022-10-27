@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Tab, Tabs } from '$lib/components';
-    import { Cover } from '$lib/layout';
+    import { Cover, CoverTitle } from '$lib/layout';
 
     const projectId = $page.params.project;
     const path = `/console/project-${projectId}/authentication`;
@@ -31,11 +31,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <h1 class="heading-level-4">
-            <span class="text">Authentication</span>
-        </h1>
+        <CoverTitle>Authentication</CoverTitle>
     </svelte:fragment>
-
     <Tabs>
         {#each tabs as tab}
             <Tab href={tab.href} selected={$page.url.pathname === tab.href}>

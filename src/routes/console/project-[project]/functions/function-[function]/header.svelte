@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { Copy, Tab, Tabs } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Cover } from '$lib/layout';
+    import { Cover, CoverTitle } from '$lib/layout';
     import { func } from './store';
 
     const projectId = $page.params.project;
@@ -30,15 +30,9 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <a
-            class="back-button"
-            href={`/console/project-${projectId}/functions`}
-            aria-label="page back">
-            <span class="icon-cheveron-left" aria-hidden="true" />
-        </a>
-        <h1 class="heading-level-4">
-            <span class="text">{$func?.name}</span>
-        </h1>
+        <CoverTitle href={`/console/project-${projectId}/functions`}>
+            {$func?.name}
+        </CoverTitle>
         <Copy value={$func?.$id}>
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />

@@ -5,7 +5,7 @@
     import { Copy, Tab, Tabs } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { Cover } from '$lib/layout';
+    import { Cover, CoverTitle } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
 
@@ -38,9 +38,9 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <h1 class="heading-level-4">
-            <span class="text">{$user.name}</span>
-        </h1>
+        <CoverTitle>
+            {$user.name}
+        </CoverTitle>
         <Copy value={$user.$id}>
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />

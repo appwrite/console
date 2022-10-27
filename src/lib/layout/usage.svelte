@@ -17,6 +17,7 @@
     import { Colors } from '$lib/charts/config';
     import type { Models } from '@aw-labs/appwrite-console';
     import DropListLink from '$lib/components/dropListLink.svelte';
+    import DropTabsLink from '$lib/components/dropTabsLink.svelte';
 
     type MetricMetadata = {
         title: string;
@@ -44,9 +45,9 @@
     <div class="u-flex u-main-space-between common-section">
         <Heading tag="h2" size="5">{title}</Heading>
         <DropTabs>
-            <DropListLink href={`${path}/24h`} disabled={range === '24h'}>24h</DropListLink>
-            <DropListLink href={`${path}/30d`} disabled={range === '30d'}>30d</DropListLink>
-            <DropListLink href={`${path}/90d`} disabled={range === '90d'}>90d</DropListLink>
+            <DropTabsLink href={`${path}/24h`} disabled={range === '24h'}>24h</DropTabsLink>
+            <DropTabsLink href={`${path}/30d`} disabled={range === '30d'}>30d</DropTabsLink>
+            <DropTabsLink href={`${path}/90d`} disabled={range === '90d'}>90d</DropTabsLink>
         </DropTabs>
     </div>
     <Card>
