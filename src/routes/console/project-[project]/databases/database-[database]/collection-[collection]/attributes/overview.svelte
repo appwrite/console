@@ -14,20 +14,18 @@
     }
 </script>
 
-{#if selectedAttribute}
-    <Modal size="big" bind:show={showOverview}>
-        <svelte:fragment slot="header">Overview</svelte:fragment>
-        <FormList>
-            <InputText
-                id="ID"
-                label="Attribute ID"
-                placeholder="Enter ID"
-                bind:value={selectedAttribute.key}
-                disabled />
+<Modal size="big" bind:show={showOverview}>
+    <svelte:fragment slot="header">Overview</svelte:fragment>
+    <FormList>
+        <InputText
+            id="ID"
+            label="Attribute ID"
+            placeholder="Enter ID"
+            bind:value={selectedAttribute.key}
+            disabled />
 
-            {#if selectedAttribute}
-                <svelte:component this={$option.component} overview={true} {selectedAttribute} />
-            {/if}
-        </FormList>
-    </Modal>
-{/if}
+        {#if selectedAttribute}
+            <svelte:component this={$option.component} overview={true} {selectedAttribute} />
+        {/if}
+    </FormList>
+</Modal>

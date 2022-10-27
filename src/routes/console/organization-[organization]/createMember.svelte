@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Modal } from '$lib/components';
-    import { InputText, InputEmail, Button, Form, FormList } from '$lib/elements/forms';
+    import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -44,25 +44,19 @@
     }
 </script>
 
-<Form on:submit={create}>
-    <Modal {error} size="big" bind:show={showCreate}>
-        <svelte:fragment slot="header">Invite Member</svelte:fragment>
-        <FormList>
-            <InputEmail
-                id="email"
-                label="Email"
-                placeholder="Enter email"
-                autofocus={true}
-                bind:value={email} />
-            <InputText
-                id="name"
-                label="Name (optional)"
-                placeholder="Enter name"
-                bind:value={name} />
-        </FormList>
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-            <Button submit>Send invite</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+    <svelte:fragment slot="header">Invite Member</svelte:fragment>
+    <FormList>
+        <InputEmail
+            id="email"
+            label="Email"
+            placeholder="Enter email"
+            autofocus={true}
+            bind:value={email} />
+        <InputText id="name" label="Name (optional)" placeholder="Enter name" bind:value={name} />
+    </FormList>
+    <svelte:fragment slot="footer">
+        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
+        <Button submit>Send invite</Button>
+    </svelte:fragment>
+</Modal>

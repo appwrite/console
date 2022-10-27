@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
@@ -28,15 +28,13 @@
     };
 </script>
 
-<Form on:submit={deleteAllSessions}>
-    <Modal bind:show={showDeleteAll} warning>
-        <svelte:fragment slot="header">Delete All Sessions</svelte:fragment>
-        <p>
-            Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDeleteAll = false)}>Cancel</Button>
-            <Button secondary submit>Delete</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<Modal bind:show={showDeleteAll} on:submit={deleteAllSessions} warning>
+    <svelte:fragment slot="header">Delete All Sessions</svelte:fragment>
+    <p>
+        Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
+    </p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDeleteAll = false)}>Cancel</Button>
+        <Button secondary submit>Delete</Button>
+    </svelte:fragment>
+</Modal>

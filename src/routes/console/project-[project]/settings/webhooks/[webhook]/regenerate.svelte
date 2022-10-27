@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { webhook } from './store';
@@ -29,16 +29,14 @@
     }
 </script>
 
-<Form on:submit={regenerate}>
-    <Modal bind:show>
-        <svelte:fragment slot="header">Regenerate Key</svelte:fragment>
-        <p class="u-text">
-            Are you sure you want to generate a new Signature Key?
-            <b>You will not be able to recover your current key.</b>
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (show = false)}>Cancel</Button>
-            <Button secondary submit>Regenerate</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<Modal bind:show on:submit={regenerate}>
+    <svelte:fragment slot="header">Regenerate Key</svelte:fragment>
+    <p class="u-text">
+        Are you sure you want to generate a new Signature Key?
+        <b>You will not be able to recover your current key.</b>
+    </p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (show = false)}>Cancel</Button>
+        <Button secondary submit>Regenerate</Button>
+    </svelte:fragment>
+</Modal>

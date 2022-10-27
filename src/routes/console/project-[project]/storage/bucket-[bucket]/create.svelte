@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, Form, FormList, InputFile } from '$lib/elements/forms';
+    import { Button, FormList, InputFile } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Modal, CustomId } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -45,32 +45,30 @@
     }
 </script>
 
-<Form on:submit={create}>
-    <Modal size="big" {error} bind:show={showCreate}>
-        <svelte:fragment slot="header">Upload File</svelte:fragment>
-        <FormList>
-            <div>
-                <InputFile bind:files />
-                <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
-            </div>
+<Modal size="big" {error} bind:show={showCreate} on:submit={create}>
+    <svelte:fragment slot="header">Upload File</svelte:fragment>
+    <FormList>
+        <div>
+            <InputFile bind:files />
+            <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
+        </div>
 
-            {#if !showCustomId}
-                <div>
-                    <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                        <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            File ID
-                        </span>
-                    </Pill>
-                </div>
-            {:else}
-                <CustomId bind:show={showCustomId} name="File" bind:id />
-            {/if}
-            <p class="heading-level-7">Permissions</p>
-            <Permissions bind:permissions />
-        </FormList>
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-            <Button submit>Upload</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+        {#if !showCustomId}
+            <div>
+                <Pill button on:click={() => (showCustomId = !showCustomId)}>
+                    <span class="icon-pencil" aria-hidden="true" /><span class="text">
+                        File ID
+                    </span>
+                </Pill>
+            </div>
+        {:else}
+            <CustomId bind:show={showCustomId} name="File" bind:id />
+        {/if}
+        <p class="heading-level-7">Permissions</p>
+        <Permissions bind:permissions />
+    </FormList>
+    <svelte:fragment slot="footer">
+        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
+        <Button submit>Upload</Button>
+    </svelte:fragment>
+</Modal>

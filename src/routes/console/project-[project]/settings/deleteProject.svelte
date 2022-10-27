@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Modal } from '$lib/components';
-    import { Button, Form, FormList, InputPassword, InputText } from '$lib/elements/forms';
+    import { Button, FormList, InputPassword, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
@@ -30,34 +30,33 @@
     };
 </script>
 
-<Form on:submit={handleDelete}>
-    <Modal bind:show={showDelete} warning>
-        <svelte:fragment slot="header">Delete Project</svelte:fragment>
-        <p>
-            <b>This project will be deleted</b>, along with all of its metadata, stats, and other
-            resources. <b>This action is irreversible</b>.
-        </p>
+<Modal bind:show={showDelete} on:submit={handleDelete} warning>
+    <svelte:fragment slot="header">Delete Project</svelte:fragment>
+    <p>
+        <b>This project will be deleted</b>, along with all of its metadata, stats, and other
+        resources. <b>This action is irreversible</b>.
+    </p>
 
-        <FormList>
-            <InputText
-                label={`Enter "${$project.name}" to continue`}
-                placeholder="Enter name"
-                id="name"
-                autofocus
-                required
-                bind:value={name} />
-            <InputPassword
-                label="To verify, enter your password"
-                placeholder="Enter password"
-                id="password"
-                required
-                showPasswordButton={true}
-                bind:value={password} />
-        </FormList>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button disabled={!name || !password || name !== $project.name} secondary submit
-                >Delete</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+    <FormList>
+        <InputText
+            label={`Enter "${$project.name}" to continue`}
+            placeholder="Enter name"
+            id="name"
+            autofocus
+            required
+            bind:value={name} />
+        <InputPassword
+            label="To verify, enter your password"
+            placeholder="Enter password"
+            id="password"
+            required
+            showPasswordButton={true}
+            bind:value={password} />
+    </FormList>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button disabled={!name || !password || name !== $project.name} secondary submit>
+            Delete
+        </Button>
+    </svelte:fragment>
+</Modal>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -32,16 +32,14 @@
     };
 </script>
 
-<Form on:submit={handleDelete}>
-    <Modal warning={true} bind:show={showDelete}>
-        <svelte:fragment slot="header">Delete Index</svelte:fragment>
+<Modal warning={true} on:submit={handleDelete} bind:show={showDelete}>
+    <svelte:fragment slot="header">Delete Index</svelte:fragment>
 
-        <p>
-            Are you sure you want to delete <b>'{selectedIndex.key}' from {$collection.name}</b>?
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Delete</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+    <p>
+        Are you sure you want to delete <b>'{selectedIndex.key}' from {$collection.name}</b>?
+    </p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button secondary submit>Delete</Button>
+    </svelte:fragment>
+</Modal>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
@@ -34,16 +34,14 @@
     };
 </script>
 
-<Form on:submit={deleteOrg}>
-    <Modal bind:show={showDelete} warning>
-        <svelte:fragment slot="header">Delete Organization</svelte:fragment>
-        <p>
-            Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})
-            and data associated with this organization will be deleted. This action is irreversible.
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Delete</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<Modal on:submit={deleteOrg} bind:show={showDelete} warning>
+    <svelte:fragment slot="header">Delete Organization</svelte:fragment>
+    <p>
+        Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})
+        and data associated with this organization will be deleted. This action is irreversible.
+    </p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button secondary submit>Delete</Button>
+    </svelte:fragment>
+</Modal>

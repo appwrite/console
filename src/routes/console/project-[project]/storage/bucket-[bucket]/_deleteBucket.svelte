@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Modal } from '$lib/components';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { bucket } from './store';
@@ -24,13 +24,11 @@
     };
 </script>
 
-<Form on:submit={deleteUser}>
-    <Modal bind:show={showDelete} warning>
-        <svelte:fragment slot="header">Delete Bucket</svelte:fragment>
-        <p>Are you sure you want to delete <b>{$bucket.name}</b>?</p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Delete</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<Modal bind:show={showDelete} on:submit={deleteUser} warning>
+    <svelte:fragment slot="header">Delete Bucket</svelte:fragment>
+    <p>Are you sure you want to delete <b>{$bucket.name}</b>?</p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button secondary submit>Delete</Button>
+    </svelte:fragment>
+</Modal>

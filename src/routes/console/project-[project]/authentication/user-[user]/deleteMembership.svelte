@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -37,15 +37,13 @@
     };
 </script>
 
-<Form on:submit={deleteMembership}>
-    <Modal bind:show={showDelete} warning>
-        <svelte:fragment slot="header">Delete Member</svelte:fragment>
-        <p>
-            Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Delete</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<Modal bind:show={showDelete} on:submit={deleteMembership} warning>
+    <svelte:fragment slot="header">Delete Member</svelte:fragment>
+    <p>
+        Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
+    </p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button secondary submit>Delete</Button>
+    </svelte:fragment>
+</Modal>

@@ -120,8 +120,6 @@
 </Container>
 
 <Create bind:showCreate />
-{#if selectedAttribute}
-    <Delete bind:showDelete {selectedAttribute} />
-    <Overview bind:showOverview {selectedAttribute} />
-    <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />
-{/if}
+<Delete bind:showDelete {selectedAttribute} />
+<Overview bind:showOverview {selectedAttribute} />
+<CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />

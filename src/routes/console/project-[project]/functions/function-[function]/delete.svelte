@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -31,13 +31,11 @@
     };
 </script>
 
-<Form noStyle noMargin on:submit={handleSubmit}>
-    <Modal bind:show={showDelete} warning>
-        <svelte:fragment slot="header">Delete Deployment</svelte:fragment>
-        <p>Are you sure you want to delete this deployment?</p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Delete</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<Modal bind:show={showDelete} on:submit={handleSubmit} warning>
+    <svelte:fragment slot="header">Delete Deployment</svelte:fragment>
+    <p>Are you sure you want to delete this deployment?</p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button secondary submit>Delete</Button>
+    </svelte:fragment>
+</Modal>

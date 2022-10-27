@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { goto } from '$app/navigation';
     import { Modal } from '$lib/components';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -40,19 +40,17 @@
     $: isUser = selectedMember.userId === $user.$id;
 </script>
 
-<Form on:submit={deleteMembership}>
-    <Modal bind:show={showDelete} warning>
-        <svelte:fragment slot="header">
-            {isUser ? 'Leave Organization' : 'Delete Member'}
-        </svelte:fragment>
-        <p>
-            {isUser
-                ? `Are you sure you want to leave '${selectedMember.teamName}'?`
-                : `Are you sure you want to delete ${selectedMember.userName} from '${selectedMember.teamName}'?`}
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>{isUser ? 'Leave' : 'Delete'}</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<Modal bind:show={showDelete} on:submit={deleteMembership} warning>
+    <svelte:fragment slot="header">
+        {isUser ? 'Leave Organization' : 'Delete Member'}
+    </svelte:fragment>
+    <p>
+        {isUser
+            ? `Are you sure you want to leave '${selectedMember.teamName}'?`
+            : `Are you sure you want to delete ${selectedMember.userName} from '${selectedMember.teamName}'?`}
+    </p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button secondary submit>{isUser ? 'Leave' : 'Delete'}</Button>
+    </svelte:fragment>
+</Modal>

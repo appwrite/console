@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { Modal, Copy } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { createEventDispatcher } from 'svelte';
@@ -157,152 +157,147 @@
     //TODO: remove inline style
 </script>
 
-<Form noStyle noMargin on:submit={create}>
-    <Modal bind:show size="big">
-        <svelte:fragment slot="header">Create Event</svelte:fragment>
+<Modal bind:show on:submit={create} size="big">
+    <svelte:fragment slot="header">Create Event</svelte:fragment>
 
+    <div>
+        <p class="u-text">Choose a service</p>
+        <div class="u-flex u-gap-8 u-margin-block-start-8">
+            {#each services as service}
+                <Pill
+                    disabled={showInput}
+                    selected={service.name === selectedService?.name}
+                    button
+                    on:click={() => {
+                        selectedService = service;
+                        inputData = null;
+                    }}>{service.name}</Pill>
+            {/each}
+        </div>
+    </div>
+    {#if selectedService}
         <div>
-            <p class="u-text">Choose a service</p>
+            <p class="u-text">Choose a request (optional)</p>
             <div class="u-flex u-gap-8 u-margin-block-start-8">
-                {#each services as service}
+                {#each selectedService.requests as request}
                     <Pill
                         disabled={showInput}
-                        selected={service.name === selectedService?.name}
+                        selected={request.name === selectedRequest?.name}
                         button
                         on:click={() => {
-                            selectedService = service;
+                            selectedRequest === request
+                                ? (selectedRequest = null)
+                                : (selectedRequest = request);
                             inputData = null;
-                        }}>{service.name}</Pill>
+                        }}>{request.name}</Pill>
                 {/each}
             </div>
         </div>
-        {#if selectedService}
-            <div>
-                <p class="u-text">Choose a request (optional)</p>
-                <div class="u-flex u-gap-8 u-margin-block-start-8">
-                    {#each selectedService.requests as request}
-                        <Pill
-                            disabled={showInput}
-                            selected={request.name === selectedRequest?.name}
-                            button
-                            on:click={() => {
-                                selectedRequest === request
-                                    ? (selectedRequest = null)
-                                    : (selectedRequest = request);
-                                inputData = null;
-                            }}>{request.name}</Pill>
-                    {/each}
-                </div>
-            </div>
-            <div>
-                <p class="u-text">Choose an event (optional)</p>
-                <div class="u-flex u-gap-8 u-margin-block-start-8">
-                    {#each selectedRequest?.events ?? selectedService?.events as event}
-                        <Pill
-                            disabled={showInput}
-                            selected={selectedEvent === event}
-                            button
-                            on:click={() => {
-                                selectedEvent === event
-                                    ? (selectedEvent = null)
-                                    : (selectedEvent = event);
-                                inputData = null;
-                            }}>{event}</Pill>
-                    {/each}
-                </div>
-            </div>
-            {#if selectedService?.name === 'users' && !selectedRequest?.name}
-                <div>
-                    <p class="u-text">Choose an attribute (optional)</p>
-                    <div class="u-flex u-gap-8 u-margin-block-start-8">
-                        {#each selectedService?.attributes as attribute}
-                            <Pill
-                                disabled={showInput}
-                                selected={selectedAttribute === attribute}
-                                button
-                                on:click={() => {
-                                    selectedAttribute === attribute
-                                        ? (selectedAttribute = null)
-                                        : (selectedAttribute = attribute);
-                                    inputData = null;
-                                }}>{attribute}</Pill>
-                        {/each}
-                    </div>
-                </div>
-            {/if}
-        {/if}
-        {#if showInput}
-            <div class="input-text-wrapper" style="--amount-of-buttons:2">
-                <input type="text" placeholder="Enter custom event" bind:value={inputData} />
-                <div class="options-list">
-                    <button
-                        on:click|preventDefault={() => {
-                            showInput = false;
-                        }}
-                        class="options-list-button"
-                        aria-label="confirm">
-                        <span class="icon-check" aria-hidden="true" />
-                    </button>
-                    <button
-                        on:click|preventDefault={() => {
+        <div>
+            <p class="u-text">Choose an event (optional)</p>
+            <div class="u-flex u-gap-8 u-margin-block-start-8">
+                {#each selectedRequest?.events ?? selectedService?.events as event}
+                    <Pill
+                        disabled={showInput}
+                        selected={selectedEvent === event}
+                        button
+                        on:click={() => {
+                            selectedEvent === event
+                                ? (selectedEvent = null)
+                                : (selectedEvent = event);
                             inputData = null;
-                            showInput = false;
-                        }}
-                        class="options-list-button"
-                        aria-label="cancel">
-                        <span class="icon-x" aria-hidden="true" />
-                    </button>
-                </div>
+                        }}>{event}</Pill>
+                {/each}
             </div>
-        {:else}
-            <div class="input-text-wrapper" style="--amount-of-buttons:2">
-                <div type="text" readonly style="min-height: 2.5rem;">
-                    {#if inputData}
-                        <span>{inputData}</span>
-                    {:else}
-                        {#each Array.from(eventString.values()) as route, i}
-                            <button
-                                class:u-opacity-0-5={helper !== route.description}
-                                on:mouseenter={() => {
-                                    helper = route.description;
-                                }}
-                                on:mouseleave={() => {
-                                    helper = null;
-                                }}>
-                                {route.value}
-                            </button>
-                            <span class="u-opacity-0-5">
-                                {i + 1 < eventString?.size ? '.' : ''}
-                            </span>
-                        {/each}
-                    {/if}
+        </div>
+        {#if selectedService?.name === 'users' && !selectedRequest?.name}
+            <div>
+                <p class="u-text">Choose an attribute (optional)</p>
+                <div class="u-flex u-gap-8 u-margin-block-start-8">
+                    {#each selectedService?.attributes as attribute}
+                        <Pill
+                            disabled={showInput}
+                            selected={selectedAttribute === attribute}
+                            button
+                            on:click={() => {
+                                selectedAttribute === attribute
+                                    ? (selectedAttribute = null)
+                                    : (selectedAttribute = attribute);
+                                inputData = null;
+                            }}>{attribute}</Pill>
+                    {/each}
                 </div>
-                <div class="options-list">
-                    <button
-                        on:click|preventDefault={() => {
-                            inputData = copyValue;
-                            showInput = true;
-                        }}
-                        class="options-list-button"
-                        aria-label="edit event">
-                        <span class="icon-pencil" aria-hidden="true" />
-                    </button>
-                    <button
-                        disabled={!copyValue}
-                        class="options-list-button"
-                        aria-label="copy text">
-                        <Copy value={copyValue}>
-                            <span class="icon-duplicate" aria-hidden="true" />
-                        </Copy>
-                    </button>
-                </div>
-                <p style="height: 2rem;">{helper ?? ''}</p>
             </div>
         {/if}
+    {/if}
+    {#if showInput}
+        <div class="input-text-wrapper" style="--amount-of-buttons:2">
+            <input type="text" placeholder="Enter custom event" bind:value={inputData} />
+            <div class="options-list">
+                <button
+                    on:click|preventDefault={() => {
+                        showInput = false;
+                    }}
+                    class="options-list-button"
+                    aria-label="confirm">
+                    <span class="icon-check" aria-hidden="true" />
+                </button>
+                <button
+                    on:click|preventDefault={() => {
+                        inputData = null;
+                        showInput = false;
+                    }}
+                    class="options-list-button"
+                    aria-label="cancel">
+                    <span class="icon-x" aria-hidden="true" />
+                </button>
+            </div>
+        </div>
+    {:else}
+        <div class="input-text-wrapper" style="--amount-of-buttons:2">
+            <div type="text" readonly style="min-height: 2.5rem;">
+                {#if inputData}
+                    <span>{inputData}</span>
+                {:else}
+                    {#each Array.from(eventString.values()) as route, i}
+                        <button
+                            class:u-opacity-0-5={helper !== route.description}
+                            on:mouseenter={() => {
+                                helper = route.description;
+                            }}
+                            on:mouseleave={() => {
+                                helper = null;
+                            }}>
+                            {route.value}
+                        </button>
+                        <span class="u-opacity-0-5">
+                            {i + 1 < eventString?.size ? '.' : ''}
+                        </span>
+                    {/each}
+                {/if}
+            </div>
+            <div class="options-list">
+                <button
+                    on:click|preventDefault={() => {
+                        inputData = copyValue;
+                        showInput = true;
+                    }}
+                    class="options-list-button"
+                    aria-label="edit event">
+                    <span class="icon-pencil" aria-hidden="true" />
+                </button>
+                <button disabled={!copyValue} class="options-list-button" aria-label="copy text">
+                    <Copy value={copyValue}>
+                        <span class="icon-duplicate" aria-hidden="true" />
+                    </Copy>
+                </button>
+            </div>
+            <p style="height: 2rem;">{helper ?? ''}</p>
+        </div>
+    {/if}
 
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => (show = false)}>Cancel</Button>
-            <Button disabled={showInput || !copyValue} submit>Create</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+    <svelte:fragment slot="footer">
+        <Button secondary on:click={() => (show = false)}>Cancel</Button>
+        <Button disabled={showInput || !copyValue} submit>Create</Button>
+    </svelte:fragment>
+</Modal>

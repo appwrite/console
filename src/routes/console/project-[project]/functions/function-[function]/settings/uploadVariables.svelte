@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputFile } from '$lib/elements/forms';
+    import { Button, InputFile } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -59,19 +59,16 @@
     }
 </script>
 
-<Form noStyle noMargin on:submit={handleSubmit}>
-    <Modal bind:show>
-        <svelte:fragment slot="header">Upload Variables</svelte:fragment>
-        <p>
-            Upload multiple variables via a .env file that will be passed to your function at
-            runtime.
-        </p>
+<Modal bind:show on:submit={handleSubmit}>
+    <svelte:fragment slot="header">Upload Variables</svelte:fragment>
+    <p>
+        Upload multiple variables via a .env file that will be passed to your function at runtime.
+    </p>
 
-        <InputFile bind:files label="Attach a file" />
+    <InputFile bind:files label="Attach a file" />
 
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (show = false)}>Cancel</Button>
-            <Button submit>Create</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (show = false)}>Cancel</Button>
+        <Button submit>Create</Button>
+    </svelte:fragment>
+</Modal>

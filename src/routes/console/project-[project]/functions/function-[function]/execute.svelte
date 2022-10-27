@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Code, Modal } from '$lib/components';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -48,21 +48,19 @@
     }
 </script>
 
-<Form noStyle noMargin on:submit={handleSubmit}>
-    <Modal bind:show size="big" on:close={close}>
-        <svelte:fragment slot="header">Execute Function</svelte:fragment>
-        <FormList>
-            <InputTextarea bind:value={data} id="data" label="Custom data (optional)" />
-            <InputChoice type="switchbox" id="json" label="Show example JSON" bind:value={showJson}>
-                Here's an example of some custom data.</InputChoice>
-            {#if showJson}
-                <Code noMargin language="json" withLineNumbers code={example} />
-            {/if}
-        </FormList>
+<Modal bind:show size="big" on:submit={handleSubmit} on:close={close}>
+    <svelte:fragment slot="header">Execute Function</svelte:fragment>
+    <FormList>
+        <InputTextarea bind:value={data} id="data" label="Custom data (optional)" />
+        <InputChoice type="switchbox" id="json" label="Show example JSON" bind:value={showJson}>
+            Here's an example of some custom data.</InputChoice>
+        {#if showJson}
+            <Code noMargin language="json" withLineNumbers code={example} />
+        {/if}
+    </FormList>
 
-        <svelte:fragment slot="footer">
-            <Button text on:click={close}>Cancel</Button>
-            <Button submit>Execute Now</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+    <svelte:fragment slot="footer">
+        <Button text on:click={close}>Cancel</Button>
+        <Button submit>Execute Now</Button>
+    </svelte:fragment>
+</Modal>
