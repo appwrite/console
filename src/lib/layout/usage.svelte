@@ -13,11 +13,10 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { BarChart, LineChart } from '$lib/charts';
-    import { Card, DropTabs, Heading, Tiles } from '$lib/components';
+    import { Card, DropTabs, DropTabsLink, Heading, Tiles } from '$lib/components';
     import { Colors } from '$lib/charts/config';
     import type { Models } from '@aw-labs/appwrite-console';
-    import DropListLink from '$lib/components/dropListLink.svelte';
-    import DropTabsLink from '$lib/components/dropTabsLink.svelte';
+    import { page } from '$app/stores';
 
     type MetricMetadata = {
         title: string;
@@ -36,8 +35,6 @@
     export let readMetadata: MetricMetadata;
     export let updatedMetadata: MetricMetadata;
     export let deletedMetadata: MetricMetadata;
-
-    export let range: UsagePeriods = '30d';
     export let path: string = null;
 </script>
 
@@ -45,9 +42,12 @@
     <div class="u-flex u-main-space-between common-section">
         <Heading tag="h2" size="5">{title}</Heading>
         <DropTabs>
-            <DropTabsLink href={`${path}/24h`} disabled={range === '24h'}>24h</DropTabsLink>
-            <DropTabsLink href={`${path}/30d`} disabled={range === '30d'}>30d</DropTabsLink>
-            <DropTabsLink href={`${path}/90d`} disabled={range === '90d'}>90d</DropTabsLink>
+            <DropTabsLink href={`${path}/24h`} disabled={$page.params.period === '24h'}
+                >24h</DropTabsLink>
+            <DropTabsLink href={`${path}/30d`} disabled={$page.params.period === '30d'}
+                >30d</DropTabsLink>
+            <DropTabsLink href={`${path}/90d`} disabled={$page.params.period === '90d'}
+                >90d</DropTabsLink>
         </DropTabs>
     </div>
     <Card>
