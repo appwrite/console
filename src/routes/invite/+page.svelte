@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Button, Form, FormList, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -7,7 +7,6 @@
     import { Unauthenticated } from '$lib/layout';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
-    import { Dependencies } from '$lib/constants';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;
@@ -22,12 +21,11 @@
     const acceptInvite = async () => {
         try {
             await sdkForConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
-            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'
             });
-            await goto(`${base}/console`);
+            await goto(`${base}/console/organization-${teamId}`);
         } catch (error) {
             addNotification({
                 type: 'error',
