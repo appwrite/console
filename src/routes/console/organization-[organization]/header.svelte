@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { AvatarGroup, DropList, DropListItem, DropListLink, Tab, Tabs } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import {
         members,
@@ -20,11 +21,13 @@
     $: tabs = [
         {
             href: path,
-            title: 'Projects'
+            title: 'Projects',
+            hasChildren: true
         },
         {
             href: `${path}/members`,
-            title: 'Members'
+            title: 'Members',
+            hasChildren: true
         },
         {
             href: `${path}/settings`,
@@ -80,7 +83,7 @@
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={$page.url.pathname === tab.href}>
+            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
                 {tab.title}
             </Tab>
         {/each}

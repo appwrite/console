@@ -39,9 +39,11 @@
 
 <Modal bind:show={showDelete} on:submit={deleteMembership} warning>
     <svelte:fragment slot="header">Delete Member</svelte:fragment>
-    <p>
-        Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
-    </p>
+    {#if selectedMembership}
+        <p>
+            Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
+        </p>
+    {/if}
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

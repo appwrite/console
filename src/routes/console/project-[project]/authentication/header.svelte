@@ -1,12 +1,12 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Tab, Tabs } from '$lib/components';
+    import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
 
     const projectId = $page.params.project;
     const path = `/console/project-${projectId}/authentication`;
-    type TabElement = { href: string; title: string; hasChildren?: boolean };
-    const tabs: TabElement[] = [
+    const tabs = [
         {
             href: path,
             title: 'Users',
@@ -30,22 +30,6 @@
             title: 'Settings'
         }
     ];
-
-    function isSelected(tab: TabElement, pathname: string, basePath: string) {
-        if (!tab.hasChildren) {
-            return tab.href === pathname;
-        } else {
-            if (tab.href === pathname) return true;
-
-            if (tab.href === basePath) {
-                if (!tabs.some((t) => pathname.includes(t.href) && t.href !== tab.href)) {
-                    return pathname.includes(tab.href);
-                }
-            } else {
-                return pathname.includes(tab.href);
-            }
-        }
-    }
 </script>
 
 <Cover>
@@ -54,7 +38,7 @@
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={isSelected(tab, $page.url.pathname, path)}>
+            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
                 {tab.title}
             </Tab>
         {/each}

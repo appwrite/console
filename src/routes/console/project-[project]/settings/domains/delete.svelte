@@ -31,9 +31,11 @@
 
 <Modal bind:show={showDelete} on:submit={deleteDomain} warning>
     <svelte:fragment slot="header">Delete Domain</svelte:fragment>
-    <p>
-        Are you sure you want to delete <b>{selectedDomain.domain}</b> from '{$project.name}'?
-    </p>
+    {#if selectedDomain}
+        <p>
+            Are you sure you want to delete <b>{selectedDomain.domain}</b> from '{$project.name}'?
+        </p>
+    {/if}
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

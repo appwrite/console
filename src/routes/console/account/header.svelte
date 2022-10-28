@@ -5,6 +5,7 @@
     import { Copy, Tab, Tabs } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
+    import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
@@ -22,11 +23,13 @@
         },
         {
             href: `${path}/activity`,
-            title: 'Activity'
+            title: 'Activity',
+            hasChildren: true
         },
         {
             href: `${path}/organizations`,
-            title: 'Organizations'
+            title: 'Organizations',
+            hasChildren: true
         }
     ];
 
@@ -53,7 +56,7 @@
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={$page.url.pathname === tab.href}>
+            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
                 {tab.title}
             </Tab>
         {/each}
