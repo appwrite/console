@@ -9,9 +9,8 @@
     import { Dependencies } from '$lib/constants';
 
     export let show = false;
-    export let closable = true;
     const dispatch = createEventDispatcher();
-
+    $: console.log(show);
     let name: string;
     let id: string;
     let showCustomId = false;
@@ -36,7 +35,7 @@
     };
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show {closable}>
+<Modal {error} on:submit={create} size="big" bind:show>
     <svelte:fragment slot="header">Create New Organization</svelte:fragment>
     <FormList>
         <InputText
@@ -59,7 +58,7 @@
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
-        <Button disabled={!closable} secondary on:click={() => (show = false)}>Cancel</Button>
+        <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>

@@ -289,11 +289,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button
-                secondary
-                on:click={() => {
-                    $execute = $func;
-                }}>Execute now</Button>
+            <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
         </svelte:fragment>
     </CardGrid>
 
@@ -573,14 +569,10 @@
 </Container>
 
 <Delete bind:showDelete />
-
-{#if showVariablesModal}
-    <Variable
-        bind:selectedVar
-        bind:showCreate={showVariablesModal}
-        on:created={handleVariableCreated}
-        on:updated={handleVariableUpdated} />
-{/if}
-
+<Variable
+    bind:selectedVar
+    bind:showCreate={showVariablesModal}
+    on:created={handleVariableCreated}
+    on:updated={handleVariableUpdated} />
 <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />
 <EventModal bind:show={showEvents} on:created={handleEvent} />

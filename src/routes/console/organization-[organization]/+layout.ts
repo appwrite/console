@@ -11,7 +11,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     try {
         return {
             header: Header,
-            breadcrumb: Breadcrumbs,
+            breadcrumbs: Breadcrumbs,
             organization: sdkForConsole.teams.get(params.organization),
             members: sdkForConsole.teams.listMemberships(params.organization)
         };

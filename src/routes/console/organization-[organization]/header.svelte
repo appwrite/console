@@ -52,9 +52,7 @@
             </button>
             <svelte:fragment slot="list">
                 {#each $organizationList.teams as org}
-                    <DropListLink
-                        href={`${base}/console/organization-${org.$id}`}
-                        on:click={() => (showDropdown = false)}>
+                    <DropListLink href={`${base}/console/organization-${org.$id}`}>
                         {org.name}
                     </DropListLink>
                 {/each}
@@ -62,12 +60,9 @@
             <svelte:fragment slot="other">
                 <section class="drop-section">
                     <ul class="drop-list">
-                        <DropListItem
-                            icon="plus"
-                            on:click={() => {
-                                showDropdown = false;
-                                newOrgModal.set(true);
-                            }}>New Organization</DropListItem>
+                        <DropListItem icon="plus" on:click={() => newOrgModal.set(true)}>
+                            New Organization
+                        </DropListItem>
                     </ul>
                 </section></svelte:fragment>
         </DropList>

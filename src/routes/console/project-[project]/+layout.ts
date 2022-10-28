@@ -3,8 +3,7 @@ import { sdkForConsole, sdkForProject, setProject } from '$lib/stores/sdk';
 import { error } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ params, depends, parent }) => {
-    await parent();
+export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
 
     if (sdkForProject.client.config.project !== params.project) {

@@ -5,6 +5,4 @@
 
 <slot />
 
-{#if $execute}
-    <Execute selectedFunction={$execute} />
-{/if}
+<Execute selectedFunction={$execute} />

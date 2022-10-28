@@ -2,7 +2,7 @@
     import Shell from '$lib/layout/shell.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Header from '$lib/layout/header.svelte';
-    import { organizationList, newOrgModal } from '$lib/stores/organization';
+    import { newOrgModal } from '$lib/stores/organization';
     import Create from './createOrganization.svelte';
     import { page } from '$app/stores';
     import { beforeNavigate } from '$app/navigation';
@@ -33,7 +33,8 @@
 <Shell
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
-        !$page.url.pathname.includes('/console/account')}>
+        !$page.url.pathname.includes('/console/account') &&
+        !$page.url.pathname.includes('/console/onboarding')}>
     <svelte:fragment slot="header">
         <Header />
     </svelte:fragment>
@@ -48,9 +49,7 @@
     <svelte:component this={$wizard.component} />
 {/if}
 
-{#if $newOrgModal}
-    <Create bind:show={$newOrgModal} closable={!!$organizationList?.total} />
-{/if}
+<Create bind:show={$newOrgModal} />
 
 {#if $log.show}
     <Logs />

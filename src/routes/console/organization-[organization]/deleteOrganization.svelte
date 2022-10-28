@@ -3,7 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
+    import { organization, organizationList } from '$lib/stores/organization';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Dependencies } from '$lib/constants';
@@ -21,8 +21,8 @@
                 await invalidate(Dependencies.ACCOUNT);
                 goto(`${base}/console/`);
             } else {
-                newOrgModal.set(true);
-                goto(`${base}/console`);
+                await invalidate(Dependencies.ACCOUNT);
+                goto(`${base}/console/onboarding`);
             }
             showDelete = false;
         } catch (error) {
