@@ -14,6 +14,7 @@ test('shows select input', () => {
     const { getByText, getByLabelText } = render(InputSelect, {
         id: 'select',
         label: 'select',
+        value: '',
         options
     });
     const select = getByLabelText('select');
@@ -26,6 +27,7 @@ test('shows options', () => {
     const { getByText } = render(InputSelect, {
         id: 'select',
         label: 'select',
+        value: '',
         options
     });
 
@@ -38,8 +40,9 @@ test('shows placeholder', () => {
     const { getByText } = render(InputSelect, {
         id: 'select',
         label: 'select',
-        options,
-        placeholder: 'placeholder'
+        value: '',
+        placeholder: 'placeholder',
+        options
     });
 
     expect(getByText('placeholder')).toBeInTheDocument();
@@ -49,8 +52,9 @@ test('shows select input - required', () => {
     const { getByLabelText } = render(InputSelect, {
         id: 'select',
         label: 'select',
-        options,
-        required: true
+        value: '',
+        required: true,
+        options
     });
 
     expect(getByLabelText('select')).toBeRequired();
@@ -60,8 +64,9 @@ test('shows select input - disabled', () => {
     const { getByLabelText } = render(InputSelect, {
         id: 'select',
         label: 'select',
-        options,
-        disabled: true
+        value: '',
+        disabled: true,
+        options
     });
 
     expect(getByLabelText('select')).toBeDisabled();
@@ -70,9 +75,10 @@ test('shows select input - disabled', () => {
 test('shows select input - hide label', () => {
     render(InputSelect, {
         id: 'select',
-        options,
+        value: '',
         label: 'label',
-        showLabel: false
+        showLabel: false,
+        options
     });
 
     const label = document.querySelector('label');
@@ -83,8 +89,8 @@ test('state', async () => {
     const { component, getByLabelText } = render(InputSelect, {
         id: 'select',
         label: 'select',
-        options,
-        value: ''
+        value: '',
+        options
     });
     const select = getByLabelText('select');
 
