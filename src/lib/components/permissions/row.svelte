@@ -1,7 +1,7 @@
 <script lang="ts">
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
-    import { AvatarInitials, DropList } from '../';
+    import { AvatarInitials, HoverList } from '../';
     import Output from '../output.svelte';
 
     export let role: string;
@@ -32,7 +32,7 @@
         {:else if role === 'any'}
             <div>Any</div>
         {:else}
-            <DropList bind:show={showDropdown} placement="bottom-start" isHover>
+            <HoverList bind:show={showDropdown} placement="bottom-start">
                 <div>
                     {role}
                 </div>
@@ -61,7 +61,7 @@
                         {/if}
                     {/await}
                 </svelte:fragment>
-            </DropList>
+            </HoverList>
         {/if}
     </div>
 </div>
