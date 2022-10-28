@@ -101,6 +101,10 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="u-flex u-margin-block-start-32 u-main-space-between">
+                    <p class="text">Total results: {results?.total}</p>
+                    <Pagination limit={5} bind:offset sum={results?.total} hidePages />
+                </div>
             {:else if search}
                 <EmptySearch>
                     <div class="common-section">
@@ -133,10 +137,7 @@
                     </div>
                 </EmptySearch>
             {/if}
-            <div class="u-flex u-margin-block-start-32 u-main-space-between">
-                <p class="text">Total results: {results?.total}</p>
-                <Pagination limit={5} bind:offset sum={results?.total} hidePages />
-            </div>
+
             <svelte:fragment slot="footer">
                 <Button submit disabled={!hasSelection}>Create</Button>
             </svelte:fragment>
