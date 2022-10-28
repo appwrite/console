@@ -2,6 +2,7 @@
     import { page } from '$app/stores';
     import { Copy, Tab, Tabs } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { database } from './store';
 
@@ -11,7 +12,8 @@
     const tabs = [
         {
             href: path,
-            title: 'Collections'
+            title: 'Collections',
+            hasChildren: true
         },
         {
             href: `${path}/usage`,
@@ -39,7 +41,7 @@
 
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={$page.url.pathname === tab.href}>
+            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
                 {tab.title}
             </Tab>
         {/each}

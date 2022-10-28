@@ -61,7 +61,8 @@
     class:is-small={size === 'small'}
     class:is-big={size === 'big'}
     bind:this={dialog}>
-    <form class="modal-form" method="dialog" on:submit>
+    <!-- svelte-ignore a11y-no-redundant-roles -->
+    <form class="modal-form" role="form" on:submit|preventDefault>
         <header class="modal-header">
             {#if warning}
                 <div class="avatar is-color-orange is-medium">
