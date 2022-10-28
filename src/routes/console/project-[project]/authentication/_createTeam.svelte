@@ -43,6 +43,7 @@
             label="Name"
             placeholder="Enter name"
             autofocus={true}
+            required
             bind:value={name} />
         {#if !showCustomId}
             <div>

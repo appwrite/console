@@ -27,7 +27,7 @@
 
     const project = $page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team>) => {
-        await goto(`${base}/console/project-${project}/authentication/teams-${event.detail.$id}`);
+        await goto(`${base}/console/project-${project}/authentication/teams/team-${event.detail.$id}`);
     };
 </script>
 
