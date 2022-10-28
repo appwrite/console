@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
-    import { Cover } from '$lib/layout';
+    import { Cover, CoverTitle } from '$lib/layout';
 
     const projectId = $page.params.project;
     const path = `/console/project-${projectId}/settings`;
@@ -24,9 +24,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <h1 class="heading-level-4">
-            <span class="text">Settings</span>
-        </h1>
+        <CoverTitle>Settings</CoverTitle>
     </svelte:fragment>
 
     <Tabs>
