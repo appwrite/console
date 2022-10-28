@@ -14,6 +14,10 @@
         try {
             await sdkForProject.teams.deleteMembership('tmpstring', 'tmpstring2');
             showDeleteAll = false;
+            addNotification({
+                type: 'success',
+                message: `All memberships have been deleted`
+            });
             await goto(
                 `${base}/console/project-${$page.params.project}/authentication/${$user.$id}/membeships`
             );
@@ -24,6 +28,8 @@
             });
         }
     };
+
+    //TODO: implelment delete all memberships
 </script>
 
 <Form on:submit={deleteAllMemberships}>

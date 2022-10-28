@@ -1,22 +1,81 @@
 <script lang="ts">
-    import { slide } from 'svelte/transition';
+    import { createPopper, type Instance } from '@popperjs/core';
+    import { onDestroy, onMount } from 'svelte';
 
     export let show = false;
-    export let position: 'top' | 'bottom' = 'top';
-    export let horizontal: 'left' | 'right' = 'right';
-    export let arrowPosition: 'start' | 'center' | 'end' = 'start';
-    export let arrow = true;
+    export let noArrow = false;
+    export let placement: Placement = 'bottom-start';
     export let scrollable = false;
-    export let width: number = null;
-    export let xPadding: number = null;
-    export let yPadding: number = null;
-    let parentElement: HTMLDivElement;
+    export let childStart = false;
+
+    type Placement = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
+    let element: HTMLDivElement;
+    let tooltip: HTMLDivElement;
+    let instance: Instance;
+    let currentArrow: Placement;
+
+    $: [arrowHorizontal, arrowPosition] = applyArrow(currentArrow);
+
+    function applyArrow(value: Placement): [string: 'start' | 'end', string: 'top' | 'bottom'] {
+        switch (value) {
+            case 'bottom-start':
+                return ['start', 'bottom'];
+            case 'bottom-end':
+                return ['end', 'bottom'];
+            case 'top-start':
+                return ['start', 'top'];
+            case 'top-end':
+                return ['end', 'top'];
+            default:
+                return ['start', 'bottom'];
+        }
+    }
+
+    onMount(() => {
+        instance = createPopper(element, tooltip, {
+            placement,
+            onFirstUpdate(state) {
+                if (currentArrow !== state.placement) {
+                    currentArrow = state.placement as Placement;
+                }
+            },
+            modifiers: [
+                {
+                    name: 'offset',
+                    options: {
+                        offset: [0, noArrow ? 0 : 12]
+                    }
+                },
+                {
+                    name: 'flip',
+                    options: {
+                        fallbackPlacements: ['top-start', 'top-end', 'bottom-start', 'bottom-end']
+                    }
+                },
+                {
+                    name: 'placementLogger',
+                    enabled: true,
+                    phase: 'main',
+                    fn({ state }) {
+                        if (currentArrow !== state.placement) {
+                            currentArrow = state.placement as Placement;
+                        }
+                    }
+                }
+            ]
+        });
+    });
+
+    $: if (show) {
+        instance?.update();
+    }
+
+    onDestroy(() => {
+        instance?.destroy();
+    });
 
     const onBlur = (event: MouseEvent) => {
-        if (
-            show &&
-            !(event.target === parentElement || parentElement.contains(event.target as Node))
-        ) {
+        if (show && !(event.target === element || element.contains(event.target as Node))) {
             show = false;
         }
     };
@@ -24,34 +83,28 @@
 
 <svelte:window on:click={onBlur} />
 
-<div
-    class="drop-wrapper"
-    style={`
-    ${width ? `--drop-width-size-desktop:${width}rem;` : ''}
-    ${xPadding ? `--section-padding-horizontal:${xPadding}rem;` : ''}
-    ${yPadding ? `--section-padding-vertical:${yPadding}rem;` : ''}`}
-    class:is-open={show}
-    bind:this={parentElement}>
+<div class="drop-wrapper" class:u-cross-child-start={childStart} bind:this={element}>
     <slot />
+</div>
+
+<div bind:this={tooltip} style="z-index: 10">
     {#if show}
         <div
             class="drop"
-            class:is-arrow-center={arrowPosition === 'center'}
-            class:is-arrow-end={arrowPosition === 'end'}
-            class:is-no-arrow={!arrow}
-            class:is-block-end={position === 'bottom'}
-            class:is-inline-end={horizontal === 'left'}
-            transition:slide={{ duration: 100 }}>
-            {#if $$slots.list}
-                <section
-                    class:u-overflow-y-auto={scrollable}
-                    class:u-max-height-200={scrollable}
-                    class="drop-section ">
-                    <ul class="drop-list">
-                        <slot name="list" />
-                    </ul>
-                </section>
-            {/if}
+            style="position: revert"
+            class:is-no-arrow={noArrow}
+            class:is-arrow-start={arrowHorizontal === 'start'}
+            class:is-arrow-end={arrowHorizontal === 'end'}
+            class:is-block-start={arrowPosition === 'top'}
+            class:is-block-end={arrowPosition === 'bottom'}>
+            <section
+                class:u-overflow-y-auto={scrollable}
+                class:u-max-height-200={scrollable}
+                class="drop-section ">
+                <ul class="drop-list">
+                    <slot name="list" />
+                </ul>
+            </section>
             <slot name="other" />
         </div>
     {/if}

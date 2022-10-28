@@ -8,6 +8,7 @@
     import { createEventDispatcher } from 'svelte';
     import { organization, memberList } from '$lib/stores/organization';
     import { pageLimit } from '$lib/stores/layout';
+    import { Query } from '@aw-labs/appwrite-console';
 
     export let showCreate = false;
 
@@ -21,7 +22,7 @@
             const team = await sdkForConsole.teams.createMembership(
                 $organization.$id,
                 email,
-                [],
+                ['owner'],
                 url,
                 name
             );
@@ -30,7 +31,7 @@
                 type: 'success',
                 message: `Invite has been sent to ${email}`
             });
-            memberList.load($organization.$id, '', $pageLimit, 0);
+            memberList.load($organization.$id, [Query.limit($pageLimit)], '');
             dispatch('created', team);
         } catch ({ message }) {
             error = message;
@@ -39,6 +40,8 @@
 
     $: if (!showCreate) {
         error = null;
+        email = null;
+        name = null;
     }
 </script>
 

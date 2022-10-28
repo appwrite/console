@@ -12,24 +12,36 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { addNotification } from '$lib/stores/notifications';
+    import { onMount } from 'svelte';
 
     export let showModal = false;
     export let provider: Provider;
 
-    let { clientSecret, tenantID } = JSON.parse(provider.secret);
+    let id: string = null;
+    let active = false;
+    let clientSecret: string = null;
+    let tenantID: string = null;
     let error: string;
+
+    onMount(() => {
+        id ??= provider.id;
+        active ??= provider.active;
+        if (provider.secret) ({ clientSecret, tenantID } = JSON.parse(provider.secret));
+    });
 
     const projectId = $page.params.project;
 
     const update = async () => {
         try {
-            const secret = JSON.stringify({ clientSecret, tenantID });
             await sdkForConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
-                provider.id,
+                id,
                 secret
             );
+            provider.active = active;
+            provider.id = id;
+            provider.secret = secret;
 
             showModal = false;
             addNotification({
@@ -42,9 +54,12 @@
             error = message;
         }
     };
+
+    $: secret =
+        clientSecret && tenantID ? JSON.stringify({ clientSecret, tenantID }) : provider.secret;
 </script>
 
-<Form on:submit={update}>
+<Form noMargin on:submit={update}>
     <Modal {error} size="big" bind:show={showModal}>
         <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
         <FormList>
@@ -55,27 +70,23 @@
                     visit the docs.
                 </a>
             </p>
-            <InputSwitch
-                id="state"
-                bind:value={provider.active}
-                label={provider.active ? 'Enabled' : 'Disabled'} />
+            <InputSwitch id="state" bind:value={active} label={active ? 'Enabled' : 'Disabled'} />
             <InputText
                 id="appID"
                 label="Application (client) ID"
                 autofocus={true}
-                autocomplete={false}
                 placeholder="Enter ID"
-                bind:value={provider.id} />
+                bind:value={id} />
             <InputPassword
                 id="secret"
                 label="Client Secret"
                 placeholder="Enter Client Secret"
-                meter={false}
+                showPasswordButton
+                minlength={0}
                 bind:value={clientSecret} />
             <InputText
                 id="tenant"
                 label="Target Tenant"
-                autocomplete={false}
                 placeholder="'common','organizations','consumers' or your TenantID"
                 bind:value={tenantID} />
             <Alert type="info">
@@ -91,7 +102,12 @@
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showModal = false)}>Cancel</Button>
-            <Button submit>Update</Button>
+            <Button
+                disabled={(secret === provider.secret &&
+                    active === provider.active &&
+                    id === provider.id) ||
+                    !(id && clientSecret && tenantID)}
+                submit>Update</Button>
         </svelte:fragment>
     </Modal>
 </Form>

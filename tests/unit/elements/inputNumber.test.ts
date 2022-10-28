@@ -44,6 +44,36 @@ test('shows number input - placeholder', () => {
     expect(getByPlaceholderText('find me')).toBeInTheDocument();
 });
 
+test('shows number input - hide label', () => {
+    render(InputNumber, {
+        id: 'input',
+        label: 'label',
+        showLabel: false
+    });
+
+    const label = document.querySelector('label');
+    expect(label).toHaveClass('u-hide');
+});
+
+test('shows number input - max', () => {
+    const { getByLabelText } = render(InputNumber, {
+        id: 'input',
+        label: 'input',
+        max: 2
+    });
+
+    expect(getByLabelText('input')).toHaveAttribute('max', '2');
+});
+test('shows number input - min', () => {
+    const { getByLabelText } = render(InputNumber, {
+        id: 'input',
+        label: 'input',
+        min: 2
+    });
+
+    expect(getByLabelText('input')).toHaveAttribute('min', '2');
+});
+
 test('state', async () => {
     const { component, getByLabelText } = render(InputNumber, { id: 'input', label: 'input' });
     const input = getByLabelText('input');

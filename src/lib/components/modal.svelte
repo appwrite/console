@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { browser } from '$app/env';
+    import { browser } from '$app/environment';
     import { createEventDispatcher } from 'svelte';
     import { fade, fly, type FadeParams, type FlyParams } from 'svelte/transition';
-    import { Alert } from '$lib/components';
+    import { Alert, Heading } from '$lib/components';
+    import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
@@ -34,8 +35,8 @@
     };
     const closeModal = () => {
         if (closable) {
-            show = false;
             dispatch('close');
+            show = false;
         }
     };
 
@@ -58,7 +59,12 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if show}
-    <div class="modal-curtain" data-curtain on:click={handleBLur} transition:fade={transitionFade}>
+    <div
+        class="modal-curtain"
+        data-curtain
+        on:click={handleBLur}
+        on:keyup|self={clickOnEnter}
+        transition:fade={transitionFade}>
         <section
             class:is-small={size === 'small'}
             class:is-big={size === 'big'}
@@ -70,9 +76,9 @@
                         <span class="icon-exclamation" aria-hidden="true" />
                     </div>
                 {/if}
-                <h4 class="heading-level-5">
+                <Heading tag="h4" size="5">
                     <slot name="header" />
-                </h4>
+                </Heading>
                 {#if closable}
                     <button
                         type="button"
@@ -99,11 +105,13 @@
                 {/if}
                 <slot />
             </div>
-            <div class="modal-footer">
-                <div class="u-flex u-main-end u-gap-12">
-                    <slot name="footer" />
+            {#if $$slots.footer}
+                <div class="modal-footer">
+                    <div class="u-flex u-main-end u-gap-12">
+                        <slot name="footer" />
+                    </div>
                 </div>
-            </div>
+            {/if}
         </section>
     </div>
 {/if}

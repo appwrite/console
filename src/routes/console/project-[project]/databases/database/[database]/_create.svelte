@@ -1,30 +1,36 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button, InputText, InputCustomId, Form } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
+    import { page } from '$app/stores';
 
+    import { Modal, CustomId } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { Button, InputText, Form, FormList } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
 
+    const databaseId = $page.params.database;
     const dispatch = createEventDispatcher();
 
-    let id = '';
     let name = '';
+    let id: string = null;
+    let showCustomId = false;
 
     const create = async () => {
         try {
             const collection = await sdkForProject.databases.createCollection(
-                id,
-                name,
-                'collection',
-                [],
-                []
+                databaseId,
+                id ? id : 'unique()',
+                name
             );
-            id = name = '';
             showCreate = false;
             dispatch('created', collection);
+            addNotification({
+                type: 'success',
+                message: `${name} has been created`
+            });
+            name = id = null;
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -35,10 +41,28 @@
 </script>
 
 <Form on:submit={create}>
-    <Modal bind:show={showCreate}>
+    <Modal size="big" bind:show={showCreate}>
         <svelte:fragment slot="header">Create Collection</svelte:fragment>
-        <InputCustomId label="ID" id="id" bind:value={id} />
-        <InputText label="Name" id="name" bind:value={name} />
+        <FormList>
+            <InputText
+                id="name"
+                label="Name"
+                placeholder="Enter collection name"
+                bind:value={name}
+                autofocus
+                required />
+
+            {#if !showCustomId}
+                <div>
+                    <Pill button on:click={() => (showCustomId = !showCustomId)}
+                        ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                            Collection ID
+                        </span></Pill>
+                </div>
+            {:else}
+                <CustomId bind:show={showCustomId} name="Collection" bind:id />
+            {/if}
+        </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
             <Button submit>Create</Button>

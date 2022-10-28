@@ -1,4 +1,5 @@
 <script>
+    import { Heading } from '$lib/components';
     export let href;
 </script>
 
@@ -6,7 +7,7 @@
     <div class="grid-item-1">
         <div class="grid-item-1-start-start">
             <div class="eyebrow-heading-3"><slot name="eyebrow" /></div>
-            <h2 class="heading-level-6"><slot name="title" /></h2>
+            <Heading tag="h2" size="6"><slot name="title" /></Heading>
         </div>
         <div class="grid-item-1-start-end">
             <slot name="status" />
@@ -24,3 +25,10 @@
         </div>
     </div>
 </a>
+
+<style>
+    /* TODO: remove this when ui library is updated*/
+    .grid-item-1 {
+        min-block-size: calc(182 / 16 * 1rem);
+    }
+</style>

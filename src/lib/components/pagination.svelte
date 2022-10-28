@@ -1,10 +1,13 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+
     export let sum: number;
     export let limit: number;
     export let offset: number;
+    export let hidePages = false;
 
     const dispatch = createEventDispatcher();
+
     $: totalPages = Math.ceil(sum / limit);
     $: currentPage = Math.floor(offset / limit + 1);
     $: pages = pagination(currentPage, totalPages);
@@ -50,6 +53,7 @@
 {#if totalPages > 1}
     <nav class="pagination">
         <button
+            type="button"
             on:click={() => handleButtonPage('prev')}
             class:is-disabled={currentPage <= 1}
             class="button is-text"
@@ -57,30 +61,34 @@
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
         </button>
-        <ol class="pagination-list is-only-desktop">
-            {#each pages as page}
-                {#if typeof page === 'number'}
-                    <li class="pagination-item">
-                        <button
-                            class="button"
-                            on:click={() => handleOptionClick(page)}
-                            class:is-disabled={currentPage === page}
-                            class:is-text={currentPage !== page}
-                            aria-label="page">
-                            <span class="text">{page}</span>
-                        </button>
-                    </li>
-                {:else}
-                    <li class="li is-text">
-                        <span class="icon">...</span>
-                    </li>
-                {/if}
-            {/each}
-        </ol>
+        {#if !hidePages}
+            <ol class="pagination-list is-only-desktop">
+                {#each pages as page}
+                    {#if typeof page === 'number'}
+                        <li class="pagination-item">
+                            <button
+                                type="button"
+                                class="button"
+                                on:click={() => handleOptionClick(+page)}
+                                class:is-disabled={currentPage === page}
+                                class:is-text={currentPage !== page}
+                                aria-label="page">
+                                <span class="text">{page}</span>
+                            </button>
+                        </li>
+                    {:else}
+                        <li class="li is-text">
+                            <span class="icon">...</span>
+                        </li>
+                    {/if}
+                {/each}
+            </ol>
+        {/if}
         <button
             on:click={() => handleButtonPage('next')}
             class:is-disabled={currentPage === totalPages}
             class="button is-text"
+            type="button"
             aria-label="next page">
             <span class="text">Next</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
@@ -88,18 +96,20 @@
     </nav>
 {:else}
     <nav class="pagination">
-        <button class="button is-text is-disabled" aria-label="prev page">
+        <button type="button" class="button is-text is-disabled" aria-label="prev page">
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
         </button>
-        <ol class="pagination-list is-only-desktop">
-            <li class="pagination-item">
-                <button class="button is-disabled" aria-label="page">
-                    <span class="text">1</span>
-                </button>
-            </li>
-        </ol>
-        <button class="button is-text is-disabled" aria-label="next page">
+        {#if !hidePages}
+            <ol class="pagination-list is-only-desktop">
+                <li class="pagination-item">
+                    <button type="button" class="button is-disabled" aria-label="page">
+                        <span class="text">1</span>
+                    </button>
+                </li>
+            </ol>
+        {/if}
+        <button type="button" class="button is-text is-disabled" aria-label="next page">
             <span class="text">Next</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
         </button>

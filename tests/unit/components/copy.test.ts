@@ -19,3 +19,20 @@ test('copy to clipboard function called on click', async () => {
 
     expect(window.navigator.clipboard.writeText).toHaveBeenCalledWith('This is a test');
 });
+
+test('copy to clipboard function called on enter', async () => {
+    const { getByTestId } = render(Copy, { value });
+
+    Object.assign(window.navigator, {
+        clipboard: {
+            writeText: vi.fn().mockImplementation(() => Promise.resolve())
+        }
+    });
+
+    const button = getByTestId('copy-content');
+    await fireEvent.keyUp(button, {
+        key: 'Enter'
+    });
+
+    expect(window.navigator.clipboard.writeText).toHaveBeenCalledWith('This is a test');
+});
