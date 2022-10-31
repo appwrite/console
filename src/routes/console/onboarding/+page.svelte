@@ -19,7 +19,12 @@
         try {
             loading = true;
             const org = await createOrganization();
-            const project = await sdkForConsole.projects.create(id ?? ID.unique(), name, org.$id);
+            const project = await sdkForConsole.projects.create(
+                id ?? ID.unique(),
+                name,
+                org.$id,
+                'default'
+            );
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);
         } catch ({ message }) {
