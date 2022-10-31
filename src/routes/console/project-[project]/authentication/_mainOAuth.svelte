@@ -6,12 +6,14 @@
     import type { Provider } from '$lib/stores/oauth-providers';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let provider: Provider;
 
     const projectId = $page.params.project;
 
-    let enabled = false;
+    let enabled: boolean = null;
     let appId: string = null;
     let secret: string = null;
 
@@ -24,7 +26,6 @@
     let error: string;
 
     const update = async () => {
-        console.log(provider);
         try {
             await sdkForConsole.projects.updateOAuth2(
                 projectId,
@@ -42,6 +43,7 @@
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
+            invalidate(Dependencies.PROJECT);
         } catch ({ message }) {
             error = message;
         }

@@ -11,15 +11,14 @@
     import { event } from '$lib/actions/analytics';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
-    import { onMount } from 'svelte';
     import { page } from '$app/stores';
 
     const projectId = $page.params.project;
 
-    onMount(async () => {
+    $: {
         authMethods.load($project);
         OAuthProviders.load($project);
-    });
+    }
 
     const authUpdate = async (box: AuthMethod) => {
         try {
