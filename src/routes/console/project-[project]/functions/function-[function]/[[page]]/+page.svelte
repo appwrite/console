@@ -89,7 +89,7 @@
         {#if activeDeployment}
             <CardGrid>
                 <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                    <div class="avatar is-medium">
+                    <div class="avatar is-medium" aria-hidden="true">
                         <img
                             src={`${base}/icons/${$app.themeInUse}/color/${
                                 $func.runtime.split('-')[0]

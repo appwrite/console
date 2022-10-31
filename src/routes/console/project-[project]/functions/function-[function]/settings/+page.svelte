@@ -22,7 +22,7 @@
     import Variable from '../../createVariable.svelte';
     import Upload from './uploadVariables.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Permissions } from '$lib/components/permissions';
+    import { Roles } from '$lib/components/permissions';
     import { difference } from '$lib/helpers/array';
     import TableList from '$lib/elements/table/tableList.svelte';
     import { TableCell, TableCellText } from '$lib/elements/table';
@@ -324,7 +324,7 @@
                 check out the Permissions Guide in our documentation.
             </p>
             <svelte:fragment slot="aside">
-                <Permissions withCrud={false} bind:executeAccess={permissions} />
+                <Roles bind:roles={permissions} />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
@@ -393,7 +393,7 @@
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputCron
-                        bind:value={$func.schedule}
+                        bind:value={functionSchedule}
                         label="Schedule (CRON Syntax)"
                         id="schedule" />
                 </FormList>

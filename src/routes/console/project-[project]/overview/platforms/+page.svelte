@@ -10,6 +10,8 @@
     import CreateWeb from './createWeb.svelte';
     import { versions } from './wizard/store';
     import type { PageData } from './$types';
+    import { base } from '$app/paths';
+    import { app } from '$lib/stores/app';
 
     export let data: PageData;
 
@@ -28,6 +30,20 @@
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
         [Platform.Apple]: CreateApple
+    };
+
+    const getPlatformInfo = (platform: string) => {
+        if (platform.includes('flutter')) {
+            return 'color/flutter';
+        } else if (platform.includes('apple')) {
+            return 'color/apple';
+        } else if (platform.includes('android')) {
+            return 'color/android';
+        } else if (platform.includes('web')) {
+            return 'grayscale/code';
+        } else {
+            return 'unknown';
+        }
     };
 
     async function addPlatform(type: Platform) {
@@ -61,7 +77,18 @@
 <div class="grid-box u-margin-block-start-32" style="--grid-gap:1.5rem; --grid-item-size:25rem;">
     {#each data.platforms.platforms as platform}
         <GridItem1 href={`${path}/${platform.$id}`}>
-            <svelte:fragment slot="title">{platform.name}</svelte:fragment>
+            <svelte:fragment slot="title">
+                <div class="u-flex u-gap-8 u-cross-center">
+                    <div class="avatar is-medium" aria-hidden="true">
+                        <img
+                            src={`${base}/icons/${$app.themeInUse}/${getPlatformInfo(
+                                platform.type.toLowerCase()
+                            )}.svg`}
+                            alt="technology" />
+                    </div>
+                    <span class="text">{platform.name}</span>
+                </div>
+            </svelte:fragment>
             <div class="grid-item-1-end-start">
                 <p>Last Updated</p>
                 <p>{toLocaleDateTime(platform.$updatedAt)}</p>
