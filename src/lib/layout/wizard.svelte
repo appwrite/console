@@ -28,13 +28,8 @@
     let showExitModal = false;
 
     function handleKeydown(event: KeyboardEvent) {
-        const dialogArray = document.getElementsByTagName['dialog'];
-        let isModalOpen = false;
-        dialogArray?.forEach((dialog: HTMLDialogElement) => {
-            if (dialog.open) {
-                isModalOpen = true;
-            }
-        });
+        const isModalOpen = document.querySelectorAll('dialog[open]');
+
         if (event.key === 'Escape' && !showExitModal && isModalOpen) {
             event.preventDefault();
             dispatch('exit');

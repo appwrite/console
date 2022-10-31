@@ -37,7 +37,7 @@
                     await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
             );
             await invalidate(Dependencies.FUNCTIONS);
-            await goto(`${base}/console/project-${projectId}/functions/function/${response.$id}`);
+            goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
 
             addNotification({
                 message: 'Function has been created',
