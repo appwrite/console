@@ -37,7 +37,7 @@
         }
     };
 
-    $: isUser = selectedMember.userId === $user.$id;
+    $: isUser = selectedMember?.userId === $user?.$id;
 </script>
 
 <Modal bind:show={showDelete} on:submit={deleteMembership} warning>
@@ -46,8 +46,8 @@
     </svelte:fragment>
     <p>
         {isUser
-            ? `Are you sure you want to leave '${selectedMember.teamName}'?`
-            : `Are you sure you want to delete ${selectedMember.userName} from '${selectedMember.teamName}'?`}
+            ? `Are you sure you want to leave '${selectedMember?.teamName}'?`
+            : `Are you sure you want to delete ${selectedMember?.userName} from '${selectedMember?.teamName}'?`}
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

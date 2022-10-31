@@ -29,6 +29,10 @@
             onINP(reportWebVitals);
             onTTFB(reportWebVitals);
         }
+
+        /**
+         * Handle initial load.
+         */
         const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
         if ($user) {
             if (!$page.url.pathname.startsWith('/console')) {

@@ -119,6 +119,4 @@
     {/if}
 </Container>
 
-{#if selectedMember}
-    <Delete {selectedMember} bind:showDelete on:deleted={() => deleted()} />
-{/if}
+<Delete {selectedMember} bind:showDelete on:deleted={() => deleted()} />

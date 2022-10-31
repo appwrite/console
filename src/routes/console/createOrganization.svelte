@@ -9,12 +9,13 @@
     import { Dependencies } from '$lib/constants';
 
     export let show = false;
-    const dispatch = createEventDispatcher();
-    $: console.log(show);
+
     let name: string;
     let id: string;
     let showCustomId = false;
     let error: string;
+
+    const dispatch = createEventDispatcher();
 
     const create = async () => {
         try {
