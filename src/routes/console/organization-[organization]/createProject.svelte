@@ -18,7 +18,12 @@
 
     const create = async () => {
         try {
-            const project = await sdkForConsole.projects.create(id ?? 'unique()', name, teamId);
+            const project = await sdkForConsole.projects.create(
+                id ?? 'unique()',
+                name,
+                teamId,
+                'default'
+            );
             dispatch('created', project);
             addNotification({
                 type: 'success',

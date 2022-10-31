@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { Alert } from '$lib/components';
 
     export let show = false;
@@ -12,6 +12,10 @@
     let alert: HTMLElement;
 
     const dispatch = createEventDispatcher();
+
+    onMount(() => {
+        if (show) openModal();
+    });
 
     function handleBLur(event: MouseEvent) {
         if (event.target === dialog) {

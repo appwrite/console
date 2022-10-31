@@ -7,18 +7,17 @@
     import type { Provider } from '$lib/stores/oauth-providers';
     import { onMount } from 'svelte';
 
-    export let showModal = false;
     export let provider: Provider;
 
-    let id: string = null;
-    let active = false;
+    let appId: string = null;
+    let enabled = false;
     let keyID: string = null;
     let teamID: string = null;
     let p8: string = null;
 
     onMount(() => {
-        id ??= provider.id;
-        active ??= provider.active;
+        appId ??= provider.appId;
+        enabled ??= provider.enabled;
         if (provider.secret) ({ keyID, teamID, p8 } = JSON.parse(provider.secret));
     });
 
@@ -30,17 +29,17 @@
             await sdkForConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
-                id,
-                secret
+                appId,
+                secret,
+                enabled
             );
-            provider.active = active;
-            provider.id = id;
+            provider.enabled = enabled;
+            provider.appId = appId;
             provider.secret = secret;
-            showModal = false;
             addNotification({
                 type: 'success',
                 message: `${provider.name} authentication has been ${
-                    provider.active ? 'enabled' : 'disabled'
+                    provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
         } catch ({ message }) {
@@ -51,7 +50,7 @@
     $: secret = keyID && teamID && p8 ? JSON.stringify({ keyID, teamID, p8 }) : provider.secret;
 </script>
 
-<Modal {error} on:submit={update} size="big" bind:show={showModal}>
+<Modal {error} on:submit={update} size="big" show on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
@@ -61,13 +60,13 @@
                 visit the docs.
             </a>
         </p>
-        <InputSwitch id="state" bind:value={active} label={active ? 'Enabled' : 'Disabled'} />
+        <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
         <InputText
             id="bundleID"
             label="Bundle ID"
             autofocus={true}
             placeholder="com.company.appname"
-            bind:value={id} />
+            bind:value={appId} />
         <InputText id="keyID" label="Key ID" placeholder="SHAB13ROFN" bind:value={keyID} />
         <InputText id="teamID" label="Team ID" placeholder="ELA2CD3AED" bind:value={teamID} />
         <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={p8} />
@@ -83,12 +82,12 @@
         </div>
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showModal = false)}>Cancel</Button>
+        <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
             disabled={(secret === provider.secret &&
-                active === provider.active &&
-                id === provider.id) ||
-                !(id && keyID && teamID && p8)}
+                enabled === provider.enabled &&
+                appId === provider.appId) ||
+                !(appId && keyID && teamID && p8)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>
