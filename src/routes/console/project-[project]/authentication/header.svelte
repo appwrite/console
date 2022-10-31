@@ -1,18 +1,21 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Tab, Tabs } from '$lib/components';
-    import { Cover } from '$lib/layout';
+    import { isTabSelected } from '$lib/helpers/load';
+    import { Cover, CoverTitle } from '$lib/layout';
 
     const projectId = $page.params.project;
     const path = `/console/project-${projectId}/authentication`;
     const tabs = [
         {
             href: path,
-            title: 'Users'
+            title: 'Users',
+            hasChildren: true
         },
         {
             href: `${path}/teams`,
-            title: 'Teams'
+            title: 'Teams',
+            hasChildren: true
         },
         {
             href: `${path}/usage`,
@@ -31,14 +34,11 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <h1 class="heading-level-4">
-            <span class="text">Authentication</span>
-        </h1>
+        <CoverTitle>Authentication</CoverTitle>
     </svelte:fragment>
-
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={$page.url.pathname === tab.href}>
+            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
                 {tab.title}
             </Tab>
         {/each}

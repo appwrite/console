@@ -11,9 +11,6 @@
     import { DropList, DropListItem, Heading } from '$lib/components';
     import { BarChart, LineChart } from '$lib/charts';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { updateLayout } from '$lib/stores/layout';
-    import Header from './header.svelte';
-    import Breadcrumbs from './breadcrumbs.svelte';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -31,10 +28,6 @@
         if ($usage) {
             await promise;
         }
-        updateLayout({
-            header: Header,
-            breadcrumb: Breadcrumbs
-        });
     }
 
     const formatter = Intl.NumberFormat('en', {

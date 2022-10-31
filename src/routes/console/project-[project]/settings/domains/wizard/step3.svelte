@@ -1,7 +1,7 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
-    import CnameTable from './_cnameTable.svelte';
-    import VerificationBox from './_verificationBox.svelte';
+    import CnameTable from './cnameTable.svelte';
+    import VerificationBox from './verificationBox.svelte';
 
     let isVerifying = false;
     let isVerified = false;

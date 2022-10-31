@@ -1,0 +1,65 @@
+<script lang="ts">
+    import { goto, invalidate } from '$app/navigation';
+    import { Card } from '$lib/components';
+    import CustomId from '$lib/components/customId.svelte';
+    import { Dependencies } from '$lib/constants';
+    import { Pill } from '$lib/elements';
+    import { Button, Form, InputText } from '$lib/elements/forms';
+    import FormList from '$lib/elements/forms/formList.svelte';
+    import { Container } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
+
+    let name: string;
+    let id: string;
+    let showCustomId = false;
+    let loading = false;
+    async function createProject() {
+        try {
+            loading = true;
+            const org = await createOrganization();
+            const project = await sdkForConsole.projects.create(id ?? ID.unique(), name, org.$id);
+            await invalidate(Dependencies.ACCOUNT);
+            goto(`/console/project-${project.$id}`);
+        } catch ({ message }) {
+            addNotification({
+                message,
+                type: 'error'
+            });
+        } finally {
+            loading = false;
+        }
+    }
+
+    async function createOrganization() {
+        return await sdkForConsole.teams.create(ID.unique(), 'Personal Projects');
+    }
+</script>
+
+<Container overlapCover size="large">
+    <Card>
+        <Form on:submit={createProject}>
+            <FormList>
+                <InputText
+                    id="name"
+                    label="Project name"
+                    placeholder="First Appwrite Project"
+                    disabled={loading}
+                    bind:value={name} />
+                {#if !showCustomId}
+                    <div>
+                        <Pill button on:click={() => (showCustomId = !showCustomId)}>
+                            <span class="icon-pencil" aria-hidden="true" /><span class="text">
+                                Project ID
+                            </span>
+                        </Pill>
+                    </div>
+                {:else}
+                    <CustomId bind:show={showCustomId} name="Project ID" bind:id />
+                {/if}
+                <Button fullWidth submit disabled={loading}>Create project</Button>
+            </FormList>
+        </Form>
+    </Card>
+</Container>

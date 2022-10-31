@@ -4,12 +4,14 @@
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
-    import { project } from '../../store';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateWeb from './createWeb.svelte';
     import { versions } from './wizard/store';
+    import type { PageData } from './$types';
+
+    export let data: PageData;
 
     let showDropdown = false;
     const path = `/console/project-${$page.params.project}/overview/platforms`;
@@ -57,7 +59,7 @@
 </div>
 
 <div class="grid-box u-margin-block-start-32" style="--grid-gap:1.5rem; --grid-item-size:25rem;">
-    {#each $project.platforms as platform}
+    {#each data.platforms.platforms as platform}
         <GridItem1 href={`${path}/${platform.$id}`}>
             <svelte:fragment slot="title">{platform.name}</svelte:fragment>
             <div class="grid-item-1-end-start">

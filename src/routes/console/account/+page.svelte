@@ -7,7 +7,9 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
-    import Delete from './_delete.svelte';
+    import Delete from './delete.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     let name: string = null,
         email: string = null,
@@ -24,7 +26,7 @@
     async function updateName() {
         try {
             await sdkForConsole.account.updateName(name);
-            $user.name = name;
+            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -39,7 +41,7 @@
     async function updateEmail() {
         try {
             await sdkForConsole.account.updateEmail(email, emailPassword);
-            $user.email = email;
+            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'

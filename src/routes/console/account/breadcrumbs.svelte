@@ -5,7 +5,7 @@
     $: breadcrumbs = [
         {
             href: `/console/account`,
-            title: $user.name
+            title: $user?.name
         }
     ];
 </script>

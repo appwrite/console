@@ -7,7 +7,6 @@
         InputEmail,
         InputText,
         InputPhone,
-        Form,
         FormList
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -53,40 +52,38 @@
     }
 </script>
 
-<Form on:submit={create}>
-    <Modal {error} size="big" bind:show={showCreate}>
-        <svelte:fragment slot="header">Create User</svelte:fragment>
-        <FormList>
-            <InputText
-                id="name"
-                label="Name"
-                placeholder="Enter name"
-                autofocus={true}
-                bind:value={name} />
-            <InputEmail id="email" label="Email" placeholder="Enter email" bind:value={mail} />
-            <InputPhone id="phone" label="Phone" placeholder="Enter phone" bind:value={phone} />
-            <InputPassword
-                id="password"
-                label="Password"
-                placeholder="Enter password"
-                showPasswordButton={true}
-                bind:value={pass} />
+<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+    <svelte:fragment slot="header">Create User</svelte:fragment>
+    <FormList>
+        <InputText
+            id="name"
+            label="Name"
+            placeholder="Enter name"
+            autofocus={true}
+            bind:value={name} />
+        <InputEmail id="email" label="Email" placeholder="Enter email" bind:value={mail} />
+        <InputPhone id="phone" label="Phone" placeholder="Enter phone" bind:value={phone} />
+        <InputPassword
+            id="password"
+            label="Password"
+            placeholder="Enter password"
+            showPasswordButton={true}
+            bind:value={pass} />
 
-            {#if !showDropdown}
-                <div>
-                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            User ID
-                        </span>
-                    </Pill>
-                </div>
-            {:else}
-                <CustomId bind:show={showDropdown} name="User" bind:id />
-            {/if}
-        </FormList>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showCreate = false)}>Cancel</Button>
-            <Button submit>Create</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+        {#if !showDropdown}
+            <div>
+                <Pill button on:click={() => (showDropdown = !showDropdown)}>
+                    <span class="icon-pencil" aria-hidden="true" /><span class="text">
+                        User ID
+                    </span>
+                </Pill>
+            </div>
+        {:else}
+            <CustomId bind:show={showDropdown} name="User" bind:id />
+        {/if}
+    </FormList>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showCreate = false)}>Cancel</Button>
+        <Button submit>Create</Button>
+    </svelte:fragment>
+</Modal>

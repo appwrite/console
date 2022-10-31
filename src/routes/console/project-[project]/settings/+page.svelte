@@ -1,7 +1,6 @@
 <script lang="ts">
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
@@ -9,22 +8,22 @@
     import { CardGrid, CopyInput, Box, Heading } from '$lib/components';
     import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import Delete from './_deleteProject.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import Delete from './deleteProject.svelte';
 
     let name: string = null;
     let showDelete = false;
     const endpoint = sdkForConsole.client.config.endpoint;
 
     onMount(async () => {
-        await project.load($page.params.project);
-
         name ??= $project.name;
     });
 
     const updateName = async () => {
         try {
             await sdkForConsole.projects.update($project.$id, name);
-            $project.name = name;
+            invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'
@@ -44,6 +43,7 @@
                 service.method,
                 service.value
             );
+            invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: `${service.label} service has been ${

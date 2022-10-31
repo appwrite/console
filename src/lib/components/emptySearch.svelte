@@ -2,7 +2,7 @@
     import { app } from '$lib/stores/app';
     import Light from '$lib/images/search-light.svg';
     import Dark from '$lib/images/search-dark.svg';
-    import Pagination from './pagination.svelte';
+    import PaginationInline from './paginationInline.svelte';
 </script>
 
 <article class="card u-grid u-cross-center u-width-full-line common-section">
@@ -18,5 +18,5 @@
 
 <div class="u-flex u-margin-block-start-32 u-main-space-between">
     <p class="text">Total results: 0</p>
-    <Pagination limit={1} offset={0} sum={0} />
+    <PaginationInline limit={1} offset={0} sum={0} />
 </div>
