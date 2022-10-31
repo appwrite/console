@@ -6,21 +6,23 @@
     import type { Provider } from '$lib/stores/oauth-providers';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
-    export let showModal = false;
     export let provider: Provider;
 
     const projectId = $page.params.project;
 
-    let active = false;
-    let id: string = null;
+    let enabled: boolean = null;
+    let appId: string = null;
     let secret: string = null;
 
     onMount(() => {
-        active ??= provider.active;
-        id ??= provider.id;
+        enabled ??= provider.enabled;
+        appId ??= provider.appId;
         secret ??= provider.secret;
     });
+
     let error: string;
 
     const update = async () => {
@@ -28,26 +30,27 @@
             await sdkForConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
-                id,
-                secret
+                appId,
+                secret,
+                enabled
             );
-            provider.active = active;
-            provider.id = id;
+            provider.enabled = enabled;
+            provider.appId = appId;
             provider.secret = secret;
-            showModal = false;
             addNotification({
                 type: 'success',
                 message: `${provider.name} authentication has been ${
-                    provider.active ? 'enabled' : 'disabled'
+                    provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
+            invalidate(Dependencies.PROJECT);
         } catch ({ message }) {
             error = message;
         }
     };
 </script>
 
-<Modal {error} size="big" bind:show={showModal} on:submit={update}>
+<Modal {error} size="big" show on:submit={update} on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
@@ -56,13 +59,13 @@
             <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
                 >visit the docs.</a>
         </p>
-        <InputSwitch id="state" bind:value={active} label={active ? 'Enabled' : 'Disabled'} />
+        <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
         <InputText
             id="appID"
             label="App ID"
             autofocus={true}
             placeholder="Enter ID"
-            bind:value={id} />
+            bind:value={appId} />
         <InputPassword
             id="secret"
             label="App Secret"
@@ -82,11 +85,13 @@
         </div>
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showModal = false)}>Cancel</Button>
+        <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={!id ||
+            disabled={!appId ||
                 !secret ||
-                (id === provider.id && secret === provider.secret && active === provider.active)}
+                (appId === provider.appId &&
+                    secret === provider.secret &&
+                    enabled === provider.enabled)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>
