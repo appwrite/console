@@ -10,7 +10,7 @@
     export let provider: Provider;
 
     let appId: string = null;
-    let enabled = false;
+    let enabled: boolean = null;
     let keyID: string = null;
     let teamID: string = null;
     let p8: string = null;

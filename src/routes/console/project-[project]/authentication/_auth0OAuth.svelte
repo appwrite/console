@@ -10,7 +10,7 @@
     export let provider: Provider;
 
     let appId: string = null;
-    let enabled = false;
+    let enabled: boolean = null;
     let clientSecret: string = null;
     let auth0Domain: string = null;
     let error: string;
