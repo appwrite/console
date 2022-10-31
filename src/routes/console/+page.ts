@@ -5,7 +5,8 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ parent }) => {
     const { organizations } = await parent();
     if (organizations.total) {
-        throw redirect(303, `${base}/console/organization-${organizations.teams[0].$id}`);
+        const teamId = localStorage.getItem('organization') ?? organizations.teams[0].$id;
+        throw redirect(303, `${base}/console/organization-${teamId}`);
     } else {
         throw redirect(303, `${base}/console/onboarding`);
     }
