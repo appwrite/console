@@ -26,7 +26,6 @@
     const projectId = $page.params.project;
     let name: string = null;
     let url: string = null;
-    let events = [];
 
     const eventSet: Writable<Set<string>> = writable(new Set());
 
@@ -41,7 +40,7 @@
     onMount(async () => {
         name ??= $webhook.name;
         url ??= $webhook.url;
-        events = $webhook.events;
+        $eventSet = new Set($webhook.events);
         httpUser ??= $webhook.httpUser;
         httpPass ??= $webhook.httpPass;
         security = $webhook.security;
@@ -144,8 +143,13 @@
         eventSet.set($eventSet.add(event.detail));
     }
 
-    $: if (difference(events, $webhook.events).length > 0) {
-        areEventsDisabled = false;
+    $: if ($eventSet) {
+        if (
+            difference(Array.from($eventSet), $webhook.events).length ||
+            difference($webhook.events, Array.from($eventSet)).length
+        ) {
+            areEventsDisabled = false;
+        } else areEventsDisabled = true;
     }
 </script>
 
