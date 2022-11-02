@@ -16,8 +16,6 @@ export enum Dependencies {
     COLLECTION = 'collection',
     DOCUMENT = 'document',
     DOCUMENTS = 'documents',
-    ATTRIBUTES = 'attributes',
-    INDEXES = 'indexes',
     BUCKET = 'bucket',
     FILE = 'file',
     FILES = 'files',

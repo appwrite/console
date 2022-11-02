@@ -57,7 +57,7 @@
                 attributeList.map((a) => a.value),
                 attributeList.map((a) => a.order)
             );
-            invalidate(Dependencies.INDEXES);
+            invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Index created!',
                 type: 'success'

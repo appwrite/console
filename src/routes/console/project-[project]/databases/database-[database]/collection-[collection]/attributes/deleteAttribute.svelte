@@ -21,7 +21,7 @@
                 $collection.$id,
                 selectedAttribute.key
             );
-            invalidate(Dependencies.ATTRIBUTES);
+            invalidate(Dependencies.COLLECTION);
             showDelete = false;
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${$page.params.collection}/attributes`
