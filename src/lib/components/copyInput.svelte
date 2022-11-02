@@ -22,21 +22,23 @@
     };
 </script>
 
-<div class="input-text-wrapper" style="--amount-of-buttons:1">
+<div>
     <label class:u-hide={!showLabel} class="label" for={label}>{label}</label>
-    <input {value} id={label} type="text" class="input-text" readonly />
-    <div class="options-list">
-        <button
-            type="button"
-            class="input-button"
-            aria-label="Click to copy."
-            on:click={copy}
-            on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
-            use:tooltip={{
-                content,
-                hideOnClick: false
-            }}>
-            <span class="icon-duplicate" aria-hidden="true" />
-        </button>
+    <div class="input-text-wrapper" style="--amount-of-buttons:1">
+        <input {value} id={label} type="text" class="input-text" readonly />
+        <div class="options-list">
+            <button
+                type="button"
+                class="input-button"
+                aria-label="Click to copy."
+                on:click={copy}
+                on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
+                use:tooltip={{
+                    content,
+                    hideOnClick: false
+                }}>
+                <span class="icon-duplicate" aria-hidden="true" />
+            </button>
+        </div>
     </div>
 </div>
