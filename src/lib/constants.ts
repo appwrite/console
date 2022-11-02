@@ -1,7 +1,6 @@
 export const PAGE_LIMIT = 12; // default page limit
 export const CARD_LIMIT = 6; // default card limit
 export enum Dependencies {
-    ORGANIZATION = 'organization',
     PROJECT = 'project',
     PROJECTS = 'projects',
     ACCOUNT = 'account',
