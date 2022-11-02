@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, DropList, DropListItem } from '$lib/components';
+    import { Empty, DropList, DropListItem, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import {
         Table,
@@ -19,6 +19,7 @@
     import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
 
     export let data: PageData;
 
@@ -34,6 +35,15 @@
 </script>
 
 <Container>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <Heading tag="h2" size="5">Indexes</Heading>
+
+        <Button on:click={() => (showCreateIndex = true)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create Index</span>
+        </Button>
+    </div>
+
     {#if data.indexes.total}
         <Table>
             <TableHeader>
