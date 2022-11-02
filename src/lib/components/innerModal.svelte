@@ -1,5 +1,5 @@
 <script>
-    import FormItem from '$lib/elements/forms/formItem.svelte';
+    import { FormItem } from '$lib/elements/forms';
 
     export let show = false;
 </script>
