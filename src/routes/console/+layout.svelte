@@ -26,10 +26,6 @@
     }
 </script>
 
-<svelte:head>
-    <title>Console - Appwrite</title>
-</svelte:head>
-
 <Shell
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&

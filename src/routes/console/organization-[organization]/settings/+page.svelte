@@ -20,7 +20,7 @@
     async function updateName() {
         try {
             await sdkForConsole.teams.update($organization.$id, name);
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'

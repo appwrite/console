@@ -25,7 +25,7 @@
                 url,
                 name
             );
-            invalidate(Dependencies.ORGANIZATION);
+            invalidate(Dependencies.ACCOUNT);
             showCreate = false;
             addNotification({
                 type: 'success',

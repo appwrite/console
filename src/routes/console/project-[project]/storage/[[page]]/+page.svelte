@@ -97,7 +97,7 @@
                 <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
             </div>
             <div class="u-flex u-gap-12">
-                <Button external href="#/" text>Documentation</Button>
+                <Button external href="https://appwrite.io/docs/storage" text>Documentation</Button>
                 <Button secondary>Create bucket</Button>
             </div>
         </Empty>
