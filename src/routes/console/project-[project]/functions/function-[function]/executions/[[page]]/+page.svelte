@@ -17,12 +17,29 @@
     import { log } from '$lib/stores/logs';
     import { func } from '../../store';
     import type { PageData } from './$types';
-    import { PAGE_LIMIT } from '$lib/constants';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import { page } from '$app/stores';
+    import { onDestroy, onMount } from 'svelte';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
 
     export let data: PageData;
 
-    //TODO: add optional hover state to rows
+    let unsubscribe: { (): void; (): any };
+
+    onMount(() => {
+        unsubscribe = sdkForConsole.client.subscribe('console', (response) => {
+            if (response.events.includes('functions.*.executions.*')) {
+                invalidate(Dependencies.EXECUTIONS);
+            }
+        });
+    });
+
+    onDestroy(() => {
+        if (unsubscribe) {
+            unsubscribe();
+        }
+    });
 </script>
 
 <Container>

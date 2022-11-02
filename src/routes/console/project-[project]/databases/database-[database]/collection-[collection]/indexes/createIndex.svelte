@@ -2,7 +2,6 @@
     import { Modal } from '$lib/components';
     import { Button, InputText, FormList, InputSelect } from '$lib/elements/forms';
     import { collection } from '../store';
-    import { onMount } from 'svelte';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
@@ -11,7 +10,6 @@
     import { Dependencies } from '$lib/constants';
 
     export let showCreateIndex = false;
-    export let externalAttribute: Attributes = null;
 
     const databaseId = $page.params.database;
 
@@ -23,7 +21,7 @@
     ];
     let newAttr = false;
     let selectedType = '';
-    let attributeOptions = $collection.attributes.map((attribute: Attributes) => ({
+    $: attributeOptions = $collection.attributes.map((attribute: Attributes) => ({
         value: attribute.key,
         label: attribute.key
     }));
@@ -31,12 +29,6 @@
 
     let selectedAttribute = '';
     let selectedOrder = '';
-
-    onMount(() => {
-        if (externalAttribute) {
-            attributeList = [{ value: externalAttribute.key, order: 'ASC' }];
-        }
-    });
 
     $: if (showCreateIndex) {
         attributeList = [];
@@ -130,7 +122,7 @@
                     <div class="form-item-part u-cross-child-end">
                         <Button
                             text
-                            disabled={externalAttribute && i === 0}
+                            disabled={i === 0}
                             on:click={() => {
                                 if (i === 0) attributeList = [];
                                 attributeList = attributeList.splice(i, 1);

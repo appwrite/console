@@ -25,6 +25,7 @@ export enum Dependencies {
     FUNCTIONS = 'functions',
     VARIABLES = 'variables',
     DEPLOYMENTS = 'deployments',
+    EXECUTIONS = 'executions',
     PLATFORM = 'platform',
     PLATFORMS = 'platforms',
     KEY = 'key',
