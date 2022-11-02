@@ -23,7 +23,7 @@
     async function handleCreate(event: CustomEvent<Models.Collection>) {
         showCreate = false;
         await goto(
-            `${base}/console/project-${project}/databases/database-${databaseId}/collection/${event.detail.$id}`
+            `${base}/console/project-${project}/databases/database-${databaseId}/collection-${event.detail.$id}`
         );
     }
 </script>

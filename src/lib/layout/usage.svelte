@@ -42,12 +42,17 @@
     <div class="u-flex u-main-space-between common-section">
         <Heading tag="h2" size="5">{title}</Heading>
         <DropTabs>
-            <DropTabsLink href={`${path}/24h`} disabled={$page.params.period === '24h'}
-                >24h</DropTabsLink>
-            <DropTabsLink href={`${path}/30d`} disabled={$page.params.period === '30d'}
-                >30d</DropTabsLink>
-            <DropTabsLink href={`${path}/90d`} disabled={$page.params.period === '90d'}
-                >90d</DropTabsLink>
+            <DropTabsLink href={`${path}/24h`} disabled={$page.params.period === '24h'}>
+                24
+            </DropTabsLink>
+            <DropTabsLink
+                href={`${path}/30d`}
+                disabled={!$page.params.period || $page.params.period === '30d'}>
+                30d
+            </DropTabsLink>
+            <DropTabsLink href={`${path}/90d`} disabled={$page.params.period === '90d'}>
+                90d
+            </DropTabsLink>
         </DropTabs>
     </div>
     <Card>
