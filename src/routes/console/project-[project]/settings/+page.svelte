@@ -88,10 +88,11 @@
             <Heading tag="h6" size="7">API Credentials</Heading>
             <p class="text">
                 Access Appwrite services using your API Endpoint and Project ID. You can connect
-                Appwrite to your applications and server-side code by <a href="#/" class="link"
-                    >integrating a new platform</a>
+                Appwrite to your applications and server-side code by <a
+                    href="https://appwrite.io/docs"
+                    class="link">integrating a new platform</a>
                 or
-                <a href="#/" class="link">creating an API key</a>.
+                <a href="https://appwrite.io/docs/keys" class="link">creating an API key</a>.
             </p>
             <svelte:fragment slot="aside">
                 <FormList>

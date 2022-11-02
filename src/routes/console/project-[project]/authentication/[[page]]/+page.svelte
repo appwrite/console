@@ -154,7 +154,9 @@
                     <p>Need a hand? Check out our documentation.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="#/" text>Documentation</Button>
+                    <Button external href="https://appwrite.io/docs/server/users" text>
+                        Documentation
+                    </Button>
                     <Button secondary>Create User</Button>
                 </div>
             </div>

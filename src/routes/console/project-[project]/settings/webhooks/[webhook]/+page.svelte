@@ -273,7 +273,11 @@
                         bind:value={security}>
                         <span class="u-error">Warning:</span> Untrusted or self-signed certificates
                         may not be secure.
-                        <a href="#/" target="_blank" rel="noopener noreferrer" class="link">
+                        <a
+                            href="https://appwrite.io/docs/custom-domains#enjoySSLCert"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="link">
                             Learn more</a>
                     </InputChoice>
                 </FormList>
