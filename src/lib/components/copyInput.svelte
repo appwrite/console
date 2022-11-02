@@ -22,10 +22,10 @@
     };
 </script>
 
-<div class="input-text-wrapper is-with-end-button">
+<div class="input-text-wrapper" style="--amount-of-buttons:1">
     <label class:u-hide={!showLabel} class="label" for={label}>{label}</label>
-    <div class="input-text-wrapper">
-        <input {value} id={label} type="text" class="input-text" readonly />
+    <input {value} id={label} type="text" class="input-text" readonly />
+    <div class="options-list">
         <button
             type="button"
             class="input-button"
