@@ -22,7 +22,16 @@
 
     function handleCreated(dispatchEvent: CustomEvent) {
         createFunction.update((n) => {
-            n.vars.push(dispatchEvent.detail);
+            if (n.vars.length) {
+                n.vars.map((v) => {
+                    if (v.key !== dispatchEvent.detail.key) {
+                        n.vars.push(dispatchEvent.detail);
+                    }
+                });
+            } else {
+                n.vars.push(dispatchEvent.detail);
+            }
+
             return n;
         });
     }
