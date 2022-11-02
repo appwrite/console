@@ -11,17 +11,14 @@
     import { event } from '$lib/actions/analytics';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
-    import { onMount } from 'svelte';
     import { page } from '$app/stores';
 
     const projectId = $page.params.project;
-    let showModal = false;
 
-    onMount(async () => {
-        await project.load(projectId);
+    $: {
         authMethods.load($project);
         OAuthProviders.load($project);
-    });
+    }
 
     const authUpdate = async (box: AuthMethod) => {
         try {
@@ -57,9 +54,7 @@
                                 label={box.label}
                                 id={box.method}
                                 bind:value={box.value}
-                                on:change={() => {
-                                    authUpdate(box);
-                                }} />
+                                on:change={() => authUpdate(box)} />
                         {/each}
                     </ul>
                 </form>
@@ -73,7 +68,6 @@
                         class="card u-flex u-flex-vertical u-cross-center"
                         on:click={() => {
                             selectedProvider = provider;
-                            showModal = true;
                         }}
                         use:event={{
                             name: 'console_users',
@@ -92,8 +86,8 @@
                         </div>
                         <p class="u-margin-block-start-8">{provider.name}</p>
                         <div class="u-margin-block-start-24">
-                            <Pill success={provider.active}>
-                                {provider.active ? 'enabled' : 'disabled'}
+                            <Pill success={provider.enabled}>
+                                {provider.enabled ? 'enabled' : 'disabled'}
                             </Pill>
                         </div>
                     </button>
@@ -106,6 +100,7 @@
 {#if selectedProvider}
     <svelte:component
         this={selectedProvider.component}
-        provider={selectedProvider}
-        bind:showModal />
+        bind:provider={selectedProvider}
+        on:close={() => (selectedProvider = null)}
+        showModal />
 {/if}

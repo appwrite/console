@@ -1,6 +1,6 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
-    import CnameTable from './_cnameTable.svelte';
+    import CnameTable from './cnameTable.svelte';
 </script>
 
 <WizardStep>

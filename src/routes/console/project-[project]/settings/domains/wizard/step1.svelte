@@ -4,7 +4,6 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import { domain } from './store';
-    import { domainList } from '../store';
 
     // Handle if user goes back to this step to update
     // the domain name after creating the domain
@@ -28,9 +27,7 @@
         }
 
         if ($domain.id == '') {
-            const newDomain = await sdkForConsole.projects.createDomain(projectId, $domain.name);
-            domainList.load(projectId);
-            $domain.id = newDomain.$id;
+            await sdkForConsole.projects.createDomain(projectId, $domain.name);
         }
     };
 </script>

@@ -1,6 +1,8 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
     import { Modal } from '$lib/components';
-    import { InputText, Button, Form, FormList } from '$lib/elements/forms';
+    import { Dependencies } from '$lib/constants';
+    import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../.../../store';
@@ -16,7 +18,7 @@
             await sdkForConsole.projects.createKey($project.$id, name, scopes);
             name = null;
             scopes = [];
-            project.load($project.$id);
+            invalidate(Dependencies.KEYS);
             show = false;
         } catch (error) {
             addNotification({
@@ -27,16 +29,14 @@
     }
 </script>
 
-<Form on:submit={create}>
-    <Modal bind:show size="big">
-        <svelte:fragment slot="header">Create API Key</svelte:fragment>
-        <FormList>
-            <InputText id="name" label="Name" bind:value={name} autofocus required />
-            <Scopes bind:scopes />
-        </FormList>
-        <svelte:fragment slot="footer">
-            <Button submit>Register</Button>
-            <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+<Modal bind:show on:submit={create} size="big">
+    <svelte:fragment slot="header">Create API Key</svelte:fragment>
+    <FormList>
+        <InputText id="name" label="Name" bind:value={name} autofocus required />
+        <Scopes bind:scopes />
+    </FormList>
+    <svelte:fragment slot="footer">
+        <Button submit>Register</Button>
+        <Button secondary on:click={() => (show = false)}>Cancel</Button>
+    </svelte:fragment>
+</Modal>

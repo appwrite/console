@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { Cover } from '$lib/layout';
+    import { Cover, CoverTitle } from '$lib/layout';
 </script>
 
 <Cover>
     <svelte:fragment slot="header">
-        <h1 class="heading-level-4">
-            <span class="text">Functions</span>
-        </h1>
+        <CoverTitle>Functions</CoverTitle>
     </svelte:fragment>
 </Cover>

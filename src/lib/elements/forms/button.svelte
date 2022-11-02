@@ -16,7 +16,7 @@
     <a
         {disabled}
         {href}
-        target={external ? '_blank' : '_self'}
+        target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class="button"
         class:is-only-icon={round}

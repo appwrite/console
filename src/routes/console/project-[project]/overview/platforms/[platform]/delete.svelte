@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Modal } from '$lib/components';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Dependencies } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../store';
@@ -18,9 +19,8 @@
                 type: 'success',
                 message: `${$platform.name} has been deleted`
             });
-            project.load($project.$id);
+            await invalidate(Dependencies.PLATFORMS);
             await goto(`${base}/console/project-${$project.$id}/overview/platforms`);
-            platform.set(null);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -30,14 +30,12 @@
     };
 </script>
 
-<Form on:submit={handleDelete}>
-    <Modal bind:show={showDelete} warning>
-        <svelte:fragment slot="header">Delete Platform</svelte:fragment>
-        <p>The Platform will be permanently deleted. This action is irreversible.</p>
+<Modal bind:show={showDelete} on:submit={handleDelete} warning>
+    <svelte:fragment slot="header">Delete Platform</svelte:fragment>
+    <p>The Platform will be permanently deleted. This action is irreversible.</p>
 
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Delete</Button>
-        </svelte:fragment>
-    </Modal>
-</Form>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button secondary submit>Delete</Button>
+    </svelte:fragment>
+</Modal>

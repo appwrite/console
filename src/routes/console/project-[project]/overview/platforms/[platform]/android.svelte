@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
     import { CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -23,7 +25,7 @@
                 undefined,
                 hostname
             );
-            project.load($project.$id);
+            invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
                 message: 'Platform Package Name has been updated'

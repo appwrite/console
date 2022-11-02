@@ -4,16 +4,23 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization, memberList } from '$lib/stores/organization';
-    import Delete from '../_deleteOrganization.svelte';
+    import { members, organization } from '$lib/stores/organization';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { onMount } from 'svelte';
+    import Delete from '../deleteOrganization.svelte';
 
-    let name: string = $organization.name;
+    let name: string;
     let showDelete = false;
+
+    onMount(() => {
+        name = $organization.name;
+    });
 
     async function updateName() {
         try {
             await sdkForConsole.teams.update($organization.$id, name);
-            $organization.name = name;
+            invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -26,19 +33,7 @@
         }
     }
 
-    organization.subscribe((org) => {
-        name = org?.name;
-    });
-
-    let avatars = [];
-    let avatarsTotal = 0;
-
-    memberList.subscribe((value) => {
-        if (value?.total > 0) {
-            avatarsTotal = value.total;
-            avatars = value.memberships.map((team) => team.userName);
-        }
-    });
+    $: avatars = $members.memberships.map((team) => team.userName);
 </script>
 
 <Container>
@@ -75,7 +70,7 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
-                        <AvatarGroup {avatars} total={avatarsTotal} />
+                        <AvatarGroup {avatars} total={$members.total} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold">{$organization.name}</h6>

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { functionList } from './store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,9 +11,15 @@
     import Step5 from './wizard/step5.svelte';
     import { createFunction } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { Query } from '@aw-labs/appwrite-console';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
-    const create = async () => {
+    async function onFinish() {
+        console.log(2);
+        await invalidate(Dependencies.FUNCTIONS);
+    }
+    async function create() {
+        console.log(1);
         try {
             const response = await sdkForProject.functions.create(
                 $createFunction.id ?? 'unique()',
@@ -29,11 +34,12 @@
                 async (v) =>
                     await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
             );
+            await invalidate(Dependencies.FUNCTIONS);
+
             addNotification({
                 message: 'Function has been created',
                 type: 'success'
             });
-            functionList.load([Query.limit(6), Query.offset(0), Query.orderDesc('$createdAt')]);
             wizard.hide();
         } catch (error) {
             addNotification({
@@ -41,7 +47,7 @@
                 type: 'error'
             });
         }
-    };
+    }
 
     onDestroy(() => {
         $createFunction = {
@@ -83,4 +89,4 @@
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} />
+<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />

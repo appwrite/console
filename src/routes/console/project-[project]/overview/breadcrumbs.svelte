@@ -5,12 +5,12 @@
 
     $: breadcrumbs = [
         {
-            href: `/console/organization-${$organization.$id}`,
-            title: $organization.name
+            href: `/console/organization-${$organization?.$id}`,
+            title: $organization?.name
         },
         {
-            href: `/console/project-${$project.$id}`,
-            title: $project.name
+            href: `/console/project-${$project?.$id}`,
+            title: $project?.name
         }
     ];
 </script>

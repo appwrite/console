@@ -3,42 +3,31 @@
     import { page } from '$app/stores';
     import { AvatarGroup, DropList, DropListItem, DropListLink, Tab, Tabs } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import {
-        memberList,
+        members,
         newMemberModal,
         newOrgModal,
         organization,
         organizationList
     } from '$lib/stores/organization';
-    import { sdkForConsole } from '$lib/stores/sdk';
 
-    let avatars = [];
-    let avatarsTotal = 0;
     let showDropdown = false;
 
-    memberList.subscribe((value) => {
-        if (value?.total > 0) {
-            avatarsTotal = value.total;
-            avatars = value.memberships.map((team) => {
-                return {
-                    name: team.userName,
-                    img: sdkForConsole.avatars.getInitials(team.userName, 80, 80).toString()
-                };
-            });
-        }
-    });
-
+    $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `/console/organization-${organizationId}`;
     $: tabs = [
         {
             href: path,
-            title: 'Projects'
+            title: 'Projects',
+            hasChildren: true
         },
         {
             href: `${path}/members`,
-            title: 'Members'
+            title: 'Members',
+            hasChildren: true
         },
         {
             href: `${path}/settings`,
@@ -63,11 +52,7 @@
             </button>
             <svelte:fragment slot="list">
                 {#each $organizationList.teams as org}
-                    <DropListLink
-                        href={`${base}/console/organization-${org.$id}`}
-                        on:click={() => {
-                            showDropdown = false;
-                        }}>
+                    <DropListLink href={`${base}/console/organization-${org.$id}`}>
                         {org.name}
                     </DropListLink>
                 {/each}
@@ -75,18 +60,15 @@
             <svelte:fragment slot="other">
                 <section class="drop-section">
                     <ul class="drop-list">
-                        <DropListItem
-                            icon="plus"
-                            on:click={() => {
-                                showDropdown = false;
-                                newOrgModal.set(true);
-                            }}>New Organization</DropListItem>
+                        <DropListItem icon="plus" on:click={() => newOrgModal.set(true)}>
+                            New Organization
+                        </DropListItem>
                     </ul>
                 </section></svelte:fragment>
         </DropList>
         <div class="u-margin-inline-start-auto">
             <div class="u-flex u-gap-16">
-                <AvatarGroup size={40} {avatars} total={avatarsTotal} />
+                <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
                 <Button secondary on:click={() => newMemberModal.set(true)}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Invite</span>
@@ -96,7 +78,7 @@
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={$page.url.pathname === tab.href}>
+            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
                 {tab.title}
             </Tab>
         {/each}
