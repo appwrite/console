@@ -25,7 +25,7 @@
 
     export let data: PageData;
 
-    let unsubscribe: { (): void; (): any };
+    let unsubscribe: { (): void };
 
     onMount(() => {
         unsubscribe = sdkForConsole.client.subscribe('console', (response) => {

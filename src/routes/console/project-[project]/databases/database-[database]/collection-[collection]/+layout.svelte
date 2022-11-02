@@ -5,7 +5,7 @@
     import { onDestroy, onMount } from 'svelte';
     import { collection } from './store';
 
-    let unsubscribe: { (): void; (): any };
+    let unsubscribe: { (): void };
 
     onMount(() => {
         unsubscribe = sdkForConsole.client.subscribe('console', (response) => {

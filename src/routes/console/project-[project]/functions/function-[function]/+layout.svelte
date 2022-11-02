@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
 
-    let unsubscribe: { (): void; (): any };
+    let unsubscribe: { (): void };
 
     onMount(() => {
         unsubscribe = sdkForConsole.client.subscribe('console', (response) => {
