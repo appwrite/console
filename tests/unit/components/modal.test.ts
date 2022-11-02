@@ -5,8 +5,7 @@ import Modal from '../../../src/lib/mock/modal.test.svelte';
 afterEach(() => cleanup());
 
 test('renders modal', async () => {
-    const { queryByText, container } = render(Modal);
+    const { container } = render(Modal);
 
-    expect(queryByText('Content')).toBeInTheDocument();
     expect(container.querySelector('dialog')).toBeInTheDocument();
 });

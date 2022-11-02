@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
     import { GridItem1, Heading, Empty, CardContainer, Pagination } from '$lib/components';
@@ -8,7 +7,6 @@
     import CreateProject from '../createProject.svelte';
     import CreateOrganization from '../../createOrganization.svelte';
     import type { PageData } from './$types';
-    import type { Models } from '@aw-labs/appwrite-console';
     import { CARD_LIMIT } from '$lib/constants';
     import { page } from '$app/stores';
 
@@ -16,10 +14,6 @@
 
     let showCreate = false;
     let addOrganization = false;
-
-    const projectCreated = async (event: CustomEvent<Models.Project>) => {
-        await goto(`${base}/console/project-${event.detail.$id}`);
-    };
 
     const getPlatformInfo = (platform: string) => {
         let name: string, icon: string;
@@ -112,7 +106,4 @@
 
 <CreateOrganization bind:show={addOrganization} />
 
-<CreateProject
-    bind:show={showCreate}
-    teamId={$page.params.organization}
-    on:created={projectCreated} />
+<CreateProject bind:show={showCreate} teamId={$page.params.organization} />

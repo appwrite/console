@@ -5,9 +5,9 @@
 
 <li class="drop-tabs-item">
     {#if disabled}
-        <span class="drop-tabs-button is-disabled">
+        <button class="drop-tabs-button" disabled>
             <span class="text"><slot /></span>
-        </span>
+        </button>
     {:else}
         <a class="drop-tabs-button" {href}>
             <span class="text"><slot /></span>
