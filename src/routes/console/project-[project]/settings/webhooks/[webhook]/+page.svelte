@@ -21,11 +21,15 @@
     import { difference } from '$lib/helpers/array';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { writable, type Writable } from 'svelte/store';
 
     const projectId = $page.params.project;
     let name: string = null;
     let url: string = null;
     let events = [];
+
+    const eventSet: Writable<Set<string>> = writable(new Set());
+
     let httpUser: string = null;
     let httpPass: string = null;
     let security = false;
@@ -93,7 +97,7 @@
                 projectId,
                 $webhook.$id,
                 $webhook.name,
-                events,
+                Array.from($eventSet),
                 $webhook.url,
                 $webhook.security
             );
@@ -110,6 +114,7 @@
             });
         }
     }
+
     async function updateSecurity() {
         try {
             await sdkForConsole.projects.updateWebhook(
@@ -133,6 +138,10 @@
                 message: error.message
             });
         }
+    }
+
+    function handleEvent(event: CustomEvent) {
+        eventSet.set($eventSet.add(event.detail));
     }
 
     $: if (difference(events, $webhook.events).length > 0) {
@@ -200,24 +209,25 @@
 
     <Form on:submit={updateEvents}>
         <CardGrid>
-            <Heading tag="h2" size="7">Update Events</Heading>
+            <Heading tag="h6" size="7">Update Events</Heading>
             <p class="text">
                 Set the events that will trigger your webhook. Maximum 100 events allowed.
             </p>
             <svelte:fragment slot="aside">
-                {#if events?.length}
+                {#if $eventSet.size}
                     <TableList>
-                        {#each events as id}
+                        {#each Array.from($eventSet) as event}
                             <li class="table-row">
                                 <TableCellText title="id">
-                                    {id}
+                                    {event}
                                 </TableCellText>
                                 <TableCell showOverflow title="options" width={40}>
                                     <button
                                         class="button is-text is-only-icon"
                                         aria-label="delete id"
                                         on:click|preventDefault={() => {
-                                            events = events.filter((item) => item !== id);
+                                            $eventSet.delete(event);
+                                            eventSet.set($eventSet);
                                         }}>
                                         <span class="icon-x" aria-hidden="true" />
                                     </button>
@@ -226,14 +236,17 @@
                         {/each}
                     </TableList>
                 {:else}
-                    <Empty isButton single on:click={() => (showCreateEvent = !showCreateEvent)}
-                        >Add a event to get started</Empty>
+                    <Empty isButton on:click={() => (showCreateEvent = true)}>
+                        Add a event to get started
+                    </Empty>
                 {/if}
 
-                <Button text on:click={() => (showCreateEvent = !showCreateEvent)}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="u-text">Add event</span>
-                </Button>
+                <div class="u-flex u-margin-block-start-16">
+                    <Button text noMargin on:click={() => (showCreateEvent = true)}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="u-text">Add event</span>
+                    </Button>
+                </div>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
@@ -313,9 +326,5 @@
 
 <Delete bind:showDelete />
 <Regenerate bind:show={showRegenerate} />
-<EventModal
-    bind:show={showCreateEvent}
-    on:created={(e) => {
-        events.push(e.detail[0]);
-        events = events;
-    }} />
+
+<EventModal bind:show={showCreateEvent} on:created={handleEvent} />
