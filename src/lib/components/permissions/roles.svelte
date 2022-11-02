@@ -71,16 +71,34 @@
             return n;
         });
     }
+
+    function sortRoles(a: string, b: string) {
+        if ((a === 'any') !== (b === 'any')) {
+            return a === 'any' ? -1 : 1;
+        }
+        if ((a === 'users') !== (b === 'users')) {
+            return a === 'users' ? -1 : 1;
+        }
+        if ((a === 'guests') !== (b === 'guests')) {
+            return a === 'guests' ? -1 : 1;
+        }
+
+        return a.localeCompare(b);
+    }
+
+    $: if (roles) {
+        roles.forEach(addRole);
+    }
 </script>
 
-{#if roles?.length}
+{#if [...$groups.keys()]?.length}
     <Table noMargin noStyles noMobile>
         <TableHeader>
             <TableCellHead>Role</TableCellHead>
             <TableCellHead width={40} />
         </TableHeader>
         <TableBody>
-            {#each [...$groups.keys()] as role}
+            {#each [...$groups.keys()].sort(sortRoles) as role}
                 <TableRow>
                     <TableCell title="Role">
                         <Row {role} />
