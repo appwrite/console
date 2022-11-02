@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
     import { Alert } from '$lib/components';
 
     export let show = false;
@@ -15,6 +15,10 @@
 
     onMount(() => {
         if (show) openModal();
+    });
+
+    onDestroy(() => {
+        if (show) closeModal();
     });
 
     function handleBLur(event: MouseEvent) {
@@ -65,50 +69,52 @@
     class:is-small={size === 'small'}
     class:is-big={size === 'big'}
     bind:this={dialog}>
-    <!-- svelte-ignore a11y-no-redundant-roles -->
-    <form class="modal-form" role="form" on:submit|preventDefault>
-        <header class="modal-header">
-            {#if warning}
-                <div class="avatar is-color-orange is-medium">
-                    <span class="icon-exclamation" aria-hidden="true" />
-                </div>
-            {/if}
-            <h4 class="modal-title heading-level-5">
-                <slot name="header" />
-            </h4>
-            {#if closable}
-                <button
-                    type="button"
-                    class="x-button"
-                    aria-label="Close Modal"
-                    title="Close Modal"
-                    on:click={closeModal}>
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
-            {/if}
-        </header>
-        <div class="modal-content">
-            {#if error}
-                <div bind:this={alert}>
-                    <Alert
-                        dismissible
-                        type="warning"
-                        on:dismiss={() => {
-                            error = null;
-                        }}>
-                        {error}
-                    </Alert>
-                </div>
-            {/if}
-            <slot />
-        </div>
-
-        {#if $$slots.footer}
-            <div class="modal-footer">
-                <div class="u-flex u-main-end u-gap-16">
-                    <slot name="footer" />
-                </div>
+    {#if show}
+        <!-- svelte-ignore a11y-no-redundant-roles -->
+        <form class="modal-form" role="form" on:submit|preventDefault>
+            <header class="modal-header">
+                {#if warning}
+                    <div class="avatar is-color-orange is-medium">
+                        <span class="icon-exclamation" aria-hidden="true" />
+                    </div>
+                {/if}
+                <h4 class="modal-title heading-level-5">
+                    <slot name="header" />
+                </h4>
+                {#if closable}
+                    <button
+                        type="button"
+                        class="x-button"
+                        aria-label="Close Modal"
+                        title="Close Modal"
+                        on:click={closeModal}>
+                        <span class="icon-x" aria-hidden="true" />
+                    </button>
+                {/if}
+            </header>
+            <div class="modal-content">
+                {#if error}
+                    <div bind:this={alert}>
+                        <Alert
+                            dismissible
+                            type="warning"
+                            on:dismiss={() => {
+                                error = null;
+                            }}>
+                            {error}
+                        </Alert>
+                    </div>
+                {/if}
+                <slot />
             </div>
-        {/if}
-    </form>
+
+            {#if $$slots.footer}
+                <div class="modal-footer">
+                    <div class="u-flex u-main-end u-gap-16">
+                        <slot name="footer" />
+                    </div>
+                </div>
+            {/if}
+        </form>
+    {/if}
 </dialog>
