@@ -9,7 +9,8 @@
         InputTags,
         InputNumber,
         InputSelect,
-        InputSwitch
+        InputSwitch,
+        FormList
     } from '$lib/elements/forms';
     import { bucket } from '../store';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -208,14 +209,16 @@
                 <Heading tag="h2" size="7">{$bucket.name}</Heading>
 
                 <svelte:fragment slot="aside">
-                    <ul>
-                        <InputSwitch
-                            label={enabled ? 'Enabled' : 'Disabled'}
-                            id="toggle"
-                            bind:value={enabled} />
-                    </ul>
-                    <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                    <div>
+                        <FormList>
+                            <InputSwitch
+                                label={enabled ? 'Enabled' : 'Disabled'}
+                                id="toggle"
+                                bind:value={enabled} />
+                        </FormList>
+                        <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
+                        <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                    </div>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
@@ -228,14 +231,14 @@
             <CardGrid>
                 <Heading tag="h6" size="7">Update Name</Heading>
                 <svelte:fragment slot="aside">
-                    <ul>
+                    <FormList>
                         <InputText
                             id="name"
                             label="Name"
                             placeholder="Enter name"
                             autocomplete={false}
                             bind:value={bucketName} />
-                    </ul>
+                    </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
@@ -296,7 +299,7 @@
                     and <b>Antivirus scanning.</b>
                 </p>
                 <svelte:fragment slot="aside">
-                    <ul class="form-list">
+                    <FormList>
                         <li class="form-item">
                             <label class="choice-item" for="encryption">
                                 <div class="input-text-wrapper">
@@ -345,7 +348,7 @@
                         </li>
 
                         <li />
-                    </ul>
+                    </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">

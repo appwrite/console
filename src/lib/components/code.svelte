@@ -58,7 +58,7 @@
     @import 'prismjs/themes/prism.css';
 
     .box {
-        --p-box-background-color: var(--color-neutral-300) !important;
+        --p-box-background-color: var(--color-neutral-400) !important;
 
         body.theme-light & {
             --p-box-background-color: var(--color-neutral-5) !important;
