@@ -3,9 +3,11 @@ import Breadcrumbs from './breadcrumbs.svelte';
 import { sdkForConsole } from '$lib/stores/sdk';
 import type { LayoutLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { Dependencies } from '$lib/constants';
 
-export const load: LayoutLoad = async ({ params, parent }) => {
+export const load: LayoutLoad = async ({ params, parent, depends }) => {
     await parent();
+    depends(Dependencies.ORGANIZATION);
 
     try {
         return {
