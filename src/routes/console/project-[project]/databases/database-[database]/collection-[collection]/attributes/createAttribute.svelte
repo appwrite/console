@@ -4,6 +4,7 @@
     import { Button, InputText, FormList, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let showCreate = false;
 
@@ -14,6 +15,10 @@
     const created = async () => {
         invalidate(Dependencies.ATTRIBUTES);
         showCreate = false;
+        addNotification({
+            type: 'success',
+            message: `Attribute has been created`
+        });
     };
 
     $: if (selectedOption) {

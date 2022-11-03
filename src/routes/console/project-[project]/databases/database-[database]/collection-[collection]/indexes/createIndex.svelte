@@ -59,7 +59,7 @@
             );
             invalidate(Dependencies.INDEXES);
             addNotification({
-                message: 'Index created!',
+                message: 'Index has been created',
                 type: 'success'
             });
         } catch (error) {

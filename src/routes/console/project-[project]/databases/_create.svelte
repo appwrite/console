@@ -17,9 +17,13 @@
     const create = async () => {
         try {
             const database = await sdkForProject.databases.create(id ? id : 'unique()', name);
-            name = id = null;
             showCreate = false;
             dispatch('created', database);
+            addNotification({
+                type: 'success',
+                message: `${name} has been created`
+            });
+            name = id = null;
         } catch (error) {
             addNotification({
                 type: 'error',

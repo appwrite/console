@@ -20,6 +20,10 @@
                 $page.params.document
             );
             showDelete = false;
+            addNotification({
+                type: 'success',
+                message: `Document has been deleted`
+            });
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`
             );
