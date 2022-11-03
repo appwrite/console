@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputNumber, InputChoice } from '$lib/elements/forms';
+    import { InputChoice, InputDateTime } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -7,30 +7,26 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { page } from '$app/stores';
 
-    export let key: string = null;
+    export let key: string;
     export let submitted = false;
     export let overview = false;
-    export let selectedAttribute: Models.AttributeInteger;
+    export let selectedAttribute: Models.AttributeDatetime;
 
     const databaseId = $page.params.database;
     const dispatch = createEventDispatcher();
 
-    let min: number,
-        max: number,
-        xdefault: number,
+    let xdefault: string,
         required = false,
         array = false;
 
     const submit = async () => {
         submitted = false;
         try {
-            const attribute = await sdkForProject.databases.createIntegerAttribute(
+            const attribute = await sdkForProject.databases.createDatetimeAttribute(
                 databaseId,
                 $collection.$id,
                 key,
                 required,
-                min,
-                max,
                 xdefault ? xdefault : undefined,
                 array
             );
@@ -52,26 +48,22 @@
     }
 
     $: if (overview) {
-        ({ required, array, min, max } = selectedAttribute);
+        ({ required, array } = selectedAttribute);
         xdefault = selectedAttribute.default;
     }
-    $: if (required || array) {
+
+    $: if (required) {
         xdefault = null;
     }
 </script>
 
-<InputNumber id="min" label="Min" bind:value={min} readonly={overview} />
-<InputNumber id="max" label="Max" bind:value={max} readonly={overview} />
-
-<InputNumber
+<InputDateTime
     id="default"
     label="Default value"
-    {min}
-    {max}
     bind:value={xdefault}
-    disabled={required || array}
+    disabled={required}
     readonly={overview} />
-<InputChoice id="required" label="Required" bind:value={required} disabled={overview || array}>
+<InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
     Indicate whether this is a required attribute</InputChoice>
-<InputChoice id="array" label="Array" bind:value={array} disabled={overview || required}>
+<InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
     Indicate whether this attribute should act as an array</InputChoice>

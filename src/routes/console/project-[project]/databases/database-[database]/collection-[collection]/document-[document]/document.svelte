@@ -8,10 +8,10 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
-    import Attribute from './attribute.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
+    import Attribute from './attribute.svelte';
 
     let disableUpdate = true;
     let currentDoc: string;
