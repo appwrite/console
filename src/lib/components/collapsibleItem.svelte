@@ -6,8 +6,10 @@
     <details class="collapsible-wrapper">
         <summary class="collapsible-button">
             <slot name="beforetitle" />
-            <span class="text"><slot name="title" /></span>
-            <span class="collapsible-button-optional"><slot name="subtitle" /></span>
+            <div>
+                <span class="text"><slot name="title" /></span>
+                <span class="collapsible-button-optional"><slot name="subtitle" /></span>
+            </div>
             <div class="icon">
                 <span class="icon-cheveron-down" aria-hidden="true" />
             </div>
