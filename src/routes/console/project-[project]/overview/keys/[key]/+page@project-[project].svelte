@@ -18,7 +18,7 @@
     let name: string = null;
     let secret: string = null;
     let expire: string = null;
-    let scopes: string[] = [];
+    let scopes: string[] = null;
 
     onMount(() => {
         name ??= $key.name;
@@ -135,15 +135,17 @@
                 practice to allow only the permissions you need to meet your project goals.
             </p>
             <svelte:fragment slot="aside">
-                <Scopes bind:scopes />
+                {#if scopes !== null}
+                    <Scopes bind:scopes />
+                {/if}
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
                 <Button
                     submit
                     disabled={!(
-                        difference(scopes, $key.scopes).length !== 0 ||
-                        difference($key.scopes, scopes).length !== 0
+                        difference(scopes ?? [], $key.scopes ?? []).length !== 0 ||
+                        difference($key.scopes ?? [], scopes ?? []).length !== 0
                     )}>Update</Button>
             </svelte:fragment>
         </CardGrid>
