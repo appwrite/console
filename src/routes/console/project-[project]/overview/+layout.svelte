@@ -12,7 +12,6 @@
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
-    $: console.log($stats.get(projectId));
     let period: UsagePeriods = '30d';
     let showPeriodBandwidth = false;
     let showPeriodRequests = false;

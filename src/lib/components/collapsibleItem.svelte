@@ -1,3 +1,7 @@
+<script lang="ts">
+    export let withIndentation = false;
+</script>
+
 <li class="collapsible-item">
     <details class="collapsible-wrapper">
         <summary class="collapsible-button">
@@ -7,8 +11,14 @@
                 <span class="icon-cheveron-down" aria-hidden="true" />
             </div>
         </summary>
-        <div class="collapsible-content">
+        <div class="collapsible-content" class:indentation={withIndentation}>
             <slot />
         </div>
     </details>
 </li>
+
+<style>
+    .indentation {
+        padding-inline-start: 1.5rem;
+    }
+</style>
