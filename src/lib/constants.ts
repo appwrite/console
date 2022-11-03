@@ -33,7 +33,11 @@ export enum Dependencies {
     WEBHOOKS = 'dependency:webhooks'
 }
 
-export const scopes = [
+export const scopes: {
+    scope: string;
+    description: string;
+    category: string;
+}[] = [
     {
         scope: 'users.read',
         description: "Access to read your project's users",

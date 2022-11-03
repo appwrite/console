@@ -26,7 +26,6 @@ const setProviders = (project: Models.Project): Provider[] => {
 
             switch (n.name.toLowerCase()) {
                 case 'amazon':
-                    console.log(n);
                     docs = 'https://developer.amazon.com/apps-and-games/services-and-apis';
                     break;
                 case 'apple':

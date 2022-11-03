@@ -15,11 +15,9 @@
     import { Dependencies } from '$lib/constants';
 
     async function onFinish() {
-        console.log(2);
         await invalidate(Dependencies.FUNCTIONS);
     }
     async function create() {
-        console.log(1);
         try {
             const response = await sdkForProject.functions.create(
                 $createFunction.id ?? 'unique()',
