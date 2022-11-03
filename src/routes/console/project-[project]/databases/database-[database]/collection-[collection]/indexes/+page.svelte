@@ -37,7 +37,7 @@
 
         <Button on:click={() => (showCreateIndex = true)}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create index</span>
+            <span class="text">Create Index</span>
         </Button>
     </div>
     {#if $indexes.length}

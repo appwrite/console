@@ -1,12 +1,11 @@
 import Header from './header.svelte';
 import Breadcrumbs from './breadcrumbs.svelte';
 import { sdkForConsole } from '$lib/stores/sdk';
-import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
-export const load: LayoutLoad = async ({ params, depends }) => {
-    depends(Dependencies.ORGANIZATION);
+export const load: LayoutLoad = async ({ params, parent }) => {
+    await parent();
 
     try {
         return {

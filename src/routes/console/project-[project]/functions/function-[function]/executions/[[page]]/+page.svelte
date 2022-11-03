@@ -54,7 +54,7 @@
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
                 <TableCellHead width={70}>Type</TableCellHead>
-                <TableCellHead width={100}>Build Time</TableCellHead>
+                <TableCellHead width={100}>Duration</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.executions.executions as execution}

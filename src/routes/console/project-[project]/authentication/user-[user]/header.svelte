@@ -33,7 +33,7 @@
 <Cover>
     <svelte:fragment slot="header">
         <CoverTitle href={`/console/project-${projectId}/authentication`}>
-            {$user.name}
+            {$user.name ? $user.name : '-'}
         </CoverTitle>
         <Copy value={$user.$id}>
             <Pill button>

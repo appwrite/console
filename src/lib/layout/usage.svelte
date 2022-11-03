@@ -43,7 +43,7 @@
         <Heading tag="h2" size="5">{title}</Heading>
         <DropTabs>
             <DropTabsLink href={`${path}/24h`} disabled={$page.params.period === '24h'}>
-                24
+                24h
             </DropTabsLink>
             <DropTabsLink
                 href={`${path}/30d`}

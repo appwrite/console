@@ -2,8 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Copy, Tab, Tabs } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Tab, Tabs } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
@@ -44,12 +43,6 @@
         <CoverTitle>
             {$user.name}
         </CoverTitle>
-        <Copy value={$user.$id}>
-            <Pill button>
-                <span class="icon-duplicate" aria-hidden="true" />
-                Project ID
-            </Pill>
-        </Copy>
         <div class="u-margin-inline-start-auto">
             <Button secondary on:click={logout}>Logout</Button>
         </div>
