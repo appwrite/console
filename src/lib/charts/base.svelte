@@ -86,5 +86,6 @@
     .echart {
         width: 100%;
         min-height: 12rem;
+        height: 100%;
     }
 </style>

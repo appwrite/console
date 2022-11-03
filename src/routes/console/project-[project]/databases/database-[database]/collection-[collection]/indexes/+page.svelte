@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, DropList, DropListItem } from '$lib/components';
+    import { Empty, DropList, DropListItem, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import {
         Table,
@@ -11,16 +11,14 @@
         TableRow
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
-    import { collection } from '../store';
+    import { indexes } from '../store';
     import Delete from './deleteIndex.svelte';
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
-    import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-
-    export let data: PageData;
+    import { Button } from '$lib/elements/forms';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -29,12 +27,20 @@
     let showDelete = false;
 
     const handleDelete = async () => {
-        invalidate(Dependencies.INDEXES);
+        invalidate(Dependencies.COLLECTION);
     };
 </script>
 
 <Container>
-    {#if data.indexes.total}
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <Heading tag="h2" size="5">Indexes</Heading>
+
+        <Button on:click={() => (showCreateIndex = true)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create Index</span>
+        </Button>
+    </div>
+    {#if $indexes.length}
         <Table>
             <TableHeader>
                 <TableCellHead>Key</TableCellHead>
@@ -44,7 +50,7 @@
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
-                {#each data.indexes.indexes as index, i}
+                {#each $indexes as index, i}
                     <TableRow>
                         <TableCell title="Key">
                             <div class="u-flex u-main-space-between">
@@ -99,9 +105,9 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.indexes.total}</p>
+            <p class="text">Total results: {$indexes.length}</p>
         </div>
-    {:else if $collection.indexes?.length}
+    {:else if $indexes?.length}
         <Empty isButton single on:click={() => (showCreateIndex = true)}>
             <p>Create your first attribute to get started</p>
         </Empty>
@@ -113,6 +119,7 @@
 </Container>
 
 <Create bind:showCreateIndex />
+
 {#if selectedIndex}
     <Delete bind:showDelete {selectedIndex} on:deleted={handleDelete} />
     <Overview bind:showOverview {selectedIndex} />

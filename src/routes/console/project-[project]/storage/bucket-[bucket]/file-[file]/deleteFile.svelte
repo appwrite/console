@@ -17,6 +17,10 @@
             await goto(
                 `${base}/console/project-${$page.params.project}/storage/bucket-${$file.bucketId}`
             );
+            addNotification({
+                type: 'success',
+                message: `${$file.name} has been deleted`
+            });
         } catch (error) {
             addNotification({
                 type: 'error',

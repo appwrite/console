@@ -9,6 +9,7 @@
     import { bucket } from './store';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Permissions } from '$lib/components/permissions';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let showCreate = false;
 
@@ -34,6 +35,10 @@
             showCustomId = false;
             uploader.addFile(file);
             dispatch('created');
+            addNotification({
+                type: 'success',
+                message: `${file.name} has been created`
+            });
         } catch ({ message }) {
             error = message;
         }

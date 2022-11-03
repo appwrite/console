@@ -40,7 +40,7 @@
             goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
 
             addNotification({
-                message: 'Function has been created',
+                message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
             wizard.hide();

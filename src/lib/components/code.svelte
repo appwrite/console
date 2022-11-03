@@ -10,7 +10,6 @@
     import 'prismjs/plugins/autoloader/prism-autoloader';
     import 'prismjs/plugins/custom-class/prism-custom-class';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
-    import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
     import { afterUpdate } from 'svelte';
     import { Copy } from '.';
 
@@ -49,16 +48,16 @@
         {/if}
     </div>
 
-    <pre class={`language-${language}`} class:line-numbers={withLineNumbers}>
-        <code>{code}</code>
-    </pre>
+    <pre class={`language-${language}`} class:line-numbers={withLineNumbers}><code
+            >{code}</code></pre>
 </section>
 
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
+    @import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 
     .box {
-        --p-box-background-color: var(--color-neutral-300) !important;
+        --p-box-background-color: var(--color-neutral-400) !important;
 
         body.theme-light & {
             --p-box-background-color: var(--color-neutral-5) !important;

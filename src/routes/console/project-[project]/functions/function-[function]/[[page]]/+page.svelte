@@ -62,6 +62,7 @@
             }
             if (message.events.includes('functions.*.deployments.*.update')) {
                 invalidate(Dependencies.DEPLOYMENTS);
+                invalidate(Dependencies.FUNCTION);
 
                 return;
             }
