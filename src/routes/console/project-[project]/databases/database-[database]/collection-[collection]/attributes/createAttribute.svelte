@@ -12,7 +12,7 @@
     let submitted = false;
 
     const created = async () => {
-        invalidate(Dependencies.ATTRIBUTES);
+        invalidate(Dependencies.COLLECTION);
         showCreate = false;
     };
 
