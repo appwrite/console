@@ -6,6 +6,8 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { onMount } from 'svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let provider: Provider;
 
@@ -40,6 +42,7 @@
                 }`
             });
             provider = null;
+            invalidate(Dependencies.PROJECT);
         } catch ({ message }) {
             error = message;
         }

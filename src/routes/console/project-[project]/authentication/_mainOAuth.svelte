@@ -41,7 +41,6 @@
                 }`
             });
             provider = null;
-
             invalidate(Dependencies.PROJECT);
         } catch ({ message }) {
             error = message;
