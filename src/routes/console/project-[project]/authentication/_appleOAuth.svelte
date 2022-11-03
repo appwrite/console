@@ -6,6 +6,8 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { onMount } from 'svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let provider: Provider;
 
@@ -33,15 +35,14 @@
                 secret,
                 enabled
             );
-            provider.enabled = enabled;
-            provider.appId = appId;
-            provider.secret = secret;
             addNotification({
                 type: 'success',
                 message: `${provider.name} authentication has been ${
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
+            provider = null;
+            invalidate(Dependencies.PROJECT);
         } catch ({ message }) {
             error = message;
         }
