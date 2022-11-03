@@ -86,30 +86,34 @@
 </div>
 <Collapsible>
     {#each [Category.Authentication, Category.Database, Category.Functions, Category.Storage, Category.Other] as category}
+        {@const checked = categoryState(category, scopes)}
         <CollapsibleItem withIndentation>
-            <svelte:fragment slot="title">
-                {@const checked = categoryState(category, scopes)}
+            <svelte:fragment slot="beforetitle">
                 <input
                     type="checkbox"
                     {checked}
                     indeterminate={checked === null ? true : false}
                     on:change={(e) => onCategoryChange(e, category)} />
+            </svelte:fragment>
+            <svelte:fragment slot="title">
                 {category}
             </svelte:fragment>
             <svelte:fragment slot="subtitle">
                 ({allScopes.filter((n) => n.category === category && scopes.includes(n.scope))
                     .length} Scopes)
             </svelte:fragment>
-            <FormList>
-                {#each allScopes.filter((s) => s.category === category) as scope}
-                    <InputChoice
-                        id={scope.scope}
-                        label={scope.scope}
-                        bind:value={activeScopes[scope.scope]}>
-                        {scope.description}
-                    </InputChoice>
-                {/each}
-            </FormList>
+            <div class="form">
+                <FormList>
+                    {#each allScopes.filter((s) => s.category === category) as scope}
+                        <InputChoice
+                            id={scope.scope}
+                            label={scope.scope}
+                            bind:value={activeScopes[scope.scope]}>
+                            {scope.description}
+                        </InputChoice>
+                    {/each}
+                </FormList>
+            </div>
         </CollapsibleItem>
     {/each}
 </Collapsible>
