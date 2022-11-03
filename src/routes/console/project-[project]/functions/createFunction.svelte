@@ -37,7 +37,7 @@
             await invalidate(Dependencies.FUNCTIONS);
 
             addNotification({
-                message: 'Function has been created',
+                message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
             wizard.hide();
