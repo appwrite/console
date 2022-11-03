@@ -34,15 +34,14 @@
                 secret,
                 enabled
             );
-            provider.enabled = enabled;
-            provider.appId = appId;
-            provider.secret = secret;
             addNotification({
                 type: 'success',
                 message: `${provider.name} authentication has been ${
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
+            provider = null;
+
             invalidate(Dependencies.PROJECT);
         } catch ({ message }) {
             error = message;
