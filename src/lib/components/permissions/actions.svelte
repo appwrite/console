@@ -1,6 +1,5 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { Button } from '$lib/elements/forms';
     import { DropList, DropListItem } from '..';
     import Custom from './custom.svelte';
     import Team from './team.svelte';
@@ -22,10 +21,7 @@
 </script>
 
 <DropList bind:show={showDropdown} placement="bottom-end">
-    <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
-        <span class="icon-plus" aria-hidden="true" />
-        <span class="text">Add role</span>
-    </Button>
+    <slot />
     <svelte:fragment slot="list">
         <DropListItem disabled={$groups.has('any')} on:click={() => dispatch('create', ['any'])}>
             Any

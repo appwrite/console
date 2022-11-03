@@ -422,6 +422,7 @@
                         {/if}
                     </ul>
                     <Button
+                        noMargin
                         text
                         on:click={() => {
                             if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {

@@ -2,6 +2,12 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
 </script>
 
-<div class="table-row" role="row" on:keyup={clickOnEnter} on:click|preventDefault>
+<!-- svelte-ignore a11y-unknown-role -->
+<tr
+    class="table-row"
+    role="row button"
+    tabindex="0"
+    on:keyup={clickOnEnter}
+    on:click|preventDefault>
     <slot />
-</div>
+</tr>
