@@ -9,6 +9,7 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
+    import { onDestroy } from 'svelte';
 
     async function onFinish() {
         try {
@@ -18,7 +19,6 @@
                 $key.scopes,
                 $key.expire ?? undefined
             );
-            key.reset();
             goto(`/console/project-${$page.params.project}/overview/keys/${$id}`);
         } catch (error) {
             addNotification({
@@ -27,6 +27,10 @@
             });
         }
     }
+
+    onDestroy(() => {
+        key.reset();
+    });
 
     beforeNavigate(() => {
         wizard.hide();
@@ -43,4 +47,4 @@
     });
 </script>
 
-<Wizard title="Create an API Key" steps={stepsComponents} on:finish={onFinish} on:exit={onFinish} />
+<Wizard title="Create an API Key" steps={stepsComponents} on:finish={onFinish} />
