@@ -143,10 +143,12 @@
             <svelte:fragment slot="actions">
                 <Button
                     submit
-                    disabled={!(
-                        difference(scopes ?? [], $key.scopes ?? []).length !== 0 ||
-                        difference($key.scopes ?? [], scopes ?? []).length !== 0
-                    )}>Update</Button>
+                    disabled={scopes &&
+                        $key?.scopes &&
+                        !(
+                            difference(scopes, $key.scopes).length !== 0 ||
+                            difference($key.scopes, scopes).length !== 0
+                        )}>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
