@@ -21,7 +21,7 @@
         }
     });
 
-    const handleInvalid = (event: Event) => {
+    function handleInvalid(event: Event) {
         event.preventDefault();
 
         if (element.validity.valueMissing) {
@@ -30,7 +30,7 @@
         }
 
         error = element.validationMessage;
-    };
+    }
 
     $: if (value) {
         error = null;
@@ -45,6 +45,7 @@
             {disabled}
             {readonly}
             {required}
+            step=".001"
             autocomplete={autocomplete ? 'on' : 'off'}
             type="datetime-local"
             class="input-text"
