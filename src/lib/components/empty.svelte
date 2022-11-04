@@ -8,7 +8,7 @@
 </script>
 
 {#if single}
-    <article class="card u-grid u-cross-center u-width-full-line" class:common-section={single}>
+    <article class="card u-grid u-cross-center u-width-full-line common-section">
         <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
             <button type="button" on:click|preventDefault>
                 {#if $app.themeInUse === 'dark'}
@@ -24,8 +24,7 @@
     <button
         on:click|preventDefault
         type="button"
-        class="card u-grid u-cross-center u-width-full-line dashed"
-        class:common-section={single}>
+        class="card u-grid u-cross-center u-width-full-line dashed">
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
             <div class="common-section">
                 <Button secondary round>
