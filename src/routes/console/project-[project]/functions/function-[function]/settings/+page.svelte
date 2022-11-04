@@ -367,7 +367,7 @@
                         </Button>
                     </div>
                 {:else}
-                    <Empty on:click={() => (showEvents = true)}>Add a event to get started</Empty>
+                    <Empty on:click={() => (showEvents = true)}>Add an event to get started</Empty>
                 {/if}
             </svelte:fragment>
 

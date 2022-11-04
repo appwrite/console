@@ -73,10 +73,8 @@
     {:else}
         <Empty single>
             <div class="common-section u-text-center">
-                <p class="text u-line-height-1-5">
-                    Create your first Webhook to get startedNeed a hand?
-                </p>
-                <p class="text u-line-height-1-5">Check out our documentation.</p>
+                <p class="text u-line-height-1-5">Create your first Webhook to get started.</p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
             </div>
             <div class="u-flex u-gap-16 common-section">
                 <Button text href="https://appwrite.io/docs/webhooks">Documentation</Button>

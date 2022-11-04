@@ -143,7 +143,7 @@
                 <div class="u-text-center common-section">
                     <b class="body-text-2">Sorry we couldn't find "{search}"</b>
 
-                    <p>You have no Users. Create a user to see them here.</p>
+                    <p>You have no users. Create a user to see them here.</p>
                     <p>
                         Need a hand? Check out our <a
                             href="https://appwrite.io/docs/server/users"

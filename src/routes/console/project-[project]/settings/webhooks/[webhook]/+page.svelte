@@ -247,7 +247,7 @@
                     </div>
                 {:else}
                     <Empty on:click={() => (showCreateEvent = true)}>
-                        Add a event to get started
+                        Add an event to get started
                     </Empty>
                 {/if}
             </svelte:fragment>
