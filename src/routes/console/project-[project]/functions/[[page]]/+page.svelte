@@ -106,7 +106,7 @@
                 <p class="text u-line-height-1-5">Create your first function to get started</p>
                 <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
             </div>
-            <div class="u-flex u-gap-12">
+            <div class="u-flex u-gap-16">
                 <Button href="https://appwrite.io/docs/functions" external text>
                     Documentation
                 </Button>

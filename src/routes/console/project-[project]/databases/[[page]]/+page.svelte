@@ -63,7 +63,7 @@
                 <p class="text u-line-height-1-5">Create your first database to get started</p>
                 <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
             </div>
-            <div class="u-flex u-gap-12">
+            <div class="u-flex u-gap-16">
                 <Button external href="https://appwrite.io/docs/databases" text>
                     Documentation
                 </Button>

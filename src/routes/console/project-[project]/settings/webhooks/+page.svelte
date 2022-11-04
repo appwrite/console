@@ -78,7 +78,7 @@
                 </p>
                 <p class="text u-line-height-1-5">Check out our documentation.</p>
             </div>
-            <div class="u-flex u-gap-12 common-section">
+            <div class="u-flex u-gap-16 common-section">
                 <Button text href="https://appwrite.io/docs/webhooks">Documentation</Button>
                 <Button secondary on:click={openWizard}>
                     <span class="text">Create Webhook</span>
