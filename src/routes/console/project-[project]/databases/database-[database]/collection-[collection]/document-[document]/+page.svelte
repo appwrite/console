@@ -41,7 +41,10 @@
     }
 
     $: if (permissions) {
-        if (difference(permissions, $doc.$permissions).length) {
+        if (
+            difference(permissions, $doc.$permissions).length ||
+            difference($doc.$permissions, permissions).length
+        ) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
     }

@@ -30,7 +30,10 @@
         sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
 
     $: if (filePermissions) {
-        if (difference(filePermissions, $file.$permissions).length) {
+        if (
+            difference(filePermissions, $file.$permissions).length ||
+            difference($file.$permissions, filePermissions).length
+        ) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
     }
