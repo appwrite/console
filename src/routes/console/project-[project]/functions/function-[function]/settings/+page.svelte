@@ -359,18 +359,16 @@
                             </li>
                         {/each}
                     </TableList>
-                {:else}
-                    <Empty isButton on:click={() => (showEvents = true)}>
-                        Add a event to get started
-                    </Empty>
-                {/if}
 
-                <div class="u-flex u-margin-block-start-16">
-                    <Button text noMargin on:click={() => (showEvents = true)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="u-text">Add event</span>
-                    </Button>
-                </div>
+                    <div class="u-flex u-margin-block-start-16">
+                        <Button text noMargin on:click={() => (showEvents = true)}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="u-text">Add event</span>
+                        </Button>
+                    </div>
+                {:else}
+                    <Empty on:click={() => (showEvents = true)}>Add a event to get started</Empty>
+                {/if}
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

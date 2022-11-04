@@ -13,7 +13,7 @@
     import { attributes, type Attributes } from '../store';
     import { Container } from '$lib/layout';
     import { Pill } from '$lib/elements';
-    import Create from './createAttribute.svelte';
+    import Create from '../createAttribute.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import Delete from './deleteAttribute.svelte';
     import Overview from './overview.svelte';
@@ -110,8 +110,17 @@
             <p class="text">Total results: {$attributes.length}</p>
         </div>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
-            <p>Crate your first attribute to get started</p>
+        <Empty single on:click={() => (showCreate = true)}>
+            <div class="u-text-center">
+                <p class="text u-line-height-1-5">Create your first attribute to get started</p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
+            </div>
+            <div class="u-flex u-gap-16">
+                <Button external href="https://appwrite.io/docs/databases#attributes" text>
+                    Documentation
+                </Button>
+                <Button secondary on:click={() => (showCreate = true)}>Create attribute</Button>
+            </div>
         </Empty>
     {/if}
 </Container>

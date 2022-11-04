@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Copy, Empty, Status, Heading, Pagination } from '$lib/components';
     import {
@@ -92,9 +91,8 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton single>
-            <p>Execute your function to view execution logs</p>
-            <Button external secondary href="#">Documentation</Button>
+        <Empty single>
+            <p class="text u-line-height-1-5">Execute your function to view execution logs</p>
         </Empty>
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">

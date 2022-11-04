@@ -13,7 +13,7 @@
     <slot />
 
     {#if total > 3 ? total < limit + offset : total % 2 !== 0}
-        <Empty isButton on:click>
+        <Empty on:click>
             <slot name="empty" />
         </Empty>
     {/if}

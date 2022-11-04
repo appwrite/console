@@ -71,10 +71,12 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton single>
+        <Empty single>
             <div class="common-section u-text-center">
-                <p class="text">Create your first Webhook to get startedNeed a hand?</p>
-                <p class="text">Check out our documentation.</p>
+                <p class="text u-line-height-1-5">
+                    Create your first Webhook to get startedNeed a hand?
+                </p>
+                <p class="text u-line-height-1-5">Check out our documentation.</p>
             </div>
             <div class="u-flex u-gap-12 common-section">
                 <Button text href="https://appwrite.io/docs/webhooks">Documentation</Button>
