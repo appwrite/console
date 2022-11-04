@@ -49,7 +49,7 @@
         }
     }
 
-    const updateData = async () => {
+    async function updateData() {
         try {
             await sdkForProject.databases.updateDocument(
                 databaseId,
@@ -72,7 +72,26 @@
                 type: 'error'
             });
         }
-    };
+    }
+
+    function addArrayItem(key: string) {
+        work.update((n) => {
+            if (!Array.isArray(n[key])) {
+                n[key] = [];
+            }
+            n[key].push(null);
+
+            return n;
+        });
+    }
+
+    function removeArrayItem(key: string, index: number) {
+        work.update((n) => {
+            n[key].splice(index, 1);
+
+            return n;
+        });
+    }
 </script>
 
 <CardGrid>
@@ -83,7 +102,7 @@
             {#each $collection.attributes.filter((a) => a.status === 'available') as attribute}
                 {#if attribute.array}
                     <ul class="form-list">
-                        {#each $work[attribute.key] as _v, index}
+                        {#each [...$work[attribute.key].keys()] as index}
                             <li class="form-item is-multiple">
                                 <div class="form-item-part u-stretch">
                                     <Attribute
@@ -95,8 +114,8 @@
                                 <div class="form-item-part u-cross-child-end">
                                     <Button
                                         text
-                                        disabled={index === 0}
-                                        on:click={() => console.log('remove')}>
+                                        disabled={$work[attribute.key].length === 1}
+                                        on:click={() => removeArrayItem(attribute.key, index)}>
                                         <span class="icon-x" aria-hidden="true" />
                                     </Button>
                                 </div>
@@ -122,7 +141,7 @@
                     <Button
                         text
                         disabled={$work[attribute.key][$work[attribute.key].length - 1] === null}
-                        on:click={() => console.log('remove')}>
+                        on:click={() => addArrayItem(attribute.key)}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="text"> Add item</span>
                     </Button>

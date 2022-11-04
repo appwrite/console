@@ -16,11 +16,9 @@
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
 
-    onMount(async () => {
-        initializeDocument();
-    });
+    onMount(initializeDocument);
 
-    const initializeDocument = () => {
+    function initializeDocument() {
         $createDocument.attributes = $attributes.filter((a) => a.status === 'available');
         $attributes.forEach((attr) => {
             if (attr.array) {
@@ -29,9 +27,9 @@
                 $createDocument.document[attr.key] = null;
             }
         });
-    };
+    }
 
-    const create = async () => {
+    async function create() {
         try {
             await sdkForProject.databases.createDocument(
                 databaseId,
@@ -52,10 +50,9 @@
                 type: 'error'
             });
         }
-    };
+    }
 
     onDestroy(() => {
-        initializeDocument();
         $createDocument.permissions = [];
     });
 
