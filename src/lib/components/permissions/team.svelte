@@ -102,10 +102,11 @@
             <div class="common-section">
                 <div class="u-text-center common-section">
                     <b class="body-text-2">Sorry we couldn't find "{search}"</b>
-                    <p>There are no Teams that match your search.</p>
+                    <p>There are no teams that match your search.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="#/" text>Documentation</Button>
+                    <Button external href="https://appwrite.io/docs/client/teams" text
+                        >Documentation</Button>
                     <Button secondary on:click={() => (search = '')}>Clear search</Button>
                 </div>
             </div>
@@ -119,7 +120,7 @@
                     <p>You have no Teams. Create a user to see them here.</p>
                     <p>
                         Need a hand? Check out our <a
-                            href="#/"
+                            href="https://appwrite.io/docs/client/teams"
                             target="_blank"
                             rel="noopener noreferrer">
                             documentation</a
