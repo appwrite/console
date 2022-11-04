@@ -191,16 +191,16 @@
                 >Clear Search</Button>
         </EmptySearch>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
+        <Empty single on:click={() => (showCreate = true)}>
             <div class="u-text-center">
                 <p class="text u-line-height-1-5">Upload some files to get started</p>
                 <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
             </div>
-            <div class="u-flex u-gap-12 ">
+            <div class="u-flex u-gap-16">
                 <Button external href="https://appwrite.io/docs/storage#createFile" text>
                     Documentation
                 </Button>
-                <Button secondary>Add file</Button>
+                <Button secondary on:click={() => (showCreate = true)}>Add file</Button>
             </div>
         </Empty>
     {/if}

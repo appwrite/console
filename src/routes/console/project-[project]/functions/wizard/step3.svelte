@@ -45,18 +45,15 @@
                 </li>
             {/each}
         </TableList>
+        <div class="u-flex u-margin-block-start-16">
+            <Button text noMargin on:click={() => (showCreate = !showCreate)}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="u-text">Add event</span>
+            </Button>
+        </div>
     {:else}
-        <Empty isButton on:click={() => (showCreate = !showCreate)}
-            >Add a event to get started
-        </Empty>
+        <Empty on:click={() => (showCreate = !showCreate)}>Add an event to get started</Empty>
     {/if}
-
-    <div class="u-flex u-margin-block-start-16">
-        <Button text noMargin on:click={() => (showCreate = !showCreate)}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="u-text">Add event</span>
-        </Button>
-    </div>
 </WizardStep>
 
 {#if showCreate}

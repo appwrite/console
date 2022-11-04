@@ -59,14 +59,14 @@
         </TableBody>
     </Table>
 {:else}
-    <Empty isButton single on:click={create}>
+    <Empty single on:click={create}>
         <div class="u-text-center">
             <p class="text u-line-height-1-5">Create your first API Key to get started</p>
             <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
         </div>
         <div class="u-flex u-gap-12">
             <Button external href="https://appwrite.io/docs/keys" text>Documentation</Button>
-            <Button secondary>Create API Key</Button>
+            <Button secondary on:click={create}>Create API Key</Button>
         </div>
     </Empty>
 {/if}
