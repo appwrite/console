@@ -58,7 +58,10 @@
         if (bucketFileSecurity !== $bucket.fileSecurity) {
             arePermsDisabled = false;
         } else if (bucketPermissions) {
-            if (difference(bucketPermissions, $bucket.$permissions).length) {
+            if (
+                difference(bucketPermissions, $bucket.$permissions).length ||
+                difference($bucket.$permissions, bucketPermissions).length
+            ) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }

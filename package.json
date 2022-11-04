@@ -20,8 +20,8 @@
     },
     "dependencies": {
         "@aw-labs/appwrite-console": "^10.0.0",
-        "@aw-labs/icons": "0.0.0-68",
-        "@aw-labs/ui": "0.0.0-68",
+        "@aw-labs/icons": "0.0.0-69",
+        "@aw-labs/ui": "0.0.0-69",
         "@popperjs/core": "^2.11.6",
         "echarts": "^5.4.0",
         "prismjs": "^1.29.0",
