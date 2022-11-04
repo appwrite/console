@@ -230,10 +230,6 @@
                                 </div>
                                 <div>Users</div>
                             </div>
-
-                            <div class="grid-item-1-end-end">
-                                <div class="text">Sessions: XX</div>
-                            </div>
                         </div>
                     </a>
                     <a
