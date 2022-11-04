@@ -71,10 +71,9 @@
                         <svelte:fragment slot="title">
                             {project.name}
                         </svelte:fragment>
-                        {@const platformList = project.platforms.map((platform) =>
-                            getPlatformInfo(platform.type)
+                        {@const platforms = filterPlatforms(
+                            project.platforms.map((platform) => getPlatformInfo(platform.type))
                         )}
-                        {@const platforms = filterPlatforms(platformList)}
                         {#each platforms as platform, i}
                             {#if i < 3}
                                 <Pill>
