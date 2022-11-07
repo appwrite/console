@@ -45,11 +45,11 @@
             }
         },
         "axisLabel": {
-            "color": "#666666"
+            "color": "#4F5769"
         },
         "splitLine": {
             "lineStyle": {
-                "color": ["#333333"]
+                "color": ["#4F5769"]
             }
         },
         "splitArea": {
