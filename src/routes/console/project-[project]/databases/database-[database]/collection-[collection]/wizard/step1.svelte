@@ -57,6 +57,7 @@
                     {/each}
                     <Button
                         text
+                        noMargin
                         disabled={$createDocument.document[attribute.key][
                             $createDocument.document[attribute.key].length - 1
                         ] === null}
