@@ -9,7 +9,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { onDestroy, onMount } from 'svelte';
     import { writable, type Unsubscriber } from 'svelte/store';
     import Actions from './actions.svelte';
@@ -30,7 +30,7 @@
         roles.forEach(addRole);
         unsubscribe = groups.subscribe((n) => {
             const current = Array.from(n.keys());
-            if (difference(current, roles).length || difference(roles, current).length) {
+            if (symmetricDifference(current, roles).length) {
                 roles = current;
             }
         });

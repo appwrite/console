@@ -3,7 +3,7 @@
     import { Button, FormList, InputChoice } from '$lib/elements/forms';
     import { scopes as allScopes } from '$lib/constants';
     import { onMount } from 'svelte';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
 
     export let scopes: string[];
 
@@ -70,10 +70,7 @@
             const newScopes = allScopes
                 .filter((scope) => activeScopes[scope.scope])
                 .map(({ scope }) => scope);
-            if (
-                difference(scopes, newScopes).length !== 0 ||
-                difference(newScopes, scopes).length !== 0
-            ) {
+            if (symmetricDifference(scopes, newScopes).length) {
                 scopes = newScopes;
             }
         }
