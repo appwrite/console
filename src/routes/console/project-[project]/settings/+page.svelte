@@ -11,10 +11,13 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Delete from './deleteProject.svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     let name: string = null;
     let showDelete = false;
     const endpoint = sdkForConsole.client.config.endpoint;
+    const projectId = $page.params.project;
 
     onMount(async () => {
         name ??= $project.name;
@@ -99,6 +102,11 @@
                     <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
                     <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
                 </FormList>
+            </svelte:fragment>
+            <svelte:fragment slot="actions">
+                <Button secondary href={`${base}/console/project-${projectId}/overview/keys`}>
+                    View API Keys
+                </Button>
             </svelte:fragment>
         </CardGrid>
 
