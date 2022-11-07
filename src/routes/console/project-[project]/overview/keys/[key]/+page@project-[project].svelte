@@ -3,7 +3,7 @@
     import { CardGrid, Heading, Secret } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText, InputDateTime } from '$lib/elements/forms';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -145,10 +145,7 @@
                     submit
                     disabled={scopes &&
                         $key?.scopes &&
-                        !(
-                            difference(scopes, $key.scopes).length !== 0 ||
-                            difference($key.scopes, scopes).length !== 0
-                        )}>Update</Button>
+                        !symmetricDifference(scopes, $key.scopes).length}>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>

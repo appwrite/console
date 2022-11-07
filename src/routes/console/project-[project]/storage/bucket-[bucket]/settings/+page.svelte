@@ -18,7 +18,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { Permissions } from '$lib/components/permissions';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -58,10 +58,7 @@
         if (bucketFileSecurity !== $bucket.fileSecurity) {
             arePermsDisabled = false;
         } else if (bucketPermissions) {
-            if (
-                difference(bucketPermissions, $bucket.$permissions).length ||
-                difference($bucket.$permissions, bucketPermissions).length
-            ) {
+            if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
