@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Empty, Pagination, Trim } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { EmptySearch, Pagination, Trim } from '$lib/components';
     import {
         Table,
         TableBody,
@@ -77,25 +76,20 @@
                 {/each}
             </TableBody>
         </Table>
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {logs.total}</p>
+            <Pagination limit={PAGE_LIMIT} {path} {offset} sum={logs.total} />
+        </div>
     {:else}
-        <Empty>
+        <EmptySearch>
             <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="common-section">
-                    <p>No logs available</p>
-                </div>
-                <div class="common-section">
-                    <Button
-                        external
-                        secondary
-                        href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetLogs">
-                        Documentation
-                    </Button>
+                <div class="u-text-center">
+                    <p class="text u-line-height-1-5">
+                        You have no activity. Once your users start interacting with your app you'll
+                        see their activity here.
+                    </p>
                 </div>
             </div>
-        </Empty>
+        </EmptySearch>
     {/if}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {logs.total}</p>
-        <Pagination limit={PAGE_LIMIT} {path} {offset} sum={logs.total} />
-    </div>
 </Container>

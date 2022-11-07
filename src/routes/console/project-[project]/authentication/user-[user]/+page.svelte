@@ -27,7 +27,6 @@
     import { Dependencies } from '$lib/constants';
 
     $: if (prefs) {
-        console.log(prefs);
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
             if (!!prefs[prefs.length - 1][0] && !!prefs[prefs.length - 1][1]) {
                 arePrefsDisabled = false;
