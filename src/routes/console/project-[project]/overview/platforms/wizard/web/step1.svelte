@@ -65,8 +65,13 @@
             </div>
         </div>
         <Alert type="warning">
-            Tip: Avoid using wildcard hostnames in production to keep your project secure. Check out
-            our documentation for more info.
+            Using wildcard hostnames in production can become insecure. You can read about
+            <a
+                href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">
+                Cross-Origin Resource Sharing (CORS)</a> for more information.
         </Alert>
     </FormList>
 </WizardStep>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { Pill } from '$lib/elements';
-    import { Copy, Empty, Status, Heading, Pagination } from '$lib/components';
+    import { Copy, Status, Heading, Pagination, EmptySearch } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -21,8 +21,11 @@
     import { onDestroy, onMount } from 'svelte';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
+    import { Button } from '$lib/elements/forms';
+    import CreateDeployment from '../../create.svelte';
 
     export let data: PageData;
+    let showCreate = false;
 
     let unsubscribe: { (): void };
 
@@ -90,17 +93,30 @@
                 {/each}
             </TableBody>
         </Table>
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {data.executions.total}</p>
+            <Pagination
+                limit={PAGE_LIMIT}
+                path={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/executions`}
+                offset={data.offset}
+                sum={data.executions.total} />
+        </div>
     {:else}
-        <Empty single>
-            <p class="text u-line-height-1-5">Execute your function to view execution logs</p>
-        </Empty>
+        <EmptySearch>
+            <div class="u-text-center">
+                <p class="text u-line-height-1-5">
+                    You have no execution logs. Create and activate a deployment to see it here.
+                </p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation</p>
+            </div>
+            <div class="u-flex u-gap-16">
+                <Button text external href="https://appwrite.io/docs/functions#execute">
+                    Documentation
+                </Button>
+                <Button secondary on:click={() => (showCreate = true)}>Create deployment</Button>
+            </div>
+        </EmptySearch>
     {/if}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {data.executions.total}</p>
-        <Pagination
-            limit={PAGE_LIMIT}
-            path={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/executions`}
-            offset={data.offset}
-            sum={data.executions.total} />
-    </div>
 </Container>
+
+<CreateDeployment bind:showCreate />
