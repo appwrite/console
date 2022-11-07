@@ -115,7 +115,9 @@
                                         yAxis: {
                                             axisLabel: {
                                                 formatter: (value) =>
-                                                    value ? humanFileSize(+value)?.value : '0'
+                                                value ? `${humanFileSize(+value).value} ${
+                                                        humanFileSize(+value).unit
+                                                    }` : 0
                                             }
                                         }
                                     }}
@@ -199,12 +201,12 @@
                             <div class="grid-item-1-start-end" />
 
                             <div class="grid-item-1-end-start">
-                                <div class="heading-level-4">3</div>
-                                <div>Databases</div>
+                                <div class="heading-level-4">{format(last($usage.documents).value)}</div>
+                                <div>Documents</div>
                             </div>
 
                             <div class="grid-item-1-end-end">
-                                <div class="text">Documents: {last($usage.documents).value}</div>
+                                <div class="text">Databases: 3</div>
                             </div>
                         </div>
                     </a>
