@@ -101,8 +101,6 @@
             </TableBody>
         </Table>
     {:else}
-        <span class="u-sep-block-end">VARIABLES</span>
-
         <Empty isButton on:click={() => (showCreate = !showCreate)}
             >Create a variable to get started
         </Empty>

@@ -22,7 +22,6 @@
         Set the events that will trigger your function. Maximum 100 events allowed.
     </svelte:fragment>
 
-    <span class="u-sep-block-end">EVENT</span>
     {#if $createWebhook?.events?.length}
         <TableList>
             {#each $createWebhook.events as event}
