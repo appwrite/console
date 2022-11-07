@@ -87,7 +87,8 @@
                             <DropList
                                 bind:show={showPeriodBandwidth}
                                 placement="bottom-start"
-                                childStart>
+                                childStart
+                                noArrow>
                                 <button
                                     class="transparent-button"
                                     on:click={() => (showPeriodBandwidth = !showPeriodBandwidth)}>
@@ -130,7 +131,8 @@
                             <DropList
                                 bind:show={showPeriodRequests}
                                 placement="bottom-start"
-                                childStart>
+                                childStart
+                                noArrow>
                                 <button
                                     class="transparent-button"
                                     on:click={() => (showPeriodRequests = !showPeriodRequests)}>
@@ -264,13 +266,15 @@
                                 {format($stats.get(projectId)[11][1])}
                             </div>
                             <div>Realtime Connections</div>
-                            <BarChart
-                                series={[
-                                    {
-                                        name: 'Realtime connection',
-                                        data: $stats.get(projectId)
-                                    }
-                                ]} />
+                            <div style="height: 18em">
+                                <BarChart
+                                    series={[
+                                        {
+                                            name: 'Realtime connection',
+                                            data: $stats.get(projectId)
+                                        }
+                                    ]} />
+                            </div>
                         {:else}
                             <div>waiting for realtime connections</div>
                         {/if}
@@ -318,9 +322,3 @@
         </section>
     </Container>
 {/if}
-
-<style>
-    .grid-item-1 {
-        min-block-size: 6.5rem; /* TODO: remove */
-    }
-</style>

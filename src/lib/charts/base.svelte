@@ -8,10 +8,12 @@
     import dark from './dark.json';
     import type { ECharts } from 'echarts/core';
     import type { BarSeriesOption, LineSeriesOption } from 'echarts/charts';
+    import type { EChartsOption } from 'echarts';
 
     registerTheme('light', { ...base, ...light });
     registerTheme('dark', { ...base, ...dark });
 
+    export let options: EChartsOption;
     export let series: (BarSeriesOption | LineSeriesOption)[];
 
     let chart: ECharts;
@@ -19,6 +21,7 @@
 
     $: option = {
         ...defaultConfig,
+        ...options,
         series
     };
 
@@ -85,7 +88,7 @@
 <style>
     .echart {
         width: 100%;
-        min-height: 12rem;
+        min-height: 10rem;
         height: 100%;
     }
 </style>

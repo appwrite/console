@@ -17,8 +17,8 @@ export const defaultConfig: EChartsOption = {
         containLabel: true,
         left: 0,
         right: 0,
-        bottom: 15,
-        top: 15
+        bottom: 0,
+        top: 45
     },
     xAxis: {
         type: 'time',
