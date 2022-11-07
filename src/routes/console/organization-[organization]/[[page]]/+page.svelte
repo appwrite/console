@@ -95,7 +95,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
+        <Empty single on:click={() => (showCreate = true)}>
             <p>Create a new project</p>
         </Empty>
     {/if}

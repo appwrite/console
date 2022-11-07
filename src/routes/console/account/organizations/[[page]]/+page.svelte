@@ -66,7 +66,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty isButton single on:click={() => (addOrganization = true)}>
+        <Empty single on:click={() => (addOrganization = true)}>
             <p>Create a new organization</p>
         </Empty>
     {/if}
