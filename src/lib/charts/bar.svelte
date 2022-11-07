@@ -1,6 +1,5 @@
 <script lang="ts">
-    import type { BarSeriesOption } from 'echarts/charts';
-    import type { EChartsOption } from 'echarts/types/dist/shared';
+    import type { EChartsOption, BarSeriesOption } from 'echarts';
     import Base from './base.svelte';
 
     export let series: BarSeriesOption[];

@@ -7,8 +7,7 @@
     import light from './light.json';
     import dark from './dark.json';
     import type { ECharts } from 'echarts/core';
-    import type { BarSeriesOption, LineSeriesOption } from 'echarts/charts';
-    import type { EChartsOption } from 'echarts/types/dist/shared';
+    import type { EChartsOption, BarSeriesOption, LineSeriesOption } from 'echarts';
 
     registerTheme('light', { ...base, ...light });
     registerTheme('dark', { ...base, ...dark });
