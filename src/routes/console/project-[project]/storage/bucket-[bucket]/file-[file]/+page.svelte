@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { onMount } from 'svelte';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { Permissions } from '$lib/components/permissions';
     import Delete from './deleteFile.svelte';
     import { invalidate } from '$app/navigation';
@@ -30,7 +30,7 @@
         sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
 
     $: if (filePermissions) {
-        if (difference(filePermissions, $file.$permissions).length) {
+        if (symmetricDifference(filePermissions, $file.$permissions).length) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
     }

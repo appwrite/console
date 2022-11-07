@@ -11,15 +11,17 @@
     import Step5 from './wizard/step5.svelte';
     import { createFunction } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+
+    const projectId = $page.params.project;
 
     async function onFinish() {
-        console.log(2);
         await invalidate(Dependencies.FUNCTIONS);
     }
     async function create() {
-        console.log(1);
         try {
             const response = await sdkForProject.functions.create(
                 $createFunction.id ?? 'unique()',
@@ -35,9 +37,10 @@
                     await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
             );
             await invalidate(Dependencies.FUNCTIONS);
+            goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
 
             addNotification({
-                message: 'Function has been created',
+                message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
             wizard.hide();

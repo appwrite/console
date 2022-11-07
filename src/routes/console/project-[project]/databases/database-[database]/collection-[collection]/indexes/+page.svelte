@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, DropList, DropListItem } from '$lib/components';
+    import { Empty, DropList, DropListItem, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import {
         Table,
@@ -11,109 +11,148 @@
         TableRow
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
-    import { collection } from '../store';
+    import { collection, indexes } from '../store';
     import Delete from './deleteIndex.svelte';
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
+    import CreateAttribute from '../createAttribute.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
-    import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-
-    export let data: PageData;
+    import { Button } from '$lib/elements/forms';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
     let showCreateIndex = false;
     let showOverview = false;
     let showDelete = false;
+    let showCreateAttribute = false;
 
     const handleDelete = async () => {
-        invalidate(Dependencies.INDEXES);
+        invalidate(Dependencies.COLLECTION);
     };
 </script>
 
 <Container>
-    {#if data.indexes.total}
-        <Table>
-            <TableHeader>
-                <TableCellHead>Key</TableCellHead>
-                <TableCellHead>Type</TableCellHead>
-                <TableCellHead>Attributes</TableCellHead>
-                <TableCellHead>Asc/Desc</TableCellHead>
-                <TableCellHead width={30} />
-            </TableHeader>
-            <TableBody>
-                {#each data.indexes.indexes as index, i}
-                    <TableRow>
-                        <TableCell title="Key">
-                            <div class="u-flex u-main-space-between">
-                                <span class="text u-trim"> {index.key}</span>
-                                {#if index.status !== 'available'}
-                                    <Pill
-                                        warning={index.status === 'processing'}
-                                        danger={['deleting', 'stuck', 'failed'].includes(
-                                            index.status
-                                        )}>
-                                        {index.status}
-                                    </Pill>
-                                {/if}
-                            </div>
-                        </TableCell>
-                        <TableCellText title="Type">{index.type}</TableCellText>
-                        <TableCellText title="Attributes">
-                            {index.attributes}
-                        </TableCellText>
-                        <TableCellText title="ASC/DESC">
-                            {index.orders}
-                        </TableCellText>
-                        <TableCell showOverflow>
-                            <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>
-                                <button
-                                    class="button is-only-icon is-text"
-                                    aria-label="More options"
-                                    on:click|preventDefault={() => {
-                                        showDropdown[i] = !showDropdown[i];
-                                    }}>
-                                    <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
-                                <svelte:fragment slot="list">
-                                    <DropListItem
-                                        icon="eye"
-                                        on:click={() => {
-                                            selectedIndex = index;
-                                            showOverview = true;
-                                        }}>Overview</DropListItem>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <Heading tag="h2" size="5">Indexes</Heading>
 
-                                    <DropListItem
-                                        icon="trash"
-                                        on:click={() => {
-                                            selectedIndex = index;
-                                            showDelete = true;
-                                        }}>Delete</DropListItem>
-                                </svelte:fragment>
-                            </DropList>
-                        </TableCell>
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </Table>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.indexes.total}</p>
-        </div>
-    {:else if $collection.indexes?.length}
-        <Empty isButton single on:click={() => (showCreateIndex = true)}>
-            <p>Create your first attribute to get started</p>
-        </Empty>
+        <Button
+            disabled={!$collection?.attributes?.length}
+            on:click={() => (showCreateIndex = true)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create index</span>
+        </Button>
+    </div>
+    {#if $collection?.attributes?.length}
+        {#if $indexes.length}
+            <Table>
+                <TableHeader>
+                    <TableCellHead>Key</TableCellHead>
+                    <TableCellHead>Type</TableCellHead>
+                    <TableCellHead>Attributes</TableCellHead>
+                    <TableCellHead>Asc/Desc</TableCellHead>
+                    <TableCellHead width={30} />
+                </TableHeader>
+                <TableBody>
+                    {#each $indexes as index, i}
+                        <TableRow>
+                            <TableCell title="Key">
+                                <div class="u-flex u-main-space-between">
+                                    <span class="text u-trim"> {index.key}</span>
+                                    {#if index.status !== 'available'}
+                                        <Pill
+                                            warning={index.status === 'processing'}
+                                            danger={['deleting', 'stuck', 'failed'].includes(
+                                                index.status
+                                            )}>
+                                            {index.status}
+                                        </Pill>
+                                    {/if}
+                                </div>
+                            </TableCell>
+                            <TableCellText title="Type">{index.type}</TableCellText>
+                            <TableCellText title="Attributes">
+                                {index.attributes}
+                            </TableCellText>
+                            <TableCellText title="ASC/DESC">
+                                {index.orders}
+                            </TableCellText>
+                            <TableCell showOverflow>
+                                <DropList
+                                    bind:show={showDropdown[i]}
+                                    placement="bottom-start"
+                                    noArrow>
+                                    <button
+                                        class="button is-only-icon is-text"
+                                        aria-label="More options"
+                                        on:click|preventDefault={() => {
+                                            showDropdown[i] = !showDropdown[i];
+                                        }}>
+                                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                                    </button>
+                                    <svelte:fragment slot="list">
+                                        <DropListItem
+                                            icon="eye"
+                                            on:click={() => {
+                                                selectedIndex = index;
+                                                showOverview = true;
+                                            }}>Overview</DropListItem>
+
+                                        <DropListItem
+                                            icon="trash"
+                                            on:click={() => {
+                                                selectedIndex = index;
+                                                showDelete = true;
+                                            }}>Delete</DropListItem>
+                                    </svelte:fragment>
+                                </DropList>
+                            </TableCell>
+                        </TableRow>
+                    {/each}
+                </TableBody>
+            </Table>
+            <div class="u-flex u-margin-block-start-32 u-main-space-between">
+                <p class="text">Total results: {$indexes.length}</p>
+            </div>
+        {:else}
+            <Empty single on:click={() => (showCreateIndex = true)}>
+                <div class="u-text-center">
+                    <p class="text u-line-height-1-5">Create your first index to get started</p>
+                    <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
+                </div>
+                <div class="u-flex u-gap-16">
+                    <Button external href="https://appwrite.io/docs/databases#indexes" text>
+                        Documentation
+                    </Button>
+                    <Button secondary on:click={() => (showCreateIndex = true)}
+                        >Create index</Button>
+                </div>
+            </Empty>
+        {/if}
     {:else}
-        <Empty isButton single on:click={() => (showCreateIndex = true)}>
-            <p>Create your first index to get started</p>
+        <Empty single on:click={() => (showCreateAttribute = true)}>
+            <div class="u-text-center">
+                <p class="text u-line-height-1-5">Create your first attribute to get started</p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
+            </div>
+            <div class="u-flex u-gap-16">
+                <Button external href="https://appwrite.io/docs/databases#attributes" text>
+                    Documentation
+                </Button>
+                <Button secondary on:click={() => (showCreateAttribute = true)}>
+                    Create attribute
+                </Button>
+            </div>
         </Empty>
     {/if}
 </Container>
 
 <Create bind:showCreateIndex />
+
 {#if selectedIndex}
     <Delete bind:showDelete {selectedIndex} on:deleted={handleDelete} />
     <Overview bind:showOverview {selectedIndex} />
 {/if}
+
+<CreateAttribute bind:showCreate={showCreateAttribute} />

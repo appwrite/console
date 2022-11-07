@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Copy, Empty, Status, Heading, Pagination } from '$lib/components';
     import {
@@ -17,12 +16,29 @@
     import { log } from '$lib/stores/logs';
     import { func } from '../../store';
     import type { PageData } from './$types';
-    import { PAGE_LIMIT } from '$lib/constants';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import { page } from '$app/stores';
+    import { onDestroy, onMount } from 'svelte';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
 
     export let data: PageData;
 
-    //TODO: add optional hover state to rows
+    let unsubscribe: { (): void };
+
+    onMount(() => {
+        unsubscribe = sdkForConsole.client.subscribe('console', (response) => {
+            if (response.events.includes('functions.*.executions.*')) {
+                invalidate(Dependencies.EXECUTIONS);
+            }
+        });
+    });
+
+    onDestroy(() => {
+        if (unsubscribe) {
+            unsubscribe();
+        }
+    });
 </script>
 
 <Container>
@@ -37,7 +53,7 @@
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
                 <TableCellHead width={70}>Type</TableCellHead>
-                <TableCellHead width={100}>Build Time</TableCellHead>
+                <TableCellHead width={100}>Duration</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.executions.executions as execution}
@@ -75,9 +91,8 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton single>
-            <p>Execute your function to view execution logs</p>
-            <Button external secondary href="#">Documentation</Button>
+        <Empty single>
+            <p class="text u-line-height-1-5">Execute your function to view execution logs</p>
         </Empty>
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">

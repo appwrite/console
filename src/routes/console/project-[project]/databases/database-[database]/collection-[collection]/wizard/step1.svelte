@@ -1,12 +1,29 @@
 <script lang="ts">
     import { CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
+    import { Button, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { createDocument } from './store';
     import Attribute from '../document-[document]/attribute.svelte';
 
     let showCustomId = false;
+
+    function addArrayItem(key: string) {
+        createDocument.update((n) => {
+            n.document[key].push(null);
+
+            return n;
+        });
+    }
+
+    function removeArrayItem(key: string, index: number) {
+        createDocument.update((n) => {
+            n.document[key].splice(index, 1);
+
+            return n;
+        });
+    }
+    $: console.log($createDocument?.document['datearray'] ?? '');
 </script>
 
 <WizardStep>
@@ -16,11 +33,11 @@
     </svelte:fragment>
 
     {#if $createDocument.attributes.length}
-        <ul class="form-list">
+        <FormList>
             {#each $createDocument.attributes as attribute}
                 {@const label = attribute.required ? `${attribute.key}*` : attribute.key}
                 {#if attribute.array}
-                    {#each $createDocument.document[attribute.key] as _v, index}
+                    {#each [...$createDocument.document[attribute.key].keys()] as index}
                         <li class="form-item is-multiple">
                             <div class="form-item-part u-stretch">
                                 <Attribute
@@ -33,51 +50,29 @@
                                 <Button
                                     text
                                     disabled={index === 0}
-                                    on:click={() => {
-                                        $createDocument.document[attribute.key].splice(index, 1);
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </Button>
-                            </div>
-                        </li>
-                    {:else}
-                        <li class="form-item is-multiple">
-                            <div class="form-item-part u-stretch">
-                                <Attribute
-                                    {attribute}
-                                    id={`${attribute.key}-0`}
-                                    {label}
-                                    bind:value={$createDocument.document[attribute.key][0]} />
-                            </div>
-                            <div class="form-item-part u-cross-child-end">
-                                <Button text disabled>
+                                    on:click={() => removeArrayItem(attribute.key, index)}>
                                     <span class="icon-x" aria-hidden="true" />
                                 </Button>
                             </div>
                         </li>
                     {/each}
-
                     <Button
                         text
                         disabled={$createDocument.document[attribute.key][
                             $createDocument.document[attribute.key].length - 1
                         ] === null}
-                        on:click={() => {
-                            {
-                                $createDocument.document[attribute.key].push(null);
-                            }
-                        }}>
+                        on:click={() => addArrayItem(attribute.key)}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="text"> Add item</span>
                     </Button>
                 {:else}
-                    <ul class="form-list">
+                    <FormList>
                         <Attribute
                             {attribute}
-                            id={attribute.key}
                             {label}
+                            id={attribute.key}
                             bind:value={$createDocument.document[attribute.key]} />
-                    </ul>
+                    </FormList>
                 {/if}
             {/each}
             {#if !showCustomId}
@@ -91,6 +86,6 @@
             {:else}
                 <CustomId bind:show={showCustomId} name="Document" bind:id={$createDocument.id} />
             {/if}
-        </ul>
+        </FormList>
     {/if}
 </WizardStep>

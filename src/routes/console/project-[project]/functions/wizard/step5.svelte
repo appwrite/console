@@ -22,7 +22,16 @@
 
     function handleCreated(dispatchEvent: CustomEvent) {
         createFunction.update((n) => {
-            n.vars.push(dispatchEvent.detail);
+            if (n.vars.length) {
+                n.vars.map((v) => {
+                    if (v.key !== dispatchEvent.detail.key) {
+                        n.vars.push(dispatchEvent.detail);
+                    }
+                });
+            } else {
+                n.vars.push(dispatchEvent.detail);
+            }
+
             return n;
         });
     }
@@ -35,7 +44,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Variables (optional)</svelte:fragment>
+    <svelte:fragment slot="title">Variables</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Create a variable (or secret key) that will be passed to your function at runtime.
     </svelte:fragment>
@@ -91,19 +100,15 @@
                 {/each}
             </TableBody>
         </Table>
+        <div class="u-flex u-margin-block-start-16">
+            <Button text noMargin on:click={() => (showCreate = !showCreate)}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="u-text">Create variable</span>
+            </Button>
+        </div>
     {:else}
-        <span class="u-sep-block-end">VARIABLES</span>
-
-        <Empty isButton on:click={() => (showCreate = !showCreate)}
-            >Create a variable to get started
-        </Empty>
+        <Empty on:click={() => (showCreate = !showCreate)}>Create a variable to get started</Empty>
     {/if}
-    <div class="u-flex u-margin-block-start-16">
-        <Button text noMargin on:click={() => (showCreate = !showCreate)}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="u-text">Create variable</span>
-        </Button>
-    </div>
 </WizardStep>
 
 {#if showCreate}

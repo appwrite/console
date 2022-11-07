@@ -18,8 +18,10 @@
     import { collection } from '../store';
     import { page } from '$app/stores';
     import { PAGE_LIMIT } from '$lib/constants';
+    import CreateAttribute from '../createAttribute.svelte';
 
     export let data: PageData;
+    let showCreateAttribute = false;
 
     function openWizard() {
         wizard.start(Create);
@@ -83,13 +85,38 @@
                     sum={data.documents.total} />
             </div>
         {:else}
-            <Empty isButton single on:click={openWizard}>
-                <p>Create your first document to get started</p>
+            <Empty single on:click={openWizard}>
+                <div class="u-text-center">
+                    <p class="text u-line-height-1-5">Create your first document to get started</p>
+                    <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
+                </div>
+                <div class="u-flex u-gap-16">
+                    <Button
+                        external
+                        href="https://appwrite.io/docs/databases#create-documents"
+                        text>
+                        Documentation
+                    </Button>
+                    <Button secondary on:click={openWizard}>Create document</Button>
+                </div>
             </Empty>
         {/if}
     {:else}
-        <Empty single>
-            <p>Create your first attribute to get started</p>
+        <Empty single on:click={() => (showCreateAttribute = true)}>
+            <div class="u-text-center">
+                <p class="text u-line-height-1-5">Create your first attribute to get started</p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
+            </div>
+            <div class="u-flex u-gap-16">
+                <Button external href="https://appwrite.io/docs/databases#attributes" text>
+                    Documentation
+                </Button>
+                <Button secondary on:click={() => (showCreateAttribute = true)}>
+                    Create attribute
+                </Button>
+            </div>
         </Empty>
     {/if}
 </Container>
+
+<CreateAttribute bind:showCreate={showCreateAttribute} />

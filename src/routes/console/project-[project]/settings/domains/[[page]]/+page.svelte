@@ -139,14 +139,17 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton single on:click={openWizard}>
+        <Empty single on:click={openWizard}>
             <div class="common-section">
                 <div class="u-text-center common-section">
-                    <p>Create your first Domain to get started</p>
+                    <p class="text u-line-height-1-5">Create your first domain to get started</p>
+                    <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="#/" text>Documentation</Button>
-                    <Button secondary>Create domain</Button>
+                    <Button external href="https://appwrite.io/docs/custom-domains" text>
+                        Documentation
+                    </Button>
+                    <Button secondary on:click={openWizard}>Create domain</Button>
                 </div>
             </div>
         </Empty>

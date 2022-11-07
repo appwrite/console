@@ -16,7 +16,7 @@
 
     const dispatch = createEventDispatcher();
 
-    let xdefault: boolean,
+    let xdefault: boolean | null,
         required = false,
         array = false;
 
@@ -28,7 +28,7 @@
                 $collection.$id,
                 key,
                 required,
-                xdefault ? xdefault : undefined,
+                xdefault ?? undefined,
                 array
             );
             dispatch('created', attribute);
@@ -49,7 +49,7 @@
         xdefault = selectedAttribute.default;
     }
 
-    $: if (required) {
+    $: if (required || array) {
         xdefault = null;
     }
 
@@ -61,12 +61,13 @@
     label="Default value"
     placeholder="Select a value"
     options={[
+        { label: 'Select a value', value: null },
         { label: 'True', value: true },
         { label: 'False', value: false }
     ]}
     bind:value={xdefault}
-    disabled={overview} />
-<InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
+    disabled={overview || array || required} />
+<InputChoice id="required" label="Required" bind:value={required} disabled={overview || array}>
     Indicate whether this is a required attribute</InputChoice>
-<InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
+<InputChoice id="array" label="Array" bind:value={array} disabled={overview || required}>
     Indicate whether this attribute should act as an array</InputChoice>

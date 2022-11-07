@@ -8,11 +8,12 @@ import Integer from './integer.svelte';
 import Ip from './ip.svelte';
 import String from './string.svelte';
 import Url from './url.svelte';
+import Datetime from './datetime.svelte';
 
 export type Option = {
     name: string;
     component: typeof SvelteComponent;
-    type: 'string' | 'integer' | 'double' | 'boolean';
+    type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime';
     format?: 'email' | 'ip' | 'url' | 'enum';
 };
 
@@ -36,6 +37,11 @@ export const options: Option[] = [
         name: 'Boolean',
         component: Boolean,
         type: 'boolean'
+    },
+    {
+        name: 'Datetime',
+        component: Datetime,
+        type: 'datetime'
     },
     {
         name: 'Email',

@@ -62,6 +62,7 @@
             }
             if (message.events.includes('functions.*.deployments.*.update')) {
                 invalidate(Dependencies.DEPLOYMENTS);
+                invalidate(Dependencies.FUNCTION);
 
                 return;
             }
@@ -89,7 +90,7 @@
         {#if activeDeployment}
             <CardGrid>
                 <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                    <div class="avatar is-medium">
+                    <div class="avatar is-medium" aria-hidden="true">
                         <img
                             src={`${base}/icons/${$app.themeInUse}/color/${
                                 $func.runtime.split('-')[0]
@@ -127,20 +128,20 @@
                 </svelte:fragment>
             </CardGrid>
         {:else}
-            <Empty single isButton on:click={() => (showCreate = true)}>
+            <Empty single on:click={() => (showCreate = true)}>
                 <div class="u-text-center">
-                    <p>
+                    <p class="text u-line-height-1-5">
                         Create a new deployment, or activate an existing one to see your function in
                         action.
                     </p>
-                    <p>Need a hand? Check out our documentation.</p>
+                    <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
                 </div>
                 <div class="u-flex u-gap-12">
                     <Button text external href="https://appwrite.io/docs/functions#createFunction">
                         Documentation
                     </Button>
                     <Button secondary on:click={() => (showCreate = true)}>
-                        Create Deployment
+                        Create deployment
                     </Button>
                 </div>
             </Empty>
@@ -234,19 +235,19 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
+        <Empty single on:click={() => (showCreate = true)}>
             <div class="u-text-center">
-                <p>
+                <p class="text u-line-height-1-5">
                     Create a new deployment, or activate an existing one to see your function in
                     action.
                 </p>
-                <p>Need a hand? Check out our documentation.</p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
             </div>
-            <div class="u-flex u-gap-12">
+            <div class="u-flex u-gap-16">
                 <Button text external href="https://appwrite.io/docs/functions#createFunction">
                     Documentation
                 </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create Deployment</Button>
+                <Button secondary on:click={() => (showCreate = true)}>Create deployment</Button>
             </div>
         </Empty>
     {/if}

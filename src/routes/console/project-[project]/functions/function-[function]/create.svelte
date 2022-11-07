@@ -91,7 +91,12 @@
                 rel="noopener noreferrer"
                 class="link">deploying your functions</a
             >, or how to install and use the
-            <a href="#/" target="_blank" rel="noopener noreferrer" class="link">Appwrite CLI</a>.
+            <a
+                href="https://appwrite.io/docs/command-line"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Appwrite CLI</a
+            >.
         </p>
         <Collapsible>
             {#each ['Unix', 'CMD', 'PowerShell'] as category}

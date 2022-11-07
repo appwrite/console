@@ -10,16 +10,13 @@
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { DropList, DropListItem, Empty, Heading } from '$lib/components';
-    import type { Attributes } from '../store';
+    import { attributes, type Attributes } from '../store';
     import { Container } from '$lib/layout';
     import { Pill } from '$lib/elements';
-    import Create from './createAttribute.svelte';
+    import Create from '../createAttribute.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import Delete from './deleteAttribute.svelte';
     import Overview from './overview.svelte';
-    import type { PageData } from './$types';
-
-    export let data: PageData;
 
     let showDropdown = [];
     let selectedAttribute: Attributes = null;
@@ -39,7 +36,7 @@
         </Button>
     </div>
 
-    {#if data.attributes.total}
+    {#if $attributes.length}
         <Table>
             <TableHeader>
                 <TableCellHead>Key</TableCellHead>
@@ -48,7 +45,7 @@
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
-                {#each data.attributes.attributes as attribute, index}
+                {#each $attributes as attribute, index}
                     <TableRow>
                         <TableCell title="Key">
                             <div class="u-flex u-main-space-between">
@@ -110,11 +107,20 @@
             </TableBody>
         </Table>
         <div class="u-flex common-section u-main-space-between">
-            <p class="text">Total results: {data.attributes.total}</p>
+            <p class="text">Total results: {$attributes.length}</p>
         </div>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
-            <p>Crate your first attribute to get started</p>
+        <Empty single on:click={() => (showCreate = true)}>
+            <div class="u-text-center">
+                <p class="text u-line-height-1-5">Create your first attribute to get started</p>
+                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
+            </div>
+            <div class="u-flex u-gap-16">
+                <Button external href="https://appwrite.io/docs/databases#attributes" text>
+                    Documentation
+                </Button>
+                <Button secondary on:click={() => (showCreate = true)}>Create attribute</Button>
+            </div>
         </Empty>
     {/if}
 </Container>

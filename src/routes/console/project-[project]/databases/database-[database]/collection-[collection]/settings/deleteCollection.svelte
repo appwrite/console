@@ -16,6 +16,10 @@
         try {
             await sdkForProject.databases.deleteCollection(databaseId, $collection.$id);
             showDelete = false;
+            addNotification({
+                type: 'success',
+                message: `${$collection.name} has been deleted`
+            });
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database/${$page.params.database}`
             );

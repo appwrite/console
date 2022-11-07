@@ -2,19 +2,17 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
-    import { browser } from '$app/environment';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import { project } from '../store';
+    import { project, stats } from '../store';
     import { usage } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { DropList, DropListItem, Heading } from '$lib/components';
     import { BarChart, LineChart } from '$lib/charts';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { base } from '$app/paths';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
-
     let period: UsagePeriods = '30d';
     let showPeriodBandwidth = false;
     let showPeriodRequests = false;
@@ -53,15 +51,6 @@
         usage.load(projectId, period);
         showPeriodBandwidth = false;
         showPeriodRequests = false;
-    }
-
-    if (browser) {
-        sdkForConsole.client.subscribe<unknown>('console', (message) => {
-            if (message.events.includes('stats.connections')) {
-                // TODO: take care of realtime connections
-                return;
-            }
-        });
     }
 
     //TODO: workaround for broken types
@@ -119,13 +108,15 @@
                             </DropList>
                         </div>
                         {#if network.length}
-                            <BarChart
-                                series={[
-                                    {
-                                        name: 'Bandwidth',
-                                        data: [...network.map((e) => [e.date, e.value])]
-                                    }
-                                ]} />
+                            <div style="height: 12rem;">
+                                <BarChart
+                                    series={[
+                                        {
+                                            name: 'Bandwidth',
+                                            data: [...network.map((e) => [e.date, e.value])]
+                                        }
+                                    ]} />
+                            </div>
                         {/if}
                     </div>
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -160,16 +151,20 @@
                             </DropList>
                         </div>
                         {#if network.length}
-                            <LineChart
-                                series={[
-                                    {
-                                        name: 'Requests',
-                                        data: [...requests.map((e) => [e.date, e.value])]
-                                    }
-                                ]} />
+                            <div style="height: 12rem;">
+                                <LineChart
+                                    series={[
+                                        {
+                                            name: 'Requests',
+                                            data: [...requests.map((e) => [e.date, e.value])]
+                                        }
+                                    ]} />
+                            </div>
                         {/if}
                     </div>
-                    <div class="card is-2-columns-large-screen">
+                    <a
+                        href={`${base}/console/project-${projectId}/databases`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -189,8 +184,10 @@
                                 <div class="text">Documents: {last($usage.documents).value}</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card is-2-columns-large-screen">
+                    </a>
+                    <a
+                        href={`${base}/console/project-${projectId}/storage`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -213,13 +210,15 @@
                                 <div class="text">Buckets: XX</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card is-2-columns-large-screen">
+                    </a>
+                    <a
+                        href={`${base}/console/project-${projectId}/authentication`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
                                     <span class="icon-user-group" aria-hidden="true" />
-                                    <span class="text">authentication</span>
+                                    <span class="text">Authentication</span>
                                 </div>
                             </div>
 
@@ -231,13 +230,11 @@
                                 </div>
                                 <div>Users</div>
                             </div>
-
-                            <div class="grid-item-1-end-end">
-                                <div class="text">Sessions: XX</div>
-                            </div>
                         </div>
-                    </div>
-                    <div class="card is-2-columns-large-screen">
+                    </a>
+                    <a
+                        href={`${base}/console/project-${projectId}/functions`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -259,11 +256,24 @@
                                 <div class="text" />
                             </div>
                         </div>
-                    </div>
+                    </a>
                     <div
                         class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
-                        <div class="heading-level-4">XX</div>
-                        <div>Realtime Connections</div>
+                        {#if $stats.get(projectId)}
+                            <div class="heading-level-4">
+                                {format($stats.get(projectId)[11][1])}
+                            </div>
+                            <div>Realtime Connections</div>
+                            <BarChart
+                                series={[
+                                    {
+                                        name: 'Realtime connection',
+                                        data: $stats.get(projectId)
+                                    }
+                                ]} />
+                        {:else}
+                            <div>waiting for realtime connections</div>
+                        {/if}
                     </div>
                 </div>
             </section>

@@ -23,7 +23,7 @@
     async function handleCreate(event: CustomEvent<Models.Collection>) {
         showCreate = false;
         await goto(
-            `${base}/console/project-${project}/databases/database-${databaseId}/collection/${event.detail.$id}`
+            `${base}/console/project-${project}/databases/database-${databaseId}/collection-${event.detail.$id}`
         );
     }
 </script>
@@ -77,14 +77,16 @@
                 sum={data.collections.total} />
         </div>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
+        <Empty single on:click={() => (showCreate = true)}>
             <div class="u-text-center">
                 <p class="text u-line-height-1-5">Create your first collection to get started</p>
                 <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
             </div>
-            <div class="u-flex u-gap-12 ">
-                <Button external href="#/" text>Documentation</Button>
-                <Button secondary>Create Collection</Button>
+            <div class="u-flex u-gap-16">
+                <Button external href="https://appwrite.io/docs/databases#collection" text>
+                    Documentation
+                </Button>
+                <Button secondary on:click={() => (showCreate = true)}>Create collection</Button>
             </div>
         </Empty>
     {/if}

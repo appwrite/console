@@ -14,7 +14,7 @@
     onMount(async () => {
         let runtimes = await sdkForProject.functions.listRuntimes();
         options = runtimes.runtimes.map((runtime) => ({
-            label: runtime.name,
+            label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
     });
@@ -39,18 +39,16 @@
             {options}
             required />
 
-        <ul class="form-list">
-            {#if !showCustomId}
-                <div>
-                    <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                        <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            Function ID
-                        </span>
-                    </Pill>
-                </div>
-            {:else}
-                <CustomId bind:show={showCustomId} name="Function" bind:id={$createFunction.id} />
-            {/if}
-        </ul>
+        {#if !showCustomId}
+            <div>
+                <Pill button on:click={() => (showCustomId = !showCustomId)}>
+                    <span class="icon-pencil" aria-hidden="true" /><span class="text">
+                        Function ID
+                    </span>
+                </Pill>
+            </div>
+        {:else}
+            <CustomId bind:show={showCustomId} name="Function" bind:id={$createFunction.id} />
+        {/if}
     </FormList>
 </WizardStep>

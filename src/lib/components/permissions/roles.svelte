@@ -1,13 +1,15 @@
 <script lang="ts">
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
+        TableCell,
         TableCellHead,
         TableCellText,
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { onDestroy, onMount } from 'svelte';
     import { writable, type Unsubscriber } from 'svelte/store';
     import Actions from './actions.svelte';
@@ -28,7 +30,7 @@
         roles.forEach(addRole);
         unsubscribe = groups.subscribe((n) => {
             const current = Array.from(n.keys());
-            if (difference(current, roles).length || difference(roles, current).length) {
+            if (symmetricDifference(current, roles).length) {
                 roles = current;
             }
         });
@@ -69,39 +71,84 @@
             return n;
         });
     }
+
+    function sortRoles(a: string, b: string) {
+        if ((a === 'any') !== (b === 'any')) {
+            return a === 'any' ? -1 : 1;
+        }
+        if ((a === 'users') !== (b === 'users')) {
+            return a === 'users' ? -1 : 1;
+        }
+        if ((a === 'guests') !== (b === 'guests')) {
+            return a === 'guests' ? -1 : 1;
+        }
+
+        return a.localeCompare(b);
+    }
+
+    $: if (roles) {
+        roles.forEach(addRole);
+    }
 </script>
 
-<Table noMargin noStyles noMobile>
-    <TableHeader>
-        <TableCellHead>Role</TableCellHead>
-        <TableCellHead width={40} />
-    </TableHeader>
-    <TableBody>
-        {#each [...$groups.keys()] as role}
-            <TableRow>
-                <TableCellText title="Role">
-                    <Row {role} />
-                </TableCellText>
-                <TableCellText title="Remove">
-                    <div class="u-flex">
-                        <button
-                            class="button is-text is-only-icon"
-                            type="button"
-                            aria-label="delete"
-                            on:click={() => deleteRole(role)}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
-                    </div>
-                </TableCellText>
-            </TableRow>
-        {/each}
-    </TableBody>
-</Table>
-
-<Actions
-    bind:showCustom
-    bind:showDropdown
-    bind:showTeam
-    bind:showUser
-    {groups}
-    on:create={create} />
+{#if [...$groups.keys()]?.length}
+    <Table noMargin noStyles noMobile>
+        <TableHeader>
+            <TableCellHead>Role</TableCellHead>
+            <TableCellHead width={40} />
+        </TableHeader>
+        <TableBody>
+            {#each [...$groups.keys()].sort(sortRoles) as role}
+                <TableRow>
+                    <TableCell title="Role">
+                        <Row {role} />
+                    </TableCell>
+                    <TableCellText title="Remove">
+                        <div class="u-flex">
+                            <button
+                                class="button is-text is-only-icon"
+                                type="button"
+                                aria-label="delete"
+                                on:click={() => deleteRole(role)}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </TableCellText>
+                </TableRow>
+            {/each}
+        </TableBody>
+    </Table>
+    <Actions
+        bind:showCustom
+        bind:showDropdown
+        bind:showTeam
+        bind:showUser
+        {groups}
+        on:create={create}>
+        <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Add role</span>
+        </Button>
+    </Actions>
+{:else}
+    <article class="card u-grid u-cross-center u-width-full-line dashed">
+        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+            <div class="common-section">
+                <Actions
+                    bind:showCustom
+                    bind:showDropdown
+                    bind:showTeam
+                    bind:showUser
+                    {groups}
+                    on:create={create}>
+                    <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
+                        <i class="icon-plus" />
+                    </Button>
+                </Actions>
+            </div>
+            <div class="common-section">
+                <span class="text"> Add a role to get started </span>
+            </div>
+        </div>
+    </article>
+{/if}

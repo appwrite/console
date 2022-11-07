@@ -35,7 +35,16 @@
             .getElementsByClassName('code-panel-content')[0]
             .scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            $log.show = false;
+        }
+    }
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 {#if $log.data}
     <section class="cover-frame">

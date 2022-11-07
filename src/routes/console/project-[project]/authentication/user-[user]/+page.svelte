@@ -27,9 +27,12 @@
     import { Dependencies } from '$lib/constants';
 
     $: if (prefs) {
+        console.log(prefs);
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
-            if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
+            if (!!prefs[prefs.length - 1][0] && !!prefs[prefs.length - 1][1]) {
                 arePrefsDisabled = false;
+            } else {
+                arePrefsDisabled = true;
             }
         } else {
             arePrefsDisabled = true;
@@ -264,14 +267,16 @@
                             </DropListItem>
                         </svelte:fragment>
                     </DropList>
-                {:else if !$user.phone}
+                {:else if $user.email}
                     <Button secondary on:click={() => updateVerificationEmail()}>
                         {$user.emailVerification ? 'Unverify' : 'Verify'} account
                     </Button>
-                {:else if !$user.email}
+                {:else if $user.phone}
+                    test
                     <Button secondary on:click={() => updateVerificationPhone()}>
                         {$user.phoneVerification ? 'Unverify' : 'Verify'} account
-                    </Button>{/if}
+                    </Button>
+                {/if}
             {/if}
         </svelte:fragment>
     </CardGrid>
@@ -420,6 +425,7 @@
                         {/if}
                     </ul>
                     <Button
+                        noMargin
                         text
                         on:click={() => {
                             if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {

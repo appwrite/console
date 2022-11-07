@@ -15,6 +15,10 @@
         try {
             await sdkForProject.databases.delete(databaseId);
             showDelete = false;
+            addNotification({
+                type: 'success',
+                message: `${$database.name} has been deleted`
+            });
             await goto(`${base}/console/project-${$page.params.project}/databases`);
         } catch (error) {
             addNotification({

@@ -56,7 +56,7 @@
         xdefault = selectedAttribute.default;
     }
 
-    $: if (required) {
+    $: if (required || array) {
         xdefault = null;
     }
 </script>
@@ -67,11 +67,13 @@
 <InputNumber
     id="default"
     label="Default value"
+    {min}
+    {max}
     bind:value={xdefault}
-    disabled={required}
+    disabled={required || array}
     readonly={overview}
     step="any" />
-<InputChoice id="required" label="Required" bind:value={required} disabled={overview}>
+<InputChoice id="required" label="Required" bind:value={required} disabled={overview || array}>
     Indicate whether this is a required attribute</InputChoice>
-<InputChoice id="array" label="Array" bind:value={array} disabled={overview}>
+<InputChoice id="array" label="Array" bind:value={array} disabled={overview || required}>
     Indicate whether this attribute should act as an array</InputChoice>

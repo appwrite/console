@@ -131,7 +131,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
+                <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no users that match your search.</p>
             </div>
             <Button href={`/console/project-${projectId}/authentication`} secondary>
@@ -139,7 +139,7 @@
             </Button>
         </EmptySearch>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
+        <Empty single on:click={() => (showCreate = true)}>
             <div
                 class="common-section"
                 use:event={{
@@ -150,12 +150,14 @@
                     }
                 }}>
                 <div class="u-text-center common-section">
-                    <p>Create your first User to get started.</p>
+                    <p>Create your first user to get started.</p>
                     <p>Need a hand? Check out our documentation.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="#/" text>Documentation</Button>
-                    <Button secondary>Create User</Button>
+                    <Button external href="https://appwrite.io/docs/server/users" text>
+                        Documentation
+                    </Button>
+                    <Button secondary on:click={() => (showCreate = true)}>Create user</Button>
                 </div>
             </div>
         </Empty>

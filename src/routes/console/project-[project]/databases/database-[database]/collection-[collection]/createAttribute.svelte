@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { option, options } from './store';
+    import { option, options } from './attributes/store';
     import { Button, InputText, FormList, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -12,7 +12,7 @@
     let submitted = false;
 
     const created = async () => {
-        invalidate(Dependencies.ATTRIBUTES);
+        invalidate(Dependencies.COLLECTION);
         showCreate = false;
     };
 
@@ -67,6 +67,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button submit disabled={!selectedOption}>Create</Button>
     </svelte:fragment>
 </Modal>

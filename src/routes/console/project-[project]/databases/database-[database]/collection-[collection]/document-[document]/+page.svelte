@@ -8,7 +8,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Document from './document.svelte';
     import Delete from './delete.svelte';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { Permissions } from '$lib/components/permissions';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -41,7 +41,7 @@
     }
 
     $: if (permissions) {
-        if (difference(permissions, $doc.$permissions).length) {
+        if (symmetricDifference(permissions, $doc.$permissions).length) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
     }
