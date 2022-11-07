@@ -23,7 +23,7 @@
     import Upload from './uploadVariables.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Roles } from '$lib/components/permissions';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import TableList from '$lib/elements/table/tableList.svelte';
     import { TableCell, TableCellText } from '$lib/elements/table';
     import Heading from '$lib/components/heading.svelte';
@@ -244,19 +244,13 @@
     }
 
     $: if (permissions) {
-        if (
-            difference(permissions, $func.execute).length ||
-            difference($func.execute, permissions).length
-        ) {
+        if (symmetricDifference(permissions, $func.execute).length) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
     }
 
     $: if ($eventSet) {
-        if (
-            difference(Array.from($eventSet), $func.events).length ||
-            difference($func.events, Array.from($eventSet)).length
-        ) {
+        if (symmetricDifference(Array.from($eventSet), $func.events).length) {
             areEventsDisabled = false;
         } else areEventsDisabled = true;
     }

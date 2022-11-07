@@ -12,8 +12,8 @@
     registerTheme('light', { ...base, ...light });
     registerTheme('dark', { ...base, ...dark });
 
+    export let options: EChartsOption;
     export let series: (BarSeriesOption | LineSeriesOption)[];
-    export let options: EChartsOption = {};
 
     let chart: ECharts;
     let container: HTMLDivElement;
@@ -87,7 +87,7 @@
 <style>
     .echart {
         width: 100%;
-        min-height: 12rem;
+        min-height: 10rem;
         height: 100%;
     }
 </style>

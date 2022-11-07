@@ -38,6 +38,12 @@
         }
         return { name, icon };
     };
+
+    function filterPlatforms(platforms: { name: string; icon: string }[]) {
+        return platforms.filter(
+            (value, index, self) => index === self.findIndex((t) => t.name === value.name)
+        );
+    }
 </script>
 
 <Container>
@@ -65,15 +71,14 @@
                         <svelte:fragment slot="title">
                             {project.name}
                         </svelte:fragment>
-                        {@const platformList = project.platforms.map((platform) => platform.type)}
-                        {@const platforms = Array.from(new Set(platformList))}
+                        {@const platforms = filterPlatforms(
+                            project.platforms.map((platform) => getPlatformInfo(platform.type))
+                        )}
                         {#each platforms as platform, i}
                             {#if i < 3}
                                 <Pill>
-                                    <span
-                                        class={`icon-${getPlatformInfo(platform).icon}`}
-                                        aria-hidden="true" />
-                                    {getPlatformInfo(platform).name}
+                                    <span class={`icon-${platform.icon}`} aria-hidden="true" />
+                                    {platform.name}
                                 </Pill>
                             {/if}
                         {/each}

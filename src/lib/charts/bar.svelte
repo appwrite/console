@@ -3,7 +3,7 @@
     import Base from './base.svelte';
 
     export let series: BarSeriesOption[];
-    export let options: EChartsOption = {};
+    export let options: EChartsOption = null;
 </script>
 
 <Base

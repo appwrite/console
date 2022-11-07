@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params, parent, url }) => {
     const page = Number(params.page);
     const offset = pageToOffset(page, PAGE_LIMIT);
     const search = url.search.slice(1) ?? undefined;
-    console.log(page);
+
     return {
         offset,
         search,

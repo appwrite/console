@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import Delete from './deleteCollection.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -37,10 +37,7 @@
         if (collectionDocumentSecurity !== $collection.documentSecurity) {
             arePermsDisabled = false;
         } else if (collectionPermissions) {
-            if (
-                difference(collectionPermissions, $collection.$permissions).length ||
-                difference($collection.$permissions, collectionPermissions).length
-            ) {
+            if (symmetricDifference(collectionPermissions, $collection.$permissions).length) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }

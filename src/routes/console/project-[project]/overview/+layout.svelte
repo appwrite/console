@@ -87,7 +87,8 @@
                             <DropList
                                 bind:show={showPeriodBandwidth}
                                 placement="bottom-start"
-                                childStart>
+                                childStart
+                                noArrow>
                                 <button
                                     class="transparent-button"
                                     on:click={() => (showPeriodBandwidth = !showPeriodBandwidth)}>
@@ -144,7 +145,8 @@
                             <DropList
                                 bind:show={showPeriodRequests}
                                 placement="bottom-start"
-                                childStart>
+                                childStart
+                                noArrow>
                                 <button
                                     class="transparent-button"
                                     on:click={() => (showPeriodRequests = !showPeriodRequests)}>
@@ -350,9 +352,3 @@
         </section>
     </Container>
 {/if}
-
-<style>
-    .grid-item-1 {
-        min-block-size: 6.5rem; /* TODO: remove */
-    }
-</style>
