@@ -8,17 +8,20 @@
     import dark from './dark.json';
     import type { ECharts } from 'echarts/core';
     import type { BarSeriesOption, LineSeriesOption } from 'echarts/charts';
+    import type { EChartsOption } from 'echarts/types/dist/shared';
 
     registerTheme('light', { ...base, ...light });
     registerTheme('dark', { ...base, ...dark });
 
     export let series: (BarSeriesOption | LineSeriesOption)[];
+    export let options: EChartsOption = {};
 
     let chart: ECharts;
     let container: HTMLDivElement;
 
     $: option = {
         ...defaultConfig,
+        ...options,
         series
     };
 

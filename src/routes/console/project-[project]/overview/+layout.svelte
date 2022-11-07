@@ -113,7 +113,13 @@
                                     series={[
                                         {
                                             name: 'Bandwidth',
-                                            data: [...network.map((e) => [e.date, e.value])]
+                                            data: [...network.map((e) => [e.date, e.value])],
+                                            tooltip: {
+                                                valueFormatter: (value) =>
+                                                    `${humanFileSize(+value).value}${
+                                                        humanFileSize(+value).unit
+                                                    }`
+                                            }
                                         }
                                     ]} />
                             </div>
@@ -176,7 +182,7 @@
                             <div class="grid-item-1-start-end" />
 
                             <div class="grid-item-1-end-start">
-                                <div class="heading-level-4">XX</div>
+                                <div class="heading-level-4">3</div>
                                 <div>Databases</div>
                             </div>
 
@@ -207,7 +213,7 @@
                             </div>
 
                             <div class="grid-item-1-end-end">
-                                <div class="text">Buckets: XX</div>
+                                <div class="text">Buckets: 2</div>
                             </div>
                         </div>
                     </a>
@@ -261,14 +267,27 @@
                         class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
                         {#if $stats.get(projectId)}
                             <div class="heading-level-4">
-                                {format($stats.get(projectId)[11][1])}
+                                {format(34)}
                             </div>
                             <div>Realtime Connections</div>
                             <BarChart
                                 series={[
                                     {
                                         name: 'Realtime connection',
-                                        data: $stats.get(projectId)
+                                        data: [
+                                            ['2022-08-16T00:00:00.000+00:00', 34],
+                                            ['2022-08-17T00:00:00.000+00:00', 24],
+                                            ['2022-08-18T00:00:00.000+00:00', 24],
+                                            ['2022-08-19T00:00:00.000+00:00', 35],
+                                            ['2022-08-20T00:00:00.000+00:00', 32],
+                                            ['2022-08-21T00:00:00.000+00:00', 39],
+                                            ['2022-08-22T00:00:00.000+00:00', 29],
+                                            ['2022-08-23T00:00:00.000+00:00', 45],
+                                            ['2022-08-24T00:00:00.000+00:00', 40],
+                                            ['2022-08-25T00:00:00.000+00:00', 30],
+                                            ['2022-08-26T00:00:00.000+00:00', 20],
+                                            ['2022-08-27T00:00:00.000+00:00', 34]
+                                        ]
                                     }
                                 ]} />
                         {:else}
