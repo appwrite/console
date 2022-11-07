@@ -12,8 +12,8 @@
     style={`--grid-gap:1.5rem; --grid-item-size:${total > 3 ? '22rem' : '25rem'};`}>
     <slot />
 
-    {#if limit + offset > total && (total % 2 !== 0 || total % 4 === 0)}
-        <Empty isButton on:click>
+    {#if total > 3 ? total < limit + offset : total % 2 !== 0}
+        <Empty on:click>
             <slot name="empty" />
         </Empty>
     {/if}

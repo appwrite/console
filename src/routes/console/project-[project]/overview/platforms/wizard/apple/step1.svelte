@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Alert } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { FormItem, FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
@@ -46,11 +45,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Flutter app</svelte:fragment>
-    <Alert type="warning">
-        Note: If you are building your Flutter application for multiple devices, you will have to
-        follow this process for each different device.
-    </Alert>
+    <svelte:fragment slot="title">Register your Apple app</svelte:fragment>
 
     <FormList isCommonSection>
         <FormItem>

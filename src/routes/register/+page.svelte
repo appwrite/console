@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import {
         Button,
@@ -13,6 +13,7 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
+    import { Dependencies } from '$lib/constants';
 
     let name: string, mail: string, pass: string;
 
@@ -20,6 +21,7 @@
         try {
             await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
             await sdkForConsole.account.createEmailSession(mail, pass);
+            await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
         } catch (error) {
             addNotification({
@@ -31,7 +33,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Sign up</title>
+    <title>Sign up - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>

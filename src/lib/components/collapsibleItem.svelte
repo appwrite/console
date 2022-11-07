@@ -1,13 +1,23 @@
+<script lang="ts">
+    export let withIndentation = false;
+</script>
+
 <li class="collapsible-item">
     <details class="collapsible-wrapper">
         <summary class="collapsible-button">
-            <span class="text"><slot name="title" /></span>
-            <span class="collapsible-button-optional"><slot name="subtitle" /></span>
+            <slot name="beforetitle" />
+            <div>
+                <span class="text"><slot name="title" /></span>
+                <span class="collapsible-button-optional"><slot name="subtitle" /></span>
+            </div>
             <div class="icon">
                 <span class="icon-cheveron-down" aria-hidden="true" />
             </div>
         </summary>
-        <div class="collapsible-content">
+        <div
+            class="collapsible-content"
+            class:u-margin-block-start-8={withIndentation}
+            class:u-padding-inline-32={withIndentation}>
             <slot />
         </div>
     </details>

@@ -28,7 +28,8 @@
     let showExitModal = false;
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Escape' && !showExitModal) {
+        const openDialog = document.querySelectorAll('dialog[open]');
+        if (event.key === 'Escape' && !showExitModal && !openDialog?.length) {
             event.preventDefault();
             dispatch('exit');
             wizard.hide();
@@ -105,7 +106,7 @@
         <slot name="media" />
     </div>
     <div class="wizard-main">
-        <Form on:submit={submit}>
+        <Form noStyle on:submit={submit}>
             {#each sortedSteps as [step, { component }]}
                 {#if currentStep === step}
                     <svelte:component this={component} />

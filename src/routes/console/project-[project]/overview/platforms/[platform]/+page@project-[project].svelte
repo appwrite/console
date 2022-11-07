@@ -1,16 +1,4 @@
 <script lang="ts">
-    import { afterNavigate } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { CardGrid } from '$lib/components';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
-    import { updateLayout } from '$lib/stores/layout';
-    import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import { onMount, SvelteComponent } from 'svelte';
-    import { project } from '../../../store';
-    import { platform } from './store';
     import Delete from './delete.svelte';
     import Web from './web.svelte';
     import FlutterIos from './flutterIOS.svelte';
@@ -22,12 +10,24 @@
     import AppleMacOs from './appleMacOS.svelte';
     import AppleWatchOs from './appleWatchOS.svelte';
     import AppleTvos from './appleTvOS.svelte';
+    import Android from './android.svelte';
+    import { CardGrid, Heading } from '$lib/components';
+    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Container } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { onMount, SvelteComponent } from 'svelte';
+    import { project } from '../../../store';
+    import { platform } from './store';
+    import { Dependencies } from '$lib/constants';
+    import type { PageData } from './$types';
+    import { invalidate } from '$app/navigation';
 
-    const projectId = $page.params.project;
-    const platformId = $page.params.platform;
+    export let data: PageData;
+
     const types: Record<string, typeof SvelteComponent> = {
         web: Web,
-        android: Web,
+        android: Android,
         'apple-ios': AppleiOs,
         'apple-macos': AppleMacOs,
         'apple-watchos': AppleWatchOs,
@@ -39,45 +39,17 @@
         'flutter-windows': FlutterWindows
     };
 
-    let loaded = false;
     let showDelete = false;
     let name: string = null;
 
-    onMount(handle);
-    afterNavigate(handle);
-
-    async function handle(event = null) {
-        if ($platform?.$id !== platformId) {
-            await platform.load(projectId, platformId);
-        }
-
-        name ??= $platform.name;
-
-        updateLayout({
-            navigate: event,
-            back: `${base}/console/project-${projectId}/overview/platforms`,
-            title: $platform.name,
-            level: 4,
-            breadcrumbs: [
-                {
-                    level: 3,
-                    href: 'platforms',
-                    title: 'Platforms'
-                },
-                {
-                    level: 4,
-                    href: platformId,
-                    title: $platform.name
-                }
-            ]
-        });
-        loaded = true;
-    }
+    onMount(() => {
+        name ??= data.platform.name;
+    });
 
     const updateName = async () => {
         try {
-            await sdkForConsole.projects.updatePlatform($project.$id, $platform.$id, name);
-            $platform.name = name;
+            await sdkForConsole.projects.updatePlatform($project.$id, data.platform.$id, name);
+            invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
                 message: 'Platform name has been updated'
@@ -92,54 +64,49 @@
 </script>
 
 <Container>
-    {#if loaded}
-        <Form on:submit={updateName}>
-            <CardGrid>
-                <h6 class="heading-level-7">Update Name</h6>
-                <p class="text">
-                    Choose any name that will help you distinguish between platforms.
-                </p>
-                <svelte:fragment slot="aside">
-                    <FormList>
-                        <InputText
-                            id="name"
-                            label="Name"
-                            bind:value={name}
-                            required
-                            placeholder="Enter name" />
-                    </FormList>
-                </svelte:fragment>
-
-                <svelte:fragment slot="actions">
-                    <Button disabled={name === $platform.name} submit>Update</Button>
-                </svelte:fragment>
-            </CardGrid>
-        </Form>
-
-        <svelte:component this={types[$platform.type]} />
-
+    <Form on:submit={updateName}>
         <CardGrid>
-            <div>
-                <h6 class="heading-level-7">Delete Platform</h6>
-            </div>
-            <p>The Platform will be permanently deleted. This action is irreversible.</p>
+            <Heading tag="h6" size="7">Update Name</Heading>
+            <p class="text">Choose any name that will help you distinguish between platforms.</p>
             <svelte:fragment slot="aside">
-                <div class="box">
-                    <div class="u-flex u-gap-16">
-                        <!-- <img class="avatar" src="/icons/dark/color/android.svg" /> -->
-                        <div class="u-cross-child-center u-line-height-1-5">
-                            <h6 class="u-bold">{$platform.name}</h6>
-                            <p>{$platform.hostname}</p>
-                        </div>
-                    </div>
-                </div>
+                <FormList>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        bind:value={name}
+                        required
+                        placeholder="Enter name" />
+                </FormList>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button disabled={name === $platform.name} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
-    {/if}
+    </Form>
+
+    <svelte:component this={types[$platform.type]} />
+
+    <CardGrid>
+        <div>
+            <Heading tag="h6" size="7">Delete Platform</Heading>
+        </div>
+        <p>The Platform will be permanently deleted. This action is irreversible.</p>
+        <svelte:fragment slot="aside">
+            <div class="box">
+                <div class="u-flex u-gap-16">
+                    <div class="u-cross-child-center u-line-height-1-5">
+                        <h6 class="u-bold">{$platform.name}</h6>
+                        <p>{$platform.hostname}</p>
+                    </div>
+                </div>
+            </div>
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </CardGrid>
 </Container>
 
 <Delete bind:showDelete />

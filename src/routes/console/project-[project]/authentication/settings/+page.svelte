@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid } from '$lib/components';
+    import { CardGrid, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -11,17 +11,14 @@
     import { event } from '$lib/actions/analytics';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
-    import { onMount } from 'svelte';
     import { page } from '$app/stores';
 
     const projectId = $page.params.project;
-    let showModal = false;
 
-    onMount(async () => {
-        await project.load(projectId);
+    $: {
         authMethods.load($project);
         OAuthProviders.load($project);
-    });
+    }
 
     const authUpdate = async (box: AuthMethod) => {
         try {
@@ -47,7 +44,7 @@
 {#if $authMethods && $OAuthProviders}
     <Container>
         <CardGrid>
-            <h2 class="heading-level-7">Authentication Methods</h2>
+            <Heading tag="h2" size="7">Authentication Methods</Heading>
             <p>Enable the authentication methods you wish to use.</p>
             <svelte:fragment slot="aside">
                 <form class="form">
@@ -57,9 +54,7 @@
                                 label={box.label}
                                 id={box.method}
                                 bind:value={box.value}
-                                on:change={() => {
-                                    authUpdate(box);
-                                }} />
+                                on:change={() => authUpdate(box)} />
                         {/each}
                     </ul>
                 </form>
@@ -68,12 +63,11 @@
         <section class="common-section">
             <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
             <ul class="grid-box common-section">
-                {#each $OAuthProviders.providers as provider}
+                {#each $OAuthProviders.providers.sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
                     <button
                         class="card u-flex u-flex-vertical u-cross-center"
                         on:click={() => {
                             selectedProvider = provider;
-                            showModal = true;
                         }}
                         use:event={{
                             name: 'console_users',
@@ -92,8 +86,8 @@
                         </div>
                         <p class="u-margin-block-start-8">{provider.name}</p>
                         <div class="u-margin-block-start-24">
-                            <Pill success={provider.active}>
-                                {provider.active ? 'enabled' : 'disabled'}
+                            <Pill success={provider.enabled}>
+                                {provider.enabled ? 'enabled' : 'disabled'}
                             </Pill>
                         </div>
                     </button>
@@ -106,6 +100,7 @@
 {#if selectedProvider}
     <svelte:component
         this={selectedProvider.component}
-        provider={selectedProvider}
-        bind:showModal />
+        bind:provider={selectedProvider}
+        on:close={() => (selectedProvider = null)}
+        showModal />
 {/if}

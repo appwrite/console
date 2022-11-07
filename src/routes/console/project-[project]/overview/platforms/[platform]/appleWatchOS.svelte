@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { CardGrid } from '$lib/components';
+    import { invalidate } from '$app/navigation';
+    import { CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -21,7 +23,7 @@
                 $platform.name,
                 key
             );
-            $platform.key = key;
+            invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
                 message: 'Platform Bundle ID has been updated'
@@ -37,7 +39,7 @@
 
 <Form on:submit={updateHostname}>
     <CardGrid>
-        <h6 class="heading-level-7">Update Bundle ID</h6>
+        <Heading tag="h6" size="7">Update Bundle ID</Heading>
         <p class="text">
             You can find your Bundle Identifier in the General tab for your app's primary target in
             Xcode.

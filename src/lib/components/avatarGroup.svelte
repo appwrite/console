@@ -1,15 +1,16 @@
 <script lang="ts">
-    import Avatar from './avatar.svelte';
-    export let avatars = [];
+    import AvatarInitials from './avatarInitials.svelte';
+
+    export let avatars: string[] = [];
     export let total = avatars.length;
     export let size = 40;
 </script>
 
 <ul class="avatars-group">
-    {#each avatars as av, index}
+    {#each avatars as name, index}
         {#if index < 2}
             <li class="avatars-group-item">
-                <Avatar {size} src={av.img} name={av.name} />
+                <AvatarInitials {size} {name} />
             </li>
         {/if}
     {/each}

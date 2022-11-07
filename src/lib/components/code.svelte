@@ -10,7 +10,6 @@
     import 'prismjs/plugins/autoloader/prism-autoloader';
     import 'prismjs/plugins/custom-class/prism-custom-class';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
-    import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
     import { afterUpdate } from 'svelte';
     import { Copy } from '.';
 
@@ -20,6 +19,7 @@
     export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift';
     export let withLineNumbers = false;
     export let withCopy = false;
+    export let noMargin = false;
 
     Prism.plugins.customClass.prefix('prism-');
 
@@ -28,7 +28,7 @@
     });
 </script>
 
-<section class="box u-overflow-hidden common-section">
+<section class="box u-overflow-hidden " class:common-section={!noMargin}>
     <div
         class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
@@ -54,9 +54,10 @@
 
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
+    @import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 
     .box {
-        --p-box-background-color: var(--color-neutral-300) !important;
+        --p-box-background-color: var(--color-neutral-400) !important;
 
         body.theme-light & {
             --p-box-background-color: var(--color-neutral-5) !important;

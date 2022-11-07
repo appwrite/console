@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { CardGrid } from '$lib/components';
+    import { invalidate } from '$app/navigation';
+    import { CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -23,10 +25,10 @@
                 undefined,
                 hostname
             );
-            project.load($project.$id);
+            invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
-                message: 'Platform hostname has been updated'
+                message: 'Platform Hostname has been updated'
             });
         } catch (error) {
             addNotification({
@@ -39,7 +41,7 @@
 
 <Form on:submit={updateHostname}>
     <CardGrid>
-        <h6 class="heading-level-7">Update Hostname</h6>
+        <Heading tag="h6" size="7">Update Hostname</Heading>
         <p class="text">You can use * to allow wildcard hostnames or subdomains.</p>
         <svelte:fragment slot="aside">
             <FormList>

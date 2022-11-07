@@ -10,14 +10,13 @@
     export let fullWidth = false;
     export let ariaLabel: string = null;
     export let noMargin = false;
-    //TODO: add option to add aria-label to buttons that are only icons
 </script>
 
 {#if href}
     <a
         {disabled}
         {href}
-        target={external ? '_blank' : '_self'}
+        target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class="button"
         class:is-only-icon={round}
