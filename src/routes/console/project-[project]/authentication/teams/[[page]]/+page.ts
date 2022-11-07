@@ -13,6 +13,7 @@ export const load: PageLoad = async ({ params, parent, url }) => {
     return {
         offset,
         search,
+        page,
         teams: sdkForProject.teams.list(
             [Query.limit(PAGE_LIMIT), Query.offset(offset), Query.orderDesc('$createdAt')],
             search

@@ -9,28 +9,37 @@ import type { Attributes } from '../store';
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
     depends(Dependencies.DOCUMENT);
     const { collection } = await parent();
-    const document = await sdkForProject.databases.getDocument(
-        params.database,
-        params.collection,
-        params.document
-    );
 
-    /**
-     * Sanitize DateTime to remove UTC Timezone section.
-     */
-    collection.attributes.forEach((attribute) => {
-        const { type, key, array } = attribute as unknown as Attributes;
-        if (type === 'datetime') {
-            if (array) {
-                document[key] = document[key].map((n: string) => {
-                    return new Date(n).toISOString().slice(0, 23);
-                });
-            } else {
-                document[key] = new Date(document[key]).toISOString().slice(0, 23);
-            }
-        }
-    });
     try {
+        const document = await sdkForProject.databases.getDocument(
+            params.database,
+            params.collection,
+            params.document
+        );
+
+        /**
+         * Sanitize DateTime to remove UTC Timezone section.
+         */
+        collection.attributes.forEach((attribute) => {
+            const { type, key, array } = attribute as unknown as Attributes;
+            if (type === 'datetime') {
+                if (array) {
+                    document[key] = document[key].map((n: string) => {
+                        if (!n) {
+                            return '';
+                        }
+                        return new Date(n).toISOString().slice(0, 23);
+                    });
+                } else {
+                    if (document[key]) {
+                        document[key] = new Date(document[key]).toISOString().slice(0, 23);
+                    } else {
+                        document[key] = '';
+                    }
+                }
+            }
+        });
+
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
