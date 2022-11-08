@@ -122,13 +122,13 @@
                         </div>
                     </a>
                     <a
-                        href={`${base}/console/project-${projectId}/authentication`}
+                        href={`${base}/console/project-${projectId}/auth`}
                         class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
                                     <span class="icon-user-group" aria-hidden="true" />
-                                    <span class="text">Authentication</span>
+                                    <span class="text">Auth</span>
                                 </div>
                             </div>
 
