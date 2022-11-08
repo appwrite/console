@@ -108,7 +108,7 @@
                     <Button
                         external
                         secondary
-                        href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetsessions">
+                        href="https://appwrite.io/docs/server/auth?sdk=nodejs-default#usersGetsessions">
                         Documentation
                     </Button>
                 </div>

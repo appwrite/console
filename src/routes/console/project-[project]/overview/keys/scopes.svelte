@@ -8,7 +8,7 @@
     export let scopes: string[];
 
     enum Category {
-        Authentication = 'Authentication',
+        Auth = 'Auth',
         Database = 'Database',
         Functions = 'Functions',
         Storage = 'Storage',
@@ -82,7 +82,7 @@
     <Button text on:click={selectAll}>Select all</Button>
 </div>
 <Collapsible>
-    {#each [Category.Authentication, Category.Database, Category.Functions, Category.Storage, Category.Other] as category}
+    {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Other] as category}
         {@const checked = categoryState(category, scopes)}
         <CollapsibleItem withIndentation>
             <svelte:fragment slot="beforetitle">
