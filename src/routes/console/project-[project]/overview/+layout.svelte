@@ -212,7 +212,7 @@
                         </div>
                     </a>
                     <a
-                        href={`${base}/console/project-${projectId}/authentication`}
+                        href={`${base}/console/project-${projectId}/auth`}
                         class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
