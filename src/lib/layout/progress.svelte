@@ -1,14 +1,6 @@
 <script lang="ts">
     import { afterNavigate, beforeNavigate } from '$app/navigation';
 
-    const getIncrement = (number) => {
-        if (number >= 0 && number < 0.2) return 0.1;
-        else if (number >= 0.2 && number < 0.5) return 0.04;
-        else if (number >= 0.5 && number < 0.8) return 0.02;
-        else if (number >= 0.8 && number < 0.99) return 0.005;
-        return 0;
-    };
-
     let width: number;
     let updater: ReturnType<typeof setTimeout>;
     let completed = false;
@@ -19,7 +11,7 @@
     const intervalTime = 800;
     const stepSizes = [0, 0.005, 0.01, 0.02];
 
-    function animate() {
+    function animate(): void {
         if (updater) {
             clearInterval(updater);
         }
@@ -36,12 +28,12 @@
         }, intervalTime);
     }
 
-    function start() {
+    function start(): void {
         width = minimum;
         animate();
     }
 
-    function complete() {
+    function complete(): void {
         clearInterval(updater);
         width = 1;
         setTimeout(() => {
@@ -51,6 +43,14 @@
                 width = 0;
             }, settleTime);
         }, settleTime);
+    }
+
+    function getIncrement(number): number {
+        if (number >= 0 && number < 0.2) return 0.1;
+        else if (number >= 0.2 && number < 0.5) return 0.04;
+        else if (number >= 0.5 && number < 0.8) return 0.02;
+        else if (number >= 0.8 && number < 0.99) return 0.005;
+        return 0;
     }
 
     beforeNavigate(start);
