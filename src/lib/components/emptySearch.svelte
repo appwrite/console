@@ -9,11 +9,13 @@
 
 <article class="card u-grid u-cross-center u-width-full-line common-section">
     <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
-        {#if $app.themeInUse === 'dark'}
-            <img src={Dark} alt="create" aria-hidden="true" />
-        {:else}
-            <img src={Light} alt="create" aria-hidden="true" />
-        {/if}
+        <button type="button" on:click|preventDefault>
+            {#if $app.themeInUse === 'dark'}
+                <img src={Dark} alt="create" aria-hidden="true" />
+            {:else}
+                <img src={Light} alt="create" aria-hidden="true" />
+            {/if}
+        </button>
         <slot />
     </div>
 </article>

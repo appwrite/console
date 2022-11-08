@@ -195,6 +195,7 @@
         {/if}
         <Button
             text
+            noMargin
             on:click={() => {
                 newAttr = true;
                 if (selectedAttribute && selectedOrder) {
@@ -203,7 +204,7 @@
                 }
             }}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text"> Add attribute </span>
+            <span class="text">Add attribute</span>
         </Button>
     </FormList>
     <svelte:fragment slot="footer">
