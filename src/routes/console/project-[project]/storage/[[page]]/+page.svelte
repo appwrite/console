@@ -39,7 +39,6 @@
             on:click={() => (showCreate = true)}>
             {#each data.buckets.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket-${bucket.$id}`}>
-                    <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if !bucket.enabled}
