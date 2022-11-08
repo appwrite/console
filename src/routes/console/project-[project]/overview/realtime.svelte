@@ -26,14 +26,14 @@
             ]} />
     </div>
 {:else}
-    <Card>
+    <Card isDashed>
         <div
             class="u-flex u-cross-center u-flex-vertical u-main-center u-flex"
             style="height: 10rem;">
             <span
                 class="icon-chart-square-bar text-large"
                 aria-hidden="true"
-                style="font-size: var(--icon-size-large);" />
+                style="font-size: 32px;" />
             <p class="u-bold">No data to show</p>
             <a
                 class="link"
