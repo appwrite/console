@@ -34,7 +34,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Authentication</CoverTitle>
+        <CoverTitle>Auth</CoverTitle>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}

@@ -14,7 +14,7 @@
         },
         {
             href: `/console/project-${$project?.$id}/auth`,
-            title: 'Authentication'
+            title: 'Auth'
         }
     ];
 </script>

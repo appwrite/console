@@ -1,5 +1,5 @@
 <svelte:head>
-    <title>Authentication - Appwrite</title>
+    <title>Auth - Appwrite</title>
 </svelte:head>
 
 <slot />

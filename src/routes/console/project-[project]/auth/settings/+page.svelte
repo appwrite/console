@@ -44,7 +44,7 @@
 {#if $authMethods && $OAuthProviders}
     <Container>
         <CardGrid>
-            <Heading tag="h2" size="7">Authentication Methods</Heading>
+            <Heading tag="h2" size="7">Auth Methods</Heading>
             <p>Enable the authentication methods you wish to use.</p>
             <svelte:fragment slot="aside">
                 <form class="form">

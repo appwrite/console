@@ -15,7 +15,7 @@
         },
         {
             href: `/console/project-${$project?.$id}/auth`,
-            title: 'Authentication'
+            title: 'Auth'
         },
         {
             href: `/console/project-${$project?.$id}/auth/user-${$user?.$id}`,

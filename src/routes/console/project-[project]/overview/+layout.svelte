@@ -218,7 +218,7 @@
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
                                     <span class="icon-user-group" aria-hidden="true" />
-                                    <span class="text">Authentication</span>
+                                    <span class="text">Auth</span>
                                 </div>
                             </div>
 
