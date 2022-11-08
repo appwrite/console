@@ -45,7 +45,7 @@
         }, settleTime);
     }
 
-    function getIncrement(number): number {
+    function getIncrement(number: number): number {
         if (number >= 0 && number < 0.2) return 0.1;
         else if (number >= 0.2 && number < 0.5) return 0.04;
         else if (number >= 0.5 && number < 0.8) return 0.02;
