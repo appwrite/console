@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { DropList, DropListItem, GridItem1, Heading } from '$lib/components';
+    import { DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
@@ -74,25 +74,32 @@
     </span>
 </div>
 
-<div class="grid-box u-margin-block-start-32" style="--grid-gap:1.5rem; --grid-item-size:25rem;">
+<div class="grid-box u-margin-block-start-32" style="--grid-gap:1.5rem; --grid-item-size:20rem;">
     {#each data.platforms.platforms as platform}
-        <GridItem1 href={`${path}/${platform.$id}`}>
-            <svelte:fragment slot="title">
-                <div class="u-flex u-gap-8 u-cross-center">
-                    <div class="avatar is-medium" aria-hidden="true">
-                        <img
-                            src={`${base}/icons/${$app.themeInUse}/${getPlatformInfo(
-                                platform.type.toLowerCase()
-                            )}.svg`}
-                            alt="technology" />
+        <a class="card" href={`${path}/${platform.$id}`}>
+            <div class="grid-item-1" style="min-block-size: calc(182 / 16 * 1rem)">
+                <div class="grid-item-1-start-start">
+                    <div class="u-flex u-gap-8 u-cross-center">
+                        <div class="avatar is-medium" aria-hidden="true">
+                            <img
+                                src={`${base}/icons/${$app.themeInUse}/${getPlatformInfo(
+                                    platform.type.toLowerCase()
+                                )}.svg`}
+                                alt="technology" />
+                        </div>
+                        <span class="text">{platform.name}</span>
                     </div>
-                    <span class="text">{platform.name}</span>
                 </div>
-            </svelte:fragment>
-            <div class="grid-item-1-end-start">
-                <p>Last Updated</p>
-                <p>{toLocaleDateTime(platform.$updatedAt)}</p>
+
+                <div class="grid-item-1-end-start">
+                    <div class="u-flex u-gap-16 u-flex-wrap">
+                        <div class="grid-item-1-end-start">
+                            <p class="eyebrow-heading-3">Last Updated</p>
+                            <p>{toLocaleDateTime(platform.$updatedAt)}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </GridItem1>
+        </a>
     {/each}
 </div>

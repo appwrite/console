@@ -23,7 +23,6 @@
             return n;
         });
     }
-    $: console.log($createDocument?.document['datearray'] ?? '');
 </script>
 
 <WizardStep>
