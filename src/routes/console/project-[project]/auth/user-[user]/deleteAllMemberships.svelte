@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { sendEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -32,7 +33,14 @@
     //TODO: implelment delete all memberships
 </script>
 
-<Modal bind:show={showDeleteAll} on:submit={deleteAllMemberships} warning>
+<Modal
+    bind:show={showDeleteAll}
+    on:submit={deleteAllMemberships}
+    on:submit={() =>
+        sendEvent({
+            action: 'submit_auth_team_invite'
+        })}
+    warning>
     <svelte:fragment slot="header">Delete All Memberships</svelte:fragment>
 
     <p>

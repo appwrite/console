@@ -48,7 +48,7 @@
                     type: 'user'
                 }
             }}>
-            <Button on:click={() => (showCreate = true)}>
+            <Button on:click={() => (showCreate = true)} event="create_user">
                 <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
             </Button>
         </span>
