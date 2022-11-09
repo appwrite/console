@@ -158,7 +158,6 @@
                 <TableCellHead width={100}>Status</TableCellHead>
                 <TableCellHead width={90}>Build time</TableCellHead>
                 <TableCellHead width={70}>Size</TableCellHead>
-                <TableCellHead width={60} />
                 <TableCellHead width={25} />
             </TableHeader>
             <TableBody>
@@ -187,16 +186,7 @@
                             <TableCellText title="Size">
                                 {calculateSize(deployment.size)}
                             </TableCellText>
-                            <TableCell>
-                                <Button
-                                    secondary
-                                    on:click={() => {
-                                        selectedDeployment = deployment;
-                                        showActivate = true;
-                                    }}>
-                                    <span class="text">Activate</span>
-                                </Button>
-                            </TableCell>
+
                             <TableCell showOverflow>
                                 <DropList
                                     bind:show={showDropdown[index]}
@@ -212,20 +202,33 @@
                                     </button>
                                     <svelte:fragment slot="list">
                                         <DropListItem
+                                            icon="lightning-bolt"
+                                            on:click={() => {
+                                                selectedDeployment = deployment;
+                                                showActivate = true;
+                                                showDropdown = [];
+                                            }}>
+                                            Activate
+                                        </DropListItem>
+                                        <DropListItem
                                             icon="terminal"
                                             on:click={() => {
                                                 $log.show = true;
                                                 $log.func = $func;
                                                 $log.data = deployment;
                                                 showDropdown = [];
-                                            }}>Output</DropListItem>
+                                            }}>
+                                            Output
+                                        </DropListItem>
                                         <DropListItem
                                             icon="trash"
                                             on:click={() => {
                                                 selectedDeployment = deployment;
                                                 showDropdown = [];
                                                 showDelete = true;
-                                            }}>Delete</DropListItem>
+                                            }}>
+                                            Delete
+                                        </DropListItem>
                                     </svelte:fragment>
                                 </DropList>
                             </TableCell>

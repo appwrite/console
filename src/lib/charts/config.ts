@@ -27,6 +27,11 @@ export const defaultConfig: EChartsOption = {
     yAxis: {
         type: 'value',
         splitNumber: 3,
-        minInterval: 1
+        minInterval: 1,
+        splitLine: {
+            lineStyle: {
+                width: 1
+            }
+        }
     }
 };

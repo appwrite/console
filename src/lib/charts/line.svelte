@@ -1,5 +1,6 @@
 <script lang="ts">
-    import type { EChartsOption, LineSeriesOption } from 'echarts';
+    import type { LineSeriesOption } from 'echarts/charts';
+    import type { EChartsOption } from 'echarts';
     import { Colors } from './config';
     import Base from './base.svelte';
 
@@ -13,9 +14,10 @@
         s.type = 'line';
         s.stack = 'total';
         s.lineStyle = {
-            shadowBlur: 2.5,
+            shadowBlur: 38,
             shadowColor: Colors.Primary,
-            shadowOffsetY: 0
+            shadowOffsetY: 15,
+            shadowOffsetX: 0
         };
         s.showSymbol = false;
 

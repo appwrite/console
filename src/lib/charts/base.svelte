@@ -41,7 +41,7 @@
             (await import('echarts/components')).TransformComponent,
             (await import('echarts/components')).LegendComponent,
             (await import('echarts/features')).LabelLayout,
-            (await import('echarts/renderers')).CanvasRenderer
+            (await import('echarts/renderers')).SVGRenderer
         ]);
         makeChart();
     });

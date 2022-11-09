@@ -147,7 +147,7 @@ Adding a new dependency should have vital value on the product with minimum poss
 │       │   │   │   ├── _create.svelte  // Component to Create collections
 │       │   │   │   └── index.svelte    // Entrypoint for "/console/[PROJECT_ID]/database"
 │       │   │   ├── storage             // Storage Service "/console/[PROJECT]/storage"
-│       │   │   └── authentication      // Users Service "/console/[PROJECT]/authentication"
+│       │   │   └── auth                // Users Service "/console/[PROJECT]/auth"
 │       │   └──...
 │       ├── login.svelte                // Component for Login "/console/login"
 │       └── register.svelte             // Component for Register "/console/register"

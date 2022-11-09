@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
 import type { SvelteComponent } from 'svelte';
-import Apple from '../../routes/console/project-[project]/authentication/_appleOAuth.svelte';
-import Microsoft from '../../routes/console/project-[project]/authentication/_microsoftOAuth.svelte';
-import Okta from '../../routes/console/project-[project]/authentication/_oktaOAuth.svelte';
-import Auth0 from '../../routes/console/project-[project]/authentication/_auth0OAuth.svelte';
-import Main from '../../routes/console/project-[project]/authentication/_mainOAuth.svelte';
+import Apple from '../../routes/console/project-[project]/auth/_appleOAuth.svelte';
+import Microsoft from '../../routes/console/project-[project]/auth/_microsoftOAuth.svelte';
+import Okta from '../../routes/console/project-[project]/auth/_oktaOAuth.svelte';
+import Auth0 from '../../routes/console/project-[project]/auth/_auth0OAuth.svelte';
+import Main from '../../routes/console/project-[project]/auth/_mainOAuth.svelte';
 
 export type Provider = Models.Provider & {
     icon: string;
@@ -105,7 +105,7 @@ const setProviders = (project: Models.Project): Provider[] => {
                     docs = 'https://developers.tradeshift.com/docs/api';
                     break;
                 case 'twitch':
-                    docs = 'https://dev.twitch.tv/docs/authentication';
+                    docs = 'https://dev.twitch.tv/docs/auth';
                     break;
                 case 'wordpress':
                     docs = 'https://developer.wordpress.com/docs/oauth2/';
