@@ -83,7 +83,7 @@
                         </div>
                     </div>
                 </a>
-                <div>
+                <div class="u-flex u-flex-vertical u-gap-16">
                     <Heading tag="h2" size="7">{$file.name}</Heading>
                     <Copy value={getView($file.$id)}>
                         <Pill button><i class="icon-duplicate" />File URL</Pill>

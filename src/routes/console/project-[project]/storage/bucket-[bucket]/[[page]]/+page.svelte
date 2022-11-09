@@ -79,13 +79,14 @@
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
         </Button>
     </SearchQuery>
-    {#if data.files.total}
+
+    {#if data.files.total && !data.search}
         <Table>
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
                 <TableCellHead width={140}>Type</TableCellHead>
                 <TableCellHead width={100}>Size</TableCellHead>
-                <TableCellHead width={120}>Date Created</TableCellHead>
+                <TableCellHead width={120}>Created</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -179,17 +180,22 @@
                 offset={data.offset}
                 sum={data.files.total} />
         </div>
-    {:else if data.search}
+    {:else if data.search && !data.files.total}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{data.search}’</b>
                 <p>There are no files that match your search.</p>
             </div>
-            <Button
-                secondary
-                href={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}>
-                Clear Search
-            </Button>
+            <div class="u-flex u-gap-16">
+                <Button external href="https://appwrite.io/docs/storage#createFile" text>
+                    Documentation
+                </Button>
+                <Button
+                    secondary
+                    href={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}>
+                    Clear Search
+                </Button>
+            </div>
         </EmptySearch>
     {:else}
         <Empty single on:click={() => (showCreate = true)}>
