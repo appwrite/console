@@ -1,23 +1,14 @@
 import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
-import Boolean from './boolean.svelte';
-import submitBoolean from './boolean.svelte';
-import Email from './email.svelte';
-import submitEmail from './email.svelte';
-import Enum from './enum.svelte';
-import submitEnum from './enum.svelte';
-import Float from './float.svelte';
-import submitFloat from './float.svelte';
-import Integer from './integer.svelte';
-import submitInteger from './integer.svelte';
-import Ip from './ip.svelte';
-import submitIp from './ip.svelte';
-import String from './string.svelte';
-import submitString from './string.svelte';
-import Url from './url.svelte';
-import submitUrl from './url.svelte';
-import Datetime from './datetime.svelte';
-import submitDatetime from './datetime.svelte';
+import Boolean, { submitBoolean } from './boolean.svelte';
+import Email, { submitEmail } from './email.svelte';
+import Enum, { submitEnum } from './enum.svelte';
+import Float, { submitFloat } from './float.svelte';
+import Integer, { submitInteger } from './integer.svelte';
+import Ip, { submitIp } from './ip.svelte';
+import String, { submitString } from './string.svelte';
+import Url, { submitUrl } from './url.svelte';
+import Datetime, { submitDatetime } from './datetime.svelte';
 import type { Attributes } from '../store';
 
 export type Option = {
