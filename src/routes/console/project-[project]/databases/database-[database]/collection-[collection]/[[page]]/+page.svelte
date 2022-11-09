@@ -85,37 +85,18 @@
                     sum={data.documents.total} />
             </div>
         {:else}
-            <Empty single on:click={openWizard}>
-                <div class="u-text-center">
-                    <p class="text u-line-height-1-5">Create your first document to get started</p>
-                    <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-                </div>
-                <div class="u-flex u-gap-16">
-                    <Button
-                        external
-                        href="https://appwrite.io/docs/databases#create-documents"
-                        text>
-                        Documentation
-                    </Button>
-                    <Button secondary on:click={openWizard}>Create document</Button>
-                </div>
-            </Empty>
+            <Empty
+                single
+                href="https://appwrite.io/docs/databases#create-documents"
+                target="document"
+                on:click={openWizard} />
         {/if}
     {:else}
-        <Empty single on:click={() => (showCreateAttribute = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">Create your first attribute to get started</p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button external href="https://appwrite.io/docs/databases#attributes" text>
-                    Documentation
-                </Button>
-                <Button secondary on:click={() => (showCreateAttribute = true)}>
-                    Create attribute
-                </Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/databases#attributes"
+            target="attribute"
+            on:click={() => (showCreateAttribute = true)} />
     {/if}
 </Container>
 

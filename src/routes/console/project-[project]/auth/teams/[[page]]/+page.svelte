@@ -90,28 +90,11 @@
             </Button>
         </EmptySearch>
     {:else}
-        <Empty single on:click={() => (showCreate = true)}>
-            <div
-                class="common-section"
-                use:event={{
-                    name: 'console_users',
-                    action: 'click_create',
-                    parameters: {
-                        type: 'team'
-                    }
-                }}>
-                <div class="u-text-center common-section">
-                    <p>Create your first team to get started.</p>
-                    <p>Need a hand? Check out our documentation.</p>
-                </div>
-                <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="https://appwrite.io/docs/client/teams" text>
-                        Documentation
-                    </Button>
-                    <Button secondary on:click={() => (showCreate = true)}>Create team</Button>
-                </div>
-            </div>
-        </Empty>
+        <Empty
+            single
+            on:click={() => (showCreate = true)}
+            href="https://appwrite.io/docs/client/teams"
+            target="team" />
     {/if}
 </Container>
 

@@ -101,17 +101,10 @@
                 sum={data.functions.total} />
         </div>
     {:else}
-        <Empty single on:click={openWizard}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">Create your first function to get started</p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button href="https://appwrite.io/docs/functions" external text>
-                    Documentation
-                </Button>
-                <Button secondary on:click={openWizard}>Create function</Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/functions"
+            target="function"
+            on:click={openWizard} />
     {/if}
 </Container>
