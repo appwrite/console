@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params, depends }) => {
 
     return {
         header: Header,
-        breadcrumb: Breadcrumbs,
+        breadcrumbs: Breadcrumbs,
         platform: await sdkForConsole.projects.getPlatform(params.project, params.platform)
     };
 };

@@ -8,9 +8,9 @@
     import { base } from '$app/paths';
     import { browser, dev } from '$app/environment';
     import { app } from '$lib/stores/app';
-    import Notifications from '$lib/layout/notifications.svelte';
-    import Loading from './loading.svelte';
+    import { Progress, Notifications } from '$lib/layout';
     import { loading } from './store';
+    import Loading from './loading.svelte';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -94,6 +94,8 @@
 {#if $loading}
     <Loading />
 {/if}
+
+<Progress />
 
 <style lang="scss" global>
     .tippy-box {
