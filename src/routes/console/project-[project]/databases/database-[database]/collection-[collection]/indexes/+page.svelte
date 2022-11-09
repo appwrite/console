@@ -116,35 +116,18 @@
                 <p class="text">Total results: {$indexes.length}</p>
             </div>
         {:else}
-            <Empty single on:click={() => (showCreateIndex = true)}>
-                <div class="u-text-center">
-                    <p class="text u-line-height-1-5">Create your first index to get started</p>
-                    <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-                </div>
-                <div class="u-flex u-gap-16">
-                    <Button external href="https://appwrite.io/docs/databases#indexes" text>
-                        Documentation
-                    </Button>
-                    <Button secondary on:click={() => (showCreateIndex = true)}
-                        >Create index</Button>
-                </div>
-            </Empty>
+            <Empty
+                single
+                href="https://appwrite.io/docs/databases#indexes"
+                target="index"
+                on:click={() => (showCreateIndex = true)} />
         {/if}
     {:else}
-        <Empty single on:click={() => (showCreateAttribute = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">Create your first attribute to get started</p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button external href="https://appwrite.io/docs/databases#attributes" text>
-                    Documentation
-                </Button>
-                <Button secondary on:click={() => (showCreateAttribute = true)}>
-                    Create attribute
-                </Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            target="attribute"
+            href="https://appwrite.io/docs/databases#attributes"
+            on:click={() => (showCreateAttribute = true)} />
     {/if}
 </Container>
 

@@ -137,28 +137,11 @@
             <Button href={`/console/project-${projectId}/auth`} secondary>Clear Search</Button>
         </EmptySearch>
     {:else}
-        <Empty single on:click={() => (showCreate = true)}>
-            <div
-                class="common-section"
-                use:event={{
-                    name: 'console_users',
-                    action: 'click_create',
-                    parameters: {
-                        type: 'user'
-                    }
-                }}>
-                <div class="u-text-center common-section">
-                    <p>Create your first user to get started.</p>
-                    <p>Need a hand? Check out our documentation.</p>
-                </div>
-                <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="https://appwrite.io/docs/server/users" text>
-                        Documentation
-                    </Button>
-                    <Button secondary on:click={() => (showCreate = true)}>Create user</Button>
-                </div>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/server/users"
+            target="user"
+            on:click={() => (showCreate = true)} />
     {/if}
 </Container>
 
