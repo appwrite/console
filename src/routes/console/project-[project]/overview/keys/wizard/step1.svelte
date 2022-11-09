@@ -3,7 +3,7 @@
     import { WizardStep } from '$lib/layout';
     import { key } from './store';
 
-    let preset: string = null;
+    let preset = 'never';
     function incrementToday(value: number, type: 'day' | 'month' | 'year'): string {
         const date = new Date();
         switch (type) {
@@ -83,7 +83,7 @@
             id="preset"
             label="Expiration Date" />
         {#if preset === 'custom'}
-            <InputDateTime id="expire" label="Expiration Date" bind:value={$key.expire} />
+            <InputDateTime id="expire" label="" bind:value={$key.expire} showLabel={false} />
         {/if}
     </FormList>
 </WizardStep>
