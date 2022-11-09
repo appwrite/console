@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { sendEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -25,7 +26,14 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteTeam} warning>
+<Modal
+    bind:show={showDelete}
+    on:submit={deleteTeam}
+    on:submit={() =>
+        sendEvent({
+            action: 'submit_auth_team_delete'
+        })}
+    warning>
     <svelte:fragment slot="header">Delete Team</svelte:fragment>
 
     <p>

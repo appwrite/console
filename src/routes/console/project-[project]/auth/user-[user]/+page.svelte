@@ -25,6 +25,7 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { sendEvent } from '$lib/actions/analytics';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -61,7 +62,7 @@
         showVerifcationDropdown = false;
         try {
             await sdkForProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
-            $user.emailVerification = !$user.emailVerification;
+            invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.emailVerification ? 'verified' : 'unverified'
@@ -72,6 +73,10 @@
             addNotification({
                 message: error.message,
                 type: 'error'
+            });
+        } finally {
+            sendEvent({
+                action: 'submit_auth_user_update_verification_email'
             });
         }
     }
@@ -91,6 +96,10 @@
                 message: error.message,
                 type: 'error'
             });
+        } finally {
+            sendEvent({
+                action: 'submit_auth_user_update_verification_phone'
+            });
         }
     }
     async function updateStatus() {
@@ -102,6 +111,9 @@
                     $user.status ? 'unblocked' : 'blocked'
                 }`,
                 type: 'success'
+            });
+            sendEvent({
+                action: 'submit_auth_user_update_status'
             });
         } catch (error) {
             addNotification({
@@ -246,8 +258,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button text={$user.status} secondary={!$user.status} on:click={() => updateStatus()}
-                >{$user.status ? 'Block account' : 'Unblock account'}
+            <Button text={$user.status} secondary={!$user.status} on:click={() => updateStatus()}>
+                {$user.status ? 'Block account' : 'Unblock account'}
             </Button>
             {#if $user.status}
                 {#if $user.phone && $user.email}
@@ -280,7 +292,12 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateName}>
+    <Form
+        on:submit={updateName}
+        on:submit={() =>
+            sendEvent({
+                action: 'submit_auth_user_update_name'
+            })}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Name</Heading>
 
@@ -301,7 +318,12 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updateEmail}>
+    <Form
+        on:submit={updateEmail}
+        on:submit={() =>
+            sendEvent({
+                action: 'submit_auth_user_update_email'
+            })}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Email</Heading>
             <svelte:fragment slot="aside">
@@ -321,7 +343,12 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updatePhone}>
+    <Form
+        on:submit={updatePhone}
+        on:submit={() =>
+            sendEvent({
+                action: 'submit_auth_user_update_phone'
+            })}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Phone</Heading>
             <svelte:fragment slot="aside">
@@ -341,7 +368,12 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updatePassword}>
+    <Form
+        on:submit={updatePassword}
+        on:submit={() =>
+            sendEvent({
+                action: 'submit_auth_user_update_password'
+            })}>
         <CardGrid>
             <div>
                 <Heading tag="h6" size="7">Update Password</Heading>
@@ -369,7 +401,12 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updatePrefs}>
+    <Form
+        on:submit={updatePrefs}
+        on:submit={() =>
+            sendEvent({
+                action: 'submit_auth_user_update_preferences'
+            })}>
         <CardGrid>
             <Heading tag="h6" size="7">User Preferences</Heading>
             <p>
@@ -483,7 +520,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)} event="delete_user">Delete</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

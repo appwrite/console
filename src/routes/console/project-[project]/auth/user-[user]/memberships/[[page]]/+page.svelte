@@ -59,7 +59,7 @@
                                     selectedMembership = membership;
                                     showDelete = true;
                                 }}>
-                                <span class="icon-trash" aria-hidden="true" />
+                                <span class="icon-trash" aria-hidden="true" data-event="delete_membership" />
                             </button>
                         </TableCell>
                     </TableRowLink>

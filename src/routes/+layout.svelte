@@ -11,6 +11,7 @@
     import { Progress, Notifications } from '$lib/layout';
     import { loading } from './store';
     import Loading from './loading.svelte';
+    import { sendEvent } from '$lib/actions/analytics';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -52,6 +53,21 @@
         }
     });
 
+    function track(event: MouseEvent) {
+        const target = event.target as HTMLElement;
+
+        if (target.hasAttribute('data-event')) {
+            const value = target.getAttribute('data-event');
+            if (!value) {
+                return;
+            }
+
+            sendEvent({
+                action: `click_${value}`
+            });
+        }
+    }
+
     $: {
         if (browser) {
             if ($app.theme === 'auto') {
@@ -86,6 +102,7 @@
         </script>
     {/if}
 </svelte:head>
+<svelte:window on:click={track} />
 
 <Notifications />
 

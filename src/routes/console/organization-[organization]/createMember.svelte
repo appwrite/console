@@ -8,6 +8,7 @@
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { sendEvent } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -44,7 +45,15 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+<Modal
+    {error}
+    size="big"
+    bind:show={showCreate}
+    on:submit={create}
+    on:submit={() =>
+        sendEvent({
+            action: 'submit_organization_member_invite'
+        })}>
     <svelte:fragment slot="header">Invite Member</svelte:fragment>
     <FormList>
         <InputEmail

@@ -11,6 +11,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import DeleteTeam from './deleteTeam.svelte';
+    import { sendEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
     let teamName: string = null;
@@ -52,7 +53,12 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateName}>
+    <Form
+        on:submit={updateName}
+        on:submit={() =>
+            sendEvent({
+                action: 'submit_auth_team_update_name'
+            })}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Name</Heading>
 
@@ -68,11 +74,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button
-                    disabled={teamName === $team.name || !teamName}
-                    on:click={() => {
-                        updateName();
-                    }}>Update</Button>
+                <Button submit disabled={teamName === $team.name || !teamName}>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -99,7 +101,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)} event="delete_team"
+                >Delete</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

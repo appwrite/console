@@ -37,6 +37,7 @@
 {:else}
     <button
         on:click|preventDefault
+        data-event={`create_${target}`}
         type="button"
         class="card u-grid u-cross-center u-width-full-line dashed">
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

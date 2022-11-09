@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import { sendEvent } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
@@ -41,7 +42,15 @@
     };
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show>
+<Modal
+    {error}
+    on:submit={create}
+    on:submit={() =>
+        sendEvent({
+            action: 'submit_project_create'
+        })}
+    size="big"
+    bind:show>
     <svelte:fragment slot="header">Create Project</svelte:fragment>
     <FormList>
         <InputText

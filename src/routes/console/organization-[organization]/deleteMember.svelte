@@ -8,6 +8,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
+    import { sendEvent } from '$lib/actions/analytics';
 
     const dispatch = createEventDispatcher();
 
@@ -40,7 +41,14 @@
     $: isUser = selectedMember?.userId === $user?.$id;
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteMembership} warning>
+<Modal
+    bind:show={showDelete}
+    on:submit={deleteMembership}
+    on:submit={() =>
+        sendEvent({
+            action: 'submit_organization_member_delete'
+        })}
+    warning>
     <svelte:fragment slot="header">
         {isUser ? 'Leave Organization' : 'Delete Member'}
     </svelte:fragment>

@@ -12,7 +12,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@aw-labs/appwrite-console';
-    import { goto, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { PageData } from './$types';
@@ -28,14 +28,14 @@
 
     const project = $page.params.project;
 
-    async function memberCreated(event: CustomEvent<Models.Membership>) {
-        await goto(`${base}/console/project-${project}/auth/teams-${event.detail.teamId}/members`);
+    async function memberCreated() {
+        invalidate(Dependencies.MEMBERSHIPS);
     }
 </script>
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by ID">
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_membership">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create membership</span>
         </Button>
@@ -70,7 +70,10 @@
                                     selectedMembership = membership;
                                     showDelete = true;
                                 }}>
-                                <span class="icon-trash" aria-hidden="true" />
+                                <span
+                                    class="icon-trash"
+                                    data-event="delete_membership"
+                                    aria-hidden="true" />
                             </button>
                         </TableCellText>
                     </TableRowLink>

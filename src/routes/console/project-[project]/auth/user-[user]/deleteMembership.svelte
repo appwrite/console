@@ -2,6 +2,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { sendEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -37,7 +38,14 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteMembership} warning>
+<Modal
+    bind:show={showDelete}
+    on:submit={deleteMembership}
+    on:submit={() =>
+        sendEvent({
+            action: 'submit_auth_member_delete'
+        })}
+    warning>
     <svelte:fragment slot="header">Delete Member</svelte:fragment>
     {#if selectedMembership}
         <p>

@@ -153,8 +153,6 @@
         inputData = null;
         showInput = false;
     }
-
-    //TODO: remove inline style
 </script>
 
 <Modal bind:show on:submit={create} size="big">

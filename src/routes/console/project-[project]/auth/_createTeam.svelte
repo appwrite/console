@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { sendEvent } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
@@ -35,7 +36,15 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+<Modal
+    {error}
+    size="big"
+    bind:show={showCreate}
+    on:submit={create}
+    on:submit={() =>
+        sendEvent({
+            action: 'submit_auth_team_create'
+        })}>
     <svelte:fragment slot="header">Create Team</svelte:fragment>
     <FormList>
         <InputText

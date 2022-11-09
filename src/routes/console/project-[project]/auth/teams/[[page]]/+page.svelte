@@ -41,7 +41,7 @@
                     type: 'team'
                 }
             }}>
-            <Button on:click={() => (showCreate = true)}>
+            <Button on:click={() => (showCreate = true)} event="create_team">
                 <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
             </Button>
         </span>

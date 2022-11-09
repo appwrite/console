@@ -2,7 +2,7 @@ import type { Action } from 'svelte/action';
 
 export type AnalyticsActionParam = {
     name: string;
-    action: string;
+    action?: string;
     category?: string;
     label?: string;
     parameters?: Record<string, string>;
@@ -21,6 +21,16 @@ export const event: Action<HTMLElement, Partial<AnalyticsActionParam>> = (node, 
         });
     });
 };
+
+export function sendEvent(event: {
+    action: string;
+    label?: string;
+    category?: string;
+    data?: object;
+}): void {
+    console.log(`send event ${event.action}`)
+    //TODO: implement analytics
+}
 
 const isTrackingAllowed = () => {
     if (!('gtag' in window)) {

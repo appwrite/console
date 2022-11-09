@@ -7,6 +7,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Dependencies } from '$lib/constants';
+    import { sendEvent } from '$lib/actions/analytics';
 
     export let showDelete = false;
 
@@ -34,7 +35,14 @@
     };
 </script>
 
-<Modal on:submit={deleteOrg} bind:show={showDelete} warning>
+<Modal
+    on:submit={deleteOrg}
+    on:submit={() =>
+        sendEvent({
+            action: 'submit_organization_delete'
+        })}
+    bind:show={showDelete}
+    warning>
     <svelte:fragment slot="header">Delete Organization</svelte:fragment>
     <p>
         Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})

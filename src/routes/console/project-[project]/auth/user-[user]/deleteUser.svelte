@@ -8,6 +8,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
     import { project } from '../../store';
+    import { sendEvent } from '$lib/actions/analytics';
 
     export let showDelete = false;
 
@@ -29,7 +30,14 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteUser} warning>
+<Modal
+    bind:show={showDelete}
+    on:submit={deleteUser}
+    on:submit={() =>
+        sendEvent({
+            action: 'submit_auth_user_delete'
+        })}
+    warning>
     <svelte:fragment slot="header">Delete User</svelte:fragment>
     <p>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
     <svelte:fragment slot="footer">
