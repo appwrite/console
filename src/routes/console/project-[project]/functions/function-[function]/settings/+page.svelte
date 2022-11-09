@@ -548,7 +548,7 @@
         <svelte:fragment slot="aside">
             <Box>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$func.name}</h6>
+                    <h6 class="u-bold u-trim-1">{$func.name}</h6>
                 </svelte:fragment>
                 <p>Last Updated: {toLocaleDateTime($func.$updatedAt)}</p>
             </Box>

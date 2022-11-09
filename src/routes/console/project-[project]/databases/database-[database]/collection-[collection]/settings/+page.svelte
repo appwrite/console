@@ -220,7 +220,7 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$collection.name}</h6>
+                        <h6 class="u-bold u-trim-1">{$collection.name}</h6>
                     </svelte:fragment>
                     <p>Last Updated: {toLocaleDateTime($collection.$updatedAt)}</p>
                 </Box>

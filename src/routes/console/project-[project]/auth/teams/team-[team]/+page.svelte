@@ -92,7 +92,7 @@
                     <AvatarInitials size={48} name={$team.name} />
                 </svelte:fragment>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$team.name}</h6>
+                    <h6 class="u-bold u-trim-1">{$team.name}</h6>
                     <span>{$team.total} Members</span>
                 </svelte:fragment>
             </Box>

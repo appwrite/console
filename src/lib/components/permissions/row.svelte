@@ -11,7 +11,7 @@
         {:else if role === 'any'}
             <div>Any</div>
         {:else}
-            <div>{role}</div>
+            <div class="u-trim-1">{role}</div>
         {/if}
     </div>
 </div>

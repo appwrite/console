@@ -134,7 +134,7 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$file.name}</h6>
+                        <h6 class="u-bold u-trim-1">{$file.name}</h6>
                     </svelte:fragment>
                     <p>
                         Last Updated: {toLocaleDateTime($file.$updatedAt)}
