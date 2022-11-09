@@ -120,7 +120,7 @@
                         </Button>
                     {/if}
                     {#if currentStep === 1}
-                        <Button secondary on:click={() => dispatch('finish')}>Cancel</Button>
+                        <Button secondary on:click={handleExit}>Cancel</Button>
                         <Button submit>Next</Button>
                     {:else if isLastStep}
                         <Button secondary on:click={() => currentStep--}>Back</Button>

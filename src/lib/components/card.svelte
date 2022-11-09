@@ -3,11 +3,23 @@
 
     export let isTile = false;
     export let isDashed = false;
+    export let isButton = false;
     export let href: string = null;
+
+    function getElement(): string {
+        switch (true) {
+            case !!href:
+                return 'a';
+            case isButton:
+                return 'button';
+            default:
+                return 'article';
+        }
+    }
 </script>
 
 <svelte:element
-    this={href ? 'a' : 'article'}
+    this={getElement()}
     class="card"
     class:common-section={!isTile}
     class:is-border-dashed={isDashed}

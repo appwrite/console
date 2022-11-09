@@ -1,3 +1,23 @@
+<script lang="ts" context="module">
+    export enum Platform {
+        Web,
+        Flutter,
+        Android,
+        Apple
+    }
+    const platforms = {
+        [Platform.Web]: CreateWeb,
+        [Platform.Flutter]: CreateFlutter,
+        [Platform.Android]: CreateAndroid,
+        [Platform.Apple]: CreateApple
+    };
+
+    export async function addPlatform(type: Platform) {
+        await versions.load();
+        wizard.start(platforms[type]);
+    }
+</script>
+
 <script lang="ts">
     import { page } from '$app/stores';
     import { DropList, DropListItem, Heading } from '$lib/components';
@@ -18,20 +38,6 @@
     let showDropdown = false;
     const path = `/console/project-${$page.params.project}/overview/platforms`;
 
-    enum Platform {
-        Web,
-        Flutter,
-        Android,
-        Apple
-    }
-
-    const platforms = {
-        [Platform.Web]: CreateWeb,
-        [Platform.Flutter]: CreateFlutter,
-        [Platform.Android]: CreateAndroid,
-        [Platform.Apple]: CreateApple
-    };
-
     const getPlatformInfo = (platform: string) => {
         if (platform.includes('flutter')) {
             return 'color/flutter';
@@ -45,11 +51,6 @@
             return 'unknown';
         }
     };
-
-    async function addPlatform(type: Platform) {
-        await versions.load();
-        wizard.start(platforms[type]);
-    }
 </script>
 
 <div class="common-section u-flex u-gap-12">
