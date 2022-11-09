@@ -97,21 +97,11 @@
                 >Clear Search</Button>
         </EmptySearch>
     {:else}
-        <Empty single on:click={() => (showCreate = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">Add your first member to get started</p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button
-                    external
-                    href="https://appwrite.io/docs/client/teams?sdk=web-default#teamsCreateMembership"
-                    text>
-                    Documentation
-                </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create membership</Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/client/teams?sdk=web-default#teamsCreateMembership"
+            target="membership"
+            on:click={() => (showCreate = true)} />
     {/if}
 </Container>
 
