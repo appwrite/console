@@ -18,7 +18,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Delete from './delete.svelte';
     import Regenerate from './regenerate.svelte';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { writable, type Writable } from 'svelte/store';
@@ -144,10 +144,7 @@
     }
 
     $: if ($eventSet) {
-        if (
-            difference(Array.from($eventSet), $webhook.events).length ||
-            difference($webhook.events, Array.from($eventSet)).length
-        ) {
+        if (symmetricDifference(Array.from($eventSet), $webhook.events).length) {
             areEventsDisabled = false;
         } else areEventsDisabled = true;
     }

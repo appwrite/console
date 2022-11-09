@@ -1,11 +1,14 @@
 <script lang="ts">
+    import type { EChartsOption } from 'echarts';
     import type { BarSeriesOption } from 'echarts/charts';
     import Base from './base.svelte';
 
     export let series: BarSeriesOption[];
+    export let options: EChartsOption = null;
 </script>
 
 <Base
+    {options}
     series={series.map((s) => {
         s.type = 'bar';
         s.stack = 'total';

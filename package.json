@@ -24,6 +24,7 @@
         "@aw-labs/ui": "0.0.0-69",
         "@popperjs/core": "^2.11.6",
         "echarts": "^5.4.0",
+        "pretty-bytes": "^6.0.0",
         "prismjs": "^1.29.0",
         "tippy.js": "^6.3.7",
         "web-vitals": "^3.0.3"

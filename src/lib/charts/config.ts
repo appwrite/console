@@ -17,8 +17,8 @@ export const defaultConfig: EChartsOption = {
         containLabel: true,
         left: 0,
         right: 0,
-        bottom: 15,
-        top: 15
+        bottom: 0,
+        top: 45
     },
     xAxis: {
         type: 'time',
@@ -27,6 +27,11 @@ export const defaultConfig: EChartsOption = {
     yAxis: {
         type: 'value',
         splitNumber: 3,
-        minInterval: 1
+        minInterval: 1,
+        splitLine: {
+            lineStyle: {
+                width: 1
+            }
+        }
     }
 };

@@ -51,7 +51,7 @@
 </script>
 
 <Modal size="big" {error} bind:show={showCreate} on:submit={create}>
-    <svelte:fragment slot="header">Upload File</svelte:fragment>
+    <svelte:fragment slot="header">Create File</svelte:fragment>
     <FormList>
         <div>
             <InputFile bind:files />
@@ -74,6 +74,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Upload</Button>
+        <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>

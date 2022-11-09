@@ -19,7 +19,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { onDestroy, onMount } from 'svelte';
     import { writable, type Unsubscriber } from 'svelte/store';
     import Actions from './actions.svelte';
@@ -40,10 +40,7 @@
         permissions.forEach(fromPermissionString);
         unsubscribe = groups.subscribe(() => {
             const current = exportRoles();
-            if (
-                difference(current, permissions).length ||
-                difference(permissions, current).length
-            ) {
+            if (symmetricDifference(current, permissions).length) {
                 permissions = current;
             }
         });

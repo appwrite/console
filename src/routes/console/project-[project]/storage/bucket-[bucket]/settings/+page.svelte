@@ -18,7 +18,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { Permissions } from '$lib/components/permissions';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -58,10 +58,7 @@
         if (bucketFileSecurity !== $bucket.fileSecurity) {
             arePermsDisabled = false;
         } else if (bucketPermissions) {
-            if (
-                difference(bucketPermissions, $bucket.$permissions).length ||
-                difference($bucket.$permissions, bucketPermissions).length
-            ) {
+            if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
                 arePermsDisabled = false;
             } else arePermsDisabled = true;
         }
@@ -404,8 +401,11 @@
                                     selected={extensions.includes(ext)}
                                     button
                                     on:click={() => {
-                                        if (!extensions.includes(ext))
+                                        if (!extensions.includes(ext)) {
                                             extensions = [...extensions, ext];
+                                        } else {
+                                            extensions = extensions.filter((e) => e !== ext);
+                                        }
                                     }}>
                                     <span class="icon-plus" aria-hidden="true" />
                                     {ext}

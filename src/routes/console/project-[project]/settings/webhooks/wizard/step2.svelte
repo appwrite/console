@@ -22,7 +22,6 @@
         Set the events that will trigger your function. Maximum 100 events allowed.
     </svelte:fragment>
 
-    <span class="u-sep-block-end">EVENT</span>
     {#if $createWebhook?.events?.length}
         <TableList>
             {#each $createWebhook.events as event}
@@ -45,7 +44,7 @@
             {/each}
         </TableList>
         <div class="u-flex u-margin-block-start-16">
-            <Button text on:click={() => (showCreate = !showCreate)}>
+            <Button text noMargin on:click={() => (showCreate = !showCreate)}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="u-text">Add event</span>
             </Button>

@@ -12,7 +12,7 @@
     import { Dependencies } from '$lib/constants';
 
     onDestroy(() => {
-        domain.set({ id: '', name: '' });
+        domain.set({ $id: '', domain: '' });
     });
 
     beforeNavigate(() => {

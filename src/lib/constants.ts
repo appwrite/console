@@ -41,22 +41,22 @@ export const scopes: {
     {
         scope: 'users.read',
         description: "Access to read your project's users",
-        category: 'Authentication'
+        category: 'Auth'
     },
     {
         scope: 'users.write',
         description: "Access to create, update, and delete your project's users",
-        category: 'Authentication'
+        category: 'Auth'
     },
     {
         scope: 'teams.read',
         description: "Access to read your project's teams",
-        category: 'Authentication'
+        category: 'Auth'
     },
     {
         scope: 'teams.write',
         description: "Access to create, update, and delete your project's teams",
-        category: 'Authentication'
+        category: 'Auth'
     },
     {
         scope: 'databases.read',

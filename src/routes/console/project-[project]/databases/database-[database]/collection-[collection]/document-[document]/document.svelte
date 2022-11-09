@@ -140,10 +140,11 @@
 
                     <Button
                         text
+                        noMargin
                         disabled={$work[attribute.key][$work[attribute.key].length - 1] === null}
                         on:click={() => addArrayItem(attribute.key)}>
                         <span class="icon-plus" aria-hidden="true" />
-                        <span class="text"> Add item</span>
+                        <span class="text">Add item</span>
                     </Button>
                 {:else}
                     <ul class="form-list">
