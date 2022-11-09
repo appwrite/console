@@ -31,9 +31,9 @@
     import { DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import type { PageData } from './$types';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
+    import type { PageData } from './$types';
 
     export let data: PageData;
 
