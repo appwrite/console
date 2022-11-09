@@ -14,7 +14,7 @@
         s.type = 'line';
         s.stack = 'total';
         s.lineStyle = {
-            shadowBlur: 38,
+            shadowBlur: 100,
             shadowColor: Colors.Primary,
             shadowOffsetY: 15,
             shadowOffsetX: 0
