@@ -1,21 +1,29 @@
 <script lang="ts" context="module">
+    import { wizard } from '$lib/stores/wizard';
+    import { versions } from './wizard/store';
+    import CreateAndroid from './createAndroid.svelte';
+    import CreateApple from './createApple.svelte';
+    import CreateFlutter from './createFlutter.svelte';
+    import CreateWeb from './createWeb.svelte';
+
     export enum Platform {
         Web,
         Flutter,
         Android,
         Apple
     }
+
+    export async function addPlatform(type: Platform) {
+        await versions.load();
+        wizard.start(platforms[type]);
+    }
+
     const platforms = {
         [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
         [Platform.Apple]: CreateApple
     };
-
-    export async function addPlatform(type: Platform) {
-        await versions.load();
-        wizard.start(platforms[type]);
-    }
 </script>
 
 <script lang="ts">
@@ -23,12 +31,6 @@
     import { DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { wizard } from '$lib/stores/wizard';
-    import CreateAndroid from './createAndroid.svelte';
-    import CreateApple from './createApple.svelte';
-    import CreateFlutter from './createFlutter.svelte';
-    import CreateWeb from './createWeb.svelte';
-    import { versions } from './wizard/store';
     import type { PageData } from './$types';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
