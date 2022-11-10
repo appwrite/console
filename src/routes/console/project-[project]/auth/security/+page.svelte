@@ -140,7 +140,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h2" size="6">Session Length (Coming Soon)</Heading>
+        <Heading tag="h2" size="6">Session Length <Pill>Coming Soon!</Pill></Heading>
         <p>
             If you reduce the limit, users who are currently logged in will be logged out of the
             application.

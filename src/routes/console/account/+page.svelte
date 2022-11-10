@@ -169,7 +169,7 @@
                     <AvatarInitials size={48} name={$user.name} />
                 </svelte:fragment>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$user.name}</h6>
+                    <h6 class="u-bold u-trim-1">{$user.name}</h6>
                 </svelte:fragment>
             </Box>
         </svelte:fragment>
