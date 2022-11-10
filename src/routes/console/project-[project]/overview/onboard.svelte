@@ -1,8 +1,10 @@
 <script lang="ts">
     import { Card, CardGrid } from '$lib/components';
     import { addPlatform, Platform } from './platforms/+page.svelte';
+    import OnboardDarkIntro from './intro-dark.svg';
     import OnboardDark1 from './onboard-1-dark.svg';
     import OnboardDark2 from './onboard-2-dark.svg';
+    import OnboardLightIntro from './intro-light.svg';
     import OnboardLight1 from './onboard-1-light.svg';
     import OnboardLight2 from './onboard-2-light.svg';
     import { app } from '$lib/stores/app';
@@ -11,102 +13,134 @@
 
     export let projectId: string;
 
+    const platforms = [
+        {
+            title: 'Web App',
+            icon: 'grayscale/code',
+            platform: Platform.Web
+        },
+        {
+            title: 'Flutter App',
+            icon: 'color/flutter',
+            platform: Platform.Flutter
+        },
+        {
+            title: 'Apple App',
+            icon: 'color/apple',
+            platform: Platform.Apple
+        },
+        {
+            title: 'Android App',
+            icon: 'color/android',
+            platform: Platform.Android
+        }
+    ];
+
     function createKey() {
         wizard.start(Wizard);
     }
 
+    $: onBoardIntro = $app.themeInUse === 'dark' ? OnboardDarkIntro : OnboardLightIntro;
     $: onBoardImage1 = $app.themeInUse === 'dark' ? OnboardDark1 : OnboardLight1;
     $: onBoardImage2 = $app.themeInUse === 'dark' ? OnboardDark2 : OnboardLight2;
 </script>
 
-<CardGrid>
-    <h6 class="heading-level-7">Add a Platform to Get Started</h6>
-    <p>Our SDK's make it possible to easily add any platform that you want to use.</p>
-    <svelte:fragment slot="aside">
-        <div class="grid-box " style="--grid-gap:1.5rem; --grid-item-size:12rem;">
-            <Card isButton isTile on:click={() => addPlatform(Platform.Web)}>
-                <div class="u-flex u-cross-center u-gap-12">
-                    <div class="avatar is-medium" aria-hidden="true">
-                        <img
-                            src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
-                            alt="technology" />
-                    </div>
-                    <span>Web App</span>
-                    <span
-                        class="icon-plus u-margin-inline-start-auto"
-                        style="font-size: var(--icon-size-large);" />
-                </div>
-            </Card>
-            <Card isButton isTile on:click={() => addPlatform(Platform.Flutter)}>
-                <div class="u-flex u-cross-center u-gap-12">
-                    <div class="avatar is-medium" aria-hidden="true">
-                        <img src={`/icons/${$app.themeInUse}/color/flutter.svg`} alt="technology" />
-                    </div>
-                    <span>Flutter App</span>
-                    <span
-                        class="icon-plus u-margin-inline-start-auto"
-                        style="font-size: var(--icon-size-large);" />
-                </div>
-            </Card>
-            <Card isButton isTile on:click={() => addPlatform(Platform.Apple)}>
-                <div class="u-flex u-cross-center u-gap-12">
-                    <div class="avatar is-medium" aria-hidden="true">
-                        <img src={`/icons/${$app.themeInUse}/color/apple.svg`} alt="technology" />
-                    </div>
-                    <span>Apple App</span>
-                    <span
-                        class="icon-plus u-margin-inline-start-auto"
-                        style="font-size: var(--icon-size-large);" />
-                </div>
-            </Card>
-            <Card isButton isTile on:click={() => addPlatform(Platform.Android)}>
-                <div class="u-flex u-cross-center u-gap-12">
-                    <div class="avatar is-medium" aria-hidden="true">
-                        <img src={`/icons/${$app.themeInUse}/color/android.svg`} alt="technology" />
-                    </div>
-                    <span>Android App</span>
-                    <span
-                        class="icon-plus u-margin-inline-start-auto"
-                        style="font-size: var(--icon-size-large);" />
-                </div>
-            </Card>
+<div class="card">
+    <header class="card-header common-section grid-1-2">
+        <div class="grid-1-2-col-1">
+            <h2 class="heading-level-5">Getting Started Guide</h2>
+            <p class="u-line-height-1-5">Let's get your project up and running</p>
         </div>
-    </svelte:fragment>
-</CardGrid>
-<CardGrid>
-    <h6 class="heading-level-7">Integrate With Your Server</h6>
-    <p>Our SDK's make it possible to easily add any platform that you want to use.</p>
-    <svelte:fragment slot="aside">
-        <div class="grid-box " style="--grid-gap:1.5rem; --grid-item-size:12rem;">
-            <Card isButton isTile on:click={createKey}>
-                <div class="u-flex u-cross-center u-gap-12">
-                    <div class="avatar is-medium" aria-hidden="true">
-                        <img
-                            src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
-                            alt="technology" />
-                    </div>
-                    <span>API Key</span>
-                    <span
-                        class="icon-plus u-margin-inline-start-auto"
-                        style="font-size: var(--icon-size-large);" />
-                </div>
-            </Card>
-            <Card isTile href={`/console/project-${projectId}/settings/webhooks`}>
-                <div class="u-flex u-cross-center u-gap-12">
-                    <div class="avatar is-medium" aria-hidden="true">
-                        <img
-                            src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
-                            alt="technology" />
-                    </div>
-                    <span>Webhook</span>
-                    <span
-                        class="icon-plus u-margin-inline-start-auto"
-                        style="font-size: var(--icon-size-large);" />
-                </div>
-            </Card>
+        <div class="grid-1-2-col-2 u-flex u-main-end u-cross-end is-no-mobile">
+            <img src={onBoardIntro} alt="" class="card-header-image" />
         </div>
-    </svelte:fragment>
-</CardGrid>
+    </header>
+
+    <section class="common-section card-separator grid-1-2">
+        <div class="grid-1-2-col-1">
+            <h3 class="heading-level-7">Add a Platform</h3>
+            <p class="u-line-height-1-5">
+                Our SDK's make it possible to easily add any platform that you want to use.
+            </p>
+        </div>
+        <div class="grid-1-2-col-2">
+            <ul class="grid-box">
+                {#each platforms as platform}
+                    <li class="grid-box-item">
+                        <button
+                            type="button"
+                            class="card u-width-full-line"
+                            on:click={() => addPlatform(platform.platform)}>
+                            <span class="u-flex u-cross-center u-gap-16">
+                                <div class="avatar is-medium" aria-hidden="true">
+                                    <img
+                                        src={`/icons/${$app.themeInUse}/${platform.icon}.svg`}
+                                        alt="technology" />
+                                </div>
+                                <span class="text">{platform.title}</span>
+                                <span
+                                    class="icon-plus u-margin-inline-start-auto"
+                                    style="font-size: var(--icon-size-large);"
+                                    aria-hidden="true" />
+                            </span>
+                        </button>
+                    </li>
+                {/each}
+            </ul>
+        </div>
+    </section>
+
+    <div class="separator-with-text">
+        <span class="text">OR</span>
+    </div>
+
+    <section class="common-section grid-1-2">
+        <div class="grid-1-2-col-1">
+            <h3 class="heading-level-7">Integrate With Your Server</h3>
+            <p class="u-line-height-1-5">
+                Our SDK's make it possible to easily add any platform that you want to use.
+            </p>
+        </div>
+        <div class="grid-1-2-col-2">
+            <ul class="grid-box">
+                <li class="grid-box-item">
+                    <button type="button" class="card u-width-full-line" on:click={createKey}>
+                        <span class="u-flex u-cross-center u-gap-16">
+                            <div class="avatar is-medium" aria-hidden="true">
+                                <img
+                                    src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
+                                    alt="technology" />
+                            </div>
+                            <span class="text">API Key</span>
+                            <span
+                                class="icon-plus u-margin-inline-start-auto"
+                                style="font-size: var(--icon-size-large);"
+                                aria-hidden="true" />
+                        </span>
+                    </button>
+                </li>
+                <li class="grid-box-item">
+                    <a
+                        href={`/console/project-${projectId}/settings/webhooks`}
+                        class="card u-width-full-line">
+                        <span class="u-flex u-cross-center u-gap-16">
+                            <div class="avatar is-medium" aria-hidden="true">
+                                <img
+                                    src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
+                                    alt="technology" />
+                            </div>
+                            <span class="text">Webhook</span>
+                            <span
+                                class="icon-plus u-margin-inline-start-auto"
+                                style="font-size: var(--icon-size-large);"
+                                aria-hidden="true" />
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </section>
+</div>
 
 <article
     class="card u-grid u-width-full-line common-section onboard-cover"
