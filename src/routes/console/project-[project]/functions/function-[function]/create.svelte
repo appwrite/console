@@ -2,12 +2,13 @@
     import { InputChoice, Button, InputText, InputFile, FormList } from '$lib/elements/forms';
     import { Modal, Collapsible, CollapsibleItem, Tabs, Tab, Code } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
     import Github from '$lib/images/github-illustration.svg';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { func } from './store';
 
     export let showCreate = false;
 
@@ -20,11 +21,69 @@
     let entrypoint: string;
     let active: boolean;
     let files: FileList;
+    let codeSnippets = {};
 
     const functionId = $page.params.function;
     const dispatch = createEventDispatcher();
 
-    const create = async () => {
+    onMount(() => {
+        const lang = setLanguage($func.runtime);
+        codeSnippets = setCodeSnippets(lang);
+    });
+
+    function setLanguage(runtime: string) {
+        if (runtime.includes('node') || runtime.includes('deno')) {
+            return 'js';
+        } else if (runtime.includes('php')) {
+            return 'php';
+        } else if (runtime.includes('python')) {
+            return 'py';
+        } else if (runtime.includes('dart')) {
+            return 'dart';
+        } else if (runtime.includes('dotnet')) {
+            return 'cs';
+        } else if (runtime.includes('ruby')) {
+            return 'rb';
+        } else if (runtime.includes('swift')) {
+            return 'swift';
+        } else if (runtime.includes('kotlin')) {
+            return 'kt';
+        } else if (runtime.includes('java')) {
+            return 'java';
+        }
+    }
+
+    function setCodeSnippets(lang: string) {
+        return {
+            Unix: {
+                code: `appwrite functions createDeployment \\ 
+    --functionId=${functionId} \\ 
+    --entrypoint='index.${lang}' \\ 
+    --code="." \\ 
+    --activate=true`,
+                language: 'bash'
+            },
+
+            CMD: {
+                code: `appwrite functions createDeployment ^
+    --functionId=${functionId} ^
+    --entrypoint='index.${lang}' ^
+    --code="." ^
+    --activate=true`,
+                language: 'CMD'
+            },
+            PowerShell: {
+                code: `appwrite functions createDeployment ,
+    --functionId=${functionId} ,
+    --entrypoint='index.${lang}' ,
+    --code="." ,
+    --activate=true`,
+                language: 'PowerShell'
+            }
+        };
+    }
+
+    async function create() {
         try {
             await sdkForProject.functions.createDeployment(
                 functionId,
@@ -42,35 +101,7 @@
                 message: error.message
             });
         }
-    };
-
-    const codeSnippets = {
-        Unix: {
-            code: `appwrite functions createDeployment \\ 
-    --functionId=${functionId} \\ 
-    --entrypoint='index.js' \\ 
-    --code="." \\ 
-    --activate=true`,
-            language: 'bash'
-        },
-
-        CMD: {
-            code: `appwrite functions createDeployment ^
-    --functionId=${functionId} ^
-    --entrypoint='index.js' ^
-    --code="." ^
-    --activate=true`,
-            language: 'CMD'
-        },
-        PowerShell: {
-            code: `appwrite functions createDeployment ,
-    --functionId=${functionId} ,
-    --entrypoint='index.js' ,
-    --code="." ,
-    --activate=true`,
-            language: 'PowerShell'
-        }
-    };
+    }
 </script>
 
 <Modal size="big" bind:show={showCreate} on:submit={create}>
