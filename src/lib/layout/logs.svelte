@@ -2,7 +2,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { log } from '$lib/stores/logs';
-    import { Status, Tab, Tabs } from '../components';
+    import { Output, Status, Tab, Tabs } from '../components';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
@@ -68,7 +68,12 @@
                             alt="technology" />
                     </div>
                     <div>
-                        <h2 class="body-text-2">Deployment ID: {$log.data.$id}</h2>
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <h2 class="body-text-2">Deployment ID:</h2>
+                            <Output value={$log.data.$id}>
+                                {$log.data.$id}
+                            </Output>
+                        </div>
                         <time class="u-block"
                             >Created at: {toLocaleDateTime($log.data.$createdAt)}</time>
                         <div>Size: {size.value} {size.unit}</div>
@@ -131,7 +136,12 @@
                             alt="technology" />
                     </div>
                     <div>
-                        <h2 class="body-text-2">Execution ID: {$log.data.$id}</h2>
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <h2 class="body-text-2">Execution ID:</h2>
+                            <Output value={$log.data.$id}>
+                                {$log.data.$id}
+                            </Output>
+                        </div>
                         <time class="u-block">
                             Created at: {toLocaleDateTime($log.data.$createdAt)}</time>
                     </div>
