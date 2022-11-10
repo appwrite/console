@@ -32,7 +32,7 @@
         <CoverTitle href={`/console/project-${projectId}/auth/teams`}>
             {$team?.name}
         </CoverTitle>
-        <Copy value={$team?.$id}>
+        <Copy value={$team?.$id} event="team">
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />
                 Team ID

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -16,6 +16,7 @@
                 type: 'success',
                 message: `Account was deleted `
             });
+            trackEvent('submit_account_delete');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -25,14 +26,7 @@
     };
 </script>
 
-<Modal
-    bind:show={showDelete}
-    on:submit={deleteAccount}
-    on:submit={() =>
-        sendEvent({
-            action: 'submit_account_delete'
-        })}
-    warning>
+<Modal bind:show={showDelete} on:submit={deleteAccount} warning>
     <svelte:fragment slot="header">Delete Account</svelte:fragment>
     <p>Are you sure you want to delete your account?</p>
     <svelte:fragment slot="footer">

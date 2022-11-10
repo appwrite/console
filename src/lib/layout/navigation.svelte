@@ -1,16 +1,9 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { event, type AnalyticsActionParam } from '$lib/actions/analytics';
 
     $: project = $page.params.project;
     $: path = `${base}/console/project-${project}`;
-
-    const defaultEventOptions: Partial<AnalyticsActionParam> = {
-        category: 'console/navigation',
-        name: 'click_menu_link',
-        action: 'click'
-    };
 </script>
 
 <div class="side-nav">
@@ -22,11 +15,7 @@
                         <a
                             class="drop-button"
                             class:is-selected={$page.url.pathname.startsWith(`${path}/overview`)}
-                            href={path}
-                            use:event={{
-                                ...defaultEventOptions,
-                                label: 'Home Link'
-                            }}>
+                            href={path}>
                             <span class="icon-chart-bar" aria-hidden="true" />
                             <span class="text">Overview</span>
                         </a>

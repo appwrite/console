@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { user } from '$lib/stores/user';
     import { onCLS, onFID, onLCP, onFCP, onINP, onTTFB } from 'web-vitals';
@@ -11,7 +11,7 @@
     import { Progress, Notifications } from '$lib/layout';
     import { loading } from './store';
     import Loading from './loading.svelte';
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent, trackPageView } from '$lib/actions/analytics';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -53,20 +53,9 @@
         }
     });
 
-    function track(event: MouseEvent) {
-        const target = event.target as HTMLElement;
-
-        if (target.hasAttribute('data-event')) {
-            const value = target.getAttribute('data-event');
-            if (!value) {
-                return;
-            }
-
-            sendEvent({
-                action: `click_${value}`
-            });
-        }
-    }
+    afterNavigate((navigation) => {
+        trackPageView(navigation.to.routeId);
+    });
 
     $: {
         if (browser) {
@@ -86,23 +75,6 @@
         }
     }
 </script>
-
-<svelte:head>
-    {#if browser && window.GOOGLE_ANALYTICS}
-        <script
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${window.GOOGLE_ANALYTICS}`}></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
-            gtag('config', window.GOOGLE_ANALYTICS);
-        </script>
-    {/if}
-</svelte:head>
-<svelte:window on:click={track} />
 
 <Notifications />
 

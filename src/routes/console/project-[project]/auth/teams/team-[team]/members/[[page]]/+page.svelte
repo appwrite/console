@@ -7,7 +7,8 @@
         TableBody,
         TableRowLink,
         TableCellHead,
-        TableCellText
+        TableCellText,
+        TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -19,6 +20,7 @@
     import CreateMember from '../../createMembership.svelte';
     import DeleteMembership from '../../deleteMembership.svelte';
     import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -44,7 +46,7 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Role</TableCellHead>
+                <TableCellHead>Roles</TableCellHead>
                 <TableCellHead>Joined</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
@@ -58,24 +60,22 @@
                                 <span>{membership.userName ? membership.userName : 'n/a'}</span>
                             </div>
                         </TableCellText>
-                        <TableCellText title="Role">{membership.roles}</TableCellText>
+                        <TableCellText title="Roles">{membership.roles}</TableCellText>
                         <TableCellText title="Joined">
                             {toLocaleDateTime(membership.joined)}
                         </TableCellText>
-                        <TableCellText title="">
+                        <TableCell>
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
                                 on:click|preventDefault={() => {
                                     selectedMembership = membership;
                                     showDelete = true;
+                                    trackEvent('click_delete_membership');
                                 }}>
-                                <span
-                                    class="icon-trash"
-                                    data-event="delete_membership"
-                                    aria-hidden="true" />
+                                <span class="icon-trash" aria-hidden="true" />
                             </button>
-                        </TableCellText>
+                        </TableCell>
                     </TableRowLink>
                 {/each}
             </TableBody>

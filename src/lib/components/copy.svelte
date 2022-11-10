@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { addNotification } from '$lib/stores/notifications';
 
     export let value: string;
+    export let event: string = null;
 
     let content = 'Click to copy';
 
@@ -16,6 +18,12 @@
                 message: error.message,
                 type: 'error'
             });
+        } finally {
+            if (event) {
+                trackEvent('click_id_tag', {
+                    name: event
+                });
+            }
         }
     };
 </script>

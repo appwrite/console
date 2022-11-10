@@ -35,7 +35,7 @@
         <CoverTitle href={`/console/project-${projectId}/auth`}>
             {$user.name ? $user.name : '-'}
         </CoverTitle>
-        <Copy value={$user.$id}>
+        <Copy value={$user.$id} event="user">
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />
                 User ID

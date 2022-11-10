@@ -8,7 +8,7 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let provider: Provider;
 
@@ -42,6 +42,10 @@
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
+            trackEvent('submit_auth_provider_update', {
+                provider,
+                enabled
+            });
             provider = null;
             invalidate(Dependencies.PROJECT);
         } catch ({ message }) {
@@ -52,19 +56,7 @@
     $: secret = keyID && teamID && p8 ? JSON.stringify({ keyID, teamID, p8 }) : provider.secret;
 </script>
 
-<Modal
-    {error}
-    on:submit={update}
-    on:submit={() =>
-        sendEvent({
-            action: 'submit_auth_provider_update',
-            data: {
-                provider
-            }
-        })}
-    size="big"
-    show
-    on:close>
+<Modal {error} on:submit={update} size="big" show on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>

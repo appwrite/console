@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -16,6 +16,7 @@
         try {
             await sdkForProject.teams.delete(team.$id);
             showDelete = false;
+            trackEvent('submit_auth_team_delete');
             await goto(`${base}/console/project-${$page.params.project}/auth/teams`);
         } catch (error) {
             addNotification({
@@ -26,14 +27,7 @@
     };
 </script>
 
-<Modal
-    bind:show={showDelete}
-    on:submit={deleteTeam}
-    on:submit={() =>
-        sendEvent({
-            action: 'submit_auth_team_delete'
-        })}
-    warning>
+<Modal bind:show={showDelete} on:submit={deleteTeam} warning>
     <svelte:fragment slot="header">Delete Team</svelte:fragment>
 
     <p>

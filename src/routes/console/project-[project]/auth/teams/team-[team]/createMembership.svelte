@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal, Alert } from '$lib/components';
     import { Button, InputEmail, InputText, InputTags, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -30,6 +30,7 @@
                 type: 'success',
                 message: `${name ? name : email} created successfully`
             });
+            trackEvent('submit_auth_member_create');
             email = name = '';
             roles = [];
             showCreate = false;
@@ -40,15 +41,7 @@
     };
 </script>
 
-<Modal
-    {error}
-    on:submit={create}
-    on:submit={() =>
-        sendEvent({
-            action: 'submit_auth_member_create'
-        })}
-    size="big"
-    bind:show={showCreate}>
+<Modal {error} on:submit={create} size="big" bind:show={showCreate}>
     <svelte:fragment slot="header">Create Membership</svelte:fragment>
     <FormList>
         <InputEmail

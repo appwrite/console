@@ -8,7 +8,7 @@
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -32,6 +32,7 @@
                 type: 'success',
                 message: `Invite has been sent to ${email}`
             });
+            trackEvent('submit_organization_member_create');
             dispatch('created', team);
         } catch ({ message }) {
             error = message;
@@ -45,15 +46,7 @@
     }
 </script>
 
-<Modal
-    {error}
-    size="big"
-    bind:show={showCreate}
-    on:submit={create}
-    on:submit={() =>
-        sendEvent({
-            action: 'submit_organization_member_invite'
-        })}>
+<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
     <svelte:fragment slot="header">Invite Member</svelte:fragment>
     <FormList>
         <InputEmail

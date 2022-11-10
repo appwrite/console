@@ -25,7 +25,7 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -69,14 +69,11 @@
                 }`,
                 type: 'success'
             });
+            trackEvent('submit_auth_user_update_verification_email');
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
-            });
-        } finally {
-            sendEvent({
-                action: 'submit_auth_user_update_verification_email'
             });
         }
     }
@@ -91,14 +88,11 @@
                 }`,
                 type: 'success'
             });
+            trackEvent('submit_auth_user_update_verification_phone');
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
-            });
-        } finally {
-            sendEvent({
-                action: 'submit_auth_user_update_verification_phone'
             });
         }
     }
@@ -112,9 +106,7 @@
                 }`,
                 type: 'success'
             });
-            sendEvent({
-                action: 'submit_auth_user_update_status'
-            });
+            trackEvent('submit_auth_user_update_status');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -130,6 +122,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_auth_user_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -145,6 +138,7 @@
                 message: 'Email has been updated',
                 type: 'success'
             });
+            trackEvent('submit_auth_user_update_email');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -160,6 +154,7 @@
                 message: 'Phone has been updated',
                 type: 'success'
             });
+            trackEvent('submit_auth_user_update_phone');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -175,6 +170,7 @@
                 message: 'Password has been updated',
                 type: 'success'
             });
+            trackEvent('submit_auth_user_update_password');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -195,6 +191,7 @@
                 message: 'Preferences have been updated',
                 type: 'success'
             });
+            trackEvent('submit_auth_user_update_preferences');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -292,12 +289,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form
-        on:submit={updateName}
-        on:submit={() =>
-            sendEvent({
-                action: 'submit_auth_user_update_name'
-            })}>
+    <Form on:submit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Name</Heading>
 
@@ -318,12 +310,7 @@
         </CardGrid>
     </Form>
 
-    <Form
-        on:submit={updateEmail}
-        on:submit={() =>
-            sendEvent({
-                action: 'submit_auth_user_update_email'
-            })}>
+    <Form on:submit={updateEmail}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Email</Heading>
             <svelte:fragment slot="aside">
@@ -343,12 +330,7 @@
         </CardGrid>
     </Form>
 
-    <Form
-        on:submit={updatePhone}
-        on:submit={() =>
-            sendEvent({
-                action: 'submit_auth_user_update_phone'
-            })}>
+    <Form on:submit={updatePhone}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Phone</Heading>
             <svelte:fragment slot="aside">
@@ -368,12 +350,7 @@
         </CardGrid>
     </Form>
 
-    <Form
-        on:submit={updatePassword}
-        on:submit={() =>
-            sendEvent({
-                action: 'submit_auth_user_update_password'
-            })}>
+    <Form on:submit={updatePassword}>
         <CardGrid>
             <div>
                 <Heading tag="h6" size="7">Update Password</Heading>
@@ -401,12 +378,7 @@
         </CardGrid>
     </Form>
 
-    <Form
-        on:submit={updatePrefs}
-        on:submit={() =>
-            sendEvent({
-                action: 'submit_auth_user_update_preferences'
-            })}>
+    <Form on:submit={updatePrefs}>
         <CardGrid>
             <Heading tag="h6" size="7">User Preferences</Heading>
             <p>
@@ -520,7 +492,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)} event="delete_user">Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)} event="delete_user"
+                >Delete</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

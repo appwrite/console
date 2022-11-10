@@ -8,7 +8,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
 
     const dispatch = createEventDispatcher();
 
@@ -30,6 +30,7 @@
                 type: 'success',
                 message: `${selectedMember.userName} was deleted from ${selectedMember.teamName}`
             });
+            trackEvent('submit_organization_member_delete');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -41,14 +42,7 @@
     $: isUser = selectedMember?.userId === $user?.$id;
 </script>
 
-<Modal
-    bind:show={showDelete}
-    on:submit={deleteMembership}
-    on:submit={() =>
-        sendEvent({
-            action: 'submit_organization_member_delete'
-        })}
-    warning>
+<Modal bind:show={showDelete} on:submit={deleteMembership} warning>
     <svelte:fragment slot="header">
         {isUser ? 'Leave Organization' : 'Delete Member'}
     </svelte:fragment>

@@ -7,7 +7,7 @@
     import { createEventDispatcher } from 'svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
 
@@ -28,6 +28,7 @@
                 type: 'success',
                 message: `${name} has been created`
             });
+            trackEvent('submit_organization_create');
             name = null;
             id = null;
             show = false;
@@ -37,15 +38,7 @@
     };
 </script>
 
-<Modal
-    {error}
-    on:submit={create}
-    on:submit={() =>
-        sendEvent({
-            action: 'submit_organization_create'
-        })}
-    size="big"
-    bind:show>
+<Modal {error} on:submit={create} size="big" bind:show>
     <svelte:fragment slot="header">Create New Organization</svelte:fragment>
     <FormList>
         <InputText

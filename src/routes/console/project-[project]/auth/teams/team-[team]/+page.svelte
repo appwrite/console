@@ -11,7 +11,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import DeleteTeam from './deleteTeam.svelte';
-    import { sendEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
     let teamName: string = null;
@@ -28,6 +28,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_auth_team_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -53,12 +54,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form
-        on:submit={updateName}
-        on:submit={() =>
-            sendEvent({
-                action: 'submit_auth_team_update_name'
-            })}>
+    <Form on:submit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Name</Heading>
 
@@ -101,8 +97,9 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)} event="delete_team"
-                >Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)} event="delete_team">
+                Delete
+            </Button>
         </svelte:fragment>
     </CardGrid>
 </Container>
