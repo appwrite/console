@@ -2,19 +2,46 @@
     import { Modal } from '$lib/components';
     import { option, options } from './attributes/store';
     import { Button, InputText, FormList, InputSelect } from '$lib/elements/forms';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { page } from '$app/stores';
+    import { addNotification } from '$lib/stores/notifications';
+    import { base } from '$app/paths';
+    import type { Attributes } from './store';
 
     export let showCreate = false;
 
     let key: string = null;
     let selectedOption = null;
-    let submitted = false;
-
-    const created = async () => {
-        invalidate(Dependencies.COLLECTION);
-        showCreate = false;
+    let data: Partial<Attributes> = {
+        required: false,
+        array: false,
+        default: null
     };
+    const databaseId = $page.params.database;
+    const collectionId = $page.params.collection;
+
+    async function submit() {
+        try {
+            await $option.func(databaseId, collectionId, key, data);
+            invalidate(Dependencies.COLLECTION);
+            if (!$page.url.pathname.includes('attributes')) {
+                goto(
+                    `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                );
+            }
+            addNotification({
+                type: 'success',
+                message: `Attribute ${key} has been created`
+            });
+            showCreate = false;
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
 
     $: if (selectedOption) {
         $option = options.find((option) => option.name === selectedOption);
@@ -23,11 +50,11 @@
     $: if (!showCreate) {
         key = null;
         selectedOption = null;
-        submitted = false;
+        $option = null;
     }
 </script>
 
-<Modal size="big" bind:show={showCreate} on:submit={() => (submitted = true)}>
+<Modal size="big" bind:show={showCreate} on:submit={submit}>
     <svelte:fragment slot="header">Create Attribute</svelte:fragment>
     <FormList>
         <div>
@@ -59,9 +86,7 @@
         {#if selectedOption}
             <svelte:component
                 this={$option.component}
-                {key}
-                bind:submitted
-                on:created={created}
+                bind:data
                 on:close={() => ($option = null)} />
         {/if}
     </FormList>
