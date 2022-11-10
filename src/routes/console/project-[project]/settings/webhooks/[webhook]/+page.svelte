@@ -18,14 +18,17 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Delete from './delete.svelte';
     import Regenerate from './regenerate.svelte';
-    import { difference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { writable, type Writable } from 'svelte/store';
 
     const projectId = $page.params.project;
     let name: string = null;
     let url: string = null;
-    let events = [];
+
+    const eventSet: Writable<Set<string>> = writable(new Set());
+
     let httpUser: string = null;
     let httpPass: string = null;
     let security = false;
@@ -37,7 +40,7 @@
     onMount(async () => {
         name ??= $webhook.name;
         url ??= $webhook.url;
-        events = $webhook.events;
+        $eventSet = new Set($webhook.events);
         httpUser ??= $webhook.httpUser;
         httpPass ??= $webhook.httpPass;
         security = $webhook.security;
@@ -93,7 +96,7 @@
                 projectId,
                 $webhook.$id,
                 $webhook.name,
-                events,
+                Array.from($eventSet),
                 $webhook.url,
                 $webhook.security
             );
@@ -110,6 +113,7 @@
             });
         }
     }
+
     async function updateSecurity() {
         try {
             await sdkForConsole.projects.updateWebhook(
@@ -135,15 +139,28 @@
         }
     }
 
-    $: if (difference(events, $webhook.events).length > 0) {
-        areEventsDisabled = false;
+    function handleEvent(event: CustomEvent) {
+        eventSet.set($eventSet.add(event.detail));
+    }
+
+    $: if ($eventSet) {
+        if (symmetricDifference(Array.from($eventSet), $webhook.events).length) {
+            areEventsDisabled = false;
+        } else areEventsDisabled = true;
     }
 </script>
 
 <Container>
     <CardGrid>
         <Heading tag="h2" size="7">Signature Key</Heading>
-        <p>You can use the Signature Key to validate your webhooks.</p>
+        <p>
+            Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your
+            webhooks. <a
+                href="https://appwrite.io/docs/webhooks#verification"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Learn more about webhook validation.</a>
+        </p>
         <svelte:fragment slot="aside">
             <div>
                 <p>Key</p>
@@ -200,24 +217,25 @@
 
     <Form on:submit={updateEvents}>
         <CardGrid>
-            <Heading tag="h2" size="7">Update Events</Heading>
+            <Heading tag="h6" size="7">Update Events</Heading>
             <p class="text">
                 Set the events that will trigger your webhook. Maximum 100 events allowed.
             </p>
             <svelte:fragment slot="aside">
-                {#if events?.length}
+                {#if $eventSet.size}
                     <TableList>
-                        {#each events as id}
+                        {#each Array.from($eventSet) as event}
                             <li class="table-row">
                                 <TableCellText title="id">
-                                    {id}
+                                    {event}
                                 </TableCellText>
                                 <TableCell showOverflow title="options" width={40}>
                                     <button
                                         class="button is-text is-only-icon"
                                         aria-label="delete id"
                                         on:click|preventDefault={() => {
-                                            events = events.filter((item) => item !== id);
+                                            $eventSet.delete(event);
+                                            eventSet.set($eventSet);
                                         }}>
                                         <span class="icon-x" aria-hidden="true" />
                                     </button>
@@ -225,15 +243,17 @@
                             </li>
                         {/each}
                     </TableList>
+                    <div class="u-flex u-margin-block-start-16">
+                        <Button text noMargin on:click={() => (showCreateEvent = true)}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="u-text">Add event</span>
+                        </Button>
+                    </div>
                 {:else}
-                    <Empty isButton single on:click={() => (showCreateEvent = !showCreateEvent)}
-                        >Add a event to get started</Empty>
+                    <Empty on:click={() => (showCreateEvent = true)}>
+                        Add an event to get started
+                    </Empty>
                 {/if}
-
-                <Button text on:click={() => (showCreateEvent = !showCreateEvent)}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="u-text">Add event</span>
-                </Button>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
@@ -273,7 +293,11 @@
                         bind:value={security}>
                         <span class="u-error">Warning:</span> Untrusted or self-signed certificates
                         may not be secure.
-                        <a href="#/" target="_blank" rel="noopener noreferrer" class="link">
+                        <a
+                            href="https://appwrite.io/docs/custom-domains#enjoySSLCert"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="link">
                             Learn more</a>
                     </InputChoice>
                 </FormList>
@@ -313,9 +337,5 @@
 
 <Delete bind:showDelete />
 <Regenerate bind:show={showRegenerate} />
-<EventModal
-    bind:show={showCreateEvent}
-    on:created={(e) => {
-        events.push(e.detail[0]);
-        events = events;
-    }} />
+
+<EventModal bind:show={showCreateEvent} on:created={handleEvent} />

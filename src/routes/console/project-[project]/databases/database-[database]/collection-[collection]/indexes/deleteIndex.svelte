@@ -22,6 +22,10 @@
                 selectedIndex.key
             );
             showDelete = false;
+            addNotification({
+                type: 'success',
+                message: `Index has been deleted`
+            });
             dispatch('deleted');
         } catch (error) {
             addNotification({

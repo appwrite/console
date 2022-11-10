@@ -82,7 +82,7 @@
 
             <div class="u-margin-block-start-auto" />
             <p class="u-max-width-500 u-width-full-line u-margin-block-start-24">
-                version 0.15.2.402
+                <!-- version 0.15.2.402 -->
             </p>
             <div class="u-margin-block-start-20" />
         </div>

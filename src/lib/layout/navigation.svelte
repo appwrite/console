@@ -34,6 +34,15 @@
                     <li class="drop-list-item">
                         <a
                             class="drop-button"
+                            class:is-selected={$page.url.pathname.startsWith(`${path}/auth`)}
+                            href={`${path}/auth`}>
+                            <span class="icon-user-group" aria-hidden="true" />
+                            <span class="text">Auth</span>
+                        </a>
+                    </li>
+                    <li class="drop-list-item">
+                        <a
+                            class="drop-button"
                             class:is-selected={$page.url.pathname.startsWith(`${path}/databases`)}
                             href={`${path}/databases`}>
                             <span class="icon-database" aria-hidden="true" />
@@ -43,30 +52,19 @@
                     <li class="drop-list-item">
                         <a
                             class="drop-button"
-                            class:is-selected={$page.url.pathname.startsWith(`${path}/storage`)}
-                            href={`${path}/storage`}>
-                            <span class="icon-folder" aria-hidden="true" />
-                            <span class="text">Storage</span>
-                        </a>
-                    </li>
-                    <li class="drop-list-item">
-                        <a
-                            class="drop-button"
-                            class:is-selected={$page.url.pathname.startsWith(
-                                `${path}/authentication`
-                            )}
-                            href={`${path}/authentication`}>
-                            <span class="icon-user-group" aria-hidden="true" />
-                            <span class="text">Authentication</span>
-                        </a>
-                    </li>
-                    <li class="drop-list-item">
-                        <a
-                            class="drop-button"
                             class:is-selected={$page.url.pathname.startsWith(`${path}/functions`)}
                             href={`${path}/functions`}>
                             <span class="icon-lightning-bolt" aria-hidden="true" />
                             <span class="text">Functions</span>
+                        </a>
+                    </li>
+                    <li class="drop-list-item">
+                        <a
+                            class="drop-button"
+                            class:is-selected={$page.url.pathname.startsWith(`${path}/storage`)}
+                            href={`${path}/storage`}>
+                            <span class="icon-folder" aria-hidden="true" />
+                            <span class="text">Storage</span>
                         </a>
                     </li>
                 </ul>

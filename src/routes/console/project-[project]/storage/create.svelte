@@ -2,6 +2,7 @@
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
@@ -20,6 +21,10 @@
             name = null;
             showCreate = false;
             dispatch('created', bucket);
+            addNotification({
+                type: 'success',
+                message: `${name} has been created`
+            });
         } catch ({ message }) {
             error = message;
         }

@@ -21,3 +21,4 @@ export const attributes = derived(
     page,
     ($page) => $page.data.collection.attributes as Attributes[]
 );
+export const indexes = derived(page, ($page) => $page.data.collection.indexes as Models.Index[]);

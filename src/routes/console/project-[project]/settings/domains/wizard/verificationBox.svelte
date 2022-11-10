@@ -15,7 +15,7 @@
         try {
             const result = await sdkForConsole.projects.updateDomainVerification(
                 projectId,
-                $domain.id
+                $domain.$id
             );
             isVerified = result.verification;
         } catch (error) {

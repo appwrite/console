@@ -39,7 +39,6 @@
             on:click={() => (showCreate = true)}>
             {#each data.buckets.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket-${bucket.$id}`}>
-                    <svelte:fragment slot="eyebrow">XX Files</svelte:fragment>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if !bucket.enabled}
@@ -91,16 +90,11 @@
                 sum={data.buckets.total} />
         </div>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">Create your first bucket to get started</p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-12">
-                <Button external href="#/" text>Documentation</Button>
-                <Button secondary>Create bucket</Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/storage"
+            target="bucket"
+            on:click={() => (showCreate = true)} />
     {/if}
 </Container>
 

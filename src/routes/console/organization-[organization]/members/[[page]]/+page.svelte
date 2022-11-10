@@ -28,7 +28,7 @@
     let showDelete = false;
 
     const url = `${$page.url.origin}/console/`;
-    const deleted = () => invalidate(Dependencies.ORGANIZATION);
+    const deleted = () => invalidate(Dependencies.ACCOUNT);
     const resend = async (member: Models.Membership) => {
         try {
             await sdkForConsole.teams.createMembership(

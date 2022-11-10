@@ -23,7 +23,7 @@
     ];
     let newAttr = false;
     let selectedType = '';
-    let attributeOptions = $collection.attributes.map((attribute: Attributes) => ({
+    $: attributeOptions = $collection.attributes.map((attribute: Attributes) => ({
         value: attribute.key,
         label: attribute.key
     }));
@@ -57,9 +57,9 @@
                 attributeList.map((a) => a.value),
                 attributeList.map((a) => a.order)
             );
-            invalidate(Dependencies.INDEXES);
+            invalidate(Dependencies.COLLECTION);
             addNotification({
-                message: 'Index created!',
+                message: 'Index has been created',
                 type: 'success'
             });
         } catch (error) {
@@ -195,6 +195,7 @@
         {/if}
         <Button
             text
+            noMargin
             on:click={() => {
                 newAttr = true;
                 if (selectedAttribute && selectedOrder) {
@@ -203,7 +204,7 @@
                 }
             }}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text"> Add attribute </span>
+            <span class="text">Add attribute</span>
         </Button>
     </FormList>
     <svelte:fragment slot="footer">

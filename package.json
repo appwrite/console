@@ -19,11 +19,12 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
-        "@aw-labs/appwrite-console": "^6.0.0",
-        "@aw-labs/icons": "0.0.0-66",
-        "@aw-labs/ui": "0.0.0-66",
+        "@aw-labs/appwrite-console": "^10.0.0",
+        "@aw-labs/icons": "0.0.0-72",
+        "@aw-labs/ui": "0.0.0-72",
         "@popperjs/core": "^2.11.6",
         "echarts": "^5.4.0",
+        "pretty-bytes": "^6.0.0",
         "prismjs": "^1.29.0",
         "tippy.js": "^6.3.7",
         "web-vitals": "^3.0.3"

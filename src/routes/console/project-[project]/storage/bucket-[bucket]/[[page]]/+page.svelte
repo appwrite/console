@@ -76,7 +76,7 @@
 <Container>
     <SearchQuery search={data.search} placeholder="Search by filename">
         <Button on:click={() => (showCreate = true)}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Add File</span>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
         </Button>
     </SearchQuery>
     {#if data.files.total}
@@ -187,20 +187,16 @@
             </div>
             <Button
                 secondary
-                href={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}
-                >Clear Search</Button>
+                href={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}>
+                Clear Search
+            </Button>
         </EmptySearch>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">Upload some files to get started</p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-12 ">
-                <Button external href="#/" text>Documentation</Button>
-                <Button secondary>Add file</Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/storage#createFile"
+            target="file"
+            on:click={() => (showCreate = true)} />
     {/if}
 </Container>
 

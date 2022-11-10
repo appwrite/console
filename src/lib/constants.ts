@@ -1,59 +1,62 @@
 export const PAGE_LIMIT = 12; // default page limit
 export const CARD_LIMIT = 6; // default card limit
 export enum Dependencies {
-    ORGANIZATION = 'organization',
-    PROJECT = 'project',
-    PROJECTS = 'projects',
-    ACCOUNT = 'account',
-    ACCOUNT_SESSIONS = 'account_sessions',
-    USER = 'user',
-    USERS = 'users',
-    SESSIONS = 'sessions',
-    TEAM = 'team',
-    TEAMS = 'teams',
-    MEMBERSHIPS = 'memberships',
-    DATABASE = 'database',
-    COLLECTION = 'collection',
-    DOCUMENT = 'document',
-    DOCUMENTS = 'documents',
-    ATTRIBUTES = 'attributes',
-    INDEXES = 'indexes',
-    BUCKET = 'bucket',
-    FILE = 'file',
-    FILES = 'files',
-    FUNCTION = 'function',
-    FUNCTIONS = 'functions',
-    VARIABLES = 'variables',
-    DEPLOYMENTS = 'deployments',
-    PLATFORM = 'platform',
-    PLATFORMS = 'platforms',
-    KEY = 'key',
-    KEYS = 'keys',
-    DOMAINS = 'domains',
-    WEBHOOK = 'webhook',
-    WEBHOOKS = 'webhooks'
+    ORGANIZATION = 'dependency:organization',
+    PROJECT = 'dependency:project',
+    PROJECTS = 'dependency:projects',
+    ACCOUNT = 'dependency:account',
+    ACCOUNT_SESSIONS = 'dependency:account_sessions',
+    USER = 'dependency:user',
+    USERS = 'dependency:users',
+    SESSIONS = 'dependency:sessions',
+    TEAM = 'dependency:team',
+    TEAMS = 'dependency:teams',
+    MEMBERSHIPS = 'dependency:memberships',
+    DATABASE = 'dependency:database',
+    COLLECTION = 'dependency:collection',
+    DOCUMENT = 'dependency:document',
+    DOCUMENTS = 'dependency:documents',
+    BUCKET = 'dependency:bucket',
+    FILE = 'dependency:file',
+    FILES = 'dependency:files',
+    FUNCTION = 'dependency:function',
+    FUNCTIONS = 'dependency:functions',
+    VARIABLES = 'dependency:variables',
+    DEPLOYMENTS = 'dependency:deployments',
+    EXECUTIONS = 'dependency:executions',
+    PLATFORM = 'dependency:platform',
+    PLATFORMS = 'dependency:platforms',
+    KEY = 'dependency:key',
+    KEYS = 'dependency:keys',
+    DOMAINS = 'dependency:domains',
+    WEBHOOK = 'dependency:webhook',
+    WEBHOOKS = 'dependency:webhooks'
 }
 
-export const scopes = [
+export const scopes: {
+    scope: string;
+    description: string;
+    category: string;
+}[] = [
     {
         scope: 'users.read',
         description: "Access to read your project's users",
-        category: 'Authentication'
+        category: 'Auth'
     },
     {
         scope: 'users.write',
         description: "Access to create, update, and delete your project's users",
-        category: 'Authentication'
+        category: 'Auth'
     },
     {
         scope: 'teams.read',
         description: "Access to read your project's teams",
-        category: 'Authentication'
+        category: 'Auth'
     },
     {
         scope: 'teams.write',
         description: "Access to create, update, and delete your project's teams",
-        category: 'Authentication'
+        category: 'Auth'
     },
     {
         scope: 'databases.read',

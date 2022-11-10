@@ -58,16 +58,11 @@
                 sum={data.databases.total} />
         </div>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">Create your first Database to get started</p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-12">
-                <Button external href="#/" text>Documentation</Button>
-                <Button secondary>Create Database</Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/databases"
+            target="database"
+            on:click={() => (showCreate = true)} />
     {/if}
 </Container>
 

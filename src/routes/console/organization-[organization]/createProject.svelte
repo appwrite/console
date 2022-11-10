@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
@@ -15,20 +16,27 @@
     let name: string;
     let showCustomId = false;
     let error: string;
+    let isCreating = false;
 
     const create = async () => {
         try {
-            const project = await sdkForConsole.projects.create(id ?? 'unique()', name, teamId);
+            isCreating = true;
+            const project = await sdkForConsole.projects.create(
+                id ?? 'unique()',
+                name,
+                teamId,
+                'default'
+            );
             dispatch('created', project);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
             });
-            id = name = null;
-            showCustomId = false;
-            show = false;
+            await goto(`/console/project-${project.$id}`);
         } catch ({ message }) {
             error = message;
+        } finally {
+            isCreating = false;
         }
     };
 </script>
@@ -36,7 +44,13 @@
 <Modal {error} on:submit={create} size="big" bind:show>
     <svelte:fragment slot="header">Create Project</svelte:fragment>
     <FormList>
-        <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
+        <InputText
+            id="name"
+            label="Name"
+            bind:value={name}
+            required
+            autofocus={true}
+            disabled={isCreating} />
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
@@ -51,6 +65,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button submit disabled={isCreating}>Create</Button>
     </svelte:fragment>
 </Modal>

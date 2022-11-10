@@ -62,6 +62,7 @@
             }
             if (message.events.includes('functions.*.deployments.*.update')) {
                 invalidate(Dependencies.DEPLOYMENTS);
+                invalidate(Dependencies.FUNCTION);
 
                 return;
             }
@@ -89,7 +90,7 @@
         {#if activeDeployment}
             <CardGrid>
                 <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                    <div class="avatar is-medium">
+                    <div class="avatar is-medium" aria-hidden="true">
                         <img
                             src={`${base}/icons/${$app.themeInUse}/color/${
                                 $func.runtime.split('-')[0]
@@ -127,23 +128,11 @@
                 </svelte:fragment>
             </CardGrid>
         {:else}
-            <Empty single isButton on:click={() => (showCreate = true)}>
-                <div class="u-text-center">
-                    <p>
-                        Create a new deployment, or activate an existing one to see your function in
-                        action.
-                    </p>
-                    <p>Need a hand? Check out our documentation.</p>
-                </div>
-                <div class="u-flex u-gap-12">
-                    <Button text external href="https://appwrite.io/docs/functions#createFunction">
-                        Documentation
-                    </Button>
-                    <Button secondary on:click={() => (showCreate = true)}>
-                        Create Deployment
-                    </Button>
-                </div>
-            </Empty>
+            <Empty
+                single
+                href="https://appwrite.io/docs/functions#createFunction"
+                target="deployment"
+                on:click={() => (showCreate = true)} />
         {/if}
 
         <div class="common-section">
@@ -157,7 +146,6 @@
                 <TableCellHead width={100}>Status</TableCellHead>
                 <TableCellHead width={90}>Build time</TableCellHead>
                 <TableCellHead width={70}>Size</TableCellHead>
-                <TableCellHead width={60} />
                 <TableCellHead width={25} />
             </TableHeader>
             <TableBody>
@@ -186,16 +174,7 @@
                             <TableCellText title="Size">
                                 {calculateSize(deployment.size)}
                             </TableCellText>
-                            <TableCell>
-                                <Button
-                                    secondary
-                                    on:click={() => {
-                                        selectedDeployment = deployment;
-                                        showActivate = true;
-                                    }}>
-                                    <span class="text">Activate</span>
-                                </Button>
-                            </TableCell>
+
                             <TableCell showOverflow>
                                 <DropList
                                     bind:show={showDropdown[index]}
@@ -211,20 +190,33 @@
                                     </button>
                                     <svelte:fragment slot="list">
                                         <DropListItem
+                                            icon="lightning-bolt"
+                                            on:click={() => {
+                                                selectedDeployment = deployment;
+                                                showActivate = true;
+                                                showDropdown = [];
+                                            }}>
+                                            Activate
+                                        </DropListItem>
+                                        <DropListItem
                                             icon="terminal"
                                             on:click={() => {
                                                 $log.show = true;
                                                 $log.func = $func;
                                                 $log.data = deployment;
                                                 showDropdown = [];
-                                            }}>Output</DropListItem>
+                                            }}>
+                                            Output
+                                        </DropListItem>
                                         <DropListItem
                                             icon="trash"
                                             on:click={() => {
                                                 selectedDeployment = deployment;
                                                 showDropdown = [];
                                                 showDelete = true;
-                                            }}>Delete</DropListItem>
+                                            }}>
+                                            Delete
+                                        </DropListItem>
                                     </svelte:fragment>
                                 </DropList>
                             </TableCell>
@@ -234,21 +226,11 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
-            <div class="u-text-center">
-                <p>
-                    Create a new deployment, or activate an existing one to see your function in
-                    action.
-                </p>
-                <p>Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-12">
-                <Button text external href="https://appwrite.io/docs/functions#createFunction">
-                    Documentation
-                </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create Deployment</Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            target="deployment"
+            href="https://appwrite.io/docs/functions#createFunction"
+            on:click={() => (showCreate = true)} />
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.deployments.total}</p>

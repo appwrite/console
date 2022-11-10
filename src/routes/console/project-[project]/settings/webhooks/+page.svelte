@@ -71,17 +71,10 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton single>
-            <div class="common-section u-text-center">
-                <p class="text">Create your first Webhook to get startedNeed a hand?</p>
-                <p class="text">Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-12 common-section">
-                <Button text href="#/">Documentation</Button>
-                <Button secondary on:click={openWizard}>
-                    <span class="text">Create Webhook</span>
-                </Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/webhooks"
+            target="webhook"
+            on:click={openWizard} />
     {/if}
 </Container>

@@ -1,23 +1,41 @@
+<script context="module" lang="ts">
+    const formatter = Intl.NumberFormat('en', {
+        notation: 'compact'
+    });
+
+    // TODO: metric type is wrong
+    export function last(set: Array<unknown>): Models.Metric | null {
+        return (set as Models.Metric[]).slice(-1)[0] ?? null;
+    }
+
+    // TODO: metric type is wrong
+    export function total(set: Array<unknown>): number {
+        return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
+    }
+
+    export function format(number: number): string {
+        return formatter.format(number);
+    }
+</script>
+
 <script lang="ts">
     import type { Models } from '@aw-labs/appwrite-console';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
-    import { browser } from '$app/environment';
-    import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../store';
     import { usage } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
-    import { DropList, DropListItem, Heading } from '$lib/components';
-    import { BarChart, LineChart } from '$lib/charts';
+    import { Heading } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { base } from '$app/paths';
+    import Realtime from './realtime.svelte';
+    import Bandwith from './bandwith.svelte';
+    import Requests from './requests.svelte';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
-
     let period: UsagePeriods = '30d';
-    let showPeriodBandwidth = false;
-    let showPeriodRequests = false;
 
     onMount(handle);
     afterNavigate(handle);
@@ -30,49 +48,10 @@
         }
     }
 
-    const formatter = Intl.NumberFormat('en', {
-        notation: 'compact'
-    });
-
-    // TODO: metric type is wrong
-    function last(set: Array<unknown>): Models.Metric | null {
-        return (set as Models.Metric[]).slice(-1)[0] ?? null;
-    }
-
-    // TODO: metric type is wrong
-    function total(set: Array<unknown>): number {
-        return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
-    }
-
-    function format(number: number): string {
-        return formatter.format(number);
-    }
-
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
         usage.load(projectId, period);
-        showPeriodBandwidth = false;
-        showPeriodRequests = false;
     }
-
-    if (browser) {
-        sdkForConsole.client.subscribe<unknown>('console', (message) => {
-            if (message.events.includes('stats.connections')) {
-                // TODO: take care of realtime connections
-                return;
-            }
-        });
-    }
-
-    //TODO: workaround for broken types
-    $: network = $usage?.network as unknown as Array<{
-        date: number;
-        value: number;
-    }>;
-    $: requests = $usage?.requests as unknown as Array<{
-        date: number;
-        value: number;
-    }>;
 </script>
 
 <svelte:head>
@@ -82,94 +61,18 @@
 {#if $project}
     <Container overlapCover>
         {#if $usage}
-            {@const bandwith = humanFileSize(total($usage.network))}
             {@const storage = humanFileSize(last($usage.storage).value)}
             <section class="common-section">
                 <div class="grid-dashboard-1s-2m-6l">
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
-                        <div class="u-flex u-gap-16 u-main-space-between">
-                            <div>
-                                <div class="heading-level-4">
-                                    {bandwith.value}
-                                    <span class="body-text-2">{bandwith.unit}</span>
-                                </div>
-                                <div>Bandwidth</div>
-                            </div>
-                            <DropList
-                                bind:show={showPeriodBandwidth}
-                                placement="bottom-start"
-                                childStart>
-                                <button
-                                    class="transparent-button"
-                                    on:click={() => (showPeriodBandwidth = !showPeriodBandwidth)}>
-                                    <span class="text">{period}</span>
-                                    <span class="icon-cheveron-down" aria-hidden="true" />
-                                </button>
-                                <svelte:fragment slot="list">
-                                    <DropListItem on:click={() => changePeriod('24h')}>
-                                        24h
-                                    </DropListItem>
-                                    <DropListItem on:click={() => changePeriod('30d')}>
-                                        30d
-                                    </DropListItem>
-                                    <DropListItem on:click={() => changePeriod('90d')}>
-                                        90d
-                                    </DropListItem>
-                                </svelte:fragment>
-                            </DropList>
-                        </div>
-                        {#if network.length}
-                            <BarChart
-                                series={[
-                                    {
-                                        name: 'Bandwidth',
-                                        data: [...network.map((e) => [e.date, e.value])]
-                                    }
-                                ]} />
-                        {/if}
+                        <Bandwith {period} on:change={(e) => changePeriod(e.detail)} />
                     </div>
                     <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
-                        <div class="u-flex u-gap-16 u-main-space-between">
-                            <div>
-                                <div class="heading-level-4">
-                                    {format(total($usage.requests))}
-                                </div>
-                                <div>Requests</div>
-                            </div>
-                            <DropList
-                                bind:show={showPeriodRequests}
-                                placement="bottom-start"
-                                childStart>
-                                <button
-                                    class="transparent-button"
-                                    on:click={() => (showPeriodRequests = !showPeriodRequests)}>
-                                    <span class="text">{period}</span>
-                                    <span class="icon-cheveron-down" aria-hidden="true" />
-                                </button>
-                                <svelte:fragment slot="list">
-                                    <DropListItem on:click={() => changePeriod('24h')}>
-                                        24h
-                                    </DropListItem>
-                                    <DropListItem on:click={() => changePeriod('30d')}>
-                                        30d
-                                    </DropListItem>
-                                    <DropListItem on:click={() => changePeriod('90d')}>
-                                        90d
-                                    </DropListItem>
-                                </svelte:fragment>
-                            </DropList>
-                        </div>
-                        {#if network.length}
-                            <LineChart
-                                series={[
-                                    {
-                                        name: 'Requests',
-                                        data: [...requests.map((e) => [e.date, e.value])]
-                                    }
-                                ]} />
-                        {/if}
+                        <Requests {period} on:change={(e) => changePeriod(e.detail)} />
                     </div>
-                    <div class="card is-2-columns-large-screen">
+                    <a
+                        href={`${base}/console/project-${projectId}/databases`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -181,16 +84,20 @@
                             <div class="grid-item-1-start-end" />
 
                             <div class="grid-item-1-end-start">
-                                <div class="heading-level-4">XX</div>
-                                <div>Databases</div>
+                                <div class="heading-level-4">
+                                    {format(last($usage.documents).value)}
+                                </div>
+                                <div>Documents</div>
                             </div>
 
                             <div class="grid-item-1-end-end">
-                                <div class="text">Documents: {last($usage.documents).value}</div>
+                                <div class="text">Databases: XX</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card is-2-columns-large-screen">
+                    </a>
+                    <a
+                        href={`${base}/console/project-${projectId}/storage`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -213,13 +120,15 @@
                                 <div class="text">Buckets: XX</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card is-2-columns-large-screen">
+                    </a>
+                    <a
+                        href={`${base}/console/project-${projectId}/auth`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
                                     <span class="icon-user-group" aria-hidden="true" />
-                                    <span class="text">authentication</span>
+                                    <span class="text">Auth</span>
                                 </div>
                             </div>
 
@@ -231,13 +140,11 @@
                                 </div>
                                 <div>Users</div>
                             </div>
-
-                            <div class="grid-item-1-end-end">
-                                <div class="text">Sessions: XX</div>
-                            </div>
                         </div>
-                    </div>
-                    <div class="card is-2-columns-large-screen">
+                    </a>
+                    <a
+                        href={`${base}/console/project-${projectId}/functions`}
+                        class="card is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -259,11 +166,10 @@
                                 <div class="text" />
                             </div>
                         </div>
-                    </div>
+                    </a>
                     <div
                         class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
-                        <div class="heading-level-4">XX</div>
-                        <div>Realtime Connections</div>
+                        <Realtime />
                     </div>
                 </div>
             </section>
@@ -308,9 +214,3 @@
         </section>
     </Container>
 {/if}
-
-<style>
-    .grid-item-1 {
-        min-block-size: 6.5rem; /* TODO: remove */
-    }
-</style>

@@ -18,8 +18,10 @@
     import { collection } from '../store';
     import { page } from '$app/stores';
     import { PAGE_LIMIT } from '$lib/constants';
+    import CreateAttribute from '../createAttribute.svelte';
 
     export let data: PageData;
+    let showCreateAttribute = false;
 
     function openWizard() {
         wizard.start(Create);
@@ -83,13 +85,19 @@
                     sum={data.documents.total} />
             </div>
         {:else}
-            <Empty isButton single on:click={openWizard}>
-                <p>Create your first document to get started</p>
-            </Empty>
+            <Empty
+                single
+                href="https://appwrite.io/docs/databases#create-documents"
+                target="document"
+                on:click={openWizard} />
         {/if}
     {:else}
-        <Empty single>
-            <p>Create your first attribute to get started</p>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/databases#attributes"
+            target="attribute"
+            on:click={() => (showCreateAttribute = true)} />
     {/if}
 </Container>
+
+<CreateAttribute bind:showCreate={showCreateAttribute} />

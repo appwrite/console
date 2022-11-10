@@ -22,8 +22,8 @@
     import Variable from '../../createVariable.svelte';
     import Upload from './uploadVariables.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Permissions } from '$lib/components/permissions';
-    import { difference } from '$lib/helpers/array';
+    import { Roles } from '$lib/components/permissions';
+    import { symmetricDifference } from '$lib/helpers/array';
     import TableList from '$lib/elements/table/tableList.svelte';
     import { TableCell, TableCellText } from '$lib/elements/table';
     import Heading from '$lib/components/heading.svelte';
@@ -244,19 +244,13 @@
     }
 
     $: if (permissions) {
-        if (
-            difference(permissions, $func.execute).length ||
-            difference($func.execute, permissions).length
-        ) {
+        if (symmetricDifference(permissions, $func.execute).length) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
     }
 
     $: if ($eventSet) {
-        if (
-            difference(Array.from($eventSet), $func.events).length ||
-            difference($func.events, Array.from($eventSet)).length
-        ) {
+        if (symmetricDifference(Array.from($eventSet), $func.events).length) {
             areEventsDisabled = false;
         } else areEventsDisabled = true;
     }
@@ -324,7 +318,7 @@
                 check out the Permissions Guide in our documentation.
             </p>
             <svelte:fragment slot="aside">
-                <Permissions withCrud={false} bind:executeAccess={permissions} />
+                <Roles bind:roles={permissions} />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
@@ -359,18 +353,16 @@
                             </li>
                         {/each}
                     </TableList>
-                {:else}
-                    <Empty isButton on:click={() => (showEvents = true)}>
-                        Add a event to get started
-                    </Empty>
-                {/if}
 
-                <div class="u-flex u-margin-block-start-16">
-                    <Button text noMargin on:click={() => (showEvents = true)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="u-text">Add event</span>
-                    </Button>
-                </div>
+                    <div class="u-flex u-margin-block-start-16">
+                        <Button text noMargin on:click={() => (showEvents = true)}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="u-text">Add event</span>
+                        </Button>
+                    </div>
+                {:else}
+                    <Empty on:click={() => (showEvents = true)}>Add an event to get started</Empty>
+                {/if}
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
@@ -384,7 +376,7 @@
             <Heading tag="h6" size="7">Update CRON Schedule</Heading>
             <p>
                 Set a CRON schedule to trigger your function. Leave blank for no schedule. <a
-                    href="#/"
+                    href="https://appwrite.io/docs/functions#createFunction"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
@@ -393,7 +385,7 @@
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputCron
-                        bind:value={$func.schedule}
+                        bind:value={functionSchedule}
                         label="Schedule (CRON Syntax)"
                         id="schedule" />
                 </FormList>

@@ -42,12 +42,17 @@
     <div class="u-flex u-main-space-between common-section">
         <Heading tag="h2" size="5">{title}</Heading>
         <DropTabs>
-            <DropTabsLink href={`${path}/24h`} disabled={$page.params.period === '24h'}
-                >24h</DropTabsLink>
-            <DropTabsLink href={`${path}/30d`} disabled={$page.params.period === '30d'}
-                >30d</DropTabsLink>
-            <DropTabsLink href={`${path}/90d`} disabled={$page.params.period === '90d'}
-                >90d</DropTabsLink>
+            <DropTabsLink href={`${path}/24h`} disabled={$page.params.period === '24h'}>
+                24h
+            </DropTabsLink>
+            <DropTabsLink
+                href={`${path}/30d`}
+                disabled={!$page.params.period || $page.params.period === '30d'}>
+                30d
+            </DropTabsLink>
+            <DropTabsLink href={`${path}/90d`} disabled={$page.params.period === '90d'}>
+                90d
+            </DropTabsLink>
         </DropTabs>
     </div>
     <Card>
@@ -70,14 +75,16 @@
                 <Heading tag="h6" size="6">{total(created)}</Heading>
                 <p>{createdMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
-                <LineChart
-                    series={[
-                        {
-                            name: createdMetadata.legend,
-                            data: [...created.map((e) => [e.date, e.value])],
-                            color: Colors.Secondary
-                        }
-                    ]} />
+                <div style="height: 12rem;">
+                    <LineChart
+                        series={[
+                            {
+                                name: createdMetadata.legend,
+                                data: [...created.map((e) => [e.date, e.value])],
+                                color: Colors.Secondary
+                            }
+                        ]} />
+                </div>
             {/if}
         </Card>
         <Card isTile>
@@ -85,14 +92,16 @@
                 <Heading tag="h6" size="6">{total(read)}</Heading>
                 <p>{readMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
-                <LineChart
-                    series={[
-                        {
-                            name: readMetadata.legend,
-                            data: [...read.map((e) => [e.date, e.value])],
-                            color: Colors.Tertiary
-                        }
-                    ]} />
+                <div style="height: 12rem;">
+                    <LineChart
+                        series={[
+                            {
+                                name: readMetadata.legend,
+                                data: [...read.map((e) => [e.date, e.value])],
+                                color: Colors.Tertiary
+                            }
+                        ]} />
+                </div>
             {/if}
         </Card>
         <Card isTile>
@@ -100,14 +109,16 @@
                 <Heading tag="h6" size="6">{total(updated)}</Heading>
                 <p>{updatedMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
-                <LineChart
-                    series={[
-                        {
-                            name: updatedMetadata.legend,
-                            data: [...updated.map((e) => [e.date, e.value])],
-                            color: Colors.Quaternary
-                        }
-                    ]} />
+                <div style="height: 12rem;">
+                    <LineChart
+                        series={[
+                            {
+                                name: updatedMetadata.legend,
+                                data: [...updated.map((e) => [e.date, e.value])],
+                                color: Colors.Quaternary
+                            }
+                        ]} />
+                </div>
             {/if}
         </Card>
         <Card isTile>
@@ -115,14 +126,16 @@
                 <Heading tag="h6" size="6">{total(deleted)}</Heading>
                 <p>{deletedMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
-                <LineChart
-                    series={[
-                        {
-                            name: deletedMetadata.legend,
-                            data: [...deleted.map((e) => [e.date, e.value])],
-                            color: Colors.Quinary
-                        }
-                    ]} />
+                <div style="height: 12rem;">
+                    <LineChart
+                        series={[
+                            {
+                                name: deletedMetadata.legend,
+                                data: [...deleted.map((e) => [e.date, e.value])],
+                                color: Colors.Quinary
+                            }
+                        ]} />
+                </div>
             {/if}
         </Card>
     </Tiles>

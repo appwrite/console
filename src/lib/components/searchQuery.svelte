@@ -34,14 +34,18 @@
         clearTimeout(timer);
         timer = setTimeout(async () => {
             const url = new URL($page.url);
-            url.search = value;
-
+            if (url.search === value) {
+                return;
+            }
             /**
              * Reset to first page if search changes.
              */
             if ($page.data.page > 1) {
                 url.pathname = url.pathname.replace(new RegExp(`/${$page.data.page}*$`), '/');
             }
+
+            url.search = value;
+
             goto(url, { keepfocus: true });
         }, debounce);
     };

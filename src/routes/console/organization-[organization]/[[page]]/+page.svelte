@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
     import { GridItem1, Heading, Empty, CardContainer, Pagination } from '$lib/components';
@@ -8,7 +7,6 @@
     import CreateProject from '../createProject.svelte';
     import CreateOrganization from '../../createOrganization.svelte';
     import type { PageData } from './$types';
-    import type { Models } from '@aw-labs/appwrite-console';
     import { CARD_LIMIT } from '$lib/constants';
     import { page } from '$app/stores';
 
@@ -16,10 +14,6 @@
 
     let showCreate = false;
     let addOrganization = false;
-
-    const projectCreated = async (event: CustomEvent<Models.Project>) => {
-        await goto(`${base}/console/project-${event.detail.$id}`);
-    };
 
     const getPlatformInfo = (platform: string) => {
         let name: string, icon: string;
@@ -44,6 +38,12 @@
         }
         return { name, icon };
     };
+
+    function filterPlatforms(platforms: { name: string; icon: string }[]) {
+        return platforms.filter(
+            (value, index, self) => index === self.findIndex((t) => t.name === value.name)
+        );
+    }
 </script>
 
 <Container>
@@ -71,15 +71,14 @@
                         <svelte:fragment slot="title">
                             {project.name}
                         </svelte:fragment>
-                        {@const platformList = project.platforms.map((platform) => platform.type)}
-                        {@const platforms = Array.from(new Set(platformList))}
+                        {@const platforms = filterPlatforms(
+                            project.platforms.map((platform) => getPlatformInfo(platform.type))
+                        )}
                         {#each platforms as platform, i}
                             {#if i < 3}
                                 <Pill>
-                                    <span
-                                        class={`icon-${getPlatformInfo(platform).icon}`}
-                                        aria-hidden="true" />
-                                    {getPlatformInfo(platform).name}
+                                    <span class={`icon-${platform.icon}`} aria-hidden="true" />
+                                    {platform.name}
                                 </Pill>
                             {/if}
                         {/each}
@@ -96,7 +95,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty isButton single on:click={() => (showCreate = true)}>
+        <Empty single on:click={() => (showCreate = true)}>
             <p>Create a new project</p>
         </Empty>
     {/if}
@@ -112,7 +111,4 @@
 
 <CreateOrganization bind:show={addOrganization} />
 
-<CreateProject
-    bind:show={showCreate}
-    teamId={$page.params.organization}
-    on:created={projectCreated} />
+<CreateProject bind:show={showCreate} teamId={$page.params.organization} />

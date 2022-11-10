@@ -11,10 +11,13 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Delete from './deleteProject.svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     let name: string = null;
     let showDelete = false;
     const endpoint = sdkForConsole.client.config.endpoint;
+    const projectId = $page.params.project;
 
     onMount(async () => {
         name ??= $project.name;
@@ -65,6 +68,21 @@
     {#if $project}
         <Form on:submit={updateName}>
             <CardGrid>
+                <Heading tag="h6" size="7">API Credentials</Heading>
+                <p class="text">Access Appwrite services using your API Endpoint and Project ID.</p>
+                <svelte:fragment slot="aside">
+                    <FormList>
+                        <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
+                        <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
+                    </FormList>
+                </svelte:fragment>
+                <svelte:fragment slot="actions">
+                    <Button secondary href={`${base}/console/project-${projectId}/overview/keys`}>
+                        View API Keys
+                    </Button>
+                </svelte:fragment>
+            </CardGrid>
+            <CardGrid>
                 <Heading tag="h6" size="7">Update Name</Heading>
 
                 <svelte:fragment slot="aside">
@@ -83,23 +101,6 @@
                 </svelte:fragment>
             </CardGrid>
         </Form>
-
-        <CardGrid>
-            <Heading tag="h6" size="7">API Credentials</Heading>
-            <p class="text">
-                Access Appwrite services using your API Endpoint and Project ID. You can connect
-                Appwrite to your applications and server-side code by <a href="#/" class="link"
-                    >integrating a new platform</a>
-                or
-                <a href="#/" class="link">creating an API key</a>.
-            </p>
-            <svelte:fragment slot="aside">
-                <FormList>
-                    <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
-                    <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
-                </FormList>
-            </svelte:fragment>
-        </CardGrid>
 
         <CardGrid>
             <Heading tag="h6" size="7">Services</Heading>

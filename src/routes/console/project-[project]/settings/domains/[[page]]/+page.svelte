@@ -139,17 +139,11 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty isButton single on:click={openWizard}>
-            <div class="common-section">
-                <div class="u-text-center common-section">
-                    <p>Create your first Domain to get started</p>
-                </div>
-                <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="#/" text>Documentation</Button>
-                    <Button secondary>Create domain</Button>
-                </div>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/custom-domains"
+            target="domain"
+            on:click={openWizard} />
     {/if}
 </Container>
 
