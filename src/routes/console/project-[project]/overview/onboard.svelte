@@ -122,6 +122,7 @@
                 <li class="grid-box-item">
                     <a
                         href={`/console/project-${projectId}/settings/webhooks`}
+                        style="line-height: 1.5;"
                         class="card u-width-full-line">
                         <span class="u-flex u-cross-center u-gap-16">
                             <div class="avatar is-medium" aria-hidden="true">
@@ -159,7 +160,7 @@
     </div>
 </article>
 
-<img src={onBoardImage2} class="common-section" alt="Statistics Preview" />
+<img src={onBoardImage2} class="common-section" alt="statistics" />
 
 <style>
     .onboard-cover {
