@@ -13,8 +13,6 @@
     import Create from '../createFunction.svelte';
     import type { PageData } from './$types';
     import { CARD_LIMIT } from '$lib/constants';
-    import { deployment } from './store';
-    import Status from '$lib/components/status.svelte';
 
     export let data: PageData;
 
@@ -57,14 +55,11 @@
                         </div>
                     </svelte:fragment>
                     <svelte:fragment slot="status">
-                        {#if func.deployment}
-                            {#await deployment.set(func.$id, func.deployment) then deployment}
-                                <Status status={deployment.status} />
-                                <!-- {JSON.stringify(deployment)} -->
-                            {/await}
+                        <!-- {#if func.status}
+                                <Status status={func.status} />
                         {:else}
                             No deployment
-                        {/if}
+                        {/if} -->
                     </svelte:fragment>
                     <svelte:fragment slot="icons">
                         {#if func.scheduleNext}
