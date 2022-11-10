@@ -16,6 +16,7 @@
 
     const databaseId = $page.params.database;
 
+    let error: string;
     let key: string = null;
     let types = [
         { value: 'key', label: 'Key' },
@@ -46,52 +47,42 @@
         key = null;
     }
     const created = async () => {
-        if (selectedAttribute && selectedOrder) {
-            attributeList.push({ value: selectedAttribute, order: selectedOrder });
-            selectedAttribute = selectedOrder = '';
-        }
-        try {
-            await sdkForProject.databases.createIndex(
-                databaseId,
-                $collection.$id,
-                key,
-                selectedType,
-                attributeList.map((a) => a.value),
-                attributeList.map((a) => a.order)
-            );
-            invalidate(Dependencies.COLLECTION);
-            addNotification({
-                message: 'Index has been created',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
+        if (key && selectedAttribute && selectedOrder && selectedType) {
+            if (selectedAttribute && selectedOrder) {
+                attributeList.push({ value: selectedAttribute, order: selectedOrder });
+                selectedAttribute = selectedOrder = '';
+            }
+            try {
+                await sdkForProject.databases.createIndex(
+                    databaseId,
+                    $collection.$id,
+                    key,
+                    selectedType,
+                    attributeList.map((a) => a.value),
+                    attributeList.map((a) => a.order)
+                );
+                invalidate(Dependencies.COLLECTION);
+                addNotification({
+                    message: 'Index has been created',
+                    type: 'success'
+                });
+            } catch (error) {
+                addNotification({
+                    message: error.message,
+                    type: 'error'
+                });
+            }
 
-        showCreateIndex = false;
+            showCreateIndex = false;
+        } else error = 'All fields are required';
     };
 </script>
 
-<Modal size="big" on:submit={created} bind:show={showCreateIndex}>
+<Modal bind:error size="big" on:submit={created} bind:show={showCreateIndex}>
     <svelte:fragment slot="header">Create Index</svelte:fragment>
     <FormList>
-        <InputText
-            id="key"
-            label="Index Key"
-            placeholder="Enter Key"
-            bind:value={key}
-            autofocus
-            required />
-        <InputSelect
-            options={types}
-            id="type"
-            label="Index type"
-            placeholder="Select type"
-            bind:value={selectedType}
-            required />
+        <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
+        <InputSelect options={types} id="type" label="Index type" bind:value={selectedType} />
 
         {#if attributeList?.length}
             {#each attributeList as index, i}
@@ -137,12 +128,8 @@
         {/if}
         {#if !attributeList?.length || newAttr}
             <li class="form-item is-multiple">
-                <div class="form-item-part u-stretch">
-                    <Select
-                        id="attribute"
-                        label="Attribute"
-                        required
-                        bind:value={selectedAttribute}>
+                <div class="form-item-part u-stretch" style="align-items: flex-start;">
+                    <Select id="attribute" label="Attribute" bind:value={selectedAttribute}>
                         <option value="" disabled selected hidden>Select Attribute</option>
 
                         <optgroup label="Internal">
@@ -162,14 +149,13 @@
                     </Select>
                 </div>
                 <div class="form-item-part u-stretch">
-                    <Select id="order" label="Order" required bind:value={selectedOrder}>
+                    <Select id="order" label="Order" bind:value={selectedOrder}>
                         <option value="" disabled selected hidden>Select Order</option>
 
                         <option value="ASC"> ASC </option>
                         <option value="DESC"> DESC </option>
                     </Select>
                 </div>
-
                 <div class="form-item-part u-cross-child-end">
                     <Button
                         text

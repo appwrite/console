@@ -11,7 +11,6 @@
     let error: string;
 
     const handleInvalid = (event: Event) => {
-        console.log('test');
         event.preventDefault();
 
         if (element.validity.valueMissing) {
