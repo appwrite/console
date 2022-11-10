@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Card, CardGrid } from '$lib/components';
     import { addPlatform, Platform } from './platforms/+page.svelte';
     import OnboardDarkIntro from './intro-dark.svg';
     import OnboardDark1 from './onboard-1-dark.svg';
