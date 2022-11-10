@@ -10,9 +10,12 @@
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
+    import Support from '$lib/components/support.svelte';
 
     let showDropdown = false;
+    let showSupport = false;
     let droplistElement: HTMLDivElement;
+    let supportElement: HTMLDivElement;
 
     const onBlur = (event: MouseEvent) => {
         if (
@@ -20,6 +23,12 @@
             !(event.target === droplistElement || droplistElement.contains(event.target as Node))
         ) {
             showDropdown = false;
+        }
+        if (
+            showSupport &&
+            !(event.target === supportElement || supportElement.contains(event.target as Node))
+        ) {
+            showSupport = false;
         }
     };
 </script>
@@ -39,13 +48,22 @@
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop">
         <button class="button is-small is-text"><span class="text">Feedback</span></button>
-        <a
-            href="https://appwrite.io/support"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="button is-small is-text">
-            <span class="text">Support</span>
-        </a>
+        <div
+            class="drop-wrapper"
+            style="--drop-width-size-desktop: 17.5rem"
+            class:is-open={showSupport}
+            bind:this={supportElement}>
+            <button class="button is-small is-text" on:click={() => (showSupport = !showSupport)}>
+                <span class="text">Support</span>
+            </button>
+            {#if showSupport}
+                <div
+                    class="drop is-no-arrow is-block-end is-inline-end"
+                    transition:slide={{ duration: 100 }}>
+                    <Support />
+                </div>
+            {/if}
+        </div>
     </nav>
     <nav class="u-flex u-height-100-percents u-sep-inline-start">
         {#if $user}
