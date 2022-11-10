@@ -470,11 +470,11 @@
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">
+                    <h6 class="u-bold u-trim-1">
                         {$user.name || $user.email || $user.phone || 'Anonymous'}
                     </h6>
                 </svelte:fragment>
-                <p>
+                <p class="u-trim-1">
                     {$user.email && $user.phone
                         ? [$user.email, $user.phone].join(',')
                         : $user.email || $user.phone}

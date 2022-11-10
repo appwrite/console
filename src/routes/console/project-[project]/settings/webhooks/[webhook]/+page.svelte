@@ -153,7 +153,14 @@
 <Container>
     <CardGrid>
         <Heading tag="h2" size="7">Signature Key</Heading>
-        <p>You can use the Signature Key to validate your webhooks.</p>
+        <p>
+            Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your
+            webhooks. <a
+                href="https://appwrite.io/docs/webhooks#verification"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Learn more about webhook validation.</a>
+        </p>
         <svelte:fragment slot="aside">
             <div>
                 <p>Key</p>
@@ -316,7 +323,7 @@
         <svelte:fragment slot="aside">
             <Box>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$webhook.name}</h6>
+                    <h6 class="u-bold u-trim-1">{$webhook.name}</h6>
                 </svelte:fragment>
                 <p>Last updated: {toLocaleDateTime($webhook.$updatedAt)}</p>
             </Box>

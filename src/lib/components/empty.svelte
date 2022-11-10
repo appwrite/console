@@ -3,8 +3,11 @@
     import { Button } from '$lib/elements/forms';
     import EmptyLight from '$lib/images/empty-light.svg';
     import EmptyDark from '$lib/images/empty-dark.svg';
+    import { Heading } from '.';
 
     export let single = false;
+    export let target: string = null;
+    export let href: string = null;
 </script>
 
 {#if single}
@@ -17,7 +20,18 @@
                     <img src={EmptyLight} alt="create" aria-hidden="true" />
                 {/if}
             </button>
-            <slot />
+            <slot>
+                <div class="u-text-center">
+                    <Heading size="7" tag="h4">Create your first {target} to get started.</Heading>
+                    <p class="body-text-2 u-margin-block-start-4">
+                        Need a hand? Check out our documentation.
+                    </p>
+                </div>
+                <div class="u-flex u-gap-16 u-main-center">
+                    <Button external {href} text>Documentation</Button>
+                    <Button secondary on:click>Create {target}</Button>
+                </div>
+            </slot>
         </div>
     </article>
 {:else}

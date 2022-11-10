@@ -128,23 +128,11 @@
                 </svelte:fragment>
             </CardGrid>
         {:else}
-            <Empty single on:click={() => (showCreate = true)}>
-                <div class="u-text-center">
-                    <p class="text u-line-height-1-5">
-                        Create a new deployment, or activate an existing one to see your function in
-                        action.
-                    </p>
-                    <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-                </div>
-                <div class="u-flex u-gap-12">
-                    <Button text external href="https://appwrite.io/docs/functions#createFunction">
-                        Documentation
-                    </Button>
-                    <Button secondary on:click={() => (showCreate = true)}>
-                        Create deployment
-                    </Button>
-                </div>
-            </Empty>
+            <Empty
+                single
+                href="https://appwrite.io/docs/functions#createFunction"
+                target="deployment"
+                on:click={() => (showCreate = true)} />
         {/if}
 
         <div class="common-section">
@@ -238,21 +226,11 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty single on:click={() => (showCreate = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">
-                    Create a new deployment, or activate an existing one to see your function in
-                    action.
-                </p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button text external href="https://appwrite.io/docs/functions#createFunction">
-                    Documentation
-                </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create deployment</Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            target="deployment"
+            href="https://appwrite.io/docs/functions#createFunction"
+            on:click={() => (showCreate = true)} />
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.deployments.total}</p>

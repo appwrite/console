@@ -7,9 +7,14 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.KEY);
 
+    const key = await sdkForConsole.projects.getKey(params.project, params.key);
+    if (key.expire) {
+        key.expire = new Date(key.expire).toISOString().slice(0, 23);
+    }
+
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
-        key: await sdkForConsole.projects.getKey(params.project, params.key)
+        key
     };
 };

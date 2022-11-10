@@ -92,7 +92,7 @@
         <svelte:fragment slot="aside">
             <Box>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$doc.$id}</h6>
+                    <h6 class="u-bold u-trim-1">{$doc.$id}</h6>
                 </svelte:fragment>
                 <p>
                     Last Updated: {toLocaleDateTime($doc.$updatedAt)}

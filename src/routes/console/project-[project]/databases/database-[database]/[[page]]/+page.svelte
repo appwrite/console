@@ -77,18 +77,11 @@
                 sum={data.collections.total} />
         </div>
     {:else}
-        <Empty single on:click={() => (showCreate = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">Create your first collection to get started</p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button external href="https://appwrite.io/docs/databases#collection" text>
-                    Documentation
-                </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create collection</Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            href="https://appwrite.io/docs/databases#collection"
+            target="collection"
+            on:click={() => (showCreate = true)} />
     {/if}
 </Container>
 
