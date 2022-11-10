@@ -39,7 +39,7 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by name, email, or ID">
+    <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
         <span
             use:event={{
                 name: 'console_users',
