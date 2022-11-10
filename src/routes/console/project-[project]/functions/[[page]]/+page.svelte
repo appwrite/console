@@ -54,13 +54,6 @@
                             <span class="text">{func.name}</span>
                         </div>
                     </svelte:fragment>
-                    <svelte:fragment slot="status">
-                        <!-- {#if func.status}
-                                <Status status={func.status} />
-                        {:else}
-                            No deployment
-                        {/if} -->
-                    </svelte:fragment>
                     <svelte:fragment slot="icons">
                         {#if func.scheduleNext}
                             <li>
