@@ -211,7 +211,7 @@
             </svelte:fragment>
         </CardGrid>
 
-        <CardGrid>
+        <CardGrid danger>
             <Heading tag="h6" size="7">Delete Collection</Heading>
             <p>
                 The collection will be permanently deleted, including all the documents within it.
