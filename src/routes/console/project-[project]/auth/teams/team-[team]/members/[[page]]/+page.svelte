@@ -28,8 +28,8 @@
 
     const project = $page.params.project;
 
-    async function memberCreated(event: CustomEvent<Models.Membership>) {
-        await goto(`${base}/console/project-${project}/auth/teams-${event.detail.teamId}/members`);
+    async function memberCreated() {
+        invalidate(Dependencies.MEMBERSHIPS);
     }
 </script>
 
