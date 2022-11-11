@@ -62,11 +62,10 @@
     <svelte:fragment slot="header">Select teams</svelte:fragment>
     <p class="text">
         Grant access to any member of a specific team. To grant access to team members with specific
-        roles, you will need to set a <a
+        roles, you will need to set a <button
+            type="button"
             class="link"
-            href="https://appwrite.io/docs/permissions"
-            target="_blank"
-            rel="noopener noreferrer">custom permission</a
+            on:click={() => dispatch('custom')}>custom permission</button
         >.
     </p>
     <InputSearch
