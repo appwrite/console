@@ -22,7 +22,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
-    import { project } from '../store';
+    import { onboarding, project } from '../store';
     import { usage } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
@@ -61,7 +61,7 @@
 
 {#if $project}
     <Container overlapCover>
-        {#if $project.keys.length === 0 && $project.platforms.length === 0}
+        {#if $onboarding}
             <Onboard {projectId} />
         {:else}
             {#if $usage}

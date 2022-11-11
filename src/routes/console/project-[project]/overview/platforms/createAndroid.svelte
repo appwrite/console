@@ -9,8 +9,12 @@
     import Step3 from './wizard/android/step3.svelte';
     import Step4 from './wizard/step4.svelte';
     import { Dependencies } from '$lib/constants';
+    import { onboarding } from '../../store';
 
     async function onFinish() {
+        if ($onboarding) {
+            invalidate(Dependencies.PROJECT);
+        }
         invalidate(Dependencies.PLATFORMS);
         createPlatform.reset();
         wizard.hide();
