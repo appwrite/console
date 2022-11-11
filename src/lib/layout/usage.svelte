@@ -60,13 +60,15 @@
             <Heading tag="h6" size="6">{last(count).value}</Heading>
             <p>{countMetadata.title}</p>
             <div class="u-margin-block-start-16" />
-            <BarChart
-                series={[
-                    {
-                        name: countMetadata.legend,
-                        data: [...count.map((e) => [e.date, e.value])]
-                    }
-                ]} />
+            <div style="height: 12rem;">
+                <BarChart
+                    series={[
+                        {
+                            name: countMetadata.legend,
+                            data: [...count.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
+            </div>
         {/if}
     </Card>
     <Tiles>

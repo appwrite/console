@@ -37,6 +37,7 @@
     import { browser } from '$app/environment';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
+    import Output from '$lib/components/output.svelte';
 
     export let data: PageData;
 
@@ -98,8 +99,17 @@
                             alt="technology" />
                     </div>
                     <div>
-                        <p><b>Function ID: {$func.$id} </b></p>
-                        <p>Deployment ID: {$func.deployment}</p>
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <p><b>Function ID: </b></p>
+                            <Output value={$func.$id}><b>{$func.$id}</b></Output>
+                        </div>
+
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <p>Deployment ID:</p>
+                            <Output value={$func.deployment}>
+                                {$func.deployment}
+                            </Output>
+                        </div>
                     </div>
                 </div>
                 <svelte:fragment slot="aside">
@@ -128,23 +138,11 @@
                 </svelte:fragment>
             </CardGrid>
         {:else}
-            <Empty single on:click={() => (showCreate = true)}>
-                <div class="u-text-center">
-                    <p class="text u-line-height-1-5">
-                        Create a new deployment, or activate an existing one to see your function in
-                        action.
-                    </p>
-                    <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-                </div>
-                <div class="u-flex u-gap-12">
-                    <Button text external href="https://appwrite.io/docs/functions#createFunction">
-                        Documentation
-                    </Button>
-                    <Button secondary on:click={() => (showCreate = true)}>
-                        Create deployment
-                    </Button>
-                </div>
-            </Empty>
+            <Empty
+                single
+                href="https://appwrite.io/docs/functions#createFunction"
+                target="deployment"
+                on:click={() => (showCreate = true)} />
         {/if}
 
         <div class="common-section">
@@ -238,21 +236,11 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty single on:click={() => (showCreate = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">
-                    Create a new deployment, or activate an existing one to see your function in
-                    action.
-                </p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button text external href="https://appwrite.io/docs/functions#createFunction">
-                    Documentation
-                </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create deployment</Button>
-            </div>
-        </Empty>
+        <Empty
+            single
+            target="deployment"
+            href="https://appwrite.io/docs/functions#createFunction"
+            on:click={() => (showCreate = true)} />
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.deployments.total}</p>

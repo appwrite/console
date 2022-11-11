@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { afterNavigate, beforeNavigate } from '$app/navigation';
+    import { navigating } from '$app/stores';
 
     let width: number;
     let updater: ReturnType<typeof setTimeout>;
@@ -53,13 +53,14 @@
         return 0;
     }
 
-    beforeNavigate(start);
-    afterNavigate(complete);
+    $: if ($navigating) {
+        start();
+    } else {
+        complete();
+    }
 
     $: barStyle = (width && width * 100 && `width: ${width * 100}%;`) || '';
 </script>
-
-<svelte:head />
 
 {#if width}
     <div class="progress-bar" class:progress-bar-hiding={completed} style={barStyle} />
