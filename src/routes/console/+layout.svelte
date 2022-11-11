@@ -30,7 +30,7 @@
             feedback.toggleNotification();
         } else if (minutes > 60 && $feedback.visualized === 0) {
             feedback.toggleNotification();
-        } else if ((minutes - 60) % 60 >= $feedback.visualized) {
+        } else if (((minutes - 60) / 10) % 60 >= $feedback.visualized) {
             feedback.toggleNotification();
         }
     }
