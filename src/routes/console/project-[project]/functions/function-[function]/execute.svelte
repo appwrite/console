@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { afterNavigate } from '$app/navigation';
     import { Code, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
@@ -46,6 +47,8 @@
         selectedFunction = null;
         show = false;
     }
+
+    afterNavigate(close);
 </script>
 
 <Modal bind:show size="big" on:submit={handleSubmit} on:close={close}>
