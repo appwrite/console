@@ -2,24 +2,20 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { user } from '$lib/stores/user';
-    import { redirectTo } from '$lib/stores/organization';
     import { onCLS, onFID, onLCP, onFCP, onINP, onTTFB } from 'web-vitals';
     import { reportWebVitals } from '$lib/helpers/vitals';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { browser, dev } from '$app/environment';
     import { app } from '$lib/stores/app';
-    import Notifications from '$lib/layout/notifications.svelte';
-    import Loading from './_loading.svelte';
-
-    let loaded = false;
+    import { Progress, Notifications } from '$lib/layout';
+    import { loading } from './store';
+    import Loading from './loading.svelte';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
         window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
     }
-
-    const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
 
     onMount(async () => {
         /**
@@ -34,28 +30,25 @@
             onTTFB(reportWebVitals);
         }
 
-        try {
-            if (!$user) {
-                await user.fetchUser();
-            } else {
-                user.fetchUser();
-            }
-
+        /**
+         * Handle initial load.
+         */
+        const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+        if ($user) {
             if (!$page.url.pathname.startsWith('/console')) {
-                await redirectTo();
+                await goto(`${base}/console`, {
+                    replaceState: true
+                });
             }
-        } catch (error) {
+        } else {
             if (acceptedRoutes.includes($page.url.pathname)) {
                 await goto(`${base}${$page.url.pathname}${$page.url.search}`);
             } else {
-                /**
-                 * Clear cache.
-                 */
-                window.sessionStorage.clear();
-                await goto(`${base}/login`);
+                await goto(`${base}/login`, {
+                    replaceState: true
+                });
             }
-        } finally {
-            loaded = true;
+            loading.set(false);
         }
     });
 
@@ -96,11 +89,13 @@
 
 <Notifications />
 
-{#if loaded}
-    <slot />
-{:else}
+<slot />
+
+{#if $loading}
     <Loading />
 {/if}
+
+<Progress />
 
 <style lang="scss" global>
     .tippy-box {

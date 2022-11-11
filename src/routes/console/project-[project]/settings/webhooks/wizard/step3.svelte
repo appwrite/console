@@ -5,7 +5,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Security (optional)</svelte:fragment>
+    <svelte:fragment slot="title">Security</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Set an optional basic HTTP authentication username and password to protect your endpoint
         from unauthorized access.
@@ -34,7 +34,11 @@
             bind:value={$createWebhook.security}>
             <span class="u-error">Warning:</span> Untrusted or self-signed certificates may not be
             secure.
-            <a href="#/" target="_blank" rel="noopener noreferrer" class="link">
+            <a
+                href="https://appwrite.io/docs/custom-domains#enjoySSLCert"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">
                 Learn more</a
             ></InputChoice>
     </FormList>

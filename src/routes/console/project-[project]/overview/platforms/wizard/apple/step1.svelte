@@ -1,11 +1,16 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Alert } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { FormItem, FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
+    import { wizard } from '$lib/stores/wizard';
+    import { app } from '$lib/stores/app';
+    import Light from './light.svg';
+    import Dark from './dark.svg';
+
+    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     enum Platform {
         iOS = 'apple-ios',
@@ -46,11 +51,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Flutter app</svelte:fragment>
-    <Alert type="warning">
-        Note: If you are building your Flutter application for multiple devices, you will have to
-        follow this process for each different device.
-    </Alert>
+    <svelte:fragment slot="title">Register your Apple app</svelte:fragment>
 
     <FormList isCommonSection>
         <FormItem>

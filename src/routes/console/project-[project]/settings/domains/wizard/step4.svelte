@@ -3,23 +3,18 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { domain } from './store';
     import { project } from '../../../store';
-    import { domainList } from '../store';
-    import CnameTable from './_cnameTable.svelte';
-    import VerificationBox from './_verificationBox.svelte';
+    import CnameTable from './cnameTable.svelte';
+    import VerificationBox from './verificationBox.svelte';
 
     const projectId = $project.$id;
 
     let certificate = false;
     const checkCertificate = () => {
         setTimeout(async () => {
-            const result = await sdkForConsole.projects.getDomain(projectId, $domain.id);
+            const result = await sdkForConsole.projects.getDomain(projectId, $domain.$id);
             if (!result.certificateId) {
                 checkCertificate();
                 return;
-            }
-            const i = $domainList.domains.findIndex((d) => d.$id === $domain.id);
-            if (i >= 0) {
-                $domainList.domains[i] = result;
             }
             certificate = true;
         }, 2000);

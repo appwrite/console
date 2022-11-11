@@ -28,7 +28,8 @@
     let showExitModal = false;
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Escape' && !showExitModal) {
+        const openDialog = document.querySelectorAll('dialog[open]');
+        if (event.key === 'Escape' && !showExitModal && !openDialog?.length) {
             event.preventDefault();
             dispatch('exit');
             wizard.hide();
@@ -102,7 +103,9 @@
             {currentStep} />
     </aside>
     <div class="wizard-media">
-        <slot name="media" />
+        {#if $wizard.media}
+            <img src={$wizard.media} alt="wizard media" loading="lazy" />
+        {/if}
     </div>
     <div class="wizard-main">
         <Form noStyle on:submit={submit}>
@@ -114,11 +117,12 @@
             <div class="form-footer">
                 <div class="u-flex u-main-end u-gap-12">
                     {#if !isLastStep && sortedSteps[currentStep - 1][1].optional}
-                        <Button text on:click={() => dispatch('finish')}
-                            >Skip optional steps</Button>
+                        <Button text on:click={() => dispatch('finish')}>
+                            Skip optional steps
+                        </Button>
                     {/if}
                     {#if currentStep === 1}
-                        <Button secondary on:click={wizard.hide}>Cancel</Button>
+                        <Button secondary on:click={handleExit}>Cancel</Button>
                         <Button submit>Next</Button>
                     {:else if isLastStep}
                         <Button secondary on:click={() => currentStep--}>Back</Button>

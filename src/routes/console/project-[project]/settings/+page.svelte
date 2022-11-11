@@ -1,7 +1,6 @@
 <script lang="ts">
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
@@ -9,22 +8,25 @@
     import { CardGrid, CopyInput, Box, Heading } from '$lib/components';
     import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import Delete from './_deleteProject.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import Delete from './deleteProject.svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     let name: string = null;
     let showDelete = false;
     const endpoint = sdkForConsole.client.config.endpoint;
+    const projectId = $page.params.project;
 
     onMount(async () => {
-        await project.load($page.params.project);
-
         name ??= $project.name;
     });
 
     const updateName = async () => {
         try {
             await sdkForConsole.projects.update($project.$id, name);
-            $project.name = name;
+            invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'
@@ -44,6 +46,7 @@
                 service.method,
                 service.value
             );
+            invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: `${service.label} service has been ${
@@ -65,6 +68,21 @@
     {#if $project}
         <Form on:submit={updateName}>
             <CardGrid>
+                <Heading tag="h6" size="7">API Credentials</Heading>
+                <p class="text">Access Appwrite services using your API Endpoint and Project ID.</p>
+                <svelte:fragment slot="aside">
+                    <FormList>
+                        <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
+                        <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
+                    </FormList>
+                </svelte:fragment>
+                <svelte:fragment slot="actions">
+                    <Button secondary href={`${base}/console/project-${projectId}/overview/keys`}>
+                        View API Keys
+                    </Button>
+                </svelte:fragment>
+            </CardGrid>
+            <CardGrid>
                 <Heading tag="h6" size="7">Update Name</Heading>
 
                 <svelte:fragment slot="aside">
@@ -83,23 +101,6 @@
                 </svelte:fragment>
             </CardGrid>
         </Form>
-
-        <CardGrid>
-            <Heading tag="h6" size="7">API Credentials</Heading>
-            <p class="text">
-                Access Appwrite services using your API Endpoint and Project ID. You can connect
-                Appwrite to your applications and server-side code by <a href="#/" class="link"
-                    >integrating a new platform</a>
-                or
-                <a href="#/" class="link">creating an API key</a>.
-            </p>
-            <svelte:fragment slot="aside">
-                <FormList>
-                    <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
-                    <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
-                </FormList>
-            </svelte:fragment>
-        </CardGrid>
 
         <CardGrid>
             <Heading tag="h6" size="7">Services</Heading>
@@ -123,7 +124,7 @@
             </svelte:fragment>
         </CardGrid>
 
-        <CardGrid>
+        <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Delete Project</Heading>
             </div>
@@ -134,7 +135,7 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$project.name}</h6>
+                        <h6 class="u-bold u-trim-1">{$project.name}</h6>
                     </svelte:fragment>
                     <p>Last update: {toLocaleDateTime($project.$updatedAt)}</p>
                 </Box>

@@ -4,21 +4,23 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization, memberList } from '$lib/stores/organization';
-    import { title, breadcrumbs } from '$lib/stores/layout';
-    import Delete from '../_deleteOrganization.svelte';
+    import { members, organization } from '$lib/stores/organization';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { onMount } from 'svelte';
+    import Delete from '../deleteOrganization.svelte';
 
-    let name: string = $organization.name;
+    let name: string;
     let showDelete = false;
+
+    onMount(() => {
+        name = $organization.name;
+    });
 
     async function updateName() {
         try {
             await sdkForConsole.teams.update($organization.$id, name);
-            $organization.name = name;
-            title.set(name);
-            const breadcrumb = $breadcrumbs.get(0);
-            breadcrumb.title = name;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
+            await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -31,19 +33,7 @@
         }
     }
 
-    organization.subscribe((org) => {
-        name = org?.name;
-    });
-
-    let avatars = [];
-    let avatarsTotal = 0;
-
-    memberList.subscribe((value) => {
-        if (value?.total > 0) {
-            avatarsTotal = value.total;
-            avatars = value.memberships.map((team) => team.userName);
-        }
-    });
+    $: avatars = $members.memberships.map((team) => team.userName);
 </script>
 
 <Container>
@@ -69,7 +59,7 @@
             </CardGrid>
         </Form>
 
-        <CardGrid>
+        <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Delete Organization</Heading>
             </div>
@@ -80,10 +70,10 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
-                        <AvatarGroup {avatars} total={avatarsTotal} />
+                        <AvatarGroup {avatars} total={$members.total} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$organization.name}</h6>
+                        <h6 class="u-bold u-trim-1">{$organization.name}</h6>
                     </svelte:fragment>
                     <p>{$organization.total} projects</p>
                 </Box>

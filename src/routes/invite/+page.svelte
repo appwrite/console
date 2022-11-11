@@ -4,7 +4,6 @@
     import { Button, Form, FormList, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
     import { Unauthenticated } from '$lib/layout';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
@@ -22,12 +21,11 @@
     const acceptInvite = async () => {
         try {
             await sdkForConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
-            await user.fetchUser();
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'
             });
-            await goto(`${base}/console`);
+            await goto(`${base}/console/organization-${teamId}`);
         } catch (error) {
             addNotification({
                 type: 'error',

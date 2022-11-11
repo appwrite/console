@@ -1,26 +1,18 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { onMount } from 'svelte';
-    import { Breadcrumbs } from '.';
     import { AvatarInitials, DropListItem, DropListLink } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
+    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import { slide } from 'svelte/transition';
+    import { page } from '$app/stores';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
-
-    onMount(async () => {
-        await organizationList.load();
-        if (!$organization) {
-            await organization.load($organizationList.teams[0].$id);
-        }
-    });
 
     const onBlur = (event: MouseEvent) => {
         if (
@@ -40,7 +32,9 @@
     <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
 </a>
 
-<Breadcrumbs />
+{#if $page.data.breadcrumbs}
+    <svelte:component this={$page.data.breadcrumbs} />
+{/if}
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop">
@@ -53,7 +47,7 @@
             <span class="text">Support</span>
         </a>
     </nav>
-    <nav class="user-profile">
+    <nav class="u-flex u-height-100-percents u-sep-inline-start">
         {#if $user}
             <div class="drop-wrapper" class:is-open={showDropdown} bind:this={droplistElement}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { functionList } from './store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,9 +11,17 @@
     import Step5 from './wizard/step5.svelte';
     import { createFunction } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { Query } from '@aw-labs/appwrite-console';
+    import { goto, invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
-    const create = async () => {
+    const projectId = $page.params.project;
+
+    async function onFinish() {
+        await invalidate(Dependencies.FUNCTIONS);
+    }
+    async function create() {
         try {
             const response = await sdkForProject.functions.create(
                 $createFunction.id ?? 'unique()',
@@ -29,11 +36,13 @@
                 async (v) =>
                     await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
             );
+            await invalidate(Dependencies.FUNCTIONS);
+            goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
+
             addNotification({
-                message: 'Function has been created',
+                message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
-            functionList.load([Query.limit(6), Query.offset(0), Query.orderDesc('$createdAt')]);
             wizard.hide();
         } catch (error) {
             addNotification({
@@ -41,7 +50,7 @@
                 type: 'error'
             });
         }
-    };
+    }
 
     onDestroy(() => {
         $createFunction = {
@@ -83,4 +92,4 @@
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} />
+<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />

@@ -1,17 +1,5 @@
-import { sdkForConsole } from '$lib/stores/sdk';
+import { derived } from 'svelte/store';
+import { page } from '$app/stores';
 import type { Models } from '@aw-labs/appwrite-console';
-import { cachedStore } from '$lib/helpers/cache';
 
-export const key = cachedStore<
-    Models.Key,
-    {
-        load: (projectId: string, keyId: string) => Promise<void>;
-    }
->('key', function ({ set }) {
-    return {
-        load: async (projectId, keyId) => {
-            const key = await sdkForConsole.projects.getKey(projectId, keyId);
-            set(key);
-        }
-    };
-});
+export const key = derived(page, ($page) => $page.data.key as Models.Key);

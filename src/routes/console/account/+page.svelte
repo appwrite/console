@@ -6,9 +6,10 @@
     import { user } from '$lib/stores/user';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import { title, breadcrumbs } from '$lib/stores/layout';
     import { base } from '$app/paths';
-    import Delete from './_delete.svelte';
+    import Delete from './delete.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     let name: string = null,
         email: string = null,
@@ -25,11 +26,7 @@
     async function updateName() {
         try {
             await sdkForConsole.account.updateName(name);
-            $user.name = name;
-            title.set(name);
-            const breadcrumb = $breadcrumbs.get(0);
-            breadcrumb.title = name;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
+            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -44,7 +41,7 @@
     async function updateEmail() {
         try {
             await sdkForConsole.account.updateEmail(email, emailPassword);
-            $user.email = email;
+            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'
@@ -158,7 +155,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <CardGrid>
+    <CardGrid danger>
         <div>
             <Heading tag="h6" size="7">Delete Account</Heading>
         </div>
@@ -172,7 +169,7 @@
                     <AvatarInitials size={48} name={$user.name} />
                 </svelte:fragment>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$user.name}</h6>
+                    <h6 class="u-bold u-trim-1">{$user.name}</h6>
                 </svelte:fragment>
             </Box>
         </svelte:fragment>

@@ -5,11 +5,16 @@
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from '../store';
+    import { app } from '$lib/stores/app';
+    import Light from './light.svg';
+    import Dark from './dark.svg';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.app'];
 
+    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
     async function beforeSubmit() {
         if ($createPlatform.$id) {
             await sdkForConsole.projects.updatePlatform(
@@ -32,7 +37,6 @@
             undefined,
             $createPlatform.hostname
         );
-
         $createPlatform.$id = platform.$id;
     }
 </script>
@@ -65,8 +69,13 @@
             </div>
         </div>
         <Alert type="warning">
-            Tip: Avoid using wildcard hostnames in production to keep your project secure. Check out
-            our documentation for more info.
+            Using wildcard hostnames in production can become insecure. You can read about
+            <a
+                href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">
+                Cross-Origin Resource Sharing (CORS)</a> for more information.
         </Alert>
     </FormList>
 </WizardStep>

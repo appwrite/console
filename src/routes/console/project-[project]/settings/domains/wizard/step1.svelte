@@ -4,34 +4,15 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import { domain } from './store';
-    import { domainList } from '../store';
-
-    // Handle if user goes back to this step to update
-    // the domain name after creating the domain
-    const originalDomainName = $domain.name;
-    const originalDomainId = $domain.id;
-    const unsubscribe = domain.subscribe((newDomain) => {
-        if (
-            originalDomainName !== '' &&
-            newDomain.id !== '' &&
-            newDomain.name !== originalDomainName
-        ) {
-            $domain.id = '';
-        }
-    });
 
     const projectId = $project.$id;
     const createDomain = async () => {
-        unsubscribe();
-        if ($domain.name !== originalDomainName && originalDomainId) {
-            await sdkForConsole.projects.deleteDomain(projectId, originalDomainId);
+        if ($domain.$id) {
+            await sdkForConsole.projects.deleteDomain(projectId, $domain.$id);
         }
 
-        if ($domain.id == '') {
-            const newDomain = await sdkForConsole.projects.createDomain(projectId, $domain.name);
-            domainList.load(projectId);
-            $domain.id = newDomain.$id;
-        }
+        const { $id } = await sdkForConsole.projects.createDomain(projectId, $domain.domain);
+        $domain.$id = $id;
     };
 </script>
 
@@ -48,7 +29,7 @@
             placeholder="appwrite.example.com"
             autocomplete={false}
             required
-            bind:value={$domain.name} />
+            bind:value={$domain.domain} />
     </FormList>
     <div class="common-section ">
         <p>

@@ -1,20 +1,21 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { beforeNavigate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { beforeNavigate, invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
-    import { project } from '../../store';
+    import { createPlatform } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/flutter/step1.svelte';
     import Step2 from './wizard/flutter/step2.svelte';
     import Step3 from './wizard/flutter/step3.svelte';
     import Step4 from './wizard/step4.svelte';
-    import { createPlatform } from './wizard/store';
+    import { Dependencies } from '$lib/constants';
+    import { onboarding } from '../../store';
 
-    const projectId = $page.params.project;
-
-    async function create() {
-        project.load(projectId);
+    async function onFinish() {
+        if ($onboarding) {
+            invalidate(Dependencies.PROJECT);
+        }
+        invalidate(Dependencies.PLATFORMS);
         createPlatform.reset();
         wizard.hide();
     }
@@ -48,6 +49,6 @@
 <Wizard
     title="Add a Flutter Project"
     steps={stepsComponents}
-    on:finish={create}
-    on:exit={createPlatform.reset}
+    on:finish={onFinish}
+    on:exit={onFinish}
     finalAction="Take me to my Dashboard" />
