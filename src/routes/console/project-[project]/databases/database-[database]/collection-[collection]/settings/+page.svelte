@@ -184,7 +184,7 @@
 
         <CardGrid>
             <Heading tag="h6" size="7">Update Permissions</Heading>
-            <p>
+            <p class="text">
                 Choose who can access your collection and documents. For more information, check out
                 the <a
                     href="https://appwrite.io/docs/permissions"
