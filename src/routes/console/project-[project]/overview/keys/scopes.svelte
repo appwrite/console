@@ -78,7 +78,7 @@
 </script>
 
 <div class="u-flex u-cross-center u-main-end">
-    <Button text on:click={deselectAll}>deselect all</Button>
+    <Button text on:click={deselectAll}>Deselect all</Button>
     <Button text on:click={selectAll}>Select all</Button>
 </div>
 <Collapsible>

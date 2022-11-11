@@ -21,13 +21,14 @@
     let entrypoint: string;
     let active: boolean;
     let files: FileList;
+    let lang = 'js';
     let codeSnippets = {};
 
     const functionId = $page.params.function;
     const dispatch = createEventDispatcher();
 
     onMount(() => {
-        const lang = setLanguage($func.runtime);
+        lang = setLanguage($func.runtime);
         codeSnippets = setCodeSnippets(lang);
     });
 
@@ -159,7 +160,7 @@
         <FormList>
             <InputText
                 label="Entrypoint"
-                placeholder="main.py"
+                placeholder={`main.${lang}`}
                 id="entrypoint"
                 bind:value={entrypoint}
                 required />
