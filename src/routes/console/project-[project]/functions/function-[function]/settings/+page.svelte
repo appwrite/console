@@ -539,7 +539,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
+    <CardGrid danger>
         <Heading tag="h6" size="7">Delete Function</Heading>
         <p>
             The function will be permanently deleted, including all deployments associated with it.

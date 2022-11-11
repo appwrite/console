@@ -315,7 +315,7 @@
         </CardGrid>
     </Form>
 
-    <CardGrid>
+    <CardGrid danger>
         <div>
             <Heading tag="h2" size="7">Delete Webhook</Heading>
         </div>

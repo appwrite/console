@@ -124,7 +124,7 @@
             </svelte:fragment>
         </CardGrid>
 
-        <CardGrid>
+        <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Delete Project</Heading>
             </div>

@@ -421,7 +421,7 @@
             </CardGrid>
         </Form>
 
-        <CardGrid>
+        <CardGrid danger>
             <Heading tag="h6" size="7">Delete Bucket</Heading>
             <p>
                 The bucket will be permanently deleted, including all the files within it. This

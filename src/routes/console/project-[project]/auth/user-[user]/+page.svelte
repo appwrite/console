@@ -444,7 +444,7 @@
         </CardGrid>
     </Form>
 
-    <CardGrid>
+    <CardGrid danger>
         <div>
             <Heading tag="h6" size="7">Danger Zone</Heading>
         </div>
