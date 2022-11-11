@@ -155,7 +155,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <CardGrid>
+    <CardGrid danger>
         <div>
             <Heading tag="h6" size="7">Delete Account</Heading>
         </div>

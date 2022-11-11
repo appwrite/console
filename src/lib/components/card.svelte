@@ -4,6 +4,7 @@
     export let isTile = false;
     export let isDashed = false;
     export let isButton = false;
+    export let danger = false;
     export let href: string = null;
 
     function getElement(): string {
@@ -23,6 +24,7 @@
     class="card"
     class:common-section={!isTile}
     class:is-border-dashed={isDashed}
+    class:is-danger={danger}
     on:click
     on:keyup={clickOnEnter}
     {href}>
