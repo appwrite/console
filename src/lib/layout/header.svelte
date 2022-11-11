@@ -1,7 +1,13 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
-    import { app } from '$lib/stores/app';
+    import {
+        AvatarInitials,
+        DropList,
+        DropListItem,
+        DropListLink,
+        FeedbackGeneral
+    } from '$lib/components';
+    import { app, feedback } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
@@ -10,21 +16,29 @@
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { FeedbackNPS } from '$lib/components';
 
-    let showFeedback = true;
+    let showFeedback = false;
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
 
-    const onBlur = (event: MouseEvent) => {
+    function toggleFeedback() {
+        showFeedback = !showFeedback;
+        if ($feedback.notification) {
+            feedback.toggleNotification();
+            feedback.addVisualization();
+        }
+    }
+
+    function onBlur(event: MouseEvent) {
         if (
             showDropdown &&
             !(event.target === droplistElement || droplistElement.contains(event.target as Node))
         ) {
             showDropdown = false;
         }
-    };
+    }
 </script>
 
 <svelte:window on:click={onBlur} />
@@ -41,15 +55,27 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop">
+        {#if $feedback.notification}
+            <div class="u-flex u-cross-center">
+                <div class="pulse-notification" />
+            </div>
+        {/if}
         <DropList bind:show={showFeedback} scrollable={true}>
-            <button class="button is-small is-text" on:click={() => (showFeedback = !showFeedback)}>
+            <button class="button is-small is-text" on:click={toggleFeedback}>
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
-                <FeedbackNPS bind:show={showFeedback}>
-                    <svelte:fragment slot="title">How Can We Improve</svelte:fragment>
-                    Your feedback is important to us. Please be honest and tell us what you think.
-                </FeedbackNPS>
+                {#if $feedback.type === 'nps'}
+                    <FeedbackNPS bind:show={showFeedback}>
+                        <svelte:fragment slot="title">How Can We Improve</svelte:fragment>
+                        Your feedback is important to us. Please be honest and tell us what you think.
+                    </FeedbackNPS>
+                {:else if $feedback.type === 'general'}
+                    <FeedbackGeneral bind:show={showFeedback}>
+                        <svelte:fragment slot="title">How Can We Improve</svelte:fragment>
+                        Your feedback is important to us. Please be honest and tell us what you think.
+                    </FeedbackGeneral>
+                {/if}
             </svelte:fragment>
         </DropList>
         <a

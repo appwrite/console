@@ -65,14 +65,16 @@
     <div class="drop-arrow" class:u-hide={!show} bind:this={arrow} />
     {#if show}
         <div class="drop is-no-arrow" style="position: revert">
-            <section
-                class:u-overflow-y-auto={scrollable}
-                class:u-max-height-200={scrollable}
-                class="drop-section ">
-                <ul class="drop-list">
-                    <slot name="list" />
-                </ul>
-            </section>
+            {#if $$slots.list}
+                <section
+                    class:u-overflow-y-auto={scrollable}
+                    class:u-max-height-200={scrollable}
+                    class="drop-section ">
+                    <ul class="drop-list">
+                        <slot name="list" />
+                    </ul>
+                </section>
+            {/if}
             <slot name="other" />
         </div>
     {/if}
