@@ -59,6 +59,8 @@
             </div>
             <div class="u-hide" bind:this={content}>
                 {#if data}
+                    {@const isUser = role.startsWith('user')}
+                    {@const isTeam = role.startsWith('team')}
                     <div class="user-profile">
                         <AvatarInitials name={data.name} size={40} />
                         <span class="user-profile-info is-only-desktop">
@@ -73,18 +75,19 @@
                             </span>
                             <Output value={data.$id}>{role}</Output>
                         </span>
+                        {#if (isUser && (data?.email || data?.phone)) || isTeam}
+                            <span class="user-profile-sep" />
 
-                        <span class="user-profile-sep" />
-
-                        <span class="user-profile-empty-column" />
-                        <span class="user-profile-info is-only-desktop">
-                            {#if role.startsWith('user')}
-                                <p class="text u-x-small">{data?.email}</p>
-                                <p class="text u-x-small">{data?.phone}</p>
-                            {:else if role.startsWith('team')}
-                                <p class="text u-x-small">Members: {data?.total}</p>
-                            {/if}
-                        </span>
+                            <span class="user-profile-empty-column" />
+                            <span class="user-profile-info is-only-desktop">
+                                {#if isUser}
+                                    <p class="text u-x-small">{data?.email}</p>
+                                    <p class="text u-x-small">{data?.phone}</p>
+                                {:else if isTeam}
+                                    <p class="text u-x-small">Members: {data?.total}</p>
+                                {/if}
+                            </span>
+                        {/if}
                     </div>
                 {:else}
                     Not found.
