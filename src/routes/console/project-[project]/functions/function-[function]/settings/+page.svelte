@@ -539,7 +539,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
+    <CardGrid danger>
         <Heading tag="h6" size="7">Delete Function</Heading>
         <p>
             The function will be permanently deleted, including all deployments associated with it.
@@ -548,7 +548,7 @@
         <svelte:fragment slot="aside">
             <Box>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$func.name}</h6>
+                    <h6 class="u-bold u-trim-1">{$func.name}</h6>
                 </svelte:fragment>
                 <p>Last Updated: {toLocaleDateTime($func.$updatedAt)}</p>
             </Box>

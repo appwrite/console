@@ -9,12 +9,14 @@
     import type { Attributes } from '../store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import Select from './select.svelte';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
 
     const databaseId = $page.params.database;
 
+    let error: string;
     let key: string = null;
     let types = [
         { value: 'key', label: 'Key' },
@@ -22,7 +24,7 @@
         { value: 'fulltext', label: 'FullText' }
     ];
     let newAttr = false;
-    let selectedType = '';
+    let selectedType = 'key';
     $: attributeOptions = $collection.attributes.map((attribute: Attributes) => ({
         value: attribute.key,
         label: attribute.key
@@ -40,91 +42,74 @@
 
     $: if (showCreateIndex) {
         attributeList = [];
-        selectedType = selectedOrder = selectedAttribute = '';
+        selectedOrder = selectedAttribute = '';
+        selectedType = 'key';
         key = null;
     }
     const created = async () => {
-        if (selectedAttribute && selectedOrder) {
-            attributeList.push({ value: selectedAttribute, order: selectedOrder });
-            selectedAttribute = selectedOrder = '';
-        }
-        try {
-            await sdkForProject.databases.createIndex(
-                databaseId,
-                $collection.$id,
-                key,
-                selectedType,
-                attributeList.map((a) => a.value),
-                attributeList.map((a) => a.order)
-            );
-            invalidate(Dependencies.COLLECTION);
-            addNotification({
-                message: 'Index has been created',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
+        if (key && selectedAttribute && selectedOrder && selectedType) {
+            if (selectedAttribute && selectedOrder) {
+                attributeList.push({ value: selectedAttribute, order: selectedOrder });
+                selectedAttribute = selectedOrder = '';
+            }
+            try {
+                await sdkForProject.databases.createIndex(
+                    databaseId,
+                    $collection.$id,
+                    key,
+                    selectedType,
+                    attributeList.map((a) => a.value),
+                    attributeList.map((a) => a.order)
+                );
+                invalidate(Dependencies.COLLECTION);
+                addNotification({
+                    message: 'Index has been created',
+                    type: 'success'
+                });
+            } catch (error) {
+                addNotification({
+                    message: error.message,
+                    type: 'error'
+                });
+            }
 
-        showCreateIndex = false;
+            showCreateIndex = false;
+        } else error = 'All fields are required';
     };
 </script>
 
-<Modal size="big" on:submit={created} bind:show={showCreateIndex}>
+<Modal bind:error size="big" on:submit={created} bind:show={showCreateIndex}>
     <svelte:fragment slot="header">Create Index</svelte:fragment>
     <FormList>
-        <InputText
-            id="key"
-            label="Index Key"
-            placeholder="Enter Key"
-            bind:value={key}
-            autofocus
-            required />
-        <InputSelect
-            options={types}
-            id="type"
-            label="Index type"
-            placeholder="Select type"
-            bind:value={selectedType}
-            required />
+        <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
+        <InputSelect options={types} id="type" label="Index type" bind:value={selectedType} />
 
         {#if attributeList?.length}
             {#each attributeList as index, i}
                 <li class="form-item is-multiple">
                     <div class="form-item-part u-stretch">
-                        <label class="label" for="attribute">Attribute</label>
-                        <div class="select">
-                            <select id="attribute" bind:value={index.value}>
-                                <optgroup label="Internal">
-                                    <option value="$id">$id</option>
-                                    <option value="$createdAt">$createdAt</option>
-                                    <option value="$updatedAt">$updatedAt</option>
-                                </optgroup>
-                                <optgroup label="Attributes">
-                                    {#each attributeOptions as option}
-                                        <option
-                                            value={option.value}
-                                            selected={option.value === selectedAttribute}>
-                                            {option.label}
-                                        </option>
-                                    {/each}
-                                </optgroup>
-                            </select>
-                            <span class="icon-cheveron-down" aria-hidden="true" />
-                        </div>
+                        <Select id="attribute" label="Attribute" bind:value={index.value}>
+                            <optgroup label="Internal">
+                                <option value="$id">$id</option>
+                                <option value="$createdAt">$createdAt</option>
+                                <option value="$updatedAt">$updatedAt</option>
+                            </optgroup>
+                            <optgroup label="Attributes">
+                                {#each attributeOptions as option}
+                                    <option
+                                        value={option.value}
+                                        selected={option.value === selectedAttribute}>
+                                        {option.label}
+                                    </option>
+                                {/each}
+                            </optgroup>
+                        </Select>
                     </div>
                     <div class="form-item-part u-stretch">
-                        <label class="label" for="order">Order</label>
-                        <div class="select">
-                            <select id="order" bind:value={index.order}>
-                                <option value="ASC"> ASC </option>
-                                <option value="DESC"> DESC </option>
-                            </select>
-                            <span class="icon-cheveron-down" aria-hidden="true" />
-                        </div>
+                        <Select id="order" label="Order" bind:value={index.order}>
+                            <option value="ASC"> ASC </option>
+                            <option value="DESC"> DESC </option>
+                        </Select>
                     </div>
 
                     <div class="form-item-part u-cross-child-end">
@@ -143,43 +128,34 @@
         {/if}
         {#if !attributeList?.length || newAttr}
             <li class="form-item is-multiple">
-                <div class="form-item-part u-stretch">
-                    <label class="label" for="attribute">Attribute</label>
-                    <div class="select">
-                        <select required id="attribute" bind:value={selectedAttribute}>
-                            <option value="" disabled selected hidden>Select Attribute</option>
+                <div class="form-item-part u-stretch" style="align-items: flex-start;">
+                    <Select id="attribute" label="Attribute" bind:value={selectedAttribute}>
+                        <option value="" disabled selected hidden>Select Attribute</option>
 
-                            <optgroup label="Internal">
-                                <option value="$id">$id</option>
-                                <option value="$createdAt">$createdAt</option>
-                                <option value="$updatedAt">$updatedAt</option>
-                            </optgroup>
-                            <optgroup label="Attributes">
-                                {#each attributeOptions as option}
-                                    <option
-                                        value={option.value}
-                                        selected={option.value === selectedAttribute}>
-                                        {option.label}
-                                    </option>
-                                {/each}
-                            </optgroup>
-                        </select>
-                        <span class="icon-cheveron-down" aria-hidden="true" />
-                    </div>
+                        <optgroup label="Internal">
+                            <option value="$id">$id</option>
+                            <option value="$createdAt">$createdAt</option>
+                            <option value="$updatedAt">$updatedAt</option>
+                        </optgroup>
+                        <optgroup label="Attributes">
+                            {#each attributeOptions as option}
+                                <option
+                                    value={option.value}
+                                    selected={option.value === selectedAttribute}>
+                                    {option.label}
+                                </option>
+                            {/each}
+                        </optgroup>
+                    </Select>
                 </div>
                 <div class="form-item-part u-stretch">
-                    <label class="label" for="order">Order</label>
-                    <div class="select">
-                        <select id="order" bind:value={selectedOrder}>
-                            <option value="" disabled selected hidden>Select Order</option>
+                    <Select id="order" label="Order" bind:value={selectedOrder}>
+                        <option value="" disabled selected hidden>Select Order</option>
 
-                            <option value="ASC"> ASC </option>
-                            <option value="DESC"> DESC </option>
-                        </select>
-                        <span class="icon-cheveron-down" aria-hidden="true" />
-                    </div>
+                        <option value="ASC"> ASC </option>
+                        <option value="DESC"> DESC </option>
+                    </Select>
                 </div>
-
                 <div class="form-item-part u-cross-child-end">
                     <Button
                         text
@@ -195,6 +171,7 @@
         {/if}
         <Button
             text
+            noMargin
             on:click={() => {
                 newAttr = true;
                 if (selectedAttribute && selectedOrder) {
@@ -203,7 +180,7 @@
                 }
             }}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text"> Add attribute </span>
+            <span class="text">Add attribute</span>
         </Button>
     </FormList>
     <svelte:fragment slot="footer">

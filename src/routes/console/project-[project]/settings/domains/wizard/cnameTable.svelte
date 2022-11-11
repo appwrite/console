@@ -11,9 +11,9 @@
     } from '$lib/elements/table';
     import { domain } from './store';
 
-    const parts = $domain.name.split('.');
+    const parts = $domain.domain.split('.');
     const registerable = [parts[parts.length - 2], parts[parts.length - 1]].join('.');
-    const cnameValue = $domain.name.replace('.' + registerable, '');
+    const cnameValue = $domain.domain.replace('.' + registerable, '');
 </script>
 
 <Table noStyles noMargin>
@@ -28,8 +28,8 @@
             <TableCellText title="Name">{cnameValue}</TableCellText>
             <TableCell title="Value">
                 <div class="u-flex u-main-space-between u-cross-center">
-                    <span class="text">{$domain.name}</span>
-                    <Copy value={$domain.name}>
+                    <span class="text">{$domain.domain}</span>
+                    <Copy value={$domain.domain}>
                         <span class="icon-duplicate" aria-hidden="true" />
                     </Copy>
                 </div>

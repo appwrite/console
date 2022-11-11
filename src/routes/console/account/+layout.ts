@@ -5,6 +5,6 @@ import type { LayoutLoad } from './$types';
 export const load: LayoutLoad = async () => {
     return {
         header: Header,
-        breadcrumb: Breadcrumbs
+        breadcrumbs: Breadcrumbs
     };
 };

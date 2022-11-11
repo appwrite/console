@@ -55,7 +55,7 @@
                 {#each data.sessions.sessions as session}
                     <TableRow>
                         <TableCell title="Client">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <div class="u-flex u-cross-center u-gap-12">
                                     {#if session.clientName}
                                         <div class="avatar is-small">
@@ -108,7 +108,7 @@
                     <Button
                         external
                         secondary
-                        href="https://appwrite.io/docs/server/authentication?sdk=nodejs-default#usersGetsessions">
+                        href="https://appwrite.io/docs/server/auth?sdk=nodejs-default#usersGetsessions">
                         Documentation
                     </Button>
                 </div>

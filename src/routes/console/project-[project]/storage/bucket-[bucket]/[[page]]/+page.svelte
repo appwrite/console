@@ -79,13 +79,14 @@
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
         </Button>
     </SearchQuery>
-    {#if data.files.total}
+
+    {#if data.files.total && !data.search}
         <Table>
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
                 <TableCellHead width={140}>Type</TableCellHead>
                 <TableCellHead width={100}>Size</TableCellHead>
-                <TableCellHead width={120}>Date Created</TableCellHead>
+                <TableCellHead width={120}>Created</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -179,31 +180,29 @@
                 offset={data.offset}
                 sum={data.files.total} />
         </div>
-    {:else if data.search}
+    {:else if data.search && !data.files.total}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{data.search}’</b>
                 <p>There are no files that match your search.</p>
             </div>
-            <Button
-                secondary
-                href={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}>
-                Clear Search
-            </Button>
-        </EmptySearch>
-    {:else}
-        <Empty single on:click={() => (showCreate = true)}>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">Create a files to get started</p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation.</p>
-            </div>
             <div class="u-flex u-gap-16">
                 <Button external href="https://appwrite.io/docs/storage#createFile" text>
                     Documentation
                 </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create file</Button>
+                <Button
+                    secondary
+                    href={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}>
+                    Clear Search
+                </Button>
             </div>
-        </Empty>
+        </EmptySearch>
+    {:else}
+        <Empty
+            single
+            href="https://appwrite.io/docs/storage#createFile"
+            target="file"
+            on:click={() => (showCreate = true)} />
     {/if}
 </Container>
 

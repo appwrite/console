@@ -60,7 +60,7 @@
             <span class="text">Support</span>
         </a>
     </nav>
-    <nav class="user-profile">
+    <nav class="u-flex u-height-100-percents u-sep-inline-start">
         {#if $user}
             <div class="drop-wrapper" class:is-open={showDropdown} bind:this={droplistElement}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
