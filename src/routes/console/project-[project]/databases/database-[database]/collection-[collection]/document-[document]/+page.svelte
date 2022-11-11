@@ -83,7 +83,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
+    <CardGrid danger>
         <Heading tag="h6" size="7">Delete Document</Heading>
         <p>
             The document will be permanently deleted, including all the data within it. This action

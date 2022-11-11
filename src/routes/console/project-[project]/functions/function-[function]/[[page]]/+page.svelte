@@ -37,6 +37,7 @@
     import { browser } from '$app/environment';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
+    import Output from '$lib/components/output.svelte';
 
     export let data: PageData;
 
@@ -98,8 +99,17 @@
                             alt="technology" />
                     </div>
                     <div>
-                        <p><b>Function ID: {$func.$id} </b></p>
-                        <p>Deployment ID: {$func.deployment}</p>
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <p><b>Function ID: </b></p>
+                            <Output value={$func.$id}><b>{$func.$id}</b></Output>
+                        </div>
+
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <p>Deployment ID:</p>
+                            <Output value={$func.deployment}>
+                                {$func.deployment}
+                            </Output>
+                        </div>
                     </div>
                 </div>
                 <svelte:fragment slot="aside">
