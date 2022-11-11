@@ -5,7 +5,6 @@
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
     import { onboarding } from '../../store';
-    import { addNotification } from '$lib/stores/notifications';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/android/step1.svelte';
     import Step2 from './wizard/android/step2.svelte';
@@ -17,10 +16,6 @@
             invalidate(Dependencies.PROJECT);
         }
         invalidate(Dependencies.PLATFORMS);
-        addNotification({
-            type: 'success',
-            message: `${$createPlatform.name} platform has been created.`
-        });
         createPlatform.reset();
         wizard.hide();
     }
