@@ -124,7 +124,7 @@
             </svelte:fragment>
         </CardGrid>
 
-        <CardGrid>
+        <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Delete Project</Heading>
             </div>
@@ -135,7 +135,7 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$project.name}</h6>
+                        <h6 class="u-bold u-trim-1">{$project.name}</h6>
                     </svelte:fragment>
                     <p>Last update: {toLocaleDateTime($project.$updatedAt)}</p>
                 </Box>

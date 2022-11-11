@@ -30,7 +30,7 @@
         }
     }
 
-    function unselectAll() {
+    function deselectAll() {
         for (const scope in activeScopes) {
             activeScopes[scope] = false;
         }
@@ -78,7 +78,7 @@
 </script>
 
 <div class="u-flex u-cross-center u-main-end">
-    <Button text on:click={unselectAll}>Unselect all</Button>
+    <Button text on:click={deselectAll}>Deselect all</Button>
     <Button text on:click={selectAll}>Select all</Button>
 </div>
 <Collapsible>

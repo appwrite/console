@@ -33,7 +33,7 @@
             <div>Any</div>
         {:else}
             <HoverList bind:show={showDropdown} placement="bottom-start">
-                <div>
+                <div class="u-trim-1">
                     {role}
                 </div>
                 <svelte:fragment slot="list">

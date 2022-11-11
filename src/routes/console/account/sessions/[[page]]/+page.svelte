@@ -55,7 +55,7 @@
                 {#each data.sessions.sessions as session}
                     <TableRow>
                         <TableCell title="Client">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <div class="u-flex u-cross-center u-gap-12">
                                     {#if session.clientName}
                                         <div class="avatar is-small">

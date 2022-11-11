@@ -85,7 +85,7 @@
             </svelte:fragment>
         </CardGrid>
 
-        <CardGrid>
+        <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Danger Zone</Heading>
             </div>
@@ -100,7 +100,7 @@
                         <AvatarInitials size={48} name={$database.name} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$database.name}</h6>
+                        <h6 class="u-bold u-trim-1">{$database.name}</h6>
                         <span>Last Updated: {toLocaleDateTime($database.$updatedAt)}</span>
                     </svelte:fragment>
                 </Box>

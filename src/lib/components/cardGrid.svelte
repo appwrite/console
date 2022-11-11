@@ -1,8 +1,10 @@
 <script>
     import { Card } from './';
+
+    export let danger = false;
 </script>
 
-<Card>
+<Card {danger}>
     <div class="common-section grid-1-2">
         <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
             <slot />

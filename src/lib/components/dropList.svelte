@@ -11,55 +11,29 @@
     type Placement = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
     let element: HTMLDivElement;
     let tooltip: HTMLDivElement;
+    let arrow: HTMLDivElement;
     let instance: Instance;
-    let currentArrow: Placement;
-
-    $: [arrowHorizontal, arrowPosition] = applyArrow(currentArrow);
-
-    function applyArrow(value: Placement): [string: 'start' | 'end', string: 'top' | 'bottom'] {
-        switch (value) {
-            case 'bottom-start':
-                return ['start', 'bottom'];
-            case 'bottom-end':
-                return ['end', 'bottom'];
-            case 'top-start':
-                return ['start', 'top'];
-            case 'top-end':
-                return ['end', 'top'];
-            default:
-                return ['start', 'bottom'];
-        }
-    }
 
     onMount(() => {
         instance = createPopper(element, tooltip, {
             placement,
-            onFirstUpdate(state) {
-                if (currentArrow !== state.placement) {
-                    currentArrow = state.placement as Placement;
-                }
-            },
             modifiers: [
+                {
+                    name: 'arrow',
+                    options: {
+                        element: arrow
+                    }
+                },
                 {
                     name: 'offset',
                     options: {
-                        offset: [0, noArrow ? 0 : 12]
+                        offset: [0, noArrow ? 0 : 6]
                     }
                 },
                 {
                     name: 'flip',
                     options: {
                         fallbackPlacements: ['top-start', 'top-end', 'bottom-start', 'bottom-end']
-                    }
-                },
-                {
-                    name: 'placementLogger',
-                    enabled: true,
-                    phase: 'main',
-                    fn({ state }) {
-                        if (currentArrow !== state.placement) {
-                            currentArrow = state.placement as Placement;
-                        }
                     }
                 }
             ]
@@ -95,16 +69,10 @@
     <slot />
 </div>
 
-<div bind:this={tooltip} style="z-index: 10">
+<div class="drop-tooltip" bind:this={tooltip} style="z-index: 10">
+    <div class="drop-arrow" class:u-hide={!show} bind:this={arrow} />
     {#if show}
-        <div
-            class="drop"
-            style="position: revert"
-            class:is-no-arrow={noArrow}
-            class:is-arrow-start={arrowHorizontal === 'start'}
-            class:is-arrow-end={arrowHorizontal === 'end'}
-            class:is-block-start={arrowPosition === 'top'}
-            class:is-block-end={arrowPosition === 'bottom'}>
+        <div class="drop is-no-arrow" style="position: revert">
             <section
                 class:u-overflow-y-auto={scrollable}
                 class:u-max-height-200={scrollable}
@@ -117,3 +85,38 @@
         </div>
     {/if}
 </div>
+
+<style global lang="scss">
+    .drop-tooltip[data-popper-placement^='top'] > .drop-arrow {
+        bottom: -4px;
+    }
+
+    .drop-tooltip[data-popper-placement^='bottom'] > .drop-arrow {
+        top: -4px;
+    }
+
+    .drop-tooltip[data-popper-placement^='left'] > .drop-arrow {
+        right: -4px;
+    }
+
+    .drop-tooltip[data-popper-placement^='right'] > .drop-arrow {
+        left: -4px;
+    }
+    .drop-arrow,
+    .drop-arrow::before {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        z-index: -1;
+    }
+
+    .drop-arrow::before {
+        content: '';
+        transform: rotate(45deg);
+        background: hsl(var(--color-neutral-200));
+
+        body.theme-light & {
+            background: hsl(var(--color-neutral-10));
+        }
+    }
+</style>

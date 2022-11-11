@@ -54,22 +54,7 @@
                             <span class="text">{func.name}</span>
                         </div>
                     </svelte:fragment>
-                    <svelte:fragment slot="status">
-                        <!-- {#if deployments && deployments[func.$id]}
-                            {deployments[func.$id].status ?? 'No deployment'}
-                        {/if} -->
-                    </svelte:fragment>
                     <svelte:fragment slot="icons">
-                        <!-- {#if deployments && deployments[func.$id] && deployments[func.$id].status === 'failed'}
-                            <li>
-                                <span
-                                    class="icon-exclamation"
-                                    aria-hidden="true"
-                                    use:tooltip={{
-                                        content: 'Build error'
-                                    }} />
-                            </li>
-                        {/if} -->
                         {#if func.scheduleNext}
                             <li>
                                 <span

@@ -385,7 +385,7 @@
             <CardGrid>
                 <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
                 <p>
-                    A maxiumum of 100 file extensions can be added. Leave blank to allow all file
+                    A maximum of 100 file extensions can be added. Leave blank to allow all file
                     types.
                 </p>
                 <svelte:fragment slot="aside">
@@ -421,7 +421,7 @@
             </CardGrid>
         </Form>
 
-        <CardGrid>
+        <CardGrid danger>
             <Heading tag="h6" size="7">Delete Bucket</Heading>
             <p>
                 The bucket will be permanently deleted, including all the files within it. This
@@ -430,7 +430,7 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$bucket.name}</h6>
+                        <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
                     <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                 </Box>
