@@ -11,6 +11,7 @@
     let show = false;
     let data: string = null;
     let showJson = false;
+    let submitting = false;
 
     const example = `
 {
@@ -24,6 +25,7 @@
     }
 
     const handleSubmit = async () => {
+        submitting = true;
         try {
             await sdkForProject.functions.createExecution(
                 selectedFunction.$id,
@@ -39,6 +41,8 @@
                 type: 'error',
                 message: error.message
             });
+        } finally {
+            submitting = false;
         }
     };
 
@@ -61,6 +65,6 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={close}>Cancel</Button>
-        <Button submit>Execute Now</Button>
+        <Button disabled={submitting} submit>Execute Now</Button>
     </svelte:fragment>
 </Modal>
