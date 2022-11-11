@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Copy } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -21,18 +22,21 @@
         <TableCellHead>Type</TableCellHead>
         <TableCellHead>Name</TableCellHead>
         <TableCellHead>Value</TableCellHead>
+        <TableCellHead width={50} />
     </TableHeader>
     <TableBody>
         <TableRow>
             <TableCellText title="Type">CNAME</TableCellText>
             <TableCellText title="Name">{cnameValue}</TableCellText>
-            <TableCell title="Value">
-                <div class="u-flex u-main-space-between u-cross-center">
-                    <span class="text">{$domain.domain}</span>
+            <TableCellText title="Value">
+                {$domain.domain}
+            </TableCellText>
+            <TableCell>
+                <Button text>
                     <Copy value={$domain.domain}>
                         <span class="icon-duplicate" aria-hidden="true" />
                     </Copy>
-                </div>
+                </Button>
             </TableCell>
         </TableRow>
     </TableBody>
