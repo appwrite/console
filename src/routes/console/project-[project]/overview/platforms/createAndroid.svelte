@@ -3,19 +3,24 @@
     import { beforeNavigate, invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from './wizard/store';
+    import { Dependencies } from '$lib/constants';
+    import { onboarding } from '../../store';
+    import { addNotification } from '$lib/stores/notifications';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/android/step1.svelte';
     import Step2 from './wizard/android/step2.svelte';
     import Step3 from './wizard/android/step3.svelte';
     import Step4 from './wizard/step4.svelte';
-    import { Dependencies } from '$lib/constants';
-    import { onboarding } from '../../store';
 
     async function onFinish() {
         if ($onboarding) {
             invalidate(Dependencies.PROJECT);
         }
         invalidate(Dependencies.PLATFORMS);
+        addNotification({
+            type: 'success',
+            message: `${$createPlatform.name} platform has been created.`
+        });
         createPlatform.reset();
         wizard.hide();
     }
