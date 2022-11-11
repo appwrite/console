@@ -30,7 +30,7 @@
 
 <script lang="ts">
     import { page } from '$app/stores';
-    import { DropList, DropListItem, Empty, Heading } from '$lib/components';
+    import { DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { base } from '$app/paths';
@@ -137,7 +137,8 @@
                         </Button>
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>
-                                Web App</DropListItem>
+                                Web App
+                            </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
                                 Flutter App
                             </DropListItem>
