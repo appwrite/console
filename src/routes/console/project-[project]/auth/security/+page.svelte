@@ -140,7 +140,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h2" size="6">Session Length <Pill>Coming Soon!</Pill></Heading>
+        <Heading tag="h2" size="6">Session Length</Heading>
         <p>
             If you reduce the limit, users who are currently logged in will be logged out of the
             application.
@@ -148,9 +148,8 @@
         <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
                 <ul class="form-list is-multiple">
-                    <InputNumber disabled id="length" label="Length" value={1} />
+                    <InputNumber id="length" label="Length" value={1} />
                     <InputSelect
-                        disabled
                         id="period"
                         {options}
                         label="Time Period"
@@ -160,11 +159,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button
-                disabled={true}
-                on:click={() => {
-                    updateSessionLength();
-                }}>Update</Button>
+            <Button disabled={true} on:click={() => updateSessionLength()}>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>
