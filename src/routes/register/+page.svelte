@@ -5,6 +5,7 @@
         Button,
         Form,
         FormItem,
+        InputChoice,
         InputEmail,
         InputPassword,
         InputText
@@ -16,6 +17,7 @@
     import { Dependencies } from '$lib/constants';
 
     let name: string, mail: string, pass: string;
+    let terms = false;
 
     const register = async () => {
         try {
@@ -60,9 +62,23 @@
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
-
+                <InputChoice required bind:value={terms} id="terms" label="terms" showLabel={false}>
+                    By registering, you agree that you have read, understand, and acknowledge our <a
+                        class="link"
+                        href="https://appwrite.io/policy/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        Privacy Policy</a>
+                    and accept our
+                    <a
+                        class="link"
+                        href="https://appwrite.io/policy/terms"
+                        target="_blank"
+                        rel="noopener noreferrer">General Terms of Use</a>
+                    .</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit>Sign up</Button></FormItem>
+                    <Button fullWidth submit>Sign up</Button>
+                </FormItem>
             </FormList>
         </Form>
     </svelte:fragment>
