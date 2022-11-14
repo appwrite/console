@@ -57,6 +57,13 @@ function createFeedbackStore() {
 export const feedback = createFeedbackStore();
 
 if (browser) {
+    feedback.subscribe((feed) => {
+        feed.elapsed = parseInt(localStorage.getItem('feedbackElapsed') ?? '0');
+        feed.visualized = parseInt(localStorage.getItem('feedbackVisualized') ?? '0');
+    });
+}
+
+if (browser) {
     app.update((n) => ({
         ...n,
         ...(JSON.parse(localStorage.getItem('appwrite')) ?? {})
