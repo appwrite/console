@@ -1,5 +1,5 @@
 <svelte:head>
-    <title>Database - Appwrite</title>
+    <title>Databases - Appwrite</title>
 </svelte:head>
 
 <slot />
