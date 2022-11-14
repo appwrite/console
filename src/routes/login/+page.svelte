@@ -14,10 +14,11 @@
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
 
-    let mail: string, pass: string;
+    let mail: string, pass: string, disabled: boolean;
 
-    const login = async () => {
+    async function login() {
         try {
+            disabled = true;
             await sdkForConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
@@ -26,12 +27,13 @@
             });
             await goto(`${base}/console`);
         } catch (error) {
+            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
         }
-    };
+    }
 </script>
 
 <svelte:head>
@@ -59,7 +61,7 @@
                     showPasswordButton={true}
                     bind:value={pass} />
                 <FormItem>
-                    <Button fullWidth submit>Sign in</Button>
+                    <Button fullWidth submit {disabled}>Sign in</Button>
                 </FormItem>
             </FormList>
         </Form>

@@ -16,22 +16,24 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
 
-    let name: string, mail: string, pass: string;
+    let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
 
-    const register = async () => {
+    async function register() {
         try {
+            disabled = true;
             await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
             await sdkForConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
         } catch (error) {
+            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
         }
-    };
+    }
 </script>
 
 <svelte:head>
@@ -77,7 +79,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit>Sign up</Button>
+                    <Button fullWidth submit {disabled}>Sign up</Button>
                 </FormItem>
             </FormList>
         </Form>
