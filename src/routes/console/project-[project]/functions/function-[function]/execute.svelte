@@ -29,7 +29,8 @@
         try {
             await sdkForProject.functions.createExecution(
                 selectedFunction.$id,
-                data?.length ? data : undefined
+                data?.length ? data : undefined,
+                true
             );
             close();
             addNotification({
