@@ -1,15 +1,24 @@
 <script lang="ts">
     import { Form, FormList, InputTextarea, Button } from '$lib/elements/forms';
-    import { createEventDispatcher } from 'svelte';
+    import { feedback } from '$lib/stores/app';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let show = false;
 
-    const dispatch = createEventDispatcher();
-
-    let feedback: string;
-    const handleSubmit = () => {
-        dispatch('feedback', { feedback });
-    };
+    let message: string;
+    async function handleSubmit() {
+        try {
+            const result = await feedback.submitFeedback(undefined, undefined, message, [
+                'general'
+            ]);
+            console.log(result);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
 </script>
 
 <section class="drop-section">
@@ -26,19 +35,19 @@
     </header>
     <div class="u-margin-block-start-8 u-line-height-1-5"><slot /></div>
 
-    <Form on:action={handleSubmit}>
+    <Form on:submit={handleSubmit}>
         <FormList>
             <InputTextarea
                 id="feedback"
                 placeholder="Your message here"
                 showLabel={false}
                 label="Feedback"
-                bind:value={feedback} />
+                bind:value={message} />
         </FormList>
 
         <div class="u-flex u-main-end u-gap-16 u-margin-block-start-24">
             <Button text on:click={() => (show = false)}>Cancel</Button>
-            <Button disabled={!feedback} secondary submit>Submit</Button>
+            <Button disabled={!message} secondary submit>Submit</Button>
         </div>
     </Form>
 </section>

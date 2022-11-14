@@ -65,12 +65,12 @@
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
-                {#if $feedback.type === 'nps'}
+                {#if $feedback.notification}
                     <FeedbackNPS bind:show={showFeedback}>
                         <svelte:fragment slot="title">How Can We Improve</svelte:fragment>
                         Your feedback is important to us. Please be honest and tell us what you think.
                     </FeedbackNPS>
-                {:else if $feedback.type === 'general'}
+                {:else}
                     <FeedbackGeneral bind:show={showFeedback}>
                         <svelte:fragment slot="title">How Can We Improve</svelte:fragment>
                         Your feedback is important to us. Please be honest and tell us what you think.

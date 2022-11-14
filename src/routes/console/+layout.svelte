@@ -15,8 +15,8 @@
 
     onMount(() => {
         loading.set(false);
-        const interval = 60000;
-        checkForFeedback(interval);
+        // const interval = 5 * 60000;
+        const interval = 10000;
 
         setInterval(() => {
             checkForFeedback(interval);
@@ -24,8 +24,9 @@
     });
 
     function checkForFeedback(interval: number) {
-        feedback.setElapsed($feedback.elapsed + interval);
-        const hours = Math.floor($feedback.elapsed / 3600000);
+        const minutes = interval / 60000;
+        feedback.increaseElapsed(minutes);
+        const hours = Math.floor($feedback.elapsed / 60);
         if (hours >= 1 && hours < 10 && $feedback.visualized < 1) {
             feedback.toggleNotification();
         } else if (hours >= $feedback.visualized * 10) {

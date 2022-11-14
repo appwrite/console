@@ -1,19 +1,17 @@
 <script lang="ts">
     import { Form, FormList, InputTextarea, Button } from '$lib/elements/forms';
+    import { feedback } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
-    import { createEventDispatcher } from 'svelte';
     import Evaluation from './evaluation.svelte';
 
     export let show = false;
 
-    const dispatch = createEventDispatcher();
-
     let value: number = null;
-    let feedback: string;
+    let message: string;
     async function handleSubmit() {
         try {
-            console.log(value, feedback);
-            dispatch('feedback', { value, feedback });
+            await feedback.submitFeedback(undefined, undefined, message, ['npm'], [{ value }]);
+            console.log(value, message);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -21,8 +19,6 @@
             });
         }
     }
-
-    $: console.log(value);
 </script>
 
 <section class="drop-section">
@@ -39,7 +35,7 @@
     </header>
     <div class="u-margin-block-start-8 u-line-height-1-5"><slot /></div>
 
-    <Form on:action={handleSubmit}>
+    <Form on:submit={handleSubmit}>
         <Evaluation bind:value>
             How likely are you to recommend Appwrite to a friend or colleague?
         </Evaluation>
@@ -50,7 +46,7 @@
                     placeholder="Your message here"
                     showLabel={false}
                     label="Feedback"
-                    bind:value={feedback} />
+                    bind:value={message} />
             </FormList>
         {/if}
         <div class="u-flex u-main-end u-gap-16 u-margin-block-start-24">

@@ -20,8 +20,8 @@ export const app = writable<AppStore>({
 
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({
-        elapsed: parseInt(localStorage.getItem('feedbackElapsed') ?? '0'),
-        visualized: parseInt(localStorage.getItem('feedbackVisualized') ?? '0'),
+        elapsed: browser ? parseInt(localStorage.getItem('feedbackElapsed')) : 0,
+        visualized: browser ? parseInt(localStorage.getItem('feedbackVisualized')) : 0,
         notification: false,
         type: 'nps'
     });
@@ -40,26 +40,36 @@ function createFeedbackStore() {
             }),
         addVisualization: () =>
             update((feedback) => {
-                localStorage.setItem('feedbackVisualized', (feedback.visualized + 1).toString());
-                feedback.visualized = feedback.visualized + 1;
+                feedback.visualized += 1;
+                localStorage.setItem('feedbackVisualized', feedback.visualized.toString());
                 return feedback;
             }),
 
-        setElapsed: (time: number) => {
+        increaseElapsed: (time: number) => {
             update((feedback) => {
-                localStorage.setItem('feedbackElapsed', time.toString());
-                feedback.elapsed = time;
+                feedback.elapsed += time;
+                localStorage.setItem('feedbackElapsed', feedback.elapsed.toString());
                 return feedback;
             });
         },
-        submitFeedback: async (feedback: Record<string, unknown>) => {
-            const response = await fetch('/v1/feedback', {
+        submitFeedback: async (
+            subject?: string,
+            email?: string,
+            message?: string,
+            tags?: string[],
+            customFields?: Record<string, unknown>[]
+        ) => {
+            const response = await fetch('https://appwrite.io/v1/feedback', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    ...feedback
+                    subject,
+                    email,
+                    message,
+                    tags,
+                    customFields
                 })
             });
             if (response.status !== 200) {
@@ -69,13 +79,6 @@ function createFeedbackStore() {
     };
 }
 export const feedback = createFeedbackStore();
-
-if (browser) {
-    feedback.subscribe((feed) => {
-        feed.elapsed = parseInt(localStorage.getItem('feedbackElapsed') ?? '0');
-        feed.visualized = parseInt(localStorage.getItem('feedbackVisualized') ?? '0');
-    });
-}
 
 if (browser) {
     app.update((n) => ({
