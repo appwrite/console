@@ -7,12 +7,19 @@
     export let scrollable = false;
     export let childStart = false;
     export let noArrow = false;
+    export let width: string = null;
 </script>
 
-<Drop bind:show {placement} {childStart} {noArrow}>
+<Drop bind:show {placement} {childStart} {noArrow} {width}>
     <slot />
     <svelte:fragment slot="list">
-        <div class="drop is-no-arrow" style="position: revert">
+        <div
+            class="drop is-no-arrow"
+            style={`${
+                width
+                    ? `--drop-width-size-desktop:${width}rem; position:relative`
+                    : ' position:relative'
+            }`}>
             {#if $$slots.list}
                 <section
                     class:u-overflow-y-auto={scrollable}

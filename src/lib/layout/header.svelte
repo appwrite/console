@@ -60,7 +60,7 @@
                 <div class="pulse-notification" />
             </div>
         {/if}
-        <DropList bind:show={showFeedback} scrollable={true}>
+        <DropList width="28" bind:show={showFeedback} scrollable={true}>
             <button class="button is-small is-text" on:click={toggleFeedback}>
                 <span class="text">Feedback</span>
             </button>
