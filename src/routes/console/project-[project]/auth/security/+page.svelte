@@ -10,16 +10,22 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { timeToMinutes } from '$lib/helpers/timeConversion';
 
     const projectId = $project.$id;
     let isLimited = $project.authLimit === 0 ? 'unlimited' : 'limited';
     let newLimit = $project.authLimit === 0 ? 100 : $project.authLimit;
+    let time: number = $project.authDuration;
+    let period = 'm';
     let btnActive = false;
 
     let options = [
-        { label: 'years', value: 'years' },
-        { label: 'months', value: 'months' },
-        { label: 'days', value: 'days' }
+        { label: 'years', value: 'y' },
+        { label: 'months', value: 'M' },
+        { label: 'days', value: 'd' },
+        { label: 'hours', value: 'h' },
+        { label: 'minutes', value: 'm' },
+        { label: 'seconds', value: 's' }
     ];
 
     $: {
@@ -56,7 +62,8 @@
     }
     async function updateSessionLength() {
         try {
-            //TODO: implement correct SDK call
+            await sdkForConsole.projects.updateAuthDuration(projectId, timeToMinutes(time, period));
+            invalidate(Dependencies.PROJECT);
 
             addNotification({
                 type: 'success',
@@ -143,7 +150,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h2" size="6">Session Length <Pill>Coming Soon!</Pill></Heading>
+        <Heading tag="h2" size="6">Session Length</Heading>
         <p>
             If you reduce the limit, users who are currently logged in will be logged out of the
             application.
@@ -151,12 +158,12 @@
         <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
                 <ul class="form-list is-multiple">
-                    <InputNumber disabled id="length" label="Length" value={1} />
+                    <InputNumber disabled id="length" label="Length" bind:value={time} />
                     <InputSelect
                         disabled
                         id="period"
                         label="Time Period"
-                        value={options[0].value}
+                        value={period}
                         {options} />
                 </ul>
             </form>
