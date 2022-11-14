@@ -10,7 +10,7 @@
     export let width: string = null;
 </script>
 
-<Drop bind:show {placement} {childStart} {noArrow} {width}>
+<Drop bind:show {placement} {childStart} {noArrow}>
     <slot />
     <svelte:fragment slot="list">
         <div
