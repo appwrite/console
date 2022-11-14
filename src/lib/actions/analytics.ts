@@ -7,11 +7,11 @@ const analytics = Analytics({
     app: 'appwrite',
     plugins: [
         googleAnalytics({
-            measurementIds: [globalThis.GOOGLE_ANALYTICS]
+            measurementIds: [window?.GOOGLE_ANALYTICS]
         })
     ]
 });
-
+console.log(window.GOOGLE_ANALYTICS);
 export function trackEvent(name: string, data: object = null): void {
     if (!isTrackingAllowed()) {
         return;
