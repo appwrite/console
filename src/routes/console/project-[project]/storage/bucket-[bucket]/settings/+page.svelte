@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Pill } from '$lib/elements';
-    import { CardGrid, Box, Heading } from '$lib/components';
+    import { CardGrid, Box, Heading, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import {
         Form,
@@ -272,8 +272,21 @@
                         rel="noopener noreferrer">Permissions Guide</a> in our documentation.
                 </p>
                 <svelte:fragment slot="aside">
-                    {#if bucketPermissions}
-                        <Permissions bind:permissions={bucketPermissions} />
+                    {#if $bucket.fileSecurity}
+                        {#if bucketPermissions}
+                            <Permissions bind:permissions={bucketPermissions} />
+                        {/if}
+                    {:else}
+                        <Alert type="info">
+                            <svelte:fragment slot="title">
+                                File security is disabled
+                            </svelte:fragment>
+                            <p class="text">
+                                If you want to assign document permissions, navigate to Bucket
+                                settings and enable file security. Otherwise, only Bucket
+                                permissions will be used.
+                            </p>
+                        </Alert>
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
