@@ -51,6 +51,20 @@ function createFeedbackStore() {
                 feedback.elapsed = time;
                 return feedback;
             });
+        },
+        submitFeedback: async (feedback: Record<string, unknown>) => {
+            const response = await fetch('/v1/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...feedback
+                })
+            });
+            if (response.status !== 200) {
+                throw new Error('Failed to submit feedback');
+            }
         }
     };
 }
