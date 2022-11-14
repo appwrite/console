@@ -62,7 +62,7 @@
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
-                <InputChoice required bind:value={terms} id="terms" label="terms" showLabel={false}>
+                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <a
                         class="link"
                         href="https://appwrite.io/policy/privacy"
