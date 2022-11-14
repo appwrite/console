@@ -31,31 +31,42 @@
         {
             name: string;
             hostname: string;
+            tooltip: string;
         }
     > = {
         [Platform.Android]: {
             name: 'My Android App',
-            hostname: 'com.company.appname'
+            hostname: 'com.company.appname',
+            tooltip:
+                "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
         [Platform.Ios]: {
             name: 'My iOS App',
-            hostname: 'com.company.appname'
+            hostname: 'com.company.appname',
+            tooltip:
+                'Your package name is generally the applicationId in your app-level build.gradle file.'
         },
         [Platform.Linux]: {
             name: 'My Linux App',
-            hostname: 'appname'
+            hostname: 'appname',
+            tooltip: 'Your application name'
         },
         [Platform.Macos]: {
             name: 'My mac OS App',
-            hostname: 'com.company.appname'
+            hostname: 'com.company.appname',
+            tooltip:
+                "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
         [Platform.Web]: {
             name: 'My Web App',
-            hostname: 'com.company.appname'
+            hostname: 'com.company.appname',
+            tooltip:
+                'The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required.'
         },
         [Platform.Windows]: {
             name: 'My Windows App',
-            hostname: 'appname'
+            hostname: 'appname',
+            tooltip: 'Your application name'
         }
     };
 
@@ -154,6 +165,7 @@
                 id="hostname"
                 label={hostname[platform]}
                 placeholder={placeholder[platform].hostname}
+                tooltip={placeholder[platform].tooltip}
                 required
                 bind:value={$createPlatform.hostname} />
             {#if platform === Platform.Web}
