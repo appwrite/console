@@ -19,7 +19,7 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
-        "@aw-labs/appwrite-console": "^10.0.0",
+        "@aw-labs/appwrite-console": "^11.0.0",
         "@aw-labs/icons": "0.0.0-76",
         "@aw-labs/ui": "0.0.0-76",
         "@popperjs/core": "^2.11.6",
