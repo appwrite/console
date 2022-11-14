@@ -1,6 +1,5 @@
 import Analytics from 'analytics';
 import googleAnalytics from '@analytics/google-analytics';
-import { dev } from '$app/environment';
 import { get } from 'svelte/store';
 import { page } from '$app/stores';
 
