@@ -2,7 +2,7 @@
     import { Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
     import { versions } from '../store';
-    console.log($versions);
+
     const example1 = `repositories {
     mavenCentral()
 }`;
