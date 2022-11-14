@@ -17,7 +17,6 @@
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
-        window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
         window.SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN?.toString() ?? false;
     }
 
