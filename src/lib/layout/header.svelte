@@ -66,15 +66,9 @@
             </button>
             <svelte:fragment slot="other">
                 {#if $feedback.notification}
-                    <FeedbackNPS bind:show={showFeedback}>
-                        <svelte:fragment slot="title">How Can We Improve</svelte:fragment>
-                        Your feedback is important to us. Please be honest and tell us what you think.
-                    </FeedbackNPS>
+                    <FeedbackNPS bind:show={showFeedback} />
                 {:else}
-                    <FeedbackGeneral bind:show={showFeedback}>
-                        <svelte:fragment slot="title">How Can We Improve</svelte:fragment>
-                        Your feedback is important to us. Please be honest and tell us what you think.
-                    </FeedbackGeneral>
+                    <FeedbackGeneral bind:show={showFeedback} />
                 {/if}
             </svelte:fragment>
         </DropList>

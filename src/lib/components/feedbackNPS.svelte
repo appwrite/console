@@ -1,5 +1,12 @@
 <script lang="ts">
-    import { Form, FormList, InputTextarea, Button } from '$lib/elements/forms';
+    import {
+        Form,
+        FormList,
+        InputTextarea,
+        Button,
+        InputText,
+        InputEmail
+    } from '$lib/elements/forms';
     import { feedback } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import Evaluation from './evaluation.svelte';
@@ -8,9 +15,11 @@
 
     let value: number = null;
     let message: string;
+    let email: string;
+    let name: string;
     async function handleSubmit() {
         try {
-            await feedback.submitFeedback(undefined, undefined, message, ['npm'], [{ value }]);
+            await feedback.submitFeedback(undefined, email, message, ['npm'], [{ value, name }]);
             console.log(value, message);
         } catch (error) {
             addNotification({
@@ -23,7 +32,7 @@
 
 <section class="drop-section">
     <header class="u-flex u-main-space-between u-gap-16">
-        <h4 class="body-text-1"><slot name="title" /></h4>
+        <h4 class="body-text-1">How are we doing?</h4>
         <button
             type="button"
             class="x-button u-margin-inline-start-auto"
@@ -33,7 +42,10 @@
             <span class="icon-x" aria-hidden="true" />
         </button>
     </header>
-    <div class="u-margin-block-start-8 u-line-height-1-5"><slot /></div>
+    <div class="u-margin-block-start-8 u-line-height-1-5">
+        At Appwrite, we value the feedback of our users. That means you! We'd love to hear what you
+        think.
+    </div>
 
     <Form on:submit={handleSubmit}>
         <Evaluation bind:value>
@@ -44,9 +56,22 @@
                 <InputTextarea
                     id="feedback"
                     placeholder="Your message here"
-                    showLabel={false}
                     label="Feedback"
-                    bind:value={message} />
+                    required
+                    bind:value={message}
+                    showLabel={false} />
+                <InputText
+                    label="name"
+                    id="name"
+                    bind:value={name}
+                    placeholder="Enter name"
+                    showLabel={false} />
+                <InputEmail
+                    label="email"
+                    id="email"
+                    bind:value={email}
+                    placeholder="Enter email"
+                    showLabel={false} />
             </FormList>
         {/if}
         <div class="u-flex u-main-end u-gap-16 u-margin-block-start-24">
