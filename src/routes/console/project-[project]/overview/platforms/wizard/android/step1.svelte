@@ -53,6 +53,7 @@
             id="hostname"
             label="Package Name"
             placeholder="com.company.appname"
+            tooltip="Your package name is generally the applicationId in your app-level build.gradle file."
             required
             bind:value={$createPlatform.hostname} />
     </FormList>

@@ -11,10 +11,27 @@
     import { log } from '$lib/stores/logs';
     import { onMount } from 'svelte';
     import { loading } from '../store';
+    import { feedback } from '$lib/stores/app';
+    import { INTERVAL } from '$lib/constants';
 
     onMount(() => {
         loading.set(false);
+
+        setInterval(() => {
+            checkForFeedback(INTERVAL);
+        }, INTERVAL);
     });
+
+    function checkForFeedback(interval: number) {
+        const minutes = interval / 60000;
+        feedback.increaseElapsed(minutes);
+        const hours = Math.floor($feedback.elapsed / 60);
+        if (hours >= 1 && hours < 10 && $feedback.visualized < 1) {
+            feedback.toggleNotification();
+        } else if (hours >= $feedback.visualized * 10) {
+            feedback.toggleNotification();
+        }
+    }
 
     beforeNavigate(() => {
         $log.show = false;

@@ -55,6 +55,7 @@
                 id="hostname"
                 label="Hostname"
                 placeholder="localhost"
+                tooltip="The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required."
                 required
                 bind:value={$createPlatform.hostname} />
             <div class="u-flex u-gap-16 u-margin-block-start-8">

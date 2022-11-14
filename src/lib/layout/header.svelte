@@ -1,13 +1,22 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarInitials, DropListItem, DropListLink } from '$lib/components';
-    import { app } from '$lib/stores/app';
+    import {
+        AvatarInitials,
+        DropList,
+        DropListItem,
+        DropListLink,
+        FeedbackGeneral
+    } from '$lib/components';
+    import { app, feedback } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
+    import { FeedbackNPS } from '$lib/components';
+
+    let showFeedback = false;
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
@@ -15,7 +24,15 @@
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
 
-    const onBlur = (event: MouseEvent) => {
+    function toggleFeedback() {
+        showFeedback = !showFeedback;
+        if ($feedback.notification) {
+            feedback.toggleNotification();
+            feedback.addVisualization();
+        }
+    }
+
+    function onBlur(event: MouseEvent) {
         if (
             showDropdown &&
             !(event.target === droplistElement || droplistElement.contains(event.target as Node))
@@ -43,7 +60,23 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop">
-        <button class="button is-small is-text"><span class="text">Feedback</span></button>
+        {#if $feedback.notification}
+            <div class="u-flex u-cross-center">
+                <div class="pulse-notification" />
+            </div>
+        {/if}
+        <DropList width="28" bind:show={showFeedback} scrollable={true}>
+            <button class="button is-small is-text" on:click={toggleFeedback}>
+                <span class="text">Feedback</span>
+            </button>
+            <svelte:fragment slot="other">
+                {#if $feedback.notification}
+                    <FeedbackNPS bind:show={showFeedback} />
+                {:else}
+                    <FeedbackGeneral bind:show={showFeedback} />
+                {/if}
+            </svelte:fragment>
+        </DropList>
         <a
             href="https://appwrite.io/support"
             target="_blank"
