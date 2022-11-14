@@ -25,12 +25,10 @@
 
     function checkForFeedback(interval: number) {
         feedback.setElapsed($feedback.elapsed + interval);
-        const minutes = $feedback.elapsed / 60000;
-        if (minutes < 60) {
+        const hours = Math.floor($feedback.elapsed / 3600000);
+        if (hours >= 1 && hours < 10 && $feedback.visualized < 1) {
             feedback.toggleNotification();
-        } else if (minutes > 60 && $feedback.visualized === 0) {
-            feedback.toggleNotification();
-        } else if (((minutes - 60) / 10) % 60 >= $feedback.visualized) {
+        } else if (hours >= $feedback.visualized * 10) {
             feedback.toggleNotification();
         }
     }
