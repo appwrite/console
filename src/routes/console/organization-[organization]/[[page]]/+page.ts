@@ -13,7 +13,8 @@ export const load: PageLoad = async ({ params }) => {
         projects: await sdkForConsole.projects.list([
             Query.offset(offset),
             Query.limit(CARD_LIMIT),
-            Query.equal('teamId', params.organization)
+            Query.equal('teamId', params.organization),
+            Query.orderDesc('$createdAt')
         ])
     };
 };
