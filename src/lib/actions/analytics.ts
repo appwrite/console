@@ -6,7 +6,6 @@ import { page } from '$app/stores';
 
 const analytics = Analytics({
     app: 'appwrite',
-    debug: dev,
     plugins: [
         googleAnalytics({
             measurementIds: [globalThis.GOOGLE_ANALYTICS]
