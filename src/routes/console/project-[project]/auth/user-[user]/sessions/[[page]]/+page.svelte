@@ -45,7 +45,7 @@
                 {#each data.sessions.sessions as session}
                     <TableRow>
                         <TableCell title="Client">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <div class="image-item">
                                     <img
                                         height="20"

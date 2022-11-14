@@ -42,7 +42,7 @@
             <span class="text">Create membership</span>
         </Button>
     </SearchQuery>
-    {#if data.memberships.total}
+    {#if data.memberships.total && !data.search}
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
@@ -95,9 +95,12 @@
                 <p>There are no members that match your search.</p>
             </div>
             <Button
-                secondary
-                href={`/console/project-${$page.params.project}/auth/teams/team-${$page.params.team}/members`}
-                >Clear Search</Button>
+                external
+                href="https://appwrite.io/docs/client/teams?sdk=web-default#teamsCreateMembership"
+                text>
+                Documentation
+            </Button>
+            <Button secondary on:click={() => (showCreate = true)}>Create membership</Button>
         </EmptySearch>
     {:else}
         <Empty

@@ -6,6 +6,12 @@
     import { WizardStep } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
+    import { wizard } from '$lib/stores/wizard';
+    import { app } from '$lib/stores/app';
+    import Light from './light.svg';
+    import Dark from './dark.svg';
+
+    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     enum Platform {
         Android = 'flutter-android',
@@ -37,7 +43,7 @@
         },
         [Platform.Linux]: {
             name: 'My Linux App',
-            hostname: 'com.company.appname'
+            hostname: 'appname'
         },
         [Platform.Macos]: {
             name: 'My mac OS App',
@@ -49,13 +55,13 @@
         },
         [Platform.Windows]: {
             name: 'My Windows App',
-            hostname: 'localhost'
+            hostname: 'appname'
         }
     };
 
     const hostname: Record<Platform, string> = {
         [Platform.Android]: 'Package Name',
-        [Platform.Ios]: 'Package Name',
+        [Platform.Ios]: 'Bundle ID',
         [Platform.Linux]: 'Package Name',
         [Platform.Macos]: 'Bundle ID',
         [Platform.Web]: 'Hostname',

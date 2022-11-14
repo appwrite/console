@@ -29,7 +29,7 @@
     function openModal() {
         if (dialog && !dialog.open) {
             dialog.showModal();
-            document.body.classList.add('u-overflow-hidden');
+            document.documentElement.classList.add('u-overflow-hidden');
         }
     }
 
@@ -39,7 +39,7 @@
                 dispatch('close');
                 dialog.close();
                 show = false;
-                document.body.classList.remove('u-overflow-hidden');
+                document.documentElement.classList.remove('u-overflow-hidden');
             }
         }
     }
@@ -62,7 +62,7 @@
     }
 </script>
 
-<svelte:window on:click={handleBLur} on:keydown={handleKeydown} />
+<svelte:window on:mousedown={handleBLur} on:keydown={handleKeydown} />
 
 <dialog
     class="modal"

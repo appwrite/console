@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { afterNavigate } from '$app/navigation';
     import { Code, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
@@ -11,9 +12,9 @@
     let show = false;
     let data: string = null;
     let showJson = false;
+    let submitting = false;
 
-    const example = `
-{
+    const example = `{
     firstName: "hello", 
     lastName:"world", 
     age:"old"
@@ -24,10 +25,12 @@
     }
 
     const handleSubmit = async () => {
+        submitting = true;
         try {
             await sdkForProject.functions.createExecution(
                 selectedFunction.$id,
-                data?.length ? data : undefined
+                data?.length ? data : undefined,
+                true
             );
             close();
             addNotification({
@@ -39,6 +42,8 @@
                 type: 'error',
                 message: error.message
             });
+        } finally {
+            submitting = false;
         }
     };
 
@@ -46,6 +51,8 @@
         selectedFunction = null;
         show = false;
     }
+
+    afterNavigate(close);
 </script>
 
 <Modal bind:show size="big" on:submit={handleSubmit} on:close={close}>
@@ -61,6 +68,6 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={close}>Cancel</Button>
-        <Button submit>Execute Now</Button>
+        <Button disabled={submitting} submit>Execute Now</Button>
     </svelte:fragment>
 </Modal>

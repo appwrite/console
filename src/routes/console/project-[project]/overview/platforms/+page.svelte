@@ -1,28 +1,23 @@
-<script lang="ts">
-    import { page } from '$app/stores';
-    import { DropList, DropListItem, Heading } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+<script lang="ts" context="module">
     import { wizard } from '$lib/stores/wizard';
+    import { versions } from './wizard/store';
+    import SearchLight from '$lib/images/search-light.svg';
+    import SearchDark from '$lib/images/search-dark.svg';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateWeb from './createWeb.svelte';
-    import { versions } from './wizard/store';
-    import type { PageData } from './$types';
-    import { base } from '$app/paths';
-    import { app } from '$lib/stores/app';
 
-    export let data: PageData;
-
-    let showDropdown = false;
-    const path = `/console/project-${$page.params.project}/overview/platforms`;
-
-    enum Platform {
+    export enum Platform {
         Web,
         Flutter,
         Android,
         Apple
+    }
+
+    export async function addPlatform(type: Platform) {
+        await versions.load();
+        wizard.start(platforms[type]);
     }
 
     const platforms = {
@@ -31,6 +26,22 @@
         [Platform.Android]: CreateAndroid,
         [Platform.Apple]: CreateApple
     };
+</script>
+
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { DropList, DropListItem, Heading } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { base } from '$app/paths';
+    import { app } from '$lib/stores/app';
+    import type { PageData } from './$types';
+
+    export let data: PageData;
+
+    let showDropdown = false;
+    let showDropdownEmpty = false;
+    const path = `/console/project-${$page.params.project}/overview/platforms`;
 
     const getPlatformInfo = (platform: string) => {
         if (platform.includes('flutter')) {
@@ -45,11 +56,6 @@
             return 'unknown';
         }
     };
-
-    async function addPlatform(type: Platform) {
-        await versions.load();
-        wizard.start(platforms[type]);
-    }
 </script>
 
 <div class="common-section u-flex u-gap-12">
@@ -74,32 +80,78 @@
     </span>
 </div>
 
-<div class="grid-box u-margin-block-start-32" style="--grid-gap:1.5rem; --grid-item-size:20rem;">
-    {#each data.platforms.platforms as platform}
-        <a class="card" href={`${path}/${platform.$id}`}>
-            <div class="grid-item-1" style="min-block-size: calc(182 / 16 * 1rem)">
-                <div class="grid-item-1-start-start">
-                    <div class="u-flex u-gap-8 u-cross-center">
-                        <div class="avatar is-medium" aria-hidden="true">
-                            <img
-                                src={`${base}/icons/${$app.themeInUse}/${getPlatformInfo(
-                                    platform.type.toLowerCase()
-                                )}.svg`}
-                                alt="technology" />
+{#if data.platforms.platforms.length}
+    <div
+        class="grid-box u-margin-block-start-32"
+        style="--grid-gap:1.5rem; --grid-item-size:20rem;">
+        {#each data.platforms.platforms as platform}
+            <a class="card" href={`${path}/${platform.$id}`}>
+                <div class="grid-item-1" style="min-block-size: calc(182 / 16 * 1rem)">
+                    <div class="grid-item-1-start-start">
+                        <div class="u-flex u-gap-8 u-cross-center">
+                            <div class="avatar is-medium" aria-hidden="true">
+                                <img
+                                    src={`${base}/icons/${$app.themeInUse}/${getPlatformInfo(
+                                        platform.type.toLowerCase()
+                                    )}.svg`}
+                                    alt="technology" />
+                            </div>
+                            <span class="text">{platform.name}</span>
                         </div>
-                        <span class="text">{platform.name}</span>
                     </div>
-                </div>
 
-                <div class="grid-item-1-end-start">
-                    <div class="u-flex u-gap-16 u-flex-wrap">
-                        <div class="grid-item-1-end-start">
-                            <p class="eyebrow-heading-3">Last Updated</p>
-                            <p>{toLocaleDateTime(platform.$updatedAt)}</p>
+                    <div class="grid-item-1-end-start">
+                        <div class="u-flex u-gap-16 u-flex-wrap">
+                            <div class="grid-item-1-end-start">
+                                <p class="eyebrow-heading-3">Last Updated</p>
+                                <p>{toLocaleDateTime(platform.$updatedAt)}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </a>
-    {/each}
-</div>
+            </a>
+        {/each}
+    </div>
+{:else}
+    <article class="card u-grid u-cross-center u-width-full-line common-section">
+        <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
+            {#if $app.themeInUse === 'dark'}
+                <img src={SearchDark} alt="empty" aria-hidden="true" />
+            {:else}
+                <img src={SearchLight} alt="empty" aria-hidden="true" />
+            {/if}
+            <slot>
+                <div class="u-text-center">
+                    <Heading size="7" tag="h4">Create your first platform to get started.</Heading>
+                    <p class="body-text-2 u-margin-block-start-4">
+                        Need a hand? Check out our documentation.
+                    </p>
+                </div>
+                <div class="u-flex u-gap-16 u-main-center">
+                    <Button external href="https://appwrite.io/docs/sdks" text>
+                        Documentation
+                    </Button>
+                    <DropList bind:show={showDropdownEmpty} placement="bottom-start">
+                        <Button secondary on:click={() => (showDropdownEmpty = !showDropdownEmpty)}>
+                            <span class="text">Add platform</span>
+                        </Button>
+                        <svelte:fragment slot="list">
+                            <DropListItem on:click={() => addPlatform(Platform.Web)}>
+                                Web App
+                            </DropListItem>
+                            <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
+                                Flutter App
+                            </DropListItem>
+                            <DropListItem on:click={() => addPlatform(Platform.Android)}>
+                                Android App
+                            </DropListItem>
+                            <DropListItem on:click={() => addPlatform(Platform.Apple)}>
+                                Apple App
+                            </DropListItem>
+                        </svelte:fragment>
+                    </DropList>
+                </div>
+            </slot>
+        </div>
+    </article>
+{/if}

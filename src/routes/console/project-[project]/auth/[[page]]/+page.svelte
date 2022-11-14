@@ -38,7 +38,7 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by name, email, or ID">
+    <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
         <Button on:click={() => (showCreate = true)} event="create_user">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
         </Button>

@@ -83,7 +83,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
+    <CardGrid danger>
         <Heading tag="h6" size="7">Delete Document</Heading>
         <p>
             The document will be permanently deleted, including all the data within it. This action
@@ -92,7 +92,7 @@
         <svelte:fragment slot="aside">
             <Box>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$doc.$id}</h6>
+                    <h6 class="u-bold u-trim-1">{$doc.$id}</h6>
                 </svelte:fragment>
                 <p>
                     Last Updated: {toLocaleDateTime($doc.$updatedAt)}

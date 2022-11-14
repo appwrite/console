@@ -4,6 +4,12 @@
     import { WizardStep } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
+    import { wizard } from '$lib/stores/wizard';
+    import { app } from '$lib/stores/app';
+    import Light from './light.svg';
+    import Dark from './dark.svg';
+
+    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     const projectId = $page.params.project;
 

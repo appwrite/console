@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Pill } from '$lib/elements';
-    import { CardGrid, Box, Heading } from '$lib/components';
+    import { CardGrid, Box, Heading, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import {
         Form,
@@ -54,14 +54,10 @@
         encryption ??= $bucket.encryption;
         antivirus ??= $bucket.antivirus;
     });
-    $: if (bucketFileSecurity || bucketPermissions) {
-        if (bucketFileSecurity !== $bucket.fileSecurity) {
+    $: if (bucketPermissions) {
+        if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
             arePermsDisabled = false;
-        } else if (bucketPermissions) {
-            if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
-                arePermsDisabled = false;
-            } else arePermsDisabled = true;
-        }
+        } else arePermsDisabled = true;
     }
     $: if (extensions) {
         if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
@@ -107,16 +103,32 @@
     }
     async function updatePermissions() {
         try {
+            await sdkForProject.storage.updateBucket($bucket.$id, $bucket.name, bucketPermissions);
+            invalidate(Dependencies.BUCKET);
+            arePermsDisabled = true;
+            addNotification({
+                message: 'Permissions have been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
+    async function updateFileSecurity() {
+        try {
             await sdkForProject.storage.updateBucket(
                 $bucket.$id,
                 $bucket.name,
-                bucketFileSecurity ? bucketPermissions : undefined,
+                $bucket.$permissions,
                 bucketFileSecurity
             );
             invalidate(Dependencies.BUCKET);
             arePermsDisabled = true;
             addNotification({
-                message: 'Permissions have been updated',
+                message: 'Security has been updated',
                 type: 'success'
             });
         } catch (error) {
@@ -242,8 +254,9 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={bucketName === $bucket.name || !bucketName} submit
-                        >Update</Button>
+                    <Button disabled={bucketName === $bucket.name || !bucketName} submit>
+                        Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -251,42 +264,61 @@
         <Form on:submit={updatePermissions}>
             <CardGrid>
                 <Heading tag="h6" size="7">Update Permissions</Heading>
-                <p>
-                    Assign read or write permissions at the <b>Bucket Level</b> or
-                    <b>File Level</b>. If Bucket Level permissions are assigned, file permissions
-                    will be ignored.
+                <p class="text">
+                    Choose who can access your buckets and files. For more information, check out
+                    the <a
+                        href="https://appwrite.io/docs/permissions"
+                        target="_blank"
+                        rel="noopener noreferrer">Permissions Guide</a> in our documentation.
                 </p>
                 <svelte:fragment slot="aside">
-                    <ul class="checkboxes-list">
-                        <li class="checkboxes-item">
-                            <label class="label">
-                                <input
-                                    type="radio"
-                                    class="is-small"
-                                    name="level"
-                                    bind:group={bucketFileSecurity}
-                                    value={true} />
-                                <span>Bucket Level</span>
-                            </label>
-                        </li>
-                        <li class="checkboxes-item">
-                            <label class="label">
-                                <input
-                                    type="radio"
-                                    class="is-small"
-                                    name="level"
-                                    bind:group={bucketFileSecurity}
-                                    value={false} />
-                                <span>File Level</span>
-                            </label>
-                        </li>
-                    </ul>
-                    {#if bucketFileSecurity}
-                        <Permissions bind:permissions={bucketPermissions} />
+                    {#if $bucket.fileSecurity}
+                        {#if bucketPermissions}
+                            <Permissions bind:permissions={bucketPermissions} />
+                        {/if}
+                    {:else}
+                        <Alert type="info">
+                            <svelte:fragment slot="title">
+                                File security is disabled
+                            </svelte:fragment>
+                            <p class="text">
+                                If you want to assign document permissions, navigate to Bucket
+                                settings and enable file security. Otherwise, only Bucket
+                                permissions will be used.
+                            </p>
+                        </Alert>
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
                     <Button disabled={arePermsDisabled} submit>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+
+        <Form on:submit={updateFileSecurity}>
+            <CardGrid>
+                <Heading tag="h6" size="7">Update File Security</Heading>
+                <svelte:fragment slot="aside">
+                    <FormList>
+                        <InputSwitch
+                            bind:value={bucketFileSecurity}
+                            id="security"
+                            label="File Security" />
+                    </FormList>
+                    <p class="text">
+                        When file security is enabled, users will be able to access files for which
+                        they have been granted <b>either File or Bucket permissions</b>.
+                    </p>
+                    <p class="text">
+                        If file security is disabled, users can access files <b
+                            >only if they have Bucket permissions</b
+                        >. File permissions will be ignored..
+                    </p>
+                </svelte:fragment>
+                <svelte:fragment slot="actions">
+                    <Button disabled={bucketFileSecurity === $bucket.fileSecurity} submit>
+                        Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -385,7 +417,7 @@
             <CardGrid>
                 <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
                 <p>
-                    A maxiumum of 100 file extensions can be added. Leave blank to allow all file
+                    A maximum of 100 file extensions can be added. Leave blank to allow all file
                     types.
                 </p>
                 <svelte:fragment slot="aside">
@@ -421,7 +453,7 @@
             </CardGrid>
         </Form>
 
-        <CardGrid>
+        <CardGrid danger>
             <Heading tag="h6" size="7">Delete Bucket</Heading>
             <p>
                 The bucket will be permanently deleted, including all the files within it. This
@@ -430,7 +462,7 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$bucket.name}</h6>
+                        <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
                     <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                 </Box>

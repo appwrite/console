@@ -29,7 +29,13 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.projects.updateKey($project.$id, $key.$id, name, $key.scopes);
+            await sdkForConsole.projects.updateKey(
+                $project.$id,
+                $key.$id,
+                name,
+                $key.scopes,
+                $key.expire
+            );
             invalidate(Dependencies.KEY);
             addNotification({
                 type: 'success',
@@ -164,7 +170,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <CardGrid>
+    <CardGrid danger>
         <div>
             <Heading tag="h6" size="7">Delete API Key</Heading>
         </div>

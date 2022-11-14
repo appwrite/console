@@ -4,6 +4,7 @@
     export let label: string = null;
     export let files: FileList;
     export let list = new DataTransfer();
+    export let allowedFileExtensions: string[] = [];
 
     let input: HTMLInputElement;
     let hovering = false;
@@ -28,7 +29,12 @@
     }
 </script>
 
-<input bind:files bind:this={input} type="file" style="display: none" />
+<input
+    bind:files
+    bind:this={input}
+    accept={allowedFileExtensions.map((n) => `.${n}`).join(',')}
+    type="file"
+    style="display: none" />
 
 <div>
     {#if label}

@@ -1,79 +1,76 @@
-<script lang="ts">
-    import { InputNumber, InputChoice } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { createEventDispatcher } from 'svelte';
-    import { collection } from '../store';
+<script context="module" lang="ts">
     import type { Models } from '@aw-labs/appwrite-console';
-    import { page } from '$app/stores';
+    import { sdkForProject } from '$lib/stores/sdk';
 
-    export let key: string;
-    export let submitted = false;
-    export let overview = false;
-    export let selectedAttribute: Models.AttributeFloat;
-
-    const databaseId = $page.params.database;
-    const dispatch = createEventDispatcher();
-
-    let min: number,
-        max: number,
-        xdefault: number,
-        required = false,
-        array = false;
-
-    const submit = async () => {
-        submitted = false;
-        try {
-            const attribute = await sdkForProject.databases.createFloatAttribute(
-                databaseId,
-                $collection.$id,
-                key,
-                required,
-                min,
-                max,
-                xdefault ? xdefault : undefined,
-                array
-            );
-            dispatch('created', attribute);
-            addNotification({
-                type: 'success',
-                message: `${key} has been created`
-            });
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    };
-
-    $: if (submitted) {
-        submit();
-    }
-
-    $: if (overview) {
-        ({ required, array, min, max } = selectedAttribute);
-        xdefault = selectedAttribute.default;
-    }
-
-    $: if (required || array) {
-        xdefault = null;
+    export async function submitFloat(
+        databaseId: string,
+        collectionId: string,
+        key: string,
+        data: Partial<Models.AttributeFloat>
+    ) {
+        await sdkForProject.databases.createFloatAttribute(
+            databaseId,
+            collectionId,
+            key,
+            data.required,
+            data.min,
+            data.max,
+            data.default ? data.default : undefined,
+            data.array
+        );
     }
 </script>
 
-<InputNumber id="min" label="Min" bind:value={min} readonly={overview} />
-<InputNumber id="max" label="Max" bind:value={max} readonly={overview} />
+<script lang="ts">
+    import { InputNumber, InputChoice } from '$lib/elements/forms';
+
+    export let selectedAttribute: Models.AttributeFloat;
+    export let data: Partial<Models.AttributeFloat> = {
+        required: false,
+        min: 0,
+        max: 0,
+        default: 0,
+        array: false
+    };
+
+    $: if (selectedAttribute) {
+        ({
+            required: data.required,
+            array: data.array,
+            min: data.min,
+            max: data.max
+        } = selectedAttribute);
+        data.default = selectedAttribute.default;
+    }
+
+    $: if (data.required || data.array) {
+        data.default = null;
+    }
+</script>
+
+<InputNumber id="min" label="Min" bind:value={data.min} readonly={!!selectedAttribute} />
+<InputNumber id="max" label="Max" bind:value={data.max} readonly={!!selectedAttribute} />
 
 <InputNumber
     id="default"
     label="Default value"
-    {min}
-    {max}
-    bind:value={xdefault}
-    disabled={required || array}
-    readonly={overview}
+    min={data.min}
+    max={data.max}
+    bind:value={data.default}
+    disabled={data.required || data.array}
+    readonly={!!selectedAttribute}
     step="any" />
-<InputChoice id="required" label="Required" bind:value={required} disabled={overview || array}>
-    Indicate whether this is a required attribute</InputChoice>
-<InputChoice id="array" label="Array" bind:value={array} disabled={overview || required}>
-    Indicate whether this attribute should act as an array</InputChoice>
+<InputChoice
+    id="required"
+    label="Required"
+    bind:value={data.required}
+    disabled={!!selectedAttribute || data.array}>
+    Indicate whether this is a required attribute
+</InputChoice>
+<InputChoice
+    id="array"
+    label="Array"
+    bind:value={data.array}
+    disabled={!!selectedAttribute || data.required}>
+    Indicate whether this attribute should act as an array
+</InputChoice>

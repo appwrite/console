@@ -68,28 +68,30 @@
             <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
             <ul class="grid-box common-section">
                 {#each $OAuthProviders.providers.sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
-                    <button
-                        class="card u-flex u-flex-vertical u-cross-center"
-                        on:click={() => {
-                            selectedProvider = provider;
-                            trackEvent(`click_select_provider`, {
-                                provider: provider.name.toLowerCase()
-                            });
-                        }}>
-                        <div class="image-item">
-                            <img
-                                height="20"
-                                width="20"
-                                src={`/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
-                                alt={provider.name} />
-                        </div>
-                        <p class="u-margin-block-start-8">{provider.name}</p>
-                        <div class="u-margin-block-start-24">
-                            <Pill success={provider.enabled}>
-                                {provider.enabled ? 'enabled' : 'disabled'}
-                            </Pill>
-                        </div>
-                    </button>
+                    <li class="grid-box-item">
+                        <button
+                            class="card u-flex u-flex-vertical u-cross-center u-width-full-line"
+                            on:click={() => {
+                                selectedProvider = provider;
+                                trackEvent(`click_select_provider`, {
+                                    provider: provider.name.toLowerCase()
+                                });
+                            }}>
+                            <div class="image-item">
+                                <img
+                                    height="20"
+                                    width="20"
+                                    src={`/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
+                                    alt={provider.name} />
+                            </div>
+                            <p class="u-margin-block-start-8">{provider.name}</p>
+                            <div class="u-margin-block-start-24">
+                                <Pill success={provider.enabled}>
+                                    {provider.enabled ? 'enabled' : 'disabled'}
+                                </Pill>
+                            </div>
+                        </button>
+                    </li>
                 {/each}
             </ul>
         </section>

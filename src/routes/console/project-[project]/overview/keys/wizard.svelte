@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { beforeNavigate, goto } from '$app/navigation';
+    import { beforeNavigate, goto, invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/step1.svelte';
@@ -10,6 +10,8 @@
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
     import { onDestroy } from 'svelte';
+    import { onboarding } from '../../store';
+    import { Dependencies } from '$lib/constants';
 
     async function onFinish() {
         try {
@@ -19,6 +21,9 @@
                 $key.scopes,
                 $key.expire ?? undefined
             );
+            if ($onboarding) {
+                invalidate(Dependencies.PROJECT);
+            }
             goto(`/console/project-${$page.params.project}/overview/keys/${$id}`);
         } catch (error) {
             addNotification({

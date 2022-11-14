@@ -11,11 +11,14 @@
     import { Progress, Notifications } from '$lib/layout';
     import { loading } from './store';
     import Loading from './loading.svelte';
-    import { trackEvent, trackPageView } from '$lib/actions/analytics';
+    import { trackPageView } from '$lib/actions/analytics';
+    import * as Sentry from '@sentry/svelte';
+    import { BrowserTracing } from '@sentry/tracing';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
         window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
+        window.SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN?.toString() ?? false;
     }
 
     onMount(async () => {
@@ -29,6 +32,17 @@
             onFCP(reportWebVitals);
             onINP(reportWebVitals);
             onTTFB(reportWebVitals);
+        }
+
+        /**
+         * Sentry Error Logging
+         */
+        if (!dev && window.SENTRY_DSN) {
+            Sentry.init({
+                dsn: window.SENTRY_DSN,
+                integrations: [new BrowserTracing()],
+                tracesSampleRate: 1.0
+            });
         }
 
         /**

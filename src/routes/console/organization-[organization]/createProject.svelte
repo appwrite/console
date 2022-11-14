@@ -19,7 +19,7 @@
     let error: string;
     let isCreating = false;
 
-    const create = async () => {
+    async function create() {
         try {
             isCreating = true;
             const project = await sdkForConsole.projects.create(
@@ -36,11 +36,10 @@
             });
             await goto(`/console/project-${project.$id}`);
         } catch ({ message }) {
-            error = message;
-        } finally {
             isCreating = false;
+            error = message;
         }
-    };
+    }
 </script>
 
 <Modal {error} on:submit={create} size="big" bind:show>
