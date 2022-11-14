@@ -35,7 +35,7 @@
         /**
          * Sentry Error Logging
          */
-        if (!dev && window.SENTRY_DSN) {
+        if (!dev) {
             Sentry.init({
                 dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
                 integrations: [new BrowserTracing()],
