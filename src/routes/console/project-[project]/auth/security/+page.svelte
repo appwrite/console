@@ -158,20 +158,15 @@
         <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
                 <ul class="form-list is-multiple">
-                    <InputNumber disabled id="length" label="Length" bind:value={time} />
-                    <InputSelect
-                        disabled
-                        id="period"
-                        label="Time Period"
-                        value={period}
-                        {options} />
+                    <InputNumber id="length" label="Length" bind:value={time} />
+                    <InputSelect id="period" label="Time Period" value={period} {options} />
                 </ul>
             </form>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
             <Button
-                disabled={true}
+                disabled={options !== 'm' || time !== $project.authDuration}
                 on:click={() => {
                     updateSessionLength();
                 }}>
