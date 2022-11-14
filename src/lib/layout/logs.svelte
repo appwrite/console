@@ -80,8 +80,6 @@
                     </div>
                     <div class="status u-margin-inline-start-auto">
                         <Status status={$log.data.status}>{$log.data.status}</Status>
-
-                        <time>TBI</time>
                     </div>
                 </div>
                 <div class="tabs u-margin-block-start-48 u-sep-block-end">
@@ -147,7 +145,6 @@
                     </div>
                     <div>
                         <p>Triggered by: {$log.data.trigger}</p>
-                        <p>Type: TBI</p>
                     </div>
                     <div class="status u-margin-inline-start-auto">
                         <Status status={$log.data.status}>{$log.data.status}</Status>
@@ -163,14 +160,14 @@
                             Response
                         </Tab>
                         <Tab
-                            selected={selectedTab === 'errors'}
-                            on:click={() => (selectedTab = 'errors')}>
-                            Errors
-                        </Tab>
-                        <Tab
                             selected={selectedTab === 'logs'}
                             on:click={() => (selectedTab = 'logs')}>
                             Logs
+                        </Tab>
+                        <Tab
+                            selected={selectedTab === 'errors'}
+                            on:click={() => (selectedTab = 'errors')}>
+                            Errors
                         </Tab>
                     </Tabs>
                 </div>

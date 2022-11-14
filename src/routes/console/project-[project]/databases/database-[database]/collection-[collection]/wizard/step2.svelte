@@ -7,7 +7,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Set Permissions</svelte:fragment>
+    <svelte:fragment slot="title">Permissions</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Choose who can access your collection and documents. For more information, check out the <a
             href="https://appwrite.io/docs/permissions"
