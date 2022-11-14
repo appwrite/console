@@ -74,8 +74,8 @@
                         class="link"
                         href="https://appwrite.io/policy/terms"
                         target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</a>
-                    .</InputChoice>
+                        rel="noopener noreferrer">General Terms of Use</a
+                    >.</InputChoice>
                 <FormItem>
                     <Button fullWidth submit>Sign up</Button>
                 </FormItem>

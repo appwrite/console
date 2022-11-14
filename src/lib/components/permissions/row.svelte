@@ -10,6 +10,7 @@
 
     let content: HTMLDivElement;
     let data = null;
+    let isFetching = false;
 
     async function getData(
         permission: string
@@ -41,8 +42,11 @@
                 use:tooltip={{
                     interactive: true,
                     allowHTML: true,
-                    onTrigger(instance) {
-                        instance.hide();
+                    onShow(instance) {
+                        if (isFetching || data) {
+                            return;
+                        }
+
                         getData(role)
                             .then((n) => {
                                 data = n;
@@ -50,7 +54,6 @@
                             .finally(() => {
                                 tick().then(() => {
                                     instance.setContent(content.innerHTML);
-                                    instance.show();
                                 });
                             });
                     }
@@ -61,8 +64,19 @@
                 {#if data}
                     {@const isUser = role.startsWith('user')}
                     {@const isTeam = role.startsWith('team')}
+                    {@const isAnonymous = !data.email && !data.phone}
                     <div class="user-profile">
-                        <AvatarInitials name={data.name} size={40} />
+                        {#if isAnonymous}
+                            <div class="avatar is-size-small ">
+                                <span class="icon-anonymous" aria-hidden="true" />
+                            </div>
+                        {:else if data.name}
+                            <AvatarInitials name={data.name} size={40} />
+                        {:else}
+                            <div class="avatar is-size-small ">
+                                <span class="icon-minus-sm" aria-hidden="true" />
+                            </div>
+                        {/if}
                         <span class="user-profile-info is-only-desktop">
                             <span class="name">
                                 {data.name
