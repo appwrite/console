@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
@@ -25,6 +26,7 @@
                 type: 'success',
                 message: `${name} has been created`
             });
+            trackEvent('submit_bucket_create');
         } catch ({ message }) {
             error = message;
         }

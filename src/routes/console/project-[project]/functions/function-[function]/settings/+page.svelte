@@ -31,6 +31,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { PageData } from './$types';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -67,6 +68,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_function_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -83,6 +85,7 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
+            trackEvent('submit_function_update_permissions');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -104,6 +107,7 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
+            trackEvent('submit_function_update_events');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -128,6 +132,7 @@
                 type: 'success',
                 message: 'CRON Schedule has been updated'
             });
+            trackEvent('submit_function_update_schedule');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -151,6 +156,7 @@
                 type: 'success',
                 message: 'Timeout has been updated'
             });
+            trackEvent('submit_function_update_timeout');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -170,6 +176,7 @@
                 type: 'success',
                 message: `${$func.name} variables have been updated`
             });
+            trackEvent('submit_variable_create');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -194,6 +201,7 @@
                 type: 'success',
                 message: `${$func.name} variables have been updated`
             });
+            trackEvent('submit_variable_update');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -209,6 +217,7 @@
                 type: 'success',
                 message: `Variable has been deleted`
             });
+            trackEvent('submit_variable_delete');
         } catch (error) {
             addNotification({
                 type: 'error',

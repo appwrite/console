@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -20,6 +21,7 @@
                 type: 'success',
                 message: `${file.name} has been deleted`
             });
+            trackEvent('submit_file_delete');
         } catch (error) {
             addNotification({
                 type: 'error',

@@ -23,7 +23,7 @@
             );
             showDelete = false;
             dispatch('deleted');
-            trackEvent('submit_auth_member_delete');
+            trackEvent('submit_member_delete');
             await goto(
                 `${base}/console/project-${$page.params.project}/auth/teams/team-${selectedMembership.teamId}/members`
             );

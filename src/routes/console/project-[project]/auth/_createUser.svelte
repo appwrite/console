@@ -38,7 +38,7 @@
                 type: 'success',
                 message: `${user.name ? user.name : 'User'} has been created`
             });
-            trackEvent('submit_auth_user_create');
+            trackEvent('submit_user_create');
             dispatch('created', user);
         } catch ({ message }) {
             error = message;

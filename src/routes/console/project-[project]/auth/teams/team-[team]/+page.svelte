@@ -28,7 +28,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_auth_team_update_name');
+            trackEvent('submit_team_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,

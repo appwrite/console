@@ -24,7 +24,7 @@
                 type: 'success',
                 message: `${team.name} has been created`
             });
-            trackEvent('submit_auth_team_create');
+            trackEvent('submit_team_create');
             dispatch('created', team);
         } catch ({ message }) {
             error = message;

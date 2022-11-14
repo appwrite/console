@@ -20,7 +20,7 @@
                 type: 'success',
                 message: `${$user.name ? $user.name : 'User'} has been deleted`
             });
-            trackEvent('submit_auth_user_delete');
+            trackEvent('submit_user_delete');
             await goto(`${base}/console/project-${$page.params.project}/auth`);
         } catch (error) {
             addNotification({

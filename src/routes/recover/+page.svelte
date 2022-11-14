@@ -4,6 +4,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let mail: string;
     const recover = async () => {
@@ -13,6 +14,7 @@
                 type: 'success',
                 message: 'We have sent you an email with a password reset link'
             });
+            trackEvent('submit_account_recover');
         } catch (error) {
             addNotification({
                 type: 'error',

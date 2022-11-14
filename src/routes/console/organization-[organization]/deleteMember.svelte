@@ -30,7 +30,7 @@
                 type: 'success',
                 message: `${selectedMember.userName} was deleted from ${selectedMember.teamName}`
             });
-            trackEvent('submit_organization_member_delete');
+            trackEvent('submit_member_delete');
         } catch (error) {
             addNotification({
                 type: 'error',

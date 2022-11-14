@@ -14,6 +14,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import FormList from '$lib/elements/forms/formList.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     const databaseId = $page.params.database;
 
@@ -47,7 +48,7 @@
         errorType = type;
     }
 
-    async function togglecollection() {
+    async function toggleCollection() {
         try {
             await sdkForProject.databases.updateCollection(
                 databaseId,
@@ -62,6 +63,7 @@
                 message: `${$collection.name} has been updated`,
                 type: 'success'
             });
+            trackEvent('submit_collection_update_enabled');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -83,6 +85,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_collection_update_name');
         } catch (error) {
             addError('name', error.message, 'error');
         }
@@ -101,6 +104,7 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
+            trackEvent('submit_collection_update_permissions');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -124,6 +128,7 @@
                 message: 'Security has been updated',
                 type: 'success'
             });
+            trackEvent('submit_collection_update_security');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -152,7 +157,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={enabled === $collection.enabled} on:click={togglecollection}>
+                <Button disabled={enabled === $collection.enabled} on:click={toggleCollection}>
                     Update
                 </Button>
             </svelte:fragment>

@@ -32,7 +32,7 @@
                 type: 'success',
                 message: `Invite has been sent to ${email}`
             });
-            trackEvent('submit_organization_member_create');
+            trackEvent('submit_member_create');
             dispatch('created', team);
         } catch ({ message }) {
             error = message;

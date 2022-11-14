@@ -20,7 +20,7 @@
                 type: 'success',
                 message: 'All sessions have been deleted'
             });
-            trackEvent('submit_auth_session_delete_all');
+            trackEvent('submit_session_delete_all');
         } catch (error) {
             addNotification({
                 type: 'error',

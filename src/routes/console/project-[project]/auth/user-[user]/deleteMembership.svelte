@@ -26,7 +26,7 @@
                 type: 'success',
                 message: `Membership has been deleted`
             });
-            trackEvent('submit_auth_member_delete');
+            trackEvent('submit_member_delete');
             await goto(
                 `${base}/console/project-${$page.params.project}/auth/user-${selectedMembership.userId}/memberships`
             );

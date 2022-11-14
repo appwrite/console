@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import type { Attributes } from './store';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -35,6 +36,7 @@
                 message: `Attribute ${key} has been created`
             });
             showCreate = false;
+            trackEvent('submit_attribute_create');
         } catch (error) {
             addNotification({
                 type: 'error',

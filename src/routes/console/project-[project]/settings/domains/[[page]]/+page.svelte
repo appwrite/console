@@ -22,6 +22,7 @@
     import type { PageData } from './$types';
     import Create from '../create.svelte';
     import Delete from '../delete.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -46,6 +47,7 @@
             }
             await sdkForConsole.projects.updateDomainVerification(projectId, domainId);
             invalidate(Dependencies.DOMAINS);
+            trackEvent('submit_domain_update_verification');
         } catch (error) {
             addNotification({
                 message: error.message,

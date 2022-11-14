@@ -7,6 +7,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let showDelete = false;
     export let selectedDomain: Models.Domain;
@@ -20,6 +21,7 @@
                 type: 'success',
                 message: `${selectedDomain.domain} has been deleted`
             });
+            trackEvent('submit_domain_delete');
         } catch (error) {
             addNotification({
                 type: 'error',

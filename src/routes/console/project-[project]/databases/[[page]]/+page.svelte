@@ -26,13 +26,16 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Databases</Heading>
 
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_database">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create database</span>
         </Button>
     </div>
 
     {#if data.databases.total}
-        <CardContainer total={data.databases.total} on:click={() => (showCreate = true)}>
+        <CardContainer
+            total={data.databases.total}
+            on:click={() => (showCreate = true)}
+            event="database">
             {#each data.databases.databases as database}
                 <GridItem1
                     href={`${base}/console/project-${project}/databases/database-${database.$id}`}>

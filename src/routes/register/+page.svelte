@@ -15,6 +15,7 @@
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
@@ -26,6 +27,7 @@
             await sdkForConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
+            trackEvent('submit_account_create');
         } catch (error) {
             disabled = false;
             addNotification({

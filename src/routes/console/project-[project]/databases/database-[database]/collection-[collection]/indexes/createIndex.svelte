@@ -10,6 +10,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Select from './select.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
@@ -66,6 +67,7 @@
                     message: 'Index has been created',
                     type: 'success'
                 });
+                trackEvent('submit_index_create');
             } catch (error) {
                 addNotification({
                     message: error.message,

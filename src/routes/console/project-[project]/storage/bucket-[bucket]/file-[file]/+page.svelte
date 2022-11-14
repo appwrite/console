@@ -14,6 +14,7 @@
     import Delete from './deleteFile.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     onMount(async () => {
         filePermissions = $file?.$permissions;
@@ -51,6 +52,7 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
+            trackEvent('submit_file_update_permissions');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -100,7 +102,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary href={downloadFile()}>
+                <Button secondary href={downloadFile()} event="download_file">
                     <span class="icon-download" aria-hidden="true" />
                     <span class="text"> Download</span></Button>
             </svelte:fragment>
@@ -143,7 +145,9 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button secondary on:click={() => (showDelete = true)} event="delete_file">
+                    Delete
+                </Button>
             </svelte:fragment>
         </CardGrid>
     {/if}

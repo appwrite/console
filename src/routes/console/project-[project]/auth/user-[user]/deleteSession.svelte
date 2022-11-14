@@ -19,7 +19,7 @@
                 type: 'success',
                 message: 'Session has been deleted'
             });
-            trackEvent('submit_auth_session_delete');
+            trackEvent('submit_session_delete');
         } catch (error) {
             addNotification({
                 type: 'error',

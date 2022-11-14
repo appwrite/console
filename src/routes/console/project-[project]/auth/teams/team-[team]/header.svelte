@@ -12,16 +12,19 @@
     const tabs = [
         {
             href: path,
-            title: 'Overview'
+            title: 'Overview',
+            event: 'overview'
         },
         {
             href: `${path}/members`,
             title: 'Members',
+            event: 'members',
             hasChildren: true
         },
         {
             href: `${path}/activity`,
             title: 'Activity',
+            event: 'activity',
             hasChildren: true
         }
     ];
@@ -42,7 +45,10 @@
 
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                event={tab.event}>
                 {tab.title}
             </Tab>
         {/each}

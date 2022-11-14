@@ -29,7 +29,7 @@
                     box.value ? 'enabled' : 'disabled'
                 }`
             });
-            trackEvent('submit_auth_limit_update', {
+            trackEvent('submit_auth_status_update', {
                 method: box.method,
                 value: box.value
             });

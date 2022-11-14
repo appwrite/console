@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -24,6 +25,7 @@
                 type: 'success',
                 message: `Document has been deleted`
             });
+            trackEvent('submit_document_delete');
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`
             );

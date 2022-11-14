@@ -14,7 +14,7 @@
         <CoverTitle href={`/console/project-${projectId}/storage/bucket-${bucketId}`}>
             {$file?.name}
         </CoverTitle>
-        <Copy value={$file?.$id}>
+        <Copy value={$file?.$id} event="file">
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />
                 File ID

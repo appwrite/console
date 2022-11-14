@@ -9,6 +9,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { func } from './store';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -96,6 +97,7 @@
             files = entrypoint = active = null;
             showCreate = false;
             dispatch('created');
+            trackEvent('submit_function_create');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -108,11 +110,19 @@
 <Modal size="big" bind:show={showCreate} on:submit={create}>
     <svelte:fragment slot="header">Create Deployment</svelte:fragment>
     <Tabs>
-        <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI}>CLI</Tab>
-        <Tab on:click={() => (mode = Mode.Github)} selected={mode === Mode.Github}>
+        <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI} event="deploy_cli">
+            CLI
+        </Tab>
+        <Tab
+            on:click={() => (mode = Mode.Github)}
+            selected={mode === Mode.Github}
+            event="deploy_github">
             GitHub - Soon!
         </Tab>
-        <Tab on:click={() => (mode = Mode.Manual)} selected={mode === Mode.Manual}>Manual</Tab>
+        <Tab
+            on:click={() => (mode = Mode.Manual)}
+            selected={mode === Mode.Manual}
+            event="deploy_manual">Manual</Tab>
     </Tabs>
     {#if mode === Mode.CLI}
         <p class="text">

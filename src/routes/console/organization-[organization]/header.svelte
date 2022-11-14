@@ -22,15 +22,18 @@
         {
             href: path,
             title: 'Projects',
+            event: 'projects',
             hasChildren: true
         },
         {
             href: `${path}/members`,
             title: 'Members',
+            event: 'members',
             hasChildren: true
         },
         {
             href: `${path}/settings`,
+            event: 'settings',
             title: 'Settings'
         }
     ];
@@ -78,7 +81,10 @@
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                event={tab.event}>
                 {tab.title}
             </Tab>
         {/each}

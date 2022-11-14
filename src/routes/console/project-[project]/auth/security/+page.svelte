@@ -62,7 +62,7 @@
                 type: 'success',
                 message: 'Updated project users limit successfully'
             });
-            trackEvent('submit_auth_session_length_update');
+            trackEvent('submit_session_length_update');
         } catch (error) {
             addNotification({
                 type: 'error',

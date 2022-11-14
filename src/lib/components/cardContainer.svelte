@@ -5,6 +5,7 @@
     export let offset = 0;
     export let limit = $cardLimit;
     export let total = 0;
+    export let event: string = null;
 </script>
 
 <ul
@@ -13,7 +14,7 @@
     <slot />
 
     {#if total > 3 ? total < limit + offset : total % 2 !== 0}
-        <Empty on:click>
+        <Empty on:click target={event}>
             <slot name="empty" />
         </Empty>
     {/if}

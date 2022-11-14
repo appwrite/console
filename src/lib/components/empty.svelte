@@ -11,9 +11,11 @@
     export let href: string = null;
 
     function track() {
-        trackEvent(`click_create_${target}`, {
-            from: 'empty'
-        });
+        if (target) {
+            trackEvent(`click_create_${target}`, {
+                from: 'empty'
+            });
+        }
     }
 </script>
 
@@ -35,7 +37,7 @@
                     </p>
                 </div>
                 <div class="u-flex u-gap-16 u-main-center">
-                    <Button external {href} text>Documentation</Button>
+                    <Button external {href} text event="empty_documentation">Documentation</Button>
                     <Button secondary on:click on:click={track}>
                         Create {target}
                     </Button>

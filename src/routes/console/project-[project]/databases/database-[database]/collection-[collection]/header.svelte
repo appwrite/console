@@ -14,28 +14,35 @@
         {
             href: path,
             title: 'Documents',
+            event: 'documents',
             hasChildren: true
         },
         {
             href: `${path}/attributes`,
-            title: 'Attributes'
+            title: 'Attributes',
+            event: 'attributes'
         },
         {
             href: `${path}/indexes`,
-            title: 'Indexes'
+            title: 'Indexes',
+            event: 'indexes'
         },
         {
             href: `${path}/activity`,
             title: 'Activity',
+            event: 'activity',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage'
+            title: 'Usage',
+            event: 'usage',
+            hasChildren: true
         },
         {
             href: `${path}/settings`,
-            title: 'Settings'
+            title: 'Settings',
+            event: 'settings'
         }
     ];
 </script>
@@ -55,7 +62,10 @@
 
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                event={tab.event}>
                 {tab.title}
             </Tab>
         {/each}

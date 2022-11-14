@@ -30,7 +30,7 @@
                 type: 'success',
                 message: `${name ? name : email} created successfully`
             });
-            trackEvent('submit_auth_member_create');
+            trackEvent('submit_member_create');
             email = name = '';
             roles = [];
             showCreate = false;

@@ -69,7 +69,7 @@
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_auth_user_update_verification_email');
+            trackEvent('submit_user_update_verification_email');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -88,7 +88,7 @@
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_auth_user_update_verification_phone');
+            trackEvent('submit_user_update_verification_phone');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -106,7 +106,7 @@
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_auth_user_update_status');
+            trackEvent('submit_user_update_status');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -122,7 +122,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_auth_user_update_name');
+            trackEvent('submit_user_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -138,7 +138,7 @@
                 message: 'Email has been updated',
                 type: 'success'
             });
-            trackEvent('submit_auth_user_update_email');
+            trackEvent('submit_user_update_email');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -154,7 +154,7 @@
                 message: 'Phone has been updated',
                 type: 'success'
             });
-            trackEvent('submit_auth_user_update_phone');
+            trackEvent('submit_user_update_phone');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -170,7 +170,7 @@
                 message: 'Password has been updated',
                 type: 'success'
             });
-            trackEvent('submit_auth_user_update_password');
+            trackEvent('submit_user_update_password');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -191,7 +191,7 @@
                 message: 'Preferences have been updated',
                 type: 'success'
             });
-            trackEvent('submit_auth_user_update_preferences');
+            trackEvent('submit_user_update_preferences');
         } catch (error) {
             addNotification({
                 message: error.message,

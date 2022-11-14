@@ -40,7 +40,7 @@
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
-            trackEvent('submit_auth_provider_update', {
+            trackEvent('submit_provider_update', {
                 provider,
                 enabled
             });

@@ -16,7 +16,7 @@
         try {
             await sdkForProject.teams.delete(team.$id);
             showDelete = false;
-            trackEvent('submit_auth_team_delete');
+            trackEvent('submit_team_delete');
             await goto(`${base}/console/project-${$page.params.project}/auth/teams`);
         } catch (error) {
             addNotification({
