@@ -39,7 +39,7 @@
         ) {
             showDropdown = false;
         }
-    };
+    }
 
     $: if (showDropdown) {
         trackEvent('click_menu_dropdown');

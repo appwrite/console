@@ -7,7 +7,7 @@ const analytics = Analytics({
     app: 'appwrite',
     plugins: [
         googleAnalytics({
-            measurementIds: [import.meta.env.VITE_GOOGLE_ANALYTICS?.toString()]
+            measurementIds: ['G-R4YJ9JN8L4']
         })
     ]
 });

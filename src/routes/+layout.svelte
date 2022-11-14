@@ -17,7 +17,6 @@
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
-        window.SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN?.toString() ?? false;
     }
 
     onMount(async () => {
@@ -38,7 +37,7 @@
          */
         if (!dev && window.SENTRY_DSN) {
             Sentry.init({
-                dsn: window.SENTRY_DSN,
+                dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
                 integrations: [new BrowserTracing()],
                 tracesSampleRate: 1.0
             });
