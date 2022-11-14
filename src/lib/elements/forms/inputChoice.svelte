@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormItem } from '.';
+    import { FormItem, Helper } from '.';
 
     export let type: 'checkbox' | 'switchbox' = 'checkbox';
     export let label: string;
@@ -8,6 +8,22 @@
     export let value = false;
     export let required = false;
     export let disabled = false;
+
+    let element: HTMLInputElement;
+    let error: string;
+
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+        if (element.validity.valueMissing) {
+            error = 'This field is required';
+            return;
+        }
+        error = element.validationMessage;
+    };
+
+    $: if (value) {
+        error = null;
+    }
 </script>
 
 <FormItem>
@@ -18,7 +34,9 @@
             {required}
             type="checkbox"
             class:switch={type === 'switchbox'}
-            bind:checked={value} />
+            bind:this={element}
+            bind:checked={value}
+            on:invalid={handleInvalid} />
 
         <div class="choice-item-content">
             <div class:u-hide={!showLabel} class="choice-item-title">{label}</div>
@@ -27,4 +45,7 @@
             {/if}
         </div>
     </label>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
+    {/if}
 </FormItem>

@@ -62,7 +62,7 @@
     }
 </script>
 
-<svelte:window on:click={handleBLur} on:keydown={handleKeydown} />
+<svelte:window on:mousedown={handleBLur} on:keydown={handleKeydown} />
 
 <dialog
     class="modal"

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Copy } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -11,9 +12,10 @@
     } from '$lib/elements/table';
     import { domain } from './store';
 
-    const parts = $domain.domain.split('.');
-    const registerable = [parts[parts.length - 2], parts[parts.length - 1]].join('.');
-    const cnameValue = $domain.domain.replace('.' + registerable, '');
+    const target = import.meta.env?.VITE_APP_DOMAIN_TARGET?.toString() ?? '';
+    $: parts = $domain.domain.split('.');
+    $: registerable = [parts[parts.length - 2], parts[parts.length - 1]].join('.');
+    $: cnameValue = $domain.domain.replace('.' + registerable, '');
 </script>
 
 <Table noStyles noMargin>
@@ -21,18 +23,21 @@
         <TableCellHead>Type</TableCellHead>
         <TableCellHead>Name</TableCellHead>
         <TableCellHead>Value</TableCellHead>
+        <TableCellHead width={50} />
     </TableHeader>
     <TableBody>
         <TableRow>
             <TableCellText title="Type">CNAME</TableCellText>
             <TableCellText title="Name">{cnameValue}</TableCellText>
-            <TableCell title="Value">
-                <div class="u-flex u-main-space-between u-cross-center">
-                    <span class="text">{$domain.domain}</span>
-                    <Copy value={$domain.domain}>
+            <TableCellText title="Value">
+                {target}
+            </TableCellText>
+            <TableCell>
+                <Button text>
+                    <Copy value={target}>
                         <span class="icon-duplicate" aria-hidden="true" />
                     </Copy>
-                </div>
+                </Button>
             </TableCell>
         </TableRow>
     </TableBody>

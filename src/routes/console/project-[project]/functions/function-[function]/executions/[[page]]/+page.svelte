@@ -51,11 +51,10 @@
     {#if data.executions.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Deployment ID</TableCellHead>
+                <TableCellHead>Execution ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
-                <TableCellHead width={70}>Type</TableCellHead>
                 <TableCellHead width={100}>Duration</TableCellHead>
             </TableHeader>
             <TableBody>
@@ -66,7 +65,7 @@
                             $log.func = $func;
                             $log.data = execution;
                         }}>
-                        <TableCell title="Deployment ID">
+                        <TableCell title="Execution ID">
                             <Copy value={execution.$id}>
                                 <Pill button
                                     ><span class="icon-duplicate" aria-hidden="true" />
@@ -86,7 +85,6 @@
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
                         </TableCellText>
-                        <TableCellText title="Type">TBI</TableCellText>
                         <TableCellText title="Duration">
                             {calculateTime(execution.duration)}</TableCellText>
                     </TableRowButton>

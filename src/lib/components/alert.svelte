@@ -18,6 +18,7 @@
     <div class="alert-grid">
         {#if dismissible}
             <button
+                type="button"
                 class="x-button"
                 aria-label="close alert box"
                 on:click={() => dispatch('dismiss')}>
