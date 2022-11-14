@@ -77,7 +77,9 @@
                     </FormList>
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
-                    <Button secondary href={`${base}/console/project-${projectId}/overview/keys`}>
+                    <Button
+                        secondary
+                        href={`${base}/console/project-${projectId}/overview/keys#integrations`}>
                         View API Keys
                     </Button>
                 </svelte:fragment>
