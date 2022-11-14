@@ -61,7 +61,7 @@
         showVerifcationDropdown = false;
         try {
             await sdkForProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
-            $user.emailVerification = !$user.emailVerification;
+            invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.emailVerification ? 'verified' : 'unverified'
