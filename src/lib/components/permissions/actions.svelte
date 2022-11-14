@@ -43,5 +43,12 @@
 </DropList>
 
 <User bind:show={showUser} on:create {groups} />
-<Team bind:show={showTeam} on:create {groups} />
+<Team
+    bind:show={showTeam}
+    on:create
+    on:custom={() => {
+        showTeam = false;
+        showCustom = true;
+    }}
+    {groups} />
 <Custom bind:show={showCustom} on:create {groups} />

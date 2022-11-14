@@ -60,7 +60,12 @@
 
 <Modal bind:show on:submit={create} on:close={reset} size="big">
     <svelte:fragment slot="header">Select users</svelte:fragment>
-    <InputSearch autofocus disabled={!results?.users?.length && !search} bind:value={search} />
+    <p class="text">Grant access to any authenticated or anonymous user.</p>
+    <InputSearch
+        autofocus
+        disabled={!results?.users?.length && !search}
+        placeholder="Search by name, email, phone or ID"
+        bind:value={search} />
     {#if results?.users?.length}
         <div class="table-wrapper">
             <table class="table is-table-layout-auto is-remove-outer-styles">

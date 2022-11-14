@@ -60,7 +60,19 @@
 
 <Modal bind:show on:submit={create} on:close={reset} size="big">
     <svelte:fragment slot="header">Select teams</svelte:fragment>
-    <InputSearch autofocus disabled={!results?.teams?.length && !search} bind:value={search} />
+    <p class="text">
+        Grant access to any member of a specific team. To grant access to team members with specific
+        roles, you will need to set a <button
+            type="button"
+            class="link"
+            on:click={() => dispatch('custom')}>custom permission</button
+        >.
+    </p>
+    <InputSearch
+        autofocus
+        disabled={!results?.teams?.length && !search}
+        placeholder="Search by name or ID"
+        bind:value={search} />
     {#if results?.teams?.length}
         <div class="table-wrapper">
             <table class="table is-table-layout-auto is-remove-outer-styles">
