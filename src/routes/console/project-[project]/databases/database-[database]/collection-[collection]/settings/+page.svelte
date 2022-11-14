@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, CardGrid, Box, Heading } from '$lib/components';
+    import { CardGrid, Box, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, InputSwitch, Helper } from '$lib/elements/forms';
     import { Permissions } from '$lib/components/permissions';
@@ -13,6 +13,7 @@
     import Delete from './deleteCollection.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import FormList from '$lib/elements/forms/formList.svelte';
 
     const databaseId = $page.params.database;
 
@@ -33,15 +34,12 @@
         collectionDocumentSecurity ??= $collection.documentSecurity;
     });
 
-    $: if (collectionDocumentSecurity || collectionPermissions) {
-        if (collectionDocumentSecurity !== $collection.documentSecurity) {
-            arePermsDisabled = false;
-        } else if (collectionPermissions) {
-            if (symmetricDifference(collectionPermissions, $collection.$permissions).length) {
-                arePermsDisabled = false;
-            } else arePermsDisabled = true;
-        }
-    }
+    $: if (
+        collectionPermissions &&
+        symmetricDifference(collectionPermissions, $collection.$permissions).length
+    ) {
+        arePermsDisabled = false;
+    } else arePermsDisabled = true;
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
@@ -95,12 +93,35 @@
                 databaseId,
                 $collection.$id,
                 $collection.name,
-                collectionDocumentSecurity ? $collection.$permissions : collectionPermissions
+                collectionPermissions
             );
             invalidate(Dependencies.COLLECTION);
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
+
+    async function updateSecurity() {
+        try {
+            await sdkForProject.databases.updateCollection(
+                databaseId,
+                $collection.$id,
+                $collection.name,
+                $collection.$permissions,
+                collectionDocumentSecurity
+            );
+            invalidate(Dependencies.COLLECTION);
+            arePermsDisabled = true;
+            addNotification({
+                message: 'Security has been updated',
                 type: 'success'
             });
         } catch (error) {
@@ -160,54 +181,49 @@
                     on:click={updateName}>Update</Button>
             </svelte:fragment>
         </CardGrid>
+
         <CardGrid>
             <Heading tag="h6" size="7">Update Permissions</Heading>
-            <p>
-                Assign read or write permissions at the <b>Collection Level</b> or
-                <b>Document Level</b>. If collection Level permissions are assigned, permissions
-                applied to individual documents are ignored.
+            <p class="text">
+                Choose who can access your collection and documents. For more information, check out
+                the <a
+                    href="https://appwrite.io/docs/permissions"
+                    target="_blank"
+                    rel="noopener noreferrer">Permissions Guide</a> in our documentation.
             </p>
             <svelte:fragment slot="aside">
-                <ul class="checkboxes-list">
-                    <li class="checkboxes-item">
-                        <label class="label">
-                            <input
-                                type="radio"
-                                class="is-small"
-                                name="level"
-                                bind:group={collectionDocumentSecurity}
-                                value={false} />
-                            <span>Collection Level</span>
-                        </label>
-                    </li>
-                    <li class="checkboxes-item">
-                        <label class="label">
-                            <input
-                                type="radio"
-                                class="is-small"
-                                name="level"
-                                bind:group={collectionDocumentSecurity}
-                                value={true} />
-                            <span>Document Level</span>
-                        </label>
-                    </li>
-                </ul>
-
-                {#if collectionDocumentSecurity}
-                    <Alert type="info">
-                        <p>
-                            Manage permissions at the <b>Document Level</b> to control access over
-                            every document in your collection. Check out our documentation for more
-                            on
-                            <a class="link" href="/#">Permissions</a>
-                        </p>
-                    </Alert>
-                {:else if collectionPermissions !== null}
+                {#if collectionPermissions}
                     <Permissions bind:permissions={collectionPermissions} withCreate />
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
                 <Button disabled={arePermsDisabled} on:click={updatePermissions}>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+
+        <CardGrid>
+            <Heading tag="h6" size="7">Update Document Security</Heading>
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputSwitch
+                        bind:value={collectionDocumentSecurity}
+                        id="security"
+                        label="Document Security" />
+                </FormList>
+                <p class="text">
+                    When document security is enabled, users will be able to access documents for
+                    which they have been granted <b>either Document or Collection permissions</b>.
+                </p>
+                <p class="text">
+                    If document security is disabled, users can access documents <b
+                        >only if they have Collection permissions</b
+                    >. Document permissions will be ignored.
+                </p>
+            </svelte:fragment>
+            <svelte:fragment slot="actions">
+                <Button
+                    disabled={collectionDocumentSecurity === $collection.documentSecurity}
+                    on:click={updateSecurity}>Update</Button>
             </svelte:fragment>
         </CardGrid>
 
