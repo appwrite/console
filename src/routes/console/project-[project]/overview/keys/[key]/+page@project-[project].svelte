@@ -29,7 +29,13 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.projects.updateKey($project.$id, $key.$id, name, $key.scopes);
+            await sdkForConsole.projects.updateKey(
+                $project.$id,
+                $key.$id,
+                name,
+                $key.scopes,
+                $key.expire
+            );
             invalidate(Dependencies.KEY);
             addNotification({
                 type: 'success',
