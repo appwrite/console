@@ -15,6 +15,7 @@
     let id: string;
     let showCustomId = false;
     let loading = false;
+
     async function createProject() {
         try {
             loading = true;
@@ -28,12 +29,11 @@
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);
         } catch ({ message }) {
+            loading = false;
             addNotification({
                 message,
                 type: 'error'
             });
-        } finally {
-            loading = false;
         }
     }
 
