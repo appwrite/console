@@ -180,4 +180,4 @@ Searching for Appwrite on Discord, GitHub, or StackOverflow and helping someone 
 
 ## Code of Conduct
 
-Help us keep Appwrite open and inclusive. Please read and follow our [Code of Conduct](/CODE_OF_CONDUCT.md).
+Help us keep Appwrite open and inclusive. Please read and follow our [Code of Conduct](https://github.com/appwrite/.github/blob/main/CODE_OF_CONDUCT.md).
