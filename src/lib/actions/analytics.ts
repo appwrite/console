@@ -11,7 +11,7 @@ const analytics = Analytics({
         })
     ]
 });
-console.log(window.GOOGLE_ANALYTICS);
+
 export function trackEvent(name: string, data: object = null): void {
     if (!isTrackingAllowed()) {
         return;
