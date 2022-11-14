@@ -59,7 +59,7 @@ function createFeedbackStore() {
             tags?: string[],
             customFields?: Record<string, unknown>[]
         ) => {
-            const response = await fetch('https://appwrite.io/v1/feedback', {
+            const response = await fetch('https://growth.appwrite.io/v1/feedback', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
