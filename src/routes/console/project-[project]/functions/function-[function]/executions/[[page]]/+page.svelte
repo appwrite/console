@@ -51,7 +51,7 @@
     {#if data.executions.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Deployment ID</TableCellHead>
+                <TableCellHead>Execution ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
@@ -66,7 +66,7 @@
                             $log.func = $func;
                             $log.data = execution;
                         }}>
-                        <TableCell title="Deployment ID">
+                        <TableCell title="Execution ID">
                             <Copy value={execution.$id}>
                                 <Pill button
                                     ><span class="icon-duplicate" aria-hidden="true" />

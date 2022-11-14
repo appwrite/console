@@ -61,7 +61,7 @@
                         </Pill>
                     </div>
                 {:else}
-                    <CustomId bind:show={showCustomId} name="Project ID" bind:id />
+                    <CustomId bind:show={showCustomId} name="Project" bind:id />
                 {/if}
                 <Button fullWidth submit disabled={loading}>Create project</Button>
             </FormList>

@@ -271,7 +271,6 @@
                         {$user.emailVerification ? 'Unverify' : 'Verify'} account
                     </Button>
                 {:else if $user.phone}
-                    test
                     <Button secondary on:click={() => updateVerificationPhone()}>
                         {$user.phoneVerification ? 'Unverify' : 'Verify'} account
                     </Button>
