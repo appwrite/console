@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { afterNavigate } from '$app/navigation';
     import { Code, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
@@ -13,8 +14,7 @@
     let showJson = false;
     let submitting = false;
 
-    const example = `
-{
+    const example = `{
     firstName: "hello", 
     lastName:"world", 
     age:"old"
@@ -51,6 +51,8 @@
         selectedFunction = null;
         show = false;
     }
+
+    afterNavigate(close);
 </script>
 
 <Modal bind:show size="big" on:submit={handleSubmit} on:close={close}>
