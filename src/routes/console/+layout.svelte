@@ -12,15 +12,14 @@
     import { onMount } from 'svelte';
     import { loading } from '../store';
     import { feedback } from '$lib/stores/app';
+    import { INTERVAL } from '$lib/constants';
 
     onMount(() => {
         loading.set(false);
-        // const interval = 5 * 60000;
-        const interval = 10000;
 
         setInterval(() => {
-            checkForFeedback(interval);
-        }, interval);
+            checkForFeedback(INTERVAL);
+        }, INTERVAL);
     });
 
     function checkForFeedback(interval: number) {
