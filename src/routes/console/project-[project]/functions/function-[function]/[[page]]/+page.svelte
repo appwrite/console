@@ -153,7 +153,7 @@
 
         <Table>
             <TableHeader>
-                <TableCellHead width={100}>Deployment ID</TableCellHead>
+                <TableCellHead width={90}>Deployment ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
                 <TableCellHead width={100}>Build Time</TableCellHead>
