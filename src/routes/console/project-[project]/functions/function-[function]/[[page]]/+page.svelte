@@ -156,6 +156,7 @@
                 <TableCellHead width={100}>Deployment ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
+                <TableCellHead width={100}>Build Time</TableCellHead>
                 <TableCellHead width={70}>Size</TableCellHead>
                 <TableCellHead width={25} />
             </TableHeader>
@@ -180,6 +181,12 @@
                                     {deployment.status}
                                 </Status>
                             </TableCell>
+
+                            <TableCellText title="Build Time">
+                                {#if deployment.status === 'ready'}
+                                    {deployment.buildTime}s
+                                {/if}
+                            </TableCellText>
 
                             <TableCellText title="Size">
                                 {calculateSize(deployment.size)}

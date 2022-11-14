@@ -95,7 +95,9 @@
                                 </div>
 
                                 <div class="grid-item-1-end-end">
-                                    <div class="text">Databases: XX</div>
+                                    <div class="text">
+                                        Databases: {format(last($usage.databases).value)}
+                                    </div>
                                 </div>
                             </div>
                         </a>
@@ -121,7 +123,9 @@
                                 </div>
 
                                 <div class="grid-item-1-end-end">
-                                    <div class="text">Buckets: XX</div>
+                                    <div class="text">
+                                        Buckets: {format(last($usage.buckets).value)}
+                                    </div>
                                 </div>
                             </div>
                         </a>
