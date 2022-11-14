@@ -43,7 +43,7 @@
         },
         [Platform.Linux]: {
             name: 'My Linux App',
-            hostname: 'com.company.appname'
+            hostname: 'appname'
         },
         [Platform.Macos]: {
             name: 'My mac OS App',
@@ -55,13 +55,13 @@
         },
         [Platform.Windows]: {
             name: 'My Windows App',
-            hostname: 'localhost'
+            hostname: 'appname'
         }
     };
 
     const hostname: Record<Platform, string> = {
         [Platform.Android]: 'Package Name',
-        [Platform.Ios]: 'Package Name',
+        [Platform.Ios]: 'Bundle ID',
         [Platform.Linux]: 'Package Name',
         [Platform.Macos]: 'Bundle ID',
         [Platform.Web]: 'Hostname',

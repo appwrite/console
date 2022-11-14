@@ -42,9 +42,7 @@
         {#if method === Method.Xcode}
             <ol class="numeric-list">
                 <li class="numeric-list-item">
-                    <span class="text">
-                        Select File > Swift Packages > Add Package Dependency
-                    </span>
+                    <span class="text"> Select File > Add Packages </span>
                 </li>
                 <li class="numeric-list-item">
                     <span class="text">
@@ -55,16 +53,19 @@
                     </span>
                 </li>
                 <li class="numeric-list-item">
-                    <span class="text"> Add version rules </span>
+                    <span class="text"
+                        >In the right panel, select your target project and add your desired version
+                        rules</span>
                 </li>
                 <li class="numeric-list-item">
                     <span class="text">
-                        Select next and wait for package resolution to complete
+                        Select Add Package and wait for package resolution to complete
                     </span>
                 </li>
                 <li class="numeric-list-item">
                     <span class="text">
-                        Make sure `Appwrite` is selected to add to your target and select finish
+                        Make sure the Appwrite package product is checked and select Add Package
+                        again
                     </span>
                 </li>
             </ol>

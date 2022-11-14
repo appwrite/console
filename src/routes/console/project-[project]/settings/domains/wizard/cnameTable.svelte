@@ -12,9 +12,10 @@
     } from '$lib/elements/table';
     import { domain } from './store';
 
-    const parts = $domain.domain.split('.');
-    const registerable = [parts[parts.length - 2], parts[parts.length - 1]].join('.');
-    const cnameValue = $domain.domain.replace('.' + registerable, '');
+    const target = import.meta.env?.VITE_APP_DOMAIN_TARGET?.toString() ?? '';
+    $: parts = $domain.domain.split('.');
+    $: registerable = [parts[parts.length - 2], parts[parts.length - 1]].join('.');
+    $: cnameValue = $domain.domain.replace('.' + registerable, '');
 </script>
 
 <Table noStyles noMargin>
@@ -29,11 +30,11 @@
             <TableCellText title="Type">CNAME</TableCellText>
             <TableCellText title="Name">{cnameValue}</TableCellText>
             <TableCellText title="Value">
-                {$domain.domain}
+                {target}
             </TableCellText>
             <TableCell>
                 <Button text>
-                    <Copy value={$domain.domain}>
+                    <Copy value={target}>
                         <span class="icon-duplicate" aria-hidden="true" />
                     </Copy>
                 </Button>

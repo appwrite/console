@@ -31,15 +31,18 @@
     });
     stepsComponents.set(2, {
         label: 'Add a CNAME Record',
-        component: Step2
+        component: Step2,
+        optional: true
     });
     stepsComponents.set(3, {
         label: 'Verify domain',
-        component: Step3
+        component: Step3,
+        optional: true
     });
     stepsComponents.set(4, {
         label: 'SSL Certificate',
-        component: Step4
+        component: Step4,
+        optional: true
     });
 </script>
 
