@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
     import { InnerModal } from '$lib/components';
     import { InputText } from '$lib/elements/forms';
 
@@ -12,6 +13,10 @@
 
     $: if (!id?.length) {
         id = null;
+    }
+
+    $: if (show) {
+        trackEvent('click_show_custom_id');
     }
 </script>
 
