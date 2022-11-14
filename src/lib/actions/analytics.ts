@@ -13,7 +13,7 @@ const analytics = Analytics({
         })
     ]
 });
-analytics.on('track', (n) => console.log(n.payload.event, n.payload.properties));
+
 export function trackEvent(name: string, data: object = null): void {
     if (!isTrackingAllowed()) {
         return;
