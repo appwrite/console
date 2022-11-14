@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, fireEvent } from '@testing-library/svelte';
-import { DropList } from '../../../src/lib/components';
+import DropList from '../../../src/lib/mock/drop.test.svelte';
 
 const data = {
     show: true
