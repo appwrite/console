@@ -6,8 +6,8 @@
 
     export let show = false;
     let selectedService: typeof services[0] = null;
-    let selectedRequest: typeof selectedService['requests'][0] = null;
-    let selectedEvent: string = null;
+    let selectedResource: typeof selectedService['resources'][0] = null;
+    let selectedAction: string = null;
     let selectedAttribute: string = null;
     let helper: string = null;
     let inputData: string = null;
@@ -20,55 +20,54 @@
         dispatch('created', copyValue);
     }
 
-    const events = ['create', 'update', 'delete'];
+    const actions = ['create', 'update', 'delete'];
 
     const services = [
         {
             name: 'buckets',
-            requests: [{ name: 'files', events }],
-            events
+            resources: [{ name: 'files', actions }],
+            actions
         },
         {
             name: 'databases',
-            requests: [
-                { name: 'collections', events },
-                { name: 'documents', events }
+            resources: [
+                { name: 'collections', actions },
+                { name: 'documents', actions }
             ],
-            events
+            actions
         },
         {
             name: 'functions',
-            requests: [
-                { name: 'deployments', events },
-                { name: 'executions', events }
+            resources: [
+                { name: 'deployments', actions },
+                { name: 'executions', actions }
             ],
-            events
+            actions
         },
         {
             name: 'teams',
-            requests: [{ name: 'memberships', events }],
-            events
+            resources: [{ name: 'memberships', actions }],
+            actions
         },
         {
             name: 'users',
-            requests: [
-                { name: 'recovery', events: ['create', 'delete'] },
-                { name: 'sessions', events: ['create', 'delete'] },
-                { name: 'verifications', events: ['create', 'delete'] }
+            resources: [
+                { name: 'recovery', actions: ['create', 'delete'] },
+                { name: 'sessions', actions: ['create', 'delete'] },
+                { name: 'verifications', actions: ['create', 'delete'] }
             ],
-            events,
+            actions,
             attributes: ['email', 'name', 'password', 'status', 'prefs']
         }
     ];
 
     function createEventString(
         service: typeof selectedService,
-        request: typeof selectedRequest,
-        event: string,
+        resource: typeof selectedResource,
+        action: string,
         attribute: string
     ) {
         const data = new Map();
-        //SERVICE
         if (service) {
             data.set('service', { value: service.name, description: 'service' });
             data.set('serviceId', {
@@ -77,46 +76,43 @@
             });
         }
 
-        //REQUEST
-        if (request) {
-            if (request.name === 'documents') {
-                data.set('request', {
+        if (resource) {
+            if (resource.name === 'documents') {
+                data.set('resource', {
                     value: 'collections',
-                    description: 'request'
+                    description: 'resource'
                 });
-                data.set('requestId', {
+                data.set('resourceId', {
                     value: '*',
                     description: `ID of collection`
                 });
-                data.set('secondaryRequest', {
+                data.set('secondaryResource', {
                     value: 'documents',
-                    description: 'secondary request'
+                    description: 'secondary resource'
                 });
-                data.set('secondaryRequestId', {
+                data.set('secondaryResourceId', {
                     value: '*',
                     description: `ID of document`
                 });
             } else {
-                data.set('request', {
-                    value: request.name,
-                    description: `request`
+                data.set('resource', {
+                    value: resource.name,
+                    description: `resource`
                 });
-                data.set('requestId', {
+                data.set('resourceId', {
                     value: '*',
-                    description: `ID of ${request?.name.slice(0, -1)}`
+                    description: `ID of ${resource?.name.slice(0, -1)}`
                 });
             }
         }
 
-        //EVENT
-        if ((event && request?.events?.includes(event)) ?? service?.events?.includes(event)) {
-            data.set('event', { value: event, description: 'event' });
+        if ((action && resource?.actions?.includes(action)) ?? service?.actions?.includes(action)) {
+            data.set('action', { value: action, description: 'action' });
         }
 
-        //ATTRIBUTE
-        if (attribute && !request) {
+        if (attribute && !resource) {
             data.set('attribute', { value: attribute, description: 'attribute' });
-        } else if (event && service.name === 'users' && !request) {
+        } else if (action && service.name === 'users' && !resource) {
             data.set('attribute', { value: '*', description: `attribute` });
         }
         return data;
@@ -124,8 +120,8 @@
 
     $: eventString = createEventString(
         selectedService,
-        selectedRequest,
-        selectedEvent,
+        selectedResource,
+        selectedAction,
         selectedAttribute
     );
     $: copyValue =
@@ -135,8 +131,8 @@
             .join('.');
 
     $: if (selectedService) {
-        selectedRequest = null;
-        selectedEvent = null;
+        selectedResource = null;
+        selectedAction = null;
         selectedAttribute = null;
         helper = null;
     }
@@ -146,8 +142,8 @@
 
     $: if (!show) {
         selectedService = null;
-        selectedRequest = null;
-        selectedEvent = null;
+        selectedResource = null;
+        selectedAction = null;
         selectedAttribute = null;
         helper = null;
         inputData = null;
@@ -177,40 +173,40 @@
     </div>
     {#if selectedService}
         <div>
-            <p class="u-text">Choose a request (optional)</p>
+            <p class="u-text">Choose a resource (optional)</p>
             <div class="u-flex u-gap-8 u-margin-block-start-8">
-                {#each selectedService.requests as request}
+                {#each selectedService.resources as resource}
                     <Pill
                         disabled={showInput}
-                        selected={request.name === selectedRequest?.name}
+                        selected={resource.name === selectedResource?.name}
                         button
                         on:click={() => {
-                            selectedRequest === request
-                                ? (selectedRequest = null)
-                                : (selectedRequest = request);
+                            selectedResource === resource
+                                ? (selectedResource = null)
+                                : (selectedResource = resource);
                             inputData = null;
-                        }}>{request.name}</Pill>
+                        }}>{resource.name}</Pill>
                 {/each}
             </div>
         </div>
         <div>
-            <p class="u-text">Choose an event (optional)</p>
+            <p class="u-text">Choose an action (optional)</p>
             <div class="u-flex u-gap-8 u-margin-block-start-8">
-                {#each selectedRequest?.events ?? selectedService?.events as event}
+                {#each selectedResource?.actions ?? selectedService?.actions as action}
                     <Pill
                         disabled={showInput}
-                        selected={selectedEvent === event}
+                        selected={selectedAction === action}
                         button
                         on:click={() => {
-                            selectedEvent === event
-                                ? (selectedEvent = null)
-                                : (selectedEvent = event);
+                            selectedAction === action
+                                ? (selectedAction = null)
+                                : (selectedAction = action);
                             inputData = null;
-                        }}>{event}</Pill>
+                        }}>{action}</Pill>
                 {/each}
             </div>
         </div>
-        {#if selectedService?.name === 'users' && !selectedRequest?.name}
+        {#if selectedService?.name === 'users' && !selectedResource?.name}
             <div>
                 <p class="u-text">Choose an attribute (optional)</p>
                 <div class="u-flex u-gap-8 u-margin-block-start-8">
