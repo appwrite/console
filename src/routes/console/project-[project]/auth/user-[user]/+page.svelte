@@ -25,6 +25,7 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -68,6 +69,7 @@
                 }`,
                 type: 'success'
             });
+            trackEvent('submit_user_update_verification_email');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -86,6 +88,7 @@
                 }`,
                 type: 'success'
             });
+            trackEvent('submit_user_update_verification_phone');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -103,6 +106,7 @@
                 }`,
                 type: 'success'
             });
+            trackEvent('submit_user_update_status');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -118,6 +122,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_user_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -133,6 +138,7 @@
                 message: 'Email has been updated',
                 type: 'success'
             });
+            trackEvent('submit_user_update_email');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -148,6 +154,7 @@
                 message: 'Phone has been updated',
                 type: 'success'
             });
+            trackEvent('submit_user_update_phone');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -163,6 +170,7 @@
                 message: 'Password has been updated',
                 type: 'success'
             });
+            trackEvent('submit_user_update_password');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -183,6 +191,7 @@
                 message: 'Preferences have been updated',
                 type: 'success'
             });
+            trackEvent('submit_user_update_preferences');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -246,8 +255,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button text={$user.status} secondary={!$user.status} on:click={() => updateStatus()}
-                >{$user.status ? 'Block account' : 'Unblock account'}
+            <Button text={$user.status} secondary={!$user.status} on:click={() => updateStatus()}>
+                {$user.status ? 'Block account' : 'Unblock account'}
             </Button>
             {#if $user.status}
                 {#if $user.phone && $user.email}
@@ -482,7 +491,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)} event="delete_user"
+                >Delete</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

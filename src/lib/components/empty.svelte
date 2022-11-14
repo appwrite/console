@@ -4,16 +4,25 @@
     import EmptyLight from '$lib/images/empty-light.svg';
     import EmptyDark from '$lib/images/empty-dark.svg';
     import { Heading } from '.';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let single = false;
     export let target: string = null;
     export let href: string = null;
+
+    function track() {
+        if (target) {
+            trackEvent(`click_create_${target}`, {
+                from: 'empty'
+            });
+        }
+    }
 </script>
 
 {#if single}
     <article class="card u-grid u-cross-center u-width-full-line common-section">
         <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
-            <button type="button" on:click|preventDefault>
+            <button type="button" on:click|preventDefault on:click={track}>
                 {#if $app.themeInUse === 'dark'}
                     <img src={EmptyDark} alt="create" aria-hidden="true" height="124" />
                 {:else}
@@ -28,8 +37,10 @@
                     </p>
                 </div>
                 <div class="u-flex u-gap-16 u-main-center">
-                    <Button external {href} text>Documentation</Button>
-                    <Button secondary on:click>Create {target}</Button>
+                    <Button external {href} text event="empty_documentation">Documentation</Button>
+                    <Button secondary on:click on:click={track}>
+                        Create {target}
+                    </Button>
                 </div>
             </slot>
         </div>
@@ -37,6 +48,7 @@
 {:else}
     <button
         on:click|preventDefault
+        on:click={track}
         type="button"
         class="card u-grid u-cross-center u-width-full-line dashed">
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

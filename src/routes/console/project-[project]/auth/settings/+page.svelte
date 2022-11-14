@@ -8,10 +8,10 @@
     import { project } from '../../store';
     import { authMethods, type AuthMethod } from '$lib/stores/auth-methods';
     import { OAuthProviders } from '$lib/stores/oauth-providers';
-    import { event } from '$lib/actions/analytics';
-    import type { Provider } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
     import { page } from '$app/stores';
+    import type { Provider } from '$lib/stores/oauth-providers';
+    import { trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
 
@@ -20,7 +20,7 @@
         OAuthProviders.load($project);
     }
 
-    const authUpdate = async (box: AuthMethod) => {
+    async function authUpdate(box: AuthMethod) {
         try {
             await sdkForConsole.projects.updateAuthStatus(projectId, box.method, box.value);
             addNotification({
@@ -29,6 +29,10 @@
                     box.value ? 'enabled' : 'disabled'
                 }`
             });
+            trackEvent('submit_auth_status_update', {
+                method: box.method,
+                value: box.value
+            });
         } catch (error) {
             box.value = !box.value;
             addNotification({
@@ -36,7 +40,7 @@
                 message: error.message
             });
         }
-    };
+    }
 
     let selectedProvider: Provider | null = null;
 </script>
@@ -69,14 +73,9 @@
                             class="card u-flex u-flex-vertical u-cross-center u-width-full-line"
                             on:click={() => {
                                 selectedProvider = provider;
-                            }}
-                            use:event={{
-                                name: 'console_users',
-                                action: 'click_update',
-                                event: 'click',
-                                parameters: {
-                                    provider: provider.name
-                                }
+                                trackEvent(`click_select_provider`, {
+                                    provider: provider.name.toLowerCase()
+                                });
                             }}>
                             <div class="image-item">
                                 <img
@@ -103,6 +102,5 @@
     <svelte:component
         this={selectedProvider.component}
         bind:provider={selectedProvider}
-        on:close={() => (selectedProvider = null)}
-        showModal />
+        on:close={() => (selectedProvider = null)} />
 {/if}

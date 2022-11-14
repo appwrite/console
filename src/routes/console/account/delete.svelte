@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -15,6 +16,7 @@
                 type: 'success',
                 message: `Account was deleted `
             });
+            trackEvent('submit_account_delete');
         } catch (error) {
             addNotification({
                 type: 'error',

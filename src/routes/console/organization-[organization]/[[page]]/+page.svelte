@@ -49,10 +49,7 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Projects</Heading>
-        <Button
-            on:click={() => {
-                showCreate = true;
-            }}>
+        <Button on:click={() => (showCreate = true)} event="create_project">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create project</span>
         </Button>
     </div>
@@ -61,6 +58,7 @@
         <CardContainer
             total={data.projects.total}
             offset={data.offset}
+            event="project"
             on:click={() => (showCreate = true)}>
             {#each data.projects.projects as project, index}
                 {#if index >= data.offset && index < CARD_LIMIT + data.offset}
@@ -110,5 +108,4 @@
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
-
 <CreateProject bind:show={showCreate} teamId={$page.params.organization} />

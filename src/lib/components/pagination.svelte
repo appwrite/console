@@ -6,6 +6,7 @@
     export let offset: number;
     export let path: string;
     export let hidePages = false;
+
     $: totalPages = Math.ceil(sum / limit);
     $: currentPage = Math.floor(offset / limit + 1);
     $: pages = pagination(currentPage, totalPages);

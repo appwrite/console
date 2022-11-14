@@ -10,6 +10,7 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Permissions } from '$lib/components/permissions';
     import { addNotification } from '$lib/stores/notifications';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -39,6 +40,7 @@
                 type: 'success',
                 message: `${file.name} has been created`
             });
+            trackEvent('submit_file_create');
         } catch ({ message }) {
             error = message;
         }

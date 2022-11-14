@@ -13,7 +13,6 @@
     import { Empty, EmptySearch, AvatarInitials, Pagination, SearchQuery } from '$lib/components';
     import Create from '../../_createTeam.svelte';
     import { goto } from '$app/navigation';
-    import { event } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -33,18 +32,9 @@
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by name">
-        <span
-            use:event={{
-                name: 'console_users',
-                action: 'click_create',
-                parameters: {
-                    type: 'team'
-                }
-            }}>
-            <Button on:click={() => (showCreate = true)}>
-                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
-            </Button>
-        </span>
+        <Button on:click={() => (showCreate = true)} event="create_team">
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
+        </Button>
     </SearchQuery>
     {#if data.teams.total}
         <Table>

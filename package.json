@@ -19,6 +19,8 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
+        "@analytics/google-analytics": "^1.0.5",
+        "analytics": "^0.8.1",
         "@aw-labs/appwrite-console": "^11.0.0",
         "@aw-labs/icons": "0.0.0-77",
         "@aw-labs/ui": "0.0.0-77",
@@ -40,7 +42,6 @@
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/svelte": "^3.2.2",
         "@testing-library/user-event": "^14.4.3",
-        "@types/gtag.js": "^0.0.12",
         "@types/prismjs": "^1.26.0",
         "@typescript-eslint/eslint-plugin": "^5.41.0",
         "@typescript-eslint/parser": "^5.41.0",

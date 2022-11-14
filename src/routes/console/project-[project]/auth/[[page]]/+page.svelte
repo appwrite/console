@@ -18,7 +18,6 @@
         TableCellText,
         TableRowLink
     } from '$lib/elements/table';
-    import { event } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
@@ -40,18 +39,9 @@
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-        <span
-            use:event={{
-                name: 'console_users',
-                action: 'click_create',
-                parameters: {
-                    type: 'user'
-                }
-            }}>
-            <Button on:click={() => (showCreate = true)}>
-                <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
-            </Button>
-        </span>
+        <Button on:click={() => (showCreate = true)} event="create_user">
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
+        </Button>
     </SearchQuery>
     {#if data.users.total}
         <Table>
@@ -106,7 +96,7 @@
                             {/if}
                         </TableCell>
                         <TableCell showOverflow title="ID">
-                            <Copy value={user.$id}>
+                            <Copy value={user.$id} event="user">
                                 <Pill button>
                                     <span class="icon-duplicate" aria-hidden="true" />
                                     <span class="text">User ID</span>

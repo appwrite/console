@@ -19,6 +19,7 @@
     let showFeedback = false;
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
@@ -38,6 +39,10 @@
         ) {
             showDropdown = false;
         }
+    };
+
+    $: if (showDropdown) {
+        trackEvent('click_menu_dropdown');
     }
 </script>
 
@@ -140,6 +145,10 @@
                                             type="radio"
                                             class="is-small"
                                             name="mode"
+                                            on:click={() =>
+                                                trackEvent('select_theme', {
+                                                    value: 'light'
+                                                })}
                                             bind:group={$app.theme}
                                             value="light" />
                                     </label>
@@ -151,6 +160,10 @@
                                             type="radio"
                                             class="is-small"
                                             name="mode"
+                                            on:click={() =>
+                                                trackEvent('select_theme', {
+                                                    value: 'dark'
+                                                })}
                                             bind:group={$app.theme}
                                             value="dark" />
                                     </label>
@@ -162,6 +175,10 @@
                                             type="radio"
                                             class="is-small"
                                             name="mode"
+                                            on:click={() =>
+                                                trackEvent('select_theme', {
+                                                    value: 'system'
+                                                })}
                                             bind:group={$app.theme}
                                             value="auto" />
                                     </label>

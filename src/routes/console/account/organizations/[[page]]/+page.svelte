@@ -29,10 +29,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Organizations</Heading>
 
-        <Button
-            on:click={() => {
-                addOrganization = true;
-            }}>
+        <Button on:click={() => (addOrganization = true)} event="create_organization">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create organization</span>
         </Button>
@@ -42,6 +39,7 @@
         <CardContainer
             total={data.organizations.total}
             offset={data.offset}
+            event="organization"
             on:click={() => (addOrganization = true)}>
             {#each data.organizations.teams as organization, index}
                 {@const avatarList = getMemberships(organization.$id)}

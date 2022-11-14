@@ -23,6 +23,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Delete from '../_deleteBucket.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
 
@@ -79,6 +80,9 @@
                 message: `${$bucket.name} has been updated`,
                 type: 'success'
             });
+            trackEvent('submit_bucket_enable', {
+                value: enabled
+            });
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -94,6 +98,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_bucket_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -110,6 +115,7 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
+            trackEvent('submit_bucket_update_permissions');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -131,6 +137,7 @@
                 message: 'Security has been updated',
                 type: 'success'
             });
+            trackEvent('submit_bucket_update_file_security');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -158,6 +165,7 @@
                 message: `${$bucket.name} has been updated`,
                 type: 'success'
             });
+            trackEvent('submit_bucket_update_security');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -181,6 +189,7 @@
                 message: `${$bucket.name} has been updated`,
                 type: 'success'
             });
+            trackEvent('submit_bucket_update_size');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -205,6 +214,7 @@
                 message: `${$bucket.name} has been updated`,
                 type: 'success'
             });
+            trackEvent('submit_bucket_update_extensions');
         } catch (error) {
             addNotification({
                 message: error.message,

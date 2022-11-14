@@ -1,32 +1,36 @@
-import type { Action } from 'svelte/action';
+import Analytics from 'analytics';
+import googleAnalytics from '@analytics/google-analytics';
+import { get } from 'svelte/store';
+import { page } from '$app/stores';
 
-export type AnalyticsActionParam = {
-    name: string;
-    action: string;
-    category?: string;
-    label?: string;
-    parameters?: Record<string, string>;
-    event?: keyof HTMLElementEventMap;
-};
+const analytics = Analytics({
+    app: 'appwrite',
+    plugins: [
+        googleAnalytics({
+            measurementIds: [import.meta.env.VITE_GOOGLE_ANALYTICS?.toString()]
+        })
+    ]
+});
 
-export const event: Action<HTMLElement, Partial<AnalyticsActionParam>> = (node, param) => {
+export function trackEvent(name: string, data: object = null): void {
     if (!isTrackingAllowed()) {
         return;
     }
 
-    node.addEventListener(param.event ?? 'click', () => {
-        gtag('event', param.name, {
-            ...param.parameters,
-            action: param.action
-        });
-    });
-};
+    analytics.track(name, { ...data, path: get(page).routeId });
+}
 
-const isTrackingAllowed = () => {
-    if (!('gtag' in window)) {
-        return false;
+export function trackPageView(path: string) {
+    if (!isTrackingAllowed()) {
+        return;
     }
 
+    analytics.page({
+        path
+    });
+}
+
+function isTrackingAllowed() {
     if (window.navigator?.doNotTrack) {
         if (navigator.doNotTrack === '1' || navigator.doNotTrack === 'yes') {
             return false;
@@ -36,4 +40,4 @@ const isTrackingAllowed = () => {
     } else {
         return true;
     }
-};
+}

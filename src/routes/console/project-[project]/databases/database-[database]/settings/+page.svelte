@@ -11,6 +11,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Delete from '../delete.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
@@ -36,6 +37,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_database_update_name');
         } catch (error) {
             addError('name', error.message, 'error');
         }

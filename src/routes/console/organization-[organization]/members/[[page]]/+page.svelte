@@ -21,6 +21,7 @@
     import Delete from '../../deleteMember.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -42,6 +43,7 @@
                 type: 'success',
                 message: `Invite has been sent to ${member.userEmail}`
             });
+            trackEvent('submit_member_create');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -56,7 +58,7 @@
         <div class="u-flex u-gap-12 common-section u-main-space-between">
             <Heading tag="h2" size="5">Members</Heading>
 
-            <Button on:click={() => newMemberModal.set(true)}>
+            <Button on:click={() => newMemberModal.set(true)} event="invite">
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Invite</span>
             </Button>
@@ -86,7 +88,10 @@
                         <TableCellText title="Email">{member.userEmail}</TableCellText>
                         <TableCell title="Roles">
                             {#if member.invited && !member.joined}
-                                <Button secondary on:click={() => resend(member)}>Resend</Button>
+                                <Button
+                                    secondary
+                                    event="invite_resend"
+                                    on:click={() => resend(member)}>Resend</Button>
                             {:else}
                                 {member.roles}
                             {/if}

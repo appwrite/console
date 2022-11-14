@@ -13,19 +13,24 @@
         {
             href: path,
             title: 'Deployments',
+            event: 'deployments',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage'
+            title: 'Usage',
+            event: 'sage',
+            hasChildren: true
         },
         {
             href: `${path}/executions`,
             title: 'Executions',
+            event: 'executions',
             hasChildren: true
         },
         {
             href: `${path}/settings`,
+            event: 'settings',
             title: 'Settings'
         }
     ];
@@ -36,7 +41,7 @@
         <CoverTitle href={`/console/project-${projectId}/functions`}>
             {$func?.name}
         </CoverTitle>
-        <Copy value={$func?.$id}>
+        <Copy value={$func?.$id} event="function">
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />
                 Function ID
@@ -46,7 +51,10 @@
 
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                event={tab.event}>
                 {tab.title}
             </Tab>
         {/each}

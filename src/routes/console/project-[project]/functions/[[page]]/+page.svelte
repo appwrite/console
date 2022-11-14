@@ -32,13 +32,17 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Functions</Heading>
-        <Button on:click={openWizard}>
+        <Button on:click={openWizard} event="create_function">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create function</span>
         </Button>
     </div>
 
     {#if data.functions.total}
-        <CardContainer total={data.functions.total} {offset} on:click={openWizard}>
+        <CardContainer
+            {offset}
+            event="functions"
+            total={data.functions.total}
+            on:click={openWizard}>
             {#each data.functions.functions as func}
                 <GridItem1
                     href={`${base}/console/project-${project}/functions/function-${func.$id}`}>
@@ -68,7 +72,7 @@
                         {/if}
                     </svelte:fragment>
 
-                    <Copy value={func.$id}>
+                    <Copy value={func.$id} event="function">
                         <Pill button><i class="icon-duplicate" />Function ID</Pill>
                     </Copy>
                 </GridItem1>

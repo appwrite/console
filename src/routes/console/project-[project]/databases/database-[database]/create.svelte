@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
 
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -31,6 +32,7 @@
                 message: `${name} has been created`
             });
             name = id = null;
+            trackEvent('submit_database_create');
         } catch (error) {
             addNotification({
                 type: 'error',

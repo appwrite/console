@@ -8,6 +8,7 @@
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -31,6 +32,7 @@
                 type: 'success',
                 message: `Invite has been sent to ${email}`
             });
+            trackEvent('submit_member_create');
             dispatch('created', team);
         } catch ({ message }) {
             error = message;

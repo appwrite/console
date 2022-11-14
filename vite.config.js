@@ -23,7 +23,10 @@ const config = {
         environment: 'jsdom',
         globals: true,
         threads: true,
-        setupFiles: ['./tests/unit/setup.ts']
+        setupFiles: ['./tests/unit/setup.ts'],
+        deps: {
+            inline: ['@analytics/type-utils']
+        }
     }
 };
 

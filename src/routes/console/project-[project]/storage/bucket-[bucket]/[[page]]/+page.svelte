@@ -35,6 +35,7 @@
     import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
     import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -64,6 +65,7 @@
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
             invalidate(Dependencies.FILES);
+            trackEvent('submit_file_delete');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -75,7 +77,7 @@
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by filename">
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_file">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
         </Button>
     </SearchQuery>

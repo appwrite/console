@@ -17,7 +17,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
             members: await sdkForConsole.teams.listMemberships(params.organization)
         };
     } catch (e) {
-        globalThis.localStorage.removeItem('organization');
+        localStorage.removeItem('organization');
         throw error(e.code, e.message);
     }
 };

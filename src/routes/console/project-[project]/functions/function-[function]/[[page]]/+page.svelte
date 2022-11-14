@@ -80,7 +80,7 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Deployments</Heading>
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_deployment">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create deployment</span>
         </Button>

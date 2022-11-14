@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
@@ -28,6 +29,7 @@
                 'default'
             );
             dispatch('created', project);
+            trackEvent('submit_project_create');
             addNotification({
                 type: 'success',
                 message: `${name} has been created`

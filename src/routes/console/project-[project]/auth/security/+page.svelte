@@ -9,6 +9,7 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     const projectId = $project.$id;
     let isLimited = $project.authLimit === 0 ? 'unlimited' : 'limited';
@@ -41,11 +42,11 @@
             );
             invalidate(Dependencies.PROJECT);
             btnActive = false;
-
             addNotification({
                 type: 'success',
                 message: 'Updated project users limit successfully'
             });
+            trackEvent('submit_auth_limit_update');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -61,6 +62,7 @@
                 type: 'success',
                 message: 'Updated project users limit successfully'
             });
+            trackEvent('submit_session_length_update');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -95,7 +97,8 @@
                         <div class="choice-item-content  u-cross-child-center">
                             <div class="choice-item-title">Unlimited</div>
                         </div>
-                        <Pill>recommended</Pill></label>
+                        <Pill>recommended</Pill>
+                    </label>
                 </li>
                 <li class="form-item is-multiple">
                     <div class="input-text-wrapper">
@@ -152,9 +155,9 @@
                     <InputSelect
                         disabled
                         id="period"
-                        {options}
                         label="Time Period"
-                        value={options[0].value} />
+                        value={options[0].value}
+                        {options} />
                 </ul>
             </form>
         </svelte:fragment>
@@ -164,7 +167,9 @@
                 disabled={true}
                 on:click={() => {
                     updateSessionLength();
-                }}>Update</Button>
+                }}>
+                Update
+            </Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

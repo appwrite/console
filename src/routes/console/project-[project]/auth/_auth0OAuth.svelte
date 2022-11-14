@@ -8,6 +8,7 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let provider: Provider;
 
@@ -38,6 +39,10 @@
                 message: `${provider.name} authentication has been ${
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
+            });
+            trackEvent('submit_provider_update', {
+                provider,
+                enabled
             });
             provider = null;
             invalidate(Dependencies.PROJECT);
