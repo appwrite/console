@@ -38,6 +38,7 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import Output from '$lib/components/output.svelte';
+    import { calculateTime } from '$lib/helpers/timeConversion';
 
     export let data: PageData;
 
@@ -119,10 +120,14 @@
                             <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
                             <p>Entrypoint: {activeDeployment?.entrypoint}</p>
                         </div>
-
-                        <Status status={activeDeployment.status}>
-                            {activeDeployment.status}
-                        </Status>
+                        <div class="u-flex u-flex-vertical u-cross-end">
+                            <Status status={activeDeployment.status}>
+                                {activeDeployment.status}
+                            </Status>
+                            <p class="text">
+                                {calculateTime(activeDeployment.buildTime)}
+                            </p>
+                        </div>
                     </div>
                 </svelte:fragment>
 
@@ -184,7 +189,7 @@
 
                             <TableCellText title="Build Time">
                                 {#if deployment.status === 'ready'}
-                                    {deployment.buildTime}s
+                                    {calculateTime(deployment.buildTime)}
                                 {/if}
                             </TableCellText>
 

@@ -27,7 +27,7 @@
     export let data: PageData;
 
     const projectId = $page.params.project;
-    const target = import.meta.env?.VITE_APP_DOMAIN_TARGET?.toString() ?? '';
+    const target = window?.location.hostname ?? '';
     let showDelete = false;
     let selectedDomain: Models.Domain;
     let isVerifying = {};
