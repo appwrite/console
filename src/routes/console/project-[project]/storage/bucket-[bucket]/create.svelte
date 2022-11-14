@@ -54,7 +54,7 @@
     <svelte:fragment slot="header">Create File</svelte:fragment>
     <FormList>
         <div>
-            <InputFile bind:files />
+            <InputFile bind:files allowedFileExtensions={$bucket.allowedFileExtensions} />
             <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
         </div>
 

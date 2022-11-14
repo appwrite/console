@@ -15,9 +15,9 @@
         <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
             <button type="button" on:click|preventDefault>
                 {#if $app.themeInUse === 'dark'}
-                    <img src={EmptyDark} alt="create" aria-hidden="true" />
+                    <img src={EmptyDark} alt="create" aria-hidden="true" height="124" />
                 {:else}
-                    <img src={EmptyLight} alt="create" aria-hidden="true" />
+                    <img src={EmptyLight} alt="create" aria-hidden="true" height="124" />
                 {/if}
             </button>
             <slot>
