@@ -21,5 +21,5 @@
     {#if status}
         <span class="status-icon" />
     {/if}
-    <span class="text u-margin-inline-end-16"><slot /></span>
+    <span class="text"><slot /></span>
 </div>

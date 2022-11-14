@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     return {
         offset,
-        logs: sdkForProject.databases.listDocumentLogs(
+        logs: await sdkForProject.databases.listDocumentLogs(
             params.database,
             params.collection,
             params.document,
