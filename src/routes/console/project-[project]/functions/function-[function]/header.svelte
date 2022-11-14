@@ -39,7 +39,7 @@
         <Copy value={$func?.$id}>
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />
-                ID Details
+                Function ID
             </Pill>
         </Copy>
     </svelte:fragment>
