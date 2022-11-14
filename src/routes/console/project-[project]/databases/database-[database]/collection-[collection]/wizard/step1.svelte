@@ -26,7 +26,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Create document data</svelte:fragment>
+    <svelte:fragment slot="title">Create data</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Provide document data based on attributes you created earlier.
     </svelte:fragment>

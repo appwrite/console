@@ -5,7 +5,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Set Permissions</svelte:fragment>
+    <svelte:fragment slot="title">Permissions</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Assign read or write permissions at the <b> Collection Level</b> or
         <b> Document Level</b>. If collection Level permissions are assigned, permissions applied to

@@ -55,7 +55,6 @@
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
-                <TableCellHead width={70}>Type</TableCellHead>
                 <TableCellHead width={100}>Duration</TableCellHead>
             </TableHeader>
             <TableBody>
@@ -86,7 +85,6 @@
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
                         </TableCellText>
-                        <TableCellText title="Type">TBI</TableCellText>
                         <TableCellText title="Duration">
                             {calculateTime(execution.duration)}</TableCellText>
                     </TableRowButton>

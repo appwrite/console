@@ -133,7 +133,9 @@
                             $log.show = true;
                             $log.func = $func;
                             $log.data = activeDeployment;
-                        }}>Logs</Button>
+                        }}>
+                        Build logs
+                    </Button>
                     <Button secondary on:click={() => execute.set($func)}>Execute now</Button>
                 </svelte:fragment>
             </CardGrid>
@@ -154,7 +156,6 @@
                 <TableCellHead width={100}>Deployment ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
-                <TableCellHead width={90}>Build time</TableCellHead>
                 <TableCellHead width={70}>Size</TableCellHead>
                 <TableCellHead width={25} />
             </TableHeader>
@@ -179,8 +180,7 @@
                                     {deployment.status}
                                 </Status>
                             </TableCell>
-                            <!-- TODO: replace with build time, when implemented -->
-                            <TableCellText title="Build Time">TBI</TableCellText>
+
                             <TableCellText title="Size">
                                 {calculateSize(deployment.size)}
                             </TableCellText>
