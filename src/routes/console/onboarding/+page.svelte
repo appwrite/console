@@ -65,7 +65,7 @@
                 {:else}
                     <CustomId bind:show={showCustomId} name="Project" bind:id />
                 {/if}
-                <Button fullWidth submit disabled={loading} event="create_project">
+                <Button fullWidth submit disabled={loading || name === ''} event="create_project">
                     Create project
                 </Button>
             </FormList>
