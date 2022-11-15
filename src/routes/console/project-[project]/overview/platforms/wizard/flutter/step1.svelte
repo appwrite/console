@@ -38,13 +38,13 @@
             name: 'My Android App',
             hostname: 'com.company.appname',
             tooltip:
-                "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
+                'Your package name is generally the applicationId in your app-level build.gradle file.'
         },
         [Platform.Ios]: {
             name: 'My iOS App',
             hostname: 'com.company.appname',
             tooltip:
-                'Your package name is generally the applicationId in your app-level build.gradle file.'
+                "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
         [Platform.Linux]: {
             name: 'My Linux App',

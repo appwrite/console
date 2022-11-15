@@ -82,7 +82,7 @@
         </Button>
     </SearchQuery>
 
-    {#if data.files.total && !data.search}
+    {#if data.files.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
@@ -106,10 +106,12 @@
                                 </div>
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
-                            <TableCellText title="Size"
-                                >{calculateSize(file.sizeOriginal)}</TableCellText>
-                            <TableCellText title="Date Created"
-                                >{toLocaleDate(file.$createdAt)}</TableCellText>
+                            <TableCellText title="Size">
+                                {calculateSize(file.sizeOriginal)}
+                            </TableCellText>
+                            <TableCellText title="Date Created">
+                                {toLocaleDate(file.$createdAt)}
+                            </TableCellText>
                             <TableCell>
                                 <div class="u-flex u-main-center">
                                     <button
@@ -140,9 +142,11 @@
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size">
-                                {calculateSize(file.sizeOriginal)}</TableCellText>
+                                {calculateSize(file.sizeOriginal)}
+                            </TableCellText>
                             <TableCellText title="Date Created">
-                                {toLocaleDate(file.$createdAt)}</TableCellText>
+                                {toLocaleDate(file.$createdAt)}
+                            </TableCellText>
                             <TableCell showOverflow>
                                 <DropList
                                     bind:show={showDropdown[index]}
@@ -182,7 +186,7 @@
                 offset={data.offset}
                 sum={data.files.total} />
         </div>
-    {:else if data.search && !data.files.total}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{data.search}’</b>
