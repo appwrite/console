@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, Copy, Heading } from '$lib/components';
+    import { CardGrid, Box, Copy, Heading, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
@@ -15,7 +15,9 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { bucket } from '../store';
 
+    let showFileAlert = true;
     onMount(async () => {
         filePermissions = $file?.$permissions;
     });
@@ -115,7 +117,28 @@
                 permissions are enabled, file permissions will be ignored.
             </p>
             <svelte:fragment slot="aside">
-                <Permissions bind:permissions={filePermissions} />
+                {#if $bucket.fileSecurity}
+                    {#if showFileAlert}
+                        <Alert type="info" dismissible on:dismiss={() => (showFileAlert = false)}>
+                            <svelte:fragment slot="title">File security is enabled</svelte:fragment>
+                            <p class="text">
+                                Users will be able to access this file if they have been granted <b
+                                    >either File or Bucket permissions.
+                                </b>
+                            </p>
+                        </Alert>
+                    {/if}
+                    <Permissions bind:permissions={filePermissions} />
+                {:else}
+                    <Alert type="info">
+                        <svelte:fragment slot="title">File security is disabled</svelte:fragment>
+                        <p class="text">
+                            If you want to assign document permissions, navigate to Bucket settings
+                            and enable file security. Otherwise, only Bucket permissions will be
+                            used.
+                        </p>
+                    </Alert>
+                {/if}
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
