@@ -53,9 +53,9 @@
         class="card u-grid u-cross-center u-width-full-line dashed">
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
             <div class="common-section">
-                <Button secondary round>
+                <div class="button is-secondary is-only-icon">
                     <i class="icon-plus" />
-                </Button>
+                </div>
             </div>
             <div class="common-section">
                 <slot />
