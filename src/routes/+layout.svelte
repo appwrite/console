@@ -46,23 +46,25 @@
         /**
          * Handle initial load.
          */
-        const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
-        if ($user) {
-            if (!$page.url.pathname.startsWith('/console')) {
-                await goto(`${base}/console`, {
-                    replaceState: true
-                });
-            }
-        } else {
-            if (acceptedRoutes.includes($page.url.pathname)) {
-                await goto(`${base}${$page.url.pathname}${$page.url.search}`);
+        if (!$page.url.pathname.startsWith('/auth')) {
+            const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+            if ($user) {
+                if (!$page.url.pathname.startsWith('/console')) {
+                    await goto(`${base}/console`, {
+                        replaceState: true
+                    });
+                }
             } else {
-                await goto(`${base}/login`, {
-                    replaceState: true
-                });
+                if (acceptedRoutes.includes($page.url.pathname)) {
+                    await goto(`${base}${$page.url.pathname}${$page.url.search}`);
+                } else {
+                    await goto(`${base}/login`, {
+                        replaceState: true
+                    });
+                }
             }
-            loading.set(false);
         }
+        loading.set(false);
     });
 
     afterNavigate((navigation) => {
