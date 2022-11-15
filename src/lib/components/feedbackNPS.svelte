@@ -21,7 +21,9 @@
         try {
             await feedback.submitFeedback(undefined, email, message, ['npm'], [{ value, name }]);
             console.log(value, message);
+            feedback.switchType('general');
         } catch (error) {
+            feedback.switchType('general');
             addNotification({
                 type: 'error',
                 message: error.message

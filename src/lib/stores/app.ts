@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
+import type { e } from 'vitest/dist/index-40e0cb97';
 
 export type AppStore = {
     theme: 'light' | 'dark' | 'auto';
@@ -33,9 +34,9 @@ function createFeedbackStore() {
                 feedback.notification = !feedback.notification;
                 return feedback;
             }),
-        switchType: () =>
+        switchType: (feedType: 'nps' | 'general') =>
             update((feedback) => {
-                feedback.type = feedback.type === 'nps' ? 'general' : 'nps';
+                feedback.type = feedType;
                 return feedback;
             }),
         addVisualization: () =>
