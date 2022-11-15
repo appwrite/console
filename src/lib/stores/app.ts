@@ -23,7 +23,7 @@ function createFeedbackStore() {
         elapsed: browser ? parseInt(localStorage.getItem('feedbackElapsed')) : 0,
         visualized: browser ? parseInt(localStorage.getItem('feedbackVisualized')) : 0,
         notification: false,
-        type: 'nps'
+        type: 'general'
     });
     return {
         subscribe,

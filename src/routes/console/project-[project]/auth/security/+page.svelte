@@ -20,8 +20,6 @@
     let btnActive = false;
 
     let options = [
-        { label: 'years', value: 'y' },
-        { label: 'months', value: 'M' },
         { label: 'days', value: 'd' },
         { label: 'hours', value: 'h' },
         { label: 'minutes', value: 'm' },
@@ -64,6 +62,7 @@
         try {
             await sdkForConsole.projects.updateAuthDuration(projectId, timeToSeconds(time, period));
             invalidate(Dependencies.PROJECT);
+            period = 's';
 
             addNotification({
                 type: 'success',
@@ -77,6 +76,10 @@
             });
         }
     }
+
+    project.subscribe((p) => {
+        time = p.authDuration;
+    });
 </script>
 
 <Container>
@@ -159,14 +162,14 @@
             <form class="form u-grid u-gap-16">
                 <ul class="form-list is-multiple">
                     <InputNumber id="length" label="Length" bind:value={time} />
-                    <InputSelect id="period" label="Time Period" value={period} {options} />
+                    <InputSelect id="period" label="Time Period" bind:value={period} {options} />
                 </ul>
             </form>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
             <Button
-                disabled={period !== 's' || time !== $project.authDuration}
+                disabled={period === 's' && time === $project.authDuration}
                 on:click={() => {
                     updateSessionLength();
                 }}>
