@@ -20,7 +20,7 @@
     import { page } from '$app/stores';
     import type { Models } from '@aw-labs/appwrite-console';
     import Variable from '../../createVariable.svelte';
-    import Upload from './uploadVariables.svelte';
+    // import Upload from './uploadVariables.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Roles } from '$lib/components/permissions';
     import { symmetricDifference } from '$lib/helpers/array';
@@ -38,7 +38,7 @@
     const functionId = $page.params.function;
     let showDelete = false;
     let selectedVar: Models.Variable = null;
-    let showVariablesUpload = false;
+    // let showVariablesUpload = false;
     let showVariablesModal = false;
     let showVariablesValue = [];
     let showVariablesDropdown = [];
@@ -439,10 +439,10 @@
                     <span class="icon-download" />
                     <span class="text">Download .env file</span>
                 </Button>
-                <Button secondary on:click={() => (showVariablesUpload = true)}>
+                <!-- <Button secondary on:click={() => (showVariablesUpload = true)}>
                     <span class="icon-upload" />
                     <span class="text">Import .env file</span>
-                </Button>
+                </Button> -->
             </div>
             <table class="table is-remove-outer-styles">
                 <thead class="table-thead">
@@ -575,5 +575,5 @@
     bind:showCreate={showVariablesModal}
     on:created={handleVariableCreated}
     on:updated={handleVariableUpdated} />
-<Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />
+<!-- <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} /> -->
 <EventModal bind:show={showEvents} on:created={handleEvent} />
