@@ -44,7 +44,7 @@
     class:grid={!showSideNavigation}
     class:is-open={isOpen}
     class:u-hide={$wizard.show || $log.show}>
-    <header class="main-header">
+    <header class="main-header u-padding-inline-end-0">
         <button
             class:u-hide={!showSideNavigation}
             class="icon-button is-no-desktop"

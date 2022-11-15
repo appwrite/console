@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, Heading, Alert } from '$lib/components';
+    import { CardGrid, Box, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, InputSwitch, Helper } from '$lib/elements/forms';
     import { Permissions } from '$lib/components/permissions';
@@ -197,21 +197,8 @@
                     rel="noopener noreferrer">Permissions Guide</a> in our documentation.
             </p>
             <svelte:fragment slot="aside">
-                {#if $collection.documentSecurity}
-                    {#if collectionPermissions}
-                        <Permissions bind:permissions={collectionPermissions} withCreate />
-                    {/if}
-                {:else}
-                    <Alert type="info">
-                        <svelte:fragment slot="title">
-                            Document security is disabled
-                        </svelte:fragment>
-                        <p class="text">
-                            If you want to assign document permissions, navigate to Collection
-                            settings and enable document security. Otherwise, only Collection
-                            permissions will be used.
-                        </p>
-                    </Alert>
+                {#if collectionPermissions}
+                    <Permissions bind:permissions={collectionPermissions} withCreate />
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">

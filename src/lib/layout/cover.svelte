@@ -10,7 +10,7 @@
 
 <div class="top-cover" class:is-adjust-content-to-cover={adjustContentToCover}>
     <div class="container" {style}>
-        <div class="u-flex u-cross-center u-gap-16 u-margin-block-start-20">
+        <div class="u-flex u-cross-center u-gap-16 u-margin-block-start-20 u-flex-wrap">
             <slot name="header" />
         </div>
         <slot />

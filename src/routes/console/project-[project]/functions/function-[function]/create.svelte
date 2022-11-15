@@ -20,7 +20,7 @@
     }
     let mode: Mode = Mode.CLI;
     let entrypoint: string;
-    let active: boolean;
+    let active = false;
     let files: FileList;
     let lang = 'js';
     let codeSnippets = {};
@@ -174,7 +174,10 @@
                 id="entrypoint"
                 bind:value={entrypoint}
                 required />
-            <InputFile label="Gzipped code (tar.gz)" bind:files />
+            <InputFile
+                label="Gzipped code (tar.gz)"
+                allowedFileExtensions={['tar.gz']}
+                bind:files />
             <InputChoice label="Activate Deployment after build" id="activate" bind:value={active}>
                 This deployment will be activated after the build is completed.</InputChoice>
         </FormList>

@@ -70,7 +70,7 @@
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
-                {#if $feedback.notification}
+                {#if $feedback.type === 'nps'}
                     <FeedbackNPS bind:show={showFeedback} />
                 {:else}
                     <FeedbackGeneral bind:show={showFeedback} />

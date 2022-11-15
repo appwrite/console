@@ -28,8 +28,10 @@
         const hours = Math.floor($feedback.elapsed / 60);
         if (hours >= 1 && hours < 10 && $feedback.visualized < 1) {
             feedback.toggleNotification();
+            feedback.switchType('nps');
         } else if (hours >= $feedback.visualized * 10) {
             feedback.toggleNotification();
+            feedback.switchType('nps');
         }
     }
 
