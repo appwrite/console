@@ -29,7 +29,9 @@
     const logout = async (session: Models.Session) => {
         await sdkForConsole.account.deleteSession(session.$id);
         trackEvent('submit_account_delete_session');
-        await goto(`${base}/login`);
+        if (session.current) {
+            await goto(`${base}/login`);
+        }
         invalidate(Dependencies.ACCOUNT_SESSIONS);
     };
     const logoutAll = async () => {
