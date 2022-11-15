@@ -15,7 +15,7 @@ Appwrite Console has been built with the following frameworks:
 
 ## Developer Experience
 
-Developer experience has always been a priority for Appwrite since its inception. The web console is one of the most important pieces of the developer experience puzzle. The new web console not only looks better but serves a functional purpose. 
+Developer experience has always been a priority for Appwrite since its inception. The web console is one of the most important pieces of the developer experience puzzle. The new web console not only looks better but serves a functional purpose.
 
 ### Simplicity
 
