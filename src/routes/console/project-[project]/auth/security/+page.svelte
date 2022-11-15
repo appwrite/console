@@ -10,13 +10,13 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import { timeToMinutes } from '$lib/helpers/timeConversion';
+    import { timeToSeconds } from '$lib/helpers/timeConversion';
 
     const projectId = $project.$id;
     let isLimited = $project.authLimit === 0 ? 'unlimited' : 'limited';
     let newLimit = $project.authLimit === 0 ? 100 : $project.authLimit;
-    let time: number = $project.authDuration;
-    let period = 'm';
+    let time = $project.authDuration;
+    let period = 's';
     let btnActive = false;
 
     let options = [
@@ -62,7 +62,7 @@
     }
     async function updateSessionLength() {
         try {
-            await sdkForConsole.projects.updateAuthDuration(projectId, timeToMinutes(time, period));
+            await sdkForConsole.projects.updateAuthDuration(projectId, timeToSeconds(time, period));
             invalidate(Dependencies.PROJECT);
 
             addNotification({
@@ -166,7 +166,7 @@
 
         <svelte:fragment slot="actions">
             <Button
-                disabled={options !== 'm' || time !== $project.authDuration}
+                disabled={period !== 's' || time !== $project.authDuration}
                 on:click={() => {
                     updateSessionLength();
                 }}>
