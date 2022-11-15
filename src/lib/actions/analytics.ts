@@ -42,6 +42,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
         },
         body: JSON.stringify({
             action: event,
+            label: event,
             url: window.location.origin + path,
             data: {
                 email,
