@@ -61,10 +61,10 @@
                     await goto(`${base}/login`, {
                         replaceState: true
                     });
+                    loading.set(false);
                 }
             }
         }
-        loading.set(false);
     });
 
     afterNavigate((navigation) => {
