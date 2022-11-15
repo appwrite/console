@@ -5,9 +5,27 @@
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
-    let selectedService: typeof services[0] = null;
-    let selectedResource: typeof selectedService['resources'][0] = null;
-    let selectedAction: string = null;
+
+    type Service = {
+        name: string;
+        resources: Resource[];
+        actions?: Action[];
+    };
+
+    type Resource = {
+        name: string;
+        actions?: Action[];
+        attributes?: string[];
+    };
+
+    type Action = {
+        name: string;
+        attributes?: string[];
+    };
+
+    let selectedService: Service = null;
+    let selectedResource: Resource = null;
+    let selectedAction: Action = null;
     let selectedAttribute: string = null;
     let helper: string = null;
     let inputData: string = null;
@@ -20,7 +38,7 @@
         dispatch('created', copyValue);
     }
 
-    const actions = ['create', 'update', 'delete'];
+    const actions = [{ name: 'create' }, { name: 'update' }, { name: 'delete' }];
 
     const services = [
         {
@@ -47,24 +65,31 @@
         {
             name: 'teams',
             resources: [{ name: 'memberships', actions }],
-            actions
+            actions: [
+                { name: 'create' },
+                { name: 'update', attributes: ['status'] },
+                { name: 'delete' }
+            ]
         },
         {
             name: 'users',
             resources: [
-                { name: 'recovery', actions: ['create', 'delete'] },
-                { name: 'sessions', actions: ['create', 'delete'] },
-                { name: 'verifications', actions: ['create', 'delete'] }
+                { name: 'recovery', actions: [{ name: 'create' }, { name: 'delete' }] },
+                { name: 'sessions', actions: [{ name: 'create' }, { name: 'delete' }] },
+                { name: 'verifications', actions: [{ name: 'create' }, { name: 'delete' }] }
             ],
-            actions,
-            attributes: ['email', 'name', 'password', 'status', 'prefs']
+            actions: [
+                { name: 'create' },
+                { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
+                { name: 'delete' }
+            ]
         }
     ];
 
     function createEventString(
-        service: typeof selectedService,
-        resource: typeof selectedResource,
-        action: string,
+        service: Service,
+        resource: Resource,
+        action: Action,
         attribute: string
     ) {
         const data = new Map();
@@ -106,13 +131,13 @@
             }
         }
 
-        if ((action && resource?.actions?.includes(action)) ?? service?.actions?.includes(action)) {
-            data.set('action', { value: action, description: 'action' });
+        if (action) {
+            data.set('action', { value: action.name, description: 'action' });
         }
 
         if (attribute && !resource) {
             data.set('attribute', { value: attribute, description: 'attribute' });
-        } else if (action && service.name === 'users' && !resource) {
+        } else if (action?.attributes && !resource) {
             data.set('attribute', { value: '*', description: `attribute` });
         }
         return data;
@@ -136,6 +161,11 @@
         selectedAttribute = null;
         helper = null;
     }
+
+    $: if (!selectedAction?.attributes) {
+        selectedAttribute = null;
+    }
+
     $: if (!showInput) {
         helper = null;
     }
@@ -200,15 +230,15 @@
                                 ? (selectedAction = null)
                                 : (selectedAction = action);
                             inputData = null;
-                        }}>{action}</Pill>
+                        }}>{action.name}</Pill>
                 {/each}
             </div>
         </div>
-        {#if selectedService?.name === 'users' && !selectedResource?.name}
+        {#if selectedAction?.attributes}
             <div>
                 <p class="u-text">Choose an attribute (optional)</p>
                 <div class="u-flex u-gap-8 u-margin-block-start-8">
-                    {#each selectedService?.attributes as attribute}
+                    {#each selectedAction.attributes as attribute}
                         <Pill
                             disabled={showInput}
                             selected={selectedAttribute === attribute}
