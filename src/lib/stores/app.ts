@@ -33,9 +33,9 @@ function createFeedbackStore() {
                 feedback.notification = !feedback.notification;
                 return feedback;
             }),
-        switchType: () =>
+        switchType: (feedType: 'nps' | 'general') =>
             update((feedback) => {
-                feedback.type = feedback.type === 'nps' ? 'general' : 'nps';
+                feedback.type = feedType;
                 return feedback;
             }),
         addVisualization: () =>

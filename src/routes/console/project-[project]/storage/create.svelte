@@ -19,13 +19,13 @@
     const create = async () => {
         try {
             const bucket = await sdkForProject.storage.createBucket(id ? id : 'unique()', name);
-            name = null;
             showCreate = false;
             dispatch('created', bucket);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
             });
+            name = null;
             trackEvent('submit_bucket_create');
         } catch ({ message }) {
             error = message;
