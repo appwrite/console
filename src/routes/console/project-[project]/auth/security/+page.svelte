@@ -10,16 +10,22 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { timeToSeconds } from '$lib/helpers/timeConversion';
+    import { writable } from 'svelte/store';
 
     const projectId = $project.$id;
     let isLimited = $project.authLimit === 0 ? 'unlimited' : 'limited';
     let newLimit = $project.authLimit === 0 ? 100 : $project.authLimit;
+    let time = $project.authDuration;
+    let timeInSec = time;
+    let period = writable('s');
     let btnActive = false;
 
     let options = [
-        { label: 'years', value: 'years' },
-        { label: 'months', value: 'months' },
-        { label: 'days', value: 'days' }
+        { label: 'days', value: 'd' },
+        { label: 'hours', value: 'h' },
+        { label: 'minutes', value: 'm' },
+        { label: 'seconds', value: 's' }
     ];
 
     $: {
@@ -56,7 +62,12 @@
     }
     async function updateSessionLength() {
         try {
-            //TODO: implement correct SDK call
+            await sdkForConsole.projects.updateAuthDuration(
+                projectId,
+                timeToSeconds(time, $period)
+            );
+            invalidate(Dependencies.PROJECT);
+            $period = 's';
 
             addNotification({
                 type: 'success',
@@ -69,6 +80,26 @@
                 message: error.message
             });
         }
+    }
+
+    period.subscribe((p) => {
+        if (p === 'd') {
+            time = timeInSec / 86400;
+            timeInSec = timeToSeconds(time, p);
+        } else if (p === 'h') {
+            time = timeInSec / 3600;
+            timeInSec = timeToSeconds(time, p);
+        } else if (p === 'm') {
+            time = timeInSec / 60;
+            timeInSec = timeToSeconds(time, p);
+        } else if (p === 's') {
+            time = timeInSec;
+            timeInSec = timeToSeconds(time, p);
+        }
+    });
+
+    $: if (time) {
+        timeInSec = timeToSeconds(time, $period);
     }
 </script>
 
@@ -143,7 +174,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h2" size="6">Session Length <Pill>Coming Soon!</Pill></Heading>
+        <Heading tag="h2" size="6">Session Length</Heading>
         <p>
             If you reduce the limit, users who are currently logged in will be logged out of the
             application.
@@ -151,20 +182,15 @@
         <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
                 <ul class="form-list is-multiple">
-                    <InputNumber disabled id="length" label="Length" value={1} />
-                    <InputSelect
-                        disabled
-                        id="period"
-                        label="Time Period"
-                        value={options[0].value}
-                        {options} />
+                    <InputNumber id="length" label="Length" bind:value={time} />
+                    <InputSelect id="period" label="Time Period" bind:value={$period} {options} />
                 </ul>
             </form>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
             <Button
-                disabled={true}
+                disabled={$period === 's' && time === $project.authDuration}
                 on:click={() => {
                     updateSessionLength();
                 }}>

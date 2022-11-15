@@ -23,3 +23,44 @@ export function calculateTime(time: number) {
         return `${years} y`;
     }
 }
+
+export function timeToSeconds(time: number, unit: string) {
+    switch (unit) {
+        case 'ms':
+            return time / 1000;
+        case 's':
+            return time;
+        case 'm':
+            return time * 60;
+        case 'h':
+            return time * 60 * 60;
+        case 'd':
+            return time * 60 * 60 * 24;
+        case 'M':
+            return time * 60 * 60 * 24 * 30;
+        case 'y':
+            return time * 60 * 60 * 24 * 30 * 12;
+        default:
+            return time;
+    }
+}
+export function timeToMinutes(time: number, unit: string) {
+    switch (unit) {
+        case 'ms':
+            return time / 1000 / 60;
+        case 's':
+            return time / 60;
+        case 'm':
+            return time;
+        case 'h':
+            return time * 60;
+        case 'd':
+            return time * 60 * 24;
+        case 'M':
+            return time * 60 * 24 * 30;
+        case 'y':
+            return time * 60 * 24 * 30 * 12;
+        default:
+            return time;
+    }
+}
