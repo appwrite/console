@@ -8,11 +8,10 @@
 
 [Appwrite](https://appwrite.io) Console is the Graphical User Interface that developers interact with when accessing their Appwrite instance in the web browser.
 
-Appwrite Console has been built with the following libraries/frameworks:
+Appwrite Console has been built with the following frameworks:
 
 -   [Svelte](https://svelte.dev/)
 -   [Svelte Kit](https://kit.svelte.dev/)
--   [@appwrite/ui](https://github.com/appwrite/ui)
 
 ## Table of Contents:
 
