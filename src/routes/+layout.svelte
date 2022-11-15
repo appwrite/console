@@ -55,7 +55,6 @@
                     });
                 }
             } else {
-                console.log(4);
                 if (acceptedRoutes.includes($page.url.pathname)) {
                     await goto(`${base}${$page.url.pathname}${$page.url.search}`);
                 } else {
