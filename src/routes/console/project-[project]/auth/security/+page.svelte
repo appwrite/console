@@ -11,12 +11,14 @@
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { timeToSeconds } from '$lib/helpers/timeConversion';
+    import { writable } from 'svelte/store';
 
     const projectId = $project.$id;
     let isLimited = $project.authLimit === 0 ? 'unlimited' : 'limited';
     let newLimit = $project.authLimit === 0 ? 100 : $project.authLimit;
     let time = $project.authDuration;
-    let period = 's';
+    let timeInSec = time;
+    let period = writable('s');
     let btnActive = false;
 
     let options = [
@@ -60,9 +62,12 @@
     }
     async function updateSessionLength() {
         try {
-            await sdkForConsole.projects.updateAuthDuration(projectId, timeToSeconds(time, period));
+            await sdkForConsole.projects.updateAuthDuration(
+                projectId,
+                timeToSeconds(time, $period)
+            );
             invalidate(Dependencies.PROJECT);
-            period = 's';
+            $period = 's';
 
             addNotification({
                 type: 'success',
@@ -77,9 +82,25 @@
         }
     }
 
-    project.subscribe((p) => {
-        time = p.authDuration;
+    period.subscribe((p) => {
+        if (p === 'd') {
+            time = timeInSec / 86400;
+            timeInSec = timeToSeconds(time, p);
+        } else if (p === 'h') {
+            time = timeInSec / 3600;
+            timeInSec = timeToSeconds(time, p);
+        } else if (p === 'm') {
+            time = timeInSec / 60;
+            timeInSec = timeToSeconds(time, p);
+        } else if (p === 's') {
+            time = timeInSec;
+            timeInSec = timeToSeconds(time, p);
+        }
     });
+
+    $: if (time) {
+        timeInSec = timeToSeconds(time, $period);
+    }
 </script>
 
 <Container>
@@ -162,14 +183,14 @@
             <form class="form u-grid u-gap-16">
                 <ul class="form-list is-multiple">
                     <InputNumber id="length" label="Length" bind:value={time} />
-                    <InputSelect id="period" label="Time Period" bind:value={period} {options} />
+                    <InputSelect id="period" label="Time Period" bind:value={$period} {options} />
                 </ul>
             </form>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
             <Button
-                disabled={period === 's' && time === $project.authDuration}
+                disabled={$period === 's' && time === $project.authDuration}
                 on:click={() => {
                     updateSessionLength();
                 }}>
