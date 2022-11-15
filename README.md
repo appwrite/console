@@ -15,66 +15,10 @@ Appwrite Console has been built with the following frameworks:
 
 ## Table of Contents:
 
--   [Development](#development)
-    -   [Build](#build)
-    -   [Tests](#tests)
-    -   [Format](#format)
-    -   [Linter](#linter)
-    -   [Diagnostics](#diagnostics)
 -   [Contributing](#contributing)
 -   [Security](#guidelines)
 -   [Follow Us](#follow-us)
 -   [Licence](#license)
-
-## Development
-
-Once you've created a project and installed dependencies with `npm install`, start a development server:
-
-```bash
-npm run dev
-```
-
-### Build
-
-```bash
-npm run build
-```
-
-> You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
-
-### Tests
-
-```bash
-npm test
-```
-
-This will run tests in the `tests/` directory.
-
-### Format
-
-Code should like everywhere the same, for this reason a code-formatter is mandatory.
-
-```bash
-npm run format
-```
-
-### Linter
-
-```bash
-npm run lint
-```
-
-### Diagnostics
-
-Diagnostic tool that checks for following:
-
--   Unused CSS
--   Svelte A11y hints
--   TypeScript compiler errors
-
-```bash
-npm run check
-```
 
 ## Contributing
 
