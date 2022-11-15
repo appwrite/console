@@ -23,7 +23,7 @@
             });
             trackEvent('submit_collection_delete');
             await goto(
-                `${base}/console/project-${$page.params.project}/databases/database/${$page.params.database}`
+                `${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}`
             );
         } catch (error) {
             addNotification({
