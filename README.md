@@ -1,156 +1,52 @@
+# Console 🖥️
+
+[![Discord](https://img.shields.io/discord/564160730845151244?label=discord&style=flat-square)](https://appwrite.io/discord)
+[![Twitter Account](https://img.shields.io/twitter/follow/appwrite?color=00acee&label=twitter&style=flat-square)](https://twitter.com/appwrite)
+[![appwrite.io](https://img.shields.io/badge/appwrite-.io-f02e65?style=flat-square)](https://appwrite.io)
+
 ![Appwrite](github.png)
 
-# @appwrite/console
+[Appwrite](https://appwrite.io) Console is the Graphical User Interface that developers interact with when accessing their Appwrite instance in the web browser.
 
-This is the base project for the new dashboard for Appwrite.
-
-Built with:
+Appwrite Console has been built with the following frameworks:
 
 -   [Svelte](https://svelte.dev/)
 -   [Svelte Kit](https://kit.svelte.dev/)
--   [@appwrite/ui](https://github.com/appwrite/ui)
 
-Table of Contents:
+## Developer Experience
 
--   [Development](#development)
-    -   [Build](#build)
-    -   [Tests](#tests)
-    -   [Format](#format)
-    -   [Linter](#linter)
-    -   [Diagnostics](#diagnostics)
--   [Contributing](#contributing)
-    -   [Guidelines](#guidelines)
-    -   [Structure](#structure)
+Developer experience has always been a priority for Appwrite since its inception. The web console is one of the most important pieces of the developer experience puzzle. The new web console not only looks better but serves a functional purpose.
 
-# Development
+### Simplicity
 
-Once you've created a project and installed dependencies with `npm install`, start a development server:
-
-```bash
-npm run dev
-```
-
-## Build
-
-```bash
-npm run build
-```
-
-> You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
-
-## Tests
-
-```bash
-npm test
-```
-
-This will run tests in the `tests/` directory.
-
-## Format
-
-Code should like everywhere the same, for this reason a code-formatter is mandatory.
-
-```bash
-npm run format
-```
-
-## Linter
-
-```bash
-npm run lint
-```
-
-## Diagnostics
-
-Diagnostic tool that checks for following:
-
--   Unused CSS
--   Svelte A11y hints
--   TypeScript compiler errors
-
-```bash
-npm run check
-```
-
-# Contributing
-
-## Guidelines
+The new UI reduces visual load with more purposeful color use and more selective inclusion of information.
 
 ### Consistency
 
-Before commiting always make sure to run all available tools to improve the codebase:
+The new Appwrite Console uses a consistent UI library, so navigating from page to page and task to task will flow seamlessly.
 
--   Formatter
-    -   `npm run format`
--   Tests
-    -   `npm test`
--   Diagnostics
-    -   `npm run check`
+### Accessibility
 
-### Performance
+Console 2.0 is designed to be accessible, from design to code. Console 2.0 is also designed to be accessible to developers of all skill levels. Complex workflows will provide more guidance for newer developers and promote good technical decisions.
 
-Page load times are a key consideration for users of all browsers and device types.
+### Scalability and Collaboration
 
-There are some general things we can do in front-end development:
+The new console is more maintainable and welcoming to community contributions. Console 2.0 is built using Svelte instead of our own library. It’s better documented and well-known, making it easier for developers to contribute to Appwrite.
 
--   Minimise HTTP requests
--   Minimise blocking – content should be readable before client side processing
--   Lazy load 'supplementary' content (especially images)
+## Contributing
 
-### Don't Repeat Yourself (DRY)
+All code contributions - including those of people having commit access - must go through a pull request and be approved by a core developer before being merged. This is to ensure a proper review of all the code.
 
-If you repeat anything that has already been defined in code, refactor it so that it only ever has one representation in the codebase.
+We truly ❤️ pull requests! If you wish to help, you can learn more about how you can contribute to this project in the [contribution guide](CONTRIBUTING.md).
 
-If you stick to this principle, you will ensure that you will only ever need to change one implementation of a feature without worrying about needing to change any other part of the code.
+## Security
 
-### Separation of concerns
+For security issues, kindly email us at [security@appwrite.io](mailto:security@appwrite.io) instead of posting a public issue on GitHub.
 
-Separate _structure_ from _presentation_ from _behaviour_ to aid maintainability and understanding.
+## Follow Us
 
--   Keep CSS (presentation), JS (behaviour) and HTML (structure) in the same respective Svelte component
--   Avoid writing inline CSS or Javascript in HTML
--   Avoid writing CSS or HTML in Javascript
--   Don't choose HTML elements to imply style
--   Where appropriate, use CSS or Svelte rather than Javascript for animations and transitions
--   Try to use templates when defining markup in Javascript
+Join our growing community around the world! See our official [Blog](https://medium.com/appwrite-io). Follow us on [Twitter](https://twitter.com/appwrite), [Facebook Page](https://www.facebook.com/appwrite.io), [Facebook Group](https://www.facebook.com/groups/appwrite.developers/), [Dev Community](https://dev.to/appwrite) or join our live [Discord server](https://appwrite.io/discord) for more help, ideas, and discussions.
 
-### Write code to be read
+## License
 
-Follow the principles of ['Keep It Simple, Stupid'](http://en.wikipedia.org/wiki/KISS_principle) (KISS); hard to read or obfuscated code is difficult to maintain and debug. Don't be too clever; write code to be read.
-
-### Identify technical debt
-
-Use code comment annotations (`@todo`) to mark parts of your code that require further work. This will allow the measurement and management of technical debt.
-
-Don't use `@fixme` (which defines things that are broken) - you shouldn't be committing broken code to the repo.
-
-### Dependencies
-
-Please avoid introducing new dependencies to Appwrite without consulting the team. New dependencies can be very helpful but also introduce new security and privacy issues, complexity, and impact total docker image size.
-
-Adding a new dependency should have vital value on the product with minimum possible risk.
-
-## Structure
-
-```
-├── src
-│   ├── lib                             // All non-route components, accessible over "import ... from '$lib'"
-│   │   ├── components                  // Re-usable components
-│   │   ├── elements                    // Re-usable elements
-│   │   ├── layout                      // Global components for the layout (Nav/Content/Container)
-│   │   └── stores                      // Global stores (state management)
-│   └─── routes
-│       ├── console                     // Routes that need authentication
-│       │   ├──[project]
-│       │   │   ├── database            // Database Service
-│       │   │   │   ├── [collection]    // Nested Route for the collection "/console/[PROJECT_ID]/database/[COLLECTION_ID]"
-│       │   │   │   ├── _create.svelte  // Component to Create collections
-│       │   │   │   └── index.svelte    // Entrypoint for "/console/[PROJECT_ID]/database"
-│       │   │   ├── storage             // Storage Service "/console/[PROJECT]/storage"
-│       │   │   └── auth                // Users Service "/console/[PROJECT]/auth"
-│       │   └──...
-│       ├── login.svelte                // Component for Login "/console/login"
-│       └── register.svelte             // Component for Register "/console/register"
-├── build // Compiled application
-└── static // Static assets
-```
+This repository is available under the [BSD 3-Clause License](./LICENSE).
