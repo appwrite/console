@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
-import type { e } from 'vitest/dist/index-40e0cb97';
 
 export type AppStore = {
     theme: 'light' | 'dark' | 'auto';
