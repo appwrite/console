@@ -21,7 +21,7 @@
     "dependencies": {
         "@analytics/google-analytics": "^1.0.5",
         "analytics": "^0.8.1",
-        "@aw-labs/appwrite-console": "^12.0.0",
+        "@aw-labs/appwrite-console": "^13.0.0",
         "@aw-labs/icons": "0.0.0-77",
         "@aw-labs/ui": "0.0.0-77",
         "@popperjs/core": "^2.11.6",
