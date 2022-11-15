@@ -19,7 +19,7 @@
     let name: string;
     async function handleSubmit() {
         try {
-            await feedback.submitFeedback(undefined, email, message, ['npm'], [{ value, name }]);
+            await feedback.submitFeedback('feedback-nps', message, name, email, value);
             console.log(value, message);
             feedback.switchType('general');
         } catch (error) {

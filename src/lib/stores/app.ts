@@ -53,11 +53,11 @@ function createFeedbackStore() {
             });
         },
         submitFeedback: async (
-            subject?: string,
+            subject: string,
+            message: string,
+            firstname?: string,
             email?: string,
-            message?: string,
-            tags?: string[],
-            customFields?: Record<string, unknown>[]
+            value?: number
         ) => {
             const response = await fetch('https://growth.appwrite.io/v1/feedback', {
                 method: 'POST',
@@ -66,10 +66,10 @@ function createFeedbackStore() {
                 },
                 body: JSON.stringify({
                     subject,
-                    email,
                     message,
-                    tags,
-                    customFields
+                    email,
+                    firstname: firstname ? firstname : undefined,
+                    customFields: value ? [{ id: '40655', value }] : undefined
                 })
             });
             if (response.status !== 200) {
