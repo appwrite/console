@@ -42,7 +42,7 @@
             <span class="text">Create membership</span>
         </Button>
     </SearchQuery>
-    {#if data.memberships.total && !data.search}
+    {#if data.memberships.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
