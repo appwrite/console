@@ -17,13 +17,7 @@
     let email: string;
     async function handleSubmit() {
         try {
-            await feedback.submitFeedback(
-                undefined,
-                email,
-                message,
-                ['general'],
-                [{ firstname: name }]
-            );
+            await feedback.submitFeedback('feedback-general', message, name, email);
             show = false;
         } catch (error) {
             show = false;
