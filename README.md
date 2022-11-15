@@ -13,13 +13,6 @@ Appwrite Console has been built with the following frameworks:
 -   [Svelte](https://svelte.dev/)
 -   [Svelte Kit](https://kit.svelte.dev/)
 
-## Table of Contents:
-
--   [Contributing](#contributing)
--   [Security](#guidelines)
--   [Follow Us](#follow-us)
--   [Licence](#license)
-
 ## Contributing
 
 All code contributions - including those of people having commit access - must go through a pull request and be approved by a core developer before being merged. This is to ensure a proper review of all the code.
