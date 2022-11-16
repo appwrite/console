@@ -1,10 +1,10 @@
 <script lang="ts">
     import type { Models } from '@aw-labs/appwrite-console';
-    import Boolean from './attributes/_boolean.svelte';
-    import Datetime from './attributes/_datetime.svelte';
-    import Enum from './attributes/_enum.svelte';
-    import Integer from './attributes/_integer.svelte';
-    import String from './attributes/_string.svelte';
+    import Boolean from './attributes/boolean.svelte';
+    import Datetime from './attributes/datetime.svelte';
+    import Enum from './attributes/enum.svelte';
+    import Integer from './attributes/integer.svelte';
+    import String from './attributes/string.svelte';
 
     export let id: string;
     export let label: string;
