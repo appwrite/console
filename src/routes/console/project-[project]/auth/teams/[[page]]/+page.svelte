@@ -11,7 +11,7 @@
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Empty, EmptySearch, AvatarInitials, Pagination, SearchQuery } from '$lib/components';
-    import Create from '../../_createTeam.svelte';
+    import Create from '../../createTeam.svelte';
     import { goto } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
