@@ -3,7 +3,8 @@ export const toLocaleDate = (datetime: string) => {
     const options: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
+        hourCycle: 'h23'
     };
 
     return date.toLocaleDateString('en', options);
@@ -17,7 +18,7 @@ export const toLocaleDateTime = (datetime: string | number) => {
         day: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
-        hour12: false
+        hourCycle: 'h23'
     };
 
     return date.toLocaleDateString('en', options);
