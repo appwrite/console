@@ -9,7 +9,7 @@
     let mail: string;
     const recover = async () => {
         try {
-            await sdkForConsole.account.createRecovery(mail, base);
+            await sdkForConsole.account.createRecovery(mail, window.location.hostname);
             addNotification({
                 type: 'success',
                 message: 'We have sent you an email with a password reset link'
