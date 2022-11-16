@@ -34,9 +34,10 @@ export function trackPageView(path: string) {
 
 function sendEventToGrowth(event: string, path: string, data: object = null): void {
     let email: string, name: string;
-    if (get(user)) {
-        email = get(user).email;
-        name = get(user).name;
+    const userStore = get(user);
+    if (userStore) {
+        email = userStore.email;
+        name = userStore.name;
     }
     fetch('https://growth.appwrite.io/v1/analytics', {
         method: 'POST',
