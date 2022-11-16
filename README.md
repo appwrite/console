@@ -7,6 +7,7 @@
 <p align="center">
 <a href="https://www.producthunt.com/posts/console-2-0?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-console&#0045;2&#0045;0" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=367206&theme=light" alt="Console&#0032;2&#0046;0 - Backend&#0032;as&#0032;a&#0032;Service&#0044;&#0032;reimagined&#0032;by&#0032;Appwrite | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </p>
+
 ![Appwrite](github.png)
 
 [Appwrite](https://appwrite.io) Console is the Graphical User Interface that developers interact with when accessing their Appwrite instance in the web browser.
