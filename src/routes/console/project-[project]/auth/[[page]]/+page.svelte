@@ -24,7 +24,7 @@
     import { base } from '$app/paths';
     import { goto } from '$app/navigation';
     import { PAGE_LIMIT } from '$lib/constants';
-    import Create from '../_createUser.svelte';
+    import Create from '../createUser.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
 

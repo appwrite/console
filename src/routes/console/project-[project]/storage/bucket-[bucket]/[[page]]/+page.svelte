@@ -14,7 +14,7 @@
         SearchQuery
     } from '$lib/components';
     import Create from '../create.svelte';
-    import Delete from '../_deleteFile.svelte';
+    import Delete from '../deleteFile.svelte';
     import {
         Table,
         TableHeader,
