@@ -50,9 +50,6 @@ export class Project extends Service {
         let path = '/project/usage';
         let payload: Payload = {};
 
-        console.log("Getting usage")
-        console.log(range)
-
         if (typeof range !== 'undefined') {
             payload['range'] = range;
         }
