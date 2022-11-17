@@ -46,7 +46,7 @@
                 {#if index >= data.offset && index < CARD_LIMIT + data.offset}
                     <GridItem1 href={`${base}/console/organization-${organization.$id}`}>
                         <svelte:fragment slot="eyebrow">
-                            {organization?.total ? organization?.total : 'No'} projects
+                            {organization?.total ? organization?.total : 'No'} members
                         </svelte:fragment>
                         <svelte:fragment slot="title">
                             {organization.name}
