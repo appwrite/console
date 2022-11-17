@@ -283,7 +283,7 @@
                 </p>
                 <svelte:fragment slot="aside">
                     {#if bucketPermissions}
-                        <Permissions bind:permissions={bucketPermissions} />
+                        <Permissions bind:permissions={bucketPermissions} withCreate />
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">

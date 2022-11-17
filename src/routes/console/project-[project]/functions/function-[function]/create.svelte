@@ -174,10 +174,7 @@
                 id="entrypoint"
                 bind:value={entrypoint}
                 required />
-            <InputFile
-                label="Gzipped code (tar.gz)"
-                allowedFileExtensions={['tar.gz']}
-                bind:files />
+            <InputFile label="Gzipped code (tar.gz)" allowedFileExtensions={['gz']} bind:files />
             <InputChoice label="Activate Deployment after build" id="activate" bind:value={active}>
                 This deployment will be activated after the build is completed.</InputChoice>
         </FormList>

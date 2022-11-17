@@ -6,10 +6,10 @@
     import { Unauthenticated } from '$lib/layout';
     import { trackEvent } from '$lib/actions/analytics';
 
-    let mail: string;
-    const recover = async () => {
+    let email: string;
+    async function recover() {
         try {
-            await sdkForConsole.account.createRecovery(mail, base);
+            await sdkForConsole.account.createRecovery(email, window.location.toString());
             addNotification({
                 type: 'success',
                 message: 'We have sent you an email with a password reset link'
@@ -21,7 +21,7 @@
                 message: error.message
             });
         }
-    };
+    }
 </script>
 
 <svelte:head>
@@ -39,7 +39,7 @@
                     placeholder="Email"
                     autofocus={true}
                     required={true}
-                    bind:value={mail} />
+                    bind:value={email} />
 
                 <FormItem>
                     <Button fullWidth submit>Recover</Button>
