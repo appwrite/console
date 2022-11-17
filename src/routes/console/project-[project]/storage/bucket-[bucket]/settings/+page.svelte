@@ -24,6 +24,7 @@
     import { Dependencies } from '$lib/constants';
     import Delete from '../deleteBucket.svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import { writable } from 'svelte/store';
 
     let showDelete = false;
 
@@ -35,13 +36,14 @@
         encryption: boolean = null,
         antivirus: boolean = null,
         maxSize: number;
-    let byteUnit: 'Bytes' | 'KB' | 'MB' | 'GB' = 'MB',
-        options = [
-            { label: 'Bytes', value: 'Bytes' },
-            { label: 'Kilobytes', value: 'KB' },
-            { label: 'Megabytes', value: 'MB' },
-            { label: 'Gigabytes', value: 'GB' }
-        ];
+    let byteUnit = writable('KB');
+    let sizeInBytes: number = null;
+    const options = [
+        { label: 'Bytes', value: 'Bytes' },
+        { label: 'Kilobytes', value: 'KB' },
+        { label: 'Megabytes', value: 'MB' },
+        { label: 'Gigabytes', value: 'GB' }
+    ];
     let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
     let extensions = $bucket.allowedFileExtensions;
     let isExtensionsDisabled = true;
@@ -54,6 +56,7 @@
         bucketPermissions ??= $bucket.$permissions;
         encryption ??= $bucket.encryption;
         antivirus ??= $bucket.antivirus;
+        maxSize = $bucket.maximumFileSize / 1024;
     });
     $: if (bucketPermissions) {
         if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
@@ -174,7 +177,7 @@
         }
     }
     async function updateMaxSize() {
-        let size = sizeToBytes(maxSize, byteUnit);
+        let size = sizeToBytes(maxSize, $byteUnit);
         try {
             await sdkForProject.storage.updateBucket(
                 $bucket.$id,
@@ -221,6 +224,22 @@
                 type: 'error'
             });
         }
+    }
+
+    byteUnit.subscribe((b) => {
+        if (b === 'Bytes') {
+            maxSize = sizeInBytes;
+        } else if (b === 'KB') {
+            maxSize = sizeInBytes / 1024;
+        } else if (b === 'MB') {
+            maxSize = sizeInBytes / 1024 / 1024;
+        } else if (b === 'GB') {
+            maxSize = sizeInBytes / 1024 / 1024 / 1024;
+        }
+    });
+
+    $: if (maxSize) {
+        sizeInBytes = sizeToBytes(maxSize, $byteUnit);
     }
 </script>
 
@@ -398,14 +417,15 @@
                         <InputNumber
                             id="size"
                             label="Size"
-                            placeholder="256"
+                            placeholder={$bucket.maximumFileSize.toString()}
                             bind:value={maxSize} />
-                        <InputSelect id="bytes" label="Bytes" {options} bind:value={byteUnit} />
+                        <InputSelect id="bytes" label="Bytes" {options} bind:value={$byteUnit} />
                     </ul>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={!maxSize} submit>Update</Button>
+                    <Button disabled={sizeInBytes === $bucket.maximumFileSize} submit
+                        >Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
