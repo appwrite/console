@@ -14,6 +14,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
 
     let email: string;
     let userId: string;
@@ -46,6 +47,7 @@
     async function setPassword() {
         try {
             await sdkForConsole.account.updateRecovery(userId, secret, password, confirmPassword);
+            await goto(`${base}/login`);
             addNotification({
                 type: 'success',
                 message: 'Password has been updated successfully'
@@ -75,12 +77,14 @@
                         id="password"
                         autofocus={true}
                         required={true}
+                        showPasswordButton={true}
                         bind:value={password} />
                     <InputPassword
                         label="Confirm password"
                         placeholder="Confirm password"
                         id="confirm-password"
                         required={true}
+                        showPasswordButton={true}
                         bind:value={confirmPassword} />
 
                     <FormItem>
