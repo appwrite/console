@@ -5,7 +5,6 @@
     export let value = '';
 
     let element: HTMLInputElement;
-    let error: string;
     let icon = 'info';
     const pattern = String.raw`/^[^._-][a-zA-Z0-9._-]*$/`;
     const autofocus = true;
@@ -19,21 +18,13 @@
     const handleInvalid = (event: Event) => {
         event.preventDefault();
 
-        if (element.validity.valueMissing) {
-            error = 'This field is required';
-            return;
-        }
-
         if (element.validity.patternMismatch) {
             icon = 'exclamation';
             return;
         }
-
-        error = element.validationMessage;
     };
 
     $: if (value) {
-        error = null;
         icon = 'info';
     }
 </script>
