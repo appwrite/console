@@ -42,7 +42,7 @@
     afterNavigate(handle);
 
     async function handle() {
-        const promise = usage.load(projectId, period);
+        const promise = usage.load(period);
 
         if ($usage) {
             await promise;
@@ -51,7 +51,7 @@
 
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
-        usage.load(projectId, period);
+        usage.load(period);
     }
 </script>
 

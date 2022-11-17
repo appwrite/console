@@ -12,6 +12,8 @@ import {
     Users
 } from '@aw-labs/appwrite-console';
 
+import { Project } from './project';
+
 const endpoint =
     import.meta.env.VITE_APPWRITE_ENDPOINT?.toString() ?? `${window?.location?.origin}/v1`;
 const clientConsole = new Client();
@@ -42,6 +44,7 @@ const sdkForProject = {
     functions: new Functions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
+    project: new Project(clientProject),
     projects: new Projects(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
