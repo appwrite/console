@@ -4,9 +4,10 @@
         Box,
         DropList,
         DropListItem,
-        Copy,
         Empty,
-        EventModal
+        EventModal,
+        Output,
+        Secret
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputNumber, InputText, InputCron, Form, FormList } from '$lib/elements/forms';
@@ -25,7 +26,15 @@
     import { Roles } from '$lib/components/permissions';
     import { symmetricDifference } from '$lib/helpers/array';
     import TableList from '$lib/elements/table/tableList.svelte';
-    import { TableCell, TableCellText } from '$lib/elements/table';
+    import {
+        Table,
+        TableBody,
+        TableCell,
+        TableCellHead,
+        TableCellText,
+        TableHeader,
+        TableRow
+    } from '$lib/elements/table';
     import Heading from '$lib/components/heading.svelte';
     import { writable, type Writable } from 'svelte/store';
     import { invalidate } from '$app/navigation';
@@ -40,7 +49,6 @@
     let selectedVar: Models.Variable = null;
     // let showVariablesUpload = false;
     let showVariablesModal = false;
-    let showVariablesValue = [];
     let showVariablesDropdown = [];
     let timeout: number = null;
     let functionName: string = null;
@@ -324,7 +332,12 @@
             <Heading tag="h6" size="7">Execute Access</Heading>
             <p>
                 Choose who can execute this function using the client API. For more information,
-                check out the Permissions Guide in our documentation.
+                check out the <a
+                    href="https://appwrite.io/docs/permissions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link">
+                    Permissions Guide</a> in our documentation.
             </p>
             <svelte:fragment slot="aside">
                 <Roles bind:roles={permissions} />
@@ -342,28 +355,28 @@
             <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
             <svelte:fragment slot="aside">
                 {#if $eventSet.size}
-                    <TableList>
-                        {#each Array.from($eventSet) as event}
-                            <li class="table-row">
-                                <TableCellText title="id">
-                                    {event}
-                                </TableCellText>
-                                <TableCell showOverflow title="options" width={40}>
-                                    <button
-                                        class="button is-text is-only-icon"
-                                        aria-label="delete id"
-                                        on:click|preventDefault={() => {
-                                            $eventSet.delete(event);
-                                            eventSet.set($eventSet);
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </button>
-                                </TableCell>
-                            </li>
-                        {/each}
-                    </TableList>
+                    <div class="u-flex u-flex-vertical u-gap-16">
+                        <TableList>
+                            {#each Array.from($eventSet) as event}
+                                <li class="table-row">
+                                    <TableCellText title="id">
+                                        {event}
+                                    </TableCellText>
+                                    <TableCell showOverflow title="options" width={40}>
+                                        <button
+                                            class="button is-text is-only-icon"
+                                            aria-label="delete id"
+                                            on:click|preventDefault={() => {
+                                                $eventSet.delete(event);
+                                                eventSet.set($eventSet);
+                                            }}>
+                                            <span class="icon-x" aria-hidden="true" />
+                                        </button>
+                                    </TableCell>
+                                </li>
+                            {/each}
+                        </TableList>
 
-                    <div class="u-flex u-margin-block-start-16">
                         <Button text noMargin on:click={() => (showEvents = true)}>
                             <span class="icon-plus" aria-hidden="true" />
                             <span class="u-text">Add event</span>
@@ -385,7 +398,7 @@
             <Heading tag="h6" size="7">Update CRON Schedule</Heading>
             <p>
                 Set a CRON schedule to trigger your function. Leave blank for no schedule. <a
-                    href="https://appwrite.io/docs/functions#createFunction"
+                    href="https://en.wikipedia.org/wiki/Cron"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
@@ -435,7 +448,7 @@
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
-                <Button secondary on:click={downloadVariables}>
+                <Button disabled={!data.variables.total} secondary on:click={downloadVariables}>
                     <span class="icon-download" />
                     <span class="text">Download .env file</span>
                 </Button>
@@ -444,107 +457,81 @@
                     <span class="text">Import .env file</span>
                 </Button> -->
             </div>
-            <table class="table is-remove-outer-styles">
-                <thead class="table-thead">
-                    <tr class="table-row">
-                        <th class="table-thead-col">
-                            <span class="eyebrow-heading-3">Key</span>
-                        </th>
-                        <th class="table-thead-col">
-                            <span class="eyebrow-heading-3">Value</span>
-                        </th>
-                        <th class="table-thead-col" style="--p-col-width:40" />
-                    </tr>
-                </thead>
-                <tbody class="table-tbody">
-                    {#if data.variables.total}
-                        {#each data.variables.variables as variable, i}
-                            <tr class="table-row">
-                                <td class="table-col" data-title="Key">
-                                    <span class="text">{variable.key}</span>
-                                </td>
-                                <td class="table-col u-overflow-visible" data-title="value">
-                                    <div class="interactive-text-output">
-                                        {#if showVariablesValue[i]}
-                                            <span class="text">{variable.value}</span>
-                                        {:else}
-                                            <span class="text">••••••••</span>
-                                        {/if}
-                                        <div class="u-flex u-cross-child-start u-gap-8">
-                                            <button
-                                                on:click|preventDefault={() =>
-                                                    (showVariablesValue[i] =
-                                                        !showVariablesValue[i])}
-                                                class="interactive-text-output-button"
-                                                aria-label="show hidden text">
-                                                {#if showVariablesValue[i]}
-                                                    <span class="icon-eye-off" aria-hidden="true" />
-                                                {:else}
-                                                    <span class="icon-eye" aria-hidden="true" />
-                                                {/if}
-                                            </button>
-                                            <Copy bind:value={variable.value}>
-                                                <button
-                                                    class="interactive-text-output-button"
-                                                    aria-label="copy text">
-                                                    <span
-                                                        class="icon-duplicate"
-                                                        aria-hidden="true" />
-                                                </button>
-                                            </Copy>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="table-col u-overflow-visible" data-title="options">
-                                    <DropList
-                                        bind:show={showVariablesDropdown[i]}
-                                        placement="bottom-start"
-                                        noArrow>
-                                        <button
-                                            class="button is-text is-only-icon"
-                                            aria-label="more options"
-                                            on:click|preventDefault={() =>
-                                                (showVariablesDropdown[i] =
-                                                    !showVariablesDropdown[i])}>
-                                            <span class="icon-dots-horizontal" aria-hidden="true" />
-                                        </button>
-                                        <svelte:fragment slot="list">
-                                            <DropListItem
-                                                icon="pencil"
-                                                on:click={() => {
-                                                    selectedVar = variable;
-                                                    showVariablesDropdown[i] = false;
-                                                    showVariablesModal = true;
-                                                }}>
-                                                Edit
-                                            </DropListItem>
-                                            <DropListItem
-                                                icon="trash"
-                                                on:click={async () => {
-                                                    handleVariableDeleted(variable);
-                                                    showVariablesDropdown[i] = false;
-                                                }}>
-                                                Delete
-                                            </DropListItem>
-                                        </svelte:fragment>
-                                    </DropList>
-                                </td>
-                            </tr>
-                        {/each}
-                    {/if}
-                </tbody>
-            </table>
-            <div class="u-flex u-margin-block-start-16">
-                <button
-                    class="button is-text u-padding-inline-0"
-                    type="button"
-                    on:click={() => {
-                        showVariablesModal = true;
-                    }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create variable</span>
-                </button>
-            </div>
+            {#if data.variables.total}
+                <div class="u-flex u-flex-vertical u-gap-16">
+                    <Table noMargin noStyles>
+                        <TableHeader>
+                            <TableCellHead>Key</TableCellHead>
+                            <TableCellHead>Value</TableCellHead>
+                            <TableCellHead width={30} />
+                        </TableHeader>
+                        <TableBody>
+                            {#each data.variables.variables as variable, i}
+                                <TableRow>
+                                    <TableCell title="key">
+                                        <Output value={variable.key}>
+                                            {variable.key}
+                                        </Output>
+                                    </TableCell>
+
+                                    <TableCell showOverflow title="value">
+                                        <Secret value={variable.value} />
+                                    </TableCell>
+                                    <TableCell showOverflow title="options">
+                                        <DropList
+                                            bind:show={showVariablesDropdown[i]}
+                                            placement="bottom-start"
+                                            noArrow>
+                                            <Button
+                                                text
+                                                round
+                                                ariaLabel="more options"
+                                                on:click={() =>
+                                                    (showVariablesDropdown[i] =
+                                                        !showVariablesDropdown[i])}>
+                                                <span
+                                                    class="icon-dots-horizontal"
+                                                    aria-hidden="true" />
+                                            </Button>
+                                            <svelte:fragment slot="list">
+                                                <DropListItem
+                                                    icon="pencil"
+                                                    on:click={() => {
+                                                        selectedVar = variable;
+                                                        showVariablesDropdown[i] = false;
+                                                        showVariablesModal = true;
+                                                    }}>
+                                                    Edit
+                                                </DropListItem>
+                                                <DropListItem
+                                                    icon="trash"
+                                                    on:click={async () => {
+                                                        handleVariableDeleted(variable);
+                                                        showVariablesDropdown[i] = false;
+                                                    }}>
+                                                    Delete
+                                                </DropListItem>
+                                            </svelte:fragment>
+                                        </DropList>
+                                    </TableCell>
+                                </TableRow>
+                            {/each}
+                        </TableBody>
+                    </Table>
+                    <Button
+                        text
+                        noMargin
+                        on:click={() => {
+                            showVariablesModal = true;
+                        }}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create variable</span>
+                    </Button>
+                </div>
+            {:else}
+                <Empty on:click={() => (showVariablesModal = !showVariablesModal)}
+                    >Create a variable to get started</Empty>
+            {/if}
         </svelte:fragment>
     </CardGrid>
 
