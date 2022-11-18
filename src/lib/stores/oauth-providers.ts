@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
 import type { SvelteComponent } from 'svelte';
-import Apple from '../../routes/console/project-[project]/auth/_appleOAuth.svelte';
-import Microsoft from '../../routes/console/project-[project]/auth/_microsoftOAuth.svelte';
-import Okta from '../../routes/console/project-[project]/auth/_oktaOAuth.svelte';
-import Auth0 from '../../routes/console/project-[project]/auth/_auth0OAuth.svelte';
-import Main from '../../routes/console/project-[project]/auth/_mainOAuth.svelte';
+import Apple from '../../routes/console/project-[project]/auth/appleOAuth.svelte';
+import Microsoft from '../../routes/console/project-[project]/auth/microsoftOAuth.svelte';
+import Okta from '../../routes/console/project-[project]/auth/oktaOAuth.svelte';
+import Auth0 from '../../routes/console/project-[project]/auth/auth0OAuth.svelte';
+import Main from '../../routes/console/project-[project]/auth/mainOAuth.svelte';
 
 export type Provider = Models.Provider & {
     icon: string;

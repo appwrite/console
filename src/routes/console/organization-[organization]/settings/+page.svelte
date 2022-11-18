@@ -77,7 +77,7 @@
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$organization.name}</h6>
                     </svelte:fragment>
-                    <p>{$organization.total} projects</p>
+                    <p>{$organization.total} members</p>
                 </Box>
             </svelte:fragment>
 

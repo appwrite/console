@@ -67,7 +67,9 @@
         <section class="common-section">
             <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
             <ul class="grid-box common-section">
-                {#each $OAuthProviders.providers.sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
+                {#each $OAuthProviders.providers
+                    .filter((p) => p.name !== 'Mock')
+                    .sort((a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1)) as provider}
                     <li class="grid-box-item">
                         <button
                             class="card u-flex u-flex-vertical u-cross-center u-width-full-line"

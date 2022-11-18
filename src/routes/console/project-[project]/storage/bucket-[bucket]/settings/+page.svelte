@@ -22,7 +22,7 @@
     import { Permissions } from '$lib/components/permissions';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import Delete from '../_deleteBucket.svelte';
+    import Delete from '../deleteBucket.svelte';
     import { trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
@@ -283,7 +283,7 @@
                 </p>
                 <svelte:fragment slot="aside">
                     {#if bucketPermissions}
-                        <Permissions bind:permissions={bucketPermissions} />
+                        <Permissions bind:permissions={bucketPermissions} withCreate />
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">

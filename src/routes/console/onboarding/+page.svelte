@@ -52,6 +52,7 @@
                     id="name"
                     label="Project name"
                     placeholder="First Appwrite Project"
+                    required
                     disabled={loading}
                     bind:value={name} />
                 {#if !showCustomId}

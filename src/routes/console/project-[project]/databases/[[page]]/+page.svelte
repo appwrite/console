@@ -6,7 +6,7 @@
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import Create from '../_create.svelte';
+    import Create from '../create.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
     import { CARD_LIMIT } from '$lib/constants';
