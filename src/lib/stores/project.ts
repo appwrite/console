@@ -1,11 +1,11 @@
-import type { Client, Models } from "@aw-labs/appwrite-console";
+import type { Client, Models } from '@aw-labs/appwrite-console';
 
 type Payload = {
     [key: string]: any;
-}
+};
 
 class Service {
-    static CHUNK_SIZE = 5*1024*1024; // 5MB
+    static CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
 
     client: Client;
 
@@ -17,13 +17,12 @@ class Service {
         let output: Payload = {};
 
         for (const key in data) {
-            let value = data[key];
-            let finalKey = prefix ? `${prefix}[${key}]` : key;
+            const value = data[key];
+            const finalKey = prefix ? `${prefix}[${key}]` : key;
 
             if (Array.isArray(value)) {
                 output = Object.assign(output, this.flatten(value, finalKey));
-            }
-            else {
+            } else {
                 output[finalKey] = value;
             }
         }
@@ -33,8 +32,7 @@ class Service {
 }
 
 export class Project extends Service {
-    constructor(client: Client)
-    {
+    constructor(client: Client) {
         super(client);
     }
 
@@ -46,17 +44,22 @@ export class Project extends Service {
      * @throws {AppwriteException}
      * @returns {Promise}
      */
-     async getUsage(range?: string): Promise<Models.UsageProject> {
-        let path = '/project/usage';
-        let payload: Payload = {};
+    async getUsage(range?: string): Promise<Models.UsageProject> {
+        const path = '/project/usage';
+        const payload: Payload = {};
 
         if (typeof range !== 'undefined') {
             payload['range'] = range;
         }
 
         const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json',
-        }, payload);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            payload
+        );
     }
 }
