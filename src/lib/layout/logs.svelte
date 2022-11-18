@@ -116,11 +116,13 @@
                         </header>
                         {#if selectedTab === 'logs'}
                             <code class="code-panel-content">
-                                {$log.data.buildStdout ?? 'No logs recorded'}
+                                {$log.data.buildStdout ? $log.data.buildStdout : 'No logs recorded'}
                             </code>
                         {:else}
                             <code class="code-panel-content">
-                                {$log.data.buildStderr ?? 'No errors recorded'}
+                                {$log.data.buildStderr
+                                    ? $log.data.buildStderr
+                                    : 'No errors recorded'}
                             </code>
                         {/if}
                     </section>
@@ -149,7 +151,7 @@
                             Created at: {toLocaleDateTime($log.data.$createdAt)}</time>
                     </div>
                     <div>
-                        <p>Triggered by: {$log.data.trigger}</p>
+                        <p>Triggered by: <b>{$log.data.trigger}</b></p>
                     </div>
                     <div class="status u-margin-inline-start-auto">
                         <Status status={$log.data.status}>{$log.data.status}</Status>
@@ -191,15 +193,15 @@
                         </header>
                         {#if selectedTab === 'logs'}
                             <code class="code-panel-content">
-                                {$log.data.stdout ?? 'No logs recorded'}
+                                {$log.data.stdout ? $log.data.stdout : 'No logs recorded'}
                             </code>
                         {:else if selectedTab === 'errors'}
                             <code class="code-panel-content">
-                                {$log.data.stderr ?? 'No errors recorded'}
+                                {$log.data.stderr ? $log.data.stderr : 'No errors recorded'}
                             </code>
                         {:else}
                             <code class="code-panel-content">
-                                {$log.data.response ?? 'No response recorded'}
+                                {$log.data.response ? $log.data.response : 'No response recorded'}
                             </code>
                         {/if}
                     </section>
