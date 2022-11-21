@@ -167,5 +167,15 @@ export const scopes: {
         scope: 'health.read',
         description: "Access to read your project's health status",
         category: 'Other'
+    },
+    {
+        scope: 'videos.read',
+        description: "Access to read your project's video content",
+        category: 'Storage'
+    },
+    {
+        scope: 'videos.write',
+        description: "Access to create, update, and delete your project's video content",
+        category: 'Storage'
     }
 ];
