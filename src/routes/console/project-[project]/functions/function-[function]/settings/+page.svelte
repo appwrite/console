@@ -570,10 +570,12 @@
 </Container>
 
 <Delete bind:showDelete />
-<Variable
-    bind:selectedVar
-    bind:showCreate={showVariablesModal}
-    on:created={handleVariableCreated}
-    on:updated={handleVariableUpdated} />
+{#if showVariablesModal}
+    <Variable
+        bind:selectedVar
+        bind:showCreate={showVariablesModal}
+        on:created={handleVariableCreated}
+        on:updated={handleVariableUpdated} />
+{/if}
 <!-- <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} /> -->
 <EventModal bind:show={showEvents} on:created={handleEvent} />
