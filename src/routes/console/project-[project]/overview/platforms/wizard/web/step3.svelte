@@ -4,9 +4,9 @@
     import { sdkForProject } from '$lib/stores/sdk';
 
     const { endpoint, project } = sdkForProject.client.config;
-    const code = `const appwrite = new Appwrite();
+    const code = `const client = new Client();
 
-appwrite
+client
     .setEndpoint('${endpoint}')
     .setProject('${project}');`;
 </script>

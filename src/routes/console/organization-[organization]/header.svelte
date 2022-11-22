@@ -55,7 +55,9 @@
             </button>
             <svelte:fragment slot="list">
                 {#each $organizationList.teams as org}
-                    <DropListLink href={`${base}/console/organization-${org.$id}`}>
+                    <DropListLink
+                        href={`${base}/console/organization-${org.$id}`}
+                        on:click={() => (showDropdown = false)}>
                         {org.name}
                     </DropListLink>
                 {/each}
