@@ -1,13 +1,13 @@
 <script lang="ts">
     import { EmptySearch, Pagination, Trim } from '$lib/components';
     import {
-        Table,
         TableBody,
         TableHeader,
         TableRow,
         TableCellHead,
         TableCell,
-        TableCellText
+        TableCellText,
+        TableScroll
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -26,7 +26,7 @@
 
 <Container>
     {#if logs.total}
-        <Table>
+        <TableScroll>
             <TableHeader>
                 <TableCellHead>Client</TableCellHead>
                 <TableCellHead>Event</TableCellHead>
@@ -75,7 +75,7 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {logs.total}</p>
             <Pagination limit={PAGE_LIMIT} {path} {offset} sum={logs.total} />

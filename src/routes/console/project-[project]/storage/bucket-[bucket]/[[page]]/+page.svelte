@@ -86,9 +86,9 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
-                <TableCellHead width={140}>Type</TableCellHead>
-                <TableCellHead width={100}>Size</TableCellHead>
-                <TableCellHead width={120}>Created</TableCellHead>
+                <TableCellHead onlyDesktop width={140}>Type</TableCellHead>
+                <TableCellHead onlyDesktop width={100}>Size</TableCellHead>
+                <TableCellHead onlyDesktop width={120}>Created</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -99,17 +99,17 @@
                                 <div class="u-flex u-gap-12 u-main-space-between">
                                     <span class="avatar is-size-small is-color-empty" />
 
-                                    <span class="text u-trim"> {file.name}</span>
+                                    <span class="text u-trim">{file.name}</span>
                                     <div>
                                         <Pill warning>Pending</Pill>
                                     </div>
                                 </div>
                             </TableCell>
-                            <TableCellText title="Type">{file.mimeType}</TableCellText>
-                            <TableCellText title="Size">
+                            <TableCellText onlyDesktop title="Type">{file.mimeType}</TableCellText>
+                            <TableCellText onlyDesktop title="Size">
                                 {calculateSize(file.sizeOriginal)}
                             </TableCellText>
-                            <TableCellText title="Date Created">
+                            <TableCellText onlyDesktop title="Date Created">
                                 {toLocaleDate(file.$createdAt)}
                             </TableCellText>
                             <TableCell>
@@ -137,14 +137,14 @@
                             <TableCell title="Name">
                                 <div class="u-flex u-gap-12">
                                     <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
-                                    <span class="text u-trim"> {file.name}</span>
+                                    <span class="text u-trim">{file.name}</span>
                                 </div>
                             </TableCell>
-                            <TableCellText title="Type">{file.mimeType}</TableCellText>
-                            <TableCellText title="Size">
+                            <TableCellText onlyDesktop title="Type">{file.mimeType}</TableCellText>
+                            <TableCellText onlyDesktop title="Size">
                                 {calculateSize(file.sizeOriginal)}
                             </TableCellText>
-                            <TableCellText title="Date Created">
+                            <TableCellText onlyDesktop title="Date Created">
                                 {toLocaleDate(file.$createdAt)}
                             </TableCellText>
                             <TableCell showOverflow>

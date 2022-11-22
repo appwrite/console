@@ -142,7 +142,7 @@
 </script>
 
 {#if [...$groups]?.length}
-    <Table noMargin noStyles noMobile>
+    <Table noMargin noStyles>
         <TableHeader>
             <TableCellHead>Role</TableCellHead>
             {#if withCreate}
