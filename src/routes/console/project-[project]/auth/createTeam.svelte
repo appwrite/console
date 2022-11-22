@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
@@ -23,6 +24,7 @@
                 type: 'success',
                 message: `${team.name} has been created`
             });
+            trackEvent('submit_team_create');
             dispatch('created', team);
         } catch ({ message }) {
             error = message;

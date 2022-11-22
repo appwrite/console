@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -19,6 +20,7 @@
                 message: `Function has been deleted`
             });
             await goto(`${base}/console/project-${$page.params.project}/functions`);
+            trackEvent('submit_function_delete');
         } catch (error) {
             addNotification({
                 type: 'error',

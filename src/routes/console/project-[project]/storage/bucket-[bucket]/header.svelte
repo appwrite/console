@@ -13,14 +13,18 @@
         {
             href: path,
             title: 'Files',
+            event: 'files',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage'
+            title: 'Usage',
+            event: 'usage',
+            hasChildren: true
         },
         {
             href: `${path}/settings`,
+            event: 'settings',
             title: 'Settings'
         }
     ];
@@ -31,7 +35,7 @@
         <CoverTitle href={`/console/project-${projectId}/storage`}>
             {$bucket?.name}
         </CoverTitle>
-        <Copy value={$bucket?.$id}>
+        <Copy value={$bucket?.$id} event="bucket">
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />
                 Bucket ID
@@ -41,7 +45,10 @@
 
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                event={tab.event}>
                 {tab.title}
             </Tab>
         {/each}

@@ -4,32 +4,57 @@
     import EmptyLight from '$lib/images/empty-light.svg';
     import EmptyDark from '$lib/images/empty-dark.svg';
     import { Heading } from '.';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let single = false;
     export let target: string = null;
     export let href: string = null;
+
+    function track() {
+        if (target) {
+            trackEvent(`click_create_${target}`, {
+                from: 'empty'
+            });
+        }
+    }
 </script>
 
 {#if single}
     <article class="card u-grid u-cross-center u-width-full-line common-section">
         <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
-            <button type="button" on:click|preventDefault>
+            <button
+                type="button"
+                on:click|preventDefault
+                on:click={track}
+                aria-label={`create {target}`}>
                 {#if $app.themeInUse === 'dark'}
-                    <img src={EmptyDark} alt="create" aria-hidden="true" />
+                    <img src={EmptyDark} alt="create" aria-hidden="true" height="124" width="215" />
                 {:else}
-                    <img src={EmptyLight} alt="create" aria-hidden="true" />
+                    <img
+                        src={EmptyLight}
+                        alt="create"
+                        aria-hidden="true"
+                        height="124"
+                        width="215" />
                 {/if}
             </button>
             <slot>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h4">Create your first {target} to get started.</Heading>
+                    <Heading size="7" tag="h2">Create your first {target} to get started.</Heading>
                     <p class="body-text-2 u-margin-block-start-4">
                         Need a hand? Check out our documentation.
                     </p>
                 </div>
                 <div class="u-flex u-gap-16 u-main-center">
-                    <Button external {href} text>Documentation</Button>
-                    <Button secondary on:click>Create {target}</Button>
+                    <Button
+                        external
+                        {href}
+                        text
+                        event="empty_documentation"
+                        ariaLabel={`create {target}`}>Documentation</Button>
+                    <Button secondary on:click on:click={track}>
+                        Create {target}
+                    </Button>
                 </div>
             </slot>
         </div>
@@ -37,13 +62,15 @@
 {:else}
     <button
         on:click|preventDefault
+        on:click={track}
+        aria-label="create"
         type="button"
         class="card u-grid u-cross-center u-width-full-line dashed">
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
             <div class="common-section">
-                <Button secondary round>
+                <div class="button is-secondary is-only-icon">
                     <i class="icon-plus" />
-                </Button>
+                </div>
             </div>
             <div class="common-section">
                 <slot />

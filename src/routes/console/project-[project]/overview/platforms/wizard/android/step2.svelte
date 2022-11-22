@@ -6,7 +6,7 @@
     const example1 = `repositories {
     mavenCentral()
 }`;
-    const example2 = `implementation("io.appwrite:sdk-for-android:${versions['client-android']}")`;
+    const example2 = `implementation("io.appwrite:sdk-for-android:${$versions['client-android']}")`;
 </script>
 
 <WizardStep>

@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -15,6 +16,7 @@
         try {
             await sdkForProject.teams.delete(team.$id);
             showDelete = false;
+            trackEvent('submit_team_delete');
             await goto(`${base}/console/project-${$page.params.project}/auth/teams`);
         } catch (error) {
             addNotification({

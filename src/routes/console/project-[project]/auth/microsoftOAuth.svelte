@@ -8,23 +8,21 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let provider: Provider;
 
     let appId: string = null;
     let enabled: boolean = null;
     let clientSecret: string = null;
-    let oktaDomain: string = null;
-    let authorizationServerId: string = null;
+    let tenantID: string = null;
+    let error: string;
 
     onMount(() => {
         appId ??= provider.appId;
         enabled ??= provider.enabled;
-        if (provider.secret)
-            ({ clientSecret, oktaDomain, authorizationServerId } = JSON.parse(provider.secret));
+        if (provider.secret) ({ clientSecret, tenantID } = JSON.parse(provider.secret));
     });
-
-    let error: string;
 
     const projectId = $page.params.project;
 
@@ -34,13 +32,18 @@
                 projectId,
                 provider.name.toLowerCase(),
                 appId,
-                secret
+                secret,
+                enabled
             );
             addNotification({
                 type: 'success',
                 message: `${provider.name} authentication has been ${
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
+            });
+            trackEvent('submit_provider_update', {
+                provider,
+                enabled
             });
             provider = null;
             invalidate(Dependencies.PROJECT);
@@ -50,9 +53,7 @@
     };
 
     $: secret =
-        clientSecret && oktaDomain && authorizationServerId
-            ? JSON.stringify({ clientSecret, oktaDomain, authorizationServerId })
-            : provider.secret;
+        clientSecret && tenantID ? JSON.stringify({ clientSecret, tenantID }) : provider.secret;
 </script>
 
 <Modal {error} on:submit={update} size="big" show on:close>
@@ -61,13 +62,14 @@
         <p>
             To use {provider.name} authentication in your application, first fill in this form. For more
             info you can
-            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
-                >visit the docs.</a>
+            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer">
+                visit the docs.
+            </a>
         </p>
         <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
         <InputText
             id="appID"
-            label="Client ID"
+            label="Application (client) ID"
             autofocus={true}
             placeholder="Enter ID"
             bind:value={appId} />
@@ -75,20 +77,14 @@
             id="secret"
             label="Client Secret"
             placeholder="Enter Client Secret"
-            minlength={0}
             showPasswordButton
+            minlength={0}
             bind:value={clientSecret} />
         <InputText
-            id="domain"
-            label="Okta Domain"
-            placeholder="dev-1337.okta.com"
-            bind:value={oktaDomain} />
-        <InputText
-            id="serverID"
-            label="Authorization Server ID"
-            placeholder="default"
-            bind:value={authorizationServerId} />
-
+            id="tenant"
+            label="Target Tenant"
+            placeholder="'common','organizations','consumers' or your TenantID"
+            bind:value={tenantID} />
         <Alert type="info">
             To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
         </Alert>
@@ -97,7 +93,7 @@
             <CopyInput
                 value={`${
                     sdkForConsole.client.config.endpoint
-                }/account/session/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">
@@ -106,7 +102,7 @@
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
-                !(appId && clientSecret && oktaDomain && authorizationServerId)}
+                !(appId && clientSecret && tenantID)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

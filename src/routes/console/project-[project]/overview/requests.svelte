@@ -16,6 +16,10 @@
         date: number;
         value: number;
     }>;
+
+    $: if (period) {
+        showPeriod = false;
+    }
 </script>
 
 <div class="u-flex u-gap-16 u-main-space-between">

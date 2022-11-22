@@ -22,6 +22,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { writable, type Writable } from 'svelte/store';
+    import { trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
     let name: string = null;
@@ -61,6 +62,7 @@
                 type: 'success',
                 message: 'Webhook name has been updated'
             });
+            trackEvent('submit_webhook_update_name');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -83,6 +85,7 @@
                 type: 'success',
                 message: 'Webhook url has been updated'
             });
+            trackEvent('submit_webhook_update_url');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -106,6 +109,7 @@
                 type: 'success',
                 message: 'Webhook events have been updated'
             });
+            trackEvent('submit_webhook_update_events');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -131,6 +135,7 @@
                 type: 'success',
                 message: 'Webhook security has been updated'
             });
+            trackEvent('submit_webhook_update_security');
         } catch (error) {
             addNotification({
                 type: 'error',

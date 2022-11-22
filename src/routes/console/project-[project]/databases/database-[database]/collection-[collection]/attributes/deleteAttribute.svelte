@@ -9,6 +9,7 @@
     import type { Attributes } from '../store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
@@ -27,6 +28,7 @@
                 type: 'success',
                 message: `Attribute has been deleted`
             });
+            trackEvent('submit_attribute_delete');
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${$page.params.collection}/attributes`
             );

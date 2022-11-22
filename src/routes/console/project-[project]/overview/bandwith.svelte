@@ -18,6 +18,10 @@
         value: number;
     }>;
     $: bandwith = humanFileSize(total($usage.network));
+
+    $: if (period) {
+        showPeriod = false;
+    }
 </script>
 
 <div class="u-flex u-gap-16 u-main-space-between">

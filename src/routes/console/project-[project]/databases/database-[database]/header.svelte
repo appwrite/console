@@ -13,14 +13,18 @@
         {
             href: path,
             title: 'Collections',
+            event: 'collections',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage'
+            title: 'Usage',
+            event: 'usage',
+            hasChildren: true
         },
         {
             href: `${path}/settings`,
+            event: 'settings',
             title: 'Settings'
         }
     ];
@@ -41,7 +45,10 @@
 
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                event={tab.event}>
                 {tab.title}
             </Tab>
         {/each}

@@ -39,7 +39,10 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Documents</Heading>
 
-        <Button disabled={!$collection?.attributes?.length} on:click={openWizard}>
+        <Button
+            disabled={!$collection?.attributes?.length}
+            on:click={openWizard}
+            event="create_document">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create document</span>
         </Button>

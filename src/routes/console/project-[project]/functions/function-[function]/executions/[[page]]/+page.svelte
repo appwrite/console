@@ -9,7 +9,7 @@
         TableCellHead,
         TableCell,
         TableCellText,
-        TableRowButton
+        TableRow
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
@@ -51,26 +51,22 @@
     {#if data.executions.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Deployment ID</TableCellHead>
+                <TableCellHead width={90}>Execution ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
-                <TableCellHead width={70}>Type</TableCellHead>
                 <TableCellHead width={100}>Duration</TableCellHead>
+                <TableCellHead width={40} />
             </TableHeader>
             <TableBody>
                 {#each data.executions.executions as execution}
-                    <TableRowButton
-                        on:click={() => {
-                            $log.show = true;
-                            $log.func = $func;
-                            $log.data = execution;
-                        }}>
-                        <TableCell title="Deployment ID">
+                    <TableRow>
+                        <TableCell title="Execution ID">
                             <Copy value={execution.$id}>
-                                <Pill button
-                                    ><span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text u-trim">{execution.$id}</span></Pill>
+                                <Pill button trim>
+                                    <span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text u-trim">{execution.$id}</span>
+                                </Pill>
                             </Copy>
                         </TableCell>
                         <TableCellText title="Created">
@@ -86,10 +82,20 @@
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
                         </TableCellText>
-                        <TableCellText title="Type">TBI</TableCellText>
                         <TableCellText title="Duration">
                             {calculateTime(execution.duration)}</TableCellText>
-                    </TableRowButton>
+                        <TableCell>
+                            <Button
+                                secondary
+                                on:click={() => {
+                                    $log.show = true;
+                                    $log.func = $func;
+                                    $log.data = execution;
+                                }}>
+                                Logs
+                            </Button>
+                        </TableCell>
+                    </TableRow>
                 {/each}
             </TableBody>
         </Table>

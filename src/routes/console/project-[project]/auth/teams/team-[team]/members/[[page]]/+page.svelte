@@ -7,18 +7,20 @@
         TableBody,
         TableRowLink,
         TableCellHead,
-        TableCellText
+        TableCellText,
+        TableCell
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@aw-labs/appwrite-console';
-    import { goto, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { PageData } from './$types';
     import CreateMember from '../../createMembership.svelte';
     import DeleteMembership from '../../deleteMembership.svelte';
     import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -28,23 +30,23 @@
 
     const project = $page.params.project;
 
-    async function memberCreated(event: CustomEvent<Models.Membership>) {
-        await goto(`${base}/console/project-${project}/auth/teams-${event.detail.teamId}/members`);
+    async function memberCreated() {
+        invalidate(Dependencies.MEMBERSHIPS);
     }
 </script>
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by ID">
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_membership">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create membership</span>
         </Button>
     </SearchQuery>
-    {#if data.memberships.total && !data.search}
+    {#if data.memberships.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Role</TableCellHead>
+                <TableCellHead>Roles</TableCellHead>
                 <TableCellHead>Joined</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
@@ -58,21 +60,22 @@
                                 <span>{membership.userName ? membership.userName : 'n/a'}</span>
                             </div>
                         </TableCellText>
-                        <TableCellText title="Role">{membership.roles}</TableCellText>
+                        <TableCellText title="Roles">{membership.roles}</TableCellText>
                         <TableCellText title="Joined">
                             {toLocaleDateTime(membership.joined)}
                         </TableCellText>
-                        <TableCellText title="">
+                        <TableCell>
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
                                 on:click|preventDefault={() => {
                                     selectedMembership = membership;
                                     showDelete = true;
+                                    trackEvent('click_delete_membership');
                                 }}>
                                 <span class="icon-trash" aria-hidden="true" />
                             </button>
-                        </TableCellText>
+                        </TableCell>
                     </TableRowLink>
                 {/each}
             </TableBody>

@@ -13,6 +13,7 @@
     import Delete from './deleteProject.svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let name: string = null;
     let showDelete = false;
@@ -31,6 +32,7 @@
                 type: 'success',
                 message: 'Project name has been updated'
             });
+            trackEvent('submit_project_update_name');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -52,6 +54,10 @@
                 message: `${service.label} service has been ${
                     service.value ? 'enabled' : 'disabled'
                 }`
+            });
+            trackEvent('submit_project_service', {
+                method: service.method,
+                value: service.value
             });
         } catch (error) {
             addNotification({
@@ -77,7 +83,9 @@
                     </FormList>
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
-                    <Button secondary href={`${base}/console/project-${projectId}/overview/keys`}>
+                    <Button
+                        secondary
+                        href={`${base}/console/project-${projectId}/overview/keys#integrations`}>
                         View API Keys
                     </Button>
                 </svelte:fragment>

@@ -4,6 +4,7 @@
     export let label: string = null;
     export let files: FileList;
     export let list = new DataTransfer();
+    export let allowedFileExtensions: string[] = [];
 
     let input: HTMLInputElement;
     let hovering = false;
@@ -28,7 +29,12 @@
     }
 </script>
 
-<input bind:files bind:this={input} type="file" style="display: none" />
+<input
+    bind:files
+    bind:this={input}
+    accept={allowedFileExtensions.map((n) => `.${n}`).join(',')}
+    type="file"
+    style="display: none" />
 
 <div>
     {#if label}
@@ -42,7 +48,7 @@
         on:dragleave|preventDefault={() => (hovering = false)}>
         <div class="u-flex u-main-center u-cross-center u-gap-32">
             <div class="avatar is-size-large">
-                <span class="icon-upload" aria-hidden="true" />
+                <span class="icon-folder" aria-hidden="true" />
             </div>
             <div class="u-grid u-gap-16">
                 <p>Drag and drop files here to upload</p>

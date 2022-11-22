@@ -20,7 +20,7 @@
     import { page } from '$app/stores';
     import type { Models } from '@aw-labs/appwrite-console';
     import Variable from '../../createVariable.svelte';
-    import Upload from './uploadVariables.svelte';
+    // import Upload from './uploadVariables.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Roles } from '$lib/components/permissions';
     import { symmetricDifference } from '$lib/helpers/array';
@@ -31,13 +31,14 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { PageData } from './$types';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
     const functionId = $page.params.function;
     let showDelete = false;
     let selectedVar: Models.Variable = null;
-    let showVariablesUpload = false;
+    // let showVariablesUpload = false;
     let showVariablesModal = false;
     let showVariablesValue = [];
     let showVariablesDropdown = [];
@@ -67,6 +68,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_function_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -83,6 +85,7 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
+            trackEvent('submit_function_update_permissions');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -104,6 +107,7 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
+            trackEvent('submit_function_update_events');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -128,6 +132,7 @@
                 type: 'success',
                 message: 'CRON Schedule has been updated'
             });
+            trackEvent('submit_function_update_schedule');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -151,6 +156,7 @@
                 type: 'success',
                 message: 'Timeout has been updated'
             });
+            trackEvent('submit_function_update_timeout');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -170,6 +176,7 @@
                 type: 'success',
                 message: `${$func.name} variables have been updated`
             });
+            trackEvent('submit_variable_create');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -194,6 +201,7 @@
                 type: 'success',
                 message: `${$func.name} variables have been updated`
             });
+            trackEvent('submit_variable_update');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -209,6 +217,7 @@
                 type: 'success',
                 message: `Variable has been deleted`
             });
+            trackEvent('submit_variable_delete');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -430,10 +439,10 @@
                     <span class="icon-download" />
                     <span class="text">Download .env file</span>
                 </Button>
-                <Button secondary on:click={() => (showVariablesUpload = true)}>
+                <!-- <Button secondary on:click={() => (showVariablesUpload = true)}>
                     <span class="icon-upload" />
                     <span class="text">Import .env file</span>
-                </Button>
+                </Button> -->
             </div>
             <table class="table is-remove-outer-styles">
                 <thead class="table-thead">
@@ -561,10 +570,12 @@
 </Container>
 
 <Delete bind:showDelete />
-<Variable
-    bind:selectedVar
-    bind:showCreate={showVariablesModal}
-    on:created={handleVariableCreated}
-    on:updated={handleVariableUpdated} />
-<Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} />
+{#if showVariablesModal}
+    <Variable
+        bind:selectedVar
+        bind:showCreate={showVariablesModal}
+        on:created={handleVariableCreated}
+        on:updated={handleVariableUpdated} />
+{/if}
+<!-- <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} /> -->
 <EventModal bind:show={showEvents} on:created={handleEvent} />

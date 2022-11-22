@@ -32,7 +32,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Collections</Heading>
 
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_collection">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create collection</span>
         </Button>
@@ -40,18 +40,13 @@
 
     {#if data.collections.total}
         <CardContainer
+            event="collection"
             total={data.collections.total}
             offset={$offset}
             on:click={() => (showCreate = true)}>
             {#each data.collections.collections as collection}
                 <GridItem1
                     href={`${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}>
-                    <!-- <svelte:fragment slot="eyebrow">
-                        {#await collections.total(databaseId, collection.$id)}
-                            N Documents
-                        {:then n}
-                            {n[collection.$id] ? n[collection.$id] : 'NO'} Documents
-                        {/await}</svelte:fragment> -->
                     <svelte:fragment slot="title">{collection.name}</svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if !collection.enabled}

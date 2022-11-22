@@ -13,10 +13,11 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            organization: sdkForConsole.teams.get(params.organization),
-            members: sdkForConsole.teams.listMemberships(params.organization)
+            organization: await sdkForConsole.teams.get(params.organization),
+            members: await sdkForConsole.teams.listMemberships(params.organization)
         };
     } catch (e) {
+        localStorage.removeItem('organization');
         throw error(e.code, e.message);
     }
 };

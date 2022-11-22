@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -20,6 +21,7 @@
                 message: `${$database.name} has been deleted`
             });
             await goto(`${base}/console/project-${$page.params.project}/databases`);
+            trackEvent('submit_database_delete');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -31,8 +33,7 @@
 
 <Modal warning={true} bind:show={showDelete} on:submit={handleDelete}>
     <svelte:fragment slot="header">Delete Database</svelte:fragment>
-
-    <p>
+    <p class="text">
         Are you sure you want to delete <b>{$database.name}</b>?
     </p>
     <svelte:fragment slot="footer">

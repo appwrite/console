@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal, Alert } from '$lib/components';
     import { Button, InputEmail, InputText, InputTags, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -15,7 +16,7 @@
     let error: string;
 
     const create = async () => {
-        const url = `${$page.url.origin}/console/project-${$page.params.project}/auth/teams-${$page.params.team}/members`;
+        const url = `${$page.url.origin}/console/project-${$page.params.project}/auth/teams/team-${$page.params.team}/members`;
 
         try {
             const user = await sdkForProject.teams.createMembership(
@@ -29,6 +30,7 @@
                 type: 'success',
                 message: `${name ? name : email} created successfully`
             });
+            trackEvent('submit_member_create');
             email = name = '';
             roles = [];
             showCreate = false;

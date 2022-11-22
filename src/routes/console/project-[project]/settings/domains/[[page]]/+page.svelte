@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Empty, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -23,10 +22,12 @@
     import type { PageData } from './$types';
     import Create from '../create.svelte';
     import Delete from '../delete.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
     const projectId = $page.params.project;
+    const target = window?.location.hostname ?? '';
     let showDelete = false;
     let selectedDomain: Models.Domain;
     let isVerifying = {};
@@ -46,6 +47,7 @@
             }
             await sdkForConsole.projects.updateDomainVerification(projectId, domainId);
             invalidate(Dependencies.DOMAINS);
+            trackEvent('submit_domain_update_verification');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -68,38 +70,30 @@
     {#if data.domains.total}
         <Table>
             <TableHeader>
-                <TableCellHead />
                 <TableCellHead>Domain Name</TableCellHead>
-                <TableCellHead>TLS</TableCellHead>
+                <TableCellHead width={100} />
+                <TableCellHead width={60}>Type</TableCellHead>
+                <TableCellHead>Name</TableCellHead>
+                <TableCellHead>Value</TableCellHead>
                 <TableCellHead />
             </TableHeader>
             <TableBody>
                 {#each data.domains.domains as domain}
                     <TableRow>
+                        <TableCellText title="Domain">
+                            {domain.domain}
+                        </TableCellText>
                         <TableCellText title="Status">
                             <Pill warning={!domain.verification} success={domain.verification}>
                                 {domain.verification ? 'verified' : 'unverified'}
                             </Pill>
                         </TableCellText>
-                        <TableCellText title="Domain">
+                        <TableCellText title="Type">CNAME</TableCellText>
+                        <TableCellText title="Name">
                             {domain.domain}
                         </TableCellText>
-                        <TableCellText title="TLS">
-                            {#if domain.certificateId}
-                                <Pill success>enabled</Pill>
-                            {:else}
-                                <span
-                                    use:tooltip={{
-                                        content:
-                                            "The process might take a while, click the retry button to see if it's finished"
-                                    }}>
-                                    <Pill warning>
-                                        {!domain.verification
-                                            ? 'pending verification'
-                                            : 'in progress'}
-                                    </Pill>
-                                </span>
-                            {/if}
+                        <TableCellText title="Name">
+                            {target}
                         </TableCellText>
                         <TableCell title="Actions">
                             <div class="u-flex u-gap-8 u-cross-center u-main-end">

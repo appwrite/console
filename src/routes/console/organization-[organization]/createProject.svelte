@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
@@ -18,7 +19,7 @@
     let error: string;
     let isCreating = false;
 
-    const create = async () => {
+    async function create() {
         try {
             isCreating = true;
             const project = await sdkForConsole.projects.create(
@@ -28,17 +29,17 @@
                 'default'
             );
             dispatch('created', project);
+            trackEvent('submit_project_create');
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
             });
             await goto(`/console/project-${project.$id}`);
         } catch ({ message }) {
-            error = message;
-        } finally {
             isCreating = false;
+            error = message;
         }
-    };
+    }
 </script>
 
 <Modal {error} on:submit={create} size="big" bind:show>

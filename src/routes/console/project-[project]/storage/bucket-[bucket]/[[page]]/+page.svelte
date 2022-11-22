@@ -14,7 +14,7 @@
         SearchQuery
     } from '$lib/components';
     import Create from '../create.svelte';
-    import Delete from '../_deleteFile.svelte';
+    import Delete from '../deleteFile.svelte';
     import {
         Table,
         TableHeader,
@@ -35,6 +35,7 @@
     import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
     import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -64,6 +65,7 @@
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
             invalidate(Dependencies.FILES);
+            trackEvent('submit_file_delete');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -75,12 +77,12 @@
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by filename">
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_file">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
         </Button>
     </SearchQuery>
 
-    {#if data.files.total && !data.search}
+    {#if data.files.total}
         <Table>
             <TableHeader>
                 <TableCellHead>Filename</TableCellHead>
@@ -104,10 +106,12 @@
                                 </div>
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
-                            <TableCellText title="Size"
-                                >{calculateSize(file.sizeOriginal)}</TableCellText>
-                            <TableCellText title="Date Created"
-                                >{toLocaleDate(file.$createdAt)}</TableCellText>
+                            <TableCellText title="Size">
+                                {calculateSize(file.sizeOriginal)}
+                            </TableCellText>
+                            <TableCellText title="Date Created">
+                                {toLocaleDate(file.$createdAt)}
+                            </TableCellText>
                             <TableCell>
                                 <div class="u-flex u-main-center">
                                     <button
@@ -138,9 +142,11 @@
                             </TableCell>
                             <TableCellText title="Type">{file.mimeType}</TableCellText>
                             <TableCellText title="Size">
-                                {calculateSize(file.sizeOriginal)}</TableCellText>
+                                {calculateSize(file.sizeOriginal)}
+                            </TableCellText>
                             <TableCellText title="Date Created">
-                                {toLocaleDate(file.$createdAt)}</TableCellText>
+                                {toLocaleDate(file.$createdAt)}
+                            </TableCellText>
                             <TableCell showOverflow>
                                 <DropList
                                     bind:show={showDropdown[index]}
@@ -180,7 +186,7 @@
                 offset={data.offset}
                 sum={data.files.total} />
         </div>
-    {:else if data.search && !data.files.total}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn’t find ‘{data.search}’</b>

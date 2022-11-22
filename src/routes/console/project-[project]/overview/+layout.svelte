@@ -180,7 +180,7 @@
             {/if}
 
             <section class="common-section u-margin-block-start-100">
-                <Heading tag="h2" size="5">Integrations</Heading>
+                <Heading tag="h2" size="5" id="integrations">Integrations</Heading>
                 <div class="tabs u-margin-block-start-24 u-sep-block-end">
                     <button
                         class="tabs-button-scroll is-start u-hide"

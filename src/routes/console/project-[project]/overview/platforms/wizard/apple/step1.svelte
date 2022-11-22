@@ -93,6 +93,7 @@
             id="hostname"
             label="Bundle ID"
             placeholder="com.company.appname"
+            tooltip="You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
             required
             bind:value={$createPlatform.hostname} />
     </FormList>

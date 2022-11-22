@@ -2,6 +2,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -25,6 +26,7 @@
                 type: 'success',
                 message: `Membership has been deleted`
             });
+            trackEvent('submit_member_delete');
             await goto(
                 `${base}/console/project-${$page.params.project}/auth/user-${selectedMembership.userId}/memberships`
             );

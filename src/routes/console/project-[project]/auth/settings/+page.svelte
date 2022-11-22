@@ -8,10 +8,10 @@
     import { project } from '../../store';
     import { authMethods, type AuthMethod } from '$lib/stores/auth-methods';
     import { OAuthProviders } from '$lib/stores/oauth-providers';
-    import { event } from '$lib/actions/analytics';
-    import type { Provider } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
     import { page } from '$app/stores';
+    import type { Provider } from '$lib/stores/oauth-providers';
+    import { trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
 
@@ -20,7 +20,7 @@
         OAuthProviders.load($project);
     }
 
-    const authUpdate = async (box: AuthMethod) => {
+    async function authUpdate(box: AuthMethod) {
         try {
             await sdkForConsole.projects.updateAuthStatus(projectId, box.method, box.value);
             addNotification({
@@ -29,6 +29,10 @@
                     box.value ? 'enabled' : 'disabled'
                 }`
             });
+            trackEvent('submit_auth_status_update', {
+                method: box.method,
+                value: box.value
+            });
         } catch (error) {
             box.value = !box.value;
             addNotification({
@@ -36,7 +40,7 @@
                 message: error.message
             });
         }
-    };
+    }
 
     let selectedProvider: Provider | null = null;
 </script>
@@ -63,34 +67,33 @@
         <section class="common-section">
             <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
             <ul class="grid-box common-section">
-                {#each $OAuthProviders.providers.sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
-                    <button
-                        class="card u-flex u-flex-vertical u-cross-center"
-                        on:click={() => {
-                            selectedProvider = provider;
-                        }}
-                        use:event={{
-                            name: 'console_users',
-                            action: 'click_update',
-                            event: 'click',
-                            parameters: {
-                                provider: provider.name
-                            }
-                        }}>
-                        <div class="image-item">
-                            <img
-                                height="20"
-                                width="20"
-                                src={`/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
-                                alt={provider.name} />
-                        </div>
-                        <p class="u-margin-block-start-8">{provider.name}</p>
-                        <div class="u-margin-block-start-24">
-                            <Pill success={provider.enabled}>
-                                {provider.enabled ? 'enabled' : 'disabled'}
-                            </Pill>
-                        </div>
-                    </button>
+                {#each $OAuthProviders.providers
+                    .filter((p) => p.name !== 'Mock')
+                    .sort((a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1)) as provider}
+                    <li class="grid-box-item">
+                        <button
+                            class="card u-flex u-flex-vertical u-cross-center u-width-full-line"
+                            on:click={() => {
+                                selectedProvider = provider;
+                                trackEvent(`click_select_provider`, {
+                                    provider: provider.name.toLowerCase()
+                                });
+                            }}>
+                            <div class="image-item">
+                                <img
+                                    height="20"
+                                    width="20"
+                                    src={`/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
+                                    alt={provider.name} />
+                            </div>
+                            <p class="u-margin-block-start-8">{provider.name}</p>
+                            <div class="u-margin-block-start-24">
+                                <Pill success={provider.enabled}>
+                                    {provider.enabled ? 'enabled' : 'disabled'}
+                                </Pill>
+                            </div>
+                        </button>
+                    </li>
                 {/each}
             </ul>
         </section>
@@ -101,6 +104,5 @@
     <svelte:component
         this={selectedProvider.component}
         bind:provider={selectedProvider}
-        on:close={() => (selectedProvider = null)}
-        showModal />
+        on:close={() => (selectedProvider = null)} />
 {/if}

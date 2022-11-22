@@ -30,7 +30,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Attributes</Heading>
 
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_attribute">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create attribute</span>
         </Button>

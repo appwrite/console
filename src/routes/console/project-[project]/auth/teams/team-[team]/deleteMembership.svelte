@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -22,6 +23,7 @@
             );
             showDelete = false;
             dispatch('deleted');
+            trackEvent('submit_member_delete');
             await goto(
                 `${base}/console/project-${$page.params.project}/auth/teams/team-${selectedMembership.teamId}/members`
             );

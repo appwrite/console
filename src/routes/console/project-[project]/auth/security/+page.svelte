@@ -9,16 +9,23 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { timeToSeconds } from '$lib/helpers/timeConversion';
+    import { writable } from 'svelte/store';
 
     const projectId = $project.$id;
     let isLimited = $project.authLimit === 0 ? 'unlimited' : 'limited';
     let newLimit = $project.authLimit === 0 ? 100 : $project.authLimit;
+    let time = $project.authDuration;
+    let timeInSec = time;
+    let period = writable('s');
     let btnActive = false;
 
     let options = [
-        { label: 'years', value: 'years' },
-        { label: 'months', value: 'months' },
-        { label: 'days', value: 'days' }
+        { label: 'days', value: 'd' },
+        { label: 'hours', value: 'h' },
+        { label: 'minutes', value: 'm' },
+        { label: 'seconds', value: 's' }
     ];
 
     $: {
@@ -41,11 +48,11 @@
             );
             invalidate(Dependencies.PROJECT);
             btnActive = false;
-
             addNotification({
                 type: 'success',
                 message: 'Updated project users limit successfully'
             });
+            trackEvent('submit_auth_limit_update');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -55,18 +62,44 @@
     }
     async function updateSessionLength() {
         try {
-            //TODO: implement correct SDK call
+            await sdkForConsole.projects.updateAuthDuration(
+                projectId,
+                timeToSeconds(time, $period)
+            );
+            invalidate(Dependencies.PROJECT);
+            $period = 's';
 
             addNotification({
                 type: 'success',
                 message: 'Updated project users limit successfully'
             });
+            trackEvent('submit_session_length_update');
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
         }
+    }
+
+    period.subscribe((p) => {
+        if (p === 'd') {
+            time = timeInSec / 86400;
+            timeInSec = timeToSeconds(time, p);
+        } else if (p === 'h') {
+            time = timeInSec / 3600;
+            timeInSec = timeToSeconds(time, p);
+        } else if (p === 'm') {
+            time = timeInSec / 60;
+            timeInSec = timeToSeconds(time, p);
+        } else if (p === 's') {
+            time = timeInSec;
+            timeInSec = timeToSeconds(time, p);
+        }
+    });
+
+    $: if (time) {
+        timeInSec = timeToSeconds(time, $period);
     }
 </script>
 
@@ -95,7 +128,8 @@
                         <div class="choice-item-content  u-cross-child-center">
                             <div class="choice-item-title">Unlimited</div>
                         </div>
-                        <Pill>recommended</Pill></label>
+                        <Pill>recommended</Pill>
+                    </label>
                 </li>
                 <li class="form-item is-multiple">
                     <div class="input-text-wrapper">
@@ -148,18 +182,20 @@
         <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
                 <ul class="form-list is-multiple">
-                    <InputNumber id="length" label="Length" value={1} />
-                    <InputSelect
-                        id="period"
-                        {options}
-                        label="Time Period"
-                        value={options[0].value} />
+                    <InputNumber id="length" label="Length" bind:value={time} />
+                    <InputSelect id="period" label="Time Period" bind:value={$period} {options} />
                 </ul>
             </form>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={true} on:click={() => updateSessionLength()}>Update</Button>
+            <Button
+                disabled={$period === 's' && time === $project.authDuration}
+                on:click={() => {
+                    updateSessionLength();
+                }}>
+                Update
+            </Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import CustomId from '$lib/components/customId.svelte';
     import { Dependencies } from '$lib/constants';
@@ -15,6 +16,7 @@
     let id: string;
     let showCustomId = false;
     let loading = false;
+
     async function createProject() {
         try {
             loading = true;
@@ -27,13 +29,13 @@
             );
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);
+            trackEvent('submit_project_create');
         } catch ({ message }) {
+            loading = false;
             addNotification({
                 message,
                 type: 'error'
             });
-        } finally {
-            loading = false;
         }
     }
 
@@ -50,6 +52,7 @@
                     id="name"
                     label="Project name"
                     placeholder="First Appwrite Project"
+                    required
                     disabled={loading}
                     bind:value={name} />
                 {#if !showCustomId}
@@ -61,9 +64,11 @@
                         </Pill>
                     </div>
                 {:else}
-                    <CustomId bind:show={showCustomId} name="Project ID" bind:id />
+                    <CustomId bind:show={showCustomId} name="Project" bind:id />
                 {/if}
-                <Button fullWidth submit disabled={loading}>Create project</Button>
+                <Button fullWidth submit disabled={loading || name === ''} event="create_project">
+                    Create project
+                </Button>
             </FormList>
         </Form>
     </Card>

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher, onDestroy, onMount } from 'svelte';
     import { Alert } from '$lib/components';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
@@ -23,6 +24,9 @@
 
     function handleBLur(event: MouseEvent) {
         if (event.target === dialog) {
+            trackEvent('click_close_modal', {
+                from: 'backdrop'
+            });
             closeModal();
         }
     }
@@ -47,6 +51,9 @@
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
             event.preventDefault();
+            trackEvent('click_close_modal', {
+                from: 'escape'
+            });
             closeModal();
         }
     }
@@ -62,7 +69,7 @@
     }
 </script>
 
-<svelte:window on:click={handleBLur} on:keydown={handleKeydown} />
+<svelte:window on:mousedown={handleBLur} on:keydown={handleKeydown} />
 
 <dialog
     class="modal"
@@ -87,6 +94,10 @@
                         class="x-button"
                         aria-label="Close Modal"
                         title="Close Modal"
+                        on:click={() =>
+                            trackEvent('click_close_modal', {
+                                from: 'button'
+                            })}
                         on:click={closeModal}>
                         <span class="icon-x" aria-hidden="true" />
                     </button>

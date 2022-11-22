@@ -15,6 +15,7 @@
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
 
@@ -38,11 +39,11 @@
             );
             await invalidate(Dependencies.FUNCTIONS);
             goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
-
             addNotification({
                 message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
+            trackEvent('submit_function_create');
             wizard.hide();
         } catch (error) {
             addNotification({

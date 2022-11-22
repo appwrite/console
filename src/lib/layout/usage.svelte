@@ -60,7 +60,7 @@
             <Heading tag="h6" size="6">{last(count).value}</Heading>
             <p>{countMetadata.title}</p>
             <div class="u-margin-block-start-16" />
-            <div style="height: 12rem;">
+            <div class="chart-container">
                 <BarChart
                     series={[
                         {
@@ -77,7 +77,7 @@
                 <Heading tag="h6" size="6">{total(created)}</Heading>
                 <p>{createdMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
-                <div style="height: 12rem;">
+                <div class="chart-container">
                     <LineChart
                         series={[
                             {
@@ -94,7 +94,7 @@
                 <Heading tag="h6" size="6">{total(read)}</Heading>
                 <p>{readMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
-                <div style="height: 12rem;">
+                <div class="chart-container">
                     <LineChart
                         series={[
                             {
@@ -111,7 +111,7 @@
                 <Heading tag="h6" size="6">{total(updated)}</Heading>
                 <p>{updatedMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
-                <div style="height: 12rem;">
+                <div class="chart-container">
                     <LineChart
                         series={[
                             {
@@ -128,7 +128,7 @@
                 <Heading tag="h6" size="6">{total(deleted)}</Heading>
                 <p>{deletedMetadata.title}</p>
                 <div class="u-margin-block-start-16" />
-                <div style="height: 12rem;">
+                <div class="chart-container">
                     <LineChart
                         series={[
                             {
@@ -142,3 +142,9 @@
         </Card>
     </Tiles>
 </Container>
+
+<style lang="scss">
+    .chart-container {
+        height: 12rem;
+    }
+</style>
