@@ -25,6 +25,7 @@
     import Delete from '../deleteBucket.svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { writable } from 'svelte/store';
+    import { Models } from '@aw-labs/appwrite-console';
 
     let showDelete = false;
 
@@ -69,49 +70,21 @@
         } else isExtensionsDisabled = true;
     }
 
-    interface IUpdateBucket {
-        id: string;
-        name: string;
-        permissions?: string[];
-        fileSecurity?: boolean;
-        enabled?: boolean;
-        maximumFileSize?: number;
-        allowedFileExtensions?: string[];
-        compression?: string;
-        encryption?: boolean;
-        antivirus?: boolean;
-    }
-
-    interface IUpdateBucketMisc {
+    type TUpdateBucketMisc = {
         successMessage?: string;
         trackEventName: string;
         trackEventData?: { value: boolean };
         arePermsDisabled?: boolean;
-    }
+    };
 
-    function getDefaults(): IUpdateBucket {
-        return {
-            id: $bucket.$id,
-            name: $bucket.name,
-            permissions: $bucket.$permissions,
-            fileSecurity: $bucket.fileSecurity,
-            enabled: $bucket.enabled,
-            maximumFileSize: $bucket.maximumFileSize,
-            allowedFileExtensions: $bucket.allowedFileExtensions,
-            compression: $bucket.compression,
-            encryption: $bucket.encryption,
-            antivirus: $bucket.antivirus
-        };
-    }
-
-    async function updateBucket(updates: Partial<IUpdateBucket>, misc: IUpdateBucketMisc) {
-        const values: IUpdateBucket = { ...getDefaults(), ...updates };
+    async function updateBucket(updates: Partial<Models.Bucket>, misc: TUpdateBucketMisc) {
+        const values = { ...$bucket, ...updates };
 
         try {
             await sdkForProject.storage.updateBucket(
-                values.id,
+                values.$id,
                 values.name,
-                values.permissions,
+                values.$permissions,
                 values.fileSecurity,
                 values.enabled,
                 values.maximumFileSize,
@@ -172,7 +145,7 @@
     function updatePermissions() {
         updateBucket(
             {
-                permissions: bucketPermissions
+                $permissions: bucketPermissions
             },
             {
                 successMessage: 'Permissions have been updated',
