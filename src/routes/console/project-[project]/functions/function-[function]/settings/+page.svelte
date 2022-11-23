@@ -62,7 +62,15 @@
 
     async function updateName() {
         try {
-            await sdkForProject.functions.update(functionId, functionName, $func.execute);
+            await sdkForProject.functions.update(
+                functionId,
+                functionName,
+                $func.execute,
+                $func.events,
+                $func.schedule,
+                $func.timeout,
+                $func.enabled
+            );
             invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Name has been updated',
@@ -79,7 +87,15 @@
 
     async function updatePermissions() {
         try {
-            await sdkForProject.functions.update(functionId, $func.name, permissions);
+            await sdkForProject.functions.update(
+                functionId,
+                $func.name,
+                permissions,
+                $func.events,
+                $func.schedule,
+                $func.timeout,
+                $func.enabled
+            );
             invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Permissions have been updated',
@@ -100,7 +116,10 @@
                 functionId,
                 $func.name,
                 $func.execute,
-                Array.from($eventSet)
+                Array.from($eventSet),
+                $func.schedule,
+                $func.timeout,
+                $func.enabled
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -124,7 +143,8 @@
                 $func.execute,
                 $func.events,
                 functionSchedule,
-                timeout
+                $func.timeout,
+                $func.enabled
             );
             invalidate(Dependencies.FUNCTION);
 
@@ -149,9 +169,11 @@
                 $func.execute,
                 $func.events,
                 $func.schedule,
-                timeout
+                timeout,
+                $func.enabled
             );
 
+            invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
                 message: 'Timeout has been updated'
