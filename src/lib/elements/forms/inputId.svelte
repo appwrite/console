@@ -43,9 +43,12 @@
             bind:this={element}
             on:invalid={handleInvalid} />
         <!-- TODO: add correct class -->
-        <div class="options-list">
-            <span class="text u-small u-opacity-0-5">{value?.length ?? 0}/36</span>
-        </div>
+
+        <span class="text-counter">
+            <span class="text-counter-count">{value?.length ?? 0}</span>
+            <span class="text-counter-separator" />
+            <span class="text-counter-max">36</span>
+        </span>
     </div>
 </FormItem>
 <div class="u-flex u-gap-4 u-margin-block-start-8 u-small" class:u-warning={icon === 'exclamation'}>
