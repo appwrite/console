@@ -21,8 +21,8 @@
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
-                undefined,
-                undefined,
+                $createPlatform.key,
+                $createPlatform.store,
                 $createPlatform.hostname
             );
 

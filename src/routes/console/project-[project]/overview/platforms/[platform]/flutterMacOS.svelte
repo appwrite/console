@@ -21,7 +21,9 @@
                 $project.$id,
                 $platform.$id,
                 $platform.name,
-                key
+                key,
+                $platform.store,
+                $platform.hostname
             );
             invalidate(Dependencies.PLATFORM);
             addNotification({

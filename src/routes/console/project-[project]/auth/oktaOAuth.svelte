@@ -35,7 +35,8 @@
                 projectId,
                 provider.name.toLowerCase(),
                 appId,
-                secret
+                secret,
+                enabled
             );
             addNotification({
                 type: 'success',

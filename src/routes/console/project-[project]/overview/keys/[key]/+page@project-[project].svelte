@@ -73,7 +73,13 @@
 
     async function updateScopes() {
         try {
-            await sdkForConsole.projects.updateKey($project.$id, $key.$id, $key.name, scopes);
+            await sdkForConsole.projects.updateKey(
+                $project.$id,
+                $key.$id,
+                $key.name,
+                scopes,
+                $key.expire
+            );
             invalidate(Dependencies.KEY);
             addNotification({
                 type: 'success',
