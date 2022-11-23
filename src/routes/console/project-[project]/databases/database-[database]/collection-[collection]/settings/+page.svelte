@@ -77,7 +77,9 @@
                 databaseId,
                 $collection.$id,
                 collectionName,
-                $collection.$permissions
+                $collection.$permissions,
+                $collection.documentSecurity,
+                $collection.enabled
             );
             invalidate(Dependencies.COLLECTION);
             showError = false;
@@ -96,7 +98,9 @@
                 databaseId,
                 $collection.$id,
                 $collection.name,
-                collectionPermissions
+                collectionPermissions,
+                $collection.documentSecurity,
+                $collection.enabled
             );
             invalidate(Dependencies.COLLECTION);
             arePermsDisabled = true;
@@ -120,7 +124,8 @@
                 $collection.$id,
                 $collection.name,
                 $collection.$permissions,
-                collectionDocumentSecurity
+                collectionDocumentSecurity,
+                $collection.enabled
             );
             invalidate(Dependencies.COLLECTION);
             arePermsDisabled = true;
