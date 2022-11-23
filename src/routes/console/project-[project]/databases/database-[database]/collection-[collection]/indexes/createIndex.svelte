@@ -31,7 +31,7 @@
         value: attribute.key,
         label: attribute.key
     }));
-    let attributeList = [{ value: '', order: '' }] as Array<{ value: string; order: string }>;
+    let attributeList = [{ value: '', order: '' }];
 
     $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
 
