@@ -125,7 +125,6 @@
                         text
                         disabled={attributeList.length <= 1}
                         on:click={() => {
-                            if (i === 0) attributeList = [];
                             attributeList = remove(attributeList, i);
                         }}>
                         <span class="icon-x" aria-hidden="true" />
