@@ -55,7 +55,9 @@
                 name,
                 $webhook.events,
                 $webhook.url,
-                $webhook.security
+                $webhook.security,
+                $webhook.httpUser,
+                $webhook.httpPass
             );
             invalidate(Dependencies.WEBHOOK);
             addNotification({
@@ -78,7 +80,9 @@
                 $webhook.name,
                 $webhook.events,
                 url,
-                $webhook.security
+                $webhook.security,
+                $webhook.httpUser,
+                $webhook.httpPass
             );
             invalidate(Dependencies.WEBHOOK);
             addNotification({
@@ -101,7 +105,9 @@
                 $webhook.name,
                 Array.from($eventSet),
                 $webhook.url,
-                $webhook.security
+                $webhook.security,
+                $webhook.httpUser,
+                $webhook.httpPass
             );
             invalidate(Dependencies.WEBHOOK);
             areEventsDisabled = true;

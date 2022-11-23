@@ -21,8 +21,8 @@
                 $project.$id,
                 $platform.$id,
                 $platform.name,
-                undefined,
-                undefined,
+                $platform.key,
+                $platform.store,
                 hostname
             );
             invalidate(Dependencies.PLATFORM);

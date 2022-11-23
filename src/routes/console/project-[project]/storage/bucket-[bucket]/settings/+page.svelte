@@ -25,7 +25,7 @@
     import Delete from '../deleteBucket.svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { writable } from 'svelte/store';
-    import { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let showDelete = false;
 

@@ -48,7 +48,14 @@
 
     const updateName = async () => {
         try {
-            await sdkForConsole.projects.updatePlatform($project.$id, data.platform.$id, name);
+            await sdkForConsole.projects.updatePlatform(
+                $project.$id,
+                data.platform.$id,
+                name,
+                data.platform.key,
+                data.platform.store,
+                data.platform.hostname
+            );
             invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
