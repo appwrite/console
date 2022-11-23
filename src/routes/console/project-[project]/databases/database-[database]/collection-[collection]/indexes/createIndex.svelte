@@ -1,17 +1,16 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button, InputText, FormList, InputSelect } from '$lib/elements/forms';
-    import { collection } from '../store';
-    import { onMount } from 'svelte';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
-    import { page } from '$app/stores';
-    import type { Attributes } from '../store';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import Select from './select.svelte';
+    import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Attributes } from '../store';
+    import { collection } from '../store';
+    import Select from './select.svelte';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
@@ -33,18 +32,19 @@
     }));
     let attributeList = [{ value: '', order: '' }];
 
-    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
-
-    onMount(() => {
-        if (!externalAttribute) return;
-        attributeList = [{ value: externalAttribute.key, order: 'ASC' }];
-    });
-
-    $: if (showCreateIndex) {
-        attributeList = [{ value: '', order: '' }];
+    function initialize() {
+        attributeList = externalAttribute
+            ? [{ value: externalAttribute.key, order: 'ASC' }]
+            : [{ value: '', order: '' }];
         selectedType = 'key';
         key = null;
     }
+
+    $: if (showCreateIndex) {
+        initialize();
+    }
+
+    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
 
     async function create() {
         if (!(key && selectedType && !addAttributeDisabled)) {
@@ -74,6 +74,14 @@
             });
         } finally {
             showCreateIndex = false;
+
+            // Redirect to the index page if the index is created from the attribute page
+            // P.S. goto is not working here for some reason
+            if (externalAttribute) {
+                // await goto(window.location.pathname.replace('attributes', 'indexes'), {
+                //     replaceState: true
+                // });
+            }
         }
     }
 

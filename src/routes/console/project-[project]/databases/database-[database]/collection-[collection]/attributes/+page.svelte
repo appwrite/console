@@ -92,7 +92,9 @@
                                         on:click={() => {
                                             selectedAttribute = attribute;
                                             showCreateIndex = true;
-                                        }}>Create Index</DropListItem>
+                                        }}
+                                        >Create Index
+                                    </DropListItem>
                                     <DropListItem
                                         icon="trash"
                                         on:click={() => {
