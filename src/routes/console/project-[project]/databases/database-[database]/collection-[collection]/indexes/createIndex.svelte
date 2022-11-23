@@ -93,8 +93,6 @@
         selectedOrder = '';
         newAttr = true;
     };
-
-    $: console.log(attributeList);
 </script>
 
 <Modal bind:error size="big" on:submit={create} bind:show={showCreateIndex}>
@@ -103,7 +101,7 @@
         <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
         <InputSelect options={types} id="type" label="Index type" bind:value={selectedType} />
 
-        {#each attributeList as attribute, i (selectedAttribute + i)}
+        {#each attributeList as attribute, i}
             <li class="form-item is-multiple">
                 <div class="form-item-part u-stretch">
                     <Select id={`attribute-${i}`} label="Attribute" bind:value={attribute.value}>
@@ -114,9 +112,7 @@
                         </optgroup>
                         <optgroup label="Attributes">
                             {#each attributeOptions as option}
-                                <option
-                                    value={option.value}
-                                    selected={option.value === selectedAttribute}>
+                                <option value={option.value}>
                                     {option.label}
                                 </option>
                             {/each}
@@ -157,9 +153,7 @@
                         </optgroup>
                         <optgroup label="Attributes">
                             {#each attributeOptions as option}
-                                <option
-                                    value={option.value}
-                                    selected={option.value === selectedAttribute}>
+                                <option value={option.value}>
                                     {option.label}
                                 </option>
                             {/each}
