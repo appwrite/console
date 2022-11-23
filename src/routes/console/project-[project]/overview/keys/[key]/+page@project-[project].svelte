@@ -13,6 +13,7 @@
     import { key } from './store';
     import Scopes from '../scopes.svelte';
     import Delete from './delete.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
     let name: string = null;
@@ -37,6 +38,7 @@
                 $key.expire
             );
             invalidate(Dependencies.KEY);
+            trackEvent('submit_key_update');
             addNotification({
                 type: 'success',
                 message: 'API Key name has been updated'
@@ -59,6 +61,7 @@
                 expire
             );
             invalidate(Dependencies.KEY);
+            trackEvent('submit_key_update');
             addNotification({
                 type: 'success',
                 message: 'API Key expiration has been updated'
@@ -81,6 +84,7 @@
                 $key.expire
             );
             invalidate(Dependencies.KEY);
+            trackEvent('submit_key_update');
             addNotification({
                 type: 'success',
                 message: 'API Key scopes has been updated'
