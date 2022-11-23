@@ -38,7 +38,7 @@
                 $key.expire
             );
             invalidate(Dependencies.KEY);
-            trackEvent('submit_key_update');
+            trackEvent('submit_key_update_name');
             addNotification({
                 type: 'success',
                 message: 'API Key name has been updated'
@@ -61,7 +61,7 @@
                 expire
             );
             invalidate(Dependencies.KEY);
-            trackEvent('submit_key_update');
+            trackEvent('submit_key_update_expire');
             addNotification({
                 type: 'success',
                 message: 'API Key expiration has been updated'
@@ -84,7 +84,7 @@
                 $key.expire
             );
             invalidate(Dependencies.KEY);
-            trackEvent('submit_key_update');
+            trackEvent('submit_key_update_scopes');
             addNotification({
                 type: 'success',
                 message: 'API Key scopes has been updated'
