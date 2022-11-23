@@ -138,7 +138,6 @@
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Add attribute</span>
         </Button>
-        {JSON.stringify(attributeList)}
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreateIndex = false)}>Cancel</Button>
