@@ -86,15 +86,15 @@
                                         on:click={() => {
                                             selectedAttribute = attribute;
                                             showOverview = true;
+                                            showDropdown[index] = false;
                                         }}>Overview</DropListItem>
                                     <DropListItem
                                         icon="plus"
                                         on:click={() => {
                                             selectedAttribute = attribute;
                                             showCreateIndex = true;
-                                        }}>
-                                        Create Index
-                                    </DropListItem>
+                                            showDropdown[index] = false;
+                                        }}>Create Index</DropListItem>
                                     <DropListItem
                                         icon="trash"
                                         on:click={() => {
