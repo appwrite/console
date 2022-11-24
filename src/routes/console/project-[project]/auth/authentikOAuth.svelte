@@ -15,20 +15,16 @@
     let appId: string = null;
     let enabled: boolean = null;
     let clientSecret: string = null;
-    let oktaDomain: string = null;
-    let authorizationServerId: string = null;
+    let authentikDomain: string = null;
+    let error: string;
 
     onMount(() => {
         appId ??= provider.appId;
         enabled ??= provider.enabled;
-        if (provider.secret)
-            ({ clientSecret, oktaDomain, authorizationServerId } = JSON.parse(provider.secret));
+        if (provider.secret) ({ clientSecret, authentikDomain } = JSON.parse(provider.secret));
     });
 
-    let error: string;
-
     const projectId = $page.params.project;
-
     const update = async () => {
         try {
             await sdkForConsole.projects.updateOAuth2(
@@ -56,12 +52,12 @@
     };
 
     $: secret =
-        clientSecret && oktaDomain && authorizationServerId
-            ? JSON.stringify({ clientSecret, oktaDomain, authorizationServerId })
+        clientSecret && authentikDomain
+            ? JSON.stringify({ clientSecret, authentikDomain })
             : provider.secret;
 </script>
 
-<Modal {error} on:submit={update} size="big" show on:close>
+<Modal {error} size="big" show on:submit={update} on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
@@ -72,7 +68,7 @@
         </p>
         <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
         <InputText
-            id="appID"
+            id="clientID"
             label="Client ID"
             autofocus={true}
             placeholder="Enter ID"
@@ -86,15 +82,9 @@
             bind:value={clientSecret} />
         <InputText
             id="domain"
-            label="Okta Domain"
-            placeholder="dev-1337.okta.com"
-            bind:value={oktaDomain} />
-        <InputText
-            id="serverID"
-            label="Authorization Server ID"
-            placeholder="default"
-            bind:value={authorizationServerId} />
-
+            label="Authentik Base-Domain"
+            placeholder="Your Authentik domain"
+            bind:value={authentikDomain} />
         <Alert type="info">
             To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
         </Alert>
@@ -112,7 +102,7 @@
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
-                !(appId && clientSecret && oktaDomain && authorizationServerId)}
+                !(appId && clientSecret && authentikDomain)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>
