@@ -32,8 +32,8 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Roles</TableCellHead>
-                <TableCellHead>Joined</TableCellHead>
+                <TableCellHead onlyDesktop>Roles</TableCellHead>
+                <TableCellHead onlyDesktop>Joined</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -46,8 +46,8 @@
                                 <span>{membership.teamName ? membership.teamName : 'n/a'}</span>
                             </div>
                         </TableCellText>
-                        <TableCellText title="Roles">{membership.roles}</TableCellText>
-                        <TableCellText title="Joined">
+                        <TableCellText onlyDesktop title="Roles">{membership.roles}</TableCellText>
+                        <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(membership.joined)}
                         </TableCellText>
                         <TableCell width={30}>
