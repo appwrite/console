@@ -28,11 +28,11 @@
     {#if logs.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHead>Client</TableCellHead>
-                <TableCellHead>Event</TableCellHead>
-                <TableCellHead>Location</TableCellHead>
-                <TableCellHead>IP</TableCellHead>
-                <TableCellHead>Date</TableCellHead>
+                <TableCellHead width={150}>Client</TableCellHead>
+                <TableCellHead width={100}>Event</TableCellHead>
+                <TableCellHead width={80}>Location</TableCellHead>
+                <TableCellHead width={90}>IP</TableCellHead>
+                <TableCellHead width={140}>Date</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each logs.logs as log}
