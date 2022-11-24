@@ -7,6 +7,7 @@ import Okta from '../../routes/console/project-[project]/auth/oktaOAuth.svelte';
 import Auth0 from '../../routes/console/project-[project]/auth/auth0OAuth.svelte';
 import Authentik from '../../routes/console/project-[project]/auth/authentikOAuth.svelte';
 import GitLab from '../../routes/console/project-[project]/auth/gitlabOAuth.svelte';
+import Keycloak from '../../routes/console/project-[project]/auth/keycloakOAuth.svelte';
 import Main from '../../routes/console/project-[project]/auth/mainOAuth.svelte';
 
 export type Provider = Models.Provider & {
@@ -81,6 +82,10 @@ const setProviders = (project: Models.Project): Provider[] => {
                     break;
                 case 'google':
                     docs = 'https://support.google.com/googleapi/answer/6158849';
+                    break;
+                case 'keycloak':
+                    docs = 'https://www.keycloak.org/guides#getting-started';
+                    component = Keycloak;
                     break;
                 case 'linkedin':
                     docs = 'https://developer.linkedin.com/';
