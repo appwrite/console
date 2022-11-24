@@ -74,14 +74,6 @@
             });
         } finally {
             showCreateIndex = false;
-
-            // Redirect to the index page if the index is created from the attribute page
-            // P.S. goto is not working here for some reason
-            if (externalAttribute) {
-                // await goto(window.location.pathname.replace('attributes', 'indexes'), {
-                //     replaceState: true
-                // });
-            }
         }
     }
 
