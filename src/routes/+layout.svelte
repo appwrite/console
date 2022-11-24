@@ -123,4 +123,9 @@
             border-right-color: hsl(var(--p-tooltip--bg-color));
         }
     }
+
+    body,
+    html {
+        box-shadow: none !important;
+    }
 </style>
