@@ -37,6 +37,8 @@
         <div class="upload-box-content" class:is-open={!$uploader.isCollapsed}>
             <ul class="upload-box-list">
                 {#each $uploader.files as file}
+                    {@const progress = Math.round(file.progress)}
+
                     {#if file.completed || file.progress === 100}
                         <li class="upload-box-item">
                             <div class="u-margin-inline-end-16">
@@ -46,7 +48,7 @@
                                     name={file.name} />
                             </div>
 
-                            <label for={file.name} class="file-name">{file.name}</label>
+                            <label for={file.name} class="file-name u-trim">{file.name}</label>
                             <span class="icon-check" />
                         </li>
                     {:else if file.failed}
@@ -55,12 +57,12 @@
                                 <div
                                     class="progress"
                                     role="progressbar"
-                                    aria-valuenow={file.progress}
+                                    aria-valuenow={progress}
                                     aria-valuemin={0}
                                     aria-valuemax={100} />
-                                <span class="icon">{file.progress}%</span>
+                                <span class="icon">{progress}%</span>
                             </div>
-                            <label for={file.name} class="file-name">{file.name}</label>
+                            <label for={file.name} class="file-name u-trim">{file.name}</label>
                             <Pill danger>Failed</Pill>
                             <button
                                 class="icon-button"
@@ -69,27 +71,20 @@
                                 <span class="icon-x" />
                             </button>
                         </li>
-                    {:else if file.cancelled}
-                        cancelled?
                     {:else}
                         <li class="upload-box-item">
                             <div class="upload-image u-margin-inline-end-16">
                                 <div
                                     class="progress"
                                     role="progressbar"
-                                    aria-valuenow={file.progress}
+                                    style={`--progress-value:${progress}`}
+                                    aria-valuenow={progress}
                                     aria-valuemin={0}
                                     aria-valuemax={100} />
-                                <span class="icon">{file.progress}%</span>
+                                <span class="icon">{progress}%</span>
                             </div>
-                            <label for={file.name} class="file-name">{file.name}</label>
+                            <label for={file.name} class="file-name u-trim">{file.name}</label>
                             <Pill warning>Pending</Pill>
-                            <button
-                                class="icon-button"
-                                aria-label="Pending"
-                                on:click={() => removeFile(file.$id, file.bucketId)}>
-                                <span class="icon-x" />
-                            </button>
                         </li>
                     {/if}
                 {/each}
