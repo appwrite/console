@@ -16,14 +16,19 @@
 
     const dispatch = createEventDispatcher();
 
-    const handleVariable = () => {
+    function close() {
+        showCreate = false;
+        selectedVar = null;
+    }
+
+    function handleVariable() {
         if (selectedVar) {
             dispatch('updated', pair);
         } else {
             dispatch('created', pair);
         }
-        showCreate = false;
-    };
+        close();
+    }
 </script>
 
 <Modal bind:show={showCreate} on:submit={handleVariable} size="big">
@@ -48,7 +53,7 @@
             required />
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
+        <Button secondary on:click={close}>Cancel</Button>
         <Button submit>{selectedVar ? 'Update' : 'Create'}</Button>
     </svelte:fragment>
 </Modal>

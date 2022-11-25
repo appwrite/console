@@ -25,6 +25,7 @@
     import Delete from '../deleteBucket.svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { writable } from 'svelte/store';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let showDelete = false;
 
@@ -69,78 +70,44 @@
         } else isExtensionsDisabled = true;
     }
 
-    async function toggleBucket() {
+    type TUpdateBucketMisc = {
+        successMessage?: string;
+        trackEventName: string;
+        trackEventData?: { value: boolean };
+        arePermsDisabled?: boolean;
+    };
+
+    async function updateBucket(updates: Partial<Models.Bucket>, misc: TUpdateBucketMisc) {
+        const values = { ...$bucket, ...updates };
+
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                enabled
+                values.$id,
+                values.name,
+                values.$permissions,
+                values.fileSecurity,
+                values.enabled,
+                values.maximumFileSize,
+                values.allowedFileExtensions,
+                values.compression,
+                values.encryption,
+                values.antivirus
             );
+
             invalidate(Dependencies.BUCKET);
+
+            if (misc.arePermsDisabled !== undefined) {
+                arePermsDisabled = misc.arePermsDisabled;
+            }
+
             addNotification({
-                message: `${$bucket.name} has been updated`,
+                message: misc.successMessage ?? `${$bucket.name} has been updated`,
                 type: 'success'
             });
-            trackEvent('submit_bucket_enable', {
-                value: enabled
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updateName() {
-        try {
-            await sdkForProject.storage.updateBucket($bucket.$id, bucketName);
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: 'Name has been updated',
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_name');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updatePermissions() {
-        try {
-            await sdkForProject.storage.updateBucket($bucket.$id, $bucket.name, bucketPermissions);
-            invalidate(Dependencies.BUCKET);
-            arePermsDisabled = true;
-            addNotification({
-                message: 'Permissions have been updated',
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_permissions');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updateFileSecurity() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                $bucket.$permissions,
-                bucketFileSecurity
-            );
-            invalidate(Dependencies.BUCKET);
-            arePermsDisabled = true;
-            addNotification({
-                message: 'Security has been updated',
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_file_security');
+
+            if (misc.trackEventName) {
+                trackEvent(misc.trackEventName, misc.trackEventData);
+            }
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -149,81 +116,91 @@
         }
     }
 
-    async function updateSecurity() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
+    function toggleBucket() {
+        updateBucket(
+            {
+                enabled
+            },
+            {
+                trackEventName: 'submit_bucket_enable',
+                trackEventData: {
+                    value: enabled
+                }
+            }
+        );
+    }
+
+    function updateName() {
+        updateBucket(
+            {
+                name: bucketName
+            },
+            {
+                successMessage: 'Name has been updated',
+                trackEventName: 'submit_bucket_update_name'
+            }
+        );
+    }
+
+    function updatePermissions() {
+        updateBucket(
+            {
+                $permissions: bucketPermissions
+            },
+            {
+                successMessage: 'Permissions have been updated',
+                trackEventName: 'submit_bucket_update_permissions',
+                arePermsDisabled: true
+            }
+        );
+    }
+
+    function updateFileSecurity() {
+        updateBucket(
+            {
+                fileSecurity: bucketFileSecurity
+            },
+            {
+                successMessage: 'Security has been updated',
+                trackEventName: 'submit_bucket_update_file_security',
+                arePermsDisabled: true
+            }
+        );
+    }
+
+    function updateSecurity() {
+        updateBucket(
+            {
                 encryption,
                 antivirus
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_security');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updateMaxSize() {
-        let size = sizeToBytes(maxSize, $byteUnit);
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                undefined,
-                size
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_size');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
+            },
+            {
+                trackEventName: 'submit_bucket_update_security'
+            }
+        );
     }
 
-    async function updateAllowedExtensions() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                extensions
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_extensions');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
+    function updateMaxSize() {
+        const size = sizeToBytes(maxSize, $byteUnit);
+        updateBucket(
+            {
+                maximumFileSize: size
+            },
+            {
+                trackEventName: 'submit_bucket_update_size'
+            }
+        );
+    }
+
+    function updateAllowedExtensions() {
+        updateBucket(
+            {
+                allowedFileExtensions: extensions
+            },
+            {
+                trackEventName: 'submit_bucket_update_extensions'
+            }
+        );
     }
 
     byteUnit.subscribe((b) => {
@@ -298,7 +275,8 @@
                     the <a
                         href="https://appwrite.io/docs/permissions"
                         target="_blank"
-                        rel="noopener noreferrer">Permissions Guide</a> in our documentation.
+                        rel="noopener noreferrer"
+                        class="link">Permissions Guide</a> in our documentation.
                 </p>
                 <svelte:fragment slot="aside">
                     {#if bucketPermissions}
@@ -403,7 +381,9 @@
                     <Button
                         disabled={encryption === $bucket.encryption &&
                             antivirus === $bucket.antivirus}
-                        submit>Update</Button>
+                        submit
+                        >Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -425,7 +405,8 @@
 
                 <svelte:fragment slot="actions">
                     <Button disabled={sizeInBytes === $bucket.maximumFileSize} submit
-                        >Update</Button>
+                        >Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>

@@ -77,7 +77,9 @@
                 databaseId,
                 $collection.$id,
                 collectionName,
-                $collection.$permissions
+                $collection.$permissions,
+                $collection.documentSecurity,
+                $collection.enabled
             );
             invalidate(Dependencies.COLLECTION);
             showError = false;
@@ -96,7 +98,9 @@
                 databaseId,
                 $collection.$id,
                 $collection.name,
-                collectionPermissions
+                collectionPermissions,
+                $collection.documentSecurity,
+                $collection.enabled
             );
             invalidate(Dependencies.COLLECTION);
             arePermsDisabled = true;
@@ -120,7 +124,8 @@
                 $collection.$id,
                 $collection.name,
                 $collection.$permissions,
-                collectionDocumentSecurity
+                collectionDocumentSecurity,
+                $collection.enabled
             );
             invalidate(Dependencies.COLLECTION);
             arePermsDisabled = true;
@@ -194,7 +199,8 @@
                 the <a
                     href="https://appwrite.io/docs/permissions"
                     target="_blank"
-                    rel="noopener noreferrer">Permissions Guide</a> in our documentation.
+                    rel="noopener noreferrer"
+                    class="link">Permissions Guide</a> in our documentation.
             </p>
             <svelte:fragment slot="aside">
                 {#if collectionPermissions}

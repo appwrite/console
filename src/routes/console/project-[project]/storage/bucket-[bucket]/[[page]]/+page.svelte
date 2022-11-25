@@ -162,11 +162,15 @@
                                     </button>
                                     <svelte:fragment slot="list">
                                         <DropListLink
+                                            on:click={() => {
+                                                showDropdown[index] = false;
+                                            }}
                                             href={`${base}/console/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
                                             icon="pencil">Update</DropListLink>
                                         <DropListItem
                                             icon="trash"
                                             on:click={() => {
+                                                showDropdown[index] = false;
                                                 selectedFile = file;
                                                 showDelete = true;
                                             }}>Delete</DropListItem>

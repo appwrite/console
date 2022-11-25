@@ -8,9 +8,6 @@ import type { LayoutLoad } from './$types';
 export const ssr = false;
 
 export const load: LayoutLoad = async ({ depends, url }) => {
-    if (url.pathname.startsWith('/auth')) {
-        return;
-    }
     depends(Dependencies.ACCOUNT);
     try {
         const account = await sdkForConsole.account.get();
@@ -20,7 +17,15 @@ export const load: LayoutLoad = async ({ depends, url }) => {
             organizations: sdkForConsole.teams.list()
         };
     } catch (error) {
-        const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+        const acceptedRoutes = [
+            '/login',
+            '/register',
+            '/recover',
+            '/invite',
+            '/auth/magic-url',
+            '/auth/oauth2/success',
+            '/auth/oauth2/failure'
+        ];
 
         if (!acceptedRoutes.includes(url.pathname)) {
             throw redirect(303, '/login');

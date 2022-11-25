@@ -12,6 +12,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import Attribute from './attribute.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let disableUpdate = true;
     let currentDoc: string;
@@ -61,6 +62,9 @@
 
             currentDoc = JSON.stringify($work);
             invalidate(Dependencies.DOCUMENT);
+            trackEvent('submit_document_update', {
+                type: 'android'
+            });
             disableUpdate = true;
             addNotification({
                 message: 'Document was updated!',
