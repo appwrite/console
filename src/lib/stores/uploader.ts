@@ -102,8 +102,3 @@ const createUploader = () => {
 };
 
 export const uploader = createUploader();
-
-function calculateProgress(file: Models.File) {
-    const progress = file.chunksUploaded / file.chunksTotal;
-    return Math.round(progress * 100);
-}
