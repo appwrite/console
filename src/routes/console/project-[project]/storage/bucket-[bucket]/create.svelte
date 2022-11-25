@@ -68,8 +68,11 @@
         <Heading tag="h6" size="7">Update Permissions</Heading>
         <p class="text">
             Choose who can access your buckets and files. For more information, check out the
-            <a href="https://appwrite.io/docs/permissions" target="_blank" rel="noopener noreferrer"
-                >Permissions Guide</a> in our documentation.
+            <a
+                href="https://appwrite.io/docs/permissions"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Permissions Guide</a> in our documentation.
         </p>
         {#if $bucket.fileSecurity}
             <div class="common-section">
