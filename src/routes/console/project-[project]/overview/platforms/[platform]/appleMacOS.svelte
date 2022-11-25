@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
@@ -21,9 +22,14 @@
                 $project.$id,
                 $platform.$id,
                 $platform.name,
-                key
+                key,
+                $platform.store,
+                $platform.hostname
             );
             invalidate(Dependencies.PLATFORM);
+            trackEvent('submit_platform_update', {
+                type: 'apple-macos'
+            });
             addNotification({
                 type: 'success',
                 message: 'Platform Bundle ID has been updated'
