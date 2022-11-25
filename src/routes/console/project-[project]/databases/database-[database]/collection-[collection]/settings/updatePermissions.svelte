@@ -61,7 +61,8 @@
         Choose who can access your collection and documents. For more information, check out the <a
             href="https://appwrite.io/docs/permissions"
             target="_blank"
-            rel="noopener noreferrer">Permissions Guide</a> in our documentation.
+            rel="noopener noreferrer"
+            class="link">Permissions Guide</a> in our documentation.
     </p>
     <svelte:fragment slot="aside">
         {#if collectionPermissions}
