@@ -42,7 +42,6 @@ const createUploader = () => {
         close: () =>
             update((n) => {
                 n.isOpen = !n.isOpen;
-
                 return n;
             }),
         toggle: () =>
@@ -88,6 +87,12 @@ const createUploader = () => {
             newFile.progress = 100;
             newFile.completed = true;
             updateFile(newFile.$id, newFile);
+        },
+        removeFromQueue: (id: string) => {
+            update((n) => {
+                n.files = n.files.filter((f) => f.$id !== id);
+                return n;
+            });
         },
         removeFile: async (file: Models.File) => {
             if (file.chunksTotal === file.chunksUploaded) {

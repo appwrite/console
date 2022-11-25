@@ -6,10 +6,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
 
-    async function removeFile($id: string, bucketId: string) {
-        const file = await sdkForProject.storage.getFile(bucketId, $id);
-        uploader.removeFile(file);
-    }
+    let hovering = false;
 
     const getPreview = (fileId: string, bucketId: string) =>
         sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
@@ -30,7 +27,7 @@
                 <span class="icon-cheveron-up" aria-hidden="true" />
             </button>
             <button
-                on:click={() => uploader.close()}
+                on:click={() => uploader.reset()}
                 class="icon-button"
                 aria-label="close upload box">
                 <span class="icon-x" aria-hidden="true" />
@@ -53,7 +50,15 @@
                             </div>
 
                             <label for={file.name} class="file-name u-trim">{file.name}</label>
-                            <span class="icon-check" />
+
+                            <button
+                                class="icon-button"
+                                aria-label="Failed"
+                                on:mouseenter={() => (hovering = true)}
+                                on:mouseleave={() => (hovering = false)}
+                                on:click|preventDefault={() => uploader.removeFromQueue(file.$id)}>
+                                <span class:icon-check={!hovering} class:icon-x={hovering} />
+                            </button>
                         </a>
                     {:else if file.failed}
                         <li class="upload-box-item">
@@ -71,7 +76,7 @@
                             <button
                                 class="icon-button"
                                 aria-label="Failed"
-                                on:click={() => removeFile(file.$id, file.bucketId)}>
+                                on:click|preventDefault={() => uploader.removeFromQueue(file.$id)}>
                                 <span class="icon-x" />
                             </button>
                         </li>
