@@ -2,7 +2,6 @@
     import { Button, FormList, InputFile } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Modal, CustomId, Heading, Alert } from '$lib/components';
-    import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
@@ -25,20 +24,15 @@
 
     async function create() {
         try {
-            const file = await sdkForProject.storage.createFile(
-                bucketId,
-                id ?? 'unique()',
-                files[0],
-                permissions
-            );
-            files = null;
             showCreate = false;
+            await uploader.uploadFile(bucketId, id, files[0], permissions);
+            files = null;
             showCustomId = false;
-            uploader.addFile(file);
+            // uploader.addFile(file);
             dispatch('created');
             addNotification({
                 type: 'success',
-                message: `${file.name} has been created`
+                message: `File has been uploaded`
             });
             trackEvent('submit_file_create');
         } catch ({ message }) {
@@ -74,8 +68,11 @@
         <Heading tag="h6" size="7">Update Permissions</Heading>
         <p class="text">
             Choose who can access your buckets and files. For more information, check out the
-            <a href="https://appwrite.io/docs/permissions" target="_blank" rel="noopener noreferrer"
-                >Permissions Guide</a> in our documentation.
+            <a
+                href="https://appwrite.io/docs/permissions"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Permissions Guide</a> in our documentation.
         </p>
         {#if $bucket.fileSecurity}
             <div class="common-section">
