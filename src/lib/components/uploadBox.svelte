@@ -3,6 +3,8 @@
     import { Pill } from '$lib/elements';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Avatar } from '$lib/components';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     async function removeFile($id: string, bucketId: string) {
         const file = await sdkForProject.storage.getFile(bucketId, $id);
@@ -40,7 +42,9 @@
                     {@const progress = Math.round(file.progress)}
 
                     {#if file.completed || file.progress === 100}
-                        <li class="upload-box-item">
+                        <a
+                            class="upload-box-item"
+                            href={`${base}/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/file-${file.$id}`}>
                             <div class="u-margin-inline-end-16">
                                 <Avatar
                                     size={32}
@@ -50,7 +54,7 @@
 
                             <label for={file.name} class="file-name u-trim">{file.name}</label>
                             <span class="icon-check" />
-                        </li>
+                        </a>
                     {:else if file.failed}
                         <li class="upload-box-item">
                             <div class="upload-image u-margin-inline-end-16">
