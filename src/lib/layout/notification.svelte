@@ -1,5 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+    import { fly } from 'svelte/transition';
+    import { flip } from 'svelte/animate';
     import type { Notification } from '../stores/notifications';
 
     export let type: Notification['type'] = 'info';
@@ -14,7 +16,8 @@
     class:is-success={type === 'success'}
     class:is-warning={type === 'warning'}
     class:is-danger={type === 'error'}
-    class:is-info={type === 'info'}>
+    class:is-info={type === 'info'}
+    transition:fly={{ x: 50 }}>
     <button class="x-button" aria-label="close alert" on:click={() => dispatch('dismiss')}>
         <span class="icon-x" aria-hidden="true" />
     </button>

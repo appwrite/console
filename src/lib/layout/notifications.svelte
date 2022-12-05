@@ -1,19 +1,22 @@
 <script lang="ts">
     import Notification from './notification.svelte';
     import { dismissNotification, notifications } from '../stores/notifications';
+    import { flip } from 'svelte/animate';
 </script>
 
 {#if $notifications}
     <section>
         <ul class="u-flex u-flex-vertical u-gap-16">
             {#each $notifications as notification (notification.id)}
-                <Notification
-                    type={notification.type}
-                    title={notification.title}
-                    on:dismiss={() => dismissNotification(notification.id)}
-                    buttons={notification?.buttons}>
-                    {notification.message}
-                </Notification>
+                <div animate:flip={{ duration: 500 }}>
+                    <Notification
+                        type={notification.type}
+                        title={notification.title}
+                        on:dismiss={() => dismissNotification(notification.id)}
+                        buttons={notification?.buttons}>
+                        {notification.message}
+                    </Notification>
+                </div>
             {/each}
         </ul>
     </section>
