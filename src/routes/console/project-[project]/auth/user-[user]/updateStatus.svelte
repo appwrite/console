@@ -56,7 +56,7 @@
             invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.status ? 'blocked' : 'unblocked'
+                    $user.status ? 'unblocked' : 'blocked'
                 }`,
                 type: 'success'
             });
