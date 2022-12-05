@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { growthEndpoint } from '$lib/constants';
 import { writable } from 'svelte/store';
 
 export type AppStore = {
@@ -59,7 +60,7 @@ function createFeedbackStore() {
             email?: string,
             value?: number
         ) => {
-            const response = await fetch('https://growth.appwrite.io/v1/feedback', {
+            const response = await fetch(`${growthEndpoint}/feedback`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
