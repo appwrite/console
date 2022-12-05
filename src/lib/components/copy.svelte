@@ -9,23 +9,54 @@
 
     let content = 'Click to copy';
 
-    const copy = async () => {
+    async function securedCopy() {
         try {
             await navigator.clipboard.writeText(value);
+        } catch {
+            return false;
+        }
+
+        return true;
+    }
+
+    function unsecuredCopy() {
+        const textArea = document.createElement('textarea');
+        textArea.value = value;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        let success = true;
+        try {
+            document.execCommand('copy');
+        } catch {
+            success = false;
+        } finally {
+            document.body.removeChild(textArea);
+        }
+
+        return success;
+    }
+
+    async function copy() {
+        // Because of how JS works, unsecuredCopy only runs if securedCopy fails
+        const success = (await securedCopy()) || unsecuredCopy();
+
+        if (success) {
             content = 'Copied';
-        } catch (error) {
+        } else {
             addNotification({
-                message: error.message,
+                message: 'Unable to copy to clipboard',
                 type: 'error'
             });
-        } finally {
-            if (event) {
-                trackEvent('click_id_tag', {
-                    name: event
-                });
-            }
         }
-    };
+
+        if (event) {
+            trackEvent('click_id_tag', {
+                name: event
+            });
+        }
+    }
 </script>
 
 <span
