@@ -97,9 +97,9 @@
             projectId,
             platform,
             $createPlatform.name,
+            platform !== Platform.Web ? $createPlatform.key : undefined,
             undefined,
-            undefined,
-            $createPlatform.hostname
+            platform === Platform.Web ? $createPlatform.hostname : undefined
         );
 
         $createPlatform.$id = response.$id;
@@ -160,15 +160,16 @@
             placeholder={placeholder[platform].name}
             required
             bind:value={$createPlatform.name} />
-        <div>
-            <InputText
-                id="hostname"
-                label={hostname[platform]}
-                placeholder={placeholder[platform].hostname}
-                tooltip={placeholder[platform].tooltip}
-                required
-                bind:value={$createPlatform.hostname} />
-            {#if platform === Platform.Web}
+        {#if platform === Platform.Web}
+            <div>
+                <InputText
+                    id="hostname"
+                    label={hostname[platform]}
+                    placeholder={placeholder[platform].hostname}
+                    tooltip={placeholder[platform].tooltip}
+                    required
+                    bind:value={$createPlatform.hostname} />
+
                 <div class="u-flex u-gap-16 u-margin-block-start-8">
                     {#each suggestions as suggestion}
                         <Pill
@@ -179,7 +180,15 @@
                         </Pill>
                     {/each}
                 </div>
-            {/if}
-        </div>
+            </div>
+        {:else}
+            <InputText
+                id="key"
+                label={hostname[platform]}
+                placeholder={placeholder[platform].hostname}
+                tooltip={placeholder[platform].tooltip}
+                required
+                bind:value={$createPlatform.key} />
+        {/if}
     </FormList>
 </WizardStep>
