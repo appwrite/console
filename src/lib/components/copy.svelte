@@ -39,7 +39,8 @@
     }
 
     async function copy() {
-        // Because of how JS works, unsecuredCopy only runs if securedCopy fails
+        // securedCopy works only in HTTPS environment.
+        // unsecuredCopy works in HTTP and only runs if securedCopy fails.
         const success = (await securedCopy()) || unsecuredCopy();
 
         if (success) {
