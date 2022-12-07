@@ -9,6 +9,7 @@
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
     import Delete from '../deleteOrganization.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let name: string;
     let showDelete = false;
@@ -25,6 +26,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_organization_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -59,7 +61,7 @@
             </CardGrid>
         </Form>
 
-        <CardGrid>
+        <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Delete Organization</Heading>
             </div>
@@ -75,7 +77,7 @@
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$organization.name}</h6>
                     </svelte:fragment>
-                    <p>{$organization.total} projects</p>
+                    <p>{$organization.total} members</p>
                 </Box>
             </svelte:fragment>
 

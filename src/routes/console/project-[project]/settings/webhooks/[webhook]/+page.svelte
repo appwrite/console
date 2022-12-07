@@ -22,6 +22,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { writable, type Writable } from 'svelte/store';
+    import { trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
     let name: string = null;
@@ -54,13 +55,16 @@
                 name,
                 $webhook.events,
                 $webhook.url,
-                $webhook.security
+                $webhook.security,
+                $webhook.httpUser,
+                $webhook.httpPass
             );
             invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',
                 message: 'Webhook name has been updated'
             });
+            trackEvent('submit_webhook_update_name');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -76,13 +80,16 @@
                 $webhook.name,
                 $webhook.events,
                 url,
-                $webhook.security
+                $webhook.security,
+                $webhook.httpUser,
+                $webhook.httpPass
             );
             invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',
                 message: 'Webhook url has been updated'
             });
+            trackEvent('submit_webhook_update_url');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -98,7 +105,9 @@
                 $webhook.name,
                 Array.from($eventSet),
                 $webhook.url,
-                $webhook.security
+                $webhook.security,
+                $webhook.httpUser,
+                $webhook.httpPass
             );
             invalidate(Dependencies.WEBHOOK);
             areEventsDisabled = true;
@@ -106,6 +115,7 @@
                 type: 'success',
                 message: 'Webhook events have been updated'
             });
+            trackEvent('submit_webhook_update_events');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -131,6 +141,7 @@
                 type: 'success',
                 message: 'Webhook security has been updated'
             });
+            trackEvent('submit_webhook_update_security');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -283,6 +294,7 @@
                     <InputPassword
                         label="Password"
                         id="password"
+                        minlength={0}
                         showPasswordButton
                         placeholder="Enter password"
                         bind:value={httpPass} />
@@ -315,7 +327,7 @@
         </CardGrid>
     </Form>
 
-    <CardGrid>
+    <CardGrid danger>
         <div>
             <Heading tag="h2" size="7">Delete Webhook</Heading>
         </div>

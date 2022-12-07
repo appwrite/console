@@ -2,7 +2,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { log } from '$lib/stores/logs';
-    import { Status, Tab, Tabs } from '../components';
+    import { Output, Status, Tab, Tabs } from '../components';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
@@ -68,15 +68,23 @@
                             alt="technology" />
                     </div>
                     <div>
-                        <h2 class="body-text-2">Deployment ID: {$log.data.$id}</h2>
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <h2 class="body-text-2">Deployment ID:</h2>
+                            <Output value={$log.data.$id}>
+                                {$log.data.$id}
+                            </Output>
+                        </div>
                         <time class="u-block"
                             >Created at: {toLocaleDateTime($log.data.$createdAt)}</time>
                         <div>Size: {size.value} {size.unit}</div>
                     </div>
                     <div class="status u-margin-inline-start-auto">
-                        <Status status={$log.data.status}>{$log.data.status}</Status>
-
-                        <time>TBI</time>
+                        <div class="u-flex u-flex-vertical u-cross-end">
+                            <Status status={$log.data.status}>{$log.data.status}</Status>
+                            <p class="text">
+                                {calculateTime($log.data.buildTime)}
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <div class="tabs u-margin-block-start-48 u-sep-block-end">
@@ -131,13 +139,17 @@
                             alt="technology" />
                     </div>
                     <div>
-                        <h2 class="body-text-2">Execution ID: {$log.data.$id}</h2>
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <h2 class="body-text-2">Execution ID:</h2>
+                            <Output value={$log.data.$id}>
+                                {$log.data.$id}
+                            </Output>
+                        </div>
                         <time class="u-block">
                             Created at: {toLocaleDateTime($log.data.$createdAt)}</time>
                     </div>
                     <div>
                         <p>Triggered by: {$log.data.trigger}</p>
-                        <p>Type: TBI</p>
                     </div>
                     <div class="status u-margin-inline-start-auto">
                         <Status status={$log.data.status}>{$log.data.status}</Status>
@@ -153,14 +165,14 @@
                             Response
                         </Tab>
                         <Tab
-                            selected={selectedTab === 'errors'}
-                            on:click={() => (selectedTab = 'errors')}>
-                            Errors
-                        </Tab>
-                        <Tab
                             selected={selectedTab === 'logs'}
                             on:click={() => (selectedTab = 'logs')}>
                             Logs
+                        </Tab>
+                        <Tab
+                            selected={selectedTab === 'errors'}
+                            on:click={() => (selectedTab = 'errors')}>
+                            Errors
                         </Tab>
                     </Tabs>
                 </div>

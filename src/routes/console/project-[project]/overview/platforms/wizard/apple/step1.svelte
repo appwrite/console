@@ -5,6 +5,12 @@
     import { WizardStep } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
+    import { wizard } from '$lib/stores/wizard';
+    import { app } from '$lib/stores/app';
+    import Light from './light.svg';
+    import Dark from './dark.svg';
+
+    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     enum Platform {
         iOS = 'apple-ios',
@@ -23,8 +29,8 @@
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
-                undefined,
-                undefined,
+                $createPlatform.key,
+                $createPlatform.store,
                 $createPlatform.hostname
             );
 
@@ -87,6 +93,7 @@
             id="hostname"
             label="Bundle ID"
             placeholder="com.company.appname"
+            tooltip="You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
             required
             bind:value={$createPlatform.hostname} />
     </FormList>

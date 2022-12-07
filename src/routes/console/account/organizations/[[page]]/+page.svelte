@@ -29,10 +29,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Organizations</Heading>
 
-        <Button
-            on:click={() => {
-                addOrganization = true;
-            }}>
+        <Button on:click={() => (addOrganization = true)} event="create_organization">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create organization</span>
         </Button>
@@ -42,24 +39,23 @@
         <CardContainer
             total={data.organizations.total}
             offset={data.offset}
+            event="organization"
             on:click={() => (addOrganization = true)}>
-            {#each data.organizations.teams as organization, index}
+            {#each data.organizations.teams as organization}
                 {@const avatarList = getMemberships(organization.$id)}
-                {#if index >= data.offset && index < CARD_LIMIT + data.offset}
-                    <GridItem1 href={`${base}/console/organization-${organization.$id}`}>
-                        <svelte:fragment slot="eyebrow">
-                            {organization?.total ? organization?.total : 'No'} projects
-                        </svelte:fragment>
-                        <svelte:fragment slot="title">
-                            {organization.name}
-                        </svelte:fragment>
-                        {#await avatarList}
-                            <span class="avatar  is-color-empty" />
-                        {:then avatars}
-                            <AvatarGroup size={40} {avatars} />
-                        {/await}
-                    </GridItem1>
-                {/if}
+                <GridItem1 href={`${base}/console/organization-${organization.$id}`}>
+                    <svelte:fragment slot="eyebrow">
+                        {organization?.total ? organization?.total : 'No'} members
+                    </svelte:fragment>
+                    <svelte:fragment slot="title">
+                        {organization.name}
+                    </svelte:fragment>
+                    {#await avatarList}
+                        <span class="avatar  is-color-empty" />
+                    {:then avatars}
+                        <AvatarGroup size={40} {avatars} />
+                    {/await}
+                </GridItem1>
             {/each}
             <svelte:fragment slot="empty">
                 <p>Create a new organization</p>
@@ -74,7 +70,7 @@
         <p class="text">Total results: {data.organizations.total}</p>
         <Pagination
             limit={CARD_LIMIT}
-            path="console/account/organizations"
+            path="/console/account/organizations"
             offset={data.offset}
             sum={data.organizations.total} />
     </div>

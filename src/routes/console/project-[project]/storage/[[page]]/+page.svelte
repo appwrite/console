@@ -27,7 +27,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Buckets</Heading>
 
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_bucket">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create bucket</span>
         </Button>
     </div>
@@ -36,6 +36,7 @@
         <CardContainer
             total={data.buckets.total}
             offset={data.offset}
+            event="bucket"
             on:click={() => (showCreate = true)}>
             {#each data.buckets.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket-${bucket.$id}`}>

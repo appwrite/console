@@ -12,16 +12,19 @@
     const tabs = [
         {
             href: path,
-            title: 'Overview'
+            title: 'Overview',
+            event: 'overview'
         },
         {
             href: `${path}/members`,
             title: 'Members',
+            event: 'members',
             hasChildren: true
         },
         {
             href: `${path}/activity`,
             title: 'Activity',
+            event: 'activity',
             hasChildren: true
         }
     ];
@@ -32,7 +35,7 @@
         <CoverTitle href={`/console/project-${projectId}/auth/teams`}>
             {$team?.name}
         </CoverTitle>
-        <Copy value={$team?.$id}>
+        <Copy value={$team?.$id} event="team">
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />
                 Team ID
@@ -42,7 +45,10 @@
 
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                event={tab.event}>
                 {tab.title}
             </Tab>
         {/each}

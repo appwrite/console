@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { Trim } from '$lib/components';
     import { Button } from '.';
 
     export let label: string = null;
     export let files: FileList;
     export let list = new DataTransfer();
+    export let allowedFileExtensions: string[] = [];
 
     let input: HTMLInputElement;
     let hovering = false;
@@ -28,7 +30,12 @@
     }
 </script>
 
-<input bind:files bind:this={input} type="file" style="display: none" />
+<input
+    bind:files
+    bind:this={input}
+    accept={allowedFileExtensions.map((n) => `.${n}`).join(',')}
+    type="file"
+    style="display: none" />
 
 <div>
     {#if label}
@@ -41,20 +48,23 @@
         on:dragover|preventDefault={dragOverHandler}
         on:dragleave|preventDefault={() => (hovering = false)}>
         <div class="u-flex u-main-center u-cross-center u-gap-32">
-            <div class="avatar is-size-large">
-                <span class="icon-upload" aria-hidden="true" />
+            <div class="avatar is-size-large u-min-width-0">
+                <span class="icon-folder" aria-hidden="true" />
             </div>
-            <div class="u-grid u-gap-16">
+            <div class="u-grid u-gap-16 u-min-width-0">
                 <p>Drag and drop files here to upload</p>
-                <div class="u-flex u-gap-8 ">
+                <div class="u-flex u-gap-8 u-min-width-0">
                     <Button secondary on:click={() => input.click()}>
                         <span class="icon-upload" aria-hidden="true" />
                         <span class="text">Choose File</span>
                     </Button>
 
                     {#if files?.length}
-                        <div class="u-flex ">
-                            {files.item(0).name}
+                        {@const fileName = files.item(0).name.split('.')}
+                        <div class="u-flex u-cross-center u-min-width-0">
+                            <Trim>{fileName[0]}</Trim>
+                            <span class="u-min-width-0 u-flex-shrink-0 u-margin-inline-end-16"
+                                >.{fileName[1]}</span>
                             <button
                                 on:click={() => (files = null)}
                                 type="button"

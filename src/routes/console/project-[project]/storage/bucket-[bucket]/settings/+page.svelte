@@ -22,7 +22,10 @@
     import { Permissions } from '$lib/components/permissions';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import Delete from '../_deleteBucket.svelte';
+    import Delete from '../deleteBucket.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { writable } from 'svelte/store';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let showDelete = false;
 
@@ -34,13 +37,14 @@
         encryption: boolean = null,
         antivirus: boolean = null,
         maxSize: number;
-    let byteUnit: 'Bytes' | 'KB' | 'MB' | 'GB' = 'MB',
-        options = [
-            { label: 'Bytes', value: 'Bytes' },
-            { label: 'Kilobytes', value: 'KB' },
-            { label: 'Megabytes', value: 'MB' },
-            { label: 'Gigabytes', value: 'GB' }
-        ];
+    let byteUnit = writable('KB');
+    let sizeInBytes: number = null;
+    const options = [
+        { label: 'Bytes', value: 'Bytes' },
+        { label: 'Kilobytes', value: 'KB' },
+        { label: 'Megabytes', value: 'MB' },
+        { label: 'Gigabytes', value: 'GB' }
+    ];
     let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
     let extensions = $bucket.allowedFileExtensions;
     let isExtensionsDisabled = true;
@@ -53,15 +57,12 @@
         bucketPermissions ??= $bucket.$permissions;
         encryption ??= $bucket.encryption;
         antivirus ??= $bucket.antivirus;
+        maxSize = $bucket.maximumFileSize / 1024;
     });
-    $: if (bucketFileSecurity || bucketPermissions) {
-        if (bucketFileSecurity !== $bucket.fileSecurity) {
+    $: if (bucketPermissions) {
+        if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
             arePermsDisabled = false;
-        } else if (bucketPermissions) {
-            if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
-                arePermsDisabled = false;
-            } else arePermsDisabled = true;
-        }
+        } else arePermsDisabled = true;
     }
     $: if (extensions) {
         if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
@@ -69,56 +70,44 @@
         } else isExtensionsDisabled = true;
     }
 
-    async function toggleBucket() {
+    type TUpdateBucketMisc = {
+        successMessage?: string;
+        trackEventName: string;
+        trackEventData?: { value: boolean };
+        arePermsDisabled?: boolean;
+    };
+
+    async function updateBucket(updates: Partial<Models.Bucket>, misc: TUpdateBucketMisc) {
+        const values = { ...$bucket, ...updates };
+
         try {
             await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                enabled
+                values.$id,
+                values.name,
+                values.$permissions,
+                values.fileSecurity,
+                values.enabled,
+                values.maximumFileSize,
+                values.allowedFileExtensions,
+                values.compression,
+                values.encryption,
+                values.antivirus
             );
+
             invalidate(Dependencies.BUCKET);
+
+            if (misc.arePermsDisabled !== undefined) {
+                arePermsDisabled = misc.arePermsDisabled;
+            }
+
             addNotification({
-                message: `${$bucket.name} has been updated`,
+                message: misc.successMessage ?? `${$bucket.name} has been updated`,
                 type: 'success'
             });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updateName() {
-        try {
-            await sdkForProject.storage.updateBucket($bucket.$id, bucketName);
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: 'Name has been updated',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updatePermissions() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                bucketFileSecurity ? bucketPermissions : undefined,
-                bucketFileSecurity
-            );
-            invalidate(Dependencies.BUCKET);
-            arePermsDisabled = true;
-            addNotification({
-                message: 'Permissions have been updated',
-                type: 'success'
-            });
+
+            if (misc.trackEventName) {
+                trackEvent(misc.trackEventName, misc.trackEventData);
+            }
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -127,78 +116,107 @@
         }
     }
 
-    async function updateSecurity() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
+    function toggleBucket() {
+        updateBucket(
+            {
+                enabled
+            },
+            {
+                trackEventName: 'submit_bucket_enable',
+                trackEventData: {
+                    value: enabled
+                }
+            }
+        );
+    }
+
+    function updateName() {
+        updateBucket(
+            {
+                name: bucketName
+            },
+            {
+                successMessage: 'Name has been updated',
+                trackEventName: 'submit_bucket_update_name'
+            }
+        );
+    }
+
+    function updatePermissions() {
+        updateBucket(
+            {
+                $permissions: bucketPermissions
+            },
+            {
+                successMessage: 'Permissions have been updated',
+                trackEventName: 'submit_bucket_update_permissions',
+                arePermsDisabled: true
+            }
+        );
+    }
+
+    function updateFileSecurity() {
+        updateBucket(
+            {
+                fileSecurity: bucketFileSecurity
+            },
+            {
+                successMessage: 'Security has been updated',
+                trackEventName: 'submit_bucket_update_file_security',
+                arePermsDisabled: true
+            }
+        );
+    }
+
+    function updateSecurity() {
+        updateBucket(
+            {
                 encryption,
                 antivirus
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updateMaxSize() {
-        let size = sizeToBytes(maxSize, byteUnit);
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                undefined,
-                size
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
+            },
+            {
+                trackEventName: 'submit_bucket_update_security'
+            }
+        );
     }
 
-    async function updateAllowedExtensions() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                extensions
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
+    function updateMaxSize() {
+        const size = sizeToBytes(maxSize, $byteUnit);
+        updateBucket(
+            {
+                maximumFileSize: size
+            },
+            {
+                trackEventName: 'submit_bucket_update_size'
+            }
+        );
+    }
+
+    function updateAllowedExtensions() {
+        updateBucket(
+            {
+                allowedFileExtensions: extensions
+            },
+            {
+                trackEventName: 'submit_bucket_update_extensions'
+            }
+        );
+    }
+
+    byteUnit.subscribe((b) => {
+        if (b === 'Bytes') {
+            maxSize = sizeInBytes;
+        } else if (b === 'KB') {
+            maxSize = sizeInBytes / 1024;
+        } else if (b === 'MB') {
+            maxSize = sizeInBytes / 1024 / 1024;
+        } else if (b === 'GB') {
+            maxSize = sizeInBytes / 1024 / 1024 / 1024;
         }
+    });
+
+    $: if (maxSize) {
+        sizeInBytes = sizeToBytes(maxSize, $byteUnit);
     }
 </script>
 
@@ -242,8 +260,9 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={bucketName === $bucket.name || !bucketName} submit
-                        >Update</Button>
+                    <Button disabled={bucketName === $bucket.name || !bucketName} submit>
+                        Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -251,42 +270,49 @@
         <Form on:submit={updatePermissions}>
             <CardGrid>
                 <Heading tag="h6" size="7">Update Permissions</Heading>
-                <p>
-                    Assign read or write permissions at the <b>Bucket Level</b> or
-                    <b>File Level</b>. If Bucket Level permissions are assigned, file permissions
-                    will be ignored.
+                <p class="text">
+                    Choose who can access your buckets and files. For more information, check out
+                    the <a
+                        href="https://appwrite.io/docs/permissions"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="link">Permissions Guide</a> in our documentation.
                 </p>
                 <svelte:fragment slot="aside">
-                    <ul class="checkboxes-list">
-                        <li class="checkboxes-item">
-                            <label class="label">
-                                <input
-                                    type="radio"
-                                    class="is-small"
-                                    name="level"
-                                    bind:group={bucketFileSecurity}
-                                    value={true} />
-                                <span>Bucket Level</span>
-                            </label>
-                        </li>
-                        <li class="checkboxes-item">
-                            <label class="label">
-                                <input
-                                    type="radio"
-                                    class="is-small"
-                                    name="level"
-                                    bind:group={bucketFileSecurity}
-                                    value={false} />
-                                <span>File Level</span>
-                            </label>
-                        </li>
-                    </ul>
-                    {#if bucketFileSecurity}
-                        <Permissions bind:permissions={bucketPermissions} />
+                    {#if bucketPermissions}
+                        <Permissions bind:permissions={bucketPermissions} withCreate />
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
                     <Button disabled={arePermsDisabled} submit>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+
+        <Form on:submit={updateFileSecurity}>
+            <CardGrid>
+                <Heading tag="h6" size="7">Update File Security</Heading>
+                <svelte:fragment slot="aside">
+                    <FormList>
+                        <InputSwitch
+                            bind:value={bucketFileSecurity}
+                            id="security"
+                            label="File Security" />
+                    </FormList>
+                    <p class="text">
+                        When file security is enabled, users will be able to access files for which
+                        they have been granted <b>either File or Bucket permissions</b>.
+                    </p>
+                    <p class="text">
+                        If file security is disabled, users can access files <b
+                            >only if they have Bucket permissions</b
+                        >. File permissions will be ignored..
+                    </p>
+                </svelte:fragment>
+                <svelte:fragment slot="actions">
+                    <Button disabled={bucketFileSecurity === $bucket.fileSecurity} submit>
+                        Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -355,7 +381,9 @@
                     <Button
                         disabled={encryption === $bucket.encryption &&
                             antivirus === $bucket.antivirus}
-                        submit>Update</Button>
+                        submit
+                        >Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -369,14 +397,16 @@
                         <InputNumber
                             id="size"
                             label="Size"
-                            placeholder="256"
+                            placeholder={$bucket.maximumFileSize.toString()}
                             bind:value={maxSize} />
-                        <InputSelect id="bytes" label="Bytes" {options} bind:value={byteUnit} />
+                        <InputSelect id="bytes" label="Bytes" {options} bind:value={$byteUnit} />
                     </ul>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={!maxSize} submit>Update</Button>
+                    <Button disabled={sizeInBytes === $bucket.maximumFileSize} submit
+                        >Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -421,7 +451,7 @@
             </CardGrid>
         </Form>
 
-        <CardGrid>
+        <CardGrid danger>
             <Heading tag="h6" size="7">Delete Bucket</Heading>
             <p>
                 The bucket will be permanently deleted, including all the files within it. This

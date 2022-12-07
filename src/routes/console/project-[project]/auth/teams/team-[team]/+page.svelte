@@ -11,6 +11,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import DeleteTeam from './deleteTeam.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
     let teamName: string = null;
@@ -27,6 +28,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_team_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -68,16 +70,12 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button
-                    disabled={teamName === $team.name || !teamName}
-                    on:click={() => {
-                        updateName();
-                    }}>Update</Button>
+                <Button submit disabled={teamName === $team.name || !teamName}>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
 
-    <CardGrid>
+    <CardGrid danger>
         <div>
             <Heading tag="h6" size="7">Danger Zone</Heading>
         </div>
@@ -99,7 +97,9 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)} event="delete_team">
+                Delete
+            </Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

@@ -8,19 +8,20 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let provider: Provider;
 
     let appId: string = null;
     let enabled: boolean = null;
     let clientSecret: string = null;
-    let auth0Domain: string = null;
+    let authentikDomain: string = null;
     let error: string;
 
     onMount(() => {
         appId ??= provider.appId;
         enabled ??= provider.enabled;
-        if (provider.secret) ({ clientSecret, auth0Domain } = JSON.parse(provider.secret));
+        if (provider.secret) ({ clientSecret, authentikDomain } = JSON.parse(provider.secret));
     });
 
     const projectId = $page.params.project;
@@ -39,6 +40,10 @@
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
+            trackEvent('submit_provider_update', {
+                provider,
+                enabled
+            });
             provider = null;
             invalidate(Dependencies.PROJECT);
         } catch ({ message }) {
@@ -47,8 +52,8 @@
     };
 
     $: secret =
-        clientSecret && auth0Domain
-            ? JSON.stringify({ clientSecret, auth0Domain })
+        clientSecret && authentikDomain
+            ? JSON.stringify({ clientSecret, authentikDomain })
             : provider.secret;
 </script>
 
@@ -77,9 +82,9 @@
             bind:value={clientSecret} />
         <InputText
             id="domain"
-            label="Auth0 Domain"
-            placeholder="Your Auth0 domain"
-            bind:value={auth0Domain} />
+            label="Authentik Base-Domain"
+            placeholder="Your Authentik domain"
+            bind:value={authentikDomain} />
         <Alert type="info">
             To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
         </Alert>
@@ -88,7 +93,7 @@
             <CopyInput
                 value={`${
                     sdkForConsole.client.config.endpoint
-                }/account/session/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">
@@ -97,7 +102,7 @@
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
-                !(appId && clientSecret && auth0Domain)}
+                !(appId && clientSecret && authentikDomain)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

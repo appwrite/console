@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { user } from '$lib/stores/user';
     import { onCLS, onFID, onLCP, onFCP, onINP, onTTFB } from 'web-vitals';
@@ -11,10 +11,12 @@
     import { Progress, Notifications } from '$lib/layout';
     import { loading } from './store';
     import Loading from './loading.svelte';
+    import { trackPageView } from '$lib/actions/analytics';
+    import * as Sentry from '@sentry/svelte';
+    import { BrowserTracing } from '@sentry/tracing';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
-        window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
     }
 
     onMount(async () => {
@@ -31,25 +33,42 @@
         }
 
         /**
+         * Sentry Error Logging
+         */
+        if (!dev) {
+            Sentry.init({
+                dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
+                integrations: [new BrowserTracing()],
+                tracesSampleRate: 1.0
+            });
+        }
+
+        /**
          * Handle initial load.
          */
-        const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
-        if ($user) {
-            if (!$page.url.pathname.startsWith('/console')) {
-                await goto(`${base}/console`, {
-                    replaceState: true
-                });
-            }
-        } else {
-            if (acceptedRoutes.includes($page.url.pathname)) {
-                await goto(`${base}${$page.url.pathname}${$page.url.search}`);
+        if (!$page.url.pathname.startsWith('/auth')) {
+            const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+            if ($user) {
+                if (!$page.url.pathname.startsWith('/console')) {
+                    await goto(`${base}/console`, {
+                        replaceState: true
+                    });
+                }
             } else {
-                await goto(`${base}/login`, {
-                    replaceState: true
-                });
+                if (acceptedRoutes.includes($page.url.pathname)) {
+                    await goto(`${base}${$page.url.pathname}${$page.url.search}`);
+                } else {
+                    await goto(`${base}/login`, {
+                        replaceState: true
+                    });
+                }
+                loading.set(false);
             }
-            loading.set(false);
         }
+    });
+
+    afterNavigate((navigation) => {
+        trackPageView(navigation.to.routeId);
     });
 
     $: {
@@ -70,22 +89,6 @@
         }
     }
 </script>
-
-<svelte:head>
-    {#if browser && window.GOOGLE_ANALYTICS}
-        <script
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${window.GOOGLE_ANALYTICS}`}></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
-            gtag('config', window.GOOGLE_ANALYTICS);
-        </script>
-    {/if}
-</svelte:head>
 
 <Notifications />
 

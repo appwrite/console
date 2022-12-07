@@ -3,6 +3,7 @@
     import { browser } from '$app/environment';
     import { wizard } from '$lib/stores/wizard';
     import { log } from '$lib/stores/logs';
+    import { beforeNavigate } from '$app/navigation';
 
     export let isOpen = false;
     export let showSideNavigation = false;
@@ -24,6 +25,16 @@
             }
         }
     };
+
+    beforeNavigate((n) => {
+        /**
+         * Hide wizard when navigation is triggered by popstate.
+         */
+        if (n.type === 'popstate' && $wizard.show) {
+            wizard.hide();
+            n.cancel();
+        }
+    });
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -33,7 +44,7 @@
     class:grid={!showSideNavigation}
     class:is-open={isOpen}
     class:u-hide={$wizard.show || $log.show}>
-    <header class="main-header">
+    <header class="main-header u-padding-inline-end-0">
         <button
             class:u-hide={!showSideNavigation}
             class="icon-button is-no-desktop"

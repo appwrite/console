@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, Heading } from '$lib/components';
+    import { CardGrid, Box, Heading, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -12,10 +12,13 @@
     import { Permissions } from '$lib/components/permissions';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { collection } from '../store';
 
     let showDelete = false;
     let permissions = $doc?.$permissions;
     let arePermsDisabled = true;
+    let showPermissionAlert = true;
 
     async function updatePermissions() {
         try {
@@ -32,6 +35,7 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
+            trackEvent('submit_document_update_permission');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -71,7 +75,30 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <Permissions bind:permissions />
+            {#if $collection.documentSecurity}
+                {#if showPermissionAlert}
+                    <Alert type="info" dismissible on:dismiss={() => (showPermissionAlert = false)}>
+                        <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
+                        <p class="text">
+                            Users will be able to access this document if they have been granted <b
+                                >either Document or Collection permissions.
+                            </b>
+                        </p>
+                    </Alert>
+                {/if}
+                {#if permissions}
+                    <Permissions bind:permissions />
+                {/if}
+            {:else}
+                <Alert type="info">
+                    <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
+                    <p class="text">
+                        If you want to assign document permissions, navigate to Collection settings
+                        and enable document security. Otherwise, only Collection permissions will be
+                        used.
+                    </p>
+                </Alert>
+            {/if}
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
@@ -83,7 +110,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
+    <CardGrid danger>
         <Heading tag="h6" size="7">Delete Document</Heading>
         <p>
             The document will be permanently deleted, including all the data within it. This action

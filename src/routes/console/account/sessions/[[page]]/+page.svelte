@@ -13,10 +13,12 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { base } from '$app/paths';
 
     export let data: PageData;
 
@@ -26,10 +28,16 @@
 
     const logout = async (session: Models.Session) => {
         await sdkForConsole.account.deleteSession(session.$id);
+        trackEvent('submit_account_delete_session');
+        if (session.current) {
+            await goto(`${base}/login`);
+        }
         invalidate(Dependencies.ACCOUNT_SESSIONS);
     };
     const logoutAll = async () => {
         await sdkForConsole.account.deleteSessions();
+        trackEvent('submit_account_delete_all_sessions');
+        await goto(`${base}/login`);
         invalidate(Dependencies.ACCOUNT_SESSIONS);
     };
 </script>
@@ -55,7 +63,7 @@
                 {#each data.sessions.sessions as session}
                     <TableRow>
                         <TableCell title="Client">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <div class="u-flex u-cross-center u-gap-12">
                                     {#if session.clientName}
                                         <div class="avatar is-small">

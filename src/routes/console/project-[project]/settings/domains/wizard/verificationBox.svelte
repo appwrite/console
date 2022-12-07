@@ -4,6 +4,7 @@
     import { domain } from './store';
     import { project } from '../../../store';
     import { addNotification } from '$lib/stores/notifications';
+    import { Pill } from '$lib/elements';
 
     const projectId = $project.$id;
 
@@ -30,22 +31,27 @@
 </script>
 
 <div class="box u-flex u-gap-16 u-cross-center">
-    {#if isVerifying}
-        <div
-            class="loader"
-            style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem" />
+    {#if isVerified}
+        <Pill success>
+            <span class="icon-check-circle" style="font-size: var(--icon-size-small);" />verified
+        </Pill>
+        <p class="u-stretch">Domain has been verified</p>
     {:else}
-        <span
-            class:u-hide={isVerifying}
-            class:icon-x={!isVerified}
-            class:icon-check={isVerified}
-            aria-hidden="true"
-            style="color: hsl(var(--color-neutral-50))" />
+        {#if isVerifying}
+            <div
+                class="loader"
+                style="color: hsl(var(--color-neutral-50)); inline-size: 1.5rem; block-size: 1.5rem" />
+        {:else}
+            <Pill danger>
+                <span
+                    class="icon-exclamation-circle"
+                    style="font-size: var(--icon-size-small);" />failed
+            </Pill>
+        {/if}
+
+        <p class="u-stretch">Domain is pending verification</p>
     {/if}
-    <p class="u-stretch">
-        {!isVerified ? 'Domain is pending verification' : 'Verified domain'}
-    </p>
-    {#if !isVerifying && !isVerified}
-        <Button secondary on:click={verifyDomain}>Verify</Button>
+    {#if !isVerified}
+        <Button secondary disabled={isVerifying} on:click={verifyDomain}>Verify</Button>
     {/if}
 </div>

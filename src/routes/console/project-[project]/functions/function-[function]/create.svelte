@@ -2,12 +2,14 @@
     import { InputChoice, Button, InputText, InputFile, FormList } from '$lib/elements/forms';
     import { Modal, Collapsible, CollapsibleItem, Tabs, Tab, Code } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
     import Github from '$lib/images/github-illustration.svg';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { func } from './store';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -18,13 +20,72 @@
     }
     let mode: Mode = Mode.CLI;
     let entrypoint: string;
-    let active: boolean;
+    let active = false;
     let files: FileList;
+    let lang = 'js';
+    let codeSnippets = {};
 
     const functionId = $page.params.function;
     const dispatch = createEventDispatcher();
 
-    const create = async () => {
+    onMount(() => {
+        lang = setLanguage($func.runtime);
+        codeSnippets = setCodeSnippets(lang);
+    });
+
+    function setLanguage(runtime: string) {
+        if (runtime.includes('node') || runtime.includes('deno')) {
+            return 'js';
+        } else if (runtime.includes('php')) {
+            return 'php';
+        } else if (runtime.includes('python')) {
+            return 'py';
+        } else if (runtime.includes('dart')) {
+            return 'dart';
+        } else if (runtime.includes('dotnet')) {
+            return 'cs';
+        } else if (runtime.includes('ruby')) {
+            return 'rb';
+        } else if (runtime.includes('swift')) {
+            return 'swift';
+        } else if (runtime.includes('kotlin')) {
+            return 'kt';
+        } else if (runtime.includes('java')) {
+            return 'java';
+        }
+    }
+
+    function setCodeSnippets(lang: string) {
+        return {
+            Unix: {
+                code: `appwrite functions createDeployment \\ 
+    --functionId=${functionId} \\ 
+    --entrypoint='index.${lang}' \\ 
+    --code="." \\ 
+    --activate=true`,
+                language: 'bash'
+            },
+
+            CMD: {
+                code: `appwrite functions createDeployment ^
+    --functionId=${functionId} ^
+    --entrypoint='index.${lang}' ^
+    --code="." ^
+    --activate=true`,
+                language: 'CMD'
+            },
+            PowerShell: {
+                code: `appwrite functions createDeployment ,
+    --functionId=${functionId} ,
+    --entrypoint='index.${lang}' ,
+    --code="." ,
+    --activate=true`,
+                language: 'PowerShell'
+            }
+        };
+    }
+
+    async function create() {
         try {
             await sdkForProject.functions.createDeployment(
                 functionId,
@@ -36,51 +97,32 @@
             files = entrypoint = active = null;
             showCreate = false;
             dispatch('created');
+            trackEvent('submit_function_create');
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
         }
-    };
-
-    const codeSnippets = {
-        Unix: {
-            code: `appwrite functions createDeployment \\ 
-    --functionId=${functionId} \\ 
-    --entrypoint='index.js' \\ 
-    --code="." \\ 
-    --activate=true`,
-            language: 'bash'
-        },
-
-        CMD: {
-            code: `appwrite functions createDeployment ^
-    --functionId=${functionId} ^
-    --entrypoint='index.js' ^
-    --code="." ^
-    --activate=true`,
-            language: 'CMD'
-        },
-        PowerShell: {
-            code: `appwrite functions createDeployment ,
-    --functionId=${functionId} ,
-    --entrypoint='index.js' ,
-    --code="." ,
-    --activate=true`,
-            language: 'PowerShell'
-        }
-    };
+    }
 </script>
 
 <Modal size="big" bind:show={showCreate} on:submit={create}>
     <svelte:fragment slot="header">Create Deployment</svelte:fragment>
     <Tabs>
-        <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI}>CLI</Tab>
-        <Tab on:click={() => (mode = Mode.Github)} selected={mode === Mode.Github}>
+        <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI} event="deploy_cli">
+            CLI
+        </Tab>
+        <Tab
+            on:click={() => (mode = Mode.Github)}
+            selected={mode === Mode.Github}
+            event="deploy_github">
             GitHub - Soon!
         </Tab>
-        <Tab on:click={() => (mode = Mode.Manual)} selected={mode === Mode.Manual}>Manual</Tab>
+        <Tab
+            on:click={() => (mode = Mode.Manual)}
+            selected={mode === Mode.Manual}
+            event="deploy_manual">Manual</Tab>
     </Tabs>
     {#if mode === Mode.CLI}
         <p class="text">
@@ -128,11 +170,11 @@
         <FormList>
             <InputText
                 label="Entrypoint"
-                placeholder="main.py"
+                placeholder={`main.${lang}`}
                 id="entrypoint"
                 bind:value={entrypoint}
                 required />
-            <InputFile label="Gzipped code (tar.gz)" bind:files />
+            <InputFile label="Gzipped code (tar.gz)" allowedFileExtensions={['gz']} bind:files />
             <InputChoice label="Activate Deployment after build" id="activate" bind:value={active}>
                 This deployment will be activated after the build is completed.</InputChoice>
         </FormList>

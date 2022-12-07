@@ -1,5 +1,12 @@
 export const PAGE_LIMIT = 12; // default page limit
 export const CARD_LIMIT = 6; // default card limit
+export const INTERVAL = 5 * 60000; // default interval to check for feedback
+
+export enum Mode {
+    CLOUD = 'mode:cloud',
+    SELF_HOSTED = 'mode:self-hosted'
+}
+
 export enum Dependencies {
     ORGANIZATION = 'dependency:organization',
     PROJECT = 'dependency:project',

@@ -37,6 +37,8 @@
     import { browser } from '$app/environment';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
+    import Output from '$lib/components/output.svelte';
+    import { calculateTime } from '$lib/helpers/timeConversion';
 
     export let data: PageData;
 
@@ -78,7 +80,7 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Deployments</Heading>
-        <Button on:click={() => (showCreate = true)}>
+        <Button on:click={() => (showCreate = true)} event="create_deployment">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create deployment</span>
         </Button>
@@ -98,8 +100,17 @@
                             alt="technology" />
                     </div>
                     <div>
-                        <p><b>Function ID: {$func.$id} </b></p>
-                        <p>Deployment ID: {$func.deployment}</p>
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <p><b>Function ID: </b></p>
+                            <Output value={$func.$id}><b>{$func.$id}</b></Output>
+                        </div>
+
+                        <div class="u-flex u-gap-12 u-cross-center">
+                            <p>Deployment ID:</p>
+                            <Output value={$func.deployment}>
+                                {$func.deployment}
+                            </Output>
+                        </div>
                     </div>
                 </div>
                 <svelte:fragment slot="aside">
@@ -109,10 +120,14 @@
                             <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
                             <p>Entrypoint: {activeDeployment?.entrypoint}</p>
                         </div>
-
-                        <Status status={activeDeployment.status}>
-                            {activeDeployment.status}
-                        </Status>
+                        <div class="u-flex u-flex-vertical u-cross-end">
+                            <Status status={activeDeployment.status}>
+                                {activeDeployment.status}
+                            </Status>
+                            <p class="text">
+                                {calculateTime(activeDeployment.buildTime)}
+                            </p>
+                        </div>
                     </div>
                 </svelte:fragment>
 
@@ -123,7 +138,9 @@
                             $log.show = true;
                             $log.func = $func;
                             $log.data = activeDeployment;
-                        }}>Logs</Button>
+                        }}>
+                        Build logs
+                    </Button>
                     <Button secondary on:click={() => execute.set($func)}>Execute now</Button>
                 </svelte:fragment>
             </CardGrid>
@@ -141,10 +158,10 @@
 
         <Table>
             <TableHeader>
-                <TableCellHead>Deployment ID</TableCellHead>
+                <TableCellHead width={90}>Deployment ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={100}>Status</TableCellHead>
-                <TableCellHead width={90}>Build time</TableCellHead>
+                <TableCellHead width={100}>Build Time</TableCellHead>
                 <TableCellHead width={70}>Size</TableCellHead>
                 <TableCellHead width={25} />
             </TableHeader>
@@ -154,7 +171,7 @@
                         <TableRow>
                             <TableCell title="Deployment ID">
                                 <Copy value={deployment.$id}>
-                                    <Pill button>
+                                    <Pill button trim>
                                         <span class="icon-duplicate" aria-hidden="true" />
                                         <span class="text u-trim">{deployment.$id}</span>
                                     </Pill>
@@ -169,8 +186,13 @@
                                     {deployment.status}
                                 </Status>
                             </TableCell>
-                            <!-- TODO: replace with build time, when implemented -->
-                            <TableCellText title="Build Time">TBI</TableCellText>
+
+                            <TableCellText title="Build Time">
+                                {#if deployment.status === 'ready'}
+                                    {calculateTime(deployment.buildTime)}
+                                {/if}
+                            </TableCellText>
+
                             <TableCellText title="Size">
                                 {calculateSize(deployment.size)}
                             </TableCellText>

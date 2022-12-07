@@ -9,15 +9,18 @@
     const tabs = [
         {
             href: path,
-            title: 'Overview'
+            title: 'Overview',
+            event: 'overview'
         },
         {
             href: `${path}/domains`,
-            title: 'Custom Domains'
+            title: 'Custom Domains',
+            event: 'domains'
         },
         {
             href: `${path}/webhooks`,
-            title: 'Webhooks'
+            title: 'Webhooks',
+            event: 'webhooks'
         }
     ];
 </script>
@@ -29,7 +32,10 @@
 
     <Tabs>
         {#each tabs as tab}
-            <Tab href={tab.href} selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                event={tab.event}>
                 {tab.title}
             </Tab>
         {/each}

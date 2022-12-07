@@ -4,6 +4,10 @@ import type { Models } from '@aw-labs/appwrite-console';
 import type { BarSeriesOption } from 'echarts/charts';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
+export const onboarding = derived(
+    project,
+    ($project) => $project.platforms.length === 0 && $project.keys.length === 0
+);
 
 function createStats() {
     const { subscribe, set, update } = writable<Map<string, BarSeriesOption['data']>>(new Map());

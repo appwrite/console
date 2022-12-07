@@ -1,11 +1,13 @@
 import { writable } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
 import type { SvelteComponent } from 'svelte';
-import Apple from '../../routes/console/project-[project]/auth/_appleOAuth.svelte';
-import Microsoft from '../../routes/console/project-[project]/auth/_microsoftOAuth.svelte';
-import Okta from '../../routes/console/project-[project]/auth/_oktaOAuth.svelte';
-import Auth0 from '../../routes/console/project-[project]/auth/_auth0OAuth.svelte';
-import Main from '../../routes/console/project-[project]/auth/_mainOAuth.svelte';
+import Apple from '../../routes/console/project-[project]/auth/appleOAuth.svelte';
+import Microsoft from '../../routes/console/project-[project]/auth/microsoftOAuth.svelte';
+import Okta from '../../routes/console/project-[project]/auth/oktaOAuth.svelte';
+import Auth0 from '../../routes/console/project-[project]/auth/auth0OAuth.svelte';
+import Authentik from '../../routes/console/project-[project]/auth/authentikOAuth.svelte';
+import GitLab from '../../routes/console/project-[project]/auth/gitlabOAuth.svelte';
+import Main from '../../routes/console/project-[project]/auth/mainOAuth.svelte';
 
 export type Provider = Models.Provider & {
     icon: string;
@@ -36,6 +38,13 @@ const setProviders = (project: Models.Project): Provider[] => {
                     docs = 'https://auth0.com/developers';
                     component = Auth0;
                     break;
+                case 'authentik':
+                    docs = 'https://goauthentik.io/integrations/sources/oauth/';
+                    component = Authentik;
+                    break;
+                case 'autodesk':
+                    docs = 'https://forge.autodesk.com/en/docs/oauth/v2/developers_guide/overview/';
+                    break;
                 case 'bitbucket':
                     docs = 'https://developer.atlassian.com/bitbucket';
                     break;
@@ -45,11 +54,20 @@ const setProviders = (project: Models.Project): Provider[] => {
                 case 'box':
                     docs = 'https://developer.box.com/reference/';
                     break;
+                case 'dailymotion':
+                    docs = 'https://developers.dailymotion.com/api/';
+                    break;
                 case 'discord':
                     docs = 'https://discordapp.com/developers/docs/topics/oauth2';
                     break;
+                case 'disqus':
+                    docs = 'https://disqus.com/api/docs/auth/';
+                    break;
                 case 'dropbox':
                     docs = 'https://www.dropbox.com/developers/documentation';
+                    break;
+                case 'etsy':
+                    docs = 'https://developers.etsy.com/';
                     break;
                 case 'facebook':
                     docs = 'https://developers.facebook.com/';
@@ -59,6 +77,7 @@ const setProviders = (project: Models.Project): Provider[] => {
                     break;
                 case 'gitlab':
                     docs = 'https://docs.gitlab.com/ee/api/';
+                    component = GitLab;
                     break;
                 case 'google':
                     docs = 'https://support.google.com/googleapi/answer/6158849';
@@ -83,6 +102,9 @@ const setProviders = (project: Models.Project): Provider[] => {
                 case 'paypalsandbox':
                     icon = 'paypal';
                     docs = 'https://developer.paypal.com/docs/api/overview/';
+                    break;
+                case 'podio':
+                    docs = 'https://developers.podio.com/doc/oauth-authorization';
                     break;
                 case 'salesforce':
                     docs = 'https://developer.salesforce.com/docs/';

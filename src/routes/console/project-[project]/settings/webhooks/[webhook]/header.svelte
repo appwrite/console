@@ -13,7 +13,7 @@
         <CoverTitle href={`/console/project-${projectId}/settings/webhooks`}>
             {$webhook?.name}
         </CoverTitle>
-        <Copy value={$webhook?.$id}>
+        <Copy value={$webhook?.$id} event="webhook">
             <Pill button>
                 <span class="icon-duplicate" aria-hidden="true" />
                 Webhook ID

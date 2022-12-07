@@ -6,6 +6,12 @@
     import { WizardStep } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
+    import { wizard } from '$lib/stores/wizard';
+    import { app } from '$lib/stores/app';
+    import Light from './light.svg';
+    import Dark from './dark.svg';
+
+    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     enum Platform {
         Android = 'flutter-android',
@@ -25,37 +31,48 @@
         {
             name: string;
             hostname: string;
+            tooltip: string;
         }
     > = {
         [Platform.Android]: {
             name: 'My Android App',
-            hostname: 'com.company.appname'
+            hostname: 'com.company.appname',
+            tooltip:
+                'Your package name is generally the applicationId in your app-level build.gradle file.'
         },
         [Platform.Ios]: {
             name: 'My iOS App',
-            hostname: 'com.company.appname'
+            hostname: 'com.company.appname',
+            tooltip:
+                "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
         [Platform.Linux]: {
             name: 'My Linux App',
-            hostname: 'com.company.appname'
+            hostname: 'appname',
+            tooltip: 'Your application name'
         },
         [Platform.Macos]: {
             name: 'My mac OS App',
-            hostname: 'com.company.appname'
+            hostname: 'com.company.appname',
+            tooltip:
+                "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
         [Platform.Web]: {
             name: 'My Web App',
-            hostname: 'com.company.appname'
+            hostname: 'com.company.appname',
+            tooltip:
+                'The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required.'
         },
         [Platform.Windows]: {
             name: 'My Windows App',
-            hostname: 'localhost'
+            hostname: 'appname',
+            tooltip: 'Your application name'
         }
     };
 
     const hostname: Record<Platform, string> = {
         [Platform.Android]: 'Package Name',
-        [Platform.Ios]: 'Package Name',
+        [Platform.Ios]: 'Bundle ID',
         [Platform.Linux]: 'Package Name',
         [Platform.Macos]: 'Bundle ID',
         [Platform.Web]: 'Hostname',
@@ -68,8 +85,8 @@
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
-                undefined,
-                undefined,
+                $createPlatform.key,
+                $createPlatform.store,
                 $createPlatform.hostname
             );
 
@@ -148,6 +165,7 @@
                 id="hostname"
                 label={hostname[platform]}
                 placeholder={placeholder[platform].hostname}
+                tooltip={placeholder[platform].tooltip}
                 required
                 bind:value={$createPlatform.hostname} />
             {#if platform === Platform.Web}

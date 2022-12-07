@@ -45,7 +45,7 @@
                 {#each data.sessions.sessions as session}
                     <TableRow>
                         <TableCell title="Client">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <div class="image-item">
                                     <img
                                         height="20"
@@ -95,7 +95,6 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.sessions.total}</p>
-        <!-- <Pagination limit={PAGE_LIMIT} bind:offset={$offset} sum={data.sessions.total} /> -->
     </div>
 </Container>
 

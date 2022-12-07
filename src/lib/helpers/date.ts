@@ -17,7 +17,7 @@ export const toLocaleDateTime = (datetime: string | number) => {
         day: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
-        hour12: false
+        hourCycle: 'h23'
     };
 
     return date.toLocaleDateString('en', options);

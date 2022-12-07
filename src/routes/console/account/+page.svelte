@@ -10,6 +10,7 @@
     import Delete from './delete.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let name: string = null,
         email: string = null,
@@ -31,6 +32,7 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_account_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -46,6 +48,7 @@
                 message: 'Email has been updated',
                 type: 'success'
             });
+            trackEvent('submit_account_update_email');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -62,6 +65,7 @@
                 message: 'Password has been updated',
                 type: 'success'
             });
+            trackEvent('submit_account_update_password');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -155,7 +159,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <CardGrid>
+    <CardGrid danger>
         <div>
             <Heading tag="h6" size="7">Delete Account</Heading>
         </div>

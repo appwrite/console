@@ -40,7 +40,7 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Webhooks</Heading>
-        <Button on:click={openWizard}>
+        <Button on:click={openWizard} event="create_webhook">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create webhook</span>
         </Button>
     </div>

@@ -5,19 +5,24 @@
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from '../store';
+    import { app } from '$lib/stores/app';
+    import Light from './light.svg';
+    import Dark from './dark.svg';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.app'];
 
+    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
     async function beforeSubmit() {
         if ($createPlatform.$id) {
             await sdkForConsole.projects.updatePlatform(
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
-                undefined,
-                undefined,
+                $createPlatform.key,
+                $createPlatform.store,
                 $createPlatform.hostname
             );
 
@@ -32,7 +37,6 @@
             undefined,
             $createPlatform.hostname
         );
-
         $createPlatform.$id = platform.$id;
     }
 </script>
@@ -51,6 +55,7 @@
                 id="hostname"
                 label="Hostname"
                 placeholder="localhost"
+                tooltip="The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required."
                 required
                 bind:value={$createPlatform.hostname} />
             <div class="u-flex u-gap-16 u-margin-block-start-8">

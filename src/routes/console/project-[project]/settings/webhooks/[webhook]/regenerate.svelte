@@ -1,6 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -20,6 +21,7 @@
                 type: 'success',
                 message: 'Key has been regenerated'
             });
+            trackEvent('submit_webhook_update_signature');
         } catch (error) {
             addNotification({
                 type: 'error',

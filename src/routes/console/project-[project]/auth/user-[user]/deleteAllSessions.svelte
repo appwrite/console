@@ -1,6 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -19,6 +20,7 @@
                 type: 'success',
                 message: 'All sessions have been deleted'
             });
+            trackEvent('submit_session_delete_all');
         } catch (error) {
             addNotification({
                 type: 'error',

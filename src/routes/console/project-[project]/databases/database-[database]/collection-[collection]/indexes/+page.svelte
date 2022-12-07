@@ -38,6 +38,7 @@
         <Heading tag="h2" size="5">Indexes</Heading>
 
         <Button
+            event="create_index"
             disabled={!$collection?.attributes?.length}
             on:click={() => (showCreateIndex = true)}>
             <span class="icon-plus" aria-hidden="true" />
