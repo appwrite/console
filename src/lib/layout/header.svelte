@@ -5,7 +5,8 @@
         DropList,
         DropListItem,
         DropListLink,
-        FeedbackGeneral
+        FeedbackGeneral,
+        FeedbackNPS
     } from '$lib/components';
     import { app, feedback } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
@@ -14,14 +15,12 @@
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { FeedbackNPS } from '$lib/components';
-
-    let showFeedback = false;
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import Support from '$lib/components/support.svelte';
 
+    let showFeedback = false;
     let showDropdown = false;
     let showSupport = false;
     let droplistElement: HTMLDivElement;
