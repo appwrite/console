@@ -47,3 +47,4 @@ export { default as EventModal } from './eventModal.svelte';
 export { default as Status } from './status.svelte';
 export { default as Heading } from './heading.svelte';
 export { default as Output } from './output.svelte';
+export { default as Support } from './support.svelte';
