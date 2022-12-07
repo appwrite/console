@@ -82,6 +82,9 @@ const setProviders = (project: Models.Project): Provider[] => {
                 case 'google':
                     docs = 'https://support.google.com/googleapi/answer/6158849';
                     break;
+                case 'line':
+                    docs = 'https://developers.line.biz/en/docs/line-login/integrate-line-login/';
+                    break;
                 case 'linkedin':
                     docs = 'https://developer.linkedin.com/';
                     break;
