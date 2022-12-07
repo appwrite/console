@@ -3,6 +3,8 @@
     import SupportLight from '$lib/images/support/support-light.png';
     import SupportDark from '$lib/images/support/support-dark.png';
     import { app } from '$lib/stores/app';
+    import { wizard } from '$lib/stores/wizard';
+    import SupportWizard from '../../routes/console/supportWizard.svelte';
 
     export let show = false;
 </script>
@@ -18,15 +20,14 @@
     <div>
         <h4 class="eyebrow-heading-3">Premium support</h4>
         <p class="u-line-height-1-5 u-margin-block-start-8">
-            Get personalized support from the Appwrite team
-            <!-- from <b>09:00 - 17:00 UTC</b> -->
+            Get personalized support from the Appwrite team from <b>09:00 - 17:00 UTC</b>
         </p>
     </div>
-    <!-- TODO: show second button only on free version -->
-    <Button href="https://appwrite.io" external>Get premium support</Button>
-    <!-- <Button secondary fullWidth>
-            <span class="text">Contact our Support Team</span>
-        </Button> -->
+    <!-- TODO: show first button only on free version (need ENV variable) -->
+    <!-- <Button>Get premium support</Button> -->
+    <Button secondary fullWidth on:click={() => wizard.start(SupportWizard)}>
+        <span class="text">Contact our Support Team</span>
+    </Button>
 </section>
 <section class="drop-section u-grid u-gap-24 u-padding-24">
     <div>

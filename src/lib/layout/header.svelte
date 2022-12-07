@@ -6,7 +6,8 @@
         DropListItem,
         DropListLink,
         FeedbackGeneral,
-        FeedbackNPS
+        FeedbackNPS,
+        Support
     } from '$lib/components';
     import { app, feedback } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
@@ -18,7 +19,6 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
-    import Support from '$lib/components/support.svelte';
 
     let showFeedback = false;
     let showDropdown = false;
