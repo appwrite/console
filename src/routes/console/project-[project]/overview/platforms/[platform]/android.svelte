@@ -10,10 +10,10 @@
     import { project } from '../../../store';
     import { platform } from './store';
 
-    let hostname: string = null;
+    let packageName: string = null;
 
     onMount(() => {
-        hostname ??= $platform.hostname;
+        packageName ??= $platform.key;
     });
 
     const updateHostname = async () => {
@@ -22,9 +22,9 @@
                 $project.$id,
                 $platform.$id,
                 $platform.name,
-                $platform.key,
+                packageName,
                 $platform.store,
-                hostname
+                $platform.hostname
             );
             invalidate(Dependencies.PLATFORM);
             trackEvent('submit_platform_update', {
@@ -52,16 +52,16 @@
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText
-                    id="hostname"
+                    id="packageName"
                     label="Package Name"
-                    bind:value={hostname}
+                    bind:value={packageName}
                     required
                     placeholder="com.company.appname" />
             </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={hostname === $platform.hostname} submit>Update</Button>
+            <Button disabled={packageName === $platform.hostname} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
