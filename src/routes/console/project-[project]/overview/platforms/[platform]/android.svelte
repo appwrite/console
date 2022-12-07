@@ -10,10 +10,10 @@
     import { project } from '../../../store';
     import { platform } from './store';
 
-    let packageName: string = null;
+    let key: string = null;
 
     onMount(() => {
-        packageName ??= $platform.key;
+        key ??= $platform.key;
     });
 
     const updateHostname = async () => {
@@ -22,7 +22,7 @@
                 $project.$id,
                 $platform.$id,
                 $platform.name,
-                packageName,
+                key,
                 $platform.store,
                 $platform.hostname
             );
@@ -52,16 +52,16 @@
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText
-                    id="packageName"
+                    id="key"
                     label="Package Name"
-                    bind:value={packageName}
+                    bind:value={key}
                     required
                     placeholder="com.company.appname" />
             </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={packageName === $platform.hostname} submit>Update</Button>
+            <Button disabled={key === $platform.hostname} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
