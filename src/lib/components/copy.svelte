@@ -2,6 +2,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { clickOnEnter } from '$lib/helpers/a11y';
+    import { copy } from '$lib/helpers/copy';
     import { addNotification } from '$lib/stores/notifications';
 
     export let value: string;
@@ -9,39 +10,8 @@
 
     let content = 'Click to copy';
 
-    async function securedCopy() {
-        try {
-            await navigator.clipboard.writeText(value);
-        } catch {
-            return false;
-        }
-
-        return true;
-    }
-
-    function unsecuredCopy() {
-        const textArea = document.createElement('textarea');
-        textArea.value = value;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-
-        let success = true;
-        try {
-            document.execCommand('copy');
-        } catch {
-            success = false;
-        } finally {
-            document.body.removeChild(textArea);
-        }
-
-        return success;
-    }
-
-    async function copy() {
-        // securedCopy works only in HTTPS environment.
-        // unsecuredCopy works in HTTP and only runs if securedCopy fails.
-        const success = (await securedCopy()) || unsecuredCopy();
+    async function handleClick() {
+        const success = await copy(value);
 
         if (success) {
             content = 'Copied';
@@ -61,7 +31,7 @@
 </script>
 
 <span
-    on:click|preventDefault={copy}
+    on:click|preventDefault={handleClick}
     on:keyup={clickOnEnter}
     on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
     use:tooltip={{
