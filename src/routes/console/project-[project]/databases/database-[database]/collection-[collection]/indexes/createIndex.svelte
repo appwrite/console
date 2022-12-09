@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidateAll } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
@@ -31,6 +31,7 @@
         label: attribute.key
     }));
     let attributeList = [{ value: '', order: '' }];
+    let creating = false;
 
     function initialize() {
         attributeList = externalAttribute
@@ -44,13 +45,16 @@
         initialize();
     }
 
-    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
+    $: addAttributeDisabled =
+        !attributeList.at(-1)?.value || !attributeList.at(-1)?.order || creating;
 
     async function create() {
         if (!(key && selectedType && !addAttributeDisabled)) {
             error = 'All fields are required';
             return;
         }
+
+        creating = true;
 
         try {
             await sdkForProject.databases.createIndex(
@@ -61,7 +65,12 @@
                 attributeList.map((a) => a.value),
                 attributeList.map((a) => a.order)
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidateAll();
+
+            goto(
+                `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
+            );
+
             addNotification({
                 message: 'Index has been created',
                 type: 'success'
@@ -74,6 +83,7 @@
             });
         } finally {
             showCreateIndex = false;
+            creating = false;
         }
     }
 
@@ -140,6 +150,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreateIndex = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button submit disabled={creating}>Create</Button>
     </svelte:fragment>
 </Modal>
