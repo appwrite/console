@@ -20,6 +20,7 @@
     let timeInSec = time;
     let period = writable('s');
     let btnActive = false;
+    let maxSessions = $project.authMaxSessions ?? 10;
 
     let options = [
         { label: 'days', value: 'd' },
@@ -74,6 +75,28 @@
                 message: 'Updated project users limit successfully'
             });
             trackEvent('submit_session_length_update');
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+    async function updateSessionsLimit() {
+        try {
+
+            let path = '/projects/' + projectId + '/auth/max-sessions';
+            const uri = new URL(sdkForConsole.client.config.endpoint + path);
+            await sdkForConsole.client.call('patch', uri, {
+                'content-type': 'application/json',
+            }, {
+                limit: maxSessions
+            });
+            addNotification({
+                type: 'success',
+                message: 'Updated project sessions limit successfully'
+            });
+            trackEvent('submit_sessions_limit_update');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -193,6 +216,30 @@
                 disabled={$period === 's' && time === $project.authDuration}
                 on:click={() => {
                     updateSessionLength();
+                }}>
+                Update
+            </Button>
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <Heading tag="h2" size="6">Session Limit</Heading>
+        <p>
+            Maximum number of active sessions allowed per user per project.
+        </p>
+        <svelte:fragment slot="aside">
+            <form class="form u-grid u-gap-16">
+                <ul class="form-list">
+                    <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
+                </ul>
+            </form>
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button
+                disabled={maxSessions === $project.authMaxSessions}
+                on:click={() => {
+                    updateSessionsLimit();
                 }}>
                 Update
             </Button>
