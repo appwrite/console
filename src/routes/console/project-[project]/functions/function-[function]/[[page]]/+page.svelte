@@ -246,7 +246,7 @@
                         {/if}
                     {/each}
                 </TableBody>
-            </Table>+
+            </Table>
         {:else}
             <Empty single target="deployment" on:click={() => (showCreate = true)}>
                 <div class="u-text-center">

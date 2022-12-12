@@ -5,11 +5,13 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
-    import Github from '$lib/images/github-illustration.svg';
+    import GithubLight from '$lib/images/github-illustration-light.svg';
+    import GithubDark from '$lib/images/github-illustration-dark.svg';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { func } from './store';
     import { trackEvent } from '$lib/actions/analytics';
+    import { app } from '$lib/stores/app';
 
     export let showCreate = false;
 
@@ -117,7 +119,7 @@
             on:click={() => (mode = Mode.Github)}
             selected={mode === Mode.Github}
             event="deploy_github">
-            GitHub - Soon!
+            GitHub - (Soon!)
         </Tab>
         <Tab
             on:click={() => (mode = Mode.Manual)}
@@ -156,7 +158,11 @@
     {:else if mode === Mode.Github}
         <div class="common-section grid-1-2">
             <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
-                <img src={Github} alt="github" />
+                {#if $app.themeInUse === 'dark'}
+                    <img src={GithubDark} alt="github" />
+                {:else}
+                    <img src={GithubLight} alt="github" />
+                {/if}
             </div>
             <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-24">
                 <h3 class="body-text-1">Coming Soon!</h3>
