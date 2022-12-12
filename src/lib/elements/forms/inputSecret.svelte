@@ -6,7 +6,6 @@
     export let showLabel = true;
     export let value = '';
     export let placeholder = '';
-    export let required = false;
 
     let showInPlainText = false;
 </script>
