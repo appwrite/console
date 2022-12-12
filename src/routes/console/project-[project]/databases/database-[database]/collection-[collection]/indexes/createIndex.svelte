@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { goto, invalidateAll } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
@@ -65,7 +66,10 @@
                 attributeList.map((a) => a.value),
                 attributeList.map((a) => a.order)
             );
-            await invalidateAll();
+            await Promise.allSettled([
+                invalidate(Dependencies.COLLECTION),
+                invalidate(Dependencies.DATABASE)
+            ]);
 
             goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
