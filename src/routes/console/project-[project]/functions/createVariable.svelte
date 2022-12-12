@@ -43,12 +43,7 @@
             bind:value={pair.key}
             required
             autofocus />
-        <InputSecret
-            id="value"
-            label="Value"
-            placeholder="Enter value"
-            bind:value={pair.value}
-            required />
+        <InputSecret id="value" label="Value" placeholder="Enter value" bind:value={pair.value} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={close}>Cancel</Button>
