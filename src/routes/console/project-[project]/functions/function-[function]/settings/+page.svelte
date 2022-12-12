@@ -308,7 +308,7 @@
             <div>
                 <Heading tag="h6" size="7">{$func.name}</Heading>
 
-                <p>{$func.runtime}</p>
+                <p class="text u-capitalize">{$func.runtime}</p>
             </div>
         </div>
         <svelte:fragment slot="aside">

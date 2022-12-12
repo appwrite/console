@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputSecret } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
-    import { InputText, InputPassword, FormList } from '$lib/elements/forms';
+    import { InputText, FormList } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import type { Models } from '@aw-labs/appwrite-console';
 
@@ -43,11 +43,9 @@
             bind:value={pair.key}
             required
             autofocus />
-        <InputPassword
+        <InputSecret
             id="value"
             label="Value"
-            minlength={0}
-            showPasswordButton
             placeholder="Enter value"
             bind:value={pair.value}
             required />
