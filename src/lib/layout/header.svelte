@@ -19,12 +19,12 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Button } from '$lib/elements/forms';
 
     let showFeedback = false;
     let showDropdown = false;
     let showSupport = false;
     let droplistElement: HTMLDivElement;
-    let supportElement: HTMLDivElement;
 
     function toggleFeedback() {
         showFeedback = !showFeedback;
@@ -40,12 +40,6 @@
             !(event.target === droplistElement || droplistElement.contains(event.target as Node))
         ) {
             showDropdown = false;
-        }
-        if (
-            showSupport &&
-            !(event.target === supportElement || supportElement.contains(event.target as Node))
-        ) {
-            showSupport = false;
         }
     }
     $: if (showDropdown) {
@@ -73,9 +67,9 @@
             </div>
         {/if}
         <DropList width="28" bind:show={showFeedback} scrollable={true}>
-            <button class="button is-small is-text" on:click={toggleFeedback}>
+            <Button text on:click={toggleFeedback}>
                 <span class="text">Feedback</span>
-            </button>
+            </Button>
             <svelte:fragment slot="other">
                 {#if $feedback.type === 'nps'}
                     <FeedbackNPS bind:show={showFeedback} />
@@ -84,22 +78,15 @@
                 {/if}
             </svelte:fragment>
         </DropList>
-        <div
-            class="drop-wrapper"
-            style="--drop-width-size-desktop: 17.5rem"
-            class:is-open={showSupport}
-            bind:this={supportElement}>
-            <button class="button is-small is-text" on:click={() => (showSupport = !showSupport)}>
+
+        <DropList width="17.5" bind:show={showSupport} scrollable={true}>
+            <Button text on:click={() => (showSupport = !showSupport)}>
                 <span class="text">Support</span>
-            </button>
-            {#if showSupport}
-                <div
-                    class="drop is-no-arrow is-block-end is-inline-end"
-                    transition:slide={{ duration: 100 }}>
-                    <Support />
-                </div>
-            {/if}
-        </div>
+            </Button>
+            <svelte:fragment slot="other">
+                <Support bind:show={showSupport} />
+            </svelte:fragment>
+        </DropList>
     </nav>
     <nav class="u-flex u-height-100-percents u-sep-inline-start">
         {#if $user}

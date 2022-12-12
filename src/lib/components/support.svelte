@@ -25,20 +25,29 @@
     </div>
     <!-- TODO: show first button only on free version (need ENV variable) -->
     <!-- <Button>Get premium support</Button> -->
-    <Button secondary fullWidth on:click={() => wizard.start(SupportWizard)}>
+    <Button
+        secondary
+        fullWidth
+        on:click={() => {
+            show = false;
+            wizard.start(SupportWizard);
+        }}>
         <span class="text">Contact our Support Team</span>
     </Button>
 </section>
 <section class="drop-section u-grid u-gap-24 u-padding-24">
     <div>
         <h4 class="eyebrow-heading-3">troubleshooting</h4>
-        <button
+        <a
+            href="https://status.appwrite.io/"
+            target="_blank"
+            rel="noopener noreferrer"
             class="button is-text u-gap-4 u-cross-center u-padding-inline-0 u-margin-block-start-8 u-width-full-line">
             <span class="helper u-success">
                 <span class="icon-check-circle" aria-hidden="true" />
             </span>
             <b class="text">All services are online</b>
-        </button>
+        </a>
     </div>
     <div class="u-flex u-gap-16 u-margin-block-start-8">
         <a

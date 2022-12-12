@@ -11,6 +11,7 @@
             name: null,
             email: null,
             message: null,
+            tags: ['general'],
             file: null
         };
     });
@@ -25,7 +26,44 @@
         component: Step2
     });
 
-    //TODO: replace steps with text add side text
+    function isSupportOnline() {
+        const currentDate = new Date();
+        const day = currentDate.getDay();
+        const hour = currentDate.getHours();
+
+        if (day === 1 || day === 6) {
+            return false;
+        }
+
+        if (hour < 9 || hour > 17) {
+            return false;
+        }
+
+        return true;
+    }
 </script>
 
-<Wizard title="Contact us" steps={stepsComponents} />
+<Wizard title="Contact us" steps={stepsComponents}>
+    <svelte:fragment slot="aside">
+        <div class="common-section">
+            <h4 class="body-text-1">Contact the Appwrite Team</h4>
+            <p class="text">
+                Found a bug? Need a hand? Just want to say hi? Contact the Appwrite team with your
+                queries.
+            </p>
+        </div>
+        <div class="common-section">
+            <p class="text">Available: <b>Mon-Fri 09:00 - 17:00 UCT</b></p>
+            <p class="text u-flex u-gap-4 u-cross-center">
+                Currently: {#if isSupportOnline()}
+                    <span class="u-success">
+                        <span class="icon-check-circle" aria-hidden="true" />
+                    </span>
+                    <span class="u-success text">online</span>
+                {:else}
+                    <span class="icon-x-circle" aria-hidden="true" />
+                    <span class="text">offline</span>{/if}
+            </p>
+        </div>
+    </svelte:fragment>
+</Wizard>

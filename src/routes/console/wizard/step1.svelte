@@ -1,6 +1,6 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
-    import { FormList, InputTextarea } from '$lib/elements/forms';
+    import { FormList, InputFile, InputTextarea } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
@@ -8,8 +8,12 @@
     import { supportData } from './store';
     import Light from '$lib/images/support/support-wizard-light.svg';
     import Dark from '$lib/images/support/support-wizard-dark.svg';
+    import { Pill } from '$lib/elements';
+    import { Collapsible, CollapsibleItem } from '$lib/components';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
+
+    let files: FileList;
 
     async function beforeSubmit() {
         try {
@@ -31,12 +35,38 @@
         in-app issues. We try to respond to all messages within our office hours (Mon-Fri 09:00 -
         17:00 UCT). Expect to receive an email from us soon!
     </svelte:fragment>
-    <FormList>
-        <InputTextarea
-            label="Leave a message"
-            id="message"
-            placeholder="Type here..."
-            bind:value={$supportData.message}
-            required />
-    </FormList>
+    <div class="common-section">
+        <p class="text">Choose a topic</p>
+        <div class="u-flex u-gap-8">
+            {#each ['General', 'Billing', 'Technical'] as topic}
+                <Pill
+                    button
+                    selected={$supportData.tags.includes(topic.toLowerCase())}
+                    on:click={() => {
+                        $supportData.tags = [topic.toLocaleLowerCase()];
+                    }}>{topic}</Pill>
+            {/each}
+        </div>
+    </div>
+    <div class="common-section">
+        <FormList>
+            <InputTextarea
+                label="Tell us a bit more"
+                id="message"
+                placeholder="Type here..."
+                bind:value={$supportData.message}
+                required />
+        </FormList>
+    </div>
+    <div class="common-section">
+        <Collapsible>
+            <CollapsibleItem>
+                <svelte:fragment slot="title">Want to attach a file? (optional)</svelte:fragment>
+                <svelte:fragment slot="subtitle">
+                    A picture is worth a thousand words.
+                </svelte:fragment>
+                <InputFile bind:files label="Attach a file" />
+            </CollapsibleItem>
+        </Collapsible>
+    </div>
 </WizardStep>
