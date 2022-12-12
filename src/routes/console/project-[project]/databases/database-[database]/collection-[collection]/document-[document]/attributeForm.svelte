@@ -3,7 +3,8 @@
     import { FormList } from '$lib/elements/forms';
     import Button from '$lib/elements/forms/button.svelte';
     import Pill from '$lib/elements/pill.svelte';
-    import type { Attributes } from '../store';
+    import { capitalize } from '$lib/helpers/string';
+    import { isAttributeEnum, type Attributes } from '../store';
     import Attribute from './attribute.svelte';
 
     export let attributes: Attributes[] = [];
@@ -26,6 +27,11 @@
             [key]: [...formValues[key], null]
         };
     }
+
+    function getAttributeType(attribute: Attributes) {
+        if (isAttributeEnum(attribute)) return 'Enum';
+        return `${capitalize(attribute.type)}${attribute.array ? '[]' : ''}`;
+    }
 </script>
 
 {#if attributes.length}
@@ -35,7 +41,11 @@
             {#if attribute.array}
                 {#if formValues[attribute.key].length === 0}
                     <div class="u-flex u-cross-center u-main-space-between">
-                        <span class="label u-margin-0">{label}</span>
+                        <div class="u-flex u-cross-center u-gap-4">
+                            <span class="label u-margin-0">{label}</span>
+                            <span class="optional">{getAttributeType(attribute)}</span>
+                        </div>
+
                         <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
                             <span class="icon-plus" aria-hidden="true" />
                             <span class="text"> Add item</span>
@@ -43,24 +53,30 @@
                     </div>
                 {/if}
 
-                {#each [...formValues[attribute.key].keys()] as index}
-                    <li class="form-item is-multiple">
-                        <div class="form-item-part u-stretch">
-                            <Attribute
-                                {attribute}
-                                id={`${attribute.key}-${index}`}
-                                label={index === 0 ? label : ''}
-                                bind:value={formValues[attribute.key][index]} />
-                        </div>
-                        <div class="form-item-part u-cross-child-end">
-                            <Button text on:click={() => removeArrayItem(attribute.key, index)}>
-                                <span class="icon-x" aria-hidden="true" />
-                            </Button>
-                        </div>
-                    </li>
-                {/each}
-
                 {#if formValues[attribute.key].length !== 0}
+                    <ul class="u-grid u-gap-8">
+                        {#each [...formValues[attribute.key].keys()] as index}
+                            <li class="form-item is-multiple">
+                                <div class="form-item-part u-stretch">
+                                    <Attribute
+                                        {attribute}
+                                        optionalText={index === 0
+                                            ? getAttributeType(attribute)
+                                            : undefined}
+                                        id={`${attribute.key}-${index}`}
+                                        label={index === 0 ? label : ''}
+                                        bind:value={formValues[attribute.key][index]} />
+                                </div>
+                                <div class="form-item-part u-cross-child-end">
+                                    <Button
+                                        text
+                                        on:click={() => removeArrayItem(attribute.key, index)}>
+                                        <span class="icon-x" aria-hidden="true" />
+                                    </Button>
+                                </div>
+                            </li>
+                        {/each}
+                    </ul>
                     <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="text"> Add item</span>
@@ -71,6 +87,7 @@
                     <Attribute
                         {attribute}
                         {label}
+                        optionalText={getAttributeType(attribute)}
                         id={attribute.key}
                         bind:value={formValues[attribute.key]} />
                 </FormList>
