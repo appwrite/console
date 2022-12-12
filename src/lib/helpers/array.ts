@@ -50,7 +50,6 @@ export function at<T>(array: readonly T[] | [], index: number): T | undefined {
 
 /**
  * Get last item
- * @date 12/12/2022 - 12:08:03 PM
  *
  * @export
  * @template T
