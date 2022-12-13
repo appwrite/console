@@ -1,7 +1,7 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { Pill } from '$lib/elements/';
-    import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
+    import { Button, InputNumber, InputSelect, Form } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { project } from '../../store';
     import { addNotification } from '$lib/stores/notifications';
@@ -85,7 +85,7 @@
     async function updateSessionsLimit() {
         try {
 
-            let path = '/projects/' + projectId + '/auth/max-sessions';
+            const path = '/projects/' + projectId + '/auth/max-sessions';
             const uri = new URL(sdkForConsole.client.config.endpoint + path);
             await sdkForConsole.client.call('patch', uri, {
                 'content-type': 'application/json',
@@ -94,7 +94,7 @@
             });
             addNotification({
                 type: 'success',
-                message: 'Updated project sessions limit successfully'
+                message: 'Sessions limit has been updated'
             });
             trackEvent('submit_sessions_limit_update');
         } catch (error) {
@@ -222,27 +222,21 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
-        <Heading tag="h2" size="6">Session Limit</Heading>
-        <p>
-            Maximum number of active sessions allowed per user.
-        </p>
-        <svelte:fragment slot="aside">
-            <form class="form u-grid u-gap-16">
-                <ul class="form-list">
-                    <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
-                </ul>
-            </form>
-        </svelte:fragment>
-
-        <svelte:fragment slot="actions">
-            <Button
-                disabled={maxSessions === $project.authMaxSessions}
-                on:click={() => {
-                    updateSessionsLimit();
-                }}>
-                Update
-            </Button>
-        </svelte:fragment>
-    </CardGrid>
+    <Form on:submit={updateSessionsLimit}>
+        <CardGrid>
+            <Heading tag="h2" size="6">Session Limit</Heading>
+            <p>
+                Maximum number of active sessions allowed per user.
+            </p>
+            <svelte:fragment slot="aside">
+                    <ul>
+                        <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
+                    </ul>
+            </svelte:fragment>
+    
+            <svelte:fragment slot="actions">
+                <Button disabled={maxSessions === $project.authMaxSessions} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
 </Container>
