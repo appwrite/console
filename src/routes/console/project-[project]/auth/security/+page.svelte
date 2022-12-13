@@ -225,7 +225,7 @@
     <CardGrid>
         <Heading tag="h2" size="6">Session Limit</Heading>
         <p>
-            Maximum number of active sessions allowed per user per project.
+            Maximum number of active sessions allowed per user.
         </p>
         <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
