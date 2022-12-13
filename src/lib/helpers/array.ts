@@ -27,3 +27,15 @@ export function remove<T>(arr: T[], index: number): T[] {
     // Remove the element at the given index, return a new array
     return [...arr.slice(0, index), ...arr.slice(index + 1)];
 }
+
+/**
+ * Returns true if the array is empty, false otherwise.
+ *
+ * @export
+ * @param {unknown[]} arr
+ * @returns {boolean}
+ */
+export function empty(arr: unknown[]): boolean {
+    if (!arr) return true;
+    return arr.length === 0;
+}

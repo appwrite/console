@@ -1,11 +1,15 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Modal, Copy } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { createEventDispatcher } from 'svelte';
+    import { empty } from '$lib/helpers/array';
+    import Copy from './copy.svelte';
 
+    // Props
     export let show = false;
 
+    // Types & Constants
     type Service = {
         name: string;
         resources: Resource[];
@@ -15,7 +19,6 @@
     type Resource = {
         name: string;
         actions?: Action[];
-        attributes?: string[];
     };
 
     type Action = {
@@ -23,48 +26,55 @@
         attributes?: string[];
     };
 
-    let selectedService: Service = null;
-    let selectedResource: Resource = null;
-    let selectedAction: Action = null;
-    let selectedAttribute: string = null;
-    let helper: string = null;
-    let inputData: string = null;
-    let showInput = false;
+    type FieldType = 'service' | 'resource' | 'action' | 'attribute';
 
-    const dispatch = createEventDispatcher();
-
-    function create() {
-        show = false;
-        dispatch('created', copyValue);
-    }
-
-    const actions = [{ name: 'create' }, { name: 'update' }, { name: 'delete' }];
-
-    const services = [
+    const services: Array<Service> = [
         {
             name: 'buckets',
-            resources: [{ name: 'files', actions }],
-            actions
+            resources: [
+                {
+                    name: 'files',
+                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+                }
+            ],
+            actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
         },
         {
             name: 'databases',
             resources: [
-                { name: 'collections', actions },
-                { name: 'documents', actions }
+                {
+                    name: 'collections',
+                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+                },
+                {
+                    name: 'documents',
+                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+                }
             ],
-            actions
+            actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
         },
         {
             name: 'functions',
             resources: [
-                { name: 'deployments', actions },
-                { name: 'executions', actions }
+                {
+                    name: 'deployments',
+                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+                },
+                {
+                    name: 'executions',
+                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+                }
             ],
-            actions
+            actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
         },
         {
             name: 'teams',
-            resources: [{ name: 'memberships', actions }],
+            resources: [
+                {
+                    name: 'memberships',
+                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+                }
+            ],
             actions: [
                 { name: 'create' },
                 { name: 'update', attributes: ['status'] },
@@ -86,23 +96,127 @@
         }
     ];
 
-    function createEventString(
-        service: Service,
-        resource: Resource,
-        action: Action,
-        attribute: string
-    ) {
+    // Helpers
+    const dispatch = createEventDispatcher();
+
+    function create() {
+        show = false;
+        dispatch('created', copyValue);
+    }
+
+    function select(field: FieldType, value: string) {
+        selected[field] = selected[field] === value ? null : value;
+
+        switch (field) {
+            case 'service': {
+                selected.resource = null;
+                selected.action = null;
+                selected.attribute = null;
+                break;
+            }
+            case 'resource': {
+                const selectedService = services.find((d) => d.name === selected.service);
+                const selectedResource = selected.resource
+                    ? selectedService.resources.find((d) => d.name === selected.resource)
+                    : null;
+
+                const availableActions = selectedResource
+                    ? selectedResource.actions
+                    : selectedService.actions;
+
+                if (!availableActions.map((a) => a.name).includes(selected.action)) {
+                    selected.action = null;
+                    selected.attribute = null;
+                } else {
+                    const selectedAction = availableActions.find((d) => d.name === selected.action);
+
+                    if (!selectedAction.attributes.includes(selected.attribute)) {
+                        selected.attribute = null;
+                    }
+                }
+                break;
+            }
+            case 'action': {
+                selected.attribute = null;
+                break;
+            }
+        }
+    }
+
+    // State & Reactive Declarations
+    let selected: Record<FieldType, string | null> = {
+        service: null,
+        resource: null,
+        action: null,
+        attribute: null
+    };
+    let helper: string = null;
+    let inputData: string = null;
+    let showInput = false;
+
+    $: available = (function getAvailable() {
+        const available: Record<`${FieldType}s`, Array<string>> = {
+            services: services.map((d) => d.name),
+            resources: [],
+            actions: [],
+            attributes: []
+        };
+
+        if (selected.service) {
+            const selectedService = services.find((d) => d.name === selected.service);
+            available.resources = selectedService.resources.map((d) => d.name);
+
+            if (!selected.resource) {
+                available.actions = selectedService.actions.map((d) => d.name);
+
+                if (selected.action) {
+                    available.attributes = selectedService.actions.find(
+                        (d) => d.name === selected.action
+                    ).attributes;
+                }
+            } else {
+                const selectedResource = selectedService.resources.find(
+                    (d) => d.name === selected.resource
+                );
+                available.actions = selectedResource.actions.map((d) => d.name);
+
+                if (selected.action) {
+                    available.attributes = selectedResource.actions.find(
+                        (d) => d.name === selected.action
+                    ).attributes;
+                }
+            }
+        }
+
+        return available;
+    })();
+
+    $: eventString = (function createEventString() {
         const data = new Map();
-        if (service) {
-            data.set('service', { value: service.name, description: 'service' });
+
+        let selectedAction: Action | null = null;
+        if (selected.action) {
+            const selectedService = services.find((d) => d.name === selected.service);
+            if (selected.resource) {
+                const selectedResource = selectedService.resources.find(
+                    (d) => d.name === selected.resource
+                );
+                selectedAction = selectedResource.actions.find((d) => d.name === selected.action);
+            } else {
+                selectedAction = selectedService.actions.find((d) => d.name === selected.action);
+            }
+        }
+
+        if (selected.service) {
+            data.set('service', { value: selected.service, description: 'service' });
             data.set('serviceId', {
                 value: '*',
-                description: `ID of ${service?.name.slice(0, -1)}`
+                description: `ID of ${selected.service.slice(0, -1)}`
             });
         }
 
-        if (resource) {
-            if (resource.name === 'documents') {
+        if (selected.resource) {
+            if (selected.resource === 'documents') {
                 data.set('resource', {
                     value: 'collections',
                     description: 'resource'
@@ -121,60 +235,43 @@
                 });
             } else {
                 data.set('resource', {
-                    value: resource.name,
+                    value: selected.resource,
                     description: `resource`
                 });
                 data.set('resourceId', {
                     value: '*',
-                    description: `ID of ${resource?.name.slice(0, -1)}`
+                    description: `ID of ${selected.resource.slice(0, -1)}`
                 });
             }
         }
 
-        if (action) {
-            data.set('action', { value: action.name, description: 'action' });
+        if (selected.action) {
+            data.set('action', { value: selected.action, description: 'action' });
         }
 
-        if (attribute && !resource) {
-            data.set('attribute', { value: attribute, description: 'attribute' });
-        } else if (action?.attributes && !resource) {
+        if (selected.attribute && !selected.resource) {
+            data.set('attribute', { value: selected.attribute, description: 'attribute' });
+        } else if (selectedAction?.attributes && !selected.resource) {
             data.set('attribute', { value: '*', description: `attribute` });
         }
         return data;
-    }
+    })();
 
-    $: eventString = createEventString(
-        selectedService,
-        selectedResource,
-        selectedAction,
-        selectedAttribute
-    );
     $: copyValue =
         inputData ??
         Array.from(eventString.values())
             .map((d) => d.value)
             .join('.');
 
-    $: if (selectedService) {
-        selectedResource = null;
-        selectedAction = null;
-        selectedAttribute = null;
-        helper = null;
-    }
-
-    $: if (!selectedAction?.attributes) {
-        selectedAttribute = null;
-    }
-
     $: if (!showInput) {
         helper = null;
     }
 
     $: if (!show) {
-        selectedService = null;
-        selectedResource = null;
-        selectedAction = null;
-        selectedAttribute = null;
+        selected.service = null;
+        selected.resource = null;
+        selected.action = null;
+        selected.attribute = null;
         helper = null;
         inputData = null;
         showInput = false;
@@ -187,73 +284,70 @@
     <div>
         <p class="u-text">Choose a service</p>
         <div class="u-flex u-gap-8 u-margin-block-start-8">
-            {#each services as service}
+            {#each available.services as service}
                 <Pill
                     disabled={showInput}
-                    selected={service.name === selectedService?.name}
+                    selected={selected.service === service}
                     button
-                    on:click={() => {
-                        selectedService = service;
-                        inputData = null;
-                    }}>{service.name}</Pill>
+                    on:click={() => select('service', service)}>
+                    {service}
+                </Pill>
             {/each}
         </div>
     </div>
-    {#if selectedService}
+    {#if !empty(available.resources)}
         <div>
             <p class="u-text">Choose a resource (optional)</p>
             <div class="u-flex u-gap-8 u-margin-block-start-8">
-                {#each selectedService.resources as resource}
+                {#each available.resources as resource}
                     <Pill
                         disabled={showInput}
-                        selected={resource.name === selectedResource?.name}
+                        selected={selected.resource === resource}
                         button
-                        on:click={() => {
-                            selectedResource === resource
-                                ? (selectedResource = null)
-                                : (selectedResource = resource);
-                            inputData = null;
-                        }}>{resource.name}</Pill>
+                        on:click={() => select('resource', resource)}>
+                        {resource}
+                    </Pill>
                 {/each}
             </div>
         </div>
+    {/if}
+
+    {#if !empty(available.actions)}
         <div>
             <p class="u-text">Choose an action (optional)</p>
             <div class="u-flex u-gap-8 u-margin-block-start-8">
-                {#each selectedResource?.actions ?? selectedService?.actions as action}
+                {#each available.actions as action}
                     <Pill
                         disabled={showInput}
-                        selected={selectedAction === action}
+                        selected={selected.action === action}
                         button
-                        on:click={() => {
-                            selectedAction === action
-                                ? (selectedAction = null)
-                                : (selectedAction = action);
-                            inputData = null;
-                        }}>{action.name}</Pill>
+                        on:click={() => select('action', action)}>
+                        {action}
+                    </Pill>
                 {/each}
             </div>
         </div>
-        {#if selectedAction?.attributes}
-            <div>
-                <p class="u-text">Choose an attribute (optional)</p>
-                <div class="u-flex u-gap-8 u-margin-block-start-8">
-                    {#each selectedAction.attributes as attribute}
-                        <Pill
-                            disabled={showInput}
-                            selected={selectedAttribute === attribute}
-                            button
-                            on:click={() => {
-                                selectedAttribute === attribute
-                                    ? (selectedAttribute = null)
-                                    : (selectedAttribute = attribute);
-                                inputData = null;
-                            }}>{attribute}</Pill>
-                    {/each}
-                </div>
-            </div>
-        {/if}
     {/if}
+
+    {#if !empty(available.attributes)}
+        <div>
+            <p class="u-text">Choose an attribute (optional)</p>
+            <div class="u-flex u-gap-8 u-margin-block-start-8">
+                {#each available.attributes as attribute}
+                    <Pill
+                        disabled={showInput}
+                        selected={selected.attribute === attribute}
+                        button
+                        on:click={() => select('attribute', attribute)}>
+                        {attribute}
+                    </Pill>
+                {/each}
+            </div>
+        </div>
+    {/if}
+    <div>
+        {JSON.stringify(selected, null, 2)}
+    </div>
     {#if showInput}
         <div class="input-text-wrapper" style="--amount-of-buttons:2">
             <input type="text" placeholder="Enter custom event" bind:value={inputData} />
