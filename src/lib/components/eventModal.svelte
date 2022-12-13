@@ -104,8 +104,16 @@
         dispatch('created', copyValue);
     }
 
-    function select(field: FieldType, value: string) {
-        selected[field] = selected[field] === value ? null : value;
+    function select(field: 'service', value: Service);
+    function select(field: 'resource', value: Resource);
+    function select(field: 'action', value: Action);
+    function select(field: 'attribute', value: string);
+    function select(field: FieldType, value: string | Service | Resource | Action) {
+        if (typeof value === 'string') {
+            selected[field as 'attribute'] = selected[field] === value ? null : value;
+        } else {
+            selected[field as any] = (selected[field] as any)?.name === value.name ? null : value;
+        }
 
         switch (field) {
             case 'service': {
@@ -115,24 +123,15 @@
                 break;
             }
             case 'resource': {
-                const selectedService = services.find((d) => d.name === selected.service);
-                const selectedResource = selected.resource
-                    ? selectedService.resources.find((d) => d.name === selected.resource)
-                    : null;
+                const availableActions = selected.resource
+                    ? selected.resource?.actions
+                    : selected.service?.actions;
 
-                const availableActions = selectedResource
-                    ? selectedResource.actions
-                    : selectedService.actions;
-
-                if (!availableActions.map((a) => a.name).includes(selected.action)) {
+                if (!availableActions.map((a) => a.name).includes(selected.action?.name)) {
                     selected.action = null;
                     selected.attribute = null;
-                } else {
-                    const selectedAction = availableActions.find((d) => d.name === selected.action);
-
-                    if (!selectedAction.attributes.includes(selected.attribute)) {
-                        selected.attribute = null;
-                    }
+                } else if (!selected?.action?.attributes.includes(selected.attribute)) {
+                    selected.attribute = null;
                 }
                 break;
             }
@@ -144,134 +143,64 @@
     }
 
     // State & Reactive Declarations
-    let selected: Record<FieldType, string | null> = {
-        service: null,
-        resource: null,
-        action: null,
-        attribute: null
+    let selected = {
+        service: null as Service | null,
+        resource: null as Resource | null,
+        action: null as Action | null,
+        attribute: null as string | null
     };
     let helper: string = null;
     let inputData: string = null;
     let showInput = false;
+    let copyParent: HTMLElement;
 
-    $: available = (function getAvailable() {
-        const available: Record<`${FieldType}s`, Array<string>> = {
-            services: services.map((d) => d.name),
-            resources: [],
-            actions: [],
-            attributes: []
-        };
-
-        if (selected.service) {
-            const selectedService = services.find((d) => d.name === selected.service);
-            available.resources = selectedService.resources.map((d) => d.name);
-
-            if (!selected.resource) {
-                available.actions = selectedService.actions.map((d) => d.name);
-
-                if (selected.action) {
-                    available.attributes = selectedService.actions.find(
-                        (d) => d.name === selected.action
-                    ).attributes;
-                }
-            } else {
-                const selectedResource = selectedService.resources.find(
-                    (d) => d.name === selected.resource
-                );
-                available.actions = selectedResource.actions.map((d) => d.name);
-
-                if (selected.action) {
-                    available.attributes = selectedResource.actions.find(
-                        (d) => d.name === selected.action
-                    ).attributes;
-                }
-            }
-        }
-
-        return available;
-    })();
+    $: available = {
+        services: services,
+        resources: selected.service?.resources || [],
+        actions: (selected.resource ? selected.resource?.actions : selected.service?.actions) || [],
+        attributes: selected.action?.attributes || []
+    };
 
     $: eventString = (function createEventString() {
-        const data = new Map();
-
-        let selectedAction: Action | null = null;
-        if (selected.action) {
-            const selectedService = services.find((d) => d.name === selected.service);
-            if (selected.resource) {
-                const selectedResource = selectedService.resources.find(
-                    (d) => d.name === selected.resource
-                );
-                selectedAction = selectedResource.actions.find((d) => d.name === selected.action);
-            } else {
-                selectedAction = selectedService.actions.find((d) => d.name === selected.action);
-            }
-        }
+        const data: Array<{ value: string; description: string }> = [];
 
         if (selected.service) {
-            data.set('service', { value: selected.service, description: 'service' });
-            data.set('serviceId', {
-                value: '*',
-                description: `ID of ${selected.service.slice(0, -1)}`
-            });
+            data.push({ value: selected.service?.name, description: 'service' });
+            data.push({ value: '*', description: `ID of ${selected.service?.name.slice(0, -1)}` });
         }
 
         if (selected.resource) {
-            if (selected.resource === 'documents') {
-                data.set('resource', {
-                    value: 'collections',
-                    description: 'resource'
-                });
-                data.set('resourceId', {
-                    value: '*',
-                    description: `ID of collection`
-                });
-                data.set('secondaryResource', {
-                    value: 'documents',
-                    description: 'secondary resource'
-                });
-                data.set('secondaryResourceId', {
-                    value: '*',
-                    description: `ID of document`
-                });
+            if (selected.resource.name === 'documents') {
+                data.push({ value: 'collections', description: 'resource' });
+                data.push({ value: '*', description: `ID of collection` });
+                data.push({ value: selected.resource.name, description: 'secondary resource' });
             } else {
-                data.set('resource', {
-                    value: selected.resource,
-                    description: `resource`
-                });
-                data.set('resourceId', {
-                    value: '*',
-                    description: `ID of ${selected.resource.slice(0, -1)}`
-                });
+                data.push({ value: selected.resource.name, description: 'resource' });
             }
+
+            data.push({ value: '*', description: `ID of ${selected.resource.name.slice(0, -1)}` });
         }
 
         if (selected.action) {
-            data.set('action', { value: selected.action, description: 'action' });
+            data.push({ value: selected.action.name, description: 'action' });
         }
 
         if (selected.attribute && !selected.resource) {
-            data.set('attribute', { value: selected.attribute, description: 'attribute' });
-        } else if (selectedAction?.attributes && !selected.resource) {
-            data.set('attribute', { value: '*', description: `attribute` });
+            data.push({ value: selected.attribute, description: 'attribute' });
+        } else if (selected.action?.attributes && !selected.resource) {
+            data.push({ value: '*', description: `attribute` });
         }
         return data;
     })();
 
-    $: copyValue =
-        inputData ??
-        Array.from(eventString.values())
-            .map((d) => d.value)
-            .join('.');
+    $: copyValue = inputData ?? eventString.map((d) => d.value).join('.');
 
     $: if (!showInput) {
         helper = null;
     }
 
     $: if (!show) {
-        selected.service = null;
-        selected.resource = null;
-        selected.action = null;
-        selected.attribute = null;
+        Object.keys(selected).forEach((key) => (selected[key] = null));
         helper = null;
         inputData = null;
         showInput = false;
@@ -287,14 +216,15 @@
             {#each available.services as service}
                 <Pill
                     disabled={showInput}
-                    selected={selected.service === service}
+                    selected={selected.service?.name === service.name}
                     button
                     on:click={() => select('service', service)}>
-                    {service}
+                    {service.name}
                 </Pill>
             {/each}
         </div>
     </div>
+
     {#if !empty(available.resources)}
         <div>
             <p class="u-text">Choose a resource (optional)</p>
@@ -302,10 +232,10 @@
                 {#each available.resources as resource}
                     <Pill
                         disabled={showInput}
-                        selected={selected.resource === resource}
+                        selected={selected.resource?.name === resource.name}
                         button
                         on:click={() => select('resource', resource)}>
-                        {resource}
+                        {resource.name}
                     </Pill>
                 {/each}
             </div>
@@ -319,10 +249,10 @@
                 {#each available.actions as action}
                     <Pill
                         disabled={showInput}
-                        selected={selected.action === action}
+                        selected={selected.action?.name === action.name}
                         button
                         on:click={() => select('action', action)}>
-                        {action}
+                        {action.name}
                     </Pill>
                 {/each}
             </div>
@@ -345,9 +275,7 @@
             </div>
         </div>
     {/if}
-    <div>
-        {JSON.stringify(selected, null, 2)}
-    </div>
+
     {#if showInput}
         <div class="input-text-wrapper" style="--amount-of-buttons:2">
             <input type="text" placeholder="Enter custom event" bind:value={inputData} />
@@ -372,24 +300,20 @@
             </div>
         </div>
     {:else}
-        <div class="input-text-wrapper" style="--amount-of-buttons:2">
+        <div class="input-text-wrapper" style="--amount-of-buttons:2" bind:this={copyParent}>
             <div type="text" readonly style="min-height: 2.5rem;">
                 {#if inputData}
                     <span>{inputData}</span>
                 {:else}
-                    {#each Array.from(eventString.values()) as route, i}
-                        <button
+                    {#each eventString as route, i}
+                        <span
                             class:u-opacity-0-5={helper !== route.description}
-                            on:mouseenter={() => {
-                                helper = route.description;
-                            }}
-                            on:mouseleave={() => {
-                                helper = null;
-                            }}>
+                            on:mouseenter={() => (helper = route.description)}
+                            on:mouseleave={() => (helper = null)}>
                             {route.value}
-                        </button>
+                        </span>
                         <span class="u-opacity-0-5">
-                            {i + 1 < eventString?.size ? '.' : ''}
+                            {i + 1 < eventString?.length ? '.' : ''}
                         </span>
                     {/each}
                 {/if}
@@ -405,9 +329,11 @@
                     <span class="icon-pencil" aria-hidden="true" />
                 </button>
                 <button disabled={!copyValue} class="options-list-button" aria-label="copy text">
-                    <Copy value={copyValue}>
-                        <span class="icon-duplicate" aria-hidden="true" />
-                    </Copy>
+                    {#key copyParent}
+                        <Copy value={copyValue} appendTo={copyParent}>
+                            <span class="icon-duplicate" aria-hidden="true" />
+                        </Copy>
+                    {/key}
                 </button>
             </div>
             <p style="height: 2rem;">{helper ?? ''}</p>

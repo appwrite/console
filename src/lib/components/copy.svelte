@@ -6,6 +6,7 @@
 
     export let value: string;
     export let event: string = null;
+    export let appendTo: any | undefined = undefined;
 
     let content = 'Click to copy';
 
@@ -34,7 +35,8 @@
     on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
     use:tooltip={{
         content,
-        hideOnClick: false
+        hideOnClick: false,
+        appendTo
     }}>
     <slot />
 </span>
