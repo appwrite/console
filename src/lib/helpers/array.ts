@@ -39,3 +39,37 @@ export function empty(arr: unknown[]): boolean {
     if (!arr) return true;
     return arr.length === 0;
 }
+
+/**
+ * Get nth item of Array. Negative for backward
+ *
+ * @export
+ * @template T
+ * @param {(readonly T[] | [])} array
+ * @param {number} index
+ * @returns {(T | undefined)}
+ */
+export function at(array: readonly [], index: number): undefined;
+export function at<T>(array: readonly T[], index: number): T;
+export function at<T>(array: readonly T[] | [], index: number): T | undefined {
+    const len = array.length;
+    if (!len) return undefined;
+
+    if (index < 0) index += len;
+
+    return array[index];
+}
+
+/**
+ * Get last item
+ *
+ * @export
+ * @template T
+ * @param {readonly T[]} array
+ * @returns {(T | undefined)}
+ */
+export function last(array: readonly []): undefined;
+export function last<T>(array: readonly T[]): T;
+export function last<T>(array: readonly T[]): T | undefined {
+    return at(array, -1);
+}

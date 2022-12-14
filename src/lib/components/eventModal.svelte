@@ -3,7 +3,7 @@
     import { Modal } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { createEventDispatcher } from 'svelte';
-    import { empty } from '$lib/helpers/array';
+    import { at, empty, last } from '$lib/helpers/array';
     import Copy from './copy.svelte';
 
     // Props
@@ -154,6 +154,56 @@
         }
     }
 
+    function resetSelected() {
+        Object.keys(selected).forEach((key) => (selected[key] = null));
+    }
+
+    function toggleShowInput(e?: Event) {
+        e?.preventDefault();
+
+        showInput = !showInput;
+        if (showInput) return;
+
+        helper = null;
+
+        resetSelected();
+
+        for (const field of customInput.split('.')) {
+            if (isService(field)) {
+                selected.service = services.find((s) => s.name === field);
+            } else if (isResource(field)) {
+                const resource = selected.service?.resources.find((r) => r.name === field);
+                selected.resource = resource;
+            } else if (isAction(field)) {
+                const action =
+                    selected.resource?.actions.find((a) => a.name === field) ||
+                    selected.service?.actions.find((a) => a.name === field);
+                selected.action = action;
+            } else if (isAttribute(field)) {
+                const attribute = selected.action?.attributes?.find((a) => a === field);
+                selected.attribute = attribute;
+            }
+        }
+    }
+
+    function getHelperStr(input: string): string {
+        const fields = input.split('.');
+        const secondToLastField = at(fields, -3);
+        const prevField = at(fields, -2);
+        const currField = last(fields);
+
+        if (fields.length === 1) return 'service';
+        if (isAttribute(currField) || isAction(prevField)) return 'attribute';
+        if (isAction(currField)) return 'action';
+        if (isResource(currField)) return 'resource';
+        if (isService(currField)) return 'service';
+        if (isService(prevField) || isResource(prevField)) return `ID of ${prevField}`;
+        if (isService(secondToLastField)) return 'resource or action';
+        if (isResource(secondToLastField)) return 'action';
+
+        return '';
+    }
+
     // Event string helpers
     const serviceNames = services.map((s) => s.name);
     const isService = (s: string) => serviceNames.includes(s);
@@ -246,15 +296,15 @@
 
     $: inputValue = eventString.map((d) => d.value).join('.');
 
-    $: if (!showInput) {
-        helper = null;
-    }
-
     $: if (!show) {
-        Object.keys(selected).forEach((key) => (selected[key] = null));
+        resetSelected();
         helper = null;
         customInput = null;
         showInput = false;
+    }
+
+    $: if (showInput) {
+        helper = getHelperStr(customInput);
     }
 </script>
 
@@ -331,23 +381,14 @@
         <div class="input-text-wrapper" style="--amount-of-buttons:2">
             <input type="text" placeholder="Enter custom event" bind:value={customInput} />
             <div class="options-list">
-                <button
-                    on:click|preventDefault={() => {
-                        showInput = false;
-                    }}
-                    class="options-list-button"
-                    aria-label="confirm">
+                <button on:click={toggleShowInput} class="options-list-button" aria-label="confirm">
                     <span class="icon-check" aria-hidden="true" />
                 </button>
-                <button
-                    on:click|preventDefault={() => {
-                        showInput = false;
-                    }}
-                    class="options-list-button"
-                    aria-label="cancel">
+                <button on:click={toggleShowInput} class="options-list-button" aria-label="cancel">
                     <span class="icon-x" aria-hidden="true" />
                 </button>
             </div>
+            <p style="height: 2rem;">{helper ?? ''}</p>
         </div>
     {:else}
         <div class="input-text-wrapper" style="--amount-of-buttons:2" bind:this={copyParent}>
@@ -368,7 +409,7 @@
                 <button
                     on:click|preventDefault={() => {
                         customInput = inputValue;
-                        showInput = true;
+                        toggleShowInput();
                     }}
                     class="options-list-button"
                     aria-label="edit event">
