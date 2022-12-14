@@ -128,14 +128,18 @@
                     ? selected.resource?.actions
                     : selected.service?.actions;
 
-                const resourceAction = availableActions.find(
+                // We need to check if the selected action is still
+                // on the available list, and if so, change it to the
+                // new one, as it may contain different attributes
+                const availableAction = availableActions.find(
                     (a) => a.name === selected.action?.name
                 );
-                if (!resourceAction) {
+
+                if (!availableAction) {
                     selected.action = null;
                     selected.attribute = null;
                 } else {
-                    selected.action = resourceAction;
+                    selected.action = availableAction;
                     console.log(selected.action);
                     if (!selected?.action?.attributes?.includes(selected.attribute)) {
                         selected.attribute = null;
