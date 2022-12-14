@@ -50,6 +50,10 @@
 
     const eventSet: Writable<Set<string>> = writable(new Set());
     let showEvents = false;
+    let eventValue: string;
+    $: if (!showEvents) {
+        eventValue = undefined;
+    }
     let areEventsDisabled = true;
 
     onMount(async () => {
@@ -271,7 +275,15 @@
     }
 
     function handleEvent(event: CustomEvent) {
-        eventSet.set($eventSet.add(event.detail));
+        if (eventValue) {
+            const newSet = new Set(
+                [...$eventSet].map((e) => (e === eventValue ? event.detail : e))
+            );
+            eventSet.set(newSet);
+        } else {
+            eventSet.set($eventSet.add(event.detail));
+        }
+        eventValue = null;
     }
 
     $: if (permissions) {
@@ -370,16 +382,27 @@
                                 <TableCellText title="id">
                                     {event}
                                 </TableCellText>
-                                <TableCell showOverflow title="options" width={40}>
-                                    <button
-                                        class="button is-text is-only-icon"
-                                        aria-label="delete id"
-                                        on:click|preventDefault={() => {
-                                            $eventSet.delete(event);
-                                            eventSet.set($eventSet);
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </button>
+                                <TableCell showOverflow title="options" width={80}>
+                                    <div class="u-flex">
+                                        <button
+                                            class="button is-text is-only-icon"
+                                            aria-label="edit id"
+                                            on:click|preventDefault={() => {
+                                                showEvents = true;
+                                                eventValue = event;
+                                            }}>
+                                            <span class="icon-pencil" aria-hidden="true" />
+                                        </button>
+                                        <button
+                                            class="button is-text is-only-icon"
+                                            aria-label="delete id"
+                                            on:click|preventDefault={() => {
+                                                $eventSet.delete(event);
+                                                eventSet.set($eventSet);
+                                            }}>
+                                            <span class="icon-x" aria-hidden="true" />
+                                        </button>
+                                    </div>
                                 </TableCell>
                             </li>
                         {/each}
@@ -600,4 +623,4 @@
         on:updated={handleVariableUpdated} />
 {/if}
 <!-- <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} /> -->
-<EventModal bind:show={showEvents} on:created={handleEvent} />
+<EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent} />

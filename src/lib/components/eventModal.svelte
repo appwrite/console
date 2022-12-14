@@ -10,6 +10,7 @@
 
     // Props
     export let show = false;
+    export let initialValue = '';
 
     // Types & Constants
     type Service = {
@@ -177,15 +178,8 @@
         Object.keys(selected).forEach((key) => (selected[key] = null));
     }
 
-    function toggleShowInput(e?: Event) {
-        e?.preventDefault();
-
-        showInput = !showInput;
-        if (showInput) return;
-
-        helper = null;
+    function inferSelectedFromCustomInput() {
         resetSelected();
-
         for (const field of customInput.split('.')) {
             if (isService(field)) {
                 selected.service = services.find((s) => s.name === field);
@@ -204,17 +198,29 @@
         }
     }
 
+    function toggleShowInput(e?: Event) {
+        e?.preventDefault();
+
+        showInput = !showInput;
+        if (showInput) return;
+
+        helper = null;
+        inferSelectedFromCustomInput();
+    }
+
     function getHelperStr(fields: string[], index: number) {
         const currField = at(fields, index);
         const prevField = at(fields, index - 1);
         const secondToLastField = at(fields, index - 2);
 
-        if (fields.length === 1 || isService(currField)) return 'service';
+        if (index === 0 || isService(currField)) return 'service';
         if (isAttribute(currField) || isAction(prevField)) return 'attribute';
         if (isAction(currField)) return 'action';
         if (isResource(currField)) return 'resource';
-        if (isService(prevField) || isResource(prevField)) return `ID of ${singular(prevField)}`;
-        if (isService(secondToLastField)) return 'resource or action';
+        if (isService(prevField) || isResource(prevField) || index === 1) {
+            return `ID of ${singular(prevField)}`;
+        }
+        if (isService(secondToLastField) || index === 2) return 'resource or action';
         if (isResource(secondToLastField)) return 'action';
 
         return '';
@@ -254,6 +260,11 @@
     let showInput = false;
     let copyParent: HTMLElement;
 
+    $: if (show && initialValue) {
+        customInput = initialValue;
+        inferSelectedFromCustomInput();
+    }
+
     $: available = {
         services: services,
         resources: selected.service?.resources || [],
@@ -266,7 +277,6 @@
 
         // Avoid calculating the event string if the user is typing, as it is not shown
         if (showInput) return [];
-
         if (customInput) {
             fields = customInput.split('.');
         } else {
@@ -431,6 +441,7 @@
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button disabled={showInput || !inputValue} submit>Create</Button>
+        <Button disabled={showInput || !inputValue} submit
+            >{initialValue ? 'Update' : 'Create'}</Button>
     </svelte:fragment>
 </Modal>
