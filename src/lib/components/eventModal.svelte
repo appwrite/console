@@ -3,8 +3,9 @@
     import { Modal } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { createEventDispatcher } from 'svelte';
-    import { at, empty, last } from '$lib/helpers/array';
+    import { at, empty } from '$lib/helpers/array';
     import Copy from './copy.svelte';
+    import { selectionStart } from '$lib/actions/selectionStart';
 
     // Props
     export let show = false;
@@ -186,11 +187,28 @@
         }
     }
 
-    function getHelperStr(input: string): string {
+    function getHelperStr(input: string, selectionStart?: number): string {
         const fields = input.split('.');
-        const secondToLastField = at(fields, -3);
-        const prevField = at(fields, -2);
-        const currField = last(fields);
+        let fieldIndex = -1;
+
+        if (selectionStart > -1) {
+            let currentIndex = 0;
+            let arrayIndex = 0;
+
+            for (const item of fields) {
+                currentIndex += item.length + 1;
+                if (currentIndex > selectionStart) {
+                    fieldIndex = arrayIndex;
+                    break;
+                }
+                arrayIndex++;
+            }
+        }
+        console.log(selectionStart, fieldIndex);
+
+        const currField = at(fields, fieldIndex);
+        const prevField = at(fields, fieldIndex - 1);
+        const secondToLastField = at(fields, fieldIndex - 2);
 
         if (fields.length === 1) return 'service';
         if (isAttribute(currField) || isAction(prevField)) return 'attribute';
@@ -304,8 +322,10 @@
     }
 
     $: if (showInput) {
-        helper = getHelperStr(customInput);
+        helper = getHelperStr(customInput, customInputCursor);
     }
+
+    let customInputCursor = -1;
 </script>
 
 <Modal bind:show on:submit={create} size="big">
@@ -379,7 +399,11 @@
 
     {#if showInput}
         <div class="input-text-wrapper" style="--amount-of-buttons:2">
-            <input type="text" placeholder="Enter custom event" bind:value={customInput} />
+            <input
+                type="text"
+                placeholder="Enter custom event"
+                bind:value={customInput}
+                use:selectionStart={{ onChange: (newValue) => (customInputCursor = newValue) }} />
             <div class="options-list">
                 <button on:click={toggleShowInput} class="options-list-button" aria-label="confirm">
                     <span class="icon-check" aria-hidden="true" />
