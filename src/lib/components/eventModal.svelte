@@ -154,6 +154,29 @@
         }
     }
 
+    // Event string helpers
+    const serviceNames = services.map((s) => s.name);
+    const isService = (s: string) => serviceNames.includes(s);
+
+    const resourceNames = services.flatMap((s) => s.resources.map((r) => r.name));
+    const isResource = (s: string) => resourceNames.includes(s);
+
+    const actionNames = [
+        ...services.flatMap((s) => s.actions.map((a) => a.name)),
+        ...services.flatMap((s) => s.resources.flatMap((r) => r.actions.map((a) => a.name)))
+    ];
+    const isAction = (s: string) => actionNames.includes(s);
+
+    const attributeNames = [
+        ...services.flatMap((s) => s.actions.flatMap((a) => a.attributes ?? [])),
+        ...services.flatMap((s) =>
+            s.resources.flatMap((r) => r.actions.flatMap((a) => a.attributes ?? []))
+        )
+    ];
+    const isAttribute = (s: string) => attributeNames.includes(s);
+
+    const isField = (s: string) => isService(s) || isResource(s) || isAction(s) || isAttribute(s);
+
     // State & Reactive Declarations
     let selected = {
         service: null as Service | null,
@@ -172,25 +195,6 @@
         actions: (selected.resource ? selected.resource?.actions : selected.service?.actions) || [],
         attributes: selected.action?.attributes || []
     };
-
-    // Event string helpers
-    const serviceNames = services.map((s) => s.name);
-    const isService = (s: string) => serviceNames.includes(s);
-    const resourceNames = services.flatMap((s) => s.resources.map((r) => r.name));
-    const isResource = (s: string) => resourceNames.includes(s);
-    const actionNames = [
-        ...services.flatMap((s) => s.actions.map((a) => a.name)),
-        ...services.flatMap((s) => s.resources.flatMap((r) => r.actions.map((a) => a.name)))
-    ];
-    const isAction = (s: string) => actionNames.includes(s);
-    const attributeNames = [
-        ...services.flatMap((s) => s.actions.flatMap((a) => a.attributes ?? [])),
-        ...services.flatMap((s) =>
-            s.resources.flatMap((r) => r.actions.flatMap((a) => a.attributes ?? []))
-        )
-    ];
-    const isAttribute = (s: string) => attributeNames.includes(s);
-    const isField = (s: string) => isService(s) || isResource(s) || isAction(s) || isAttribute(s);
 
     $: eventString = (function createEventString(): Array<{ value: string; description: string }> {
         let fields: string[] = [];
@@ -221,6 +225,7 @@
         }
 
         return fields.map((value, i, arr) => {
+            const prev = arr[i - 1];
             let description = value;
 
             if (isService(value)) {
@@ -229,15 +234,10 @@
                 description = 'resource';
             } else if (isAction(value)) {
                 description = 'action';
-            } else if (isAttribute(value)) {
+            } else if (isAttribute(value) || isAction(prev)) {
                 description = 'attribute';
-            } else if (i > 0) {
-                const prev = arr[i - 1];
-                if (isAction(prev)) {
-                    description = 'attribute';
-                } else if (isField(prev)) {
-                    description = `ID of ${prev.slice(0, -1)}`;
-                }
+            } else if (isField(prev)) {
+                description = `ID of ${prev.slice(0, -1)}`;
             }
 
             return { value, description };
