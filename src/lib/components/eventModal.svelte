@@ -159,7 +159,7 @@
                     selected.attribute = null;
                 } else {
                     selected.action = availableAction;
-                    console.log(selected.action);
+
                     if (!selected?.action?.attributes?.includes(selected.attribute)) {
                         selected.attribute = null;
                     }
