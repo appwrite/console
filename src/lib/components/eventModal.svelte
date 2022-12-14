@@ -6,6 +6,7 @@
     import { at, empty } from '$lib/helpers/array';
     import Copy from './copy.svelte';
     import { selectionStart } from '$lib/actions/selectionStart';
+    import { singular } from '$lib/helpers/string';
 
     // Props
     export let show = false;
@@ -26,8 +27,6 @@
         name: string;
         attributes?: string[];
     };
-
-    type FieldType = 'service' | 'resource' | 'action' | 'attribute';
 
     const services: Array<Service> = [
         {
@@ -97,7 +96,25 @@
         }
     ];
 
+    const serviceNames = services.map((s) => s.name);
+    const resourceNames = services.flatMap((s) => s.resources.map((r) => r.name));
+    const actionNames = [
+        ...services.flatMap((s) => s.actions.map((a) => a.name)),
+        ...services.flatMap((s) => s.resources.flatMap((r) => r.actions.map((a) => a.name)))
+    ];
+    const attributeNames = [
+        ...services.flatMap((s) => s.actions.flatMap((a) => a.attributes ?? [])),
+        ...services.flatMap((s) =>
+            s.resources.flatMap((r) => r.actions.flatMap((a) => a.attributes ?? []))
+        )
+    ];
+
     // Helpers
+    const isService = (s: string) => serviceNames.includes(s);
+    const isResource = (s: string) => resourceNames.includes(s);
+    const isAction = (s: string) => actionNames.includes(s);
+    const isAttribute = (s: string) => attributeNames.includes(s);
+
     const dispatch = createEventDispatcher();
 
     function create() {
@@ -109,12 +126,13 @@
     function select(field: 'resource', value: Resource);
     function select(field: 'action', value: Action);
     function select(field: 'attribute', value: string);
-    function select(field: FieldType, value: string | Service | Resource | Action) {
+    function select(field: string, value: string | Service | Resource | Action) {
         if (typeof value === 'string') {
             selected[field as 'attribute'] = selected[field] === value ? null : value;
         } else {
             selected[field as any] = (selected[field] as any)?.name === value.name ? null : value;
         }
+
         customInput = null;
 
         switch (field) {
@@ -129,9 +147,9 @@
                     ? selected.resource?.actions
                     : selected.service?.actions;
 
-                // We need to check if the selected action is still
-                // on the available list, and if so, change it to the
-                // new one, as it may contain different attributes
+                // We need to check if the selected action name is still
+                // on the available list, and if so, change tje action to the
+                // appropriate one, as it may contain different attributes
                 const availableAction = availableActions.find(
                     (a) => a.name === selected.action?.name
                 );
@@ -166,7 +184,6 @@
         if (showInput) return;
 
         helper = null;
-
         resetSelected();
 
         for (const field of customInput.split('.')) {
@@ -187,7 +204,23 @@
         }
     }
 
-    function getHelperStr(input: string, selectionStart?: number): string {
+    function getHelperStr(fields: string[], index: number) {
+        const currField = at(fields, index);
+        const prevField = at(fields, index - 1);
+        const secondToLastField = at(fields, index - 2);
+
+        if (fields.length === 1 || isService(currField)) return 'service';
+        if (isAttribute(currField) || isAction(prevField)) return 'attribute';
+        if (isAction(currField)) return 'action';
+        if (isResource(currField)) return 'resource';
+        if (isService(prevField) || isResource(prevField)) return `ID of ${singular(prevField)}`;
+        if (isService(secondToLastField)) return 'resource or action';
+        if (isResource(secondToLastField)) return 'action';
+
+        return '';
+    }
+
+    function getCustomInputHelperStr(input: string, selectionStart?: number): string {
         const fields = input.split('.');
         let fieldIndex = -1;
 
@@ -204,46 +237,9 @@
                 arrayIndex++;
             }
         }
-        console.log(selectionStart, fieldIndex);
 
-        const currField = at(fields, fieldIndex);
-        const prevField = at(fields, fieldIndex - 1);
-        const secondToLastField = at(fields, fieldIndex - 2);
-
-        if (fields.length === 1) return 'service';
-        if (isAttribute(currField) || isAction(prevField)) return 'attribute';
-        if (isAction(currField)) return 'action';
-        if (isResource(currField)) return 'resource';
-        if (isService(currField)) return 'service';
-        if (isService(prevField) || isResource(prevField)) return `ID of ${prevField}`;
-        if (isService(secondToLastField)) return 'resource or action';
-        if (isResource(secondToLastField)) return 'action';
-
-        return '';
+        return getHelperStr(fields, fieldIndex);
     }
-
-    // Event string helpers
-    const serviceNames = services.map((s) => s.name);
-    const isService = (s: string) => serviceNames.includes(s);
-
-    const resourceNames = services.flatMap((s) => s.resources.map((r) => r.name));
-    const isResource = (s: string) => resourceNames.includes(s);
-
-    const actionNames = [
-        ...services.flatMap((s) => s.actions.map((a) => a.name)),
-        ...services.flatMap((s) => s.resources.flatMap((r) => r.actions.map((a) => a.name)))
-    ];
-    const isAction = (s: string) => actionNames.includes(s);
-
-    const attributeNames = [
-        ...services.flatMap((s) => s.actions.flatMap((a) => a.attributes ?? [])),
-        ...services.flatMap((s) =>
-            s.resources.flatMap((r) => r.actions.flatMap((a) => a.attributes ?? []))
-        )
-    ];
-    const isAttribute = (s: string) => attributeNames.includes(s);
-
-    const isField = (s: string) => isService(s) || isResource(s) || isAction(s) || isAttribute(s);
 
     // State & Reactive Declarations
     let selected = {
@@ -254,6 +250,7 @@
     };
     let helper: string = null;
     let customInput: string = null;
+    let customInputCursor = -1;
     let showInput = false;
     let copyParent: HTMLElement;
 
@@ -292,24 +289,7 @@
             }
         }
 
-        return fields.map((value, i, arr) => {
-            const prev = arr[i - 1];
-            let description = value;
-
-            if (isService(value)) {
-                description = 'service';
-            } else if (isResource(value)) {
-                description = 'resource';
-            } else if (isAction(value)) {
-                description = 'action';
-            } else if (isAttribute(value) || isAction(prev)) {
-                description = 'attribute';
-            } else if (isField(prev)) {
-                description = `ID of ${prev.slice(0, -1)}`;
-            }
-
-            return { value, description };
-        });
+        return fields.map((value, i, arr) => ({ value, description: getHelperStr(arr, i) }));
     })();
 
     $: inputValue = eventString.map((d) => d.value).join('.');
@@ -322,10 +302,8 @@
     }
 
     $: if (showInput) {
-        helper = getHelperStr(customInput, customInputCursor);
+        helper = getCustomInputHelperStr(customInput, customInputCursor);
     }
-
-    let customInputCursor = -1;
 </script>
 
 <Modal bind:show on:submit={create} size="big">
