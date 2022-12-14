@@ -72,14 +72,14 @@
             resources: [
                 {
                     name: 'memberships',
-                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+                    actions: [
+                        { name: 'create' },
+                        { name: 'update', attributes: ['status'] },
+                        { name: 'delete' }
+                    ]
                 }
             ],
-            actions: [
-                { name: 'create' },
-                { name: 'update', attributes: ['status'] },
-                { name: 'delete' }
-            ]
+            actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
         },
         {
             name: 'users',
@@ -114,6 +114,7 @@
         } else {
             selected[field as any] = (selected[field] as any)?.name === value.name ? null : value;
         }
+        console.log(field, value, selected);
 
         switch (field) {
             case 'service': {
@@ -127,11 +128,18 @@
                     ? selected.resource?.actions
                     : selected.service?.actions;
 
-                if (!availableActions.map((a) => a.name).includes(selected.action?.name)) {
+                const resourceAction = availableActions.find(
+                    (a) => a.name === selected.action?.name
+                );
+                if (!resourceAction) {
                     selected.action = null;
                     selected.attribute = null;
-                } else if (!selected?.action?.attributes.includes(selected.attribute)) {
-                    selected.attribute = null;
+                } else {
+                    selected.action = resourceAction;
+                    console.log(selected.action);
+                    if (!selected?.action?.attributes?.includes(selected.attribute)) {
+                        selected.attribute = null;
+                    }
                 }
                 break;
             }
@@ -185,9 +193,9 @@
             data.push({ value: selected.action.name, description: 'action' });
         }
 
-        if (selected.attribute && !selected.resource) {
+        if (selected.attribute) {
             data.push({ value: selected.attribute, description: 'attribute' });
-        } else if (selected.action?.attributes && !selected.resource) {
+        } else if (selected.action?.attributes) {
             data.push({ value: '*', description: `attribute` });
         }
         return data;
