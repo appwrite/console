@@ -101,7 +101,7 @@
 
     function create() {
         show = false;
-        dispatch('created', copyValue);
+        dispatch('created', inputValue);
     }
 
     function select(field: 'service', value: Service);
@@ -114,7 +114,7 @@
         } else {
             selected[field as any] = (selected[field] as any)?.name === value.name ? null : value;
         }
-        console.log(field, value, selected);
+        customInput = null;
 
         switch (field) {
             case 'service': {
@@ -162,7 +162,7 @@
         attribute: null as string | null
     };
     let helper: string = null;
-    let inputData: string = null;
+    let customInput: string = null;
     let showInput = false;
     let copyParent: HTMLElement;
 
@@ -173,39 +173,78 @@
         attributes: selected.action?.attributes || []
     };
 
-    $: eventString = (function createEventString() {
-        const data: Array<{ value: string; description: string }> = [];
+    // Event string helpers
+    const serviceNames = services.map((s) => s.name);
+    const isService = (s: string) => serviceNames.includes(s);
+    const resourceNames = services.flatMap((s) => s.resources.map((r) => r.name));
+    const isResource = (s: string) => resourceNames.includes(s);
+    const actionNames = [
+        ...services.flatMap((s) => s.actions.map((a) => a.name)),
+        ...services.flatMap((s) => s.resources.flatMap((r) => r.actions.map((a) => a.name)))
+    ];
+    const isAction = (s: string) => actionNames.includes(s);
+    const attributeNames = [
+        ...services.flatMap((s) => s.actions.flatMap((a) => a.attributes ?? [])),
+        ...services.flatMap((s) =>
+            s.resources.flatMap((r) => r.actions.flatMap((a) => a.attributes ?? []))
+        )
+    ];
+    const isAttribute = (s: string) => attributeNames.includes(s);
+    const isField = (s: string) => isService(s) || isResource(s) || isAction(s) || isAttribute(s);
 
-        if (selected.service) {
-            data.push({ value: selected.service?.name, description: 'service' });
-            data.push({ value: '*', description: `ID of ${selected.service?.name.slice(0, -1)}` });
+    $: eventString = (function createEventString(): Array<{ value: string; description: string }> {
+        let fields: string[] = [];
+
+        // Avoid calculating the event string if the user is typing, as it is not shown
+        if (showInput) return [];
+
+        if (customInput) {
+            fields = customInput.split('.');
+        } else {
+            if (selected.service) {
+                fields.push(selected.service.name, '*');
+            }
+            if (selected.resource?.name === 'documents') {
+                fields.push('collections', '*');
+            }
+            if (selected.resource) {
+                fields.push(selected.resource.name, '*');
+            }
+            if (selected.action) {
+                fields.push(selected.action.name);
+            }
+            if (selected.attribute) {
+                fields.push(selected.attribute);
+            } else if (selected.action?.attributes) {
+                fields.push('*');
+            }
         }
 
-        if (selected.resource) {
-            if (selected.resource.name === 'documents') {
-                data.push({ value: 'collections', description: 'resource' });
-                data.push({ value: '*', description: `ID of collection` });
-                data.push({ value: selected.resource.name, description: 'secondary resource' });
-            } else {
-                data.push({ value: selected.resource.name, description: 'resource' });
+        return fields.map((value, i, arr) => {
+            let description = value;
+
+            if (isService(value)) {
+                description = 'service';
+            } else if (isResource(value)) {
+                description = 'resource';
+            } else if (isAction(value)) {
+                description = 'action';
+            } else if (isAttribute(value)) {
+                description = 'attribute';
+            } else if (i > 0) {
+                const prev = arr[i - 1];
+                if (isAction(prev)) {
+                    description = 'attribute';
+                } else if (isField(prev)) {
+                    description = `ID of ${prev.slice(0, -1)}`;
+                }
             }
 
-            data.push({ value: '*', description: `ID of ${selected.resource.name.slice(0, -1)}` });
-        }
-
-        if (selected.action) {
-            data.push({ value: selected.action.name, description: 'action' });
-        }
-
-        if (selected.attribute) {
-            data.push({ value: selected.attribute, description: 'attribute' });
-        } else if (selected.action?.attributes) {
-            data.push({ value: '*', description: `attribute` });
-        }
-        return data;
+            return { value, description };
+        });
     })();
 
-    $: copyValue = inputData ?? eventString.map((d) => d.value).join('.');
+    $: inputValue = eventString.map((d) => d.value).join('.');
 
     $: if (!showInput) {
         helper = null;
@@ -214,7 +253,7 @@
     $: if (!show) {
         Object.keys(selected).forEach((key) => (selected[key] = null));
         helper = null;
-        inputData = null;
+        customInput = null;
         showInput = false;
     }
 </script>
@@ -290,7 +329,7 @@
 
     {#if showInput}
         <div class="input-text-wrapper" style="--amount-of-buttons:2">
-            <input type="text" placeholder="Enter custom event" bind:value={inputData} />
+            <input type="text" placeholder="Enter custom event" bind:value={customInput} />
             <div class="options-list">
                 <button
                     on:click|preventDefault={() => {
@@ -302,7 +341,6 @@
                 </button>
                 <button
                     on:click|preventDefault={() => {
-                        inputData = null;
                         showInput = false;
                     }}
                     class="options-list-button"
@@ -314,35 +352,31 @@
     {:else}
         <div class="input-text-wrapper" style="--amount-of-buttons:2" bind:this={copyParent}>
             <div type="text" readonly style="min-height: 2.5rem;">
-                {#if inputData}
-                    <span>{inputData}</span>
-                {:else}
-                    {#each eventString as route, i}
-                        <span
-                            class:u-opacity-0-5={helper !== route.description}
-                            on:mouseenter={() => (helper = route.description)}
-                            on:mouseleave={() => (helper = null)}>
-                            {route.value}
-                        </span>
-                        <span class="u-opacity-0-5">
-                            {i + 1 < eventString?.length ? '.' : ''}
-                        </span>
-                    {/each}
-                {/if}
+                {#each eventString as route, i}
+                    <span
+                        class:u-opacity-0-5={helper !== route.description}
+                        on:mouseenter={() => (helper = route.description)}
+                        on:mouseleave={() => (helper = null)}>
+                        {route.value}
+                    </span>
+                    <span class="u-opacity-0-5">
+                        {i + 1 < eventString?.length ? '.' : ''}
+                    </span>
+                {/each}
             </div>
             <div class="options-list">
                 <button
                     on:click|preventDefault={() => {
-                        inputData = copyValue;
+                        customInput = inputValue;
                         showInput = true;
                     }}
                     class="options-list-button"
                     aria-label="edit event">
                     <span class="icon-pencil" aria-hidden="true" />
                 </button>
-                <button disabled={!copyValue} class="options-list-button" aria-label="copy text">
+                <button disabled={!inputValue} class="options-list-button" aria-label="copy text">
                     {#key copyParent}
-                        <Copy value={copyValue} appendTo={copyParent}>
+                        <Copy value={inputValue} appendTo={copyParent}>
                             <span class="icon-duplicate" aria-hidden="true" />
                         </Copy>
                     {/key}
@@ -354,6 +388,6 @@
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button disabled={showInput || !copyValue} submit>Create</Button>
+        <Button disabled={showInput || !inputValue} submit>Create</Button>
     </svelte:fragment>
 </Modal>
