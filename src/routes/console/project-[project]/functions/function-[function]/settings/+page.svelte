@@ -1,37 +1,26 @@
 <script lang="ts">
-    import {
-        CardGrid,
-        Box,
-        DropList,
-        DropListItem,
-        Copy,
-        Empty,
-        EventModal
-    } from '$lib/components';
-    import { Container } from '$lib/layout';
-    import { Button, InputNumber, InputText, InputCron, Form, FormList } from '$lib/elements/forms';
+    import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { Box, CardGrid, Copy, DropList, DropListItem } from '$lib/components';
+    import Heading from '$lib/components/heading.svelte';
+    import { Roles } from '$lib/components/permissions';
+    import { Dependencies } from '$lib/constants';
+    import { Button, Form, FormList, InputCron, InputNumber, InputText } from '$lib/elements/forms';
+    import { symmetricDifference } from '$lib/helpers/array';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { execute, func } from '../store';
-    import Delete from './delete.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
-    import { page } from '$app/stores';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { onMount } from 'svelte';
     import Variable from '../../createVariable.svelte';
-    // import Upload from './uploadVariables.svelte';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Roles } from '$lib/components/permissions';
-    import { symmetricDifference } from '$lib/helpers/array';
-    import TableList from '$lib/elements/table/tableList.svelte';
-    import { TableCell, TableCellText } from '$lib/elements/table';
-    import Heading from '$lib/components/heading.svelte';
-    import { writable, type Writable } from 'svelte/store';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { execute, func } from '../store';
     import type { PageData } from './$types';
-    import { trackEvent } from '$lib/actions/analytics';
+    import Delete from './delete.svelte';
+    import UpdateEvents from './updateEvents.svelte';
 
     export let data: PageData;
 
@@ -48,20 +37,11 @@
     let permissions: string[] = [];
     let arePermsDisabled = true;
 
-    const eventSet: Writable<Set<string>> = writable(new Set());
-    let showEvents = false;
-    let eventValue: string;
-    $: if (!showEvents) {
-        eventValue = undefined;
-    }
-    let areEventsDisabled = true;
-
     onMount(async () => {
         timeout ??= $func.timeout;
         functionName ??= $func.name;
         functionSchedule ??= $func.schedule;
         permissions = $func.execute;
-        $eventSet = new Set($func.events);
     });
 
     async function updateName() {
@@ -106,31 +86,6 @@
                 type: 'success'
             });
             trackEvent('submit_function_update_permissions');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-
-    async function updateEvents() {
-        try {
-            await sdkForProject.functions.update(
-                functionId,
-                $func.name,
-                $func.execute,
-                Array.from($eventSet),
-                $func.schedule,
-                $func.timeout,
-                $func.enabled
-            );
-            invalidate(Dependencies.FUNCTION);
-            addNotification({
-                message: 'Permissions have been updated',
-                type: 'success'
-            });
-            trackEvent('submit_function_update_events');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -274,28 +229,10 @@
         }
     }
 
-    function handleEvent(event: CustomEvent) {
-        if (eventValue) {
-            const newSet = new Set(
-                [...$eventSet].map((e) => (e === eventValue ? event.detail : e))
-            );
-            eventSet.set(newSet);
-        } else {
-            eventSet.set($eventSet.add(event.detail));
-        }
-        eventValue = null;
-    }
-
     $: if (permissions) {
         if (symmetricDifference(permissions, $func.execute).length) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
-    }
-
-    $: if ($eventSet) {
-        if (symmetricDifference(Array.from($eventSet), $func.events).length) {
-            areEventsDisabled = false;
-        } else areEventsDisabled = true;
     }
 </script>
 
@@ -370,60 +307,7 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updateEvents}>
-        <CardGrid>
-            <Heading tag="h6" size="7">Update Events</Heading>
-            <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
-            <svelte:fragment slot="aside">
-                {#if $eventSet.size}
-                    <TableList>
-                        {#each Array.from($eventSet) as event}
-                            <li class="table-row">
-                                <TableCellText title="id">
-                                    {event}
-                                </TableCellText>
-                                <TableCell showOverflow title="options" width={80}>
-                                    <div class="u-flex">
-                                        <button
-                                            class="button is-text is-only-icon"
-                                            aria-label="edit id"
-                                            on:click|preventDefault={() => {
-                                                showEvents = true;
-                                                eventValue = event;
-                                            }}>
-                                            <span class="icon-pencil" aria-hidden="true" />
-                                        </button>
-                                        <button
-                                            class="button is-text is-only-icon"
-                                            aria-label="delete id"
-                                            on:click|preventDefault={() => {
-                                                $eventSet.delete(event);
-                                                eventSet.set($eventSet);
-                                            }}>
-                                            <span class="icon-x" aria-hidden="true" />
-                                        </button>
-                                    </div>
-                                </TableCell>
-                            </li>
-                        {/each}
-                    </TableList>
-
-                    <div class="u-flex u-margin-block-start-16">
-                        <Button text noMargin on:click={() => (showEvents = true)}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="u-text">Add event</span>
-                        </Button>
-                    </div>
-                {:else}
-                    <Empty on:click={() => (showEvents = true)}>Add an event to get started</Empty>
-                {/if}
-            </svelte:fragment>
-
-            <svelte:fragment slot="actions">
-                <Button disabled={areEventsDisabled} submit>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-    </Form>
+    <UpdateEvents />
 
     <Form on:submit={updateSchedule}>
         <CardGrid>
@@ -484,10 +368,6 @@
                     <span class="icon-download" />
                     <span class="text">Download .env file</span>
                 </Button>
-                <!-- <Button secondary on:click={() => (showVariablesUpload = true)}>
-                    <span class="icon-upload" />
-                    <span class="text">Import .env file</span>
-                </Button> -->
             </div>
             <table class="table is-remove-outer-styles">
                 <thead class="table-thead">
@@ -622,5 +502,3 @@
         on:created={handleVariableCreated}
         on:updated={handleVariableUpdated} />
 {/if}
-<!-- <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} /> -->
-<EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent} />
