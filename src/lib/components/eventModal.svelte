@@ -7,96 +7,19 @@
     import Copy from './copy.svelte';
     import { selectionStart } from '$lib/actions/selectionStart';
     import { singular } from '$lib/helpers/string';
+    import {
+        eventServices as services,
+        type EventAction,
+        type EventResource,
+        type EventService
+    } from '$lib/constants';
+    import { tooltip } from '$lib/actions/tooltip';
 
     // Props
     export let show = false;
     export let initialValue = '';
 
-    // Types & Constants
-    type Service = {
-        name: string;
-        resources: Resource[];
-        actions?: Action[];
-    };
-
-    type Resource = {
-        name: string;
-        actions?: Action[];
-    };
-
-    type Action = {
-        name: string;
-        attributes?: string[];
-    };
-
-    const services: Array<Service> = [
-        {
-            name: 'buckets',
-            resources: [
-                {
-                    name: 'files',
-                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
-                }
-            ],
-            actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
-        },
-        {
-            name: 'databases',
-            resources: [
-                {
-                    name: 'collections',
-                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
-                },
-                {
-                    name: 'documents',
-                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
-                }
-            ],
-            actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
-        },
-        {
-            name: 'functions',
-            resources: [
-                {
-                    name: 'deployments',
-                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
-                },
-                {
-                    name: 'executions',
-                    actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
-                }
-            ],
-            actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
-        },
-        {
-            name: 'teams',
-            resources: [
-                {
-                    name: 'memberships',
-                    actions: [
-                        { name: 'create' },
-                        { name: 'update', attributes: ['status'] },
-                        { name: 'delete' }
-                    ]
-                }
-            ],
-            actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
-        },
-        {
-            name: 'users',
-            resources: [
-                { name: 'recovery', actions: [{ name: 'create' }, { name: 'delete' }] },
-                { name: 'sessions', actions: [{ name: 'create' }, { name: 'delete' }] },
-                { name: 'verifications', actions: [{ name: 'create' }, { name: 'delete' }] }
-            ],
-            actions: [
-                { name: 'create' },
-                { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
-                { name: 'delete' }
-            ]
-        }
-    ];
-
+    // Constants
     const serviceNames = services.map((s) => s.name);
     const resourceNames = services.flatMap((s) => s.resources.map((r) => r.name));
     const actionNames = [
@@ -123,11 +46,11 @@
         dispatch('created', inputValue);
     }
 
-    function select(field: 'service', value: Service);
-    function select(field: 'resource', value: Resource);
-    function select(field: 'action', value: Action);
+    function select(field: 'service', value: EventService);
+    function select(field: 'resource', value: EventResource);
+    function select(field: 'action', value: EventAction);
     function select(field: 'attribute', value: string);
-    function select(field: string, value: string | Service | Resource | Action) {
+    function select(field: string, value: string | EventService | EventResource | EventAction) {
         if (typeof value === 'string') {
             selected[field as 'attribute'] = selected[field] === value ? null : value;
         } else {
@@ -220,6 +143,7 @@
         if (isService(prevField) || isResource(prevField) || index === 1) {
             return `ID of ${singular(prevField)}`;
         }
+        // TODO: Find better name for 'resource or action'
         if (isService(secondToLastField) || index === 2) return 'resource or action';
         if (isResource(secondToLastField)) return 'action';
 
@@ -249,9 +173,9 @@
 
     // State & Reactive Declarations
     let selected = {
-        service: null as Service | null,
-        resource: null as Resource | null,
-        action: null as Action | null,
+        service: null as EventService | null,
+        resource: null as EventResource | null,
+        action: null as EventAction | null,
         attribute: null as string | null
     };
     let helper: string = null;
@@ -418,22 +342,26 @@
                 {/each}
             </div>
             <div class="options-list">
-                <button
-                    on:click|preventDefault={() => {
-                        customInput = inputValue;
-                        toggleShowInput();
-                    }}
-                    class="options-list-button"
-                    aria-label="edit event">
-                    <span class="icon-pencil" aria-hidden="true" />
-                </button>
-                <button disabled={!inputValue} class="options-list-button" aria-label="copy text">
-                    {#key copyParent}
+                {#key copyParent}
+                    <button
+                        on:click|preventDefault={() => {
+                            customInput = inputValue;
+                            toggleShowInput();
+                        }}
+                        use:tooltip={{ content: 'Edit event', appendTo: copyParent }}
+                        class="options-list-button"
+                        aria-label="edit event">
+                        <span class="icon-pencil" aria-hidden="true" />
+                    </button>
+                    <button
+                        disabled={!inputValue}
+                        class="options-list-button"
+                        aria-label="copy text">
                         <Copy value={inputValue} appendTo={copyParent}>
                             <span class="icon-duplicate" aria-hidden="true" />
                         </Copy>
-                    {/key}
-                </button>
+                    </button>
+                {/key}
             </div>
             <p style="height: 2rem;">{helper ?? ''}</p>
         </div>
