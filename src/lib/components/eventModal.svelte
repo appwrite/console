@@ -218,8 +218,6 @@
             }
             if (selected.attribute) {
                 fields.push(selected.attribute);
-            } else if (selected.action?.attributes) {
-                fields.push('*');
             }
         }
 
