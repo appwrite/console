@@ -60,10 +60,10 @@
                                 <div class="form-item-part u-stretch">
                                     <Attribute
                                         {attribute}
+                                        id={`${attribute.key}-${index}`}
                                         optionalText={index === 0
                                             ? getAttributeType(attribute)
                                             : undefined}
-                                        id={`${attribute.key}-${index}`}
                                         label={index === 0 ? label : ''}
                                         bind:value={formValues[attribute.key][index]} />
                                 </div>
