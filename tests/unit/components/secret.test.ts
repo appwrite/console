@@ -19,22 +19,24 @@ test('shows Secret component', () => {
 test('toggle secret', async () => {
     const { container } = render(Secret, { value });
     const toggle = container.querySelector('[aria-label="show hidden text"]');
+    expect(toggle).not.toBeNull();
 
     let secret = container.querySelector('span.text');
     expect(secret).not.toContainEqual(value);
-    await fireEvent.click(toggle);
+    await fireEvent.click(toggle as Element);
 
     secret = container.querySelector('span.text');
-    expect(secret.textContent).toEqual(value);
-    await fireEvent.click(toggle);
+    expect(secret?.textContent).toEqual(value);
+    await fireEvent.click(toggle as Element);
 
     secret = container.querySelector('span.text');
-    expect(secret.textContent).not.toEqual(value);
+    expect(secret?.textContent).not.toEqual(value);
 });
 
 test('copy to clipboard on click', async () => {
     const { container } = render(Secret, { value });
     const copy = container.querySelector('[aria-label="copy text"]');
+    expect(copy).not.toBeNull();
 
     Object.assign(window.navigator, {
         clipboard: {
@@ -42,7 +44,7 @@ test('copy to clipboard on click', async () => {
         }
     });
 
-    await fireEvent.click(copy);
+    await fireEvent.click(copy as Element);
 
     expect(window.navigator.clipboard.writeText).toHaveBeenCalledWith(value);
 });

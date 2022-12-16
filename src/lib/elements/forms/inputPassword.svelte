@@ -5,7 +5,7 @@
     export let id: string;
     export let label: string;
     export let showLabel = true;
-    export let value = '';
+    export let value: string | null = '';
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
@@ -14,10 +14,10 @@
     export let autocomplete = false;
     export let showPasswordButton = false;
     export let minlength = 8;
-    export let maxlength: number = null;
+    export let maxlength: number | null = null;
 
     let element: HTMLInputElement;
-    let error: string;
+    let error: string | null;
     let showInPlainText = false;
 
     onMount(() => {

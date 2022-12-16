@@ -12,11 +12,11 @@
 
     export let provider: Provider;
 
-    let appId: string = null;
-    let enabled: boolean = null;
-    let clientSecret: string = null;
-    let oktaDomain: string = null;
-    let authorizationServerId: string = null;
+    let appId: string | null = null;
+    let enabled: boolean | null = null;
+    let clientSecret: string | null = null;
+    let oktaDomain: string | null = null;
+    let authorizationServerId: string | null = null;
 
     onMount(() => {
         appId ??= provider.appId;

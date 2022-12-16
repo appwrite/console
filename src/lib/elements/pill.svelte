@@ -8,7 +8,7 @@
     export let button = false;
     export let submit = false;
     export let external = false;
-    export let href: string = null;
+    export let href: string | null = null;
     export let trim = false;
 
     let element: HTMLButtonElement;

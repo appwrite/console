@@ -12,7 +12,7 @@
 
     export let showCreate = false;
 
-    let key: string = null;
+    let key: string | null = null;
     let selectedOption = null;
     let data: Partial<Attributes> = {
         required: false,

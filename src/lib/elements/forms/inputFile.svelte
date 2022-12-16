@@ -2,7 +2,7 @@
     import { Trim } from '$lib/components';
     import { Button } from '.';
 
-    export let label: string = null;
+    export let label: string | null = null;
     export let files: FileList;
     export let list = new DataTransfer();
     export let allowedFileExtensions: string[] = [];

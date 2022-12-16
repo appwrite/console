@@ -10,23 +10,26 @@
     import { Permissions } from '$lib/components/permissions';
     import { addNotification } from '$lib/stores/notifications';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isString } from '$lib/helpers/type';
 
     export let showCreate = false;
 
     const bucketId = $page.params.bucket;
     const dispatch = createEventDispatcher();
 
-    let files: FileList;
+    let files: FileList = new FileList();
     let permissions: string[] = [];
-    let id: string = null;
-    let error: string;
+    let id: string | null = null;
+    let error: string | null;
     let showCustomId = false;
 
     async function create() {
+        if (!isString(bucketId) || !isString(id) || !isString(files[0])) return;
+
         try {
             showCreate = false;
             await uploader.uploadFile(bucketId, id, files[0], permissions);
-            files = null;
+            files = new FileList();
             showCustomId = false;
             // uploader.addFile(file);
             dispatch('created');
@@ -41,7 +44,8 @@
     }
 
     $: if (!showCreate) {
-        id = files = error = null;
+        id = error = null;
+        files = new FileList();
         permissions = [];
     }
 </script>

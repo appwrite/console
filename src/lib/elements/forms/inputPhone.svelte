@@ -12,7 +12,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
-    export let maxlength: number = null;
+    export let maxlength: number | null = null;
 
     const pattern = String.raw`^\+?[1-9]\d{1,14}$`;
 

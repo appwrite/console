@@ -7,8 +7,8 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     export let single = false;
-    export let target: string = null;
-    export let href: string = null;
+    export let target: string | null = null;
+    export let href: string | null = null;
 
     function track() {
         if (target) {

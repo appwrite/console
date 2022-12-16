@@ -2,10 +2,10 @@ import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
 
 export const createWebhook = writable<Partial<Models.Webhook>>({
-    name: null,
-    url: null,
+    name: undefined,
+    url: undefined,
     events: [],
     security: false,
-    httpUser: null,
-    httpPass: null
+    httpUser: undefined,
+    httpPass: undefined
 });

@@ -5,14 +5,14 @@
     export let label: string;
     export let showLabel = true;
     export let id: string;
-    export let value: string = null;
+    export let value: string | null = null;
     export let placeholder = '* * * * *';
     export let required = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
-    export let maxlength: number = null;
-    export let minlength: number = null;
+    export let maxlength: number | null = null;
+    export let minlength: number | null = null;
     export let step: number | 'any' = 1;
 
     let element: HTMLInputElement;

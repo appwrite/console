@@ -22,7 +22,7 @@
 <script lang="ts">
     import { InputChoice, InputDateTime } from '$lib/elements/forms';
 
-    export let selectedAttribute: Models.AttributeDatetime = null;
+    export let selectedAttribute: Models.AttributeDatetime | null = null;
     export let data: Partial<Models.AttributeDatetime>;
 
     $: if (selectedAttribute) {

@@ -5,7 +5,7 @@
     import Base from './base.svelte';
 
     export let series: LineSeriesOption[];
-    export let options: EChartsOption = null;
+    export let options: EChartsOption | null = null;
 </script>
 
 <Base

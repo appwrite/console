@@ -19,7 +19,7 @@
     import Overview from './overview.svelte';
 
     let showDropdown = [];
-    let selectedAttribute: Attributes = null;
+    let selectedAttribute: Attributes | null = null;
     let showCreate = false;
     let showDelete = false;
     let showOverview = false;

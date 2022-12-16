@@ -75,14 +75,14 @@ test('removes tag on click', async () => {
     expect(component.tags).toContain('second');
     const first = getByText('first').nextElementSibling;
 
-    await fireEvent.click(first);
+    first && (await fireEvent.click(first));
     expect(component.tags).toHaveLength(1);
     expect(component.tags).toContain('second');
     expect(component.tags).not.toContain('first');
     expect(queryByText('first')).not.toBeInTheDocument();
 
     const second = getByText('second').nextElementSibling;
-    await fireEvent.click(second);
+    second && (await fireEvent.click(second));
     expect(component.tags).toHaveLength(0);
     expect(component.tags).not.toContain('second');
     expect(component.tags).not.toContain('first');

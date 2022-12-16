@@ -14,12 +14,12 @@
     import { remove } from '$lib/helpers/array';
 
     export let showCreateIndex = false;
-    export let externalAttribute: Attributes = null;
+    export let externalAttribute: Attributes | null = null;
 
     const databaseId = $page.params.database;
 
     let error: string;
-    let key: string = null;
+    let key: string | null = null;
     let types = [
         { value: 'key', label: 'Key' },
         { value: 'unique', label: 'Unique' },

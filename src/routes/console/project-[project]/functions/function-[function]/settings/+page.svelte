@@ -37,14 +37,14 @@
 
     const functionId = $page.params.function;
     let showDelete = false;
-    let selectedVar: Models.Variable = null;
+    let selectedVar: Models.Variable | null = null;
     // let showVariablesUpload = false;
     let showVariablesModal = false;
     let showVariablesValue = [];
     let showVariablesDropdown = [];
-    let timeout: number = null;
-    let functionName: string = null;
-    let functionSchedule: string = null;
+    let timeout: number | null = null;
+    let functionName: string | null = null;
+    let functionSchedule: string | null = null;
     let permissions: string[] = [];
     let arePermsDisabled = true;
 

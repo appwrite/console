@@ -35,7 +35,7 @@
     export let readMetadata: MetricMetadata;
     export let updatedMetadata: MetricMetadata;
     export let deletedMetadata: MetricMetadata;
-    export let path: string = null;
+    export let path: string | null = null;
 </script>
 
 <Container>

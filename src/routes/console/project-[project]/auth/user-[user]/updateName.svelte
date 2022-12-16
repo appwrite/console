@@ -9,7 +9,7 @@
     import { onMount } from 'svelte';
     import { user } from './store';
 
-    let userName: string = null;
+    let userName: string | null = null;
     onMount(async () => {
         userName ??= $user.name;
     });

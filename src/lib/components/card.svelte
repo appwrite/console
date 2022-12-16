@@ -5,7 +5,7 @@
     export let isDashed = false;
     export let isButton = false;
     export let danger = false;
-    export let href: string = null;
+    export let href: string | null = null;
 
     function getElement(): string {
         switch (true) {

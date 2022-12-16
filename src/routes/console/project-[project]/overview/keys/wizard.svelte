@@ -13,8 +13,17 @@
     import { onboarding } from '../../store';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isString, isStringArray } from '$lib/helpers/type';
 
     async function onFinish() {
+        if (
+            !isString($page.params.project) ||
+            !isString($key.name) ||
+            !isStringArray($key.scopes)
+        ) {
+            return;
+        }
+
         try {
             const { $id } = await sdkForConsole.projects.createKey(
                 $page.params.project,

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Heading } from '$lib/components';
 
-    export let href: string = null;
+    export let href: string | null = null;
 </script>
 
 <Heading size="4" tag="h1" trimmed={false}>

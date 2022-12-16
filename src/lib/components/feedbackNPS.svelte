@@ -13,7 +13,7 @@
 
     export let show = false;
 
-    let value: number = null;
+    let value: number | null = null;
     let message: string;
     let email: string;
     let name: string;

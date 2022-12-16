@@ -9,7 +9,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let showDelete = false;
-    export let selectedDeployment: Models.Deployment = null;
+    export let selectedDeployment: Models.Deployment | null = null;
 
     const handleSubmit = async () => {
         try {

@@ -40,7 +40,7 @@
     };
 
     let showDelete = false;
-    let name: string = null;
+    let name: string;
 
     onMount(() => {
         name ??= data.platform.name;

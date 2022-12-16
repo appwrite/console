@@ -10,8 +10,8 @@
 
     export let showDelete = false;
 
-    let password: string = null;
-    let name: string = null;
+    let password: string;
+    let name: string;
 
     const handleDelete = async () => {
         try {

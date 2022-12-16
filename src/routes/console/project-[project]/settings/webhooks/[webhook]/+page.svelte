@@ -23,15 +23,16 @@
     import { Dependencies } from '$lib/constants';
     import { writable, type Writable } from 'svelte/store';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isString } from '$lib/helpers/type';
 
     const projectId = $page.params.project;
-    let name: string = null;
-    let url: string = null;
+    let name: string | null = null;
+    let url: string | null = null;
 
     const eventSet: Writable<Set<string>> = writable(new Set());
 
-    let httpUser: string = null;
-    let httpPass: string = null;
+    let httpUser: string | null = null;
+    let httpPass: string | null = null;
     let security = false;
     let showDelete = false;
     let showCreateEvent = false;
@@ -48,6 +49,8 @@
     });
 
     async function updateName() {
+        if (!isString(projectId) || !isString(name)) return;
+
         try {
             await sdkForConsole.projects.updateWebhook(
                 projectId,
@@ -73,6 +76,7 @@
         }
     }
     async function updateUrl() {
+        if (projectId === undefined || url === null) return;
         try {
             await sdkForConsole.projects.updateWebhook(
                 projectId,
@@ -98,6 +102,7 @@
         }
     }
     async function updateEvents() {
+        if (projectId === undefined) return;
         try {
             await sdkForConsole.projects.updateWebhook(
                 projectId,
@@ -125,6 +130,7 @@
     }
 
     async function updateSecurity() {
+        if (projectId === undefined || httpUser === null || httpPass === null) return;
         try {
             await sdkForConsole.projects.updateWebhook(
                 projectId,

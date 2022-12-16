@@ -24,8 +24,8 @@
     let confirmPassword: string;
 
     onMount(() => {
-        userId = $page.url.searchParams.get('userId');
-        secret = $page.url.searchParams.get('secret');
+        userId = $page.url.searchParams.get('userId') || '';
+        secret = $page.url.searchParams.get('secret') || '';
     });
 
     async function recover() {

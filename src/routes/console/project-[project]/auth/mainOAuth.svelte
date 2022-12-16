@@ -14,9 +14,9 @@
 
     const projectId = $page.params.project;
 
-    let enabled: boolean = null;
-    let appId: string = null;
-    let secret: string = null;
+    let enabled: boolean | null = null;
+    let appId: string | null = null;
+    let secret: string | null = null;
 
     onMount(() => {
         enabled ??= provider.enabled;

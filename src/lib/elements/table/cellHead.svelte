@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let width: number = null;
+    export let width: number | null = null;
 </script>
 
 <div

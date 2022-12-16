@@ -24,7 +24,8 @@ test('hide drop list on body click', async () => {
 test('hide drop list on wrapper click', async () => {
     const { component } = render(DropList, { ...data });
     const wrapper = document.querySelector('div');
+    expect(wrapper).not.toBeNull();
 
-    await fireEvent.click(wrapper);
+    await fireEvent.click(wrapper as Element);
     expect(component.show).toStrictEqual(false);
 });

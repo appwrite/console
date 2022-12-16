@@ -8,11 +8,11 @@
     export let disabled = false;
     export let round = false;
     export let external = false;
-    export let href: string = null;
+    export let href: string | null = null;
     export let fullWidth = false;
-    export let ariaLabel: string = null;
+    export let ariaLabel: string | null = null;
     export let noMargin = false;
-    export let event: string = null;
+    export let event: string | null = null;
 
     function track() {
         if (!event) {

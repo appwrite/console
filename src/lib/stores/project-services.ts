@@ -7,8 +7,12 @@ export type Service = {
     value: boolean | null;
 };
 
+type ServicesObj = {
+    list: Array<Service>;
+};
+
 function createServices() {
-    const { subscribe, set } = writable({
+    const { subscribe, set } = writable<ServicesObj>({
         list: [
             {
                 label: 'Account',

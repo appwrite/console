@@ -29,29 +29,28 @@
 
     let showDelete = false;
 
-    let enabled: boolean = null,
-        bucketName: string = null,
-        bucketFileSecurity: boolean = null,
-        bucketPermissions: string[] = null,
-        arePermsDisabled = true,
-        encryption: boolean = null,
-        antivirus: boolean = null,
-        maxSize: number;
+    let enabled: boolean | null = null;
+    let bucketName: string = '';
+    let bucketFileSecurity: boolean | null = null;
+    let bucketPermissions: string[] | null = null;
+    let arePermsDisabled = true;
+    let encryption: boolean | null = null;
+    let antivirus: boolean | null = null;
+    let maxSize: number;
     let byteUnit = writable('KB');
-    let sizeInBytes: number = null;
+    let sizeInBytes: number | null = null;
+    let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
+    let extensions = $bucket.allowedFileExtensions;
+    let isExtensionsDisabled = true;
     const options = [
         { label: 'Bytes', value: 'Bytes' },
         { label: 'Kilobytes', value: 'KB' },
         { label: 'Megabytes', value: 'MB' },
         { label: 'Gigabytes', value: 'GB' }
     ];
-    let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
-    let extensions = $bucket.allowedFileExtensions;
-    let isExtensionsDisabled = true;
 
     onMount(async () => {
         enabled ??= $bucket.enabled;
-        bucketName ??= $bucket.name;
         bucketName ??= $bucket.name;
         bucketFileSecurity ??= $bucket.fileSecurity;
         bucketPermissions ??= $bucket.$permissions;
@@ -59,6 +58,7 @@
         antivirus ??= $bucket.antivirus;
         maxSize = $bucket.maximumFileSize / 1024;
     });
+
     $: if (bucketPermissions) {
         if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
             arePermsDisabled = false;
@@ -117,6 +117,7 @@
     }
 
     function toggleBucket() {
+        if (enabled === null) return;
         updateBucket(
             {
                 enabled
@@ -143,6 +144,7 @@
     }
 
     function updatePermissions() {
+        if (bucketPermissions === null) return;
         updateBucket(
             {
                 $permissions: bucketPermissions
@@ -156,6 +158,7 @@
     }
 
     function updateFileSecurity() {
+        if (bucketFileSecurity === null) return;
         updateBucket(
             {
                 fileSecurity: bucketFileSecurity
@@ -169,6 +172,7 @@
     }
 
     function updateSecurity() {
+        if (encryption === null || antivirus === null) return;
         updateBucket(
             {
                 encryption,
@@ -204,6 +208,8 @@
     }
 
     byteUnit.subscribe((b) => {
+        if (sizeInBytes === null) return;
+
         if (b === 'Bytes') {
             maxSize = sizeInBytes;
         } else if (b === 'KB') {

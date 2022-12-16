@@ -12,10 +12,10 @@
 
     export let provider: Provider;
 
-    let appId: string = null;
-    let enabled: boolean = null;
-    let clientSecret: string = null;
-    let auth0Domain: string = null;
+    let appId: string | null = null;
+    let enabled: boolean | null = null;
+    let clientSecret: string | null = null;
+    let auth0Domain: string | null = null;
     let error: string;
 
     onMount(() => {

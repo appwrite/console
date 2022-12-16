@@ -5,7 +5,7 @@
     export let offset = 0;
     export let limit = $cardLimit;
     export let total = 0;
-    export let event: string = null;
+    export let event: string | null = null;
 </script>
 
 <ul

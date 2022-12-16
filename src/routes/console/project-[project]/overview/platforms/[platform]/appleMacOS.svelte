@@ -10,7 +10,7 @@
     import { project } from '../../../store';
     import { platform } from './store';
 
-    let key: string = null;
+    let key: string;
 
     onMount(() => {
         key ??= $platform.key;

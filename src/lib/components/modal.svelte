@@ -4,9 +4,9 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
-    export let size: 'small' | 'big' = null;
+    export let size: 'small' | 'big' | null = null;
     export let warning = false;
-    export let error: string = null;
+    export let error: string | undefined | null = null;
     export let closable = true;
 
     let dialog: HTMLDialogElement;

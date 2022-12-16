@@ -12,7 +12,7 @@
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
 
-    let name: string = null,
+    let name: string | null = null,
         email: string = null,
         emailPassword: string = null,
         newPassword: string = null,

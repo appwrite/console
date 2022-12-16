@@ -2,7 +2,7 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let href: string;
-    export let icon: string = null;
+    export let icon: string | null = null;
     export let disabled = false;
 </script>
 

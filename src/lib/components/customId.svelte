@@ -5,7 +5,7 @@
 
     export let show = false;
     export let name: string;
-    export let id: string;
+    export let id: string | null;
 
     $: if (!show) {
         id = null;

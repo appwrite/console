@@ -3,6 +3,7 @@
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -11,12 +12,13 @@
 
     const dispatch = createEventDispatcher();
 
-    let name = '';
-    let id: string = null;
+    let name: string | null = '';
+    let id: string | null = null;
     let showCustomId = false;
-    let error: string;
+    let error: string | null;
 
     const create = async () => {
+        if (!isString(name)) return;
         try {
             const bucket = await sdkForProject.storage.createBucket(id ? id : 'unique()', name);
             showCreate = false;

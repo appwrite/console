@@ -4,7 +4,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let showOverview = false;
-    export let selectedIndex: Models.Index = null;
+    export let selectedIndex: Models.Index | null = null;
     //TODO: add error message when index failed
 </script>
 

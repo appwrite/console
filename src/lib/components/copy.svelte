@@ -5,7 +5,7 @@
     import { addNotification } from '$lib/stores/notifications';
 
     export let value: string;
-    export let event: string = null;
+    export let event: string | null = null;
 
     let content = 'Click to copy';
 

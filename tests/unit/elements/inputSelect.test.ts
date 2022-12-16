@@ -97,8 +97,8 @@ test('state', async () => {
     expect(component.value).toEqual('');
 
     await userEvent.selectOptions(select, '1');
-    expect(component.value).toEqual(options[1].value);
+    expect(component.value).toEqual(options[1]?.value);
 
     await userEvent.selectOptions(select, '2');
-    expect(component.value).toEqual(options[2].value);
+    expect(component.value).toEqual(options[2]?.value);
 });

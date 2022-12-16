@@ -7,7 +7,7 @@
     export let scrollable = false;
     export let childStart = false;
     export let noArrow = false;
-    export let width: string = null;
+    export let width: string | null = null;
 </script>
 
 <Drop bind:show {placement} {childStart} {noArrow}>

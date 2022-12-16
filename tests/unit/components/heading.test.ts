@@ -10,5 +10,5 @@ test('shows heading', () => {
 
     const headings = container.querySelectorAll(tag);
     expect(headings.length).toEqual(1);
-    expect(headings[0].className).includes(`heading-level-${size}`);
+    expect(headings[0]?.className).includes(`heading-level-${size}`);
 });

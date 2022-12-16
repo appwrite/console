@@ -1,6 +1,6 @@
 <script lang="ts">
     export let disabled = false;
-    export let icon: string = null;
+    export let icon: string | null = null;
 </script>
 
 <li class="drop-list-item">

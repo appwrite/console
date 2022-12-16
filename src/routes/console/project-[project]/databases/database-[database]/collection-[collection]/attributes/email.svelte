@@ -23,7 +23,7 @@
 <script lang="ts">
     import { InputChoice, InputEmail } from '$lib/elements/forms';
 
-    export let selectedAttribute: Models.AttributeEmail = null;
+    export let selectedAttribute: Models.AttributeEmail | null = null;
     export let data: Partial<Models.AttributeEmail>;
 
     $: if (selectedAttribute) {

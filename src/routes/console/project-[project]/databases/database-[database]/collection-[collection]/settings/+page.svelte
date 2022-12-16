@@ -22,7 +22,7 @@
     let showError: false | 'name' | 'size' = false,
         errorMessage = 'Something went wrong',
         errorType: 'error' | 'warning' | 'success' = 'error';
-    let enabled: boolean = null,
+    let enabled: boolean | null = null,
         collectionName: string = null,
         collectionDocumentSecurity: boolean = null,
         collectionPermissions: string[] = null,

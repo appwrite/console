@@ -17,7 +17,7 @@
     let showError: false | 'name' | 'email' | 'password' = false;
     let errorMessage = 'Something went wrong';
     let errorType: 'error' | 'warning' | 'success' = 'error';
-    let databaseName: string = null;
+    let databaseName: string | null = null;
 
     onMount(async () => {
         databaseName ??= $database.name;

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
     import { FormList, InputDomain } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { WizardStep } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../store';
@@ -8,6 +9,7 @@
 
     const projectId = $project.$id;
     const createDomain = async () => {
+        if (!isString($domain.domain)) return;
         if ($domain.$id) {
             await sdkForConsole.projects.deleteDomain(projectId, $domain.$id);
         }

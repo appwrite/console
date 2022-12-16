@@ -6,7 +6,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
 
-    let newPassword: string = null;
+    let newPassword: string | null = null;
 
     async function updatePassword() {
         try {

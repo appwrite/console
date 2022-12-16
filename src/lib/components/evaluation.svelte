@@ -1,7 +1,7 @@
 <script lang="ts">
     import { clickOnEnter } from '$lib/helpers/a11y';
 
-    export let value: number = null;
+    export let value: number | null = null;
 </script>
 
 <fieldset class="u-margin-block-start-8">

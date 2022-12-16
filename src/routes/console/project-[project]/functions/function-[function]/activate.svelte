@@ -8,7 +8,7 @@
     import { createEventDispatcher } from 'svelte';
 
     export let showActivate = false;
-    export let selectedDeployment: Models.Deployment = null;
+    export let selectedDeployment: Models.Deployment | null = null;
 
     const dispatch = createEventDispatcher();
 

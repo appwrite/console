@@ -13,18 +13,20 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isBoolean } from '$lib/helpers/type';
 
     const projectId = $page.params.project;
     const create = async () => {
+        if (!isBoolean($createWebhook.security)) return;
         try {
             await sdkForConsole.projects.createWebhook(
-                projectId,
-                $createWebhook.name,
-                $createWebhook.events,
-                $createWebhook.url,
+                projectId ?? '',
+                $createWebhook.name ?? '',
+                $createWebhook.events ?? [],
+                $createWebhook.url ?? '',
                 $createWebhook.security,
-                $createWebhook.httpUser,
-                $createWebhook.httpPass
+                $createWebhook.httpUser ?? '',
+                $createWebhook.httpPass ?? ''
             );
             invalidate(Dependencies.WEBHOOKS);
             addNotification({
@@ -43,12 +45,8 @@
 
     onDestroy(() => {
         $createWebhook = {
-            name: null,
-            url: null,
             events: [],
-            security: false,
-            httpUser: null,
-            httpPass: null
+            security: false
         };
     });
 

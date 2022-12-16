@@ -23,6 +23,7 @@
     import Create from '../create.svelte';
     import Delete from '../delete.svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isString } from '$lib/helpers/type';
 
     export let data: PageData;
 
@@ -37,6 +38,7 @@
     };
 
     const refreshDomain = async (domain: Models.Domain) => {
+        if (!isString(projectId)) return;
         const domainId = domain.$id;
         try {
             isVerifying[domainId] = true;

@@ -21,7 +21,7 @@
         }
     }
 
-    let prefs: [string, unknown][] = null;
+    let prefs: [string, unknown][] | null = null;
     let arePrefsDisabled = true;
 
     onMount(async () => {

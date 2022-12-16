@@ -16,10 +16,10 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
-    let name: string = null;
-    let secret: string = null;
-    let expire: string = null;
-    let scopes: string[] = null;
+    let name: string = '';
+    let secret: string = '';
+    let expire: string = '';
+    let scopes: string[] = [];
 
     onMount(() => {
         name ??= $key.name;

@@ -5,6 +5,7 @@
     import { project } from '../../../store';
     import { addNotification } from '$lib/stores/notifications';
     import { Pill } from '$lib/elements';
+    import { isString } from '$lib/helpers/type';
 
     const projectId = $project.$id;
 
@@ -12,11 +13,14 @@
     export let isVerified = false;
 
     const verifyDomain = async () => {
+        const domainId = $domain.$id;
+        if (!isString(domainId)) return;
         isVerifying = true;
+
         try {
             const result = await sdkForConsole.projects.updateDomainVerification(
                 projectId,
-                $domain.$id
+                domainId
             );
             isVerified = result.verification;
         } catch (error) {

@@ -47,7 +47,7 @@
     let showDelete = false;
     let showActivate = false;
 
-    let selectedDeployment: Models.Deployment = null;
+    let selectedDeployment: Models.Deployment | null = null;
 
     const handleActivate = () => {
         invalidate(Dependencies.DEPLOYMENTS);

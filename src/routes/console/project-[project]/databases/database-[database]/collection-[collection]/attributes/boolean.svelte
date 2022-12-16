@@ -22,7 +22,7 @@
 <script lang="ts">
     import { InputChoice, InputSelect } from '$lib/elements/forms';
 
-    export let selectedAttribute: Models.AttributeBoolean = null;
+    export let selectedAttribute: Models.AttributeBoolean | null = null;
     export let data: Partial<Models.AttributeBoolean> = {
         required: false,
         array: false,

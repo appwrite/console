@@ -3,12 +3,12 @@
 
     export let label: string;
     export let id: string;
-    export let value = false;
+    export let value: boolean | null = false;
     export let required = false;
     export let disabled = false;
 
     let element: HTMLInputElement;
-    let error: string;
+    let error: string | null = null;
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();

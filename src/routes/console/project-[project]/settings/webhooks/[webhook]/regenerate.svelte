@@ -5,6 +5,7 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { webhook } from './store';
@@ -13,6 +14,7 @@
     const projectId = $page.params.project;
 
     async function regenerate() {
+        if (!isString(projectId)) return;
         try {
             await sdkForConsole.projects.updateWebhookSignature(projectId, $webhook.$id);
             invalidate(Dependencies.WEBHOOK);

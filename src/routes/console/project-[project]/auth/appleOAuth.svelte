@@ -12,11 +12,11 @@
 
     export let provider: Provider;
 
-    let appId: string = null;
-    let enabled: boolean = null;
-    let keyID: string = null;
-    let teamID: string = null;
-    let p8: string = null;
+    let appId: string | null = null;
+    let enabled: boolean | null = null;
+    let keyID: string | null = null;
+    let teamID: string | null = null;
+    let p8: string | null = null;
 
     onMount(() => {
         appId ??= provider.appId;

@@ -95,7 +95,7 @@ test('intercepts submit', async () => {
     expect(step1Required).toBeInTheDocument();
     expect(step1Optional).toBeInTheDocument();
 
-    await userEvent.type(step1Required, 'fail');
+    await userEvent.type(step1Required as Element, 'fail');
     form.submit();
     await tick();
 
@@ -103,7 +103,7 @@ test('intercepts submit', async () => {
     expect(step1Required).toBeInTheDocument();
     expect(step1Optional).toBeInTheDocument();
 
-    await userEvent.type(step1Required, 'works');
+    await userEvent.type(step1Required as Element, 'works');
     form.submit();
     await tick();
 

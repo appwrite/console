@@ -4,7 +4,7 @@
     import { addNotification } from '$lib/stores/notifications';
 
     export let value: string;
-    export let label: string = null;
+    export let label: string | null = null;
     export let showLabel = false;
 
     let content = 'Click to copy';

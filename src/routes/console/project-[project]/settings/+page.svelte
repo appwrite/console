@@ -15,7 +15,7 @@
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
 
-    let name: string = null;
+    let name: string;
     let showDelete = false;
     const endpoint = sdkForConsole.client.config.endpoint;
     const projectId = $page.params.project;
@@ -46,7 +46,8 @@
             await sdkForConsole.projects.updateServiceStatus(
                 $project.$id,
                 service.method,
-                service.value
+                // Worst case scenario, an error notification will be shown
+                service.value as boolean
             );
             invalidate(Dependencies.PROJECT);
             addNotification({

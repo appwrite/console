@@ -2,7 +2,7 @@
     import InputText from '$lib/elements/forms/inputText.svelte';
     import WizardStep from '$lib/layout/wizardStep.svelte';
 
-    let value: string = null;
+    let value: string | null = null;
 
     async function beforeSubmit() {
         if (value === 'fail') {

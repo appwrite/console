@@ -12,7 +12,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
-    export let maxlength: number = null;
+    export let maxlength: number | null = null;
 
     // https://www.geeksforgeeks.org/how-to-validate-a-domain-name-using-regular-expression/
     const pattern = String.raw`^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,6}$`;

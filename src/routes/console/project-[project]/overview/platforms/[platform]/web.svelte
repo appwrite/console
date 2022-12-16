@@ -9,7 +9,7 @@
     import { project } from '../../../store';
     import { platform } from './store';
 
-    let hostname: string = null;
+    let hostname: string;
 
     onMount(() => {
         hostname ??= $platform.hostname;

@@ -20,8 +20,8 @@ const list = [
 test('shows Tabs component', () => {
     const { container } = render(Tabs, { tabs: list });
     const tabs = container.querySelector('div.tabs');
-    const children = tabs.childNodes;
+    const children = tabs?.childNodes;
 
     expect(tabs).toBeInTheDocument();
-    expect(children.length).toBe(list.length);
+    expect(children?.length).toBe(list.length);
 });

@@ -23,12 +23,12 @@
         attributes?: string[];
     };
 
-    let selectedService: Service = null;
-    let selectedResource: Resource = null;
-    let selectedAction: Action = null;
-    let selectedAttribute: string = null;
-    let helper: string = null;
-    let inputData: string = null;
+    let selectedService: Service | null = null;
+    let selectedResource: Resource | null = null;
+    let selectedAction: Action | null = null;
+    let selectedAttribute: string | null = null;
+    let helper: string | null = null;
+    let inputData: string | null = null;
     let showInput = false;
 
     const dispatch = createEventDispatcher();

@@ -9,7 +9,7 @@ test('default props', async () => {
         language: 'js'
     });
 
-    expect(container.querySelector('.controls').children.length).toEqual(0);
+    expect(container.querySelector('.controls')?.children.length).toEqual(0);
 });
 
 test('shows label', async () => {
@@ -70,8 +70,9 @@ test('copy to clipboard function called on click', async () => {
     });
 
     const button = container.querySelector('.icon-duplicate');
+    expect(button).not.toBeNull();
 
-    await fireEvent.click(button);
+    await fireEvent.click(button as Element);
 
     expect(window.navigator.clipboard.writeText).toHaveBeenCalledWith('console.log("test");');
 });

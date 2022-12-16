@@ -8,10 +8,10 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
 
-    export let selectedFunction: Models.Function = null;
+    export let selectedFunction: Models.Function | null = null;
 
     let show = false;
-    let data: string = null;
+    let data: string | null = null;
     let showJson = false;
     let submitting = false;
 

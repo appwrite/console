@@ -14,7 +14,7 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
-    let teamName: string = null;
+    let teamName: string | null = null;
 
     onMount(async () => {
         teamName ??= $team.name;

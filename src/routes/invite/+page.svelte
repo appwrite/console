@@ -13,10 +13,10 @@
     let terms = false;
 
     onMount(() => {
-        userId = $page.url.searchParams.get('userId');
-        secret = $page.url.searchParams.get('secret');
-        teamId = $page.url.searchParams.get('teamId');
-        membershipId = $page.url.searchParams.get('membershipId');
+        userId = $page.url.searchParams.get('userId') || '';
+        secret = $page.url.searchParams.get('secret') || '';
+        teamId = $page.url.searchParams.get('teamId') || '';
+        membershipId = $page.url.searchParams.get('membershipId') || '';
     });
 
     const acceptInvite = async () => {

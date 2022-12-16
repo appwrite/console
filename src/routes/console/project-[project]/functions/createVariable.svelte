@@ -6,7 +6,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let showCreate = false;
-    export let selectedVar: Partial<Models.Variable> = null;
+    export let selectedVar: Partial<Models.Variable> | null = null;
 
     let pair = {
         $id: selectedVar?.$id,

@@ -5,13 +5,17 @@
     import { project } from '../../../store';
     import CnameTable from './cnameTable.svelte';
     import VerificationBox from './verificationBox.svelte';
+    import { isString } from '$lib/helpers/type';
 
     const projectId = $project.$id;
 
     let certificate = false;
     const checkCertificate = () => {
+        const domainId = $domain.$id;
+        if (!isString(domainId)) return;
+
         setTimeout(async () => {
-            const result = await sdkForConsole.projects.getDomain(projectId, $domain.$id);
+            const result = await sdkForConsole.projects.getDomain(projectId, domainId);
             if (!result.certificateId) {
                 checkCertificate();
                 return;

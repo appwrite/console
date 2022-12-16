@@ -36,18 +36,24 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isString } from '$lib/helpers/type';
 
     export let data: PageData;
 
     let showCreate = false;
     let showDelete = false;
-    let showDropdown = [];
-    let selectedFile: Models.File = null;
+    let showDropdown: boolean[] = [];
+    let selectedFile: Models.File | null = null;
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+    const getPreview = (fileId: string) => {
+        if (!isString(bucketId)) return '';
+        return (
+            sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() +
+            '&mode=admin'
+        );
+    };
 
     function fileCreated() {
         showCreate = false;

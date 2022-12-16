@@ -17,7 +17,7 @@
 
     let showCreate = false;
 
-    let selectedVar: Partial<Models.Variable> = null;
+    let selectedVar: Partial<Models.Variable> | null = null;
     let showDropdown = [];
 
     function handleCreated(dispatchEvent: CustomEvent) {

@@ -22,7 +22,7 @@
     import { Button } from '$lib/elements/forms';
 
     let showDropdown = [];
-    let selectedIndex: Models.Index = null;
+    let selectedIndex: Models.Index | null = null;
     let showCreateIndex = false;
     let showOverview = false;
     let showDelete = false;

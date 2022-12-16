@@ -1,7 +1,7 @@
 <script lang="ts">
     export let title = '';
     export let onlyDesktop = false;
-    export let width: number = null;
+    export let width: number | null = null;
     export let showOverflow = false;
 </script>
 
