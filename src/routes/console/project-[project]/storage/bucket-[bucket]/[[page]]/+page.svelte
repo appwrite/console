@@ -1,41 +1,43 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
+    import { trackEvent } from '$lib/actions/analytics';
     import {
-        Empty,
-        EmptySearch,
-        Pagination,
         Avatar,
         DropList,
         DropListItem,
         DropListLink,
+        Empty,
+        EmptySearch,
+        Pagination,
         SearchQuery
     } from '$lib/components';
-    import Create from '../create.svelte';
-    import Delete from '../deleteFile.svelte';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
-        TableHeader,
         TableBody,
-        TableRowLink,
-        TableRow,
+        TableCell,
         TableCellHead,
         TableCellText,
-        TableCell
+        TableHeader,
+        TableRow,
+        TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { uploader } from '$lib/stores/uploader';
+    import { wizard } from '$lib/stores/wizard';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import Create from '../create.svelte';
+    import CreateFile from '../createFile/createFile.svelte';
+    import Delete from '../deleteFile.svelte';
     import type { PageData } from './$types';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -78,6 +80,10 @@
 <Container>
     <SearchQuery search={data.search} placeholder="Search by filename">
         <Button on:click={() => (showCreate = true)} event="create_file">
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Old create file</span>
+        </Button>
+
+        <Button on:click={() => wizard.start(CreateFile)} event="create_file">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
         </Button>
     </SearchQuery>
@@ -212,7 +218,7 @@
             single
             href="https://appwrite.io/docs/storage#createFile"
             target="file"
-            on:click={() => (showCreate = true)} />
+            on:click={() => wizard.start(CreateFile)} />
     {/if}
 </Container>
 

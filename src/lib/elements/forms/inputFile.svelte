@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
+    import { getFileExt, getFileName } from '$lib/helpers/file';
     import { Button } from '.';
 
     export let label: string = null;
@@ -60,11 +61,13 @@
                     </Button>
 
                     {#if files?.length}
-                        {@const fileName = files.item(0).name.split('.')}
+                        {@const fileName = getFileName(files.item(0).name)}
+                        {@const fileExt = getFileExt(files.item(0).name)}
+
                         <div class="u-flex u-cross-center u-min-width-0">
-                            <Trim>{fileName[0]}</Trim>
+                            <Trim>{fileName}</Trim>
                             <span class="u-min-width-0 u-flex-shrink-0 u-margin-inline-end-16"
-                                >.{fileName[1]}</span>
+                                >.{fileExt}</span>
                             <button
                                 on:click={() => (files = null)}
                                 type="button"

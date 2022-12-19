@@ -57,6 +57,7 @@
             try {
                 await $wizard.interceptor();
             } catch (error) {
+                console.log(error);
                 addNotification({
                     message: error.message,
                     type: 'error'
