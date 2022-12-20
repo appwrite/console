@@ -6,6 +6,7 @@ export type WizardStore = {
     media?: string;
     component?: typeof SvelteComponent;
     interceptor?: () => Promise<void>;
+    nextDisabled?: boolean;
 };
 
 function createWizardStore() {
@@ -13,7 +14,8 @@ function createWizardStore() {
         show: false,
         component: null,
         interceptor: null,
-        media: null
+        media: null,
+        nextDisabled: false
     });
 
     return {
@@ -24,6 +26,7 @@ function createWizardStore() {
                 n.show = true;
                 n.component = component;
                 n.media = media;
+                n.nextDisabled = false;
 
                 return n;
             }),
@@ -39,6 +42,7 @@ function createWizardStore() {
                 n.show = false;
                 n.component = null;
                 n.media = null;
+                n.nextDisabled = false;
 
                 return n;
             })

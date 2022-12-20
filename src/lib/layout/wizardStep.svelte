@@ -13,7 +13,7 @@
 </script>
 
 <header class="form-header">
-    <Heading tag="h1" size="6">
+    <Heading tag="h6" size="6">
         <slot name="title" />
     </Heading>
     {#if $$slots.subtitle}

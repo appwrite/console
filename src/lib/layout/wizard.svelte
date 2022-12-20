@@ -36,7 +36,13 @@
         }
     }
 
-    function handleExit() {
+    function handleBack() {
+        // Exit
+        if (currentStep !== 1) {
+            currentStep--;
+            return;
+        }
+
         if (confirmExit) {
             showExitModal = true;
         } else {
@@ -57,7 +63,6 @@
             try {
                 await $wizard.interceptor();
             } catch (error) {
-                console.log(error);
                 addNotification({
                     message: error.message,
                     type: 'error'
@@ -76,6 +81,11 @@
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
     $: isLastStep = currentStep === steps.size;
+
+    $: {
+        currentStep;
+        $wizard.nextDisabled = false;
+    }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -89,7 +99,7 @@
         <div class="body-text-1">{title}</div>
 
         <slot name="header" />
-        <button class="x-button" aria-label="close wizard" on:click={handleExit}>
+        <button class="x-button" aria-label="close wizard" on:click={handleBack}>
             <span class="icon-x" aria-hidden="true" />
         </button>
     </header>
@@ -122,16 +132,10 @@
                             Skip optional steps
                         </Button>
                     {/if}
-                    {#if currentStep === 1}
-                        <Button secondary on:click={handleExit}>Cancel</Button>
-                        <Button submit>Next</Button>
-                    {:else if isLastStep}
-                        <Button secondary on:click={() => currentStep--}>Back</Button>
-                        <Button submit>{finalAction}</Button>
-                    {:else}
-                        <Button secondary on:click={() => currentStep--}>Back</Button>
-                        <Button submit>Next</Button>
-                    {/if}
+                    <Button secondary on:click={handleBack}
+                        >{currentStep === 1 ? 'Cancel' : 'Back'}</Button>
+                    <Button submit disabled={$wizard.nextDisabled}
+                        >{isLastStep ? finalAction : 'Next'}</Button>
                 </div>
             </div>
         </Form>

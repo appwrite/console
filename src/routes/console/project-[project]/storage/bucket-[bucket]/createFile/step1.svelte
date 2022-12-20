@@ -5,6 +5,7 @@
     import InputFile from '$lib/elements/forms/inputFile.svelte';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import WizardStep from '$lib/layout/wizardStep.svelte';
+    import { wizard } from '$lib/stores/wizard';
     import { bucket } from '../store';
     import { store } from './store';
 
@@ -15,6 +16,8 @@
             throw new Error('No file selected');
         }
     }
+
+    $: $wizard.nextDisabled = !$store.files?.length;
 </script>
 
 <WizardStep {beforeSubmit}>
