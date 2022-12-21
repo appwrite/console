@@ -21,6 +21,7 @@
     let period = writable('s');
     let btnActive = false;
     let maxSessions = $project.authMaxSessions ?? 10;
+    let passwordHistory = $project.passwordHistory ?? 0;
 
     let options = [
         { label: 'days', value: 'd' },
@@ -84,19 +85,49 @@
     }
     async function updateSessionsLimit() {
         try {
-
             const path = '/projects/' + projectId + '/auth/max-sessions';
             const uri = new URL(sdkForConsole.client.config.endpoint + path);
-            await sdkForConsole.client.call('patch', uri, {
-                'content-type': 'application/json',
-            }, {
-                limit: maxSessions
-            });
+            await sdkForConsole.client.call(
+                'patch',
+                uri,
+                {
+                    'content-type': 'application/json'
+                },
+                {
+                    limit: maxSessions
+                }
+            );
             addNotification({
                 type: 'success',
                 message: 'Sessions limit has been updated'
             });
             trackEvent('submit_sessions_limit_update');
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+    async function updatePasswordHistoryLimit() {
+        try {
+            const path = '/projects/' + projectId + '/auth/password-history';
+            const uri = new URL(sdkForConsole.client.config.endpoint + path);
+            await sdkForConsole.client.call(
+                'patch',
+                uri,
+                {
+                    'content-type': 'application/json'
+                },
+                {
+                    limit: passwordHistory
+                }
+            );
+            addNotification({
+                type: 'success',
+                message: 'Password history limit has been updated'
+            });
+            trackEvent('submit_password_history_limit_update');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -225,17 +256,35 @@
     <Form on:submit={updateSessionsLimit}>
         <CardGrid>
             <Heading tag="h2" size="6">Session Limit</Heading>
-            <p>
-                Maximum number of active sessions allowed per user.
-            </p>
+            <p>Maximum number of active sessions allowed per user.</p>
             <svelte:fragment slot="aside">
-                    <ul>
-                        <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
-                    </ul>
+                <ul>
+                    <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
+                </ul>
             </svelte:fragment>
-    
+
             <svelte:fragment slot="actions">
                 <Button disabled={maxSessions === $project.authMaxSessions} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+
+    <Form on:submit={updatePasswordHistoryLimit}>
+        <CardGrid>
+            <Heading tag="h2" size="6">Password History</Heading>
+            <p>
+                Maximum nubmer of password history to save for a user. 0 for disabling the password
+                history.
+            </p>
+            <svelte:fragment slot="aside">
+                <ul>
+                    <InputNumber id="max-session" label="Limit" bind:value={passwordHistory} />
+                </ul>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={passwordHistory === $project.passwordHistory} submit
+                    >Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
