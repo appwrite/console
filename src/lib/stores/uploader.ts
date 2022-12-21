@@ -10,35 +10,26 @@ type UploaderFile = {
     completed: boolean;
     failed: boolean;
     error?: string;
+    size: number;
 };
+
 export type Uploader = {
     isOpen: boolean;
     isCollapsed: boolean;
     files: UploaderFile[];
 };
 
+const initialState: Uploader = {
+    isOpen: false,
+    isCollapsed: false,
+    files: []
+};
+
 const createUploader = () => {
-    const { subscribe, set, update } = writable<Uploader>({
-        isOpen: false,
-        isCollapsed: false,
-        files: []
-    });
-
-    const updateFile = (id: string, file: Partial<UploaderFile>) => {
-        return update((n) => {
-            const index = n.files.findIndex((f) => f.$id === id);
-            n.files[index] = {
-                ...n.files[index],
-                ...file
-            };
-
-            return n;
-        });
-    };
+    const { subscribe, set, update } = writable<Uploader>({ ...initialState });
 
     return {
         subscribe,
-
         close: () =>
             update((n) => {
                 n.isOpen = !n.isOpen;
@@ -50,20 +41,32 @@ const createUploader = () => {
 
                 return n;
             }),
-        reset: () =>
-            set({
-                isOpen: false,
-                isCollapsed: false,
-                files: []
-            }),
-        uploadFile: async (bucketId: string, id: string, file: File, permissions: string[]) => {
+        reset: () => set({ ...initialState }),
+        updateFile: (id: string, file: Partial<UploaderFile>) => {
+            update((n) => {
+                const index = n.files.findIndex((f) => f.$id === id);
+                n.files[index] = {
+                    ...n.files[index],
+                    ...file
+                };
+
+                return n;
+            });
+        },
+        uploadFile: async function (
+            bucketId: string,
+            id: string,
+            file: File,
+            permissions: string[]
+        ) {
             const newFile: UploaderFile = {
                 $id: id,
-                bucketId: bucketId,
+                bucketId,
                 name: file.name,
                 progress: 0,
                 completed: false,
-                failed: false
+                failed: false,
+                size: file.size
             };
             update((n) => {
                 n.isOpen = true;
@@ -80,13 +83,13 @@ const createUploader = () => {
                     newFile.$id = p.$id;
                     newFile.progress = p.progress;
                     newFile.completed = p.progress === 100 ? true : false;
-                    updateFile(p.$id, newFile);
+                    this.updateFile(p.$id, newFile);
                 }
             );
             newFile.$id = uploadedFile.$id;
             newFile.progress = 100;
             newFile.completed = true;
-            updateFile(newFile.$id, newFile);
+            this.updateFile(newFile.$id, newFile);
         },
         removeFromQueue: (id: string) => {
             update((n) => {
@@ -94,14 +97,8 @@ const createUploader = () => {
                 return n;
             });
         },
-        removeFile: async (file: Models.File) => {
-            if (file.chunksTotal === file.chunksUploaded) {
-                return update((n) => {
-                    n.files = n.files.filter((f) => f.$id !== file.$id);
-
-                    return n;
-                });
-            }
+        removeFile: async function (file: Models.File) {
+            if (file.chunksTotal === file.chunksUploaded) this.removeFromQueue(file.$id);
         }
     };
 };
