@@ -119,7 +119,7 @@
             </TableHeader>
             <TableBody>
                 {#each files as file, index}
-                    {@const href = `${base}/projects/${projectId}/buckets/${bucketId}/files/${file.$id}`}
+                    {@const href = `${base}/console/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
                     <TableRow href={file.status === FileStatus.PENDING ? undefined : href}>
                         <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">

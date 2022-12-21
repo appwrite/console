@@ -10,6 +10,7 @@
     import { store } from './store';
 
     let showCustomId = false;
+    let error: string = null;
 
     async function beforeSubmit() {
         if (!$store.files?.length) {
@@ -17,19 +18,31 @@
         }
     }
 
-    $: $wizard.nextDisabled = !$store.files?.length;
+    $: {
+        if (!$store.files?.length) {
+            $wizard.nextDisabled = true;
+            error = null;
+        } else if ($store.files.item(0).size > $bucket.maximumFileSize) {
+            $wizard.nextDisabled = true;
+            error = `File size exceeds the maximum allowed size of ${calculateSize(
+                $bucket.maximumFileSize
+            )}`;
+        } else {
+            $wizard.nextDisabled = false;
+            error = null;
+        }
+    }
 </script>
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Upload a file</svelte:fragment>
     <svelte:fragment slot="subtitle">Upload a file to add it to your bucket.</svelte:fragment>
     <FormList>
-        <div>
-            <InputFile
-                bind:files={$store.files}
-                allowedFileExtensions={$bucket.allowedFileExtensions} />
-            <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
-        </div>
+        <InputFile
+            bind:files={$store.files}
+            allowedFileExtensions={$bucket.allowedFileExtensions}
+            maxSize={$bucket.maximumFileSize}
+            {error} />
 
         {#if !showCustomId}
             <div>
