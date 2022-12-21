@@ -1,16 +1,15 @@
 <script lang="ts">
-    import Wizard from '$lib/layout/wizard.svelte';
+    import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { Dependencies } from '$lib/constants';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import Wizard from '$lib/layout/wizard.svelte';
+    import { uploader } from '$lib/stores/uploader';
+    import { wizard } from '$lib/stores/wizard';
     import Step1 from './step1.svelte';
     import Step2 from './step2.svelte';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { uploader } from '$lib/stores/uploader';
     import { store } from './store';
-    import { addNotification } from '$lib/stores/notifications';
-    import { trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/stores';
-    import { wizard } from '$lib/stores/wizard';
 
     const bucketId = $page.params.bucket;
     const steps: WizardStepsType = new Map();
@@ -23,20 +22,16 @@
         label: 'Set permissions'
     });
 
-    async function finish() {
-        try {
-            wizard.hide();
-            await uploader.uploadFile(bucketId, $store.id, $store.files[0], $store.permissions);
-            store.reset();
-            addNotification({
-                type: 'success',
-                message: `File has been uploaded`
-            });
-            trackEvent('submit_file_create');
-        } catch ({ message }) {
-            // error = message;
-        }
-        invalidate(Dependencies.FILES);
+    function finish() {
+        wizard.hide();
+        // We use then() here instead of await so we don't need to wait for the upload to finish
+        // to reset the store, since resetting it before the upload starts will cause the
+        // store arguments to be null.
+        uploader.uploadFile(bucketId, $store.id, $store.files[0], $store.permissions).then(() => {
+            invalidate(Dependencies.FILES);
+        });
+        trackEvent('submit_file_create');
+        store.reset();
     }
 </script>
 

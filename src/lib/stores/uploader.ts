@@ -1,5 +1,6 @@
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
+import { addNotification } from './notifications';
 import { sdkForProject } from './sdk';
 
 type UploaderFile = {
@@ -74,22 +75,34 @@ const createUploader = () => {
                 n.files.unshift(newFile);
                 return n;
             });
-            const uploadedFile = await sdkForProject.storage.createFile(
-                bucketId,
-                id ?? 'unique()',
-                file,
-                permissions,
-                (p) => {
-                    newFile.$id = p.$id;
-                    newFile.progress = p.progress;
-                    newFile.completed = p.progress === 100 ? true : false;
-                    this.updateFile(p.$id, newFile);
-                }
-            );
-            newFile.$id = uploadedFile.$id;
-            newFile.progress = 100;
-            newFile.completed = true;
-            this.updateFile(newFile.$id, newFile);
+            try {
+                const uploadedFile = await sdkForProject.storage.createFile(
+                    bucketId,
+                    id ?? 'unique()',
+                    file,
+                    permissions,
+                    (p) => {
+                        newFile.$id = p.$id;
+                        newFile.progress = p.progress;
+                        newFile.completed = p.progress === 100 ? true : false;
+                        this.updateFile(p.$id, newFile);
+                    }
+                );
+                newFile.$id = uploadedFile.$id;
+                newFile.progress = 100;
+                newFile.completed = true;
+                this.updateFile(newFile.$id, newFile);
+                addNotification({
+                    type: 'success',
+                    message: `File has been uploaded`
+                });
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+                this.removeFromQueue(newFile.$id);
+            }
         },
         removeFromQueue: (id: string) => {
             update((n) => {
