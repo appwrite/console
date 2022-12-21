@@ -21,7 +21,7 @@
     let period = writable('s');
     let btnActive = false;
     let maxSessions = $project.authMaxSessions ?? 10;
-    let passwordHistory = $project.passwordHistory ?? 0;
+    let passwordHistory = $project.authPasswordHistory ?? 0;
 
     let options = [
         { label: 'days', value: 'd' },
