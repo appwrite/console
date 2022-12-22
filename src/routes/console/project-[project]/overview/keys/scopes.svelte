@@ -59,7 +59,7 @@
         });
     }
 
-    const activeScopes = allScopes.reduce((prev, next) => {
+    const activeScopes = allScopes.reduce<Record<string, boolean>>((prev, next) => {
         prev[next.scope] = false;
 
         return prev;

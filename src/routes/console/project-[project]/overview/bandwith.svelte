@@ -6,6 +6,7 @@
     import type { UsagePeriods } from '$lib/layout';
     import { createEventDispatcher } from 'svelte';
     import { BarChart } from '$lib/charts';
+    import type { EChartsOption } from 'echarts';
 
     export let period: UsagePeriods;
 
@@ -22,6 +23,15 @@
     $: if (period) {
         showPeriod = false;
     }
+
+    const barChartOptions: EChartsOption = {
+        yAxis: {
+            axisLabel: {
+                formatter: (value: number) =>
+                    value ? `${humanFileSize(+value).value} ${humanFileSize(+value).unit}` : '0'
+            }
+        }
+    };
 </script>
 
 <div class="u-flex u-gap-16 u-main-space-between">
@@ -47,16 +57,7 @@
 {#if bandwith.value !== '0'}
     <div style="height: 12rem;">
         <BarChart
-            options={{
-                yAxis: {
-                    axisLabel: {
-                        formatter: (value) =>
-                            value
-                                ? `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
-                                : '0'
-                    }
-                }
-            }}
+            options={barChartOptions}
             series={[
                 {
                     name: 'Bandwidth',

@@ -12,6 +12,7 @@
         "noUnusedParameters": true,
         "esModuleInterop": true,
         "resolveJsonModule": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "noImplicitAny": true
     }
 }

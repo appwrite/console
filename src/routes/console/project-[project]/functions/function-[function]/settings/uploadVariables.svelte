@@ -12,18 +12,18 @@
 
     const dispatch = createEventDispatcher();
 
-    const functionId = $page.params.function;
+    const functionId = $page.params.function ?? '';
     let files: FileList;
 
     const handleSubmit = async () => {
         if (files?.length) {
-            const variables = await parseFile(files[0]);
+            const variables = await parseFile(files[0] as any);
             for (const variable of variables) {
                 try {
                     await sdkForProject.functions.createVariable(
                         functionId,
-                        variable.key,
-                        variable.value
+                        variable.key ?? '',
+                        variable.value ?? ''
                     );
                     invalidate(Dependencies.VARIABLES);
                     addNotification({
@@ -47,15 +47,15 @@
     };
 
     async function parseFile(file: File) {
-        if (file) {
-            let variables = [];
-            let text = await file.text();
-            text.split('\n').forEach((line) => {
-                const [key, value] = line.split('=');
-                variables.push({ key, value });
-            });
-            return variables;
-        }
+        const variables: Array<{ key: string | undefined; value: string | undefined }> = [];
+        if (!file) return variables;
+        let text = await file.text();
+        text.split('\n').forEach((line) => {
+            const [key, value] = line.split('=');
+            variables.push({ key, value });
+        });
+
+        return variables;
     }
 </script>
 

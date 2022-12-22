@@ -31,7 +31,7 @@
     const target = window?.location.hostname ?? '';
     let showDelete = false;
     let selectedDomain: Models.Domain;
-    let isVerifying = {};
+    let isVerifying: Record<string, boolean> = {};
 
     const openWizard = () => {
         wizard.start(Create);

@@ -5,10 +5,12 @@
     import { stats } from '../store';
     import { format } from './+layout.svelte';
 
-    $: projectId = $page.params.project;
+    $: projectId = $page.params.project ?? '';
     $: projectStats = $stats?.get(projectId);
-    $: current = projectStats ? projectStats[11][1] : 0;
-    $: total = projectStats?.reduce((prev, next) => prev + next[1], 0) ?? 0;
+    // TODO: remove any
+    $: current = projectStats ? ((projectStats[11] as any)[1] as any) : 0;
+    // TODO: remove any
+    $: total = projectStats?.reduce((prev, next) => prev + (next as any)[1], 0) ?? 0;
 </script>
 
 <div class="heading-level-4">

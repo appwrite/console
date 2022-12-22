@@ -2,10 +2,10 @@
     import { onMount } from 'svelte';
     import { FormItem, Helper } from '.';
 
-    export let label: string;
+    export let label: string | null;
     export let showLabel = true;
     export let id: string;
-    export let value = '';
+    export let value: string | null = '';
     export let required = false;
     export let disabled = false;
     export let readonly = false;
@@ -13,7 +13,7 @@
     export let autocomplete = false;
 
     let element: HTMLInputElement;
-    let error: string;
+    let error: string | null;
 
     onMount(() => {
         if (element && autofocus) {

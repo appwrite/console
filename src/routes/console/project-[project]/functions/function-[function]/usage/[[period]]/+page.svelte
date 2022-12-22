@@ -35,7 +35,7 @@
     </div>
     {#if count}
         <Card>
-            <Heading tag="h6" size="6">{last(count).value}</Heading>
+            <Heading tag="h6" size="6">{last(count)?.value}</Heading>
             <p>Executions</p>
             <div class="u-margin-block-start-16" />
             <BarChart
@@ -49,7 +49,7 @@
     {/if}
     {#if errors}
         <Card>
-            <Heading tag="h6" size="6">{last(errors).value}</Heading>
+            <Heading tag="h6" size="6">{last(errors)?.value}</Heading>
             <p>Errors</p>
             <div class="u-margin-block-start-16" />
             <BarChart

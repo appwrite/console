@@ -40,8 +40,8 @@
     let selectedVar: Models.Variable | null = null;
     // let showVariablesUpload = false;
     let showVariablesModal = false;
-    let showVariablesValue = [];
-    let showVariablesDropdown = [];
+    let showVariablesValue: Array<any> = [];
+    let showVariablesDropdown: Array<any> = [];
     let timeout: number | null = null;
     let functionName: string | null = null;
     let functionSchedule: string | null = null;

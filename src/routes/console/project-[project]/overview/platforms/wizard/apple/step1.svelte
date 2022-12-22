@@ -9,6 +9,7 @@
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
+    import { isString } from '$lib/helpers/type';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
@@ -24,6 +25,7 @@
     const projectId = $page.params.project;
 
     async function beforeSubmit() {
+        if (!isString(projectId) || !isString($createPlatform.name)) return;
         if ($createPlatform.$id) {
             await sdkForConsole.projects.updatePlatform(
                 projectId,

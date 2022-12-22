@@ -10,12 +10,14 @@
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
+    import { isString } from '$lib/helpers/type';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.app'];
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
     async function beforeSubmit() {
+        if (!isString(projectId) || !isString($createPlatform.name)) return;
         if ($createPlatform.$id) {
             await sdkForConsole.projects.updatePlatform(
                 projectId,
