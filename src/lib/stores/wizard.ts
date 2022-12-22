@@ -9,14 +9,16 @@ export type WizardStore = {
     nextDisabled?: boolean;
 };
 
+const initialState: WizardStore = {
+    show: false,
+    component: null,
+    interceptor: null,
+    media: null,
+    nextDisabled: false
+};
+
 function createWizardStore() {
-    const { subscribe, update, set } = writable<WizardStore>({
-        show: false,
-        component: null,
-        interceptor: null,
-        media: null,
-        nextDisabled: false
-    });
+    const { subscribe, update, set } = writable<WizardStore>({ ...initialState });
 
     return {
         subscribe,
@@ -37,15 +39,7 @@ function createWizardStore() {
                 return n;
             });
         },
-        hide: () =>
-            update((n) => {
-                n.show = false;
-                n.component = null;
-                n.media = null;
-                n.nextDisabled = false;
-
-                return n;
-            })
+        hide: () => set({ ...initialState })
     };
 }
 
