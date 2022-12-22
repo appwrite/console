@@ -10,6 +10,7 @@
     import 'prismjs/plugins/autoloader/prism-autoloader';
     import 'prismjs/plugins/custom-class/prism-custom-class';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
+    import './code.scss';
     import { afterUpdate } from 'svelte';
     import { Copy } from '.';
 
@@ -52,129 +53,16 @@
             >{code}</code></pre>
 </section>
 
-<style lang="scss" global>
-    @import 'prismjs/themes/prism.css';
-    @import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
-
+<style lang="scss">
     .box {
         --p-box-background-color: var(--color-neutral-400) !important;
 
-        body.theme-light & {
+        :global(body.theme-light) & {
             --p-box-background-color: var(--color-neutral-5) !important;
         }
 
         .controls {
             z-index: 2;
-        }
-    }
-
-    code,
-    pre {
-        &[class*='language-'] {
-            color: #fcfcff;
-            text-shadow: none;
-            font-family: 'Source Code Pro';
-
-            &.line-numbers {
-                padding-left: 2.5em;
-            }
-            body.theme-light & {
-                color: #373b4d;
-            }
-        }
-        ::selection,
-        &::selection {
-            text-shadow: none;
-            background: #b3d4fc;
-        }
-
-        &.line-numbers .line-numbers-rows {
-            border: none;
-
-            > span::before {
-                color: #868ea3;
-            }
-        }
-    }
-
-    :not(pre) > code[class*='language-'],
-    pre[class*='language-'] {
-        background: hsl(var(--p-box-background-color));
-        padding: 0;
-        margin: 0;
-    }
-    .prism-token {
-        &.prism-comment,
-        &.prism-prolog,
-        &.prism-doctype,
-        &.prism-cdata {
-            color: #868ea3;
-        }
-
-        &.prism-punctuation {
-            color: #fcfcff;
-
-            body.theme-light & {
-                color: #373b4d;
-            }
-        }
-        &.prism-property,
-        &.prism-tag,
-        &.prism-boolean,
-        &.prism-number,
-        &.prism-constant,
-        &.prism-symbol,
-        &.prism-deleted,
-        &.prism-selector,
-        &.prism-attr-name,
-        &.prism-string,
-        &.prism-char,
-        &.prism-builtin,
-        &.prism-inserted {
-            color: #fdc584;
-            body.theme-light & {
-                color: #e49545;
-            }
-        }
-        &.prism-operator,
-        &.prism-entity,
-        &.prism-url,
-        .language-css &.prism-string,
-        .style &.prism-string {
-            color: #fcfcff;
-            background: none;
-            body.theme-light & {
-                color: #373b4d;
-            }
-        }
-
-        &.prism-atrule,
-        &.prism-attr-value,
-        &.prism-keyword {
-            color: #cbb1fc;
-            body.theme-light & {
-                color: #6a6af7;
-            }
-        }
-        &.prism-function {
-            color: #ffa1ce;
-            body.theme-light & {
-                color: #f02e7f;
-            }
-        }
-        &.prism-class-name {
-            color: #a1c4ff;
-            body.theme-light & {
-                color: #62aed2;
-            }
-        }
-        &.prism-regex,
-        &.prism-important,
-        &.prism-variable {
-            color: #a1c4ff;
-            body.theme-light & {
-                color: #62aed2;
-            }
         }
     }
 </style>
