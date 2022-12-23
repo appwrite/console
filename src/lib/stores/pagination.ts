@@ -42,7 +42,7 @@ export function createPersistentPagination(limit: number) {
     };
 
     afterNavigate(({ type, to }) => {
-        const target = +(to.url.searchParams.get('page') ?? 1);
+        const target = +(to?.url.searchParams.get('page') ?? 1);
 
         /**
          * Listens to back/forward of the browser.

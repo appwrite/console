@@ -26,6 +26,7 @@
     }
 
     const handleSubmit = async () => {
+        if (!selectedFunction) return;
         submitting = true;
         try {
             await sdkForProject.functions.createExecution(

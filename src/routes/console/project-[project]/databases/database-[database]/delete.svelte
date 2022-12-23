@@ -5,6 +5,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { database } from './store';
@@ -13,6 +14,8 @@
     export let showDelete = false;
 
     const handleDelete = async () => {
+        if (!isString(databaseId)) return;
+
         try {
             await sdkForProject.databases.delete(databaseId);
             showDelete = false;

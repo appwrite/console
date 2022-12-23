@@ -9,8 +9,9 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isNonNullable } from '$lib/helpers/type';
 
-    export let provider: Provider;
+    export let provider: Provider | null;
 
     const projectId = $page.params.project;
 
@@ -19,26 +20,27 @@
     let secret: string | null = null;
 
     onMount(() => {
-        enabled ??= provider.enabled;
-        appId ??= provider.appId;
-        secret ??= provider.secret;
+        enabled ??= provider?.enabled ?? null;
+        appId ??= provider?.appId ?? null;
+        secret ??= provider?.secret ?? null;
     });
 
     let error: string;
 
     const update = async () => {
+        if (!isNonNullable(enabled)) return;
         try {
             await sdkForConsole.projects.updateOAuth2(
-                projectId,
-                provider.name.toLowerCase(),
-                appId,
-                secret,
+                projectId ?? '',
+                provider?.name.toLowerCase() ?? '',
+                appId ?? '',
+                secret ?? '',
                 enabled
             );
             addNotification({
                 type: 'success',
-                message: `${provider.name} authentication has been ${
-                    provider.enabled ? 'enabled' : 'disabled'
+                message: `${provider?.name} authentication has been ${
+                    provider?.enabled ? 'enabled' : 'disabled'
                 }`
             });
             trackEvent('submit_provider_update', {
@@ -54,12 +56,12 @@
 </script>
 
 <Modal {error} size="big" show on:submit={update} on:close>
-    <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
+    <svelte:fragment slot="header">{provider?.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
-            To use {provider.name} authentication in your application, first fill in this form. For more
-            info you can
-            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
+            To use {provider?.name} authentication in your application, first fill in this form. For
+            more info you can
+            <a class="link" href={provider?.docs} target="_blank" rel="noopener noreferrer"
                 >visit the docs.</a>
         </p>
         <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
@@ -77,14 +79,14 @@
             showPasswordButton
             bind:value={secret} />
         <Alert type="info">
-            To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
+            To complete set up, add this OAuth2 redirect URI to your {provider?.name} app configuration.
         </Alert>
         <div>
             <p>URI</p>
             <CopyInput
                 value={`${
                     sdkForConsole.client.config.endpoint
-                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+                }/account/sessions/oauth2/callback/${provider?.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">
@@ -92,7 +94,7 @@
         <Button
             disabled={!appId ||
                 !secret ||
-                (appId === provider.appId &&
+                (appId === provider?.appId &&
                     secret === provider.secret &&
                     enabled === provider.enabled)}
             submit>Update</Button>

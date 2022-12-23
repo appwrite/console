@@ -10,7 +10,9 @@
 
     function addArrayItem(key: string) {
         createDocument.update((n) => {
-            n.document[key].push(null);
+            if (Array.isArray(n.document[key])) {
+                n.document[key] = [...(n.document[key] as unknown[]), null];
+            }
 
             return n;
         });
@@ -18,7 +20,9 @@
 
     function removeArrayItem(key: string, index: number) {
         createDocument.update((n) => {
-            n.document[key].splice(index, 1);
+            if (Array.isArray(n.document[key])) {
+                (n.document[key] as unknown[])?.splice(index, 1);
+            }
 
             return n;
         });

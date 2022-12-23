@@ -1,17 +1,18 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { page } from '$app/stores';
-    import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
-    import { Container } from '$lib/layout';
-    import { Button, InputText, Form } from '$lib/elements/forms';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { addNotification } from '$lib/stores/notifications';
-    import { team } from './store';
-    import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import DeleteTeam from './deleteTeam.svelte';
+    import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { AvatarInitials, Box, CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button, Form, InputText } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { getIfNonNullableObject } from '$lib/helpers/type';
+    import { Container } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import DeleteTeam from './deleteTeam.svelte';
+    import { team } from './store';
 
     let showDelete = false;
     let teamName: string | null = null;
@@ -21,8 +22,11 @@
     });
 
     async function updateName() {
+        const args = getIfNonNullableObject({ team: $page.params.team, name: teamName });
+        if (!args) return;
+
         try {
-            await sdkForProject.teams.update($page.params.team, teamName);
+            await sdkForProject.teams.update(args.team, args.name);
             invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Name has been updated',

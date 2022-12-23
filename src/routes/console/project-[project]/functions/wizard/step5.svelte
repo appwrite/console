@@ -18,18 +18,18 @@
     let showCreate = false;
 
     let selectedVar: Partial<Models.Variable> | null = null;
-    let showDropdown = [];
+    let showDropdown: boolean[] = [];
 
     function handleCreated(dispatchEvent: CustomEvent) {
         createFunction.update((n) => {
-            if (n.vars.length) {
+            if (n.vars?.length) {
                 n.vars.map((v) => {
                     if (v.key !== dispatchEvent.detail.key) {
-                        n.vars.push(dispatchEvent.detail);
+                        n.vars?.push(dispatchEvent.detail);
                     }
                 });
             } else {
-                n.vars.push(dispatchEvent.detail);
+                n.vars?.push(dispatchEvent.detail);
             }
 
             return n;
@@ -37,7 +37,7 @@
     }
     function handleUpdated(dispatchEvent: CustomEvent) {
         createFunction.update((n) => {
-            n.vars = n.vars.map((v) => (v.key === selectedVar.key ? dispatchEvent.detail : v));
+            n.vars = n.vars?.map((v) => (v.key === selectedVar?.key ? dispatchEvent.detail : v));
             return n;
         });
     }
@@ -48,7 +48,7 @@
     <svelte:fragment slot="subtitle">
         Create a variable (or secret key) that will be passed to your function at runtime.
     </svelte:fragment>
-    {#if $createFunction.vars.length}
+    {#if $createFunction.vars?.length}
         <Table noStyles>
             <TableHeader>
                 <TableCellHead>Key</TableCellHead>
@@ -63,7 +63,9 @@
                             {variable.key}
                         </TableCellText>
                         <TableCell showOverflow title="value">
-                            <Secret value={variable.value} />
+                            {#if variable.value}
+                                <Secret value={variable.value} />
+                            {/if}
                         </TableCell>
                         <TableCell showOverflow title="options">
                             <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>
@@ -78,7 +80,7 @@
                                     <DropListItem
                                         icon="pencil"
                                         on:click={() => {
-                                            selectedVar = $createFunction.vars[i];
+                                            selectedVar = $createFunction.vars?.[i] ?? null;
                                             showDropdown[i] = false;
                                             showCreate = true;
                                         }}>
@@ -87,7 +89,7 @@
                                     <DropListItem
                                         icon="trash"
                                         on:click={() => {
-                                            $createFunction.vars.splice(i, 1);
+                                            $createFunction.vars?.splice(i, 1);
                                             $createFunction = $createFunction;
                                             showDropdown[i] = false;
                                         }}>

@@ -15,7 +15,7 @@
 
     export let label: string | null = null;
     export let labelIcon: 'code' | 'android' | 'flutter' | 'apple' | null = null;
-    export let code: string;
+    export let code: string = '';
     export let language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift';
     export let withLineNumbers = false;
     export let withCopy = false;

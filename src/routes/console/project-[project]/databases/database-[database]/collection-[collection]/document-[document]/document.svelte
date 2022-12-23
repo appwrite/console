@@ -1,18 +1,19 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
-    import { CardGrid, Heading } from '$lib/components';
-    import { collection } from '../store';
-    import { doc } from './store';
-    import { onMount } from 'svelte';
-    import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
-    import { writable } from 'svelte/store';
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import Attribute from './attribute.svelte';
+    import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
+    import { getIfNonNullableObject } from '$lib/helpers/type';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { onMount } from 'svelte';
+    import { writable } from 'svelte/store';
+    import { collection } from '../store';
+    import Attribute from './attribute.svelte';
+    import { doc } from './store';
 
     let disableUpdate = true;
     let currentDoc: string;
@@ -35,7 +36,7 @@
             .reduce((obj, key) => {
                 obj[key] = $doc[key];
                 return obj;
-            }, {}) as Models.Document
+            }, {} as Models.Document)
     );
 
     onMount(async () => {
@@ -51,11 +52,14 @@
     }
 
     async function updateData() {
+        const args = getIfNonNullableObject({ databaseId, collectionId, documentId });
+        if (!args) return;
+
         try {
             await sdkForProject.databases.updateDocument(
-                databaseId,
-                collectionId,
-                documentId,
+                args.databaseId,
+                args.collectionId,
+                args.documentId,
                 $work,
                 $work.$permissions
             );

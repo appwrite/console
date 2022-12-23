@@ -6,7 +6,7 @@
     import type { Permission } from './permissions.svelte';
 
     export let show: boolean;
-    export let groups: Writable<Map<string, Permission>>;
+    export let groups: Writable<Map<string, Permission | null>>;
 
     const dispatch = createEventDispatcher();
 

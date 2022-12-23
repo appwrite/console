@@ -1,20 +1,20 @@
 <script lang="ts">
-    import { CardGrid, Box, Heading } from '$lib/components';
-    import { Container } from '$lib/layout';
-    import { Button, InputText, InputSwitch, Helper } from '$lib/elements/forms';
-    import { Permissions } from '$lib/components/permissions';
-    import { collection } from '../store';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
-    import { onMount } from 'svelte';
-    import { page } from '$app/stores';
-    import { symmetricDifference } from '$lib/helpers/array';
-    import Delete from './deleteCollection.svelte';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import FormList from '$lib/elements/forms/formList.svelte';
+    import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Box, CardGrid, Heading } from '$lib/components';
+    import { Permissions } from '$lib/components/permissions';
+    import { Dependencies } from '$lib/constants';
+    import { Button, Helper, InputSwitch, InputText } from '$lib/elements/forms';
+    import FormList from '$lib/elements/forms/formList.svelte';
+    import { symmetricDifference } from '$lib/helpers/array';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { isString } from '$lib/helpers/type';
+    import { Container } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { collection } from '../store';
+    import Delete from './deleteCollection.svelte';
 
     const databaseId = $page.params.database;
 
@@ -22,18 +22,11 @@
     let showError: false | 'name' | 'size' = false,
         errorMessage = 'Something went wrong',
         errorType: 'error' | 'warning' | 'success' = 'error';
-    let enabled: boolean | null = null,
-        collectionName: string = null,
-        collectionDocumentSecurity: boolean = null,
-        collectionPermissions: string[] = null,
-        arePermsDisabled = true;
-
-    onMount(() => {
-        enabled ??= $collection.enabled;
-        collectionName ??= $collection.name;
-        collectionPermissions ??= $collection.$permissions;
-        collectionDocumentSecurity ??= $collection.documentSecurity;
-    });
+    let enabled = $collection.enabled;
+    let collectionName = $collection.name;
+    let collectionDocumentSecurity = $collection.documentSecurity;
+    let collectionPermissions = $collection.$permissions;
+    let arePermsDisabled = true;
 
     $: if (
         collectionPermissions &&
@@ -49,6 +42,8 @@
     }
 
     async function toggleCollection() {
+        if (!isString(databaseId)) return;
+
         try {
             await sdkForProject.databases.updateCollection(
                 databaseId,
@@ -72,6 +67,8 @@
         }
     }
     async function updateName() {
+        if (!isString(databaseId)) return;
+
         try {
             await sdkForProject.databases.updateCollection(
                 databaseId,
@@ -93,6 +90,8 @@
         }
     }
     async function updatePermissions() {
+        if (!isString(databaseId)) return;
+
         try {
             await sdkForProject.databases.updateCollection(
                 databaseId,
@@ -118,6 +117,8 @@
     }
 
     async function updateSecurity() {
+        if (!isString(databaseId)) return;
+
         try {
             await sdkForProject.databases.updateCollection(
                 databaseId,

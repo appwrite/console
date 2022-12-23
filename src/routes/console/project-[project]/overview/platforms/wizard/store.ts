@@ -4,28 +4,14 @@ import { cachedStore } from '$lib/helpers/cache';
 import type { Models } from '@aw-labs/appwrite-console';
 
 function createPlatformStore() {
-    const { subscribe, update, set } = writable<Partial<Models.Platform>>({
-        $id: null,
-        name: null,
-        hostname: null,
-        key: null,
-        store: null,
-        type: null
-    });
+    const { subscribe, update, set } = writable<Partial<Models.Platform>>({});
 
     return {
         subscribe,
         update,
         set,
         reset() {
-            set({
-                $id: null,
-                name: null,
-                hostname: null,
-                key: null,
-                store: null,
-                type: null
-            });
+            set({});
         }
     };
 }

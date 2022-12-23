@@ -1,5 +1,6 @@
 <script lang="ts">
     import { UploadBox } from '$lib/components';
+    import { isObject } from '$lib/helpers/type';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onDestroy, onMount } from 'svelte';
     import { stats } from './store';
@@ -8,7 +9,7 @@
 
     onMount(() => {
         unsubscribe = sdkForConsole.client.subscribe(['project', 'console'], (response) => {
-            if (response.events.includes('stats.connections')) {
+            if (response.events.includes('stats.connections') && isObject(response.payload)) {
                 for (const [projectId, value] of Object.entries(response.payload)) {
                     stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
                 }

@@ -4,17 +4,17 @@
     export let id: string;
     export let label: string;
     export let showLabel = true;
-    export let value: string | number | boolean;
+    export let value: string | number | boolean | null | undefined;
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
     export let options: {
-        value: string | boolean | number;
+        value: string | boolean | number | null | undefined;
         label: string;
     }[];
 
     let element: HTMLSelectElement;
-    let error: string;
+    let error: string | null;
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();

@@ -8,6 +8,7 @@
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isString } from '$lib/helpers/type';
 
     export let showDelete = false;
     export let selectedIndex: Models.Index;
@@ -16,6 +17,7 @@
     const dispatch = createEventDispatcher();
 
     const handleDelete = async () => {
+        if (!isString(databaseId)) return;
         try {
             await sdkForProject.databases.deleteIndex(
                 databaseId,

@@ -32,20 +32,23 @@
     import { Dependencies } from '$lib/constants';
     import type { PageData } from './$types';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isString } from '$lib/helpers/type';
 
     export let data: PageData;
 
     const functionId = $page.params.function;
     let showDelete = false;
     let selectedVar: Models.Variable | null = null;
-    // let showVariablesUpload = false;
+
     let showVariablesModal = false;
     let showVariablesValue: Array<any> = [];
     let showVariablesDropdown: Array<any> = [];
-    let timeout: number | null = null;
-    let functionName: string | null = null;
-    let functionSchedule: string | null = null;
-    let permissions: string[] = [];
+
+    let timeout = $func.timeout;
+    let functionName = $func.name;
+    let functionSchedule = $func.schedule;
+
+    let permissions = $func.execute;
     let arePermsDisabled = true;
 
     const eventSet: Writable<Set<string>> = writable(new Set());
@@ -53,14 +56,11 @@
     let areEventsDisabled = true;
 
     onMount(async () => {
-        timeout ??= $func.timeout;
-        functionName ??= $func.name;
-        functionSchedule ??= $func.schedule;
-        permissions = $func.execute;
         $eventSet = new Set($func.events);
     });
 
     async function updateName() {
+        if (!isString(functionId)) return;
         try {
             await sdkForProject.functions.update(
                 functionId,
@@ -86,6 +86,8 @@
     }
 
     async function updatePermissions() {
+        if (!isString(functionId)) return;
+
         try {
             await sdkForProject.functions.update(
                 functionId,
@@ -111,6 +113,8 @@
     }
 
     async function updateEvents() {
+        if (!isString(functionId)) return;
+
         try {
             await sdkForProject.functions.update(
                 functionId,
@@ -136,6 +140,8 @@
     }
 
     async function updateSchedule() {
+        if (!isString(functionId)) return;
+
         try {
             await sdkForProject.functions.update(
                 functionId,
@@ -162,6 +168,8 @@
     }
 
     async function updateTimeout() {
+        if (!isString(functionId)) return;
+
         try {
             await sdkForProject.functions.update(
                 functionId,
@@ -188,6 +196,8 @@
     }
 
     async function handleVariableCreated(event: CustomEvent<Models.Variable>) {
+        if (!isString(functionId)) return;
+
         const variable = event.detail;
 
         try {
@@ -208,6 +218,8 @@
     }
 
     async function handleVariableUpdated(event: CustomEvent<Models.Variable>) {
+        if (!isString(functionId)) return;
+
         const variable = event.detail;
         try {
             await sdkForProject.functions.updateVariable(

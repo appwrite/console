@@ -11,8 +11,8 @@
 
     export let show = false;
 
-    let name: string;
-    let id: string;
+    let name: string | null;
+    let id: string | null;
     let showCustomId = false;
     let error: string;
 
@@ -20,7 +20,7 @@
 
     const create = async () => {
         try {
-            const org = await sdkForConsole.teams.create(id ?? 'unique()', name);
+            const org = await sdkForConsole.teams.create(id ?? 'unique()', name ?? '');
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
             await goto(`/console/organization-${org.$id}`);

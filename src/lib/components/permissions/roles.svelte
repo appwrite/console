@@ -24,7 +24,7 @@
     let showDropdown = false;
     let unsubscribe: Unsubscriber;
 
-    const groups = writable<Map<string, Permission>>(new Map());
+    const groups = writable<Map<string, Permission | null>>(new Map());
 
     onMount(() => {
         roles.forEach(addRole);

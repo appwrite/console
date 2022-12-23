@@ -2,6 +2,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputPassword } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
@@ -9,6 +10,8 @@
     let newPassword: string | null = null;
 
     async function updatePassword() {
+        if (!isString(newPassword)) return;
+
         try {
             await sdkForProject.users.updatePassword($user.$id, newPassword);
             newPassword = null;

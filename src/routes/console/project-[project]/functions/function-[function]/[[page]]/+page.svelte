@@ -43,7 +43,7 @@
     export let data: PageData;
 
     let showCreate = false;
-    let showDropdown = [];
+    let showDropdown: Array<boolean> = [];
     let showDelete = false;
     let showActivate = false;
 
@@ -137,7 +137,7 @@
                         on:click={() => {
                             $log.show = true;
                             $log.func = $func;
-                            $log.data = activeDeployment;
+                            if (activeDeployment) $log.data = activeDeployment;
                         }}>
                         Build logs
                     </Button>

@@ -10,20 +10,27 @@
     import { Dependencies } from '$lib/constants';
     import { func } from './store';
     import { trackEvent } from '$lib/actions/analytics';
-
-    export let showCreate = false;
+    import { isString } from '$lib/helpers/type';
 
     enum Mode {
         CLI,
         Github,
         Manual
     }
+
+    type CodeSnippet = {
+        code: string;
+        language: string;
+    };
+
+    export let showCreate = false;
+
     let mode: Mode = Mode.CLI;
-    let entrypoint: string;
+    let entrypoint = '';
     let active = false;
     let files: FileList;
-    let lang = 'js';
-    let codeSnippets = {};
+    let lang: ReturnType<typeof setLanguage> = 'js';
+    let codeSnippets: Record<string, CodeSnippet> = {};
 
     const functionId = $page.params.function;
     const dispatch = createEventDispatcher();
@@ -55,7 +62,8 @@
         }
     }
 
-    function setCodeSnippets(lang: string) {
+    function setCodeSnippets(lang: string | undefined): Record<string, CodeSnippet> {
+        if (!lang) return {};
         return {
             Unix: {
                 code: `appwrite functions createDeployment \\ 
@@ -86,6 +94,8 @@
     }
 
     async function create() {
+        if (!isString(functionId) || files[0] === undefined) return;
+
         try {
             await sdkForProject.functions.createDeployment(
                 functionId,
@@ -94,8 +104,10 @@
                 active
             );
             await invalidate(Dependencies.FUNCTION);
-            files = entrypoint = active = null;
+            files = new FileList();
+            active = false;
             showCreate = false;
+            entrypoint = '';
             dispatch('created');
             trackEvent('submit_function_create');
         } catch (error) {
@@ -148,8 +160,8 @@
                         withLineNumbers
                         withCopy
                         language="sh"
-                        label={codeSnippets[category].language}
-                        code={codeSnippets[category].code} />
+                        label={codeSnippets[category]?.language}
+                        code={codeSnippets[category]?.code} />
                 </CollapsibleItem>
             {/each}
         </Collapsible>

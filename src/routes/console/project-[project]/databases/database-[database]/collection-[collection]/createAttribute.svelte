@@ -9,22 +9,25 @@
     import { base } from '$app/paths';
     import type { Attributes } from './store';
     import { trackEvent } from '$lib/actions/analytics';
+    import { getIfNonNullableObject } from '$lib/helpers/type';
 
     export let showCreate = false;
 
     let key: string | null = null;
-    let selectedOption = null;
+    let selectedOption: string | null = null;
     let data: Partial<Attributes> = {
         required: false,
-        array: false,
-        default: null
+        array: false
     };
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
 
     async function submit() {
+        const args = getIfNonNullableObject({ databaseId, collectionId, key });
+        if (!args) return;
+
         try {
-            await $option.func(databaseId, collectionId, key, data);
+            await $option?.func(args.databaseId, args.collectionId, args.key, data);
             invalidate(Dependencies.COLLECTION);
             if (!$page.url.pathname.includes('attributes')) {
                 goto(
@@ -46,7 +49,8 @@
     }
 
     $: if (selectedOption) {
-        $option = options.find((option) => option.name === selectedOption);
+        const found = options.find((option) => option.name === selectedOption);
+        if (found) $option = found;
     }
 
     $: if (!showCreate) {
@@ -87,7 +91,7 @@
             required />
         {#if selectedOption}
             <svelte:component
-                this={$option.component}
+                this={$option?.component}
                 bind:data
                 on:close={() => ($option = null)} />
         {/if}

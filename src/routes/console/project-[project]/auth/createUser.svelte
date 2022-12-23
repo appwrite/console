@@ -19,8 +19,8 @@
     const dispatch = createEventDispatcher();
 
     let showDropdown = false;
-    let name: string, mail: string, pass: string, id: string, phone: string;
-    let error: string;
+    let name: string, mail: string, pass: string, id: string | null, phone: string;
+    let error: string | null;
 
     const create = async () => {
         try {

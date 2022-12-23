@@ -10,12 +10,12 @@
 
     onMount(async () => {
         const projectId = $page.url.searchParams.get('project');
-        client.setEndpoint(`${$page.url.origin}/v1`).setProject(projectId);
+        projectId && client.setEndpoint(`${$page.url.origin}/v1`).setProject(projectId);
 
         const userId = $page.url.searchParams.get('userId');
         const secret = $page.url.searchParams.get('secret');
 
-        await account.updateMagicURLSession(userId, secret);
+        userId && secret && (await account.updateMagicURLSession(userId, secret));
         await goto(`appwrite-callback-${projectId}://${$page.url.search}`);
     });
 </script>

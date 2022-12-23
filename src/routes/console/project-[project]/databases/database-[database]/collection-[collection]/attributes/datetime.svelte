@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
     import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export async function submitDatetime(
         databaseId: string,
@@ -8,6 +8,8 @@
         key: string,
         data: Partial<Models.AttributeDatetime>
     ) {
+        if (!isNonNullable(data.required)) return;
+
         await sdkForProject.databases.createDatetimeAttribute(
             databaseId,
             collectionId,
@@ -21,6 +23,7 @@
 
 <script lang="ts">
     import { InputChoice, InputDateTime } from '$lib/elements/forms';
+    import { isNonNullable } from '$lib/helpers/type';
 
     export let selectedAttribute: Models.AttributeDatetime | null = null;
     export let data: Partial<Models.AttributeDatetime>;
@@ -32,7 +35,7 @@
     }
 
     $: if (data.required) {
-        data.default = null;
+        data.default = undefined;
     }
 </script>
 

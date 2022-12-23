@@ -12,11 +12,11 @@
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
 
-    let name: string | null = null,
-        email: string = null,
-        emailPassword: string = null,
-        newPassword: string = null,
-        oldPassword: string = null;
+    let name: string | null = null;
+    let email: string | null = null;
+    let emailPassword: string | null = null;
+    let newPassword: string | null = null;
+    let oldPassword: string | null = null;
     let showDelete = false;
 
     onMount(async () => {
@@ -26,7 +26,7 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.account.updateName(name);
+            await sdkForConsole.account.updateName(name ?? '');
             invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',
@@ -42,7 +42,7 @@
     }
     async function updateEmail() {
         try {
-            await sdkForConsole.account.updateEmail(email, emailPassword);
+            await sdkForConsole.account.updateEmail(email ?? '', emailPassword ?? '');
             invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Email has been updated',
@@ -59,7 +59,7 @@
 
     async function updatePassword() {
         try {
-            await sdkForConsole.account.updatePassword(newPassword, oldPassword);
+            await sdkForConsole.account.updatePassword(newPassword ?? '', oldPassword ?? '');
             newPassword = oldPassword = null;
             addNotification({
                 message: 'Password has been updated',

@@ -14,17 +14,17 @@
 
     const dispatch = createEventDispatcher();
 
-    let email: string, name: string, error: string;
+    let email: string | null, name: string | null, error: string | null;
     const url = `${$page.url.origin}/invite`;
 
     const create = async () => {
         try {
             const team = await sdkForConsole.teams.createMembership(
                 $organization.$id,
-                email,
+                email ?? '',
                 ['owner'],
                 url,
-                name
+                name ?? ''
             );
             invalidate(Dependencies.ACCOUNT);
             showCreate = false;

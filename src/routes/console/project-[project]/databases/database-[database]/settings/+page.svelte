@@ -1,17 +1,18 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { Card, CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
-    import { Container } from '$lib/layout';
-    import { Button, InputText, Helper } from '$lib/elements/forms';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
-    import { database } from '../store';
-    import { onMount } from 'svelte';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import Delete from '../delete.svelte';
+    import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { AvatarInitials, Box, Card, CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button, Helper, InputText } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { getIfStringObject } from '$lib/helpers/type';
+    import { Container } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import Delete from '../delete.svelte';
+    import { database } from '../store';
 
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
@@ -30,8 +31,11 @@
     }
 
     async function updateName() {
+        const args = getIfStringObject({ db: $page.params.database, dbName: databaseName });
+        if (!args) return;
+
         try {
-            await sdkForProject.databases.update($page.params.database, databaseName);
+            await sdkForProject.databases.update(args.db, args.dbName);
             invalidate(Dependencies.DATABASE);
             addNotification({
                 message: 'Name has been updated',

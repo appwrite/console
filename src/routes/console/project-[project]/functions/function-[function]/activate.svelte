@@ -13,6 +13,7 @@
     const dispatch = createEventDispatcher();
 
     const handleSubmit = async () => {
+        if (!selectedDeployment) return;
         try {
             await sdkForProject.functions.updateDeployment(
                 selectedDeployment.resourceId,

@@ -21,7 +21,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
 
-    let showDropdown = [];
+    let showDropdown: boolean[] = [];
     let selectedIndex: Models.Index | null = null;
     let showCreateIndex = false;
     let showOverview = false;

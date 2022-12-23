@@ -5,6 +5,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { collection } from '../store';
@@ -14,6 +15,8 @@
     const databaseId = $page.params.database;
 
     const handleDelete = async () => {
+        if (!isString(databaseId)) return;
+
         try {
             await sdkForProject.databases.deleteCollection(databaseId, $collection.$id);
             showDelete = false;

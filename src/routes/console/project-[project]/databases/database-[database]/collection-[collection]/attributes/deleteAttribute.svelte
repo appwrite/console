@@ -10,12 +10,14 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isString } from '$lib/helpers/type';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
     const databaseId = $page.params.database;
 
     const handleDelete = async () => {
+        if (!isString(databaseId)) return;
         try {
             await sdkForProject.databases.deleteAttribute(
                 databaseId,

@@ -15,13 +15,13 @@
             id="key"
             label="Index Key"
             placeholder="Enter Key"
-            value={selectedIndex.key}
+            value={selectedIndex?.key}
             readonly />
         <InputText
             id="type"
             label="Index type"
             placeholder="Select type"
-            value={selectedIndex.type}
+            value={selectedIndex?.type}
             readonly />
 
         {#if selectedIndex?.attributes?.length}
@@ -40,14 +40,15 @@
                         </div>
                     </div>
                     <div class="form-item-part u-stretch">
-                        <label class="label" for={`value-${selectedIndex.orders[i]}`}>Order</label>
+                        <label class="label" for={`value-${selectedIndex.orders?.[i]}`}
+                            >Order</label>
                         <div class="input-text-wrapper">
                             <input
-                                id={`value-${selectedIndex.orders[i]}`}
+                                id={`value-${selectedIndex.orders?.[i]}`}
                                 placeholder=""
                                 type="text"
                                 class="input-text"
-                                value={selectedIndex.orders[i]}
+                                value={selectedIndex.orders?.[i]}
                                 readonly />
                         </div>
                     </div>

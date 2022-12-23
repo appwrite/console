@@ -5,6 +5,7 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
@@ -12,6 +13,8 @@
     export let showDeleteAll = false;
 
     const deleteAllSessions = async () => {
+        if (!isString($page.params.user)) return;
+
         try {
             await sdkForProject.users.deleteSessions($page.params.user);
             invalidate(Dependencies.SESSIONS);

@@ -12,6 +12,7 @@
     import { page } from '$app/stores';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isNonNullable } from '$lib/helpers/type';
 
     const projectId = $page.params.project;
 
@@ -21,8 +22,10 @@
     }
 
     async function authUpdate(box: AuthMethod) {
+        if (!isNonNullable(box.value)) return;
+
         try {
-            await sdkForConsole.projects.updateAuthStatus(projectId, box.method, box.value);
+            await sdkForConsole.projects.updateAuthStatus(projectId ?? '', box.method, box.value);
             addNotification({
                 type: 'success',
                 message: `${box.label} authentication has been ${

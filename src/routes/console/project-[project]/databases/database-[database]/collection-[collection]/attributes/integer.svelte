@@ -8,6 +8,8 @@
         key: string,
         data: Partial<Models.AttributeInteger>
     ) {
+        if (!isNonNullable(data.required)) return;
+
         await sdkForProject.databases.createIntegerAttribute(
             databaseId,
             collectionId,
@@ -23,6 +25,7 @@
 
 <script lang="ts">
     import { InputNumber, InputChoice } from '$lib/elements/forms';
+    import { isNonNullable } from '$lib/helpers/type';
 
     export let selectedAttribute: Models.AttributeInteger;
     export let data: Partial<Models.AttributeInteger> = {
@@ -43,7 +46,7 @@
         } = selectedAttribute);
     }
     $: if (data.required || data.array) {
-        data.default = null;
+        data.default = undefined;
     }
 </script>
 

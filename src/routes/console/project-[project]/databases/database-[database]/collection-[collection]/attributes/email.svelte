@@ -9,6 +9,8 @@
         key: string,
         data: Partial<Models.AttributeEmail>
     ) {
+        if (!isNonNullable(data.required)) return;
+
         await sdkForProject.databases.createEmailAttribute(
             databaseId,
             collectionId,
@@ -22,6 +24,7 @@
 
 <script lang="ts">
     import { InputChoice, InputEmail } from '$lib/elements/forms';
+    import { isNonNullable } from '$lib/helpers/type';
 
     export let selectedAttribute: Models.AttributeEmail | null = null;
     export let data: Partial<Models.AttributeEmail>;
@@ -33,7 +36,7 @@
     }
 
     $: if (data.required || data.array) {
-        data.default = null;
+        data.default = undefined;
     }
 </script>
 

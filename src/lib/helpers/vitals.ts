@@ -1,6 +1,7 @@
 import { page } from '$app/stores';
 import { get } from 'svelte/store';
 import type { Metric } from 'web-vitals';
+import { isObject, isObjectType } from './type';
 
 type Options = {
     params:
@@ -15,12 +16,20 @@ type Options = {
 
 const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
 
+type Navigator = {
+    connection: {
+        effectiveType: unknown;
+    };
+};
+
+function isNavigator(obj: unknown): obj is Navigator {
+    return isObjectType<Navigator>(obj, {
+        connection: (v) => isObject(v) && 'effectiveType' in v
+    });
+}
+
 function getConnectionSpeed() {
-    return 'connection' in navigator &&
-        navigator['connection'] &&
-        'effectiveType' in navigator['connection']
-        ? navigator['connection']['effectiveType']
-        : '';
+    return isNavigator(navigator) ? navigator['connection']['effectiveType'] : '';
 }
 
 function sendToAnalytics(metric: Metric, options: Options) {
@@ -43,7 +52,9 @@ function sendToAnalytics(metric: Metric, options: Options) {
         console.log('[Analytics]', metric.name, JSON.stringify(body, null, 2));
     }
 
-    const blob = new Blob([new URLSearchParams(body).toString()], {
+    // TODO: verify if this cast is okay, or find an alternative
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const blob = new Blob([new URLSearchParams(body as any).toString()], {
         // This content type is necessary for `sendBeacon`
         type: 'application/x-www-form-urlencoded'
     });

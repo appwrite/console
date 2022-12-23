@@ -8,6 +8,7 @@
         key: string,
         data: Partial<Models.AttributeIp>
     ) {
+        if (!isNonNullable(data.required)) return;
         await sdkForProject.databases.createIpAttribute(
             databaseId,
             collectionId,
@@ -21,6 +22,7 @@
 
 <script lang="ts">
     import { InputText, InputChoice } from '$lib/elements/forms';
+    import { isNonNullable } from '$lib/helpers/type';
 
     export let selectedAttribute: Models.AttributeIp;
     export let data: Partial<Models.AttributeIp>;
@@ -29,7 +31,7 @@
         ({ required: data.required, array: data.array, default: data.default } = selectedAttribute);
     }
     $: if (data.required || data.array) {
-        data.default = null;
+        data.default = undefined;
     }
 </script>
 

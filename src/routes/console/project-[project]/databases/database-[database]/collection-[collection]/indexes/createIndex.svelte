@@ -47,7 +47,7 @@
     }
 
     async function create() {
-        if (!(key && selectedType && !addAttributeDisabled)) {
+        if (!(key && selectedType && !addAttributeDisabled && databaseId)) {
             error = 'All fields are required';
             return;
         }

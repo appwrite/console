@@ -4,10 +4,10 @@ import type { Models } from '@aw-labs/appwrite-console';
 export type AuthMethod = {
     label: string;
     method: string;
-    value: boolean | null;
+    value: boolean | undefined;
 };
 
-const setAuthMethod = (project: Models.Project): AuthMethod[] => {
+const setAuthMethod = (project: Models.Project | null): AuthMethod[] => {
     return [
         {
             label: 'Email/Password',

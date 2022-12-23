@@ -9,8 +9,9 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isNonNullable } from '$lib/helpers/type';
 
-    export let provider: Provider;
+    export let provider: Provider | null;
 
     let appId: string | null = null;
     let enabled: boolean | null = null;
@@ -19,27 +20,28 @@
     let p8: string | null = null;
 
     onMount(() => {
-        appId ??= provider.appId;
-        enabled ??= provider.enabled;
-        if (provider.secret) ({ keyID, teamID, p8 } = JSON.parse(provider.secret));
+        appId ??= provider?.appId ?? null;
+        enabled ??= provider?.enabled ?? null;
+        if (provider?.secret) ({ keyID, teamID, p8 } = JSON.parse(provider.secret));
     });
 
     let error: string;
 
     const projectId = $page.params.project;
     const update = async () => {
+        if (!isNonNullable(enabled)) return;
         try {
             await sdkForConsole.projects.updateOAuth2(
-                projectId,
-                provider.name.toLowerCase(),
-                appId,
+                projectId ?? '',
+                provider?.name.toLowerCase() ?? '',
+                appId ?? '',
                 secret,
                 enabled
             );
             addNotification({
                 type: 'success',
-                message: `${provider.name} authentication has been ${
-                    provider.enabled ? 'enabled' : 'disabled'
+                message: `${provider?.name} authentication has been ${
+                    provider?.enabled ? 'enabled' : 'disabled'
                 }`
             });
             trackEvent('submit_provider_update', {
@@ -53,16 +55,16 @@
         }
     };
 
-    $: secret = keyID && teamID && p8 ? JSON.stringify({ keyID, teamID, p8 }) : provider.secret;
+    $: secret = keyID && teamID && p8 ? JSON.stringify({ keyID, teamID, p8 }) : provider?.secret;
 </script>
 
 <Modal {error} on:submit={update} size="big" show on:close>
-    <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
+    <svelte:fragment slot="header">{provider?.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
-            To use {provider.name} authentication in your application, first fill in this form. For more
-            info you can
-            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer">
+            To use {provider?.name} authentication in your application, first fill in this form. For
+            more info you can
+            <a class="link" href={provider?.docs} target="_blank" rel="noopener noreferrer">
                 visit the docs.
             </a>
         </p>
@@ -77,22 +79,22 @@
         <InputText id="teamID" label="Team ID" placeholder="ELA2CD3AED" bind:value={teamID} />
         <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={p8} />
         <Alert type="info">
-            To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
+            To complete set up, add this OAuth2 redirect URI to your {provider?.name} app configuration.
         </Alert>
         <div>
             <p>URI</p>
             <CopyInput
                 value={`${
                     sdkForConsole.client.config.endpoint
-                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+                }/account/sessions/oauth2/callback/${provider?.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={(secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId) ||
+            disabled={(secret === provider?.secret &&
+                enabled === provider?.enabled &&
+                appId === provider?.appId) ||
                 !(appId && keyID && teamID && p8)}
             submit>Update</Button>
     </svelte:fragment>

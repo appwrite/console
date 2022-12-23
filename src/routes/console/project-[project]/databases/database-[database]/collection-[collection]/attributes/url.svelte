@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
     import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export async function submitUrl(
         databaseId: string,
@@ -8,6 +8,7 @@
         key: string,
         data: Partial<Models.AttributeUrl>
     ) {
+        if (!isNonNullable(data.required)) return;
         await sdkForProject.databases.createUrlAttribute(
             databaseId,
             collectionId,
@@ -20,7 +21,8 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputChoice } from '$lib/elements/forms';
+    import { InputChoice, InputText } from '$lib/elements/forms';
+    import { isNonNullable } from '$lib/helpers/type';
 
     export let selectedAttribute: Models.AttributeUrl;
     export let data: Partial<Models.AttributeUrl>;
@@ -29,7 +31,7 @@
         ({ required: data.required, array: data.array, default: data.default } = selectedAttribute);
     }
     $: if (data.required || data.array) {
-        data.default = null;
+        data.default = undefined;
     }
 </script>
 

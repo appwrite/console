@@ -12,6 +12,8 @@
     export let selectedDeployment: Models.Deployment | null = null;
 
     const handleSubmit = async () => {
+        if (selectedDeployment === null) return;
+
         try {
             await sdkForProject.functions.deleteDeployment(
                 selectedDeployment.resourceId,

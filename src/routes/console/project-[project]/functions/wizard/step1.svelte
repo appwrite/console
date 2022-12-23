@@ -9,7 +9,7 @@
 
     let showCustomId = false;
 
-    let options = [];
+    let options: { label: string; value: string }[] = [];
 
     onMount(async () => {
         let runtimes = await sdkForProject.functions.listRuntimes();

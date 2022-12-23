@@ -8,6 +8,7 @@
         key: string,
         data: Partial<Models.AttributeFloat>
     ) {
+        if (!isNonNullable(data.required)) return;
         await sdkForProject.databases.createFloatAttribute(
             databaseId,
             collectionId,
@@ -23,6 +24,7 @@
 
 <script lang="ts">
     import { InputNumber, InputChoice } from '$lib/elements/forms';
+    import { isNonNullable } from '$lib/helpers/type';
 
     export let selectedAttribute: Models.AttributeFloat;
     export let data: Partial<Models.AttributeFloat> = {
@@ -44,7 +46,7 @@
     }
 
     $: if (data.required || data.array) {
-        data.default = null;
+        data.default = undefined;
     }
 </script>
 

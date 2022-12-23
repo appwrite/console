@@ -4,6 +4,7 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -15,6 +16,8 @@
     });
 
     async function updateName() {
+        if (!isString(userName)) return;
+
         try {
             await sdkForProject.users.updateName($user.$id, userName);
             invalidate(Dependencies.USER);

@@ -7,6 +7,10 @@
     };
 
     export type PermissionsTypes = 'create' | 'read' | 'update' | 'delete';
+
+    export function isPermissionType(value: string): value is PermissionsTypes {
+        return ['create', 'read', 'update', 'delete'].includes(value);
+    }
 </script>
 
 <script lang="ts">
@@ -81,6 +85,7 @@
 
     function fromPermissionString(permission: string): void {
         const type = permission.slice(0, permission.indexOf('('));
+        if (!isPermissionType(type)) return;
         const role = permission.slice(permission.indexOf('("') + 2, permission.indexOf('")'));
 
         groups.update((n) => {
@@ -92,7 +97,8 @@
                     delete: false
                 });
             }
-            n.get(role)[type] = true;
+
+            n.get(role)![type] = true;
 
             return n;
         });
@@ -100,7 +106,10 @@
 
     function togglePermission(role: string, permission: PermissionsTypes): void {
         groups.update((n) => {
-            n.get(role)[permission] = !n.get(role)[permission];
+            const fromRole = n.get(role);
+            if (fromRole) {
+                fromRole[permission] = !fromRole[permission];
+            }
 
             return n;
         });
@@ -117,13 +126,13 @@
     function exportRoles() {
         return [...$groups].reduce((prev, [role, permission]) => {
             ['create', 'read', 'update', 'delete'].forEach((type) => {
-                if (permission[type] === true) {
+                if (permission[type as PermissionsTypes] === true) {
                     prev.push(`${type}("${role}")`);
                 }
             });
 
             return prev;
-        }, []);
+        }, [] as string[]);
     }
 
     function sortRoles([a]: [string, Permission], [b]: [string, Permission]) {

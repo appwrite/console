@@ -85,4 +85,4 @@ export const options: Option[] = [
     }
 ];
 
-export const option = writable<Option>();
+export const option = writable<Option | null>();

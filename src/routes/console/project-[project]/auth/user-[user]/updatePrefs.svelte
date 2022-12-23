@@ -4,6 +4,7 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
+    import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -11,7 +12,7 @@
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
-            if (!!prefs[prefs.length - 1][0] && !!prefs[prefs.length - 1][1]) {
+            if (!!prefs[prefs.length - 1]?.[0] && !!prefs[prefs.length - 1]?.[1]) {
                 arePrefsDisabled = false;
             } else {
                 arePrefsDisabled = true;
@@ -32,6 +33,7 @@
     });
 
     async function updatePrefs() {
+        if (!prefs) return;
         try {
             let updatedPrefs = Object.fromEntries(prefs);
 
@@ -96,8 +98,7 @@
                                             if (index === 0) {
                                                 prefs = [['', '']];
                                             } else {
-                                                prefs.splice(index, 1);
-                                                prefs = prefs;
+                                                prefs = remove(prefs ?? [], index);
                                             }
                                         }}>
                                         <span class="icon-x" aria-hidden="true" />
@@ -111,7 +112,8 @@
                     noMargin
                     text
                     on:click={() => {
-                        if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
+                        if (!prefs) return;
+                        if (prefs[prefs.length - 1]?.[0] && prefs[prefs.length - 1]?.[1]) {
                             prefs.push(['', '']);
                             prefs = prefs;
                         }

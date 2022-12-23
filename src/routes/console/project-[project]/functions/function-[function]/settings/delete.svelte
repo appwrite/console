@@ -5,6 +5,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
 
@@ -12,6 +13,8 @@
     const functionId = $page.params.function;
 
     const handleSubmit = async () => {
+        if (!isString(functionId)) return;
+
         try {
             await sdkForProject.functions.delete(functionId);
             showDelete = false;

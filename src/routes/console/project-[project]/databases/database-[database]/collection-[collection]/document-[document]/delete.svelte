@@ -5,6 +5,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { getIfStringObject } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { collection } from '../store';
@@ -14,11 +15,18 @@
     const databaseId = $page.params.database;
 
     const handleDelete = async () => {
+        const args = getIfStringObject({
+            databaseId,
+            collection: $page.params.collection,
+            document: $page.params.document
+        });
+        if (!args) return;
+
         try {
             await sdkForProject.databases.deleteDocument(
-                databaseId,
-                $page.params.collection,
-                $page.params.document
+                args.databaseId,
+                args.collection,
+                args.document
             );
             showDelete = false;
             addNotification({

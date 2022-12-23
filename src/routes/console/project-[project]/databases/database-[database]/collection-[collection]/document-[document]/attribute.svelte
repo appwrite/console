@@ -28,28 +28,33 @@
         datetime: Datetime
     };
 
+    function isValidType(type: string): type is keyof typeof attributesTypeMap {
+        return type in attributesTypeMap;
+    }
+
     const attributesFormatMap = {
         ip: String,
         url: String,
         email: String,
         enum: Enum
     };
+
+    function isValidFormat(format: string): format is keyof typeof attributesFormatMap {
+        return format in attributesFormatMap;
+    }
+
+    // TODO: Remove this any
+    $: cmp = (function (): any {
+        if (attribute.type in attributesTypeMap) {
+            if ('format' in attribute && attribute.format && isValidFormat(attribute.format)) {
+                return attributesFormatMap[attribute.format];
+            } else if (isValidType(attribute.type)) {
+                return attributesTypeMap[attribute.type];
+            }
+        }
+    })();
 </script>
 
-{#if attribute.type in attributesTypeMap}
-    {#if 'format' in attribute && attribute.format}
-        <svelte:component
-            this={attributesFormatMap[attribute.format]}
-            {id}
-            {label}
-            {attribute}
-            bind:value />
-    {:else}
-        <svelte:component
-            this={attributesTypeMap[attribute.type]}
-            {id}
-            {label}
-            {attribute}
-            bind:value />
-    {/if}
+{#if cmp}
+    <svelte:component this={cmp} {id} {label} {attribute} bind:value />
 {/if}

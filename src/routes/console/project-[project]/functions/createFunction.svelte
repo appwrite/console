@@ -16,6 +16,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isNonNullableObject } from '$lib/helpers/type';
 
     const projectId = $page.params.project;
 
@@ -23,9 +24,10 @@
         await invalidate(Dependencies.FUNCTIONS);
     }
     async function create() {
+        if (!isNonNullableObject($createFunction)) return;
         try {
             const response = await sdkForProject.functions.create(
-                $createFunction.id ?? 'unique()',
+                $createFunction.id,
                 $createFunction.name,
                 $createFunction.execute,
                 $createFunction.runtime,
@@ -33,10 +35,12 @@
                 $createFunction.schedule,
                 $createFunction.timeout
             );
-            $createFunction.vars.forEach(
-                async (v) =>
-                    await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
-            );
+            await Promise.all([
+                ...($createFunction.vars?.map((v) => {
+                    if (!v.key || !v.value) return null;
+                    return sdkForProject.functions.createVariable(response.$id, v.key, v.value);
+                }) ?? [])
+            ]);
             await invalidate(Dependencies.FUNCTIONS);
             goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
             addNotification({
@@ -54,16 +58,7 @@
     }
 
     onDestroy(() => {
-        $createFunction = {
-            id: null,
-            name: null,
-            execute: [],
-            runtime: null,
-            vars: [],
-            events: [],
-            schedule: null,
-            timeout: null
-        };
+        createFunction.reset();
     });
 
     const stepsComponents: WizardStepsType = new Map();

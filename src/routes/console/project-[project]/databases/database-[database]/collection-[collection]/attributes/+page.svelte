@@ -18,7 +18,7 @@
     import Delete from './deleteAttribute.svelte';
     import Overview from './overview.svelte';
 
-    let showDropdown = [];
+    let showDropdown: boolean[] = [];
     let selectedAttribute: Attributes | null = null;
     let showCreate = false;
     let showDelete = false;
@@ -119,6 +119,11 @@
 </Container>
 
 <Create bind:showCreate />
-<Delete bind:showDelete {selectedAttribute} />
-<Overview bind:showOverview {selectedAttribute} />
+{#if selectedAttribute}
+    <Delete bind:showDelete {selectedAttribute} />
+    <Overview bind:showOverview {selectedAttribute} />
+
+    <Delete bind:showDelete {selectedAttribute} />
+    <Overview bind:showOverview {selectedAttribute} />
+{/if}
 <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />

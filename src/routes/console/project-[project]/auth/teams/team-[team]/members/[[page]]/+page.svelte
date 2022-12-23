@@ -111,7 +111,9 @@
     {/if}
 </Container>
 
-<CreateMember teamId={$page.params.team} bind:showCreate on:created={memberCreated} />
+{#if $page.params.team}
+    <CreateMember teamId={$page.params.team} bind:showCreate on:created={memberCreated} />
+{/if}
 <DeleteMembership
     {selectedMembership}
     bind:showDelete

@@ -8,12 +8,15 @@
         key: string,
         data: Partial<Models.AttributeString>
     ) {
+        const args = getIfNonNullableObject({ ...data });
+        if (!args) return;
+
         await sdkForProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             key,
-            data.size,
-            data.required,
+            args.size,
+            args.required,
             data.default ? (data.default as string) : undefined,
             data.array
         );
@@ -22,12 +25,13 @@
 
 <script lang="ts">
     import { InputNumber, InputText, InputChoice } from '$lib/elements/forms';
+    import { getIfNonNullableObject } from '$lib/helpers/type';
 
     export let selectedAttribute: Models.AttributeString;
     export let data: Partial<Models.AttributeString> = {
         required: false,
         size: 0,
-        default: null,
+        default: undefined,
         array: false
     };
 
@@ -39,8 +43,9 @@
             default: data.default
         } = selectedAttribute);
     }
+
     $: if (data.required || data.array) {
-        data.default = null;
+        data.default = undefined;
     }
 </script>
 

@@ -5,6 +5,7 @@
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -14,11 +15,13 @@
     const databaseId = $page.params.database;
     const dispatch = createEventDispatcher();
 
-    let name = '';
+    let name: string = '';
     let id: string | null = null;
     let showCustomId = false;
 
     const create = async () => {
+        if (!isString(databaseId)) return;
+
         try {
             const collection = await sdkForProject.databases.createCollection(
                 databaseId,
@@ -31,7 +34,8 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            name = id = null;
+            name = '';
+            id = null;
             trackEvent('submit_database_create');
         } catch (error) {
             addNotification({

@@ -4,6 +4,7 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputPhone } from '$lib/elements/forms';
+    import { isString } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -15,6 +16,8 @@
     });
 
     async function updatePhone() {
+        if (!isString(userPhone)) return;
+
         try {
             await sdkForProject.users.updatePhone($user.$id, userPhone);
             invalidate(Dependencies.USER);

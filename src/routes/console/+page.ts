@@ -3,7 +3,9 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ parent }) => {
-    const { organizations } = await parent();
+    // TODO: Remove this eslint-disable when we have a better way to type parent()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { organizations } = (await parent()) as any;
     if (organizations.total) {
         const teamId = localStorage.getItem('organization') ?? organizations.teams[0].$id;
         throw redirect(303, `${base}/console/organization-${teamId}`);

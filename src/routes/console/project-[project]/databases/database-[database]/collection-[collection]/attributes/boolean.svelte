@@ -8,6 +8,7 @@
         key: string,
         data: Partial<Models.AttributeBoolean>
     ) {
+        if (!isNonNullable(data.required)) return;
         await sdkForProject.databases.createBooleanAttribute(
             databaseId,
             collectionId,
@@ -21,12 +22,13 @@
 
 <script lang="ts">
     import { InputChoice, InputSelect } from '$lib/elements/forms';
+    import { isNonNullable } from '$lib/helpers/type';
 
     export let selectedAttribute: Models.AttributeBoolean | null = null;
     export let data: Partial<Models.AttributeBoolean> = {
         required: false,
         array: false,
-        default: null
+        default: undefined
     };
 
     $: if (selectedAttribute) {
@@ -36,7 +38,7 @@
     }
 
     $: if (data.required || data.array) {
-        data.default = null;
+        data.default = undefined;
     }
 </script>
 

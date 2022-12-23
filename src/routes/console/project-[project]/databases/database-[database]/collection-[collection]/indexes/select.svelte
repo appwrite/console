@@ -8,7 +8,7 @@
 
     let element: HTMLSelectElement;
 
-    let error: string;
+    let error: string | null;
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();

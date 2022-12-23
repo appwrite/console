@@ -19,7 +19,7 @@ export type Providers = {
     providers: Provider[];
 };
 
-const setProviders = (project: Models.Project): Provider[] => {
+const setProviders = (project: Models.Project | null): Provider[] => {
     return (
         project?.providers.map((n) => {
             let docs: Provider['docs'];

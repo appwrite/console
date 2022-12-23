@@ -11,7 +11,7 @@
     export let showUser: boolean;
     export let showTeam: boolean;
     export let showCustom: boolean;
-    export let groups: Writable<Map<string, Permission>>;
+    export let groups: Writable<Map<string, Permission | null>>;
 
     const dispatch = createEventDispatcher();
 

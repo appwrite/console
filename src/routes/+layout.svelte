@@ -14,6 +14,7 @@
     import { trackPageView } from '$lib/actions/analytics';
     import * as Sentry from '@sentry/svelte';
     import { BrowserTracing } from '@sentry/tracing';
+    import { isString } from '$lib/helpers/type';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -68,7 +69,7 @@
     });
 
     afterNavigate((navigation) => {
-        trackPageView(navigation.to.routeId);
+        if (isString(navigation.to?.routeId)) trackPageView(navigation.to!.routeId);
     });
 
     $: {

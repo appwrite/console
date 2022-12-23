@@ -106,4 +106,6 @@
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
-<CreateProject bind:show={showCreate} teamId={$page.params.organization} />
+{#if $page.params.organization}
+    <CreateProject bind:show={showCreate} teamId={$page.params.organization} />
+{/if}
