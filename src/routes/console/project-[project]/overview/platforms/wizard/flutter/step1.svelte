@@ -25,7 +25,7 @@
     let platform: Platform = Platform.Android;
 
     const projectId = $page.params.project;
-    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.app'];
+    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
     const placeholder: Record<
         Platform,
         {
