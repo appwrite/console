@@ -65,7 +65,7 @@
                         </TableCell>
                         <TableCellText title="Type">{attribute.type}</TableCellText>
                         <TableCellText title="Default Value">
-                            {attribute.default ? attribute.default : '-'}
+                            {attribute.default !== null ? attribute.default : '-'}
                         </TableCellText>
                         <TableCell showOverflow>
                             <DropList
