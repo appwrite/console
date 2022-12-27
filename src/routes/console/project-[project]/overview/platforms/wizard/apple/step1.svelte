@@ -41,9 +41,9 @@
             projectId,
             platform,
             $createPlatform.name,
+            $createPlatform.key,
             undefined,
-            undefined,
-            $createPlatform.hostname
+            undefined
         );
 
         $createPlatform.$id = response.$id;
@@ -95,6 +95,6 @@
             placeholder="com.company.appname"
             tooltip="You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
             required
-            bind:value={$createPlatform.hostname} />
+            bind:value={$createPlatform.key} />
     </FormList>
 </WizardStep>
