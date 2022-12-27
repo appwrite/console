@@ -97,7 +97,7 @@
             files = entrypoint = active = null;
             showCreate = false;
             dispatch('created');
-            trackEvent('submit_function_create');
+            trackEvent('submit_deployment_create');
         } catch (error) {
             addNotification({
                 type: 'error',
