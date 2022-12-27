@@ -59,7 +59,7 @@ function createServices() {
                 label: 'GraphQL',
                 method: 'graphql',
                 value: null
-            },
+            }
         ]
     });
 
@@ -117,7 +117,7 @@ function createServices() {
                     label: 'GraphQL',
                     method: 'graphql',
                     value: project.serviceStatusForGraphql
-                },
+                }
             ];
             set({ list });
         }
