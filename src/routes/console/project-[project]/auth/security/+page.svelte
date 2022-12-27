@@ -20,7 +20,7 @@
     let timeInSec = time;
     let period = writable('s');
     let btnActive = false;
-    let maxSessions = $project.authMaxSessions ?? 10;
+    let maxSessions = $project.authSessionsLimit;
 
     let options = [
         { label: 'days', value: 'd' },
@@ -84,14 +84,8 @@
     }
     async function updateSessionsLimit() {
         try {
+            await sdkForConsole.projects.updateAuthSessionsLimit(projectId, maxSessions);
 
-            const path = '/projects/' + projectId + '/auth/max-sessions';
-            const uri = new URL(sdkForConsole.client.config.endpoint + path);
-            await sdkForConsole.client.call('patch', uri, {
-                'content-type': 'application/json',
-            }, {
-                limit: maxSessions
-            });
             addNotification({
                 type: 'success',
                 message: 'Sessions limit has been updated'
@@ -225,17 +219,15 @@
     <Form on:submit={updateSessionsLimit}>
         <CardGrid>
             <Heading tag="h2" size="6">Session Limit</Heading>
-            <p>
-                Maximum number of active sessions allowed per user.
-            </p>
+            <p>Maximum number of active sessions allowed per user.</p>
             <svelte:fragment slot="aside">
-                    <ul>
-                        <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
-                    </ul>
+                <ul>
+                    <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
+                </ul>
             </svelte:fragment>
-    
+
             <svelte:fragment slot="actions">
-                <Button disabled={maxSessions === $project.authMaxSessions} submit>Update</Button>
+                <Button disabled={maxSessions === $project.authSessionsLimit} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
