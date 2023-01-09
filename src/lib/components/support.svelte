@@ -5,39 +5,49 @@
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '../../routes/console/supportWizard.svelte';
+    import { Mode, Tier } from '$lib/constants';
+    const mode = import.meta.env.VITE_CONSOLE_MODE?.toString() || Mode.SELF_HOSTED;
+    const tier = import.meta.env.VITE_CONSOLE_TIER?.toString() || Tier.BASE;
 
     export let show = false;
 </script>
 
-<section class="drop-section u-grid u-gap-24 u-padding-24">
-    <div class="u-flex">
-        {#if $app.themeInUse === 'light'}
-            <img src={SupportLight} alt="Support" />
+{#if mode === 'cloud'}
+    <section class="drop-section u-grid u-gap-24 u-padding-24">
+        <div class="u-flex">
+            {#if $app.themeInUse === 'light'}
+                <img src={SupportLight} alt="Support" />
+            {:else}
+                <img src={SupportDark} alt="Support" />
+            {/if}
+        </div>
+        <div>
+            <h4 class="eyebrow-heading-3">Premium support</h4>
+            <p class="u-line-height-1-5 u-margin-block-start-8">
+                Get personalized support from the Appwrite team from <b>09:00 - 17:00 UTC</b>
+            </p>
+        </div>
+        {#if tier === 'base'}
+            <Button fullWidth href="https://appwrite.io/billing">
+                <span class="text">Get Premium support</span>
+            </Button>
         {:else}
-            <img src={SupportDark} alt="Support" />
+            <Button
+                secondary
+                fullWidth
+                on:click={() => {
+                    show = false;
+                    wizard.start(SupportWizard);
+                }}>
+                <span class="text">Contact our Support Team</span>
+            </Button>
         {/if}
-    </div>
-    <div>
-        <h4 class="eyebrow-heading-3">Premium support</h4>
-        <p class="u-line-height-1-5 u-margin-block-start-8">
-            Get personalized support from the Appwrite team from <b>09:00 - 17:00 UTC</b>
-        </p>
-    </div>
-    <!-- TODO: show first button only on free version (need ENV variable) -->
-    <!-- <Button>Get premium support</Button> -->
-    <Button
-        secondary
-        fullWidth
-        on:click={() => {
-            show = false;
-            wizard.start(SupportWizard);
-        }}>
-        <span class="text">Contact our Support Team</span>
-    </Button>
-</section>
+    </section>
+{/if}
 <section class="drop-section u-grid u-gap-24 u-padding-24">
     <div>
-        <h4 class="eyebrow-heading-3">troubleshooting</h4>
+        <h4 class="eyebrow-heading-3">Troubleshooting</h4>
+        <!-- TODO: check service live -->
         <a
             href="https://status.appwrite.io/"
             target="_blank"

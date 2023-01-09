@@ -43,7 +43,7 @@
     }
 </script>
 
-<Wizard title="Contact us" steps={stepsComponents}>
+<Wizard title="Contact us" steps={stepsComponents} finalAction="Go back to My Console">
     <svelte:fragment slot="aside">
         <div class="common-section">
             <h4 class="body-text-1">Contact the Appwrite Team</h4>

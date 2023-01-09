@@ -7,6 +7,12 @@ export enum Mode {
     SELF_HOSTED = 'self-hosted'
 }
 
+export enum Tier {
+    BASE = 'base',
+    PREMIUM = 'premium',
+    ENTERPRISE = 'enterprise'
+}
+
 export enum Dependencies {
     ORGANIZATION = 'dependency:organization',
     PROJECT = 'dependency:project',
