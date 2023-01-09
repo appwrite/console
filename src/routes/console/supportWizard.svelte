@@ -8,8 +8,6 @@
 
     onDestroy(() => {
         $supportData = {
-            name: null,
-            email: null,
             message: null,
             tags: ['general'],
             file: null

@@ -16,12 +16,24 @@
     let files: FileList;
 
     async function beforeSubmit() {
-        try {
-            console.log($supportData.message);
-            trackEvent('submit_support_ticket');
-        } catch (error) {
+        console.log('test');
+        const response = await fetch('https://growth.appwrite.io/v1/support', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                subject: 'support',
+                message: $supportData.message,
+                email: 'test@email.com',
+                tags: $supportData.tags
+            })
+        });
+        console.log(response);
+        trackEvent('submit_support_ticket');
+        if (response.status !== 200) {
             addNotification({
-                message: error.message,
+                message: 'There was an error submitting your feedback',
                 type: 'error'
             });
         }
