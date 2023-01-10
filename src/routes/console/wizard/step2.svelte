@@ -7,7 +7,7 @@
     <svelte:fragment slot="title">Your message has been sent</svelte:fragment>
     <svelte:fragment slot="subtitle">The Appwrite team is on it!</svelte:fragment>
 
-    {#if $supportData.tags.includes('technical')}
+    {#if $supportData.category === 'technical'}
         <img
             src="https://i.kym-cdn.com/photos/images/newsfeed/001/485/098/245.gif"
             alt="Sweating guy" />

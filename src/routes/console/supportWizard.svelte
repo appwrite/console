@@ -9,7 +9,7 @@
     onDestroy(() => {
         $supportData = {
             message: null,
-            tags: ['general'],
+            category: 'general',
             file: null
         };
     });
