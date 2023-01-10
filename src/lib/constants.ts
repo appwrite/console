@@ -12,6 +12,7 @@ export enum Tier {
     PREMIUM = 'premium',
     ENTERPRISE = 'enterprise'
 }
+export const growthEndpoint = import.meta.env.VITE_APPWRITE_GROWTH_ENDPOINT;
 
 export enum Dependencies {
     ORGANIZATION = 'dependency:organization',

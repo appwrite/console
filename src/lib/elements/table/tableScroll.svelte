@@ -1,7 +1,11 @@
+<script lang="ts">
+    export let isSticky = false;
+</script>
+
 <div class="table-with-scroll u-margin-block-start-32">
     <div class="table-wrapper">
-        <div class="table is-sticky-scroll" role="table">
+        <table class="table" class:is-sticky-scroll={isSticky}>
             <slot />
-        </div>
+        </table>
     </div>
 </div>
