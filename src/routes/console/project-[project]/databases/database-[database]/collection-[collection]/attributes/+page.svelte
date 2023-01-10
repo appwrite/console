@@ -40,8 +40,8 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Key</TableCellHead>
-                <TableCellHead>Type</TableCellHead>
-                <TableCellHead>Default Value</TableCellHead>
+                <TableCellHead onlyDesktop>Type</TableCellHead>
+                <TableCellHead onlyDesktop>Default Value</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -63,10 +63,10 @@
                                 {/if}
                             </div>
                         </TableCell>
-                        <TableCellText title="Type">
+                        <TableCellText onlyDesktop title="Type">
                             {`${attribute.type}${attribute.array ? '[]' : ''}`}
                         </TableCellText>
-                        <TableCellText title="Default Value">
+                        <TableCellText onlyDesktop title="Default Value">
                             {attribute.default !== null ? attribute.default : '-'}
                         </TableCellText>
                         <TableCell showOverflow>
