@@ -63,7 +63,9 @@
                                 {/if}
                             </div>
                         </TableCell>
-                        <TableCellText title="Type">{attribute.type}</TableCellText>
+                        <TableCellText title="Type">
+                            {`${attribute.type}${attribute.array ? '[]' : ''}`}
+                        </TableCellText>
                         <TableCellText title="Default Value">
                             {attribute.default !== null ? attribute.default : '-'}
                         </TableCellText>
