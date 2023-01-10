@@ -19,7 +19,7 @@
         Linux = 'flutter-linux',
         Macos = 'flutter-macos',
         Windows = 'flutter-windows',
-        Web = 'flutter-web'
+        Web = 'web'
     }
 
     let platform: Platform = Platform.Android;
