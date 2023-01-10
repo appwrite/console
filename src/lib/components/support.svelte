@@ -12,7 +12,7 @@
     export let show = false;
 </script>
 
-{#if mode !== 'cloud'}
+{#if mode === 'cloud'}
     <section class="drop-section u-grid u-gap-24 u-padding-24">
         <div class="u-flex">
             {#if $app.themeInUse === 'light'}
@@ -27,7 +27,7 @@
                 Get personalized support from the Appwrite team from <b>09:00 - 17:00 UTC</b>
             </p>
         </div>
-        {#if tier !== 'base'}
+        {#if tier === 'base'}
             <Button fullWidth href="https://appwrite.io/billing">
                 <span class="text">Get Premium support</span>
             </Button>
