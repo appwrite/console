@@ -72,7 +72,7 @@
             <Button
                 external
                 secondary
-                href="https://appwrite.io/docs/server/auth?sdk=nodejs-default#usersGetMemberships">
+                href="https://appwrite.io/docs/server/users?sdk=nodejs-default#usersListMemberships">
                 Documentation
             </Button>
         </Empty>

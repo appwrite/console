@@ -12,8 +12,12 @@
 
     let method: Method = Method.NPM;
 
-    const example1 = `import { Appwrite } from 'appwrite';`;
-    const example2 = `<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}" />`;
+    const example1 = `import { Client } from 'appwrite';`;
+    const example2 =
+        `<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}" />
+<script>
+    const { Client } = Appwrite;
+</script` + `>`; // Prevent svelte from processing the closing script tag
 </script>
 
 <WizardStep>

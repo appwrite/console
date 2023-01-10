@@ -3,12 +3,13 @@ import googleAnalytics from '@analytics/google-analytics';
 import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
+import { growthEndpoint, Mode } from '$lib/constants';
 
 const analytics = Analytics({
     app: 'appwrite',
     plugins: [
         googleAnalytics({
-            measurementIds: ['G-R4YJ9JN8L4']
+            measurementIds: [import.meta.env.VITE_GA_PROJECT?.toString() || 'G-R4YJ9JN8L4']
         })
     ]
 });
@@ -39,7 +40,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
         email = userStore.email;
         name = userStore.name;
     }
-    fetch('https://growth.appwrite.io/v1/analytics', {
+    fetch(`${growthEndpoint}/analytics`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -48,6 +49,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
             action: event,
             label: event,
             url: window.location.origin + path,
+            account: import.meta.env.VITE_CONSOLE_MODE?.toString() || Mode.SELF_HOSTED,
             data: {
                 email,
                 name,

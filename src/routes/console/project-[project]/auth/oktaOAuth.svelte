@@ -35,7 +35,8 @@
                 projectId,
                 provider.name.toLowerCase(),
                 appId,
-                secret
+                secret,
+                enabled
             );
             addNotification({
                 type: 'success',
@@ -102,7 +103,7 @@
             <CopyInput
                 value={`${
                     sdkForConsole.client.config.endpoint
-                }/account/session/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">
