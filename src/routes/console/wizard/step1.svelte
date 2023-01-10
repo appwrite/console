@@ -10,13 +10,13 @@
     import Dark from '$lib/images/support/support-wizard-dark.svg';
     import { Pill } from '$lib/elements';
     import { Collapsible, CollapsibleItem } from '$lib/components';
+    import { user } from '$lib/stores/user';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     let files: FileList;
 
     async function beforeSubmit() {
-        console.log('test');
         const response = await fetch('https://growth.appwrite.io/v1/support', {
             method: 'POST',
             headers: {
@@ -24,12 +24,13 @@
             },
             body: JSON.stringify({
                 subject: 'support',
+                email: $user.email,
+                firstName: $user?.name ?? '',
                 message: $supportData.message,
-                email: 'test@email.com',
-                tags: $supportData.tags
+                tags: ['cloud'],
+                customFields: [{ id: '41612', value: $supportData.category }]
             })
         });
-        console.log(response);
         trackEvent('submit_support_ticket');
         if (response.status !== 200) {
             addNotification({
@@ -53,9 +54,9 @@
             {#each ['General', 'Billing', 'Technical'] as topic}
                 <Pill
                     button
-                    selected={$supportData.tags.includes(topic.toLowerCase())}
+                    selected={$supportData.category === topic.toLowerCase()}
                     on:click={() => {
-                        $supportData.tags = [topic.toLocaleLowerCase()];
+                        $supportData.category = topic.toLocaleLowerCase();
                     }}>{topic}</Pill>
             {/each}
         </div>
