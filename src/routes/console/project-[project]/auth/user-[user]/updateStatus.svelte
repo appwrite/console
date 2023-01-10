@@ -53,7 +53,7 @@
     async function updateStatus() {
         try {
             await sdkForProject.users.updateStatus($user.$id, !$user.status);
-            invalidate(Dependencies.USER);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.status ? 'unblocked' : 'blocked'
