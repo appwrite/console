@@ -31,9 +31,9 @@
             projectId,
             'android',
             $createPlatform.name,
+            $createPlatform.key,
             undefined,
-            undefined,
-            $createPlatform.hostname
+            undefined
         );
 
         $createPlatform.$id = platform.$id;
@@ -50,11 +50,11 @@
             required
             bind:value={$createPlatform.name} />
         <InputText
-            id="hostname"
+            id="key"
             label="Package Name"
             placeholder="com.company.appname"
             tooltip="Your package name is generally the applicationId in your app-level build.gradle file."
             required
-            bind:value={$createPlatform.hostname} />
+            bind:value={$createPlatform.key} />
     </FormList>
 </WizardStep>

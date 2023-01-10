@@ -19,7 +19,7 @@
             invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.emailVerification ? 'verified' : 'unverified'
+                    $user.emailVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
             });
@@ -38,7 +38,7 @@
             invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.phoneVerification ? 'verified' : 'unverified'
+                    $user.phoneVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
             });
@@ -56,7 +56,7 @@
             invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.status ? 'unblocked' : 'blocked'
+                    $user.status ? 'blocked' : 'unblocked'
                 }`,
                 type: 'success'
             });

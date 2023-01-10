@@ -12,7 +12,7 @@
     import Dark from './dark.svg';
 
     const projectId = $page.params.project;
-    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.app'];
+    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
     async function beforeSubmit() {
