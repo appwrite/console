@@ -63,9 +63,11 @@
                                 {/if}
                             </div>
                         </TableCell>
-                        <TableCellText onlyDesktop title="Type">{attribute.type}</TableCellText>
+                        <TableCellText onlyDesktop title="Type">
+                            {`${attribute.type}${attribute.array ? '[]' : ''}`}
+                        </TableCellText>
                         <TableCellText onlyDesktop title="Default Value">
-                            {attribute.default ? attribute.default : '-'}
+                            {attribute.default !== null ? attribute.default : '-'}
                         </TableCellText>
                         <TableCell showOverflow>
                             <DropList

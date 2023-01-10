@@ -1,5 +1,6 @@
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
+import { sdkForProject } from './sdk';
 
 type UploaderFile = {
     $id: string;
@@ -8,7 +9,6 @@ type UploaderFile = {
     progress: number;
     completed: boolean;
     failed: boolean;
-    cancelled: boolean;
     error?: string;
 };
 export type Uploader = {
@@ -42,7 +42,6 @@ const createUploader = () => {
         close: () =>
             update((n) => {
                 n.isOpen = !n.isOpen;
-
                 return n;
             }),
         toggle: () =>
@@ -57,20 +56,41 @@ const createUploader = () => {
                 isCollapsed: false,
                 files: []
             }),
-        addFile: async (file: Models.File, isOpen = true, isCollapsed = false) => {
+        uploadFile: async (bucketId: string, id: string, file: File, permissions: string[]) => {
             const newFile: UploaderFile = {
-                $id: file.$id,
-                bucketId: file.bucketId,
+                $id: id,
+                bucketId: bucketId,
                 name: file.name,
-                progress: calculateProgress(file),
-                completed: calculateProgress(file) === 100 ? true : false,
-                failed: false,
-                cancelled: false
+                progress: 0,
+                completed: false,
+                failed: false
             };
-            return update((n) => {
-                n.isOpen = isOpen;
-                n.isCollapsed = isCollapsed;
+            update((n) => {
+                n.isOpen = true;
+                n.isCollapsed = false;
                 n.files.unshift(newFile);
+                return n;
+            });
+            const uploadedFile = await sdkForProject.storage.createFile(
+                bucketId,
+                id ?? 'unique()',
+                file,
+                permissions,
+                (p) => {
+                    newFile.$id = p.$id;
+                    newFile.progress = p.progress;
+                    newFile.completed = p.progress === 100 ? true : false;
+                    updateFile(p.$id, newFile);
+                }
+            );
+            newFile.$id = uploadedFile.$id;
+            newFile.progress = 100;
+            newFile.completed = true;
+            updateFile(newFile.$id, newFile);
+        },
+        removeFromQueue: (id: string) => {
+            update((n) => {
+                n.files = n.files.filter((f) => f.$id !== id);
                 return n;
             });
         },
@@ -81,18 +101,9 @@ const createUploader = () => {
 
                     return n;
                 });
-            } else {
-                if (confirm('Are you sure you want to cancel the upload?')) {
-                    updateFile(file.$id, { cancelled: true });
-                }
             }
         }
     };
 };
 
 export const uploader = createUploader();
-
-function calculateProgress(file: Models.File) {
-    const progress = file.chunksUploaded / file.chunksTotal;
-    return Math.round(progress * 100);
-}
