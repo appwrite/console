@@ -13,7 +13,6 @@ const config = {
         adapter: adapter({
             fallback: 'index.html'
         }),
-        prerender: { entries: [] },
         paths: {
             base: ''
         }
