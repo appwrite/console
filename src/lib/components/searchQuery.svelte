@@ -46,7 +46,7 @@
 
             url.search = value;
 
-            goto(url, { keepfocus: true });
+            goto(url, { keepFocus: true });
         }, debounce);
     };
 </script>
