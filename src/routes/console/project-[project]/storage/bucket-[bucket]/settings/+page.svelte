@@ -349,7 +349,7 @@
                             <label class="choice-item" for="encryption">
                                 <div class="input-text-wrapper">
                                     <input
-                                        label="Encryption"
+                                        name="encryption"
                                         id="encryption"
                                         type="checkbox"
                                         class="switch"
@@ -372,7 +372,7 @@
                             <label class="choice-item" for="antivirus">
                                 <div class="input-text-wrapper">
                                     <input
-                                        label="Antivirus"
+                                        name="antivirus"
                                         id="antivirus"
                                         type="checkbox"
                                         class="switch"
