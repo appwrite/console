@@ -16,6 +16,27 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    import { isCloud } from '$lib/stores/app';
+    import LoginLight from '$lib/images/login/login-light-mode.svg';
+    import LoginDark from '$lib/images/login/login-dark-mode.svg';
+
+    let referrer: string;
+    let imgLight = LoginLight;
+    let imgDark = LoginDark;
+
+    onMount(async () => {
+        if (isCloud) {
+            referrer = $page.url.searchParams.get('ref');
+            switch (referrer) {
+                case 'appwrite':
+                    imgDark = (await import('$lib/images/appwrite.svg')).default;
+                    imgLight = (await import('$lib/images/appwrite.svg')).default;
+                    break;
+            }
+        }
+    });
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
@@ -42,7 +63,7 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated {imgLight} {imgDark}>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form on:submit={register}>
