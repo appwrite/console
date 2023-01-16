@@ -38,7 +38,7 @@
         error = element.validationMessage;
     };
 
-    const handleOnInput = () => {
+    const handleInput = () => {
         if (value === '') {
             value = null;
         }
@@ -62,7 +62,7 @@
             type="url"
             autocomplete={autocomplete ? 'on' : 'off'}
             bind:value
-            on:input={handleOnInput}
+            on:input={handleInput}
             bind:this={element}
             on:invalid={handleInvalid} />
     </div>
