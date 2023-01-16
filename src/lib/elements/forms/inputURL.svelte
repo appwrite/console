@@ -5,7 +5,7 @@
     export let label: string;
     export let showLabel = true;
     export let id: string;
-    export let value = null;
+    export let value = '';
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
