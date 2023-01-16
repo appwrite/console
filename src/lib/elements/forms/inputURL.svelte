@@ -5,7 +5,7 @@
     export let label: string;
     export let showLabel = true;
     export let id: string;
-    export let value = '';
+    export let value = null;
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
@@ -38,6 +38,12 @@
         error = element.validationMessage;
     };
 
+    const handleOnInput = () => {
+        if (value === '') {
+            value = null;
+        }
+    };
+
     $: if (value) {
         error = null;
     }
@@ -56,6 +62,7 @@
             type="url"
             autocomplete={autocomplete ? 'on' : 'off'}
             bind:value
+            on:input={handleOnInput}
             bind:this={element}
             on:invalid={handleInvalid} />
     </div>
