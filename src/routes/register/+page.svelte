@@ -30,6 +30,10 @@
         if (isCloud) {
             code = $page.url.searchParams.get('code');
             switch (code) {
+                case 'mlh':
+                    imgDark = (await import('./mlh-logo-white.svg')).default;
+                    imgLight = (await import('./mlh-logo-white.svg')).default;
+                    break;
                 case 'appwrite':
                     imgDark = (await import('$lib/images/appwrite.svg')).default;
                     imgLight = (await import('$lib/images/appwrite.svg')).default;
