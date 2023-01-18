@@ -44,8 +44,13 @@
     async function register() {
         try {
             disabled = true;
-            await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
+            if (isCloud && referrer) {
+                await sdkForConsole.account.invite('unique()', mail, pass, referrer, name ?? '');
+            } else {
+                await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
+            }
             await sdkForConsole.account.createEmailSession(mail, pass);
+            await sdkForConsole.account.updatePrefs({ ref: referrer });
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
             trackEvent('submit_account_create');
