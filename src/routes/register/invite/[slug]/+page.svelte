@@ -11,28 +11,68 @@
         InputText
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { endpoint, sdkForConsole } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    import { isCloud } from '$lib/stores/app';
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
 
+    let slug = $page.params.slug;
     let imgLight = LoginLight;
     let imgDark = LoginDark;
 
-    let name: string, mail: string, pass: string, disabled: boolean;
+    onMount(async () => {
+        if (isCloud) {
+            switch (slug) {
+                case 'mlh':
+                    imgDark = (await import('./mlh-dark.svg')).default;
+                    imgLight = (await import('./mlh-light.svg')).default;
+                    title = 'Welcome MLH Hackers!';
+                    break;
+                case 'appwrite':
+                    imgDark = (await import('$lib/images/appwrite.svg')).default;
+                    imgLight = (await import('$lib/images/appwrite.svg')).default;
+                    title = 'Welcome Appwriters!';
+
+                    break;
+            }
+        }
+    });
+
+    let name: string, mail: string, pass: string, code: string, disabled: boolean;
+    let title = 'Sign up';
     let terms = false;
 
-    async function register() {
+    async function invite() {
         try {
             disabled = true;
-            await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
-            await sdkForConsole.account.createEmailSession(mail, pass);
-            await invalidate(Dependencies.ACCOUNT);
-            await goto(`${base}/console`);
-            trackEvent('submit_account_create');
+            const res = await fetch(`${endpoint}/account/invite`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: 'unique()',
+                    email: mail,
+                    password: pass,
+                    code: code,
+                    name: name ?? ''
+                })
+            });
+            if (!res.ok) {
+                throw new Error((await res.json()).message);
+            } else {
+                await sdkForConsole.account.createEmailSession(mail, pass);
+                await sdkForConsole.account.updatePrefs({ code });
+                await invalidate(Dependencies.ACCOUNT);
+                await goto(`${base}/console`);
+                trackEvent('submit_account_create', { code: code });
+            }
         } catch (error) {
             disabled = false;
             addNotification({
@@ -48,9 +88,9 @@
 </svelte:head>
 
 <Unauthenticated {imgLight} {imgDark}>
-    <svelte:fragment slot="title">Sign up</svelte:fragment>
+    <svelte:fragment slot="title">{title}</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={register}>
+        <Form on:submit={invite}>
             <FormList>
                 <InputText
                     id="name"
@@ -71,6 +111,12 @@
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
+                <InputText
+                    id="Code"
+                    label="Code"
+                    placeholder="Your code"
+                    required={true}
+                    bind:value={code} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <a
                         class="link"
