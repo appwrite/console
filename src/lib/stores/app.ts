@@ -19,7 +19,9 @@ export const app = writable<AppStore>({
     themeInUse: 'light'
 });
 
-export const isCloud = import.meta.env.VITE_CONSOLE_MODE?.toString() === 'cloud' ? true : false;
+export const isCloud =
+    (import.meta.env.VITE_CONSOLE_MODE?.toString() ?? 'cloud') === 'cloud' ? true : false;
+// export const isCloud = import.meta.env.VITE_CONSOLE_MODE?.toString() === 'cloud' ? true : false;
 
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({
