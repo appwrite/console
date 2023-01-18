@@ -11,7 +11,7 @@
         InputText
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { endpoint, sdkForConsole } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
@@ -22,14 +22,14 @@
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
 
-    let referrer: string;
+    let code: string;
     let imgLight = LoginLight;
     let imgDark = LoginDark;
 
     onMount(async () => {
         if (isCloud) {
-            referrer = $page.url.searchParams.get('ref');
-            switch (referrer) {
+            code = $page.url.searchParams.get('code');
+            switch (code) {
                 case 'appwrite':
                     imgDark = (await import('$lib/images/appwrite.svg')).default;
                     imgLight = (await import('$lib/images/appwrite.svg')).default;
@@ -41,16 +41,45 @@
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
 
+    async function invite() {
+        try {
+            disabled = true;
+            const res = await fetch(`${endpoint}/account/invite`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: 'unique()',
+                    email: mail,
+                    password: pass,
+                    code: code,
+                    name: name ?? ''
+                })
+            });
+            if (!res.ok) {
+                throw new Error((await res.json()).message);
+            } else {
+                await sdkForConsole.account.createEmailSession(mail, pass);
+                await sdkForConsole.account.updatePrefs({ code });
+                await invalidate(Dependencies.ACCOUNT);
+                await goto(`${base}/console`);
+                trackEvent('submit_account_create');
+            }
+        } catch (error) {
+            disabled = false;
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
     async function register() {
         try {
             disabled = true;
-            if (isCloud && referrer) {
-                await sdkForConsole.account.invite('unique()', mail, pass, referrer, name ?? '');
-            } else {
-                await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
-            }
+            await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
             await sdkForConsole.account.createEmailSession(mail, pass);
-            await sdkForConsole.account.updatePrefs({ ref: referrer });
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
             trackEvent('submit_account_create');
@@ -71,7 +100,7 @@
 <Unauthenticated {imgLight} {imgDark}>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={register}>
+        <Form on:submit={isCloud && code ? invite : register}>
             <FormList>
                 <InputText
                     id="name"
