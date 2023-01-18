@@ -5,7 +5,7 @@ import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, depends }) => {
-    depends(Dependencies.PROJECT);
+    depends(Dependencies.PLATFORM);
 
     return {
         header: Header,

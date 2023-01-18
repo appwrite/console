@@ -17,6 +17,7 @@
 
     let name: string = null;
     let showDelete = false;
+    let updating = false;
     const endpoint = sdkForConsole.client.config.endpoint;
     const projectId = $page.params.project;
 
@@ -24,7 +25,8 @@
         name ??= $project.name;
     });
 
-    const updateName = async () => {
+    async function updateName() {
+        updating = true;
         try {
             await sdkForConsole.projects.update($project.$id, name);
             invalidate(Dependencies.PROJECT);
@@ -39,9 +41,15 @@
                 message: error.message
             });
         }
-    };
+    }
 
-    const serviceUpdate = async (service: Service) => {
+    $: {
+        // When project name is updated, finalize the updating flow
+        $project.name;
+        updating = false;
+    }
+
+    async function serviceUpdate(service: Service) {
         try {
             await sdkForConsole.projects.updateServiceStatus(
                 $project.$id,
@@ -65,7 +73,7 @@
                 message: error.message
             });
         }
-    };
+    }
 
     $: services.load($project);
 </script>
@@ -105,7 +113,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={name === $project.name} submit>Update</Button>
+                    <Button disabled={name === $project.name || updating} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>

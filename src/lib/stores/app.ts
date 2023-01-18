@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { growthEndpoint } from '$lib/constants';
 import { writable } from 'svelte/store';
 
 export type AppStore = {
@@ -17,6 +18,10 @@ export const app = writable<AppStore>({
     theme: 'auto',
     themeInUse: 'light'
 });
+
+//TODO: remove cloud always set to true
+export const isCloud =
+    (import.meta.env.VITE_CONSOLE_MODE?.toString() ?? 'cloud') === 'cloud' ? true : false;
 
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({
@@ -59,7 +64,7 @@ function createFeedbackStore() {
             email?: string,
             value?: number
         ) => {
-            const response = await fetch('https://growth.appwrite.io/v1/feedback', {
+            const response = await fetch(`${growthEndpoint}/feedback`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

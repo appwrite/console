@@ -50,7 +50,7 @@
 
     {#if $collection?.attributes?.length}
         {#if data.documents.total}
-            <TableScroll>
+            <TableScroll isSticky>
                 <TableHeader>
                     <TableCellHead>Document ID</TableCellHead>
                     {#each columns as column}

@@ -1,9 +1,13 @@
 <script lang="ts">
     import AppwriteLogo from '$lib/images/appwrite.svg';
-    import LoginLight from '$lib/images/login/login-light-mode.svg';
-    import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
+    import { user } from '$lib/stores/user';
+    import LoginLight from '$lib/images/login/login-light-mode.svg';
+    import LoginDark from '$lib/images/login/login-dark-mode.svg';
+
+    export let imgLight = LoginLight;
+    export let imgDark = LoginDark;
 
     const technologies = [
         'js',
@@ -25,7 +29,7 @@
         <div
             class="container u-margin-block-start-20"
             style="--p-container-max-size: var(--container-size-medium);">
-            <a href="/">
+            <a href={user ? '/console' : '/'}>
                 <img src={AppwriteLogo} width="196" height="47" class="u-block" alt="Appwrite" />
             </a>
         </div>
@@ -34,12 +38,12 @@
 
         <div class="u-margin-block-start-auto is-no-mobile" />
         <div
-            class="container u-margin-block-start-20 is-no-mobile"
+            class="container u-margin-block-start-20 is-no-mobile u-flex u-main-center"
             style="--p-container-max-size: var(--container-size-large);">
             {#if $app.themeInUse === 'dark'}
-                <img src={LoginDark} alt="" class="u-only-dark" />
+                <img src={imgDark} alt="" class="u-only-dark" />
             {:else}
-                <img src={LoginLight} alt="" class="u-only-light" />
+                <img src={imgLight} alt="" class="u-only-light" />
             {/if}
         </div>
 
