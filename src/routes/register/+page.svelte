@@ -64,7 +64,7 @@
                 await sdkForConsole.account.updatePrefs({ code });
                 await invalidate(Dependencies.ACCOUNT);
                 await goto(`${base}/console`);
-                trackEvent('submit_account_create');
+                trackEvent('submit_account_create', { code: code });
             }
         } catch (error) {
             disabled = false;
