@@ -1,11 +1,14 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import SupportLight from '$lib/images/support/support-light.png';
-    import SupportDark from '$lib/images/support/support-dark.png';
+    import SupportOfflineLight from '$lib/images/support/support-offline-light.png';
+    import SupportOfflineDark from '$lib/images/support/support-offline-dark.png';
+    import SupportOnlineLight from '$lib/images/support/support-online-light.png';
+    import SupportOnlineDark from '$lib/images/support/support-online-dark.png';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '../../routes/console/supportWizard.svelte';
     import { Mode, Tier } from '$lib/constants';
+    import { isSupportOnline } from '../../routes/console/wizard/store';
     const mode = import.meta.env.VITE_CONSOLE_MODE?.toString() || Mode.SELF_HOSTED;
     const tier = import.meta.env.VITE_CONSOLE_TIER?.toString() || Tier.BASE;
 
@@ -14,11 +17,17 @@
 
 {#if mode === 'cloud'}
     <section class="drop-section u-grid u-gap-24 u-padding-24">
-        <div class="u-flex">
-            {#if $app.themeInUse === 'light'}
-                <img src={SupportLight} alt="Support" />
+        <div class="u-flex u-main-center">
+            {#if isSupportOnline()}
+                {#if $app.themeInUse === 'light'}
+                    <img src={SupportOnlineLight} alt="Support" />
+                {:else}
+                    <img src={SupportOnlineDark} alt="Support" />
+                {/if}
+            {:else if $app.themeInUse === 'light'}
+                <img src={SupportOfflineLight} alt="Support" />
             {:else}
-                <img src={SupportDark} alt="Support" />
+                <img src={SupportOfflineDark} alt="Support" />
             {/if}
         </div>
         <div>
@@ -59,7 +68,7 @@
             <b class="text">All services are online</b>
         </a>
     </div>
-    <div class="u-flex u-gap-16 u-margin-block-start-8">
+    <div class="u-flex u-gap-16">
         <a
             href="https://appwrite.io/docs"
             target="_blank"
@@ -81,7 +90,7 @@
 <section class="drop-section u-grid u-gap-8 u-padding-24">
     <div>
         <h4 class="eyebrow-heading-3">community support</h4>
-        <p>Get help from our community</p>
+        <p class="text u-margin-block-start-8">Get help from our community</p>
     </div>
     <ul class="u-flex">
         <li>

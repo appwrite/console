@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
     import { onDestroy } from 'svelte';
-    import { supportData } from './wizard/store';
+    import { isSupportOnline, supportData } from './wizard/store';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
@@ -23,22 +23,6 @@
         label: 'Your message has been sent',
         component: Step2
     });
-
-    function isSupportOnline() {
-        const currentDate = new Date();
-        const day = currentDate.getDay();
-        const hour = currentDate.getHours();
-
-        if (day === 1 || day === 6) {
-            return false;
-        }
-
-        if (hour < 9 || hour > 17) {
-            return false;
-        }
-
-        return true;
-    }
 </script>
 
 <Wizard title="Contact us" steps={stepsComponents} finalAction="Go back to My Console">
@@ -57,10 +41,10 @@
                     <span class="u-success">
                         <span class="icon-check-circle" aria-hidden="true" />
                     </span>
-                    <span class="u-success text">online</span>
+                    <span class="u-success text">Online</span>
                 {:else}
                     <span class="icon-x-circle" aria-hidden="true" />
-                    <span class="text">offline</span>{/if}
+                    <span class="text">Offline</span>{/if}
             </p>
         </div>
     </svelte:fragment>

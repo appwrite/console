@@ -49,14 +49,14 @@
         17:00 UCT). Expect to receive an email from us soon!
     </svelte:fragment>
     <div class="common-section">
-        <p class="text">Choose a topic</p>
-        <div class="u-flex u-gap-8">
-            {#each ['General', 'Billing', 'Technical'] as topic}
+        <p class="label">Choose a topic</p>
+        <div class="u-flex u-gap-8 u-margin-block-start-8">
+            {#each ['general', 'billing', 'technical'] as topic}
                 <Pill
                     button
-                    selected={$supportData.category === topic.toLowerCase()}
+                    selected={$supportData.category === topic}
                     on:click={() => {
-                        $supportData.category = topic.toLocaleLowerCase();
+                        $supportData.category = topic;
                     }}>{topic}</Pill>
             {/each}
         </div>
