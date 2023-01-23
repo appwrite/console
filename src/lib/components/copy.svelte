@@ -6,7 +6,7 @@
 
     export let value: string;
     export let event: string = null;
-    export let appendTo: any | undefined = undefined;
+    export let appendTo: Parameters<typeof tooltip>['1']['appendTo'] = undefined;
 
     let content = 'Click to copy';
 

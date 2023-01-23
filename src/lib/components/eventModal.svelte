@@ -54,7 +54,7 @@
         if (typeof value === 'string') {
             selected[field as 'attribute'] = selected[field] === value ? null : value;
         } else {
-            selected[field as any] = (selected[field] as any)?.name === value.name ? null : value;
+            selected[field] = selected[field]?.name === value.name ? null : value;
         }
 
         customInput = null;
@@ -121,8 +121,8 @@
         }
     }
 
-    function toggleShowInput(e?: Event) {
-        e?.preventDefault();
+    function toggleShowInput(e: Event) {
+        e.preventDefault();
 
         showInput = !showInput;
         if (showInput) return;
@@ -326,7 +326,7 @@
         </div>
     {:else}
         <div class="input-text-wrapper" style="--amount-of-buttons:2" bind:this={copyParent}>
-            <div type="text" readonly style="min-height: 2.5rem;">
+            <div style="min-height: 2.5rem;">
                 {#each eventString as route, i}
                     <span
                         class:u-opacity-0-5={helper !== route.description}
@@ -342,9 +342,9 @@
             <div class="options-list">
                 {#key copyParent}
                     <button
-                        on:click|preventDefault={() => {
+                        on:click={(e) => {
                             customInput = inputValue;
-                            toggleShowInput();
+                            toggleShowInput(e);
                         }}
                         use:tooltip={{ content: 'Edit event', appendTo: copyParent }}
                         class="options-list-button"
