@@ -8,12 +8,26 @@
     import { base } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Query } from "@aw-labs/appwrite-console";
+    import { FormList, InputPassword, InputText } from "$lib/elements/forms/index.js";
 
     export let showDelete = false;
+
+    let password: string = null;
+    let name: string = null;
 
     const deleteOrg = async () => {
         try {
             await sdkForConsole.teams.delete($organization.$id);
+
+            const projectList = await sdkForConsole.projects.list([
+                Query.equal('teamId', $organization.$id),
+            ])
+
+            await Promise.all(projectList.projects.map(async (project) => {
+                await sdkForConsole.projects.delete(project.$id, password);
+            }));
+
             addNotification({
                 type: 'success',
                 message: `${$organization.name} has been deleted`
@@ -42,8 +56,27 @@
         Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})
         and data associated with this organization will be deleted. This action is irreversible.
     </p>
+
+    <FormList>
+        <InputText
+            label={`Enter "${$organization.name}" to continue`}
+            placeholder="Enter name"
+            id="name"
+            autofocus
+            required
+            bind:value={name} />
+        <InputPassword
+            label="To verify, enter your password"
+            placeholder="Enter password"
+            id="password"
+            required
+            showPasswordButton={true}
+            bind:value={password} />
+    </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button disabled={!name || !password || name !== $organization.name} secondary submit>
+            Delete
+        </Button>
     </svelte:fragment>
 </Modal>
