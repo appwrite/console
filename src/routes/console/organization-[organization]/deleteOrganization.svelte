@@ -8,8 +8,8 @@
     import { base } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import { Query } from "@aw-labs/appwrite-console";
-    import { FormList, InputPassword, InputText } from "$lib/elements/forms/index.js";
+    import { Query } from '@aw-labs/appwrite-console';
+    import { FormList, InputPassword, InputText } from '$lib/elements/forms/index.js';
 
     export let showDelete = false;
 
@@ -19,12 +19,14 @@
     const deleteOrg = async () => {
         try {
             const projectList = await sdkForConsole.projects.list([
-                Query.equal('teamId', $organization.$id),
-            ])
+                Query.equal('teamId', $organization.$id)
+            ]);
 
-            await Promise.all(projectList.projects.map(async (project) => {
-                await sdkForConsole.projects.delete(project.$id, password);
-            }));
+            await Promise.all(
+                projectList.projects.map(async (project) => {
+                    await sdkForConsole.projects.delete(project.$id, password);
+                })
+            );
 
             await sdkForConsole.teams.delete($organization.$id);
 
@@ -53,8 +55,8 @@
 <Modal on:submit={deleteOrg} bind:show={showDelete} warning>
     <svelte:fragment slot="header">Delete Organization</svelte:fragment>
     <p>
-        Are you sure you want to delete <b>{$organization.name}</b>? All projects
-        and data associated with this organization will be deleted. This action is irreversible.
+        Are you sure you want to delete <b>{$organization.name}</b>? All projects and data
+        associated with this organization will be deleted. This action is irreversible.
     </p>
 
     <FormList>
