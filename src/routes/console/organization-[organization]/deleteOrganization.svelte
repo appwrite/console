@@ -53,7 +53,7 @@
 <Modal on:submit={deleteOrg} bind:show={showDelete} warning>
     <svelte:fragment slot="header">Delete Organization</svelte:fragment>
     <p>
-        Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})
+        Are you sure you want to delete <b>{$organization.name}</b>? All projects
         and data associated with this organization will be deleted. This action is irreversible.
     </p>
 
