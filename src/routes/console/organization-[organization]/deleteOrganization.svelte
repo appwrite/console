@@ -18,8 +18,6 @@
 
     const deleteOrg = async () => {
         try {
-            await sdkForConsole.teams.delete($organization.$id);
-
             const projectList = await sdkForConsole.projects.list([
                 Query.equal('teamId', $organization.$id),
             ])
@@ -27,6 +25,8 @@
             await Promise.all(projectList.projects.map(async (project) => {
                 await sdkForConsole.projects.delete(project.$id, password);
             }));
+
+            await sdkForConsole.teams.delete($organization.$id);
 
             addNotification({
                 type: 'success',
