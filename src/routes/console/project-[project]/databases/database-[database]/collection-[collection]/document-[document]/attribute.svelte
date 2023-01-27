@@ -9,6 +9,7 @@
     export let id: string;
     export let label: string;
     export let value: string | number | boolean;
+    export let optionalText: string | undefined = undefined;
     export let attribute:
         | Models.AttributeBoolean
         | Models.AttributeEmail
@@ -43,6 +44,7 @@
             {id}
             {label}
             {attribute}
+            {optionalText}
             bind:value />
     {:else}
         <svelte:component
@@ -50,6 +52,7 @@
             {id}
             {label}
             {attribute}
+            {optionalText}
             bind:value />
     {/if}
 {/if}

@@ -6,12 +6,14 @@
     export let label: string;
     export let value: boolean;
     export let attribute: Models.AttributeBoolean;
+    export let optionalText: string | undefined = undefined;
 </script>
 
 {#if attribute?.array}
     <InputSelect
         {id}
         {label}
+        {optionalText}
         showLabel={!!label?.length}
         placeholder="Select a value"
         required={attribute.required}
@@ -21,5 +23,5 @@
         ]}
         bind:value />
 {:else}
-    <InputCheckbox {id} {label} required={attribute.required} bind:value />
+    <InputCheckbox {id} {label} {optionalText} required={attribute.required} bind:value />
 {/if}
