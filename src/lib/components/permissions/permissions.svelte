@@ -142,9 +142,9 @@
 </script>
 
 {#if [...$groups]?.length}
-    <Table noMargin noStyles noMobile>
+    <Table noMargin noStyles>
         <TableHeader>
-            <TableCellHead>Role</TableCellHead>
+            <TableCellHead width={70}>Role</TableCellHead>
             {#if withCreate}
                 <TableCellHead width={70}>Create</TableCellHead>
             {/if}
