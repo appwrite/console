@@ -441,30 +441,6 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updateTimeout}>
-        <CardGrid>
-            <Heading tag="h6" size="7">Update Timeout</Heading>
-            <p>
-                Limit the execution time of your function. Maximum value is 900 seconds (15
-                minutes).
-            </p>
-            <svelte:fragment slot="aside">
-                <FormList>
-                    <InputNumber
-                        min={1}
-                        max={900}
-                        id="time"
-                        label="Time (in seconds)"
-                        bind:value={timeout} />
-                </FormList>
-            </svelte:fragment>
-
-            <svelte:fragment slot="actions">
-                <Button disabled={$func.timeout === timeout || timeout < 1} submit>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-    </Form>
-
     <CardGrid>
         <Heading tag="h6" size="7">Update Function Variables</Heading>
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
@@ -556,6 +532,30 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
+    <Form on:submit={updateTimeout}>
+        <CardGrid>
+            <Heading tag="h6" size="7">Update Timeout</Heading>
+            <p>
+                Limit the execution time of your function. Maximum value is 900 seconds (15
+                minutes).
+            </p>
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputNumber
+                        min={1}
+                        max={900}
+                        id="time"
+                        label="Time (in seconds)"
+                        bind:value={timeout} />
+                </FormList>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={$func.timeout === timeout || timeout < 1} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
 
     <CardGrid danger>
         <Heading tag="h6" size="7">Delete Function</Heading>
