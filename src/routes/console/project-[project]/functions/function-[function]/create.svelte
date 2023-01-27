@@ -143,8 +143,8 @@
             >.
         </p>
         <Collapsible>
-            {#each ['Unix', 'CMD', 'PowerShell'] as category}
-                <CollapsibleItem>
+            {#each ['Unix', 'CMD', 'PowerShell'] as category, i}
+                <CollapsibleItem open={i === 0}>
                     <svelte:fragment slot="title">{category}</svelte:fragment>
                     <Code
                         withLineNumbers

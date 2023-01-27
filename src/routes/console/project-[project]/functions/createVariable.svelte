@@ -42,7 +42,8 @@
             placeholder="Enter key"
             bind:value={pair.key}
             required
-            autofocus />
+            autofocus
+            autocomplete={false} />
         <InputSecret id="value" label="Value" placeholder="Enter value" bind:value={pair.value} />
     </FormList>
     <svelte:fragment slot="footer">
