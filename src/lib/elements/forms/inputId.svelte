@@ -42,8 +42,6 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
-        <!-- TODO: add correct class -->
-
         <span class="text-counter">
             <span class="text-counter-count">{value?.length ?? 0}</span>
             <span class="text-counter-separator" />
