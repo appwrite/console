@@ -89,11 +89,11 @@
 
     {#if $collection?.attributes?.length}
         {#if data.documents.total}
-            <TableScroll>
+            <TableScroll isSticky>
                 <TableHeader>
-                    <TableCellHead>Document ID</TableCellHead>
+                    <TableCellHead eyebrow={false}>Document ID</TableCellHead>
                     {#each columns as column}
-                        <TableCellHead>{column.title}</TableCellHead>
+                        <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
                     {/each}
                 </TableHeader>
                 <TableBody>

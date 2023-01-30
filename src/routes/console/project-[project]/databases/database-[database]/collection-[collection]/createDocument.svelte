@@ -58,6 +58,9 @@
     }
 
     onDestroy(() => {
+        $createDocument.id = null;
+        $createDocument.document = {};
+        $createDocument.attributes = [];
         $createDocument.permissions = [];
     });
 

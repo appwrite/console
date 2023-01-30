@@ -11,9 +11,11 @@
     export let autofocus = false;
     export let disabled = false;
     export let readonly = false;
+    export let required = false;
 
     let value = '';
     let element: HTMLInputElement;
+    let hiddenEl: HTMLInputElement;
     let error: string;
 
     onMount(() => {
@@ -55,11 +57,11 @@
     const handleInvalid = (event: Event) => {
         event.preventDefault();
 
-        if (element.validity.valueMissing) {
+        if (hiddenEl.validity.valueMissing) {
             error = 'This field is required';
             return;
         }
-        error = element.validationMessage;
+        error = hiddenEl.validationMessage;
     };
 
     $: if (value) {
@@ -68,6 +70,12 @@
 </script>
 
 <FormItem>
+    <input
+        class="u-hide"
+        bind:this={hiddenEl}
+        value={tags.join(',')}
+        {required}
+        on:invalid={handleInvalid} />
     <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
     <div class="input-text-wrapper">
         <div class="tags-input">
@@ -99,8 +107,7 @@
                 bind:value
                 bind:this={element}
                 on:keydown={handleInput}
-                on:blur={addValue}
-                on:invalid={handleInvalid} />
+                on:blur={addValue} />
         </div>
     </div>
     {#if error}
