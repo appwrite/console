@@ -19,15 +19,17 @@
     import { Button } from '$lib/elements/forms';
     import DropList from '$lib/components/dropList.svelte';
     import DropListItem from '$lib/components/dropListItem.svelte';
+    import { isNonNullable, type Nullable } from '$lib/helpers/type';
 
     const functionId = $page.params.function;
     const eventSet: Writable<Set<string>> = writable(new Set($func.events));
     let showEvents = false;
-    let eventValue: string;
+    let eventValue: Nullable<string>;
     let isDisabled = true;
     let showDropdown: boolean[] = [];
 
     async function updateEvents() {
+        if (!isNonNullable(functionId)) return;
         try {
             await sdkForProject.functions.update(
                 functionId,

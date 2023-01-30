@@ -1,11 +1,12 @@
 <script lang="ts">
+    import type { Nullable } from '$lib/helpers/type';
     import { FormItem, Helper } from '.';
 
     export let id: string;
     export let label: string;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
-    export let value: string | null | undefined;
+    export let value: Nullable<unknown>;
     export let placeholder = '';
     export let required = false;
     export let disabled = false;

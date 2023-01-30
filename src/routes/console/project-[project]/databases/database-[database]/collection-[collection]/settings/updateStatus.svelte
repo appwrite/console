@@ -6,6 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { isNonNullable, type Nullable } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -13,13 +14,14 @@
 
     const databaseId = $page.params.database;
 
-    let enabled: boolean = null;
+    let enabled: Nullable<boolean> = null;
 
     onMount(() => {
         enabled ??= $collection.enabled;
     });
 
     async function toggleCollection() {
+        if (!isNonNullable(databaseId)) return;
         try {
             await sdkForProject.databases.updateCollection(
                 databaseId,
@@ -27,7 +29,7 @@
                 $collection.name,
                 $collection.$permissions,
                 $collection.documentSecurity,
-                enabled
+                enabled ?? undefined
             );
             invalidate(Dependencies.COLLECTION);
             addNotification({

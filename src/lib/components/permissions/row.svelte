@@ -1,5 +1,6 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
+    import type { PromiseValue } from '$lib/helpers/type';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { tick } from 'svelte';
@@ -9,14 +10,16 @@
     export let role: string;
 
     let content: HTMLDivElement;
-    let data = null;
+    let data: PromiseValue<ReturnType<typeof getData>> | null = null;
     let isFetching = false;
 
     async function getData(
         permission: string
-    ): Promise<Partial<Models.User<Record<string, unknown>> & Models.Team>> {
+    ): Promise<Partial<Models.User<Record<string, unknown>> & Models.Team> | undefined> {
         const role = permission.split(':')[0];
-        const id = permission.split(':')[1].split('/')[0];
+        const id = permission.split(':')[1]?.split('/')[0];
+        if (!id) return;
+
         if (role === 'user') {
             const user = await sdkForProject.users.get(id);
             return user;
@@ -88,7 +91,7 @@
                                         ? data?.phone
                                         : '-'}
                                 </span>
-                                <Output value={data.$id}>{role}</Output>
+                                <Output value={data.$id ?? ''}>{role}</Output>
                             </span>
                             {#if (isUser && (data?.email || data?.phone)) || isTeam}
                                 <span class="user-profile-sep" />

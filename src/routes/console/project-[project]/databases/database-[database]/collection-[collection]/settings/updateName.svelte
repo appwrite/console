@@ -5,6 +5,7 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
+    import { isNonNullableObject, type Nullable } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -12,18 +13,20 @@
 
     const databaseId = $page.params.database;
 
-    let collectionName: string = null;
+    let collectionName: Nullable<string> = null;
 
     onMount(() => {
         collectionName ??= $collection.name;
     });
 
     async function updateName() {
+        const args = { databaseId, collectionName };
+        if (!isNonNullableObject(args)) return;
         try {
             await sdkForProject.databases.updateCollection(
-                databaseId,
+                args.databaseId,
                 $collection.$id,
-                collectionName,
+                args.collectionName,
                 $collection.$permissions,
                 $collection.documentSecurity,
                 $collection.enabled

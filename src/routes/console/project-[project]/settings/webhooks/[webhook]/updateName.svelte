@@ -5,24 +5,27 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { isNonNullableObject, type Nullable } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
     const projectId = $page.params.project;
-    let name: string = null;
+    let name: Nullable<string> = null;
 
     onMount(async () => {
         name ??= $webhook.name;
     });
 
     async function updateName() {
+        const args = { projectId, name };
+        if (!isNonNullableObject(args)) return;
         try {
             await sdkForConsole.projects.updateWebhook(
-                projectId,
+                args.projectId,
                 $webhook.$id,
-                name,
+                args.name,
                 $webhook.events,
                 $webhook.url,
                 $webhook.security,

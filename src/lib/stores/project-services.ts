@@ -120,7 +120,9 @@ function createServices() {
                 {
                     label: 'GraphQL',
                     method: 'graphql',
-                    value: project.serviceStatusForGraphql
+                    // TODO: verify this is correct
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    value: (project as any).serviceStatusForGraphql
                 }
             ];
             set({ list });

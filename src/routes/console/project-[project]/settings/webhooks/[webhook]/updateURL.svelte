@@ -5,26 +5,29 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { isNonNullableObject } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
     const projectId = $page.params.project;
-    let url: string = null;
+    let url: string | null = null;
 
     onMount(async () => {
         url ??= $webhook.url;
     });
 
     async function updateUrl() {
+        const args = { projectId, url };
+        if (!isNonNullableObject(args)) return;
         try {
             await sdkForConsole.projects.updateWebhook(
-                projectId,
+                args.projectId,
                 $webhook.$id,
                 $webhook.name,
                 $webhook.events,
-                url,
+                args.url,
                 $webhook.security,
                 $webhook.httpUser,
                 $webhook.httpPass

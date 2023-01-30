@@ -2,6 +2,8 @@ import { objectEntries } from './object';
 
 export type Nullable<T> = T | null | undefined;
 
+export type PromiseValue<T> = T extends Promise<infer U> ? U : T;
+
 export function isNonNullable<T>(value: T): value is NonNullable<T> {
     return value !== null && value !== undefined;
 }
@@ -136,3 +138,15 @@ export const isObjectType = <T>(
 
     return true;
 };
+
+/**
+ * Casts value as any. Useful for Svelte templates, since they don't support
+ * type-casting and TS expressions in general.
+ *
+ * @param {unknown} value
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function Anyify(value: unknown): any {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return value as any;
+}

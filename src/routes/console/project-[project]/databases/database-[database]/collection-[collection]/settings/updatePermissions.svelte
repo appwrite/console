@@ -7,6 +7,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
+    import { isNonNullable } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -16,19 +17,20 @@
 
     let arePermsDisabled = true;
 
-    let collectionPermissions: string[] = null;
+    let collectionPermissions: string[] | null = null;
 
     onMount(() => {
         collectionPermissions ??= $collection.$permissions;
     });
 
     async function updatePermissions() {
+        if (!isNonNullable(databaseId)) return;
         try {
             await sdkForProject.databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 $collection.name,
-                collectionPermissions,
+                collectionPermissions ?? undefined,
                 $collection.documentSecurity,
                 $collection.enabled
             );

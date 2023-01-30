@@ -12,6 +12,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { timeToSeconds } from '$lib/helpers/timeConversion';
     import { writable } from 'svelte/store';
+    import { Anyify } from '$lib/helpers/type';
 
     const projectId = $project.$id;
     let isLimited = $project.authLimit === 0 ? 'unlimited' : 'limited';
@@ -20,7 +21,8 @@
     let timeInSec = time;
     let period = writable('s');
     let btnActive = false;
-    let maxSessions = $project.authSessionsLimit;
+    // TODO: verify if this is the correct way to get the max sessions
+    let maxSessions = ($project as any).authSessionsLimit;
 
     let options = [
         { label: 'days', value: 'd' },
@@ -84,7 +86,8 @@
     }
     async function updateSessionsLimit() {
         try {
-            await sdkForConsole.projects.updateAuthSessionsLimit(projectId, maxSessions);
+            // TODO: verify if this is the correct way to update the max sessions
+            await (sdkForConsole.projects as any)?.updateAuthSessionsLimit(projectId, maxSessions);
 
             addNotification({
                 type: 'success',
@@ -227,7 +230,9 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={maxSessions === $project.authSessionsLimit} submit>Update</Button>
+                <!-- TODO: verify types for $project -->
+                <Button disabled={maxSessions === Anyify($project).authSessionsLimit} submit
+                    >Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>

@@ -15,10 +15,11 @@
     } from '$lib/constants';
     import { tooltip } from '$lib/actions/tooltip';
     import { objectKeys } from '$lib/helpers/object';
+    import type { Nullable } from '$lib/helpers/type';
 
     // Props
     export let show = false;
-    export let initialValue = '';
+    export let initialValue: Nullable<string> = '';
 
     // Constants
     const serviceNames = services.map((s) => s.name);

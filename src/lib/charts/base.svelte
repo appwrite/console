@@ -13,7 +13,7 @@
     registerTheme('light', { ...base, ...light });
     registerTheme('dark', { ...base, ...dark });
 
-    export let options: EChartsOption;
+    export let options: EChartsOption | null;
     export let series: (BarSeriesOption | LineSeriesOption)[];
 
     let chart: ECharts;

@@ -12,14 +12,15 @@
         InputPassword,
         InputText
     } from '$lib/elements/forms';
+    import { isNonNullableObject, type Nullable } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
     const projectId = $page.params.project;
-    let httpUser: string = null;
-    let httpPass: string = null;
+    let httpUser: string | null = null;
+    let httpPass: Nullable<string> = null;
     let security = false;
 
     onMount(async () => {
@@ -29,16 +30,18 @@
     });
 
     async function updateSecurity() {
+        const args = { projectId, httpUser, httpPass };
+        if (!isNonNullableObject(args)) return;
         try {
             await sdkForConsole.projects.updateWebhook(
-                projectId,
+                args.projectId,
                 $webhook.$id,
                 $webhook.name,
                 $webhook.events,
                 $webhook.url,
                 security,
-                httpUser,
-                httpPass
+                args.httpUser,
+                args.httpPass
             );
             invalidate(Dependencies.WEBHOOK);
             addNotification({

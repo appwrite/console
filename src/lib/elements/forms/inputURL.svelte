@@ -1,11 +1,13 @@
 <script lang="ts">
+    import type { Nullable } from '$lib/helpers/type';
     import { onMount } from 'svelte';
+
     import { FormItem, Helper } from '.';
 
     export let label: string;
     export let showLabel = true;
     export let id: string;
-    export let value = '';
+    export let value: Nullable<string> = '';
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
@@ -15,7 +17,7 @@
     export let maxlength: number | null = null;
 
     let element: HTMLInputElement;
-    let error: string;
+    let error: Nullable<string>;
 
     onMount(() => {
         if (element && autofocus) {

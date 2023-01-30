@@ -17,7 +17,7 @@
         }
         updater = setInterval(() => {
             const randomStep = stepSizes[Math.floor(Math.random() * stepSizes.length)];
-            const step = getIncrement(width) + randomStep;
+            const step = getIncrement(width) + (randomStep ?? 0);
             if (width < maximum) {
                 width = width + step;
             }

@@ -1,10 +1,11 @@
 <script lang="ts">
     import { InputCheckbox, InputSelect } from '$lib/elements/forms';
+    import type { Nullable } from '$lib/helpers/type';
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let id: string;
     export let label: string;
-    export let value: boolean;
+    export let value: Nullable<boolean>;
     export let attribute: Models.AttributeBoolean;
     export let optionalText: string | undefined = undefined;
 </script>

@@ -1,7 +1,7 @@
-import { derived, writable } from 'svelte/store';
 import { page } from '$app/stores';
 import type { Models } from '@aw-labs/appwrite-console';
 import type { BarSeriesOption } from 'echarts/charts';
+import { derived, writable } from 'svelte/store';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
 export const onboarding = derived(
@@ -14,11 +14,11 @@ function createStats() {
 
     return {
         subscribe,
-        add: (projectId: string, data: BarSeriesOption['data'][number]) =>
+        add: (projectId: string, data: Array<string | number | Date>) =>
             update((n) => {
                 let series = n.get(projectId) ?? [];
 
-                if (series.length === 0) {
+                if (series.length === 0 && data[0]) {
                     const date = new Date(data[0]);
                     for (let i = 0; i < 12; i++) {
                         series.push([date.toISOString(), 0]);

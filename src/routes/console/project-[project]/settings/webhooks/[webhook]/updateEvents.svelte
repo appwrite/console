@@ -7,6 +7,7 @@
     import { Button, Form } from '$lib/elements/forms';
     import { TableCell, TableCellText, TableList } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
+    import { isNonNullable } from '$lib/helpers/type';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -24,6 +25,7 @@
     });
 
     async function updateEvents() {
+        if (!isNonNullable(projectId)) return;
         try {
             await sdkForConsole.projects.updateWebhook(
                 projectId,

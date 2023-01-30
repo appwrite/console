@@ -27,7 +27,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
     if (url.origin === location.origin && cachedFiles.includes(url.pathname)) {
         // always return build files from cache
-        event.respondWith(cached);
+        event.respondWith(cached as Promise<Response>);
     } else if (url.protocol === 'https:' || location.hostname === 'localhost') {
         // hit the network for everything else...
         const promise = fetch(request);
@@ -44,6 +44,6 @@ self.addEventListener('fetch', (event: FetchEvent) => {
         });
 
         // ...but if it fails, fall back to cache if available
-        event.respondWith(promise.catch(() => cached || promise));
+        event.respondWith(promise.catch(() => (cached as Promise<Response>) || promise));
     }
 });

@@ -8,29 +8,40 @@
     import Attribute from './attribute.svelte';
 
     export let attributes: Attributes[] = [];
-    export let formValues: object = {};
+
+    // Svelte templates do not support type casting, making type-checking impossible
+    // in certain scenarios. For example, the following has a type error that could be
+    // confidently fixed by type-casting:
+    // {# if formValues[attribute.key] } <input bind:value={formValues[attribute.key][index]} /> {/if}
+    export let formValues: any = {};
     export let customId: string | null | undefined = undefined;
     export let gap: '16' | '32' = '32';
 
     let showCustomId = false;
 
     function removeArrayItem(key: string, index: number) {
+        if (!formValues[key]) return;
         formValues = {
             ...formValues,
-            [key]: formValues[key].filter((_, i) => i !== index)
+            [key]: formValues[key]?.filter((_: any, i: any) => i !== index)
         };
     }
 
     function addArrayItem(key: string) {
         formValues = {
             ...formValues,
-            [key]: [...formValues[key], null]
+            [key]: [...(formValues[key] ?? []), null]
         };
     }
 
     function getAttributeType(attribute: Attributes) {
         if (isAttributeEnum(attribute)) return 'Enum';
         return `${capitalize(attribute.type)}${attribute.array ? '[]' : ''}`;
+    }
+
+    function keys(arr?: unknown[]): number[] {
+        if (!arr) return [];
+        return [...arr.keys()];
     }
 </script>
 
@@ -39,7 +50,7 @@
         {#each attributes as attribute}
             {@const label = attribute.required ? `${attribute.key}*` : attribute.key}
             {#if attribute.array}
-                {#if formValues[attribute.key].length === 0}
+                {#if formValues[attribute.key]?.length === 0}
                     <div class="u-flex u-cross-center u-main-space-between">
                         <span class="label u-margin-0">
                             {label}
@@ -55,19 +66,21 @@
                     </div>
                 {/if}
 
-                {#if formValues[attribute.key].length !== 0}
+                {#if formValues[attribute.key]?.length !== 0}
                     <ul class="u-grid u-gap-8">
-                        {#each [...formValues[attribute.key].keys()] as index}
+                        {#each keys(formValues[attribute.key]) as index}
                             <li class="form-item is-multiple">
                                 <div class="form-item-part u-stretch">
-                                    <Attribute
-                                        {attribute}
-                                        id={`${attribute.key}-${index}`}
-                                        optionalText={index === 0
-                                            ? getAttributeType(attribute)
-                                            : undefined}
-                                        label={index === 0 ? label : ''}
-                                        bind:value={formValues[attribute.key][index]} />
+                                    {#if formValues[attribute.key]}
+                                        <Attribute
+                                            {attribute}
+                                            id={`${attribute.key}-${index}`}
+                                            optionalText={index === 0
+                                                ? getAttributeType(attribute)
+                                                : undefined}
+                                            label={index === 0 ? label : ''}
+                                            bind:value={formValues[attribute.key][index]} />
+                                    {/if}
                                 </div>
                                 <div class="form-item-part u-cross-child-end">
                                     <Button
