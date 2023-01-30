@@ -29,6 +29,18 @@ export function remove<T>(arr: T[], index: number): T[] {
 }
 
 /**
+ * Returns true if the array is empty, false otherwise.
+ *
+ * @export
+ * @param {unknown[]} arr
+ * @returns {boolean}
+ */
+export function empty(arr: unknown[]): boolean {
+    if (!arr) return true;
+    return arr.length === 0;
+}
+
+/**
  * Get nth item of Array. Negative for backward
  *
  * @export

@@ -2,7 +2,9 @@
     "extends": "./.svelte-kit/tsconfig.json",
     "compilerOptions": {
         "lib": [
-            "webworker"
+            "webworker",
+            "ES2016",
+            "DOM"
         ],
         "module": "ESNext",
         "moduleResolution": "Node",
