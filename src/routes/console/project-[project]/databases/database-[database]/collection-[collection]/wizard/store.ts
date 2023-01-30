@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import type { Attributes } from '../store';
 
-type Store = {
+type CreateDocument = {
     id?: string | null;
     // TODO: Improve this type
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -10,9 +10,24 @@ type Store = {
     attributes: Attributes[];
 };
 
-export const createDocument = writable<Store>({
+const initialCreateDocument: CreateDocument = {
     id: null,
     document: {},
     permissions: [],
     attributes: []
-});
+};
+
+function createDocumentWritable() {
+    const store = writable<CreateDocument>({ ...initialCreateDocument });
+
+    const reset = () => {
+        store.set({ ...initialCreateDocument });
+    };
+
+    return {
+        ...store,
+        reset
+    };
+}
+
+export const createDocument = createDocumentWritable();

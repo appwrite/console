@@ -9,6 +9,7 @@
     export let id: string;
     export let label: string;
     export let value: string | number | boolean;
+    export let optionalText: string | undefined = undefined;
     export let attribute:
         | Models.AttributeBoolean
         | Models.AttributeEmail
@@ -56,5 +57,5 @@
 </script>
 
 {#if cmp}
-    <svelte:component this={cmp} {id} {label} {attribute} bind:value />
+    <svelte:component this={cmp} {id} {label} {attribute} {optionalText} bind:value />
 {/if}

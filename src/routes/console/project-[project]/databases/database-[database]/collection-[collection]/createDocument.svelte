@@ -24,7 +24,7 @@
         $createDocument.attributes = $attributes.filter((a) => a.status === 'available');
         $attributes.forEach((attr) => {
             if (attr.array) {
-                $createDocument.document[attr.key] = [null];
+                $createDocument.document[attr.key] = [];
             } else {
                 $createDocument.document[attr.key] = null;
             }
@@ -43,12 +43,15 @@
                 $createDocument.document,
                 $createDocument.permissions
             );
+
             addNotification({
                 message: 'Document has been created',
                 type: 'success'
             });
             trackEvent('submit_document_create');
             invalidate(Dependencies.DOCUMENTS);
+
+            createDocument.reset();
             wizard.hide();
         } catch (error) {
             addNotification({

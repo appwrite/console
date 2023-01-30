@@ -6,11 +6,13 @@
     export let label: string;
     export let value: string;
     export let attribute: Models.AttributeString;
+    export let optionalText: string | undefined = undefined;
 </script>
 
 <InputText
     {id}
     {label}
+    {optionalText}
     showLabel={!!label?.length}
     required={attribute.required}
     maxlength={attribute.size}

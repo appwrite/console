@@ -4,6 +4,7 @@
     import { FormItem, Helper } from '.';
 
     export let label: string;
+    export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let id: string | null;
     export let value: string | null = '';
@@ -42,8 +43,8 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}
-        >{label}
+    <label class:u-hide={!showLabel} class="label" for={id}>
+        {label}
         {#if tooltip}
             <span
                 class="icon-info"
@@ -52,7 +53,9 @@
                     content: tooltip
                 }} />
         {/if}
+        <span class:u-hide={!showLabel || !optionalText} class="optional">{optionalText}</span>
     </label>
+
     <div class="input-text-wrapper">
         <input
             {id}

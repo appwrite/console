@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { last } from '$lib/helpers/array';
     import { onMount } from 'svelte';
     import { FormItem, Helper } from '.';
 
@@ -34,7 +35,7 @@
         }
         if (['Backspace', 'Delete'].includes(e.key)) {
             if (value.length === 0) {
-                removeValue(tags[tags.length - 1]);
+                removeValue(last(tags));
             }
         }
     };
