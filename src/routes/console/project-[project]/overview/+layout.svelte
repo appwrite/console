@@ -5,6 +5,7 @@
 
     // TODO: metric type is wrong
     export function total(set: Array<unknown>): number {
+        if (!set) return 0;
         return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
     }
 
@@ -14,21 +15,21 @@
 </script>
 
 <script lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { Container, type UsagePeriods } from '$lib/layout';
-    import { page } from '$app/stores';
-    import { onboarding, project } from '../store';
-    import { usage } from './store';
-    import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
     import { Heading } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { base } from '$app/paths';
-    import Realtime from './realtime.svelte';
-    import Bandwith from './bandwith.svelte';
-    import Requests from './requests.svelte';
-    import Onboard from './onboard.svelte';
+    import { Container, type UsagePeriods } from '$lib/layout';
     import { last } from '$lib/layout/usage.svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { onMount } from 'svelte';
+    import { onboarding, project } from '../store';
+    import Bandwith from './bandwith.svelte';
+    import Onboard from './onboard.svelte';
+    import Realtime from './realtime.svelte';
+    import Requests from './requests.svelte';
+    import { usage } from './store';
 
     $: projectId = $page.params.project ?? '';
     $: path = `/console/project-${projectId}/overview`;
@@ -85,14 +86,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.documents)?.value)}
+                                        {format(last($usage.documents)?.value ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(last($usage.databases)?.value)}
+                                        Databases: {format(last($usage.databases)?.value ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -120,7 +121,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(last($usage.buckets)?.value)}
+                                        Buckets: {format(last($usage.buckets)?.value ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +162,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.executions)?.value)}
+                                        {format(last($usage.executions)?.value ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>

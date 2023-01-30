@@ -1,12 +1,12 @@
 <script lang="ts">
     import {
-        Table,
         TableHeader,
         TableBody,
         TableCellHead,
         TableCell,
         TableCellText,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { AvatarInitials, Heading, Pagination } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -64,11 +64,11 @@
             </Button>
         </div>
 
-        <Table>
+        <TableScroll>
             <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Email</TableCellHead>
-                <TableCellHead width={100}>Role</TableCellHead>
+                <TableCellHead width={140}>Name</TableCellHead>
+                <TableCellHead width={120}>Email</TableCellHead>
+                <TableCellHead width={90}>Role</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -112,7 +112,7 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.organizationMembers.total}</p>
             <Pagination

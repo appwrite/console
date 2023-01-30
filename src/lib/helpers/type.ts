@@ -1,5 +1,7 @@
 import { objectEntries } from './object';
 
+export type Nullable<T> = T | null | undefined;
+
 export function isNonNullable<T>(value: T): value is NonNullable<T> {
     return value !== null && value !== undefined;
 }

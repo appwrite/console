@@ -10,21 +10,22 @@
     import { project } from '../../../store';
     import { platform } from './store';
 
-    let hostname: string;
+    let key: string | null = null;
 
     onMount(() => {
-        hostname ??= $platform.hostname;
+        key ??= $platform.key;
     });
 
     const updateHostname = async () => {
+        if (!key) return;
         try {
             await sdkForConsole.projects.updatePlatform(
                 $project.$id,
                 $platform.$id,
                 $platform.name,
-                $platform.key,
+                key,
                 $platform.store,
-                hostname
+                $platform.hostname
             );
             invalidate(Dependencies.PLATFORM);
             trackEvent('submit_platform_update', {
@@ -52,16 +53,16 @@
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText
-                    id="hostname"
+                    id="key"
                     label="Package Name"
-                    bind:value={hostname}
+                    bind:value={key}
                     required
                     placeholder="com.company.appname" />
             </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={hostname === $platform.hostname} submit>Update</Button>
+            <Button disabled={key === $platform.hostname} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

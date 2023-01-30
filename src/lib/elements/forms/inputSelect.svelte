@@ -5,7 +5,7 @@
     export let label: string;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
-    export let value: string | number | boolean | null | undefined;
+    export let value: string | null | undefined;
     export let placeholder = '';
     export let required = false;
     export let disabled = false;

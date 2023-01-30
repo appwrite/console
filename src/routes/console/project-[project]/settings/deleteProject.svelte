@@ -43,7 +43,7 @@
         <InputText
             label={`Enter "${$project.name}" to continue`}
             placeholder="Enter name"
-            id="name"
+            id="project-name"
             autofocus
             required
             bind:value={name} />

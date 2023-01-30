@@ -47,10 +47,10 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Identifiers</TableCellHead>
-                <TableCellHead width={130}>Status</TableCellHead>
-                <TableCellHead width={100}>ID</TableCellHead>
-                <TableCellHead>Joined</TableCellHead>
+                <TableCellHead onlyDesktop>Identifiers</TableCellHead>
+                <TableCellHead onlyDesktop width={130}>Status</TableCellHead>
+                <TableCellHead onlyDesktop width={100}>ID</TableCellHead>
+                <TableCellHead onlyDesktop>Joined</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.users.users as user}
@@ -75,12 +75,12 @@
                                 {/if}
                             </div>
                         </TableCell>
-                        <TableCellText title="Identifiers">
+                        <TableCellText onlyDesktop title="Identifiers">
                             {user.email && user.phone
                                 ? [user.email, user.phone].join(',')
                                 : user.email || user.phone}
                         </TableCellText>
-                        <TableCell title="Status">
+                        <TableCell onlyDesktop title="Status">
                             {#if user.status}
                                 <Pill success={user.emailVerification || user.phoneVerification}>
                                     {user.emailVerification && user.phoneVerification
@@ -95,7 +95,7 @@
                                 <Pill danger>blocked</Pill>
                             {/if}
                         </TableCell>
-                        <TableCell showOverflow title="ID">
+                        <TableCell onlyDesktop showOverflow title="ID">
                             <Copy value={user.$id} event="user">
                                 <Pill button>
                                     <span class="icon-duplicate" aria-hidden="true" />
@@ -103,7 +103,7 @@
                                 </Pill>
                             </Copy>
                         </TableCell>
-                        <TableCellText title="Joined">
+                        <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(user.registration)}
                         </TableCellText>
                     </TableRowLink>

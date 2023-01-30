@@ -109,7 +109,7 @@
             showCreate = false;
             entrypoint = '';
             dispatch('created');
-            trackEvent('submit_function_create');
+            trackEvent('submit_deployment_create');
         } catch (error) {
             addNotification({
                 type: 'error',

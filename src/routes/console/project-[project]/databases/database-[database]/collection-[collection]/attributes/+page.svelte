@@ -40,8 +40,8 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Key</TableCellHead>
-                <TableCellHead>Type</TableCellHead>
-                <TableCellHead>Default Value</TableCellHead>
+                <TableCellHead onlyDesktop>Type</TableCellHead>
+                <TableCellHead onlyDesktop>Default Value</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -63,9 +63,11 @@
                                 {/if}
                             </div>
                         </TableCell>
-                        <TableCellText title="Type">{attribute.type}</TableCellText>
-                        <TableCellText title="Default Value">
-                            {attribute.default ? attribute.default : '-'}
+                        <TableCellText onlyDesktop title="Type">
+                            {`${attribute.type}${attribute.array ? '[]' : ''}`}
+                        </TableCellText>
+                        <TableCellText onlyDesktop title="Default Value">
+                            {attribute.default !== null ? attribute.default : '-'}
                         </TableCellText>
                         <TableCell showOverflow>
                             <DropList
@@ -86,12 +88,14 @@
                                         on:click={() => {
                                             selectedAttribute = attribute;
                                             showOverview = true;
+                                            showDropdown[index] = false;
                                         }}>Overview</DropListItem>
                                     <DropListItem
                                         icon="plus"
                                         on:click={() => {
                                             selectedAttribute = attribute;
                                             showCreateIndex = true;
+                                            showDropdown[index] = false;
                                         }}>Create Index</DropListItem>
                                     <DropListItem
                                         icon="trash"

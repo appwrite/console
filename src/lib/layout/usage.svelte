@@ -2,6 +2,7 @@
     export type UsagePeriods = '24h' | '30d' | '90d';
 
     export function last(set: Models.Metric[]): Models.Metric | null {
+        if (!set) return null;
         return set.slice(-1)[0] ?? null;
     }
 

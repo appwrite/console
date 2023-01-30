@@ -3,7 +3,7 @@ import googleAnalytics from '@analytics/google-analytics';
 import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
-import { Mode } from '$lib/constants';
+import { growthEndpoint, Mode } from '$lib/constants';
 
 const analytics = Analytics({
     app: 'appwrite',
@@ -40,7 +40,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
         email = userStore.email;
         name = userStore.name;
     }
-    fetch('https://growth.appwrite.io/v1/analytics', {
+    fetch(`${growthEndpoint}/analytics`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

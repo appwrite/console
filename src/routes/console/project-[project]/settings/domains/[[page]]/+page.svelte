@@ -4,13 +4,13 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
-        Table,
         TableBody,
         TableCell,
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -70,14 +70,14 @@
         </Button>
     </div>
     {#if data.domains.total}
-        <Table>
+        <TableScroll>
             <TableHeader>
-                <TableCellHead>Domain Name</TableCellHead>
+                <TableCellHead width={150}>Domain Name</TableCellHead>
                 <TableCellHead width={100} />
                 <TableCellHead width={60}>Type</TableCellHead>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Value</TableCellHead>
-                <TableCellHead />
+                <TableCellHead width={90}>Name</TableCellHead>
+                <TableCellHead width={90}>Value</TableCellHead>
+                <TableCellHead width={40} />
             </TableHeader>
             <TableBody>
                 {#each data.domains.domains as domain}
@@ -133,7 +133,7 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
     {:else}
         <Empty
             single

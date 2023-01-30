@@ -92,9 +92,9 @@
 </script>
 
 {#if [...$groups.keys()]?.length}
-    <Table noMargin noStyles noMobile>
+    <Table noMargin noStyles>
         <TableHeader>
-            <TableCellHead>Role</TableCellHead>
+            <TableCellHead width={70}>Role</TableCellHead>
             <TableCellHead width={40} />
         </TableHeader>
         <TableBody>

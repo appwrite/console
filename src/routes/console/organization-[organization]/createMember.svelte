@@ -55,7 +55,11 @@
             placeholder="Enter email"
             autofocus={true}
             bind:value={email} />
-        <InputText id="name" label="Name (optional)" placeholder="Enter name" bind:value={name} />
+        <InputText
+            id="member-name"
+            label="Name (optional)"
+            placeholder="Enter name"
+            bind:value={name} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

@@ -1,31 +1,32 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { Box, CardGrid, Heading } from '$lib/components';
+    import { Permissions } from '$lib/components/permissions';
+    import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
-    import { CardGrid, Box, Heading } from '$lib/components';
-    import { Container } from '$lib/layout';
     import {
-        Form,
         Button,
-        InputText,
-        InputTags,
+        Form,
+        FormList,
         InputNumber,
         InputSelect,
         InputSwitch,
-        FormList
+        InputTags,
+        InputText
     } from '$lib/elements/forms';
-    import { bucket } from '../store';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sizeToBytes } from '$lib/helpers/sizeConvertion';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { isNonNullable } from '$lib/helpers/type';
+    import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { onMount } from 'svelte';
-    import { symmetricDifference } from '$lib/helpers/array';
-    import { Permissions } from '$lib/components/permissions';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import Delete from '../deleteBucket.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
-    import { writable } from 'svelte/store';
+    import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { onMount } from 'svelte';
+    import { writable } from 'svelte/store';
+    import Delete from '../deleteBucket.svelte';
+    import { bucket } from '../store';
 
     let showDelete = false;
 
@@ -37,17 +38,24 @@
     let encryption: boolean | null = null;
     let antivirus: boolean | null = null;
     let maxSize: number;
-    let byteUnit = writable('KB');
+    let byteUnit = writable('MB');
     let sizeInBytes: number | null = null;
-    let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
-    let extensions = $bucket.allowedFileExtensions;
-    let isExtensionsDisabled = true;
+    let compression: string | null = null;
+
     const options = [
         { label: 'Bytes', value: 'Bytes' },
         { label: 'Kilobytes', value: 'KB' },
         { label: 'Megabytes', value: 'MB' },
         { label: 'Gigabytes', value: 'GB' }
     ];
+    const compressionOptions = [
+        { label: 'None', value: 'none' },
+        { label: 'Gzip', value: 'gzip' },
+        { label: 'Zstd', value: 'zstd' }
+    ];
+    let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
+    let extensions = $bucket.allowedFileExtensions;
+    let isExtensionsDisabled = true;
 
     onMount(async () => {
         enabled ??= $bucket.enabled;
@@ -56,7 +64,8 @@
         bucketPermissions ??= $bucket.$permissions;
         encryption ??= $bucket.encryption;
         antivirus ??= $bucket.antivirus;
-        maxSize = $bucket.maximumFileSize / 1024;
+        maxSize = $bucket.maximumFileSize / 1024 / 1024;
+        compression ??= $bucket.compression;
     });
 
     $: if (bucketPermissions) {
@@ -117,7 +126,7 @@
     }
 
     function toggleBucket() {
-        if (enabled === null) return;
+        if (!isNonNullable(enabled)) return;
         updateBucket(
             {
                 enabled
@@ -196,6 +205,18 @@
         );
     }
 
+    function updateCompression() {
+        if (compression === null) return;
+        updateBucket(
+            {
+                compression
+            },
+            {
+                trackEventName: 'submit_bucket_update_size'
+            }
+        );
+    }
+
     function updateAllowedExtensions() {
         updateBucket(
             {
@@ -240,8 +261,8 @@
                                 id="toggle"
                                 bind:value={enabled} />
                         </FormList>
-                        <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                        <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                        <p class="text">Created: {toLocaleDateTime($bucket.$createdAt)}</p>
+                        <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                     </div>
                 </svelte:fragment>
 
@@ -326,7 +347,7 @@
         <Form on:submit={updateSecurity}>
             <CardGrid>
                 <Heading tag="h2" size="7">Update Security Settings</Heading>
-                <p>
+                <p class="text">
                     Enable or disable security services for the bucket including <b>Ecryption</b>
                     and <b>Antivirus scanning.</b>
                 </p>
@@ -336,7 +357,6 @@
                             <label class="choice-item" for="encryption">
                                 <div class="input-text-wrapper">
                                     <input
-                                        label="Encryption"
                                         id="encryption"
                                         type="checkbox"
                                         class="switch"
@@ -359,7 +379,6 @@
                             <label class="choice-item" for="antivirus">
                                 <div class="input-text-wrapper">
                                     <input
-                                        label="Antivirus"
                                         id="antivirus"
                                         type="checkbox"
                                         class="switch"
@@ -387,9 +406,32 @@
                     <Button
                         disabled={encryption === $bucket.encryption &&
                             antivirus === $bucket.antivirus}
-                        submit
-                        >Update
+                        submit>
+                        Update
                     </Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+
+        <Form on:submit={updateCompression}>
+            <CardGrid>
+                <Heading tag="h2" size="6">Update Compression Algorithm</Heading>
+                <p class="text">
+                    Choose an algorithm for compression. For files larger than 20MB, compression
+                    will be skipped even if it's enabled.
+                </p>
+                <svelte:fragment slot="aside">
+                    <FormList>
+                        <InputSelect
+                            id="compression"
+                            label="Compression algorithm"
+                            options={compressionOptions}
+                            bind:value={compression} />
+                    </FormList>
+                </svelte:fragment>
+
+                <svelte:fragment slot="actions">
+                    <Button disabled={compression === $bucket.compression} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -397,7 +439,7 @@
         <Form on:submit={updateMaxSize}>
             <CardGrid>
                 <Heading tag="h2" size="6">Update Maximum File Size</Heading>
-                <p>Set the maximum file size allowed in the bucket.</p>
+                <p class="text">Set the maximum file size allowed in the bucket.</p>
                 <svelte:fragment slot="aside">
                     <ul class="u-flex u-gap-12">
                         <InputNumber
@@ -420,7 +462,7 @@
         <Form on:submit={updateAllowedExtensions}>
             <CardGrid>
                 <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
-                <p>
+                <p class="text">
                     A maximum of 100 file extensions can be added. Leave blank to allow all file
                     types.
                 </p>
@@ -459,7 +501,7 @@
 
         <CardGrid danger>
             <Heading tag="h6" size="7">Delete Bucket</Heading>
-            <p>
+            <p class="text">
                 The bucket will be permanently deleted, including all the files within it. This
                 action is irreversible.
             </p>
@@ -468,7 +510,7 @@
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
-                    <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                    <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                 </Box>
             </svelte:fragment>
 
