@@ -41,10 +41,12 @@
             {#if attribute.array}
                 {#if formValues[attribute.key].length === 0}
                     <div class="u-flex u-cross-center u-main-space-between">
-                        <div class="u-flex u-cross-center u-gap-4">
-                            <span class="label u-margin-0">{label}</span>
-                            <span class="optional">{getAttributeType(attribute)}</span>
-                        </div>
+                        <span class="label u-margin-0">
+                            {label}
+                            <span class="optional">
+                                {getAttributeType(attribute)}
+                            </span>
+                        </span>
 
                         <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
                             <span class="icon-plus" aria-hidden="true" />

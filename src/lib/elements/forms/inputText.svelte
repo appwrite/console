@@ -53,8 +53,8 @@
                     content: tooltip
                 }} />
         {/if}
+        <span class:u-hide={!showLabel || !optionalText} class="optional">{optionalText}</span>
     </label>
-    <span class:u-hide={!showLabel || !optionalText} class="optional">{optionalText}</span>
 
     <div class="input-text-wrapper">
         <input

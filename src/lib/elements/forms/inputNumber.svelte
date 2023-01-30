@@ -52,8 +52,12 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel || !label} class="label" for={id}>{label}</label>
-    <span class:u-hide={!showLabel || !optionalText} class="optional">{optionalText}</span>
+    <label class:u-hide={!showLabel} class="label" for={id}>
+        {label}
+        <span class:u-hide={!showLabel || !optionalText} class="optional">
+            {optionalText}
+        </span>
+    </label>
 
     <div class="input-text-wrapper">
         <input
