@@ -326,7 +326,11 @@
         </div>
     {:else}
         <div class="input-text-wrapper" style="--amount-of-buttons:2" bind:this={copyParent}>
-            <div style="min-height: 2.5rem;">
+            <!-- 
+                This object syntax avoids TS erroring because 'type' isn't a valid HTMLDivElement attribute
+                (we need to set it to 'text' to add styling)
+             -->
+            <div {...{ type: 'text' }} style="min-height: 2.5rem;">
                 {#each eventString as route, i}
                     <span
                         class:u-opacity-0-5={helper !== route.description}
