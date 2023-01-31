@@ -10,6 +10,7 @@
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
+    import { trackEvent } from '$lib/actions/analytics';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
@@ -101,6 +102,10 @@
             undefined,
             platform === Platform.Web ? $createPlatform.hostname : undefined
         );
+
+        trackEvent('submit_platform_create', {
+            type: platform
+        });
 
         $createPlatform.$id = response.$id;
     }
