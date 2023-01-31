@@ -31,7 +31,7 @@ export function humanFileSize(bytes: number): {
     }).split(' ');
 
     return {
-        value: value[0],
-        unit: value[1]
+        value: value[0] ?? '',
+        unit: value[1] ?? ''
     };
 }

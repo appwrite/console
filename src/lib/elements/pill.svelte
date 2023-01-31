@@ -15,23 +15,26 @@
 
     const isOverflowing = (elem: HTMLButtonElement, iterator = 1) => {
         let parent = elem?.parentElement;
+        if (!parent) return;
         if (
             trim &&
             elem &&
-            elem.scrollWidth + 10 >
-                (parent.clientWidth ? parent.clientWidth : parent.parentElement.clientWidth)
+            elem.scrollWidth + 10 > (parent?.clientWidth ?? parent.parentElement?.clientWidth)
         )
             trimText(iterator);
         else return;
     };
 
     function trimText(iterator: number) {
+        const childEl = element.childNodes[element.childElementCount];
+
+        if (!childEl) return;
+
         if (iterator > 3) {
-            element.childNodes[element.childElementCount].textContent = '...';
+            childEl.textContent = '...';
         } else {
-            let text = element.childNodes[element.childElementCount].textContent;
-            element.childNodes[element.childElementCount].textContent =
-                text.slice(0, 3) + '...' + text.slice(-9 + iterator * 2);
+            let text = childEl.textContent;
+            childEl.textContent = text?.slice(0, 3) + '...' + text?.slice(-9 + iterator * 2);
             isOverflowing(element, iterator + 1);
         }
     }
@@ -41,7 +44,7 @@
 
 {#if href}
     <a
-        {disabled}
+        {...{ disabled }}
         {href}
         target={external ? '_blank' : '_self'}
         rel={external ? 'noopener noreferrer' : ''}

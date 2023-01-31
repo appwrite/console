@@ -98,7 +98,7 @@
             on:step={handleStepClick}
             steps={sortedSteps.map(([, { label, optional }]) => ({
                 text: label,
-                optional
+                optional: optional ?? false
             }))}
             {currentStep} />
     </aside>

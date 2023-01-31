@@ -20,9 +20,12 @@ export const app = writable<AppStore>({
 });
 
 function createFeedbackStore() {
+    const localElapsed = parseInt(localStorage.getItem('feedbackElapsed') ?? '0');
+    const localVisualized = parseInt(localStorage.getItem('feedbackVisualized') ?? '0');
+
     const { subscribe, update } = writable<Feedback>({
-        elapsed: browser ? parseInt(localStorage.getItem('feedbackElapsed')) : 0,
-        visualized: browser ? parseInt(localStorage.getItem('feedbackVisualized')) : 0,
+        elapsed: browser ? localElapsed : 0,
+        visualized: browser ? localVisualized : 0,
         notification: false,
         type: 'general'
     });
@@ -82,9 +85,11 @@ function createFeedbackStore() {
 export const feedback = createFeedbackStore();
 
 if (browser) {
+    const localAppwrite = JSON.parse(localStorage.getItem('appwrite') ?? '{}');
+
     app.update((n) => ({
         ...n,
-        ...(JSON.parse(localStorage.getItem('appwrite')) ?? {})
+        ...(localAppwrite ?? {})
     }));
     app.subscribe((u) => localStorage.setItem('appwrite', JSON.stringify(u) ?? '{}'));
 }

@@ -27,10 +27,12 @@ const createUploader = () => {
     const updateFile = (id: string, file: Partial<UploaderFile>) => {
         return update((n) => {
             const index = n.files.findIndex((f) => f.$id === id);
-            n.files[index] = {
-                ...n.files[index],
-                ...file
-            };
+            if (index !== -1) {
+                n.files[index] = {
+                    ...(n.files[index] as UploaderFile),
+                    ...file
+                };
+            }
 
             return n;
         });

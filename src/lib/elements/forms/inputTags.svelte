@@ -1,5 +1,6 @@
 <script lang="ts">
     import { last } from '$lib/helpers/array';
+    import type { Nullable } from '$lib/helpers/type';
     import { onMount } from 'svelte';
     import { FormItem, Helper } from '.';
 
@@ -16,7 +17,7 @@
     let value = '';
     let element: HTMLInputElement;
     let hiddenEl: HTMLInputElement;
-    let error: string;
+    let error: Nullable<string>;
 
     onMount(() => {
         if (element && autofocus) {

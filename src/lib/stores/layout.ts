@@ -1,5 +1,6 @@
 import { writable, readable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
+import type { Nullable } from '$lib/helpers/type';
 
 export type Tab = {
     href: string;
@@ -16,8 +17,8 @@ export type updateLayoutArguments = {
     breadcrumb?: typeof SvelteComponent;
 };
 
-export const header = writable<typeof SvelteComponent>();
-export const breadcrumb = writable<typeof SvelteComponent>();
+export const header = writable<Nullable<typeof SvelteComponent>>();
+export const breadcrumb = writable<Nullable<typeof SvelteComponent>>();
 
 export function updateLayout(args: updateLayoutArguments) {
     header.set(args.header ?? null);

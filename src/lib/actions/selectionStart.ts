@@ -1,28 +1,32 @@
+import { isNonNullable } from '$lib/helpers/type';
 import type { Action } from 'svelte/action';
 
 type Props = {
     onChange: (selectionStart: number) => void;
 };
 
-export const selectionStart: Action<HTMLInputElement, Props> = (node, { onChange }) => {
+const init: Action<HTMLInputElement, Props> = (node, props) => {
+    const { onChange } = props ?? {};
+
     const handler = () => {
-        onChange(node.selectionStart);
+        if (!isNonNullable(node.selectionStart)) return;
+        onChange?.(node.selectionStart);
     };
+
     node.addEventListener('click', handler);
     node.addEventListener('keydown', handler);
     node.addEventListener('keyup', handler);
+};
+
+export const selectionStart: Action<HTMLInputElement, Props> = (node, props) => {
+    init(node, props);
 
     return {
-        update({ onChange }) {
-            const handler = () => {
-                onChange(node.selectionStart);
-            };
-            node.addEventListener('click', handler);
-            node.addEventListener('keydown', handler);
-            node.addEventListener('keyup', handler);
+        update(props) {
+            init(node, props);
         },
         destroy() {
-            onChange(-1);
+            props?.onChange(-1);
         }
     };
 };

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Nullable } from '$lib/helpers/type';
     import { onMount } from 'svelte';
     import { FormItem, Helper } from '.';
 
@@ -17,7 +18,7 @@
     export let step: number | 'any' = 1;
 
     let element: HTMLInputElement;
-    let error: string;
+    let error: Nullable<string>;
 
     onMount(() => {
         if (element && autofocus) {

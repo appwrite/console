@@ -9,6 +9,7 @@
     onMount(onResize);
 
     function onResize() {
+        if (!container) return;
         showTooltip = container.offsetWidth < container.scrollWidth;
     }
 </script>

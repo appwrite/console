@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Nullable } from '$lib/helpers/type';
     import { onMount } from 'svelte';
     import { FormItem, Helper } from '.';
 
@@ -18,7 +19,7 @@
     const pattern = String.raw`^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,6}$`;
 
     let element: HTMLInputElement;
-    let error: string;
+    let error: Nullable<string>;
 
     onMount(() => {
         if (element && autofocus) {

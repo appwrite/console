@@ -8,7 +8,7 @@ type Props = TippyProps & {
 
 export const tooltip: Action<HTMLElement, Partial<Props>> = (node, config) => {
     const instance = tippy(node, config);
-    if (config.disabled) instance.disable();
+    if (config?.disabled) instance.disable();
 
     return {
         update({ content, disabled }) {

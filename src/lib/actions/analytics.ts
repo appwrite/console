@@ -4,6 +4,7 @@ import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
 import { growthEndpoint, Mode } from '$lib/constants';
+import { isNonNullable, isNonNullableObject, type Nullable } from '$lib/helpers/type';
 
 const analytics = Analytics({
     app: 'appwrite',
@@ -14,13 +15,14 @@ const analytics = Analytics({
     ]
 });
 
-export function trackEvent(name: string, data: object = null): void {
+export function trackEvent(name: string, data: Nullable<object> = null): void {
     if (!isTrackingAllowed()) {
         return;
     }
     const path = get(page).routeId;
     analytics.track(name, { ...data, path });
-    sendEventToGrowth(name, path, data);
+
+    isNonNullable(path) && sendEventToGrowth(name, path, data);
 }
 
 export function trackPageView(path: string) {
@@ -33,13 +35,12 @@ export function trackPageView(path: string) {
     });
 }
 
-function sendEventToGrowth(event: string, path: string, data: object = null): void {
-    let email: string, name: string;
+function sendEventToGrowth(event: string, path: string, data: Nullable<object> = null): void {
     const userStore = get(user);
-    if (userStore) {
-        email = userStore.email;
-        name = userStore.name;
-    }
+    const args = { email: userStore?.email, name: userStore?.name };
+
+    if (!isNonNullableObject(args)) return;
+
     fetch(`${growthEndpoint}/analytics`, {
         method: 'POST',
         headers: {
@@ -51,8 +52,8 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
             url: window.location.origin + path,
             account: import.meta.env.VITE_CONSOLE_MODE?.toString() || Mode.SELF_HOSTED,
             data: {
-                email,
-                name,
+                email: args.email,
+                name: args.name,
                 ...data
             }
         })

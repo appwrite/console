@@ -4,10 +4,11 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { copy } from '$lib/helpers/copy';
     import { addNotification } from '$lib/stores/notifications';
+    import type { Props as TippyProps } from 'tippy.js';
 
     export let value: string;
     export let event: string | null = null;
-    export let appendTo: Parameters<typeof tooltip>['1']['appendTo'] = undefined;
+    export let appendTo: TippyProps['appendTo'] | undefined = undefined;
 
     let content = 'Click to copy';
 

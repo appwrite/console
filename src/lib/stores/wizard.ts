@@ -1,11 +1,12 @@
+import type { Nullable } from '$lib/helpers/type';
 import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type WizardStore = {
     show: boolean;
-    media?: string;
-    component?: typeof SvelteComponent;
-    interceptor?: () => Promise<void>;
+    media?: Nullable<string>;
+    component?: Nullable<typeof SvelteComponent>;
+    interceptor?: Nullable<() => Promise<void>>;
 };
 
 function createWizardStore() {
@@ -19,7 +20,7 @@ function createWizardStore() {
     return {
         subscribe,
         set,
-        start: (component: typeof SvelteComponent, media: string = null) =>
+        start: (component: WizardStore['component'], media: WizardStore['media'] = null) =>
             update((n) => {
                 n.show = true;
                 n.component = component;

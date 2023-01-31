@@ -7,6 +7,7 @@
         InputText,
         InputEmail
     } from '$lib/elements/forms';
+    import { isNonNullable } from '$lib/helpers/type';
     import { feedback } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import Evaluation from './evaluation.svelte';
@@ -18,6 +19,7 @@
     let email: string;
     let name: string;
     async function handleSubmit() {
+        if (!isNonNullable(value)) return;
         try {
             await feedback.submitFeedback('feedback-nps', message, name, email, value);
             console.log(value, message);

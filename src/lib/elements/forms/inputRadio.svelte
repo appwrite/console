@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Nullable } from '$lib/helpers/type';
     import { FormItem, Helper } from '.';
 
     export let label: string;
@@ -11,7 +12,7 @@
     export let disabled = false;
 
     let element: HTMLInputElement;
-    let error: string;
+    let error: Nullable<string>;
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();

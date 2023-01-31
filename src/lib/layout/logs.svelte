@@ -17,23 +17,25 @@
     function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
         if ('buildId' in data) {
             selectedTab = 'logs';
-            rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
+            rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func?.$id}/deployment/${$log.data?.$id}?mode=admin&project=${$page.params.project}`;
             return true;
         }
+        return false;
     }
 
     function isExecution(data: Models.Deployment | Models.Execution): data is Models.Execution {
         if ('trigger' in data) {
             selectedTab = 'response';
-            rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
+            rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func?.$id}/execution/${$log.data?.$id}?mode=admin&project=${$page.params.project}`;
             return true;
         }
+        return false;
     }
 
     function scrollToTop() {
         document
             .getElementsByClassName('code-panel-content')[0]
-            .scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+            ?.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
 
     function handleKeydown(event: KeyboardEvent) {
@@ -49,7 +51,7 @@
 {#if $log.data}
     <section class="cover-frame">
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
-            <h1 class="body-text-1" name="title">Function ID: {$log.func.$id}</h1>
+            <h1 class="body-text-1" {...{ name: 'title' }}>Function ID: {$log.func?.$id}</h1>
             <button on:click={() => ($log.show = false)} class="x-button" aria-label="close popup">
                 <span class="icon-x" aria-hidden="true" />
             </button>
@@ -63,7 +65,7 @@
                             height="28"
                             width="28"
                             src={`${base}/icons/${$app.themeInUse}/color/${
-                                $log.func.runtime.split('-')[0]
+                                $log.func?.runtime.split('-')[0]
                             }.svg`}
                             alt="technology" />
                     </div>
@@ -134,7 +136,7 @@
                             height="28"
                             width="28"
                             src={`${base}/icons/${$app.themeInUse}/color/${
-                                $log.func.runtime.split('-')[0]
+                                $log.func?.runtime.split('-')[0]
                             }.svg`}
                             alt="technology" />
                     </div>

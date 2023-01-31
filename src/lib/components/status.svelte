@@ -7,7 +7,8 @@
         | 'processing'
         | 'ready'
         | 'building'
-        | string = null;
+        | string
+        | null = null;
 
     //TODO: Remove type string once SDK is updated
 </script>

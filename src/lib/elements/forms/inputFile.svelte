@@ -1,9 +1,10 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
+    import type { Nullable } from '$lib/helpers/type';
     import { Button } from '.';
 
     export let label: string | null = null;
-    export let files: FileList;
+    export let files: Nullable<FileList>;
     export let list = new DataTransfer();
     export let allowedFileExtensions: string[] = [];
 
@@ -12,13 +13,13 @@
 
     function dropHandler(ev: DragEvent) {
         hovering = false;
-        if (ev.dataTransfer.items) {
+        if (ev.dataTransfer?.items) {
             // Use DataTransferItemList interface to access the file(s)
-            for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+            for (let i = 0; i < ev.dataTransfer?.items.length; i++) {
                 // If dropped items aren't files, reject them
-                if (ev.dataTransfer.items[i].kind === 'file') {
+                if (ev.dataTransfer?.items[i]?.kind === 'file') {
                     list.items.clear();
-                    list.items.add(ev.dataTransfer.items[i].getAsFile());
+                    list.items.add(ev.dataTransfer?.items[i]?.getAsFile() as File);
                     files = list.files;
                 }
             }
@@ -60,11 +61,11 @@
                     </Button>
 
                     {#if files?.length}
-                        {@const fileName = files.item(0).name.split('.')}
+                        {@const fileName = files.item(0)?.name.split('.')}
                         <div class="u-flex u-cross-center u-min-width-0">
-                            <Trim>{fileName[0]}</Trim>
+                            <Trim>{fileName?.[0]}</Trim>
                             <span class="u-min-width-0 u-flex-shrink-0 u-margin-inline-end-16"
-                                >.{fileName[1]}</span>
+                                >.{fileName?.[1]}</span>
                             <button
                                 on:click={() => (files = null)}
                                 type="button"
