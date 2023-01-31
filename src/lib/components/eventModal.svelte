@@ -285,7 +285,7 @@
                 {:else}
                     {#each Array.from(eventString.values()) as route, i}
                         <button
-                            class:u-opacity-0-5={helper !== route.description}
+                            class:u-opacity-50={helper !== route.description}
                             on:mouseenter={() => {
                                 helper = route.description;
                             }}
@@ -294,7 +294,7 @@
                             }}>
                             {route.value}
                         </button>
-                        <span class="u-opacity-0-5">
+                        <span class="u-opacity-50">
                             {i + 1 < eventString?.size ? '.' : ''}
                         </span>
                     {/each}

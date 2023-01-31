@@ -14,7 +14,8 @@
                     </h4>
                     <button
                         type="button"
-                        class="x-button"
+                        class="button is-text is-only-icon"
+                        style="--button-size:1.5rem;"
                         aria-label="Close"
                         title="Close"
                         on:click={() => (show = false)}>

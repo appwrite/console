@@ -1,4 +1,5 @@
-import '@aw-labs/ui/src/_index.scss';
+import '@appwrite.io/pink';
+import '@appwrite.io/pink-icons';
 import 'tippy.js/dist/tippy.css';
 import { sdkForConsole } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';

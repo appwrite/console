@@ -50,7 +50,7 @@
             <h2 class="heading-level-5">Getting Started Guide</h2>
             <p class="u-line-height-1-5">Let's get your project up and running</p>
         </div>
-        <div class="grid-1-2-col-2 u-flex u-main-end u-cross-end is-no-mobile">
+        <div class="grid-1-2-col-2 u-flex u-main-end u-cross-end is-not-mobile">
             <img src={onBoardIntro} alt="" class="card-header-image" />
         </div>
     </header>
