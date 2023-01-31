@@ -4,6 +4,7 @@
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
+    import { user } from '$lib/stores/user';
 
     const technologies = [
         'js',
@@ -25,7 +26,7 @@
         <div
             class="container u-margin-block-start-20"
             style="--p-container-max-size: var(--container-size-medium);">
-            <a href="/">
+            <a href={user ? '/console' : '/'}>
                 <img src={AppwriteLogo} width="196" height="47" class="u-block" alt="Appwrite" />
             </a>
         </div>

@@ -20,10 +20,7 @@
     import { project } from '../../../store';
     import { platform } from './store';
     import { Dependencies } from '$lib/constants';
-    import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
-
-    export let data: PageData;
 
     const types: Record<string, typeof SvelteComponent> = {
         web: Web,
@@ -41,20 +38,22 @@
 
     let showDelete = false;
     let name: string = null;
+    let updating = false;
 
     onMount(() => {
-        name ??= data.platform.name;
+        name ??= $platform.name;
     });
 
-    const updateName = async () => {
+    async function updateName() {
+        updating = true;
         try {
             await sdkForConsole.projects.updatePlatform(
                 $project.$id,
-                data.platform.$id,
+                $platform.$id,
                 name,
-                data.platform.key,
-                data.platform.store,
-                data.platform.hostname
+                $platform.key,
+                $platform.store,
+                $platform.hostname
             );
             invalidate(Dependencies.PLATFORM);
             addNotification({
@@ -67,7 +66,13 @@
                 message: error.message
             });
         }
-    };
+    }
+
+    $: {
+        // When platform name is updated, finalize the updating flow
+        $platform.name;
+        updating = false;
+    }
 </script>
 
 <Container>
@@ -87,7 +92,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={name === $platform.name} submit>Update</Button>
+                <Button disabled={name === $platform.name || updating} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>

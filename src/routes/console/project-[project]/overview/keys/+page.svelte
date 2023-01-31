@@ -35,9 +35,9 @@
     <Table>
         <TableHeader>
             <TableCellHead>Name</TableCellHead>
-            <TableCellHead>last accessed</TableCellHead>
-            <TableCellHead>expiration date</TableCellHead>
-            <TableCellHead>scopes</TableCellHead>
+            <TableCellHead onlyDesktop>last accessed</TableCellHead>
+            <TableCellHead onlyDesktop>expiration date</TableCellHead>
+            <TableCellHead onlyDesktop>scopes</TableCellHead>
         </TableHeader>
         <TableBody>
             {#each data.keys.keys as key}
@@ -45,13 +45,13 @@
                     <TableCellText title="Name">
                         {key.name}
                     </TableCellText>
-                    <TableCellText title="Last Accessed">
+                    <TableCellText onlyDesktop title="Last Accessed">
                         {key.accessedAt ? toLocaleDateTime(key.accessedAt) : 'never'}
                     </TableCellText>
-                    <TableCellText title="Expiration Date">
+                    <TableCellText onlyDesktop title="Expiration Date">
                         {key.expire ? toLocaleDateTime(key.expire) : 'never'}
                     </TableCellText>
-                    <TableCellText title="Expiration Date">
+                    <TableCellText onlyDesktop title="Expiration Date">
                         {key.scopes.length} Scopes
                     </TableCellText>
                 </TableRowLink>
