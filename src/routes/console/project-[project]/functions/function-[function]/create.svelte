@@ -34,7 +34,7 @@
     onMount(() => {
         lang = setLanguage($func.runtime);
         codeSnippets = setCodeSnippets(lang);
-        OS = navigator?.userAgentData?.platform || navigator?.platform || 'unknown';
+        OS = navigator['userAgentData']?.platform || navigator?.platform || 'unknown';
     });
 
     function setLanguage(runtime: string) {
