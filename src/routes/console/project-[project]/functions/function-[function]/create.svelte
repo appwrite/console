@@ -26,6 +26,7 @@
     let files: FileList;
     let lang = 'js';
     let codeSnippets = {};
+    let OS = 'unknown';
 
     const functionId = $page.params.function;
     const dispatch = createEventDispatcher();
@@ -33,6 +34,7 @@
     onMount(() => {
         lang = setLanguage($func.runtime);
         codeSnippets = setCodeSnippets(lang);
+        OS = navigator?.userAgentData?.platform || navigator?.platform || 'unknown';
     });
 
     function setLanguage(runtime: string) {
@@ -107,6 +109,21 @@
             });
         }
     }
+
+    function openCategory(category: string, index: number) {
+        switch (category) {
+            case 'CMD':
+                return OS.includes('Win');
+            case 'PowerShell':
+                return OS.includes('Win');
+            case 'Unix':
+                return (
+                    OS === 'unknown' || OS.includes('Linux') || OS.includes('Mac') || index === 0
+                );
+            default:
+                return index === 0;
+        }
+    }
 </script>
 
 <Modal size="big" bind:show={showCreate} on:submit={create}>
@@ -144,7 +161,7 @@
         </p>
         <Collapsible>
             {#each ['Unix', 'CMD', 'PowerShell'] as category, i}
-                <CollapsibleItem open={i === 0}>
+                <CollapsibleItem open={openCategory(category, i)}>
                     <svelte:fragment slot="title">{category}</svelte:fragment>
                     <Code
                         withLineNumbers
@@ -156,19 +173,17 @@
             {/each}
         </Collapsible>
     {:else if mode === Mode.Github}
-        <div class="common-section grid-1-2">
-            <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
-                {#if $app.themeInUse === 'dark'}
-                    <img src={GithubDark} alt="github" />
-                {:else}
-                    <img src={GithubLight} alt="github" />
-                {/if}
-            </div>
-            <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-24">
+        <div class="grid-1-1 u-gap-16">
+            {#if $app.themeInUse === 'dark'}
+                <img src={GithubDark} alt="github" />
+            {:else}
+                <img src={GithubLight} alt="github" />
+            {/if}
+            <div class="u-flex u-flex-vertical u-gap-24">
                 <h3 class="body-text-1">Coming Soon!</h3>
                 <p>
                     Creating deployments will be easier than ever with our upcoming Git Integration.
-                    Just set up a repository and we’ll do the rest.
+                    Just set up a repository and we'll do the rest.
                 </p>
             </div>
         </div>
