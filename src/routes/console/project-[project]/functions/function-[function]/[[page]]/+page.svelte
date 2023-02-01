@@ -12,13 +12,13 @@
         Pagination
     } from '$lib/components';
     import {
-        Table,
         TableHeader,
         TableBody,
         TableRow,
         TableCellHead,
         TableCell,
-        TableCellText
+        TableCellText,
+        TableScroll
     } from '$lib/elements/table';
     import { execute, func } from '../store';
     import { Container } from '$lib/layout';
@@ -156,7 +156,7 @@
             <Heading tag="h3" size="7">Inactive</Heading>
         </div>
         {#if data.deployments.total > 1}
-            <Table>
+            <TableScroll>
                 <TableHeader>
                     <TableCellHead width={90}>Deployment ID</TableCellHead>
                     <TableCellHead width={140}>Created</TableCellHead>
@@ -246,7 +246,7 @@
                         {/if}
                     {/each}
                 </TableBody>
-            </Table>
+            </TableScroll>
         {:else}
             <Empty single target="deployment" on:click={() => (showCreate = true)}>
                 <div class="u-text-center">
