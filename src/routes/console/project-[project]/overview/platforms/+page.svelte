@@ -39,6 +39,20 @@
 
     export let data: PageData;
 
+    enum PlatformTypes {
+        'apple-ios' = 'iOS',
+        'apple-macos' = 'macOS',
+        'apple-watchos' = 'watchOS',
+        'apple-tvos' = 'tvOS',
+        'android' = 'Android',
+        'flutter-android' = 'Android',
+        'flutter-ios' = 'iOS',
+        'flutter-linux' = 'Linux',
+        'flutter-macos' = 'macOS',
+        'flutter-windows' = 'Windows',
+        'flutter-web' = 'Web',
+        'web' = 'Web'
+    }
     let showDropdown = false;
     let showDropdownEmpty = false;
     const path = `/console/project-${$page.params.project}/overview/platforms`;
@@ -85,9 +99,6 @@
         class="grid-box u-margin-block-start-32"
         style="--grid-gap:1.5rem; --grid-item-size:20rem;">
         {#each data.platforms.platforms as platform}
-            {@const platformType = platform.type.includes('-')
-                ? platform.type.split('-')[1]
-                : platform.type}
             <a class="card" href={`${path}/${platform.$id}`}>
                 <div class="grid-item-1" style="min-block-size: calc(182 / 16 * 1rem)">
                     <div class="grid-item-1-start-start">
@@ -101,7 +112,7 @@
                             </div>
                             <div>
                                 <Heading size="6" tag="h3">{platform.name}</Heading>
-                                <p class="text">{platformType}</p>
+                                <p class="text">{PlatformTypes[platform.type]}</p>
                             </div>
                         </div>
                     </div>
