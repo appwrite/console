@@ -63,7 +63,11 @@
                 bind:value={search} />
             <span class="icon-search" aria-hidden="true" />
             {#if isWithEndButton && search}
-                <button class="x-button" aria-label="Clear search" on:click={() => (search = '')}>
+                <button
+                    class="button is-text is-only-icon"
+                    style="--button-size:1.5rem;"
+                    aria-label="Clear search"
+                    on:click={() => (search = '')}>
                     <span class="icon-x" aria-hidden="true" />
                 </button>
             {/if}

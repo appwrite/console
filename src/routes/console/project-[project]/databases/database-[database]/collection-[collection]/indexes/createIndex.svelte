@@ -9,7 +9,7 @@
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
-    import type { Attributes } from '../store';
+    import { indexes, type Attributes } from '../store';
     import { collection } from '../store';
     import Select from './select.svelte';
 
@@ -19,7 +19,7 @@
     const databaseId = $page.params.database;
 
     let error: string;
-    let key: string = null;
+    let key = `index_${$indexes.length + 1}`;
     let types = [
         { value: 'key', label: 'Key' },
         { value: 'unique', label: 'Unique' },
@@ -37,12 +37,12 @@
     function initialize() {
         attributeList = externalAttribute
             ? [{ value: externalAttribute.key, order: 'ASC' }]
-            : [{ value: '', order: '' }];
+            : [{ value: '', order: 'ASC' }];
         selectedType = 'key';
-        key = null;
     }
 
     $: if (showCreateIndex) {
+        error = null;
         initialize();
     }
 

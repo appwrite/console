@@ -10,6 +10,7 @@
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
+    import { trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -37,6 +38,11 @@
             undefined,
             $createPlatform.hostname
         );
+
+        trackEvent('submit_platform_create', {
+            type: 'web'
+        });
+
         $createPlatform.$id = platform.$id;
     }
 </script>

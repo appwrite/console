@@ -68,7 +68,8 @@
                             <button
                                 on:click={() => (files = null)}
                                 type="button"
-                                class="x-button"
+                                class="button is-text is-only-icon"
+                                style="--button-size:1.5rem;"
                                 aria-label="remove file"
                                 title="Remove file">
                                 <span class="icon-x" aria-hidden="true" />

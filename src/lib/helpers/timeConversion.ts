@@ -8,17 +8,17 @@ export function calculateTime(time: number) {
     const years = Math.floor(months / 12);
 
     if (milliseconds < 1000) {
-        return milliseconds + 'ms';
+        return `${milliseconds}ms`;
     } else if (seconds < 60) {
-        return `${seconds} s`;
+        return `${seconds}s`;
     } else if (minutes < 60) {
-        return `${minutes} m`;
+        return `${minutes}m`;
     } else if (hours < 24) {
-        return `${hours} h`;
+        return `${hours}h`;
     } else if (days < 30) {
-        return `${days} d`;
+        return `${days}d`;
     } else if (months < 12) {
-        return `${months} M`;
+        return `${months}M`;
     } else {
         return `${years} y`;
     }

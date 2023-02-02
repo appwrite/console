@@ -26,7 +26,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
                 if (array) {
                     document[key] = document[key].map((n: string) => {
                         if (!n) {
-                            return '';
+                            return null;
                         }
                         return new Date(n).toISOString().slice(0, 23);
                     });
@@ -34,7 +34,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
                     if (document[key]) {
                         document[key] = new Date(document[key]).toISOString().slice(0, 23);
                     } else {
-                        document[key] = '';
+                        document[key] = null;
                     }
                 }
             }

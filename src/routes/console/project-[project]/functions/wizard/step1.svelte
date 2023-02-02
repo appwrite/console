@@ -42,9 +42,8 @@
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                    <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Function ID
-                    </span>
+                    <span class="icon-pencil" aria-hidden="true" />
+                    <span class="text">Function ID </span>
                 </Pill>
             </div>
         {:else}
