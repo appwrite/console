@@ -179,6 +179,9 @@
         inputData = null;
         showInput = false;
     }
+
+    //allows to add the href attribute without throwing an error
+    const attributes = { type: 'text', readonly: 'readonly' } as Record<string, string>;
 </script>
 
 <Modal bind:show on:submit={create} size="big">
@@ -279,7 +282,7 @@
         </div>
     {:else}
         <div class="input-text-wrapper" style="--amount-of-buttons:2">
-            <div type="text" readonly style="min-height: 2.5rem;">
+            <div {...attributes} style="min-height: 2.5rem;">
                 {#if inputData}
                     <span>{inputData}</span>
                 {:else}
