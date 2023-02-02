@@ -50,7 +50,11 @@
     <section class="cover-frame">
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
             <h1 class="body-text-1" name="title">Function ID: {$log.func.$id}</h1>
-            <button on:click={() => ($log.show = false)} class="x-button" aria-label="close popup">
+            <button
+                on:click={() => ($log.show = false)}
+                class="button is-text is-only-icon"
+                style="--button-size:1.5rem;"
+                aria-label="close popup">
                 <span class="icon-x" aria-hidden="true" />
             </button>
         </header>

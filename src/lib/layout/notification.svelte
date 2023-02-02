@@ -15,7 +15,11 @@
     class:is-warning={type === 'warning'}
     class:is-danger={type === 'error'}
     class:is-info={type === 'info'}>
-    <button class="x-button" aria-label="close alert" on:click={() => dispatch('dismiss')}>
+    <button
+        class="button is-text is-only-icon"
+        style="--button-size:1.5rem;"
+        aria-label="close alert"
+        on:click={() => dispatch('dismiss')}>
         <span class="icon-x" aria-hidden="true" />
     </button>
     <div class="alert-sticky-image">
@@ -33,7 +37,7 @@
         <p><slot /></p>
     </div>
     {#if buttons}
-        <div class="buttons u-flex">
+        <div class="alert-sticky-buttons u-flex">
             {#each buttons as button}
                 <button class="button is-text is-small" on:click={button.method}>
                     <span class="text">{button.name}</span>
