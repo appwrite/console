@@ -23,6 +23,7 @@
     import { invalidate } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
     import CreateDeployment from '../../create.svelte';
+    import { timer } from '$lib/actions/timer';
 
     export let data: PageData;
     let showCreate = false;
@@ -83,7 +84,12 @@
                             </Pill>
                         </TableCellText>
                         <TableCellText title="Duration">
-                            {calculateTime(execution.duration)}</TableCellText>
+                            {#if execution.duration === 0}
+                                <span use:timer={{ start: execution.$createdAt }} />
+                            {:else}
+                                {calculateTime(execution.duration)}
+                            {/if}
+                        </TableCellText>
                         <TableCell>
                             <Button
                                 secondary
