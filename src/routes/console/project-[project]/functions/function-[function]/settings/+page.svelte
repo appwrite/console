@@ -158,7 +158,7 @@
 
             addNotification({
                 type: 'success',
-                message: 'CRON Schedule has been updated'
+                message: 'Cron Schedule has been updated'
             });
             trackEvent('submit_function_update_schedule');
         } catch (error) {
@@ -419,18 +419,18 @@
         <CardGrid>
             <Heading tag="h6" size="7">Update Schedule</Heading>
             <p>
-                Set a CRON schedule to trigger your function. Leave blank for no schedule. <a
+                Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
                     href="https://en.wikipedia.org/wiki/Cron"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
-                    More details on CRON syntax here.</a>
+                    More details on Cron syntax here.</a>
             </p>
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputCron
                         bind:value={functionSchedule}
-                        label="Schedule (CRON Syntax)"
+                        label="Schedule (Cron Syntax)"
                         id="schedule" />
                 </FormList>
             </svelte:fragment>
