@@ -5,7 +5,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Scheduling</svelte:fragment>
+    <svelte:fragment slot="title">Schedule</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
             href="https://appwrite.io/docs/functions#createFunction"
