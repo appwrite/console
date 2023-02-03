@@ -442,7 +442,7 @@
     </Form>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Update Function Variables</Heading>
+        <Heading tag="h6" size="7">Update Variables</Heading>
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
