@@ -417,7 +417,7 @@
 
     <Form on:submit={updateSchedule}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update CRON Schedule</Heading>
+            <Heading tag="h6" size="7">Update Schedule</Heading>
             <p>
                 Set a CRON schedule to trigger your function. Leave blank for no schedule. <a
                     href="https://en.wikipedia.org/wiki/Cron"
