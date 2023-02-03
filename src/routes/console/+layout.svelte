@@ -13,6 +13,7 @@
     import { loading } from '../store';
     import { feedback } from '$lib/stores/app';
     import { INTERVAL } from '$lib/constants';
+    import Footer from '$lib/layout/footer.svelte';
 
     onMount(() => {
         loading.set(false);
@@ -57,7 +58,7 @@
         <SideNavigation />
     </svelte:fragment>
     <slot />
-    <footer class="main-footer" />
+    <Footer slot="footer" />
 </Shell>
 
 {#if $wizard.show && $wizard.component}

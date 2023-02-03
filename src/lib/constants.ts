@@ -7,6 +7,8 @@ export enum Mode {
     SELF_HOSTED = 'self-hosted'
 }
 
+export const consoleMode = import.meta.env.VITE_CONSOLE_MODE?.toString() || Mode.SELF_HOSTED;
+
 export const growthEndpoint = import.meta.env.VITE_APPWRITE_GROWTH_ENDPOINT;
 
 export enum Dependencies {

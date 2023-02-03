@@ -1,9 +1,9 @@
-import Analytics from 'analytics';
-import googleAnalytics from '@analytics/google-analytics';
-import { get } from 'svelte/store';
 import { page } from '$app/stores';
+import { consoleMode, growthEndpoint } from '$lib/constants';
 import { user } from '$lib/stores/user';
-import { growthEndpoint, Mode } from '$lib/constants';
+import googleAnalytics from '@analytics/google-analytics';
+import Analytics from 'analytics';
+import { get } from 'svelte/store';
 
 const analytics = Analytics({
     app: 'appwrite',
@@ -49,7 +49,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
             action: event,
             label: event,
             url: window.location.origin + path,
-            account: import.meta.env.VITE_CONSOLE_MODE?.toString() || Mode.SELF_HOSTED,
+            account: consoleMode,
             data: {
                 email,
                 name,

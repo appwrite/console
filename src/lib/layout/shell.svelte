@@ -64,6 +64,7 @@
 
         <slot />
     </section>
+    <slot name="footer" />
 </main>
 
 <style>
