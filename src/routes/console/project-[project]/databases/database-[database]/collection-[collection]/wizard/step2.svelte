@@ -13,7 +13,7 @@
             href="https://appwrite.io/docs/permissions"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Permissions Guide</a> in our documentation.
+            class="link">Permissions Guide</a>.
     </svelte:fragment>
     {#if $collection.documentSecurity}
         <div class="common-section">

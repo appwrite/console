@@ -359,7 +359,7 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
-                    Permissions Guide</a> in our documentation.
+                    Permissions Guide</a>.
             </p>
             <svelte:fragment slot="aside">
                 <Roles bind:roles={permissions} />
