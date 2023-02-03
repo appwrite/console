@@ -44,7 +44,7 @@
         "@types/prismjs": "^1.26.0",
         "@typescript-eslint/eslint-plugin": "^5.50.0",
         "@typescript-eslint/parser": "^5.50.0",
-        "@vitest/ui": "^0.24.5",
+        "@vitest/ui": "^0.24.3",
         "eslint": "^8.33.0",
         "eslint-config-prettier": "^8.6.0",
         "eslint-plugin-svelte3": "^4.0.0",
@@ -60,7 +60,7 @@
         "tslib": "^2.5.0",
         "typescript": "^4.9.5",
         "vite": "^4.1.0",
-        "vitest": "^0.24.5"
+        "vitest": "^0.24.3"
     },
     "type": "module",
     "pre-commit": [
