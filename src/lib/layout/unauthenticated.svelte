@@ -38,7 +38,7 @@
 
         <div class="u-margin-block-start-auto is-not-mobile" />
         <div
-            class="container u-margin-block-start-20 is-not-mobile"
+            class="container u-margin-block-start-20 is-not-mobile u-flex u-main-center"
             style="--p-container-max-size: var(--container-size-large);">
             {#if $app.themeInUse === 'dark'}
                 <img src={imgDark} alt="" class="u-only-dark" />
