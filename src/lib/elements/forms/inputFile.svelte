@@ -12,6 +12,7 @@
     let hovering = false;
 
     function dropHandler(ev: DragEvent) {
+        ev.dataTransfer.dropEffect = 'move';
         hovering = false;
         if (ev.dataTransfer.items) {
             for (let i = 0; i < ev.dataTransfer.items.length; i++) {
