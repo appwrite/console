@@ -62,7 +62,9 @@
             href="https://appwrite.io/docs/permissions"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Permissions Guide</a>.
+            class="link">
+            Permissions Guide
+        </a>.
     </p>
     <svelte:fragment slot="aside">
         {#if collectionPermissions}
