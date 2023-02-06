@@ -42,7 +42,7 @@
     <svelte:fragment slot="header">Create New Organization</svelte:fragment>
     <FormList>
         <InputText
-            id="name"
+            id="organization-name"
             label="Name"
             placeholder="Enter name"
             bind:value={name}

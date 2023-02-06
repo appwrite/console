@@ -20,6 +20,8 @@
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { Button } from '$lib/elements/forms';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { goto } from '$app/navigation';
 
     let showFeedback = false;
     let showDropdown = false;
@@ -32,6 +34,12 @@
             feedback.toggleNotification();
             feedback.addVisualization();
         }
+    }
+
+    async function logout() {
+        await sdkForConsole.account.deleteSession('current');
+        trackEvent('submit_account_logout');
+        await goto(`${base}/login`);
     }
 
     function onBlur(event: MouseEvent) {
@@ -137,6 +145,14 @@
                                     on:click={() => (showDropdown = false)}>
                                     Your Account
                                 </DropListLink>
+                                <DropListItem
+                                    icon="logout-right"
+                                    on:click={() => {
+                                        showDropdown = false;
+                                        logout();
+                                    }}>
+                                    Sign Out
+                                </DropListItem>
                             </ul>
                         </section>
                         <section class="drop-section">

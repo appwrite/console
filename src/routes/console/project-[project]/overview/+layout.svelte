@@ -5,11 +5,13 @@
 
     // TODO: metric type is wrong
     export function last(set: Array<unknown>): Models.Metric | null {
+        if (!set) return null;
         return (set as Models.Metric[]).slice(-1)[0] ?? null;
     }
 
     // TODO: metric type is wrong
     export function total(set: Array<unknown>): number {
+        if (!set) return 0;
         return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
     }
 
@@ -65,7 +67,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(last($usage.storage).value)}
+                {@const storage = humanFileSize(last($usage.storage)?.value ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -89,14 +91,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.documents).value)}
+                                        {format(last($usage.documents)?.value ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(last($usage.databases).value)}
+                                        Databases: {format(last($usage.databases)?.value ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -124,7 +126,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(last($usage.buckets).value)}
+                                        Buckets: {format(last($usage.buckets)?.value ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -144,7 +146,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.users).value)}
+                                        {format(last($usage.users)?.value ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -165,7 +167,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.executions).value)}
+                                        {format(last($usage.executions)?.value ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>

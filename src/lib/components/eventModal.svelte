@@ -179,6 +179,9 @@
         inputData = null;
         showInput = false;
     }
+
+    //allows to add the href attribute without throwing an error
+    const attributes = { type: 'text', readonly: 'readonly' } as Record<string, string>;
 </script>
 
 <Modal bind:show on:submit={create} size="big">
@@ -279,13 +282,13 @@
         </div>
     {:else}
         <div class="input-text-wrapper" style="--amount-of-buttons:2">
-            <div type="text" readonly style="min-height: 2.5rem;">
+            <div {...attributes} style="min-height: 2.5rem;">
                 {#if inputData}
                     <span>{inputData}</span>
                 {:else}
                     {#each Array.from(eventString.values()) as route, i}
                         <button
-                            class:u-opacity-0-5={helper !== route.description}
+                            class:u-opacity-50={helper !== route.description}
                             on:mouseenter={() => {
                                 helper = route.description;
                             }}
@@ -294,7 +297,7 @@
                             }}>
                             {route.value}
                         </button>
-                        <span class="u-opacity-0-5">
+                        <span class="u-opacity-50">
                             {i + 1 < eventString?.size ? '.' : ''}
                         </span>
                     {/each}

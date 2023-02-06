@@ -55,8 +55,8 @@
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
-                <TableCellHead width={100}>Duration</TableCellHead>
-                <TableCellHead width={40} />
+                <TableCellHead width={80}>Duration</TableCellHead>
+                <TableCellHead width={50} />
             </TableHeader>
             <TableBody>
                 {#each data.executions.executions as execution}

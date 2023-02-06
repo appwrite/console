@@ -33,11 +33,16 @@ If you are worried or don’t know where to start, check out our next section ex
 
 ## Development
 
-Once you've created a project and installed dependencies with `npm install`, start a development server:
+Once you've created a project and installed dependencies with `npm install`, create a `.env` file using `.env.example` as a template.
+
+Finally, start a development server:
 
 ```bash
 npm run dev
 ```
+
+> **Note**
+> If http://localhost:3000 is blank and the browser console logs have a `TypeError: Failed to fetch dynamically imported module: http://localhost:3000/.svelte-kit/generated/nodes/0.js` error, try to turn off any ad blocker you have and reload the page ([reference](https://github.com/sveltejs/kit/issues/3308#issuecomment-1149942109)).
 
 ### Build
 

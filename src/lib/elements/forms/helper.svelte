@@ -4,10 +4,10 @@
 
 <p
     class="helper u-margin-block-start-12"
-    class:u-info={type === 'info'}
-    class:u-error={type === 'error'}
-    class:u-success={type === 'success'}
-    class:u-warning={type === 'warning'}>
+    class:u-color-text-info={type === 'info'}
+    class:u-color-text-danger={type === 'error'}
+    class:u-color-text-success={type === 'success'}
+    class:u-color-text-warning={type === 'warning'}>
     {#if type}
         <span
             class:icon-info={type === 'info' || type === 'neutral'}
