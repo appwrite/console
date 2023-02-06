@@ -20,6 +20,8 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { goto } from '$app/navigation';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
@@ -30,6 +32,12 @@
             feedback.toggleNotification();
             feedback.addVisualization();
         }
+    }
+
+    async function logout() {
+        await sdkForConsole.account.deleteSession('current');
+        trackEvent('submit_account_logout');
+        await goto(`${base}/login`);
     }
 
     function onBlur(event: MouseEvent) {
@@ -134,6 +142,14 @@
                                     on:click={() => (showDropdown = false)}>
                                     Your Account
                                 </DropListLink>
+                                <DropListItem
+                                    icon="logout-right"
+                                    on:click={() => {
+                                        showDropdown = false;
+                                        logout();
+                                    }}>
+                                    Sign Out
+                                </DropListItem>
                             </ul>
                         </section>
                         <section class="drop-section">

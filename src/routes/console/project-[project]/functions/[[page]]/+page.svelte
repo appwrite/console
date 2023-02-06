@@ -92,7 +92,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/functions"
+            href="https://appwrite.io/docs/functions#deployFunction"
             target="function"
             on:click={openWizard} />
     {/if}
