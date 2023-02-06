@@ -35,7 +35,7 @@
         }
 
         if (element.validity.patternMismatch) {
-            error = 'Please enter a valid CRON expression';
+            error = 'Please enter a valid Cron expression';
             return;
         }
 

@@ -52,7 +52,7 @@
                 <span class="icon-folder" aria-hidden="true" />
             </div>
             <div class="u-grid u-gap-16 u-min-width-0">
-                <p>Drag and drop files here to upload</p>
+                <p>Drag and drop files here</p>
                 <div class="u-flex u-gap-8 u-min-width-0">
                     <Button secondary on:click={() => input.click()}>
                         <span class="icon-upload" aria-hidden="true" />
