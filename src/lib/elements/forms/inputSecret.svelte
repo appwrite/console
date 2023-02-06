@@ -19,8 +19,6 @@
                 role="textbox"
                 {id}
                 aria-placeholder={placeholder}
-                name={id}
-                type="text"
                 class="input-text  is-resizable"
                 bind:textContent={value} />
         {:else}
