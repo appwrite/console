@@ -7,7 +7,7 @@ const config = {
         include: ['echarts', 'prismjs']
     },
     ssr: {
-        noExternal: ['echarts', 'prismjs']
+        noExternal: ['echarts', 'prismjs', '@analytics/google-analytics', 'analytics']
     },
     define: {
         'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)

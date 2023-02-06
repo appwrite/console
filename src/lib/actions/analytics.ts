@@ -18,7 +18,7 @@ export function trackEvent(name: string, data: object = null): void {
     if (!isTrackingAllowed()) {
         return;
     }
-    const path = get(page).routeId;
+    const path = get(page).route.id;
     analytics.track(name, { ...data, path });
     sendEventToGrowth(name, path, data);
 }
