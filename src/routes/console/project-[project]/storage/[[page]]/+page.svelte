@@ -54,7 +54,7 @@
                     <svelte:fragment slot="icons">
                         <li>
                             <span
-                                class:u-opacity-0-2={!bucket.encryption}
+                                class:u-opacity-20={!bucket.encryption}
                                 class="icon-lock-closed"
                                 aria-hidden="true"
                                 use:tooltip={{
@@ -65,7 +65,7 @@
                         </li>
                         <li>
                             <span
-                                class:u-opacity-0-2={!bucket.antivirus}
+                                class:u-opacity-20={!bucket.antivirus}
                                 class="icon-shield-check"
                                 aria-hidden="true"
                                 use:tooltip={{

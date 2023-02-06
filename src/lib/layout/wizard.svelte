@@ -88,7 +88,11 @@
         <div class="body-text-1">{title}</div>
 
         <slot name="header" />
-        <button class="x-button" aria-label="close wizard" on:click={handleExit}>
+        <button
+            class="button is-text is-only-icon"
+            style="--button-size:1.5rem;"
+            aria-label="close wizard"
+            on:click={handleExit}>
             <span class="icon-x" aria-hidden="true" />
         </button>
     </header>

@@ -32,8 +32,8 @@
             id="Security"
             label="Certificate verification (SSL/TLS)"
             bind:value={$createWebhook.security}>
-            <span class="u-error">Warning:</span> Untrusted or self-signed certificates may not be
-            secure.
+            <span class="u-color-text-danger">Warning:</span> Untrusted or self-signed certificates
+            may not be secure.
             <a
                 href="https://appwrite.io/docs/custom-domains#enjoySSLCert"
                 target="_blank"

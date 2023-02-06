@@ -7,6 +7,9 @@
     export let danger = false;
     export let href: string = null;
 
+    //allows to add the href attribute without throwing an error
+    let attributes = { href } as Record<string, string>;
+
     function getElement(): string {
         switch (true) {
             case !!href:
@@ -27,6 +30,6 @@
     class:is-danger={danger}
     on:click
     on:keyup={clickOnEnter}
-    {href}>
+    {...attributes}>
     <slot />
 </svelte:element>

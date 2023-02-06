@@ -37,7 +37,7 @@ export function createPersistentPagination(limit: number) {
         }
 
         goto(target, {
-            noscroll: true
+            noScroll: true
         });
     };
 
