@@ -9,6 +9,7 @@
     export let maxSize: number = null;
 
     let input: HTMLInputElement;
+    let dropTarget: HTMLDivElement;
     let hovering = false;
 
     function dropHandler(ev: DragEvent) {
@@ -47,8 +48,10 @@
         class="box is-border-dashed is-no-shadow u-padding-24"
         style="--box-border-radius:var(--border-radius-xsmall); z-index: 1"
         class:is-hover-with-file={hovering}
+        bind:this={dropTarget}
         on:drop|preventDefault={dropHandler}
-        on:dragover|preventDefault|stopPropagation={dragOverHandler}
+        on:dragover|preventDefault={dragOverHandler}
+        on:dragenter|preventDefault
         on:dragleave|preventDefault={() => (hovering = false)}>
         <div class="upload-file-box">
             <div class="upload-file-box-image">
