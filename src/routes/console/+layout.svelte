@@ -51,12 +51,8 @@
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/onboarding')}>
-    <svelte:fragment slot="header">
-        <Header />
-    </svelte:fragment>
-    <svelte:fragment slot="side">
-        <SideNavigation />
-    </svelte:fragment>
+    <Header slot="header" />
+    <SideNavigation slot="side" />
     <slot />
     <Footer slot="footer" />
 </Shell>

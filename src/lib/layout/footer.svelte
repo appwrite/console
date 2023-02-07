@@ -45,3 +45,9 @@
         </ul>
     </div>
 </footer>
+
+<style lang="scss">
+    .main-footer {
+        margin-block-start: auto;
+    }
+</style>
