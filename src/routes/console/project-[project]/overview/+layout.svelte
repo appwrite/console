@@ -67,7 +67,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(last($usage.storage)?.value ?? 0)}
+                {@const storage = humanFileSize(last($usage.filesStorage)?.value ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -91,14 +91,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.documents)?.value ?? 0)}
+                                        {format(last($usage.documentsTotal)?.value ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(last($usage.databases)?.value ?? 0)}
+                                        Databases: {format(last($usage.databasesTotal)?.value ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +126,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(last($usage.buckets)?.value ?? 0)}
+                                        Buckets: {format(last($usage.bucketsTotal)?.value ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +146,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.users)?.value ?? 0)}
+                                        {format(last($usage.usersTotal)?.value ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -167,7 +167,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.executions)?.value ?? 0)}
+                                        {format(last($usage.executionsTotal)?.value ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>
