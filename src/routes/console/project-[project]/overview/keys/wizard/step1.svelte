@@ -3,7 +3,6 @@
     import { WizardStep } from '$lib/layout';
     import { key } from './store';
 
-    let preset = 'never';
     function incrementToday(value: number, type: 'day' | 'month' | 'year'): string {
         const date = new Date();
         switch (type) {
@@ -21,24 +20,11 @@
         return date.toISOString();
     }
 
+    let expirationSelect = null;
+    let expirationCustom: string | undefined = undefined;
+
     $: {
-        switch (preset) {
-            case 'never':
-                $key.expire = null;
-                break;
-            case '1day':
-                $key.expire = incrementToday(1, 'day');
-                break;
-            case '7days':
-                $key.expire = incrementToday(7, 'day');
-                break;
-            case '1month':
-                $key.expire = incrementToday(1, 'month');
-                break;
-            case '1year':
-                $key.expire = incrementToday(1, 'year');
-                break;
-        }
+        $key.expire = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
     }
 </script>
 
@@ -53,37 +39,37 @@
             required
             bind:value={$key.name} />
         <InputSelect
-            bind:value={preset}
+            bind:value={expirationSelect}
             options={[
                 {
                     label: 'Never',
-                    value: 'never'
-                },
-                {
-                    label: '1 Day',
-                    value: '1day'
+                    value: null
                 },
                 {
                     label: '7 Days',
-                    value: '7days'
+                    value: incrementToday(7, 'day')
                 },
                 {
-                    label: '1 Month',
-                    value: '1month'
+                    label: '30 days',
+                    value: incrementToday(30, 'day')
+                },
+                {
+                    label: '90 days',
+                    value: incrementToday(90, 'day')
                 },
                 {
                     label: '1 Year',
-                    value: '1year'
+                    value: incrementToday(1, 'year')
                 },
                 {
-                    label: 'Custom Date',
+                    label: 'Custom expiration Date',
                     value: 'custom'
                 }
             ]}
             id="preset"
             label="Expiration Date" />
-        {#if preset === 'custom'}
-            <InputDateTime id="expire" label="" bind:value={$key.expire} showLabel={false} />
+        {#if expirationSelect === 'custom'}
+            <InputDateTime id="expire" label="" bind:value={expirationCustom} showLabel={false} />
         {/if}
     </FormList>
 </WizardStep>
