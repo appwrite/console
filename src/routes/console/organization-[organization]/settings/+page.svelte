@@ -15,6 +15,7 @@
     let name: string;
     let showDelete = false;
     let stripe: any;
+    let elements: any;
 
     onMount(() => {
         name = $organization.name;
@@ -38,7 +39,7 @@
                 }
             };
             // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
-            const elements = stripe.elements(options);
+            elements = stripe.elements(options);
 
             // Create and mount the Payment Element
             const paymentElement = elements.create('payment');
@@ -48,6 +49,29 @@
                 message: error.toString(),
                 type: 'error'
             });
+        }
+    }
+
+    async function savePaymentDetails(event) {
+        event.preventDefault();
+
+        const { error } = await stripe.confirmSetup({
+            //`Elements` instance that was used to create the Payment Element
+            elements,
+            confirmParams: {
+                return_url: 'https://localhost:3000'
+            }
+        });
+
+        if (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        } else {
+            // Your customer will be redirected to your `return_url`. For some payment
+            // methods like iDEAL, your customer will be redirected to an intermediate
+            // site first to authorize the payment, then redirected to the `return_url`.
         }
     }
 
@@ -94,20 +118,18 @@
             </CardGrid>
         </Form>
 
-        <form id="payment-form">
+        <form id="payment-form" on:submit={savePaymentDetails}>
             <CardGrid>
                 <Heading tag="h6" size="7">Create Payment Method</Heading>
+                <div id="payment-element">
+                    <!-- Elements will create form elements here -->
+                </div>
+
                 <svelte:fragment slot="actions">
+                    <Button submit>Save</Button>
                     <Button on:click={createPaymentMethod}>Create Payment Method</Button>
                 </svelte:fragment>
             </CardGrid>
-            <div id="payment-element">
-                <!-- Elements will create form elements here -->
-            </div>
-            <button id="submit">Submit</button>
-            <div id="error-message">
-                <!-- Display error message to your customers here -->
-            </div>
         </form>
 
         <CardGrid danger>
