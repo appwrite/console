@@ -9,8 +9,14 @@ test('shows button', () => {
     expect(getByRole('button')).toBeInTheDocument();
 });
 
+test('shows link', () => {
+    render(SecondaryTabsItem, { href: 'https://www.appwrite.io' });
+    const href = document.querySelector('a');
+    expect(href).toBeInTheDocument();
+});
+
 test('shows button - disabled', () => {
-    const { getByRole } = render(SecondaryTabsItem, { disabled: true });
+    const { getByRole } = render(SecondaryTabsItem, { href: null, disabled: true });
 
     expect(getByRole('button')).toBeDisabled();
 });
