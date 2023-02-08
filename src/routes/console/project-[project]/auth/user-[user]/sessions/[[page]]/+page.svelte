@@ -84,7 +84,7 @@
         </Table>
     {:else}
         <Empty single>
-            <p>No session available</p>
+            <p>No sessions available</p>
             <Button
                 external
                 secondary

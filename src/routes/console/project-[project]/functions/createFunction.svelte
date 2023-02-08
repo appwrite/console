@@ -68,7 +68,7 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Function Details',
+        label: 'Details',
         component: Step1
     });
     stepsComponents.set(2, {
@@ -82,7 +82,7 @@
         optional: true
     });
     stepsComponents.set(4, {
-        label: 'Scheduling',
+        label: 'Schedule',
         component: Step4,
         optional: true
     });

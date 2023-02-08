@@ -1,46 +1,35 @@
 <script lang="ts">
-    import {
-        CardGrid,
-        Box,
-        DropList,
-        DropListItem,
-        Empty,
-        EventModal,
-        Output,
-        Secret
-    } from '$lib/components';
-    import { Container } from '$lib/layout';
-    import { Button, InputNumber, InputText, InputCron, Form, FormList } from '$lib/elements/forms';
+    import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { Box, CardGrid, DropList, DropListItem, Empty, Output, Secret } from '$lib/components';
+    import Heading from '$lib/components/heading.svelte';
+    import { Roles } from '$lib/components/permissions';
+    import { Dependencies } from '$lib/constants';
+    import { Button, Form, FormList, InputCron, InputNumber, InputText } from '$lib/elements/forms';
+    import { symmetricDifference } from '$lib/helpers/array';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { execute, func } from '../store';
-    import Delete from './delete.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
-    import { page } from '$app/stores';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { onMount } from 'svelte';
     import Variable from '../../createVariable.svelte';
+    import { execute, func } from '../store';
     // import Upload from './uploadVariables.svelte';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Roles } from '$lib/components/permissions';
-    import { symmetricDifference } from '$lib/helpers/array';
-    import TableList from '$lib/elements/table/tableList.svelte';
     import {
         Table,
         TableBody,
         TableCell,
         TableCellHead,
-        TableCellText,
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import Heading from '$lib/components/heading.svelte';
-    import { writable, type Writable } from 'svelte/store';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import type { PageData } from './$types';
-    import { trackEvent } from '$lib/actions/analytics';
+    import Delete from './delete.svelte';
+    import UpdateEvents from './updateEvents.svelte';
 
     export let data: PageData;
 
@@ -56,16 +45,11 @@
     let permissions: string[] = [];
     let arePermsDisabled = true;
 
-    const eventSet: Writable<Set<string>> = writable(new Set());
-    let showEvents = false;
-    let areEventsDisabled = true;
-
     onMount(async () => {
         timeout ??= $func.timeout;
         functionName ??= $func.name;
         functionSchedule ??= $func.schedule;
         permissions = $func.execute;
-        $eventSet = new Set($func.events);
     });
 
     async function updateName() {
@@ -118,31 +102,6 @@
         }
     }
 
-    async function updateEvents() {
-        try {
-            await sdkForProject.functions.update(
-                functionId,
-                $func.name,
-                $func.execute,
-                Array.from($eventSet),
-                $func.schedule,
-                $func.timeout,
-                $func.enabled
-            );
-            invalidate(Dependencies.FUNCTION);
-            addNotification({
-                message: 'Permissions have been updated',
-                type: 'success'
-            });
-            trackEvent('submit_function_update_events');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-
     async function updateSchedule() {
         try {
             await sdkForProject.functions.update(
@@ -158,7 +117,7 @@
 
             addNotification({
                 type: 'success',
-                message: 'CRON Schedule has been updated'
+                message: 'Cron Schedule has been updated'
             });
             trackEvent('submit_function_update_schedule');
         } catch (error) {
@@ -278,20 +237,10 @@
         }
     }
 
-    function handleEvent(event: CustomEvent) {
-        eventSet.set($eventSet.add(event.detail));
-    }
-
     $: if (permissions) {
         if (symmetricDifference(permissions, $func.execute).length) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
-    }
-
-    $: if ($eventSet) {
-        if (symmetricDifference(Array.from($eventSet), $func.events).length) {
-            areEventsDisabled = false;
-        } else areEventsDisabled = true;
     }
 </script>
 
@@ -359,7 +308,8 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
-                    Permissions Guide</a> in our documentation.
+                    Permissions Guide
+                </a>.
             </p>
             <svelte:fragment slot="aside">
                 <Roles bind:roles={permissions} />
@@ -371,66 +321,24 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updateEvents}>
-        <CardGrid>
-            <Heading tag="h6" size="7">Update Events</Heading>
-            <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
-            <svelte:fragment slot="aside">
-                {#if $eventSet.size}
-                    <div class="u-flex u-flex-vertical u-gap-16">
-                        <TableList>
-                            {#each Array.from($eventSet) as event}
-                                <li class="table-row">
-                                    <TableCellText title="id">
-                                        {event}
-                                    </TableCellText>
-                                    <TableCell showOverflow title="options" width={40}>
-                                        <button
-                                            class="button is-text is-only-icon"
-                                            aria-label="delete id"
-                                            on:click|preventDefault={() => {
-                                                $eventSet.delete(event);
-                                                eventSet.set($eventSet);
-                                            }}>
-                                            <span class="icon-x" aria-hidden="true" />
-                                        </button>
-                                    </TableCell>
-                                </li>
-                            {/each}
-                        </TableList>
-
-                        <Button text noMargin on:click={() => (showEvents = true)}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="u-text">Add event</span>
-                        </Button>
-                    </div>
-                {:else}
-                    <Empty on:click={() => (showEvents = true)}>Add an event to get started</Empty>
-                {/if}
-            </svelte:fragment>
-
-            <svelte:fragment slot="actions">
-                <Button disabled={areEventsDisabled} submit>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-    </Form>
+    <UpdateEvents />
 
     <Form on:submit={updateSchedule}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update CRON Schedule</Heading>
+            <Heading tag="h6" size="7">Update Schedule</Heading>
             <p>
-                Set a CRON schedule to trigger your function. Leave blank for no schedule. <a
+                Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
                     href="https://en.wikipedia.org/wiki/Cron"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
-                    More details on CRON syntax here.</a>
+                    More details on Cron syntax here.</a>
             </p>
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputCron
                         bind:value={functionSchedule}
-                        label="Schedule (CRON Syntax)"
+                        label="Schedule (Cron Syntax)"
                         id="schedule" />
                 </FormList>
             </svelte:fragment>
@@ -442,7 +350,7 @@
     </Form>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Update Function Variables</Heading>
+        <Heading tag="h6" size="7">Update Variables</Heading>
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
@@ -586,5 +494,3 @@
         on:created={handleVariableCreated}
         on:updated={handleVariableUpdated} />
 {/if}
-<!-- <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} /> -->
-<EventModal bind:show={showEvents} on:created={handleEvent} />

@@ -6,7 +6,6 @@
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
     import { bucket } from './store';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Permissions } from '$lib/components/permissions';
     import { addNotification } from '$lib/stores/notifications';
     import { trackEvent } from '$lib/actions/analytics';
@@ -50,8 +49,10 @@
     <svelte:fragment slot="header">Create File</svelte:fragment>
     <FormList>
         <div>
-            <InputFile bind:files allowedFileExtensions={$bucket.allowedFileExtensions} />
-            <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
+            <InputFile
+                bind:files
+                allowedFileExtensions={$bucket.allowedFileExtensions}
+                maxSize={$bucket.maximumFileSize} />
         </div>
 
         {#if !showCustomId}
@@ -72,7 +73,9 @@
                 href="https://appwrite.io/docs/permissions"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="link">Permissions Guide</a> in our documentation.
+                class="link">
+                Permissions Guide
+            </a>.
         </p>
         {#if $bucket.fileSecurity}
             <div class="common-section">

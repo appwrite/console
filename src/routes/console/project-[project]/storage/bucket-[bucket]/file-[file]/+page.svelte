@@ -152,10 +152,7 @@
 
         <CardGrid danger>
             <Heading tag="h6" size="7">Delete File</Heading>
-            <p>
-                The file will be permanently deleted, including all the files within it. This action
-                is irreversible.
-            </p>
+            <p>The file will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
