@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { Card, DropListLink, DropTabs, Heading } from '$lib/components';
-    import { last } from '$lib/layout/usage.svelte';
+    import { total } from '$lib/layout/usage.svelte';
     import { BarChart } from '$lib/charts';
     import { page } from '$app/stores';
     import type { PageData } from './$types';
@@ -34,7 +34,7 @@
     </div>
     {#if count}
         <Card>
-            <Heading tag="h6" size="6">{last(count).value}</Heading>
+            <Heading tag="h6" size="6">{total(count).value}</Heading>
             <p>Executions</p>
             <div class="u-margin-block-start-16" />
             <BarChart

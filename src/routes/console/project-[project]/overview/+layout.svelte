@@ -5,13 +5,11 @@
 
     // TODO: metric type is wrong
     export function last(set: Array<unknown>): Models.Metric | null {
-        if (!set) return null;
         return (set as Models.Metric[]).slice(-1)[0] ?? null;
     }
 
     // TODO: metric type is wrong
     export function total(set: Array<unknown>): number {
-        if (!set) return 0;
         return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
     }
 
@@ -44,7 +42,7 @@
     afterNavigate(handle);
 
     async function handle() {
-        const promise = usage.load(projectId, period);
+        const promise = usage.load(period);
 
         if ($usage) {
             await promise;
@@ -53,7 +51,7 @@
 
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
-        usage.load(projectId, period);
+        usage.load(period);
     }
 </script>
 
@@ -67,7 +65,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(last($usage.filesStorage)?.value ?? 0)}
+                {@const storage = humanFileSize(total($usage.storage))}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -91,14 +89,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.documentsTotal)?.value ?? 0)}
+                                        {format(total($usage.documents))}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(last($usage.databasesTotal)?.value ?? 0)}
+                                        Databases: {format(total($usage.databases))}
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +124,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(last($usage.bucketsTotal)?.value ?? 0)}
+                                        Buckets: {format(total($usage.buckets))}
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +144,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.usersTotal)?.value ?? 0)}
+                                        {format(total($usage.users))}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -167,7 +165,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.executionsTotal)?.value ?? 0)}
+                                        {format(total($usage.executions))}
                                     </div>
                                     <div>Executions</div>
                                 </div>

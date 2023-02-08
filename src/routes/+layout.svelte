@@ -59,7 +59,10 @@
                 }
                 loading.set(false);
             } else {
-                if (acceptedRoutes.includes($page.url.pathname)) {
+                if (
+                    acceptedRoutes.includes($page.url.pathname) ||
+                    $page.url.pathname.startsWith('/register/invite')
+                ) {
                     await goto(`${base}${$page.url.pathname}${$page.url.search}`);
                 } else {
                     await goto(`${base}/login`, {
