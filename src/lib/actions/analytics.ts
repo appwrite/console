@@ -34,8 +34,9 @@ export function trackPageView(path: string) {
 }
 
 function sendEventToGrowth(event: string, path: string, data: object = null): void {
-    let email: string, name: string;
+    if (!growthEndpoint) return;
     const userStore = get(user);
+    let email: string, name: string;
     if (userStore) {
         email = userStore.email;
         name = userStore.name;
