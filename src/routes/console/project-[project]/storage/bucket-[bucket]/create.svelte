@@ -6,7 +6,6 @@
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
     import { bucket } from './store';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Permissions } from '$lib/components/permissions';
     import { addNotification } from '$lib/stores/notifications';
     import { trackEvent } from '$lib/actions/analytics';
@@ -50,8 +49,10 @@
     <svelte:fragment slot="header">Create File</svelte:fragment>
     <FormList>
         <div>
-            <InputFile bind:files allowedFileExtensions={$bucket.allowedFileExtensions} />
-            <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
+            <InputFile
+                bind:files
+                allowedFileExtensions={$bucket.allowedFileExtensions}
+                maxSize={$bucket.maximumFileSize} />
         </div>
 
         {#if !showCustomId}
