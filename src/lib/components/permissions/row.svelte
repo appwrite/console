@@ -80,13 +80,7 @@
                             {/if}
                             <span class="user-profile-info is-only-desktop">
                                 <span class="name">
-                                    {data.name
-                                        ? data.name
-                                        : data?.email
-                                        ? data?.email
-                                        : data?.phone
-                                        ? data?.phone
-                                        : '-'}
+                                    {data.name ?? data?.email ?? data?.phone ?? '-'}
                                 </span>
                                 <Output value={data.$id}>{role}</Output>
                             </span>
