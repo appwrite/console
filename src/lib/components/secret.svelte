@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { tooltip } from '$lib/actions/tooltip';
     import { Copy } from '.';
 
     export let show = false;
@@ -16,7 +17,8 @@
             class="interactive-text-output-button"
             aria-label="show hidden text"
             type="button"
-            on:click={() => (show = !show)}>
+            on:click={() => (show = !show)}
+            use:tooltip={{ content: show ? 'Hide secret' : 'Show secret', hideOnClick: false }}>
             <span class:icon-eye-off={show} class:icon-eye={!show} aria-hidden="true" />
         </button>
         <Copy {value}>
