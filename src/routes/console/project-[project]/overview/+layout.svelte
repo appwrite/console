@@ -65,7 +65,8 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(total($usage.storage))}
+                {@const storage = humanFileSize(total($usage.filesStorage))}
+
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -89,14 +90,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.documents))}
+                                        {format(total($usage.documentsTotal))}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(total($usage.databases))}
+                                        Databases: {format(total($usage.databasesTotal))}
                                     </div>
                                 </div>
                             </div>
@@ -124,7 +125,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(total($usage.buckets))}
+                                        Buckets: {format(total($usage.bucketsTotal))}
                                     </div>
                                 </div>
                             </div>
@@ -144,7 +145,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.users))}
+                                        {format(total($usage.usersTotal))}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -165,7 +166,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.executions))}
+                                        {format(total($usage.executionsTotal))}
                                     </div>
                                     <div>Executions</div>
                                 </div>
