@@ -10,13 +10,33 @@
     import { onMount } from 'svelte';
     import Delete from '../deleteOrganization.svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import { loadStripe } from '@stripe/stripe-js';
 
     let name: string;
     let showDelete = false;
+    let stripe: any;
 
+    const options = {
+        clientSecret: '{{CLIENT_SECRET}}',
+        // Fully customizable with appearance API.
+        appearance: {/*...*/},
+    };
+
+    
     onMount(() => {
         name = $organization.name;
+        initStripe();
     });
+    
+    async function initStripe() {
+        stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY?.toString());
+        // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
+        const elements = stripe.elements(options);
+    
+        // Create and mount the Payment Element
+        const paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
+    }
 
     async function updateName() {
         try {
@@ -60,6 +80,16 @@
                 </svelte:fragment>
             </CardGrid>
         </Form>
+
+        <form id="payment-form">
+            <div id="payment-element">
+              <!-- Elements will create form elements here -->
+            </div>
+            <button id="submit">Submit</button>
+            <div id="error-message">
+              <!-- Display error message to your customers here -->
+            </div>
+        </form>
 
         <CardGrid danger>
             <div>
