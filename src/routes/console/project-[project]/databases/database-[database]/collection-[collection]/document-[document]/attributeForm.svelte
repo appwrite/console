@@ -4,7 +4,7 @@
     import Button from '$lib/elements/forms/button.svelte';
     import Pill from '$lib/elements/pill.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { isAttributeEnum, type Attributes } from '../store';
+    import type { Attributes } from '../store';
     import Attribute from './attribute.svelte';
 
     export let attributes: Attributes[] = [];
@@ -29,7 +29,7 @@
     }
 
     function getAttributeType(attribute: Attributes) {
-        if (isAttributeEnum(attribute)) return 'Enum';
+        if ('format' in attribute && attribute.format === 'enum') return 'Enum';
         return `${capitalize(attribute.type)}${attribute.array ? '[]' : ''}`;
     }
 </script>

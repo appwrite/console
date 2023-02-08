@@ -1,7 +1,6 @@
-import { derived } from 'svelte/store';
 import { page } from '$app/stores';
 import type { Models } from '@aw-labs/appwrite-console';
-import { isObjectType } from '$lib/helpers/object';
+import { derived } from 'svelte/store';
 
 export type Attributes =
     | Models.AttributeBoolean
@@ -12,12 +11,6 @@ export type Attributes =
     | Models.AttributeIp
     | Models.AttributeString
     | Models.AttributeUrl;
-
-export function isAttributeEnum(attribute: unknown): attribute is Models.AttributeEnum {
-    return isObjectType<Models.AttributeEnum>(attribute, {
-        format: (v) => v === 'enum'
-    });
-}
 
 type Collection = Omit<Models.Collection, 'attributes'> & {
     attributes: Array<Attributes>;
