@@ -1,0 +1,114 @@
+{
+    "backgroundColor": "rgba(255,255,255,0)",
+    "textStyle": {},
+    "line": {
+        "itemStyle": {
+            "borderWidth": 1
+        },
+        "lineStyle": {
+            "width": 1
+        },
+        "symbolSize": 4,
+        "symbol": "emptyCircle",
+        "smooth": true
+    },
+    "bar": {
+        "itemStyle": {
+            "barBorderColor": "#ccc"
+        }
+    },
+    "categoryAxis": {
+        "axisLine": {
+            "show": true
+        },
+        "axisTick": {
+            "show": true
+        },
+        "axisLabel": {
+            "show": true
+        },
+        "splitLine": {
+            "show": false
+        },
+        "splitArea": {
+            "show": false
+        }
+    },
+    "valueAxis": {
+        "axisLine": {
+            "show": false
+        },
+        "axisTick": {
+            "show": false
+        },
+        "axisLabel": {
+            "show": true
+        },
+        "splitLine": {
+            "show": true
+        },
+        "splitArea": {
+            "show": false
+        }
+    },
+    "logAxis": {
+        "axisLine": {
+            "show": true
+        },
+        "axisTick": {
+            "show": true
+        },
+        "axisLabel": {
+            "show": true
+        },
+        "splitLine": {
+            "show": true
+        },
+        "splitArea": {
+            "show": false
+        }
+    },
+    "timeAxis": {
+        "axisLine": {
+            "show": true
+        },
+        "axisTick": {
+            "show": true
+        },
+        "axisLabel": {
+            "show": true
+        },
+        "splitLine": {
+            "show": true
+        },
+        "splitArea": {
+            "show": false
+        }
+    },
+    "tooltip": {
+        "axisPointer": {
+            "lineStyle": {
+                "width": 1
+            },
+            "crossStyle": {
+                "width": 1
+            }
+        }
+    },
+    "timeline": {
+        "lineStyle": {
+            "width": 1
+        },
+        "itemStyle": {
+            "borderWidth": 1
+        },
+        "controlStyle": {
+            "borderWidth": 0.5
+        },
+        "emphasis": {
+            "controlStyle": {
+                "borderWidth": 0.5
+            }
+        }
+    }
+}

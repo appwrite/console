@@ -1,9 +1,15 @@
 <script lang="ts">
+    import { Trim } from '$lib/components';
     export let title: string;
     export let showOverflow = false;
-    let data: HTMLSpanElement;
+    export let onlyDesktop = false;
 </script>
 
-<div class="table-col " class:u-overflow-visible={showOverflow} data-title={title} role="cell">
-    <span bind:this={data} class="text u-trim" title={data?.innerText}><slot /></span>
+<div
+    class="table-col"
+    class:is-only-desktop={onlyDesktop}
+    class:u-overflow-visible={showOverflow}
+    data-title={title}
+    role="cell">
+    <Trim><slot /></Trim>
 </div>

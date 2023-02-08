@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import {
         Button,
         Form,
         FormItem,
+        InputChoice,
         InputEmail,
         InputPassword,
         InputText
@@ -13,25 +14,32 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
+    import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
-    let name: string, mail: string, pass: string;
+    let name: string, mail: string, pass: string, disabled: boolean;
+    let terms = false;
 
-    const register = async () => {
+    async function register() {
         try {
+            disabled = true;
             await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
             await sdkForConsole.account.createEmailSession(mail, pass);
+            await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
+            trackEvent('submit_account_create');
         } catch (error) {
+            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
         }
-    };
+    }
 </script>
 
 <svelte:head>
-    <title>Appwrite - Sign up</title>
+    <title>Sign up - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
@@ -58,9 +66,23 @@
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
-
+                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                    By registering, you agree that you have read, understand, and acknowledge our <a
+                        class="link"
+                        href="https://appwrite.io/policy/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        Privacy Policy</a>
+                    and accept our
+                    <a
+                        class="link"
+                        href="https://appwrite.io/policy/terms"
+                        target="_blank"
+                        rel="noopener noreferrer">General Terms of Use</a
+                    >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit>Sign up</Button></FormItem>
+                    <Button fullWidth submit {disabled}>Sign up</Button>
+                </FormItem>
             </FormList>
         </Form>
     </svelte:fragment>

@@ -4,10 +4,10 @@
     import { Button, Form, FormList, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
     import { Unauthenticated } from '$lib/layout';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;
@@ -22,12 +22,12 @@
     const acceptInvite = async () => {
         try {
             await sdkForConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
-            await user.fetchUser();
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'
             });
-            await goto(`${base}/console`);
+            await goto(`${base}/console/organization-${teamId}`);
+            trackEvent('submit_membership_update_status');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -38,7 +38,7 @@
 </script>
 
 <svelte:head>
-    <title>Appwrite - Accept invite</title>
+    <title>Accept invite - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
@@ -59,9 +59,14 @@
                         By accepting the invitation, you agree to the <a
                             class="link"
                             href="https://appwrite.io/policy/terms"
-                            target="_blank">Terms and Conditions</a>
+                            target="_blank"
+                            rel="noopener noreferrer">Terms and Conditions</a>
                         and
-                        <a class="link" href="https://appwrite.io/policy/privacy" target="_blank">
+                        <a
+                            class="link"
+                            href="https://appwrite.io/policy/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer">
                             Privacy Policy</a
                         >.</InputChoice>
 

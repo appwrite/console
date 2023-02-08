@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
+
     export let submit = false;
     export let secondary = false;
     export let text = false;
@@ -9,14 +11,29 @@
     export let href: string = null;
     export let fullWidth = false;
     export let ariaLabel: string = null;
-    //TODO: add option to add aria-label to buttons that are only icons
+    export let noMargin = false;
+    export let event: string = null;
+
+    //allows to add the disabled attribute to <a> tag without throwing an error
+    let attributes = { disabled } as Record<string, boolean>;
+
+    function track() {
+        if (!event) {
+            return;
+        }
+
+        trackEvent(`click_${event}`, {
+            from: 'button'
+        });
+    }
 </script>
 
 {#if href}
     <a
-        {disabled}
+        on:click={track}
+        {...attributes}
         {href}
-        target={external ? '_blank' : '_self'}
+        target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class="button"
         class:is-only-icon={round}
@@ -24,12 +41,14 @@
         class:is-text={text}
         class:is-danger={danger}
         class:is-full-width={fullWidth}
+        class:u-padding-inline-0={noMargin}
         aria-label={ariaLabel}>
         <slot />
     </a>
 {:else}
     <button
         on:click
+        on:click={track}
         {disabled}
         class="button"
         class:is-only-icon={round}
@@ -37,6 +56,7 @@
         class:is-danger={danger}
         class:is-text={text}
         class:is-full-width={fullWidth}
+        class:u-padding-inline-0={noMargin}
         type={submit ? 'submit' : 'button'}
         aria-label={ariaLabel}>
         <slot />

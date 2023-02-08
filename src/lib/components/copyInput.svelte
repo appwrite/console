@@ -1,5 +1,6 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
+    import { copy } from '$lib/helpers/copy';
 
     import { addNotification } from '$lib/stores/notifications';
 
@@ -9,34 +10,37 @@
 
     let content = 'Click to copy';
 
-    const copy = async () => {
-        try {
-            await navigator.clipboard.writeText(value);
+    const handleCopy = async () => {
+        const success = await copy(value);
+
+        if (success) {
             content = 'Copied';
-        } catch (error) {
+        } else {
             addNotification({
-                message: error.message,
+                message: 'Unable to copy to clipboard',
                 type: 'error'
             });
         }
     };
 </script>
 
-<div class="input-text-wrapper is-with-end-button">
+<div>
     <label class:u-hide={!showLabel} class="label" for={label}>{label}</label>
-    <div class="input-text-wrapper">
+    <div class="input-text-wrapper" style="--amount-of-buttons:1">
         <input {value} id={label} type="text" class="input-text" readonly />
-        <button
-            type="button"
-            class="input-button"
-            aria-label="Click to copy."
-            on:click={copy}
-            on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
-            use:tooltip={{
-                content,
-                hideOnClick: false
-            }}>
-            <span class="icon-duplicate" aria-hidden="true" />
-        </button>
+        <div class="options-list">
+            <button
+                type="button"
+                class="input-button"
+                aria-label="Click to copy."
+                on:click={handleCopy}
+                on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
+                use:tooltip={{
+                    content,
+                    hideOnClick: false
+                }}>
+                <span class="icon-duplicate" aria-hidden="true" />
+            </button>
+        </div>
     </div>
 </div>

@@ -4,10 +4,10 @@ import { sveltekit } from '@sveltejs/kit/vite';
 const config = {
     plugins: [sveltekit()],
     optimizeDeps: {
-        include: ['echarts']
+        include: ['echarts', 'prismjs']
     },
     ssr: {
-        noExternal: ['echarts']
+        noExternal: ['echarts', 'prismjs', '@analytics/google-analytics', 'analytics']
     },
     define: {
         'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)
@@ -23,7 +23,10 @@ const config = {
         environment: 'jsdom',
         globals: true,
         threads: true,
-        setupFiles: ['./tests/unit/setup.ts']
+        setupFiles: ['./tests/unit/setup.ts'],
+        deps: {
+            inline: ['@analytics/type-utils']
+        }
     }
 };
 

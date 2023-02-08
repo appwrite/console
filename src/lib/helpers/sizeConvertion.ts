@@ -1,3 +1,5 @@
+import prettyBytes from 'pretty-bytes';
+
 const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
 export function calculateSize(bytes: number, decimals = 1) {
@@ -18,4 +20,18 @@ export function sizeToBytes(value: number, unit: string) {
 export function bytesToSize(value: number, unit: string) {
     const index = sizes.indexOf(unit);
     return value / Math.pow(1024, index);
+}
+
+export function humanFileSize(bytes: number): {
+    value: string;
+    unit: string;
+} {
+    const value = prettyBytes(bytes, {
+        locale: 'en'
+    }).split(' ');
+
+    return {
+        value: value[0],
+        unit: value[1]
+    };
 }

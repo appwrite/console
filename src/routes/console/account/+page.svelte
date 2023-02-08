@@ -1,14 +1,16 @@
 <script lang="ts">
     import { Button, Form, FormList, InputText, InputPassword } from '$lib/elements/forms';
-    import { CardGrid, Box, Avatar } from '$lib/components';
+    import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
     import { Container } from '$lib/layout';
     import { onMount } from 'svelte';
     import { user } from '$lib/stores/user';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import { title, breadcrumbs } from '$lib/stores/layout';
     import { base } from '$app/paths';
-    import Delete from './_delete.svelte';
+    import Delete from './delete.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let name: string = null,
         email: string = null,
@@ -22,20 +24,15 @@
         email ??= $user.email;
     });
 
-    const getAvatar = (name: string) => sdkForConsole.avatars.getInitials(name, 96, 96).toString();
-
     async function updateName() {
         try {
             await sdkForConsole.account.updateName(name);
-            $user.name = name;
-            title.set(name);
-            const breadcrumb = $breadcrumbs.get(0);
-            breadcrumb.title = name;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
+            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_account_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -46,11 +43,12 @@
     async function updateEmail() {
         try {
             await sdkForConsole.account.updateEmail(email, emailPassword);
-            $user.email = email;
+            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'
             });
+            trackEvent('submit_account_update_email');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -62,10 +60,12 @@
     async function updatePassword() {
         try {
             await sdkForConsole.account.updatePassword(newPassword, oldPassword);
+            newPassword = oldPassword = null;
             addNotification({
                 message: 'Password has been updated',
                 type: 'success'
             });
+            trackEvent('submit_account_update_password');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -78,7 +78,7 @@
 <Container>
     <Form on:submit={updateName}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Name</h6>
+            <Heading tag="h6" size="7">Update Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -99,7 +99,7 @@
     </Form>
     <Form on:submit={updateEmail}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Email</h6>
+            <Heading tag="h6" size="7">Update Email</Heading>
 
             <svelte:fragment slot="aside">
                 <FormList>
@@ -129,7 +129,7 @@
     </Form>
     <Form on:submit={updatePassword}>
         <CardGrid>
-            <h6 class="heading-level-7">Update Password</h6>
+            <Heading tag="h6" size="7">Update Password</Heading>
             <p class="text">
                 Forgot your password? <a class="link" href={`${base}/recover`}
                     >Recover your password</a>
@@ -159,9 +159,9 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <CardGrid>
+    <CardGrid danger>
         <div>
-            <h6 class="heading-level-7">Delete Account</h6>
+            <Heading tag="h6" size="7">Delete Account</Heading>
         </div>
         <p>
             Your account will be permanently deleted and access will be lost to any of your teams
@@ -170,10 +170,10 @@
         <svelte:fragment slot="aside">
             <Box>
                 <svelte:fragment slot="image">
-                    <Avatar size={48} name={$user.name} src={getAvatar($user.name)} />
+                    <AvatarInitials size={48} name={$user.name} />
                 </svelte:fragment>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold">{$user.name}</h6>
+                    <h6 class="u-bold u-trim-1">{$user.name}</h6>
                 </svelte:fragment>
             </Box>
         </svelte:fragment>

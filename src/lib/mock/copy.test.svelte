@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
     import { Copy } from '../components';
 
-    export let value = false;
+    export let value: string;
 </script>
 
 <Copy {value}>

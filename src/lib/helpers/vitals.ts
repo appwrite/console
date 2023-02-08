@@ -1,4 +1,6 @@
-import { getCLS, getFCP, getFID, getLCP, getTTFB, type Metric } from 'web-vitals';
+import { page } from '$app/stores';
+import { get } from 'svelte/store';
+import type { Metric } from 'web-vitals';
 
 type Options = {
     params:
@@ -16,7 +18,7 @@ const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
 function getConnectionSpeed() {
     return 'connection' in navigator &&
         navigator['connection'] &&
-        'effectiveType' in navigator['connection']
+        'effectiveType' in (navigator['connection'] as Record<string, unknown>)
         ? navigator['connection']['effectiveType']
         : '';
 }
@@ -57,14 +59,19 @@ function sendToAnalytics(metric: Metric, options: Options) {
         });
 }
 
-export function webVitals(options: Options) {
+export function reportWebVitals(metric: Metric) {
     try {
-        getFID((metric) => sendToAnalytics(metric, options));
-        getTTFB((metric) => sendToAnalytics(metric, options));
-        getLCP((metric) => sendToAnalytics(metric, options));
-        getCLS((metric) => sendToAnalytics(metric, options));
-        getFCP((metric) => sendToAnalytics(metric, options));
+        sendToAnalytics(metric, createWebVitalsOptions());
     } catch (err) {
         console.error('[Analytics]', err);
     }
+}
+
+function createWebVitalsOptions(): Options {
+    const ctx = get(page);
+    return {
+        path: ctx.url.pathname,
+        params: ctx.params,
+        analyticsId: window.VERCEL_ANALYTICS_ID || ''
+    };
 }

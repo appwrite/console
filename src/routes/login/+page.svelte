@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import {
         Button,
@@ -11,31 +11,35 @@
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
     import { Unauthenticated } from '$lib/layout';
+    import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
-    let mail: string, pass: string;
+    let mail: string, pass: string, disabled: boolean;
 
-    const login = async () => {
+    async function login() {
         try {
+            disabled = true;
             await sdkForConsole.account.createEmailSession(mail, pass);
-            user.fetchUser();
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'
             });
+            trackEvent('submit_session_create');
             await goto(`${base}/console`);
         } catch (error) {
+            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
         }
-    };
+    }
 </script>
 
 <svelte:head>
-    <title>Appwrite - Sign in</title>
+    <title>Sign in - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
@@ -59,7 +63,7 @@
                     showPasswordButton={true}
                     bind:value={pass} />
                 <FormItem>
-                    <Button fullWidth submit>Sign in</Button>
+                    <Button fullWidth submit {disabled}>Sign in</Button>
                 </FormItem>
             </FormList>
         </Form>

@@ -1,28 +1,32 @@
 <script lang="ts">
-    import { CardGrid, Box, AvatarGroup } from '$lib/components';
+    import { CardGrid, Box, AvatarGroup, Heading } from '$lib/components';
     import { InputText, Form, Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { organization, memberList } from '$lib/stores/organization';
-    import { title, breadcrumbs } from '$lib/stores/layout';
-    import Delete from '../_deleteOrganization.svelte';
+    import { members, organization } from '$lib/stores/organization';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { onMount } from 'svelte';
+    import Delete from '../deleteOrganization.svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
-    let name: string = $organization.name;
+    let name: string;
     let showDelete = false;
+
+    onMount(() => {
+        name = $organization.name;
+    });
 
     async function updateName() {
         try {
             await sdkForConsole.teams.update($organization.$id, name);
-            $organization.name = name;
-            title.set(name);
-            const breadcrumb = $breadcrumbs.get(0);
-            breadcrumb.title = name;
-            $breadcrumbs = $breadcrumbs.set($breadcrumbs.size, breadcrumb);
+            await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
             });
+            trackEvent('submit_organization_update_name');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -31,31 +35,14 @@
         }
     }
 
-    organization.subscribe((org) => {
-        name = org?.name;
-    });
-
-    let avatars = [];
-    let avatarsTotal = 0;
-
-    memberList.subscribe((value) => {
-        if (value?.total > 0) {
-            avatarsTotal = value.total;
-            avatars = value.memberships.map((team) => {
-                return {
-                    name: team.userName,
-                    img: sdkForConsole.avatars.getInitials(team.userName, 120, 120).toString()
-                };
-            });
-        }
-    });
+    $: avatars = $members.memberships.map((team) => team.userName);
 </script>
 
 <Container>
     {#if $organization}
         <Form on:submit={updateName}>
             <CardGrid>
-                <h6 class="heading-level-7">Update Name</h6>
+                <Heading tag="h6" size="7">Update Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <ul>
@@ -74,9 +61,9 @@
             </CardGrid>
         </Form>
 
-        <CardGrid>
+        <CardGrid danger>
             <div>
-                <h6 class="heading-level-7">Delete Organization</h6>
+                <Heading tag="h6" size="7">Delete Organization</Heading>
             </div>
             <p>
                 The organization will be permanently deleted, including all projects and data
@@ -85,12 +72,12 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="image">
-                        <AvatarGroup {avatars} total={avatarsTotal} />
+                        <AvatarGroup {avatars} total={$members.total} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold">{$organization.name}</h6>
+                        <h6 class="u-bold u-trim-1">{$organization.name}</h6>
                     </svelte:fragment>
-                    <p>{$organization.total} projects</p>
+                    <p>{$organization.total} members</p>
                 </Box>
             </svelte:fragment>
 

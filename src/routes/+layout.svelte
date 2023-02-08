@@ -1,50 +1,79 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { user } from '$lib/stores/user';
-    import { redirectTo } from '$lib/stores/organization';
+    import { onCLS, onFID, onLCP, onFCP, onINP, onTTFB } from 'web-vitals';
+    import { reportWebVitals } from '$lib/helpers/vitals';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { browser, dev } from '$app/environment';
     import { app } from '$lib/stores/app';
-    import Notifications from '$lib/layout/notifications.svelte';
-    import Loading from './_loading.svelte';
-    import { webVitals } from '$lib/helpers/vitals';
-
-    let loaded = false;
+    import { Progress, Notifications } from '$lib/layout';
+    import { loading } from './store';
+    import Loading from './loading.svelte';
+    import { trackPageView } from '$lib/actions/analytics';
+    import * as Sentry from '@sentry/svelte';
+    import { BrowserTracing } from '@sentry/tracing';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
-        window.GOOGLE_ANALYTICS = import.meta.env.VITE_GOOGLE_ANALYTICS?.toString() ?? false;
     }
 
-    const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
-
     onMount(async () => {
-        try {
-            if (!$user) {
-                await user.fetchUser();
-            }
+        /**
+         * Reporting Web Vitals.
+         */
+        if (!dev && window.VERCEL_ANALYTICS_ID) {
+            onCLS(reportWebVitals);
+            onFID(reportWebVitals);
+            onLCP(reportWebVitals);
+            onFCP(reportWebVitals);
+            onINP(reportWebVitals);
+            onTTFB(reportWebVitals);
+        }
 
-            if (!$page.url.pathname.startsWith('/console')) {
-                await redirectTo();
+        /**
+         * Sentry Error Logging
+         */
+        if (!dev) {
+            Sentry.init({
+                dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
+                integrations: [new BrowserTracing()],
+                tracesSampleRate: 1.0
+            });
+        }
+
+        /**
+         * Handle initial load.
+         */
+        if (!$page.url.pathname.startsWith('/auth')) {
+            const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+            if ($user) {
+                if (
+                    !$page.url.pathname.startsWith('/console') &&
+                    !$page.url.pathname.startsWith('/invite')
+                ) {
+                    await goto(`${base}/console`, {
+                        replaceState: true
+                    });
+                }
+                loading.set(false);
+            } else {
+                if (acceptedRoutes.includes($page.url.pathname)) {
+                    await goto(`${base}${$page.url.pathname}${$page.url.search}`);
+                } else {
+                    await goto(`${base}/login`, {
+                        replaceState: true
+                    });
+                }
+                loading.set(false);
             }
-        } catch (error) {
-            if (acceptedRoutes.includes($page.url.pathname)) {
-                await goto(`${base}${$page.url.pathname}${$page.url.search}`);
-            } else await goto(`${base}/login`);
-        } finally {
-            loaded = true;
         }
     });
 
-    $: if (!dev && browser && window.VERCEL_ANALYTICS_ID) {
-        webVitals({
-            path: $page.url.pathname,
-            params: $page.params,
-            analyticsId: window.VERCEL_ANALYTICS_ID
-        });
-    }
+    afterNavigate((navigation) => {
+        trackPageView(navigation.to.route.id);
+    });
 
     $: {
         if (browser) {
@@ -65,29 +94,15 @@
     }
 </script>
 
-<svelte:head>
-    {#if browser && window.GOOGLE_ANALYTICS}
-        <script
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${window.GOOGLE_ANALYTICS}`}></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
-            gtag('config', window.GOOGLE_ANALYTICS);
-        </script>
-    {/if}
-</svelte:head>
-
 <Notifications />
 
-{#if loaded}
-    <slot />
-{:else}
+<slot />
+
+{#if $loading}
     <Loading />
 {/if}
+
+<Progress />
 
 <style lang="scss" global>
     .tippy-box {
