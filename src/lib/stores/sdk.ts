@@ -12,6 +12,8 @@ import {
     Users
 } from '@aw-labs/appwrite-console';
 
+import { Billing } from './billing';
+
 const endpoint =
     import.meta.env.VITE_APPWRITE_ENDPOINT?.toString() ?? `${window?.location?.origin}/v1`;
 const clientConsole = new Client();
@@ -50,7 +52,7 @@ const sdkForProject = {
 
 const cloudSdk = {
     ...sdkForConsole,
-    billing: new Billing(clientConsole),
-}
+    billing: new Billing(clientConsole)
+};
 
 export { sdkForConsole, sdkForProject, cloudSdk, setProject };

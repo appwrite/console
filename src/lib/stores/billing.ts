@@ -1,4 +1,4 @@
-import type { Client } from "@aw-labs/appwrite-console";
+import type { Client } from '@aw-labs/appwrite-console';
 
 export class Billing {
     client: Client;
@@ -11,6 +11,13 @@ export class Billing {
         const path = `/teams/${teamId}/payment-methods`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);
-        this.client.call('POST', uri, {}, params);
+        return await this.client.call(
+            'POST',
+            uri,
+            {
+                'Content-Type': 'application/json'
+            },
+            params
+        );
     }
 }

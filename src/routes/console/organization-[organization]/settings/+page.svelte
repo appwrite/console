@@ -3,7 +3,7 @@
     import { InputText, Form, Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { cloudSdk, sdkForConsole } from '$lib/stores/sdk';
     import { members, organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -16,26 +16,39 @@
     let showDelete = false;
     let stripe: any;
 
-    const options = {
-        clientSecret: '{{CLIENT_SECRET}}',
-        // Fully customizable with appearance API.
-        appearance: {/*...*/},
-    };
-
-    
     onMount(() => {
         name = $organization.name;
         initStripe();
     });
-    
+
     async function initStripe() {
         stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY?.toString());
-        // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
-        const elements = stripe.elements(options);
-    
-        // Create and mount the Payment Element
-        const paymentElement = elements.create('payment');
-        paymentElement.mount('#payment-element');
+    }
+
+    async function createPaymentMethod(event) {
+        event.preventDefault();
+
+        try {
+            const paymentMethod = await cloudSdk.billing.createPaymentMethod($organization.$id);
+            const options = {
+                clientSecret: paymentMethod.clientSecret,
+                // Fully customizable with appearance API.
+                appearance: {
+                    /*...*/
+                }
+            };
+            // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
+            const elements = stripe.elements(options);
+
+            // Create and mount the Payment Element
+            const paymentElement = elements.create('payment');
+            paymentElement.mount('#payment-element');
+        } catch (error) {
+            addNotification({
+                message: error.toString(),
+                type: 'error'
+            });
+        }
     }
 
     async function updateName() {
@@ -82,12 +95,18 @@
         </Form>
 
         <form id="payment-form">
+            <CardGrid>
+                <Heading tag="h6" size="7">Create Payment Method</Heading>
+                <svelte:fragment slot="actions">
+                    <Button on:click={createPaymentMethod}>Create Payment Method</Button>
+                </svelte:fragment>
+            </CardGrid>
             <div id="payment-element">
-              <!-- Elements will create form elements here -->
+                <!-- Elements will create form elements here -->
             </div>
             <button id="submit">Submit</button>
             <div id="error-message">
-              <!-- Display error message to your customers here -->
+                <!-- Display error message to your customers here -->
             </div>
         </form>
 
