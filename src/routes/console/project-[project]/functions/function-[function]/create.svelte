@@ -136,7 +136,7 @@
             on:click={() => (mode = Mode.Github)}
             selected={mode === Mode.Github}
             event="deploy_github">
-            GitHub - (Soon!)
+            GitHub - (Soon)
         </Tab>
         <Tab
             on:click={() => (mode = Mode.Manual)}
