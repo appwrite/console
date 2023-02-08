@@ -9,7 +9,6 @@
     export let maxSize: number = null;
 
     let input: HTMLInputElement;
-    let dropTarget: HTMLDivElement;
     let hovering = false;
 
     function dropHandler(ev: DragEvent) {
@@ -45,10 +44,10 @@
         <p class="text">{label}</p>
     {/if}
     <div
-        class="box is-border-dashed is-no-shadow u-padding-24"
+        class="box  is-no-shadow u-padding-24"
         style="--box-border-radius:var(--border-radius-xsmall); z-index: 1"
+        class:is-border-dashed={!hovering}
         class:is-hover-with-file={hovering}
-        bind:this={dropTarget}
         on:drop|preventDefault={dropHandler}
         on:dragover|preventDefault={dragOverHandler}
         on:dragenter|preventDefault
