@@ -26,7 +26,7 @@
     let files: FileList;
     let lang = 'js';
     let codeSnippets = {};
-    let OS = 'unknown';
+    let os = 'unknown';
 
     const functionId = $page.params.function;
     const dispatch = createEventDispatcher();
@@ -34,7 +34,7 @@
     onMount(() => {
         lang = setLanguage($func.runtime);
         codeSnippets = setCodeSnippets(lang);
-        OS = navigator['userAgentData']?.platform || navigator?.platform || 'unknown';
+        os = navigator['userAgentData']?.platform || navigator?.platform || 'unknown';
     });
 
     function setLanguage(runtime: string) {
@@ -113,12 +113,12 @@
     function openCategory(category: string, index: number) {
         switch (category) {
             case 'CMD':
-                return OS.includes('Win');
+                return os.includes('Win');
             case 'PowerShell':
-                return OS.includes('Win');
+                return os.includes('Win');
             case 'Unix':
                 return (
-                    OS === 'unknown' || OS.includes('Linux') || OS.includes('Mac') || index === 0
+                    os === 'unknown' || os.includes('Linux') || os.includes('Mac') || index === 0
                 );
             default:
                 return index === 0;
