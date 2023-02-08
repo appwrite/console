@@ -34,7 +34,8 @@
         <h4 class="body-text-1">How can we improve?</h4>
         <button
             type="button"
-            class="x-button u-margin-inline-start-auto"
+            class="button is-text is-only-icon u-margin-inline-start-auto"
+            style="--button-size:1.5rem;"
             aria-label="Close Modal"
             title="Close Modal"
             on:click={() => (show = false)}>
