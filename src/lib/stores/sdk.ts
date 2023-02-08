@@ -48,4 +48,9 @@ const sdkForProject = {
     users: new Users(clientProject)
 };
 
-export { sdkForConsole, sdkForProject, setProject };
+const cloudSdk = {
+    ...sdkForConsole,
+    billing: new Billing(clientConsole),
+}
+
+export { sdkForConsole, sdkForProject, cloudSdk, setProject };
