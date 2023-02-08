@@ -33,9 +33,9 @@
 
         <div class="u-margin-block-start-auto" />
 
-        <div class="u-margin-block-start-auto is-no-mobile" />
+        <div class="u-margin-block-start-auto is-not-mobile" />
         <div
-            class="container u-margin-block-start-20 is-no-mobile"
+            class="container u-margin-block-start-20 is-not-mobile"
             style="--p-container-max-size: var(--container-size-large);">
             {#if $app.themeInUse === 'dark'}
                 <img src={LoginDark} alt="" class="u-only-dark" />
@@ -46,13 +46,13 @@
 
         <div class="u-margin-block-start-auto" />
 
-        <div class="u-margin-block-start-auto is-no-mobile" />
+        <div class="u-margin-block-start-auto is-not-mobile" />
         <div
-            class="container u-text-color-light-gray is-no-mobile"
+            class="container u-color-text-gray is-not-mobile"
             style="--p-container-max-size:var(--container-size-small); --p-container-padding-inline:1rem;">
             <p>Integrate with your favourite technologies</p>
             <ul
-                class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 u-opacity-0-5">
+                class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 u-opacity-50">
                 {#each technologies as tech}
                     <li>
                         <img
@@ -67,7 +67,7 @@
         <div class="u-margin-block-start-40" />
     </section>
     <section class="grid-1-1-col-2 u-flex u-main-center u-cross-center">
-        <div class="container u-flex u-flex-vertical u-cross-center u-height-100-percents">
+        <div class="container u-flex u-flex-vertical u-cross-center u-height-100-percent">
             <div class="u-margin-block-start-auto" />
 
             <div class="u-max-width-500 u-width-full-line">

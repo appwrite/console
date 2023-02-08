@@ -117,7 +117,7 @@
 
             addNotification({
                 type: 'success',
-                message: 'CRON Schedule has been updated'
+                message: 'Cron Schedule has been updated'
             });
             trackEvent('submit_function_update_schedule');
         } catch (error) {
@@ -308,7 +308,8 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
-                    Permissions Guide</a> in our documentation.
+                    Permissions Guide
+                </a>.
             </p>
             <svelte:fragment slot="aside">
                 <Roles bind:roles={permissions} />
@@ -324,20 +325,20 @@
 
     <Form on:submit={updateSchedule}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update CRON Schedule</Heading>
+            <Heading tag="h6" size="7">Update Schedule</Heading>
             <p>
-                Set a CRON schedule to trigger your function. Leave blank for no schedule. <a
+                Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
                     href="https://en.wikipedia.org/wiki/Cron"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
-                    More details on CRON syntax here.</a>
+                    More details on Cron syntax here.</a>
             </p>
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputCron
                         bind:value={functionSchedule}
-                        label="Schedule (CRON Syntax)"
+                        label="Schedule (Cron Syntax)"
                         id="schedule" />
                 </FormList>
             </svelte:fragment>
@@ -349,7 +350,7 @@
     </Form>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Update Function Variables</Heading>
+        <Heading tag="h6" size="7">Update Variables</Heading>
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">

@@ -20,7 +20,7 @@
                 <span class="amount">{$uploader.files.length}</span>
             </h4>
             <button
-                class="icon-button"
+                class="upload-box-button"
                 class:is-open={!$uploader.isCollapsed}
                 aria-label="toggle upload box"
                 on:click={() => uploader.toggle()}>
@@ -28,7 +28,7 @@
             </button>
             <button
                 on:click={() => uploader.reset()}
-                class="icon-button"
+                class="upload-box-button"
                 aria-label="close upload box">
                 <span class="icon-x" aria-hidden="true" />
             </button>
@@ -52,7 +52,7 @@
                             <label for={file.name} class="file-name u-trim">{file.name}</label>
 
                             <button
-                                class="icon-button"
+                                class="upload-box-button"
                                 aria-label="Failed"
                                 on:mouseenter={() => (hovering = true)}
                                 on:mouseleave={() => (hovering = false)}
@@ -74,7 +74,7 @@
                             <label for={file.name} class="file-name u-trim">{file.name}</label>
                             <Pill danger>Failed</Pill>
                             <button
-                                class="icon-button"
+                                class="upload-box-button"
                                 aria-label="Failed"
                                 on:click|preventDefault={() => uploader.removeFromQueue(file.$id)}>
                                 <span class="icon-x" />

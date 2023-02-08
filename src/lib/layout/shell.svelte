@@ -47,7 +47,7 @@
     <header class="main-header u-padding-inline-end-0">
         <button
             class:u-hide={!showSideNavigation}
-            class="icon-button is-no-desktop"
+            class="icon-button is-not-desktop"
             aria-label="Open Menu"
             on:click={toggleMenu}>
             <span class:icon-x={isOpen} class:icon-menu={!isOpen} aria-hidden="true" />

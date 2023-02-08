@@ -39,6 +39,7 @@
             ? [{ value: externalAttribute.key, order: 'ASC' }]
             : [{ value: '', order: 'ASC' }];
         selectedType = 'key';
+        key = `index_${$indexes.length + 1}`;
     }
 
     $: if (showCreateIndex) {
