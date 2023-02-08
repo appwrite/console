@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Alert } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
