@@ -153,10 +153,6 @@
             </Pill>
         </div>
     </svelte:fragment>
-    <Alert type="warning">
-        Note: If you are building your Flutter application for multiple devices, you will have to
-        follow this process for each different device.
-    </Alert>
 
     <FormList isCommonSection>
         <InputText
