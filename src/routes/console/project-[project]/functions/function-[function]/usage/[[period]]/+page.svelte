@@ -34,7 +34,7 @@
     </div>
     {#if count}
         <Card>
-            <Heading tag="h6" size="6">{total(count).value}</Heading>
+            <Heading tag="h6" size="6">{total(count)}</Heading>
             <p>Executions</p>
             <div class="u-margin-block-start-16" />
             <BarChart
