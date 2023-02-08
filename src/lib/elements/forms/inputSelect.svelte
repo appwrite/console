@@ -35,9 +35,9 @@
 <FormItem>
     <label class:u-hide={!showLabel} class="label" for={id}>
         {label}
-        <span class:u-hide={!showLabel || !optionalText} class="optional">
-            {optionalText}
-        </span>
+        {#if optionalText}
+            <span class="optional">{optionalText}</span>
+        {/if}
     </label>
 
     <div class="select">
