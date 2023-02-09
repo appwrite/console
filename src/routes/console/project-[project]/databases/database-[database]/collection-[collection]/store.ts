@@ -1,6 +1,6 @@
-import { derived } from 'svelte/store';
 import { page } from '$app/stores';
 import type { Models } from '@aw-labs/appwrite-console';
+import { derived } from 'svelte/store';
 
 export type Attributes =
     | Models.AttributeBoolean

@@ -3,6 +3,7 @@
 
     export let id: string;
     export let label: string;
+    export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let value: string | number | boolean;
     export let placeholder = '';
@@ -32,7 +33,13 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+    <label class:u-hide={!showLabel} class="label" for={id}>
+        {label}
+        {#if optionalText}
+            <span class="optional">{optionalText}</span>
+        {/if}
+    </label>
+
     <div class="select">
         <select
             {id}
