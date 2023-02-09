@@ -106,4 +106,13 @@
     </CardGrid>
 </Form>
 
-<EventModal bind:show={showCreateEvent} on:created={handleEvent} />
+<EventModal bind:show={showCreateEvent} on:created={handleEvent}>
+    <p class="text">
+        Select events in your Appwrite project that will trigger your webhook. <a
+            href="https://appwrite.io/docs/events"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">Learn more about Appwrite Events</a
+        >.
+    </p>
+</EventModal>
