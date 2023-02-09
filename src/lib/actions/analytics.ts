@@ -24,7 +24,7 @@ export function trackEvent(name: string, data: object = null): void {
     const path = get(page).route.id;
 
     if (isDevelopment) {
-        console.log(`[Analytics] Event ${name} ${path}`, data);
+        console.debug(`[Analytics] Event ${name} ${path}`, data);
     } else {
         analytics.track(name, { ...data, path });
         sendEventToGrowth(name, path, data);
@@ -37,7 +37,7 @@ export function trackPageView(path: string) {
     }
 
     if (isDevelopment) {
-        console.log(`[Analytics] Pageview ${path}`);
+        console.debug(`[Analytics] Pageview ${path}`);
     } else {
         analytics.page({
             path

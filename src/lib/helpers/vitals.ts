@@ -40,7 +40,7 @@ function sendToAnalytics(metric: Metric, options: Options) {
     };
 
     if (options.debug) {
-        console.log('[Analytics]', metric.name, JSON.stringify(body, null, 2));
+        console.debug('[Analytics]', metric.name, JSON.stringify(body, null, 2));
     }
 
     const blob = new Blob([new URLSearchParams(body).toString()], {
