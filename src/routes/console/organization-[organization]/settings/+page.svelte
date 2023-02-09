@@ -4,7 +4,7 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { cloudSdk, sdkForConsole } from '$lib/stores/sdk';
-    import { members, organization } from '$lib/stores/organization';
+    import { members, organization, paymentMethods } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
@@ -59,7 +59,7 @@
             //`Elements` instance that was used to create the Payment Element
             elements,
             confirmParams: {
-                return_url: 'https://localhost:3000'
+                return_url: 'http://localhost:3000'
             }
         });
 
@@ -121,6 +121,10 @@
         <Form on:submit={savePaymentDetails}>
             <CardGrid>
                 <Heading tag="h6" size="7">Create Payment Method</Heading>
+                {#each $paymentMethods.paymentMethods as paymentMethod}
+                    {paymentMethod.providerUserId}
+                {/each}
+
                 <div id="payment-element">
                     <!-- Elements will create form elements here -->
                 </div>

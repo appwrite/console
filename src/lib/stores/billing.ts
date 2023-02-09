@@ -7,6 +7,12 @@ export class Billing {
         this.client = client;
     }
 
+    async listPaymentMethods(teamId: string) {
+        const path = `/teams/${teamId}/payment-methods`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('GET', uri);
+    }
+
     async createPaymentMethod(teamId: string) {
         const path = `/teams/${teamId}/payment-methods`;
         const params = {};

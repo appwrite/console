@@ -9,4 +9,6 @@ export const organizationList = derived(
     ($page) => $page.data.organizations as Models.TeamList
 );
 export const organization = derived(page, ($page) => $page.data.organization as Models.Team);
+
+export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
