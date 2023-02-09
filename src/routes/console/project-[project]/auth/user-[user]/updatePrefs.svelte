@@ -110,6 +110,11 @@
                 <Button
                     noMargin
                     text
+                    disabled={prefs?.length &&
+                    prefs[prefs.length - 1][0] &&
+                    prefs[prefs.length - 1][1]
+                        ? false
+                        : true}
                     on:click={() => {
                         if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
                             prefs.push(['', '']);
