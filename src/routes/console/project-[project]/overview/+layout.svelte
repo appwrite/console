@@ -203,8 +203,7 @@
                             <a
                                 class="tabs-button"
                                 href={`${path}/platforms`}
-                                class:is-selected={$page.url.pathname === `${path}/platforms`}
-                                on:click={() => ($selectedTab = 'platforms')}>
+                                class:is-selected={$page.url.pathname === `${path}/platforms`}>
                                 <span class="text">Platforms</span>
                             </a>
                         </li>
@@ -212,8 +211,7 @@
                             <a
                                 class="tabs-button"
                                 href={`${path}/keys`}
-                                class:is-selected={$page.url.pathname === `${path}/keys`}
-                                on:click={() => ($selectedTab = 'keys')}>
+                                class:is-selected={$page.url.pathname === `${path}/keys`}>
                                 <span class="text">API Keys</span>
                             </a>
                         </li>
