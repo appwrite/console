@@ -68,7 +68,9 @@
     let expirationCustom: string | null = value ?? null;
 
     $: {
-        value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
+        if (!isSameDay(new Date(expirationSelect), new Date(value))) {
+            value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
+        }
     }
 </script>
 
