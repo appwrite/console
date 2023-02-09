@@ -1,12 +1,14 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { trackEvent } from '$lib/actions/analytics';
+    import Alert from '$lib/components/alert.svelte';
     import CardGrid from '$lib/components/cardGrid.svelte';
     import Heading from '$lib/components/heading.svelte';
     import { Dependencies } from '$lib/constants';
     import { Form } from '$lib/elements/forms';
     import Button from '$lib/elements/forms/button.svelte';
     import FormList from '$lib/elements/forms/formList.svelte';
+    import { diffDays } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../store';
@@ -37,6 +39,11 @@
             });
         }
     }
+
+    let alertsDismissed = false;
+    $: isExpiring =
+        !alertsDismissed && $key.expire && diffDays(new Date(), new Date($key.expire)) < 14;
+    $: isExpired = !alertsDismissed && $key.expire !== null && new Date($key.expire) < new Date();
 </script>
 
 <Form on:submit={updateExpire}>
@@ -44,6 +51,20 @@
         <Heading tag="h6" size="7">Update Expiration Date</Heading>
         <p class="text">Set a date after which your API Key will expire.</p>
         <svelte:fragment slot="aside">
+            {#if isExpired}
+                <Alert type="error" dismissible on:dismiss={() => (alertsDismissed = true)}>
+                    <span slot="title">Your API Key has expired</span>
+                    <p>
+                        For security reasons, we recommend you delete your expired key and create a
+                        new one.
+                    </p>
+                </Alert>
+            {:else if isExpiring}
+                <Alert type="warning" dismissible on:dismiss={() => (alertsDismissed = true)}>
+                    <span slot="title">Your API Key is about to expire</span>
+                    <p>Update the expiration date to keep the key active</p>
+                </Alert>
+            {/if}
             <FormList>
                 <ExpirationInput bind:value={expiration} />
             </FormList>

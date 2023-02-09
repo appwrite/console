@@ -1,5 +1,11 @@
 import '@testing-library/jest-dom';
-import { toLocaleDate, toLocaleDateTime, isSameDay, isValidDate } from '$lib/helpers/date';
+import {
+    toLocaleDate,
+    toLocaleDateTime,
+    isSameDay,
+    isValidDate,
+    diffDays
+} from '$lib/helpers/date';
 
 describe('local date', () => {
     [
@@ -50,6 +56,24 @@ describe('is valid date', () => {
     entries.forEach(([value, expected]) => {
         it(value, () => {
             expect(isValidDate(value)).toBe(expected);
+        });
+    });
+});
+
+describe('diff days', () => {
+    const entries: Array<[string, string, number]> = [
+        ['2022-11-15 08:26:28', '2022-11-15 08:26:28', 0],
+        ['2022-11-15 08:26:28', '2022-11-16 08:26:28', 1],
+        ['2022-11-15 08:26:28', '2022-11-16 08:26:27', 0],
+        ['2022-11-15 08:26:28', '2022-11-14 08:26:29', 0],
+        ['2022-11-15 08:26:28', '2022-11-14 08:26:27', 1],
+        ['2022-11-15 08:26:28', '2022-11-20 08:26:29', 5],
+        ['2022-11-15 08:26:28', '2022-11-20 08:26:27', 4]
+    ];
+
+    entries.forEach(([value1, value2, expected]) => {
+        it(`${value1} ${value2}`, () => {
+            expect(diffDays(new Date(value1), new Date(value2))).toBe(expected);
         });
     });
 });

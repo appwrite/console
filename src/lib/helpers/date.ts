@@ -31,7 +31,11 @@ export const isSameDay = (date1: Date, date2: Date) => {
     );
 };
 
-// Function that checks if a string is a valid date
 export const isValidDate = (date: string) => {
     return !isNaN(new Date(date).getTime());
+};
+
+export const diffDays = (date1: Date, date2: Date) => {
+    const diffTime = Math.abs(date2.getTime() - date1.getTime());
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 };
