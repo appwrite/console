@@ -25,7 +25,7 @@
     import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
     import { onboarding, project } from '../store';
-    import { selectedTab, usage } from './store';
+    import { usage } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { Heading } from '$lib/components';
