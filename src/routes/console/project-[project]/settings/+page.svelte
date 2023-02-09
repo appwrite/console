@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { cloudSdk, sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -16,6 +16,7 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     let name: string = null;
+    let plan: string = null;
     let showDelete = false;
     let updating = false;
     const endpoint = sdkForConsole.client.config.endpoint;
@@ -23,6 +24,7 @@
 
     onMount(async () => {
         name ??= $project.name;
+        plan ??= $project.billingPlan;
     });
 
     async function updateName() {
@@ -43,9 +45,28 @@
         }
     }
 
+    async function updatePlan() {
+        updating = true;
+        try {
+            await cloudSdk.billing.updateProjectPlan($project.$id, plan);
+            invalidate(Dependencies.PROJECT);
+            addNotification({
+                type: 'success',
+                message: 'Project plan has been updated'
+            });
+            trackEvent('submit_project_update_plan');
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
     $: {
         // When project name is updated, finalize the updating flow
         $project.name;
+        $project.billingPlan;
         updating = false;
     }
 
@@ -114,6 +135,28 @@
 
                 <svelte:fragment slot="actions">
                     <Button disabled={name === $project.name || updating} submit>Update</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+
+        <Form on:submit={updatePlan}>
+            <CardGrid>
+                <Heading tag="h6" size="7">Update Plan</Heading>
+
+                <svelte:fragment slot="aside">
+                    <FormList>
+                        <InputText
+                            id="plan"
+                            label="plan"
+                            bind:value={plan}
+                            required
+                            placeholder="Select plan" />
+                    </FormList>
+                </svelte:fragment>
+
+                <svelte:fragment slot="actions">
+                    <Button disabled={plan === $project.billingPlan || updating} submit
+                        >Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>

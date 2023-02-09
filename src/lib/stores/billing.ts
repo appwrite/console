@@ -1,4 +1,4 @@
-import type { Client } from '@aw-labs/appwrite-console';
+import type { Client, Payload } from '@aw-labs/appwrite-console';
 
 export class Billing {
     client: Client;
@@ -15,7 +15,23 @@ export class Billing {
             'POST',
             uri,
             {
-                'Content-Type': 'application/json'
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async updateProjectPlan(projectId: string, billingPlan: string) {
+        const path = `/project/${projectId}/plan`;
+        const params: Payload = {
+            billingPlan
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
             },
             params
         );

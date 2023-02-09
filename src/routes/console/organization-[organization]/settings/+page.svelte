@@ -118,7 +118,7 @@
             </CardGrid>
         </Form>
 
-        <form id="payment-form" on:submit={savePaymentDetails}>
+        <Form on:submit={savePaymentDetails}>
             <CardGrid>
                 <Heading tag="h6" size="7">Create Payment Method</Heading>
                 <div id="payment-element">
@@ -130,7 +130,7 @@
                     <Button on:click={createPaymentMethod}>Create Payment Method</Button>
                 </svelte:fragment>
             </CardGrid>
-        </form>
+        </Form>
 
         <CardGrid danger>
             <div>
