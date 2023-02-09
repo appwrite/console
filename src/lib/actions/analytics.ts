@@ -5,6 +5,7 @@ import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
 import { growthEndpoint, Mode } from '$lib/constants';
 
+const isDevelopment = import.meta.env.DEV || import.meta.env?.VERCEL_ENV === 'preview';
 const analytics = Analytics({
     app: 'appwrite',
     plugins: [
@@ -18,9 +19,15 @@ export function trackEvent(name: string, data: object = null): void {
     if (!isTrackingAllowed()) {
         return;
     }
+
     const path = get(page).route.id;
-    analytics.track(name, { ...data, path });
-    sendEventToGrowth(name, path, data);
+
+    if (isDevelopment) {
+        console.log(`[Analytics] Event ${name} ${path}`, data);
+    } else {
+        analytics.track(name, { ...data, path });
+        sendEventToGrowth(name, path, data);
+    }
 }
 
 export function trackPageView(path: string) {
@@ -28,9 +35,13 @@ export function trackPageView(path: string) {
         return;
     }
 
-    analytics.page({
-        path
-    });
+    if (isDevelopment) {
+        console.log(`[Analytics] Pageview ${path}`);
+    } else {
+        analytics.page({
+            path
+        });
+    }
 }
 
 function sendEventToGrowth(event: string, path: string, data: object = null): void {
