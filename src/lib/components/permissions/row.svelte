@@ -65,7 +65,7 @@
                     {#if data}
                         {@const isUser = role.startsWith('user')}
                         {@const isTeam = role.startsWith('team')}
-                        {@const isAnonymous = !data.email && !data.phone}
+                        {@const isAnonymous = !data.email && !data.phone && isUser}
                         <div class="user-profile">
                             {#if isAnonymous}
                                 <div class="avatar is-size-small ">
