@@ -3,13 +3,13 @@
     import { Pill } from '$lib/elements';
     import { Copy, Status, Heading, Pagination, EmptySearch } from '$lib/components';
     import {
-        Table,
         TableHeader,
         TableBody,
         TableCellHead,
         TableCell,
         TableCellText,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
@@ -49,7 +49,7 @@
         <Heading tag="h2" size="5">Logs</Heading>
     </div>
     {#if data.executions.total}
-        <Table>
+        <TableScroll>
             <TableHeader>
                 <TableCellHead width={90}>Execution ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
@@ -98,7 +98,7 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.executions.total}</p>
             <Pagination
