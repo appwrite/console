@@ -25,7 +25,7 @@
     import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
     import { onboarding, project } from '../store';
-    import { usage } from './store';
+    import { selectedTab, usage } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { Heading } from '$lib/components';
@@ -203,7 +203,8 @@
                             <a
                                 class="tabs-button"
                                 href={`${path}/platforms`}
-                                class:is-selected={$page.url.pathname === `${path}/platforms`}>
+                                class:is-selected={$page.url.pathname === `${path}/platforms`}
+                                on:click={() => ($selectedTab = 'platforms')}>
                                 <span class="text">Platforms</span>
                             </a>
                         </li>
@@ -211,7 +212,8 @@
                             <a
                                 class="tabs-button"
                                 href={`${path}/keys`}
-                                class:is-selected={$page.url.pathname === `${path}/keys`}>
+                                class:is-selected={$page.url.pathname === `${path}/keys`}
+                                on:click={() => ($selectedTab = 'keys')}>
                                 <span class="text">API Keys</span>
                             </a>
                         </li>
