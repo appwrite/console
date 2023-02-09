@@ -1,29 +1,28 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
+    import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { Copy, EmptySearch, Heading, Pagination, Status } from '$lib/components';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import { Pill } from '$lib/elements';
-    import { Copy, Status, Heading, Pagination, EmptySearch } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
-        TableHeader,
         TableBody,
-        TableCellHead,
         TableCell,
+        TableCellHead,
         TableCellText,
+        TableHeader,
         TableRow
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { Container } from '$lib/layout';
     import { log } from '$lib/stores/logs';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { onDestroy, onMount } from 'svelte';
+    import CreateDeployment from '../../create.svelte';
     import { func } from '../../store';
     import type { PageData } from './$types';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-    import { page } from '$app/stores';
-    import { onDestroy, onMount } from 'svelte';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import { invalidate } from '$app/navigation';
-    import { Button } from '$lib/elements/forms';
-    import CreateDeployment from '../../create.svelte';
-    import { timer } from '$lib/actions/timer';
 
     export let data: PageData;
     let showCreate = false;
@@ -84,11 +83,7 @@
                             </Pill>
                         </TableCellText>
                         <TableCellText title="Duration">
-                            {#if execution.duration === 0}
-                                <span use:timer={{ start: execution.$createdAt }} />
-                            {:else}
-                                {calculateTime(execution.duration)}
-                            {/if}
+                            {calculateTime(execution.duration)}
                         </TableCellText>
                         <TableCell>
                             <Button
