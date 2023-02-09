@@ -141,4 +141,13 @@
     </CardGrid>
 </Form>
 
-<EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent} />
+<EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent}>
+    <p class="text">
+        Select events in your Appwrite project that will trigger your function. <a
+            href="https://appwrite.io/docs/events"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">Learn more about Appwrite Events</a
+        >.
+    </p>
+</EventModal>

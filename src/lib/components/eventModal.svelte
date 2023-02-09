@@ -240,14 +240,7 @@
 
 <Modal bind:show on:submit={create} size="big">
     <svelte:fragment slot="header">Create Event</svelte:fragment>
-    <p class="text">
-        Select events in your Appwrite project that will trigger your function. <a
-            href="https://appwrite.io/docs/events"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">Learn more about Appwrite Events</a
-        >.
-    </p>
+    <slot />
     <div>
         <p class="u-text">Choose a service</p>
         <div class="u-flex u-gap-8 u-margin-block-start-8">
