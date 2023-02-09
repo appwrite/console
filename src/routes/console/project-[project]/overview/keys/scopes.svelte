@@ -96,8 +96,11 @@
                 {category}
             </svelte:fragment>
             <svelte:fragment slot="subtitle">
-                ({allScopes.filter((n) => n.category === category && scopes.includes(n.scope))
-                    .length} Scopes)
+                {@const scopesLength = allScopes.filter(
+                    (n) => n.category === category && scopes.includes(n.scope)
+                ).length}
+                ({scopesLength}
+                {scopesLength === 1 ? 'Scope' : 'Scopes'})
             </svelte:fragment>
             <div class="form">
                 <FormList>
