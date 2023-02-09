@@ -35,7 +35,7 @@
         }))
     ];
 
-    function formatArray(array: any[]) {
+    function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
 
         let formattedFields: string[] = [];
@@ -50,7 +50,7 @@
         return `[${formattedFields.join(', ')}]`;
     }
 
-    function formatColumn(column: any) {
+    function formatColumn(column: unknown) {
         let formattedColumn: string;
 
         if (typeof column === 'string') {
