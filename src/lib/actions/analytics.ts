@@ -5,7 +5,7 @@ import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
 import { growthEndpoint, Mode } from '$lib/constants';
 
-const isDevelopment = import.meta.env.DEV || import.meta.env?.VERCEL_ENV === 'preview';
+const isDevelopment = import.meta.env.DEV || import.meta.env?.VERCEL_ENV?.toString() === 'preview';
 const analytics = Analytics({
     app: 'appwrite',
     plugins: [
