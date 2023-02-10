@@ -189,10 +189,10 @@
                                 </TableCell>
 
                                 <TableCellText title="Build Time">
-                                    {#if deployment.status === 'ready'}
-                                        {calculateTime(deployment.buildTime)}
-                                    {:else}
+                                    {#if ['processing', 'building'].includes(deployment.status)}
                                         <span use:timer={{ start: deployment.$createdAt }} />
+                                    {:else}
+                                        {calculateTime(deployment.buildTime)}
                                     {/if}
                                 </TableCellText>
 
