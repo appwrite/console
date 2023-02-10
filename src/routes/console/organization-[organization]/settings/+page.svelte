@@ -61,7 +61,8 @@
             elements,
             confirmParams: {
                 return_url: 'http://localhost:3000'
-            }
+            },
+            redirect: 'if_required'
         });
 
         if (error) {
