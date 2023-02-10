@@ -27,10 +27,17 @@ export class Billing {
         );
     }
 
-    async updatePaymentMethod(teamId: string, paymentMethodId: string) {
+    async updatePaymentMethod(teamId: string, paymentMethodId: string, providerMethodId: string) {
         const path = `/teams/${teamId}/payment-methods/${paymentMethodId}`;
         const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('PUT', uri, { 'content-type': 'application/json' }, {});
+        return await this.client.call(
+            'PUT',
+            uri,
+            { 'content-type': 'application/json' },
+            {
+                providerMethodId
+            }
+        );
     }
 
     async updateProjectPlan(projectId: string, billingPlan: string) {

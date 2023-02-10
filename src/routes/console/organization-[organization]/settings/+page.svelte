@@ -82,7 +82,11 @@
                     });
                 } else if (setupIntent && setupIntent.status === 'succeeded') {
                     //update payment method
-                    cloudSdk.billing.updatePaymentMethod($organization.$id, paymentMethod.$id);
+                    await cloudSdk.billing.updatePaymentMethod(
+                        $organization.$id,
+                        paymentMethod.$id,
+                        setupIntent.payment_method
+                    );
                 }
             }
         }
