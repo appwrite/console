@@ -18,13 +18,18 @@
     async function handleSubmit() {
         try {
             await feedback.submitFeedback('feedback-general', message, name, email);
-            show = false;
+
+            addNotification({
+                type: 'success',
+                message: 'Feedback submitted successfully'
+            });
         } catch (error) {
-            show = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
+        } finally {
+            show = false;
         }
     }
 </script>
