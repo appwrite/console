@@ -46,7 +46,7 @@
         </span>
     </label>
 
-    <div class="input-text-wrapper">
+    <div class="input-text-wrapper" style="--amount-of-buttons:1; --button-size: 1rem">
         <input
             {id}
             {disabled}
