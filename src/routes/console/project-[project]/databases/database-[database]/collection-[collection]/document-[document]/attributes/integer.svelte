@@ -6,11 +6,13 @@
     export let label: string;
     export let value: number;
     export let attribute: Models.AttributeInteger;
+    export let optionalText: string | undefined = undefined;
 </script>
 
 <InputNumber
     {id}
     {label}
+    {optionalText}
     required={attribute.required}
     min={attribute.min}
     max={attribute.max}

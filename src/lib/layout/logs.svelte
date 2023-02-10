@@ -83,11 +83,10 @@
                         <div>Size: {size.value} {size.unit}</div>
                     </div>
                     <div class="status u-margin-inline-start-auto">
-                        <div class="u-flex u-flex-vertical u-cross-end">
+                        <div class="status u-margin-inline-start-auto">
                             <Status status={$log.data.status}>{$log.data.status}</Status>
-                            <p class="text">
-                                {calculateTime($log.data.buildTime)}
-                            </p>
+
+                            <time>{calculateTime($log.data.buildTime)}</time>
                         </div>
                     </div>
                 </div>

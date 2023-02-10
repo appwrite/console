@@ -5,6 +5,8 @@ import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
 import { growthEndpoint, Mode } from '$lib/constants';
 
+const isDevelopment =
+    import.meta.env.DEV || import.meta.env?.VITE_VERCEL_ENV?.toString() === 'preview';
 const analytics = Analytics({
     app: 'appwrite',
     plugins: [
@@ -18,9 +20,15 @@ export function trackEvent(name: string, data: object = null): void {
     if (!isTrackingAllowed()) {
         return;
     }
+
     const path = get(page).route.id;
-    analytics.track(name, { ...data, path });
-    sendEventToGrowth(name, path, data);
+
+    if (isDevelopment) {
+        console.debug(`[Analytics] Event ${name} ${path}`, data);
+    } else {
+        analytics.track(name, { ...data, path });
+        sendEventToGrowth(name, path, data);
+    }
 }
 
 export function trackPageView(path: string) {
@@ -28,14 +36,19 @@ export function trackPageView(path: string) {
         return;
     }
 
-    analytics.page({
-        path
-    });
+    if (isDevelopment) {
+        console.debug(`[Analytics] Pageview ${path}`);
+    } else {
+        analytics.page({
+            path
+        });
+    }
 }
 
 function sendEventToGrowth(event: string, path: string, data: object = null): void {
-    let email: string, name: string;
+    if (!growthEndpoint) return;
     const userStore = get(user);
+    let email: string, name: string;
     if (userStore) {
         email = userStore.email;
         name = userStore.name;

@@ -119,6 +119,11 @@
             "crossStyle": {
                 "color": "#444444"
             }
+        },
+        "backgroundColor": "#373B4D",
+        "borderColor": "#373B4D",
+        "textStyle": {
+            "color": "#F2F2F8"
         }
     },
     "timeline": {

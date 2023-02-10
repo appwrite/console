@@ -26,6 +26,7 @@
     let files: FileList;
     let lang = 'js';
     let codeSnippets = {};
+    let os = 'unknown';
 
     const functionId = $page.params.function;
     const dispatch = createEventDispatcher();
@@ -33,6 +34,7 @@
     onMount(() => {
         lang = setLanguage($func.runtime);
         codeSnippets = setCodeSnippets(lang);
+        os = navigator['userAgentData']?.platform || navigator?.platform || 'unknown';
     });
 
     function setLanguage(runtime: string) {
@@ -107,6 +109,21 @@
             });
         }
     }
+
+    function openCategory(category: string, index: number) {
+        switch (category) {
+            case 'CMD':
+                return os.includes('Win');
+            case 'PowerShell':
+                return os.includes('Win');
+            case 'Unix':
+                return (
+                    os === 'unknown' || os.includes('Linux') || os.includes('Mac') || index === 0
+                );
+            default:
+                return index === 0;
+        }
+    }
 </script>
 
 <Modal size="big" bind:show={showCreate} on:submit={create}>
@@ -119,7 +136,7 @@
             on:click={() => (mode = Mode.Github)}
             selected={mode === Mode.Github}
             event="deploy_github">
-            GitHub - (Soon!)
+            GitHub - (Soon)
         </Tab>
         <Tab
             on:click={() => (mode = Mode.Manual)}
@@ -144,7 +161,7 @@
         </p>
         <Collapsible>
             {#each ['Unix', 'CMD', 'PowerShell'] as category, i}
-                <CollapsibleItem open={i === 0}>
+                <CollapsibleItem open={openCategory(category, i)}>
                     <svelte:fragment slot="title">{category}</svelte:fragment>
                     <Code
                         withLineNumbers
@@ -156,19 +173,17 @@
             {/each}
         </Collapsible>
     {:else if mode === Mode.Github}
-        <div class="common-section grid-1-2">
-            <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
-                {#if $app.themeInUse === 'dark'}
-                    <img src={GithubDark} alt="github" />
-                {:else}
-                    <img src={GithubLight} alt="github" />
-                {/if}
-            </div>
-            <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-24">
+        <div class="grid-1-1 u-gap-16">
+            {#if $app.themeInUse === 'dark'}
+                <img src={GithubDark} alt="github" />
+            {:else}
+                <img src={GithubLight} alt="github" />
+            {/if}
+            <div class="u-flex u-flex-vertical u-gap-24">
                 <h3 class="body-text-1">Coming Soon!</h3>
                 <p>
                     Creating deployments will be easier than ever with our upcoming Git Integration.
-                    Just set up a repository and we’ll do the rest.
+                    Just set up a repository and we'll do the rest.
                 </p>
             </div>
         </div>
@@ -181,7 +196,7 @@
                 bind:value={entrypoint}
                 required />
             <InputFile label="Gzipped code (tar.gz)" allowedFileExtensions={['gz']} bind:files />
-            <InputChoice label="Activate Deployment after build" id="activate" bind:value={active}>
+            <InputChoice label="Activate deployment after build" id="activate" bind:value={active}>
                 This deployment will be activated after the build is completed.</InputChoice>
         </FormList>
     {/if}

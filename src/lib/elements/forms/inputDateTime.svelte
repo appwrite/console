@@ -4,6 +4,7 @@
 
     export let label: string;
     export let showLabel = true;
+    export let optionalText: string | undefined = undefined;
     export let id: string;
     export let value = '';
     export let required = false;
@@ -38,8 +39,14 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
-    <div class="input-text-wrapper">
+    <label class:u-hide={!showLabel} class="label" for={id}>
+        {label}
+        <span class:u-hide={!showLabel || !optionalText} class="optional">
+            {optionalText}
+        </span>
+    </label>
+
+    <div class="input-text-wrapper" style="--amount-of-buttons:1; --button-size: 1rem">
         <input
             {id}
             {disabled}

@@ -1,6 +1,7 @@
 import { sdkForConsole } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
 import type { Models } from '@aw-labs/appwrite-console';
+import { writable, type Writable } from 'svelte/store';
 
 export const usage = cachedStore<
     Models.UsageProject,
@@ -15,3 +16,5 @@ export const usage = cachedStore<
         }
     };
 });
+
+export const selectedTab: Writable<'platforms' | 'keys'> = writable('platforms');

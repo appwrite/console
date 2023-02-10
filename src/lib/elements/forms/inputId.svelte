@@ -6,7 +6,7 @@
 
     let element: HTMLInputElement;
     let icon = 'info';
-    const pattern = String.raw`/^[^._-][a-zA-Z0-9._-]*$/`;
+    const pattern = String.raw`^[a-zA-Z0-9][a-zA-Z0-9._-]*$`;
     const autofocus = true;
 
     onMount(() => {
@@ -49,7 +49,9 @@
         </span>
     </div>
 </FormItem>
-<div class="u-flex u-gap-4 u-margin-block-start-8 u-small" class:u-warning={icon === 'exclamation'}>
+<div
+    class="u-flex u-gap-4 u-margin-block-start-8 u-small"
+    class:u-color-text-warning={icon === 'exclamation'}>
     <span
         class:icon-info={icon === 'info'}
         class:icon-exclamation={icon === 'exclamation'}

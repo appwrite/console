@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { afterNavigate } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { Code, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -32,6 +34,9 @@
                 selectedFunction.$id,
                 data?.length ? data : undefined,
                 true
+            );
+            goto(
+                `${base}/console/project-${$page.params.project}/functions/function-${selectedFunction.$id}/executions`
             );
             close();
             addNotification({
