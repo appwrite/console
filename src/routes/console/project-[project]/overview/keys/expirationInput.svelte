@@ -1,6 +1,8 @@
 <script lang="ts">
+    import Helper from '$lib/elements/forms/helper.svelte';
     import InputDateTime from '$lib/elements/forms/inputDateTime.svelte';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import { isSameDay, isValidDate, toLocaleDate } from '$lib/helpers/date';
 
     function incrementToday(value: number, type: 'day' | 'month' | 'year'): string {
         const date = new Date();
@@ -19,18 +21,7 @@
         return date.toISOString();
     }
 
-    export let value: string | null = null;
-    let expirationSelect = value === null ? null : 'custom';
-    let expirationCustom: string | null = value ?? null;
-
-    $: {
-        value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
-    }
-</script>
-
-<InputSelect
-    bind:value={expirationSelect}
-    options={[
+    const options = [
         {
             label: 'Never',
             value: null
@@ -55,9 +46,42 @@
             label: 'Custom Date',
             value: 'custom'
         }
-    ]}
-    id="preset"
-    label="Expiration Date" />
+    ];
+
+    export let value: string | null = null;
+
+    function initExpirationSelect() {
+        if (value === null || !isValidDate(value)) return null;
+
+        let result = 'custom';
+        for (const option of options) {
+            if (!isValidDate(option.value)) continue;
+
+            if (isSameDay(new Date(option.value), new Date(value))) {
+                result = option.value;
+                break;
+            }
+        }
+
+        return result;
+    }
+    let expirationSelect = initExpirationSelect();
+    let expirationCustom: string | null = value ?? null;
+
+    $: {
+        if (!isSameDay(new Date(expirationSelect), new Date(value))) {
+            value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
+        }
+    }
+</script>
+
+<InputSelect bind:value={expirationSelect} {options} id="preset" label="Expiration Date">
+    <svelte:fragment slot="helper">
+        {#if expirationSelect !== 'custom' && expirationSelect !== null}
+            <Helper type="neutral">Your key will expire in {toLocaleDate(value)}</Helper>
+        {/if}
+    </svelte:fragment>
+</InputSelect>
 {#if expirationSelect === 'custom'}
     <InputDateTime id="expire" label="" bind:value={expirationCustom} showLabel={false} />
 {/if}

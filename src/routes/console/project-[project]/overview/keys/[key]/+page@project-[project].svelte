@@ -63,7 +63,7 @@
             trackEvent('submit_key_update_scopes');
             addNotification({
                 type: 'success',
-                message: 'API Key scopes has been updated'
+                message: 'API Key scopes have been updated'
             });
         } catch (error) {
             addNotification({

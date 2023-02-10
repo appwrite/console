@@ -61,5 +61,7 @@
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
+    {:else}
+        <slot name="helper" />
     {/if}
 </FormItem>
