@@ -1,13 +1,9 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { trackEvent } from '$lib/actions/analytics';
-    import Alert from '$lib/components/alert.svelte';
-    import CardGrid from '$lib/components/cardGrid.svelte';
-    import Heading from '$lib/components/heading.svelte';
+    import { Alert, CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Form } from '$lib/elements/forms';
-    import Button from '$lib/elements/forms/button.svelte';
-    import FormList from '$lib/elements/forms/formList.svelte';
+    import { Button, Form, FormList } from '$lib/elements/forms';
     import { diffDays } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
