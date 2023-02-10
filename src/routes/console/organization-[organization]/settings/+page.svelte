@@ -16,6 +16,7 @@
     let showDelete = false;
     let stripe: any;
     let elements: any;
+    let paymentMethod: any;
 
     onMount(() => {
         name = $organization.name;
@@ -30,7 +31,7 @@
         event.preventDefault();
 
         try {
-            const paymentMethod = await cloudSdk.billing.createPaymentMethod($organization.$id);
+            paymentMethod = await cloudSdk.billing.createPaymentMethod($organization.$id);
             const options = {
                 clientSecret: paymentMethod.clientSecret,
                 // Fully customizable with appearance API.
@@ -69,9 +70,21 @@
                 type: 'error'
             });
         } else {
-            // Your customer will be redirected to your `return_url`. For some payment
-            // methods like iDEAL, your customer will be redirected to an intermediate
-            // site first to authorize the payment, then redirected to the `return_url`.
+            if (paymentMethod) {
+                const { error, setupIntent } = await stripe.retrieveSetupIntent(
+                    paymentMethod.clientSecret
+                );
+
+                if (error) {
+                    addNotification({
+                        message: error.message,
+                        type: 'error'
+                    });
+                } else if (setupIntent && setupIntent.status === 'succeeded') {
+                    //update payment method
+                    cloudSdk.billing.updatePaymentMethod($organization.$id, paymentMethod.$id);
+                }
+            }
         }
     }
 
