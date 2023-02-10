@@ -7,7 +7,6 @@
     export let value: string;
     export let attribute: Models.AttributeEnum;
     export let optionalText: string | undefined = undefined;
-    export let required = false;
 
     $: options = attribute.elements.map((element) => {
         return {
