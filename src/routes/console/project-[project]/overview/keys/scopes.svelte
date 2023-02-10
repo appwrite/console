@@ -77,10 +77,15 @@
     }
 </script>
 
-<div class="u-flex u-cross-center u-main-end">
-    <Button text on:click={deselectAll}>Deselect all</Button>
-    <Button text on:click={selectAll}>Select all</Button>
-</div>
+<ul class="buttons-list u-main-end">
+    <li class="buttons-list-item">
+        <Button text on:click={deselectAll}>Deselect all</Button>
+    </li>
+    <li class="buttons-list-item">
+        <Button text on:click={selectAll}>Select all</Button>
+    </li>
+</ul>
+
 <Collapsible>
     {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Other] as category}
         {@const checked = categoryState(category, scopes)}
