@@ -39,6 +39,7 @@
     import { page } from '$app/stores';
     import Output from '$lib/components/output.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { timer } from '$lib/actions/timer';
 
     export let data: PageData;
 
@@ -188,7 +189,9 @@
                                 </TableCell>
 
                                 <TableCellText title="Build Time">
-                                    {#if deployment.status === 'ready'}
+                                    {#if ['processing', 'building'].includes(deployment.status)}
+                                        <span use:timer={{ start: deployment.$createdAt }} />
+                                    {:else}
                                         {calculateTime(deployment.buildTime)}
                                     {/if}
                                 </TableCellText>
