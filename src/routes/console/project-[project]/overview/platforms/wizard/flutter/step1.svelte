@@ -113,7 +113,7 @@
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Register your Flutter app</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        <div class="u-flex u-gap-16 u-margin-block-start-8">
+        <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
             <Pill
                 button
                 on:click={() => (platform = Platform.Android)}
