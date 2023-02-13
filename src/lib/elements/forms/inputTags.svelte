@@ -51,6 +51,7 @@
     };
 
     const removeValue = (value: string) => {
+        if (readonly) return;
         tags = tags.filter((tag) => tag !== value);
     };
 
