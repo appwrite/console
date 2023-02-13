@@ -32,7 +32,7 @@ export function trackEvent(name: string, data: object = null): void {
     }
 }
 
-export function trackError(exception: AppwriteException, event: Submit): void {
+export function trackError(exception: Error, event: Submit): void {
     if (exception instanceof AppwriteException && exception.type) {
         trackEvent(Submit.Error, {
             type: exception.type,
