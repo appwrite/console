@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading, Secret } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
@@ -37,7 +37,7 @@
                 $key.expire
             );
             invalidate(Dependencies.KEY);
-            trackEvent('submit_key_update_name');
+            trackEvent(Submit.KeyUpdateName);
             addNotification({
                 type: 'success',
                 message: 'API Key name has been updated'
@@ -47,6 +47,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.KeyUpdateName);
         }
     }
 
@@ -60,7 +61,7 @@
                 $key.expire
             );
             invalidate(Dependencies.KEY);
-            trackEvent('submit_key_update_scopes');
+            trackEvent(Submit.KeyUpdateScopes);
             addNotification({
                 type: 'success',
                 message: 'API Key scopes have been updated'
@@ -70,6 +71,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.KeyUpdateScopes);
         }
     }
 </script>

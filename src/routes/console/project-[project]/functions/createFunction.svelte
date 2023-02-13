@@ -15,7 +15,7 @@
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
 
@@ -43,13 +43,14 @@
                 message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
-            trackEvent('submit_function_create');
+            trackEvent(Submit.FunctionCreate);
             wizard.hide();
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FunctionCreate);
         }
     }
 

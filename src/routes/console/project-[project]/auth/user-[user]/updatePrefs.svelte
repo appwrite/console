@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
@@ -43,12 +43,13 @@
                 message: 'Preferences have been updated',
                 type: 'success'
             });
-            trackEvent('submit_user_update_preferences');
+            trackEvent(Submit.UserUpdatePreferences);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdatePreferences);
         }
     }
 </script>

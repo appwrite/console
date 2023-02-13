@@ -10,7 +10,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { func } from './store';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { app } from '$lib/stores/app';
 
     export let showCreate = false;
@@ -101,12 +101,13 @@
             files = entrypoint = active = null;
             showCreate = false;
             dispatch('created');
-            trackEvent('submit_deployment_create');
+            trackEvent(Submit.DeploymentCreate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.DeploymentCreate);
         }
     }
 

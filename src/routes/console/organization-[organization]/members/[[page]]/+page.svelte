@@ -21,7 +21,7 @@
     import Delete from '../../deleteMember.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -43,12 +43,13 @@
                 type: 'success',
                 message: `Invite has been sent to ${member.userEmail}`
             });
-            trackEvent('submit_member_create');
+            trackEvent(Submit.MemberCreate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error
             });
+            trackError(error, Submit.MemberCreate);
         }
     };
 </script>

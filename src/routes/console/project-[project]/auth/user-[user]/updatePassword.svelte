@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -16,12 +16,13 @@
                 message: 'Password has been updated',
                 type: 'success'
             });
-            trackEvent('submit_user_update_password');
+            trackEvent(Submit.UserUpdatePassword);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdatePassword);
         }
     }
 </script>

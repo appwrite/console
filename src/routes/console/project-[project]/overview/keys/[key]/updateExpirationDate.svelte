@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList } from '$lib/elements/forms';
@@ -23,7 +23,7 @@
                 expiration
             );
             invalidate(Dependencies.KEY);
-            trackEvent('submit_key_update_expire');
+            trackEvent(Submit.KeyUpdateExpire);
             addNotification({
                 type: 'success',
                 message: 'API Key expiration has been updated'
@@ -33,6 +33,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.KeyUpdateExpire);
         }
     }
 

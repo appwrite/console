@@ -7,7 +7,7 @@
     import { Unauthenticated } from '$lib/layout';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert } from '$lib/components';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
@@ -28,12 +28,13 @@
                 message: 'Successfully logged in.'
             });
             await goto(`${base}/console/organization-${teamId}`);
-            trackEvent('submit_membership_update_status');
+            trackEvent(Submit.MembershipUpdateStatus);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.MembershipUpdateStatus);
         }
     };
 </script>

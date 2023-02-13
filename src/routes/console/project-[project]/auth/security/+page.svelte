@@ -9,7 +9,7 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { timeToSeconds } from '$lib/helpers/timeConversion';
     import { writable } from 'svelte/store';
 
@@ -53,12 +53,13 @@
                 type: 'success',
                 message: 'Updated project users limit successfully'
             });
-            trackEvent('submit_auth_limit_update');
+            trackEvent(Submit.AuthLimitUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AuthLimitUpdate);
         }
     }
     async function updateSessionLength() {
@@ -74,12 +75,13 @@
                 type: 'success',
                 message: 'Updated project users limit successfully'
             });
-            trackEvent('submit_session_length_update');
+            trackEvent(Submit.SessionsLengthUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.SessionsLengthUpdate);
         }
     }
     async function updateSessionsLimit() {
@@ -90,12 +92,13 @@
                 type: 'success',
                 message: 'Sessions limit has been updated'
             });
-            trackEvent('submit_sessions_limit_update');
+            trackEvent(Submit.SessionsLimitUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.SessionsLimitUpdate);
         }
     }
 
