@@ -51,6 +51,7 @@
     };
 
     const removeValue = (value: string) => {
+        if (readonly) return;
         tags = tags.filter((tag) => tag !== value);
     };
 
@@ -89,7 +90,7 @@
                                     type="button"
                                     class="input-tag-delete-button"
                                     aria-label={`delete ${tag} tag`}
-                                    on:click={() => !readonly && removeValue(tag)}>
+                                    on:click={() => removeValue(tag)}>
                                     <span class="icon-x" aria-hidden="true" />
                                 </button>
                             </div>
