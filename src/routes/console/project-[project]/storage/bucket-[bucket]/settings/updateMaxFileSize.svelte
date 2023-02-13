@@ -1,8 +1,8 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
-    import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
-    import { writable } from 'svelte/store';
+    import { bytesToSize, sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
+    import { withPrevious } from '$lib/stores/withPrevious';
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
 
@@ -13,40 +13,38 @@
         { label: 'Gigabytes', value: 'GB' }
     ];
 
-    let byteUnit = writable<Size>('MB');
+    let byteUnit = withPrevious<Size>('Bytes');
 
     function getInitialMaxSize() {
         const size = $bucket.maximumFileSize;
 
         // GB
         if (size > 1024 ** 3 && size % 1024 ** 3 === 0) {
-            byteUnit.set('GB');
+            byteUnit.set('GB', { updateAll: true });
             return size / 1024 ** 3;
         }
 
         // MB
         if (size > 1024 ** 2 && size % 1024 ** 2 === 0) {
-            byteUnit.set('MB');
+            byteUnit.set('MB', { updateAll: true });
             return size / 1024 ** 2;
         }
 
         // KB
         if (size > 1024 && size % 1024 === 0) {
-            byteUnit.set('KB');
+            byteUnit.set('KB', { updateAll: true });
             return size / 1024;
         }
 
         // Bytes
-        byteUnit.set('Bytes');
+        byteUnit.set('Bytes', { updateAll: true });
         return size;
     }
 
     let maxSize: number = getInitialMaxSize();
-    let sizeInBytes: number = maxSize ? sizeToBytes(maxSize, $byteUnit) : null;
 
     function updateMaxSize() {
         const size = sizeToBytes(maxSize, $byteUnit);
-        console.log(size, maxSize, $byteUnit);
         updateBucket(
             {
                 maximumFileSize: size
@@ -58,21 +56,10 @@
         );
     }
 
-    byteUnit.subscribe((b) => {
-        if (b === 'Bytes') {
-            maxSize = sizeInBytes;
-        } else if (b === 'KB') {
-            maxSize = sizeInBytes / 1024;
-        } else if (b === 'MB') {
-            maxSize = sizeInBytes / 1024 / 1024;
-        } else if (b === 'GB') {
-            maxSize = sizeInBytes / 1024 / 1024 / 1024;
-        }
+    byteUnit.subscribe((newValue, prev) => {
+        const sizeInBytes = sizeToBytes(maxSize, prev);
+        maxSize = bytesToSize(sizeInBytes, newValue);
     });
-
-    $: if (maxSize) {
-        sizeInBytes = sizeToBytes(maxSize, $byteUnit);
-    }
 </script>
 
 <Form on:submit={updateMaxSize}>
@@ -91,7 +78,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={sizeInBytes === $bucket.maximumFileSize} submit>Update</Button>
+            <Button disabled={sizeToBytes(maxSize, $byteUnit) === $bucket.maximumFileSize} submit
+                >Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

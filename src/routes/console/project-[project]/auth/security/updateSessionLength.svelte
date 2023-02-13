@@ -7,7 +7,7 @@
     import { secsToUnit, timeToSeconds } from '$lib/helpers/timeConversion';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { writable } from 'svelte/store';
+    import { withPrevious } from '$lib/stores/withPrevious';
     import { project } from '../../store';
 
     enum Period {
@@ -25,23 +25,23 @@
         { label: 'seconds', value: Period.Seconds }
     ];
 
-    let period = writable(Period.Seconds);
+    let period = withPrevious(Period.Seconds);
 
     function getInitialTime() {
         let t = $project.authDuration;
 
         if (t >= 86400 && t % 86400 === 0) {
-            $period = Period.Days;
+            period.set(Period.Days, { updateAll: true });
             return t / 86400;
         }
 
         if (t >= 3600 && t % 3600 === 0) {
-            $period = Period.Hours;
+            period.set(Period.Hours, { updateAll: true });
             return t / 3600;
         }
 
         if (t >= 60 && t % 60 === 0) {
-            $period = Period.Minutes;
+            period.set(Period.Minutes, { updateAll: true });
             return t / 60;
         }
 
@@ -49,17 +49,18 @@
     }
 
     let time = getInitialTime();
-    let timeInSecs = timeToSeconds(time, $period);
 
-    period.subscribe((p) => {
-        time = secsToUnit(timeInSecs, p);
+    period.subscribe((newValue, prev) => {
+        const timeInSecs = timeToSeconds(time, prev);
+        time = secsToUnit(timeInSecs, newValue);
     });
-
-    $: timeInSecs = timeToSeconds(time, $period);
 
     async function updateSessionLength() {
         try {
-            await sdkForConsole.projects.updateAuthDuration(projectId, timeInSecs);
+            await sdkForConsole.projects.updateAuthDuration(
+                projectId,
+                timeToSeconds(time, $period)
+            );
             invalidate(Dependencies.PROJECT);
 
             addNotification({
