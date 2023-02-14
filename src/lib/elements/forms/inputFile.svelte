@@ -1,12 +1,15 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { Helper } from '.';
 
     export let label: string = null;
     export let files: FileList;
     export let list = new DataTransfer();
     export let allowedFileExtensions: string[] = [];
     export let maxSize: number = null;
+    export let required = false;
+    export let error: string = null;
 
     let input: HTMLInputElement;
     let hovering = false;
@@ -29,6 +32,20 @@
         hovering = true;
     }
 
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+
+        if (input.validity.valueMissing) {
+            error = 'This field is required';
+            return;
+        }
+        error = input.validationMessage;
+    };
+
+    $: if (files) {
+        error = null;
+    }
+
     $: fileArray = files?.length ? Array.from(files) : [];
 </script>
 
@@ -37,7 +54,9 @@
     bind:this={input}
     accept={allowedFileExtensions.map((n) => `.${n}`).join(',')}
     type="file"
-    style="display: none" />
+    style="display: none"
+    {required}
+    on:invalid={handleInvalid} />
 
 <div>
     {#if label}
@@ -117,4 +136,7 @@
             {/if}
         </div>
     </div>
+    {#if error}
+        <Helper type="warning">{error}</Helper>
+    {/if}
 </div>

@@ -9,7 +9,7 @@
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
@@ -22,7 +22,13 @@
         Web = 'flutter-web'
     }
 
-    let platform: Platform = Platform.Android;
+    function isPlatform(value: string): value is Platform {
+        return Object.values(Platform).includes(value as Platform);
+    }
+
+    let platform: Platform = isPlatform($createPlatform.type)
+        ? $createPlatform.type
+        : Platform.Android;
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -81,16 +87,7 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
-                projectId,
-                $createPlatform.$id,
-                $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
-            );
-
-            return;
+            await sdkForConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
 
         const response = await sdkForConsole.projects.createPlatform(
@@ -102,11 +99,12 @@
             platform === Platform.Web ? $createPlatform.hostname : undefined
         );
 
-        trackEvent('submit_platform_create', {
+        trackEvent(Submit.PlatformCreate, {
             type: platform
         });
 
         $createPlatform.$id = response.$id;
+        $createPlatform.type = platform;
     }
 </script>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let label: string;
     export let showLabel = true;
@@ -37,7 +37,10 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+    <Label {required} hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
     <div class="input-text-wrapper">
         <textarea
             {id}

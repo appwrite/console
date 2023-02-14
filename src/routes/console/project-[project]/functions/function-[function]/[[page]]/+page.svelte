@@ -156,7 +156,7 @@
         <div class="common-section">
             <Heading tag="h3" size="7">Inactive</Heading>
         </div>
-        {#if data.deployments.total > 1}
+        {#if data.deployments.total > 1 || (!activeDeployment && data.deployments.total === 1)}
             <TableScroll>
                 <TableHeader>
                     <TableCellHead width={90}>Deployment ID</TableCellHead>

@@ -14,6 +14,7 @@
         type EventService
     } from '$lib/constants';
     import { tooltip } from '$lib/actions/tooltip';
+    import { trackEvent } from '$lib/actions/analytics';
 
     // Props
     export let show = false;
@@ -43,14 +44,20 @@
 
     function create() {
         show = false;
+        trackEvent('events_add', {
+            value: inputValue
+        });
         dispatch('created', inputValue);
     }
 
-    function select(field: 'service', value: EventService);
-    function select(field: 'resource', value: EventResource);
-    function select(field: 'action', value: EventAction);
-    function select(field: 'attribute', value: string);
-    function select(field: string, value: string | EventService | EventResource | EventAction) {
+    function select(field: 'service', value: EventService): void;
+    function select(field: 'resource', value: EventResource): void;
+    function select(field: 'action', value: EventAction): void;
+    function select(field: 'attribute', value: string): void;
+    function select(
+        field: string,
+        value: string | EventService | EventResource | EventAction
+    ): void {
         if (typeof value === 'string') {
             selected[field as 'attribute'] = selected[field] === value ? null : value;
         } else {

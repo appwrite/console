@@ -12,7 +12,7 @@
     import { Permissions } from '$lib/components/permissions';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { collection } from '../store';
 
     let showDelete = false;
@@ -35,12 +35,13 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
-            trackEvent('submit_document_update_permission');
+            trackEvent(Submit.DocumentUpdatePermissions);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.DocumentUpdatePermissions);
         }
     }
 

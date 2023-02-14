@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -18,12 +18,13 @@
                 type: 'success',
                 message: 'Sessions limit has been updated'
             });
-            trackEvent('submit_sessions_limit_update');
+            trackEvent(Submit.SessionsLimitUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.SessionsLimitUpdate);
         }
     }
 </script>

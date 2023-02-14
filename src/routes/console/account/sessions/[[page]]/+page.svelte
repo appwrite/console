@@ -17,7 +17,7 @@
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
 
     export let data: PageData;
@@ -28,7 +28,7 @@
 
     const logout = async (session: Models.Session) => {
         await sdkForConsole.account.deleteSession(session.$id);
-        trackEvent('submit_account_delete_session');
+        trackEvent(Submit.AccountDeleteSession);
         if (session.current) {
             await goto(`${base}/login`);
         }
@@ -36,7 +36,7 @@
     };
     const logoutAll = async () => {
         await sdkForConsole.account.deleteSessions();
-        trackEvent('submit_account_delete_all_sessions');
+        trackEvent(Submit.AccountDeleteAllSessions);
         await goto(`${base}/login`);
         invalidate(Dependencies.ACCOUNT_SESSIONS);
     };

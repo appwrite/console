@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let label: string;
     export let optionalText: string | undefined = undefined;
@@ -52,12 +52,9 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>
+    <Label {required} {optionalText} hide={!showLabel} for={id}>
         {label}
-        {#if optionalText}
-            <span class="optional">{optionalText}</span>
-        {/if}
-    </label>
+    </Label>
 
     <div class="input-text-wrapper">
         <input

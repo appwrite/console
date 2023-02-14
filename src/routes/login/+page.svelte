@@ -13,7 +13,7 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -26,7 +26,7 @@
                 type: 'success',
                 message: 'Successfully logged in.'
             });
-            trackEvent('submit_session_create');
+            trackEvent(Submit.AccountCreate);
             await goto(`${base}/console`);
         } catch (error) {
             disabled = false;
@@ -34,6 +34,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AccountCreate);
         }
     }
 </script>

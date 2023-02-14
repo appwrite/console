@@ -12,7 +12,8 @@
     import { createDocument } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@aw-labs/appwrite-console';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -35,7 +36,7 @@
             await sdkForProject.databases.createDocument(
                 databaseId,
                 collectionId,
-                $createDocument.id ?? 'unique()',
+                $createDocument.id ?? ID.unique(),
                 $createDocument.document,
                 $createDocument.permissions
             );
@@ -44,7 +45,9 @@
                 message: 'Document has been created',
                 type: 'success'
             });
-            trackEvent('submit_document_create');
+            trackEvent(Submit.DocumentCreate, {
+                customId: !!$createDocument.id
+            });
             invalidate(Dependencies.DOCUMENTS);
 
             createDocument.reset();
@@ -54,6 +57,7 @@
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.DocumentCreate);
         }
     }
 

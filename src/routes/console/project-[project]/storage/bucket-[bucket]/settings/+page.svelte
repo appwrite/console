@@ -1,7 +1,9 @@
 <script lang="ts" context="module">
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+
     type TUpdateBucketMisc = {
         successMessage?: string;
-        trackEventName: string;
+        trackEventName: Submit;
         trackEventData?: { value: boolean };
         arePermsDisabled?: boolean;
     };
@@ -45,13 +47,13 @@
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, misc.trackEventName);
         }
     }
 </script>
 
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
     import { Box, CardGrid, Heading } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
@@ -126,7 +128,7 @@
                 enabled
             },
             {
-                trackEventName: 'submit_bucket_enable',
+                trackEventName: Submit.BucketUpdateEnabled,
                 trackEventData: {
                     value: enabled
                 }
@@ -141,7 +143,7 @@
             },
             {
                 successMessage: 'Name has been updated',
-                trackEventName: 'submit_bucket_update_name'
+                trackEventName: Submit.BucketUpdateName
             }
         );
     }
@@ -153,7 +155,7 @@
             },
             {
                 successMessage: 'Permissions have been updated',
-                trackEventName: 'submit_bucket_update_permissions',
+                trackEventName: Submit.BucketUpdatePermissions,
                 arePermsDisabled: true
             }
         );
@@ -166,7 +168,7 @@
             },
             {
                 successMessage: 'Security has been updated',
-                trackEventName: 'submit_bucket_update_file_security',
+                trackEventName: Submit.BucketUpdateFileSecurity,
                 arePermsDisabled: true
             }
         );
@@ -179,7 +181,7 @@
                 antivirus
             },
             {
-                trackEventName: 'submit_bucket_update_security'
+                trackEventName: Submit.BucketUpdateSecurity
             }
         );
     }
@@ -190,7 +192,7 @@
                 compression
             },
             {
-                trackEventName: 'submit_bucket_update_size'
+                trackEventName: Submit.BucketUpdateCompression
             }
         );
     }
@@ -201,7 +203,7 @@
                 allowedFileExtensions: extensions
             },
             {
-                trackEventName: 'submit_bucket_update_extensions'
+                trackEventName: Submit.BucketUpdateExtensions
             }
         );
     }
