@@ -32,6 +32,7 @@
                     id="size"
                     label="Size"
                     placeholder={$bucket.maximumFileSize.toString()}
+                    min={0}
                     bind:value={$value} />
                 <InputSelect id="bytes" label="Bytes" {options} bind:value={$unit} />
             </ul>
