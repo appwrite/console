@@ -13,7 +13,7 @@
     import Delete from './deleteProject.svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let name: string = null;
     let showDelete = false;
@@ -34,12 +34,13 @@
                 type: 'success',
                 message: 'Project name has been updated'
             });
-            trackEvent('submit_project_update_name');
+            trackEvent(Submit.ProjectUpdateName);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.ProjectUpdateName);
         }
     }
 
@@ -63,7 +64,7 @@
                     service.value ? 'enabled' : 'disabled'
                 }`
             });
-            trackEvent('submit_project_service', {
+            trackEvent(Submit.ProjectService, {
                 method: service.method,
                 value: service.value
             });
@@ -72,6 +73,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.ProjectService);
         }
     }
 

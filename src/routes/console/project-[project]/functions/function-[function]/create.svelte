@@ -9,7 +9,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { func } from './store';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { app } from '$lib/stores/app';
 
     export let showCreate = false;
@@ -103,9 +103,10 @@
             active = false;
             showCreate = false;
             dispatch('created');
-            trackEvent('submit_deployment_create');
-        } catch ({ message }) {
-            error = message;
+            trackEvent(Submit.DeploymentCreate);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.DeploymentCreate);
         }
     }
 

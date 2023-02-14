@@ -35,7 +35,7 @@
     import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
     import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -65,12 +65,13 @@
             await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
             invalidate(Dependencies.FILES);
-            trackEvent('submit_file_delete');
+            trackEvent(Submit.FileDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.FileDelete);
         }
     }
 </script>

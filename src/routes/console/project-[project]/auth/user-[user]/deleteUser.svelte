@@ -8,7 +8,7 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
     import { project } from '../../store';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showDelete = false;
 
@@ -20,13 +20,14 @@
                 type: 'success',
                 message: `${$user.name ? $user.name : 'User'} has been deleted`
             });
-            trackEvent('submit_user_delete');
+            trackEvent(Submit.UserDelete);
             await goto(`${base}/console/project-${$page.params.project}/auth`);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.UserDelete);
         }
     };
 </script>

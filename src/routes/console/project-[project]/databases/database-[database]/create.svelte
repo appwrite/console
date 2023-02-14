@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -32,12 +32,13 @@
                 message: `${name} has been created`
             });
             name = id = null;
-            trackEvent('submit_database_create');
+            trackEvent(Submit.CollectionCreate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.CollectionCreate);
         }
     };
 </script>

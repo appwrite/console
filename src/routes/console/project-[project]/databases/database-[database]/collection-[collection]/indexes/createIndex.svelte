@@ -2,7 +2,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
@@ -80,12 +80,13 @@
                 message: 'Index has been created',
                 type: 'success'
             });
-            trackEvent('submit_index_create');
+            trackEvent(Submit.IndexCreate);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.IndexCreate);
         } finally {
             showCreateIndex = false;
             creating = false;

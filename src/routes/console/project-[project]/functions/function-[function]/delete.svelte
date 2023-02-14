@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -23,12 +23,13 @@
                 type: 'success',
                 message: `Deployment has been deleted`
             });
-            trackEvent('submit_deployment_delete');
+            trackEvent(Submit.DeploymentDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.DeploymentDelete);
         }
     };
 </script>

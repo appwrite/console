@@ -5,7 +5,7 @@
 
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import Form from '$lib/elements/forms/form.svelte';
     import { TableCell, TableCellText } from '$lib/elements/table';
@@ -43,12 +43,13 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
-            trackEvent('submit_function_update_events');
+            trackEvent(Submit.FunctionUpdateEvents);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FunctionUpdateEvents);
         }
     }
 

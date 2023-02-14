@@ -251,7 +251,7 @@ export const eventServices: Array<EventService> = [
         resources: [
             { name: 'recovery', actions: [{ name: 'create' }, { name: 'delete' }] },
             { name: 'sessions', actions: [{ name: 'create' }, { name: 'delete' }] },
-            { name: 'verifications', actions: [{ name: 'create' }, { name: 'delete' }] }
+            { name: 'verification', actions: [{ name: 'create' }, { name: 'delete' }] }
         ],
         actions: [
             { name: 'create' },

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements/';
     import {
@@ -38,10 +38,11 @@
                 type: 'success',
                 message: `${user.name ? user.name : 'User'} has been created`
             });
-            trackEvent('submit_user_create');
+            trackEvent(Submit.UserCreate);
             dispatch('created', user);
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.UserCreate);
         }
     };
 
