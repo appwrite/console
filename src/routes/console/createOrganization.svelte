@@ -7,7 +7,7 @@
     import { createEventDispatcher } from 'svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let show = false;
 
@@ -28,12 +28,13 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            trackEvent('submit_organization_create');
+            trackEvent(Submit.OrganizationCreate);
             name = null;
             id = null;
             show = false;
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.OrganizationCreate);
         }
     };
 </script>

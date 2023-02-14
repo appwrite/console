@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputPhone } from '$lib/elements/forms';
@@ -22,12 +22,13 @@
                 message: 'Phone has been updated',
                 type: 'success'
             });
-            trackEvent('submit_user_update_phone');
+            trackEvent(Submit.UserUpdatePhone);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdatePhone);
         }
     }
 </script>

@@ -12,7 +12,7 @@
     import { createDocument } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -44,7 +44,7 @@
                 message: 'Document has been created',
                 type: 'success'
             });
-            trackEvent('submit_document_create');
+            trackEvent(Submit.DocumentCreate);
             invalidate(Dependencies.DOCUMENTS);
 
             createDocument.reset();
@@ -54,6 +54,7 @@
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.DocumentCreate);
         }
     }
 

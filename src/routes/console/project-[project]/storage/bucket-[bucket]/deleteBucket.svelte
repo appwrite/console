@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -20,12 +20,13 @@
                 message: `${$bucket.name} has been deleted`
             });
             await goto(`${base}/console/project-${$page.params.project}/storage`);
-            trackEvent('submit_bucket_delete');
+            trackEvent(Submit.BucketDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.BucketDelete);
         }
     };
 </script>

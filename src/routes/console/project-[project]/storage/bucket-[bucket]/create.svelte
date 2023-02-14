@@ -8,7 +8,7 @@
     import { bucket } from './store';
     import { Permissions } from '$lib/components/permissions';
     import { addNotification } from '$lib/stores/notifications';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -27,15 +27,15 @@
             await uploader.uploadFile(bucketId, id, files[0], permissions);
             files = null;
             showCustomId = false;
-            // uploader.addFile(file);
             dispatch('created');
             addNotification({
                 type: 'success',
                 message: `File has been uploaded`
             });
-            trackEvent('submit_file_create');
-        } catch ({ message }) {
-            error = message;
+            trackEvent(Submit.FileCreate);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.FileCreate);
         }
     }
 

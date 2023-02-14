@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { FormList, InputDomain } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -14,7 +14,7 @@
 
         const { $id } = await sdkForConsole.projects.createDomain(projectId, $domain.domain);
         $domain.$id = $id;
-        trackEvent('submit_domain_create');
+        trackEvent(Submit.DomainCreate);
     };
 </script>
 
