@@ -2,7 +2,7 @@ import { derived, writable } from 'svelte/store';
 import { last } from './array';
 import { withPrevious } from './withPrevious';
 
-type Unit<T = string> = {
+export type Unit<T = string> = {
     name: T;
     value: number;
 };

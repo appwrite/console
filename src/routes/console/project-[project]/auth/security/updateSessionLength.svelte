@@ -4,41 +4,26 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
-    import { timeToSeconds } from '$lib/helpers/timeConversion';
-    import { createValueUnitPair } from '$lib/helpers/unit';
+    import { createValueUnitPair, type Unit } from '$lib/helpers/unit';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    enum Period {
-        Days = 'd',
-        Hours = 'h',
-        Minutes = 'm',
-        Seconds = 's'
-    }
-
     const projectId = $project.$id;
-    const options = [
-        { label: 'days', value: Period.Days },
-        { label: 'hours', value: Period.Hours },
-        { label: 'minutes', value: Period.Minutes },
-        { label: 'seconds', value: Period.Seconds }
-    ];
 
-    const {
-        value: time,
-        unit: period,
-        baseValue: timeInSecs
-    } = createValueUnitPair($project.authDuration, [
-        { name: Period.Days, value: 86400 },
-        { name: Period.Hours, value: 3600 },
-        { name: Period.Minutes, value: 60 },
-        { name: Period.Seconds, value: 1 }
-    ]);
+    const units: Unit[] = [
+        { name: 'Days', value: 86400 },
+        { name: 'Hours', value: 3600 },
+        { name: 'Minutes', value: 60 },
+        { name: 'Seconds', value: 1 }
+    ];
+    const { value, unit, baseValue } = createValueUnitPair($project.authDuration, units);
+
+    const options = units.map((v) => ({ label: v.name, value: v.name }));
 
     async function updateSessionLength() {
         try {
-            await sdkForConsole.projects.updateAuthDuration(projectId, $timeInSecs);
+            await sdkForConsole.projects.updateAuthDuration(projectId, $baseValue);
             invalidate(Dependencies.PROJECT);
 
             addNotification({
@@ -65,15 +50,15 @@
     <svelte:fragment slot="aside">
         <form class="form u-grid u-gap-16">
             <ul class="form-list is-multiple">
-                <InputNumber id="length" label="Length" bind:value={$time} />
-                <InputSelect id="period" label="Time Period" bind:value={$period} {options} />
+                <InputNumber id="length" label="Length" bind:value={$value} />
+                <InputSelect id="period" label="Time Period" bind:value={$unit} {options} />
             </ul>
         </form>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
         <Button
-            disabled={timeToSeconds($time, $period) === $project.authDuration}
+            disabled={$baseValue === $project.authDuration}
             on:click={() => {
                 updateSessionLength();
             }}>

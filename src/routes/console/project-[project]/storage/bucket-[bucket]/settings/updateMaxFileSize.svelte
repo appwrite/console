@@ -1,33 +1,24 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
-    import type { Size } from '$lib/helpers/sizeConvertion';
-    import { createValueUnitPair } from '$lib/helpers/unit';
+    import { createValueUnitPair, type Unit } from '$lib/helpers/unit';
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
 
-    const options: Array<{ label: string; value: Size }> = [
-        { label: 'Bytes', value: 'Bytes' },
-        { label: 'Kilobytes', value: 'KB' },
-        { label: 'Megabytes', value: 'MB' },
-        { label: 'Gigabytes', value: 'GB' }
-    ];
-
-    const {
-        value: maxSize,
-        unit: byteUnit,
-        baseValue: baseMaxSize
-    } = createValueUnitPair($bucket.maximumFileSize, [
+    const units: Array<Unit> = [
         { name: 'Bytes', value: 1 },
-        { name: 'KB', value: 1024 },
-        { name: 'MB', value: 1024 ** 2 },
-        { name: 'GB', value: 1024 ** 3 }
-    ]);
+        { name: 'Kilobytes', value: 1024 },
+        { name: 'Megabytes', value: 1024 ** 2 },
+        { name: 'Gigabytes', value: 1024 ** 3 }
+    ];
+    const { value, unit, baseValue } = createValueUnitPair($bucket.maximumFileSize, units);
+
+    const options = units.map((v) => ({ label: v.name, value: v.name }));
 
     function updateMaxSize() {
         updateBucket(
             {
-                maximumFileSize: $baseMaxSize
+                maximumFileSize: $baseValue
             },
             {
                 trackEventName: 'submit_bucket_update_size',
@@ -47,13 +38,13 @@
                     id="size"
                     label="Size"
                     placeholder={$bucket.maximumFileSize.toString()}
-                    bind:value={$maxSize} />
-                <InputSelect id="bytes" label="Bytes" {options} bind:value={$byteUnit} />
+                    bind:value={$value} />
+                <InputSelect id="bytes" label="Bytes" {options} bind:value={$unit} />
             </ul>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={$baseMaxSize === $bucket.maximumFileSize} submit>Update</Button>
+            <Button disabled={$baseValue === $bucket.maximumFileSize} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
