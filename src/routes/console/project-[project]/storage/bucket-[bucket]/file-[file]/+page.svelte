@@ -70,7 +70,7 @@
         <CardGrid>
             <div class="u-flex u-gap-16">
                 <a
-                    href={downloadFile()}
+                    href={getView($file.$id)}
                     class="file-preview is-with-image"
                     target="_blank"
                     rel="noopener noreferrer"
