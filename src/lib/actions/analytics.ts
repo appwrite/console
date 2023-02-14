@@ -91,6 +91,9 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
 }
 
 function isTrackingAllowed() {
+    if (import.meta.env?.VITEST) {
+        return;
+    }
     if (window.navigator?.doNotTrack) {
         if (navigator.doNotTrack === '1' || navigator.doNotTrack === 'yes') {
             return false;
