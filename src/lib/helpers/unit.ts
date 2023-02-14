@@ -21,6 +21,10 @@ export function createValueUnitPair<T = string>(initialValue = 0, units: Unit<T>
         throw new Error('Units must have a value of 1');
     }
 
+    if (units.some((u) => u.value < 1)) {
+        throw new Error('Units must have a value greater than 1');
+    }
+
     // Highest to lowest
     const sortedUnits = units.sort((a, b) => b.value - a.value);
 
@@ -50,4 +54,24 @@ export function createValueUnitPair<T = string>(initialValue = 0, units: Unit<T>
         unit,
         baseValue
     };
+}
+
+export function createTimeUnitPair(initialValue = 0) {
+    const units: Unit[] = [
+        { name: 'Days', value: 86400 },
+        { name: 'Hours', value: 3600 },
+        { name: 'Minutes', value: 60 },
+        { name: 'Seconds', value: 1 }
+    ];
+    return { ...createValueUnitPair(initialValue, units), units };
+}
+
+export function createByteUnitPair(initialValue = 0) {
+    const units: Unit[] = [
+        { name: 'Bytes', value: 1 },
+        { name: 'Kilobytes', value: 1024 },
+        { name: 'Megabytes', value: 1024 ** 2 },
+        { name: 'Gigabytes', value: 1024 ** 3 }
+    ];
+    return { ...createValueUnitPair(initialValue, units), units };
 }

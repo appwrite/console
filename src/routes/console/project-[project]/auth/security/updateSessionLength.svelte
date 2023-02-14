@@ -4,21 +4,13 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
-    import { createValueUnitPair, type Unit } from '$lib/helpers/unit';
+    import { createTimeUnitPair } from '$lib/helpers/unit';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;
-
-    const units: Unit[] = [
-        { name: 'Days', value: 86400 },
-        { name: 'Hours', value: 3600 },
-        { name: 'Minutes', value: 60 },
-        { name: 'Seconds', value: 1 }
-    ];
-    const { value, unit, baseValue } = createValueUnitPair($project.authDuration, units);
-
+    const { value, unit, baseValue, units } = createTimeUnitPair($project.authDuration);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
 
     async function updateSessionLength() {

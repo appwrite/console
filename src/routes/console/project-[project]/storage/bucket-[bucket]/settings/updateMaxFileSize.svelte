@@ -1,18 +1,12 @@
 <script lang="ts">
+    import { Submit } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
-    import { createValueUnitPair, type Unit } from '$lib/helpers/unit';
+    import { createByteUnitPair } from '$lib/helpers/unit';
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
 
-    const units: Array<Unit> = [
-        { name: 'Bytes', value: 1 },
-        { name: 'Kilobytes', value: 1024 },
-        { name: 'Megabytes', value: 1024 ** 2 },
-        { name: 'Gigabytes', value: 1024 ** 3 }
-    ];
-    const { value, unit, baseValue } = createValueUnitPair($bucket.maximumFileSize, units);
-
+    const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
 
     function updateMaxSize() {
@@ -21,7 +15,7 @@
                 maximumFileSize: $baseValue
             },
             {
-                trackEventName: 'submit_bucket_update_size',
+                trackEventName: Submit.BucketUpdateSize,
                 arePermsDisabled: false
             }
         );
