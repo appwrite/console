@@ -96,24 +96,23 @@
                 $createPlatform.store,
                 $createPlatform.hostname
             );
+        } else {
+            const response = await sdkForConsole.projects.createPlatform(
+                projectId,
+                platform,
+                $createPlatform.name,
+                platform !== Platform.Web ? $createPlatform.key : undefined,
+                undefined,
+                platform === Platform.Web ? $createPlatform.hostname : undefined
+            );
 
-            return;
+            trackEvent('submit_platform_create', {
+                type: platform
+            });
+
+            $createPlatform.$id = response.$id;
         }
 
-        const response = await sdkForConsole.projects.createPlatform(
-            projectId,
-            platform,
-            $createPlatform.name,
-            platform !== Platform.Web ? $createPlatform.key : undefined,
-            undefined,
-            platform === Platform.Web ? $createPlatform.hostname : undefined
-        );
-
-        trackEvent('submit_platform_create', {
-            type: platform
-        });
-
-        $createPlatform.$id = response.$id;
         $createPlatform.type = platform;
     }
 </script>
