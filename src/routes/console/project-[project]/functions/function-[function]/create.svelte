@@ -3,7 +3,6 @@
     import { Modal, Collapsible, CollapsibleItem, Tabs, Tab, Code } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
     import GithubLight from '$lib/images/github-illustration-light.svg';
     import GithubDark from '$lib/images/github-illustration-dark.svg';
@@ -27,6 +26,7 @@
     let lang = 'js';
     let codeSnippets = {};
     let os = 'unknown';
+    let error: string = null;
 
     const functionId = $page.params.function;
     const dispatch = createEventDispatcher();
@@ -97,17 +97,16 @@
                 files[0],
                 active
             );
-            await invalidate(Dependencies.FUNCTION);
-            files = entrypoint = active = null;
+            await invalidate(Dependencies.DEPLOYMENTS);
+            files = undefined;
+            entrypoint = null;
+            active = false;
             showCreate = false;
             dispatch('created');
             trackEvent(Submit.DeploymentCreate);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.DeploymentCreate);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.DeploymentCreate);
         }
     }
 
@@ -125,9 +124,16 @@
                 return index === 0;
         }
     }
+
+    $: if (!showCreate) {
+        files = undefined;
+        entrypoint = null;
+        active = false;
+        error = null;
+    }
 </script>
 
-<Modal size="big" bind:show={showCreate} on:submit={create}>
+<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
     <svelte:fragment slot="header">Create Deployment</svelte:fragment>
     <Tabs>
         <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI} event="deploy_cli">
@@ -196,7 +202,11 @@
                 id="entrypoint"
                 bind:value={entrypoint}
                 required />
-            <InputFile label="Gzipped code (tar.gz)" allowedFileExtensions={['gz']} bind:files />
+            <InputFile
+                label="Gzipped code (tar.gz)"
+                allowedFileExtensions={['gz']}
+                bind:files
+                required={true} />
             <InputChoice label="Activate deployment after build" id="activate" bind:value={active}>
                 This deployment will be activated after the build is completed.</InputChoice>
         </FormList>
