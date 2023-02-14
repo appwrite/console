@@ -10,6 +10,7 @@ export enum Mode {
 export const growthEndpoint = import.meta.env.VITE_APPWRITE_GROWTH_ENDPOINT;
 
 export enum Dependencies {
+    PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     PROJECT = 'dependency:project',
     PROJECTS = 'dependency:projects',

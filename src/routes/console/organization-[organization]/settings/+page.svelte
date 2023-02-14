@@ -88,6 +88,9 @@
                         paymentMethod.$id,
                         setupIntent.payment_method
                     );
+                    const paymentElement = elements.getElement('payment');
+                    await invalidate(Dependencies.PAYMENT_METHODS);
+                    paymentElement.destroy();
                 }
             }
         }
@@ -140,7 +143,11 @@
             <CardGrid>
                 <Heading tag="h6" size="7">Create Payment Method</Heading>
                 {#each $paymentMethods.paymentMethods as paymentMethod}
-                    {paymentMethod.providerUserId}
+                    <p>
+                        {paymentMethod.brand}
+                        {paymentMethod.last4}, expiring: {paymentMethod.expiryMonth}/{paymentMethod.expiryYear}
+                        {#if paymentMethod.default} <span class="icon-check-circle" /> {/if}
+                    </p>
                 {/each}
 
                 <div id="payment-element">

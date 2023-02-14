@@ -8,6 +8,7 @@ import { Dependencies } from '$lib/constants';
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
     await parent();
     depends(Dependencies.ORGANIZATION);
+    depends(Dependencies.PAYMENT_METHODS);
 
     try {
         return {
