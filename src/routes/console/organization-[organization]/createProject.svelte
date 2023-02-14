@@ -31,7 +31,8 @@
             );
             dispatch('created', project);
             trackEvent(Submit.ProjectCreate, {
-                customId: !!id
+                customId: !!id,
+                teamId
             });
             addNotification({
                 type: 'success',

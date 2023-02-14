@@ -30,7 +30,8 @@
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);
             trackEvent(Submit.ProjectCreate, {
-                customId: !!id
+                customId: !!id,
+                teamId: org.$id
             });
         } catch (error) {
             loading = false;

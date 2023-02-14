@@ -20,13 +20,14 @@
     import { log } from '$lib/stores/logs';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onDestroy, onMount } from 'svelte';
-    import CreateDeployment from '../../create.svelte';
     import { func } from '../../store';
+    import CreateDeployment from '../../create.svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
 
     export let data: PageData;
-    let showCreate = false;
 
+    let showCreate = false;
     let unsubscribe: { (): void };
 
     onMount(() => {
@@ -42,6 +43,12 @@
             unsubscribe();
         }
     });
+
+    function showLogs(execution: Models.Execution) {
+        $log.show = true;
+        $log.func = $func;
+        $log.data = execution;
+    }
 </script>
 
 <Container>
@@ -88,11 +95,8 @@
                         <TableCell>
                             <Button
                                 secondary
-                                on:click={() => {
-                                    $log.show = true;
-                                    $log.func = $func;
-                                    $log.data = execution;
-                                }}>
+                                event="view_logs"
+                                on:click={() => showLogs(execution)}>
                                 Logs
                             </Button>
                         </TableCell>

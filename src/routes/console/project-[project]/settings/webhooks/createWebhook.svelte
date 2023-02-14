@@ -32,7 +32,9 @@
                 type: 'success'
             });
             wizard.hide();
-            trackEvent(Submit.WebhookCreate);
+            trackEvent(Submit.WebhookCreate, {
+                events: $createWebhook.events
+            });
         } catch (error) {
             addNotification({
                 message: error.message,

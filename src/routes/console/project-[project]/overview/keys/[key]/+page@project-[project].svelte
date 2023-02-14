@@ -61,7 +61,9 @@
                 $key.expire
             );
             invalidate(Dependencies.KEY);
-            trackEvent(Submit.KeyUpdateScopes);
+            trackEvent(Submit.KeyUpdateScopes, {
+                scopes
+            });
             addNotification({
                 type: 'success',
                 message: 'API Key scopes have been updated'
@@ -97,7 +99,7 @@
     <CardGrid>
         <Heading tag="h6" size="7">API Key Secret</Heading>
         <svelte:fragment slot="aside">
-            <Secret bind:value={secret} />
+            <Secret copyEvent="key" bind:value={secret} />
         </svelte:fragment>
     </CardGrid>
 

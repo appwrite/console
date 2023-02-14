@@ -41,7 +41,9 @@
                 type: 'success',
                 message: 'Webhook events have been updated'
             });
-            trackEvent(Submit.WebhookUpdateEvents);
+            trackEvent(Submit.WebhookUpdateEvents, {
+                events: Array.from($eventSet)
+            });
         } catch (error) {
             addNotification({
                 type: 'error',

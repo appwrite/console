@@ -95,6 +95,7 @@
                 <svelte:fragment slot="actions">
                     <Button
                         secondary
+                        event="view_keys"
                         href={`${base}/console/project-${projectId}/overview/keys#integrations`}>
                         View API Keys
                     </Button>
