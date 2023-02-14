@@ -27,6 +27,14 @@
         error = element.validationMessage;
     };
 
+    $: if (element && required && !value) {
+        element.setCustomValidity('This field is required');
+    }
+
+    $: if (element && required && value) {
+        element.setCustomValidity('');
+    }
+
     $: if (value) {
         error = null;
     }

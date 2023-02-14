@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -37,13 +37,14 @@
                 type: 'success',
                 message: 'Updated project users limit successfully'
             });
-            trackEvent('submit_auth_limit_update');
+            trackEvent(Submit.AuthLimitUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
             submitting = false;
+            trackError(error, Submit.AuthLimitUpdate);
         }
     }
 </script>

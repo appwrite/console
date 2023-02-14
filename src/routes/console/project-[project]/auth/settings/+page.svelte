@@ -11,7 +11,7 @@
     import { app } from '$lib/stores/app';
     import { page } from '$app/stores';
     import type { Provider } from '$lib/stores/oauth-providers';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
 
@@ -29,7 +29,7 @@
                     box.value ? 'enabled' : 'disabled'
                 }`
             });
-            trackEvent('submit_auth_status_update', {
+            trackEvent(Submit.AuthStatusUpdate, {
                 method: box.method,
                 value: box.value
             });
@@ -39,6 +39,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AuthStatusUpdate);
         }
     }
 

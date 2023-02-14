@@ -1,7 +1,5 @@
 <script lang="ts">
-    import Helper from '$lib/elements/forms/helper.svelte';
-    import InputDateTime from '$lib/elements/forms/inputDateTime.svelte';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import { Helper, InputDateTime, InputSelect } from '$lib/elements/forms';
     import { isSameDay, isValidDate, toLocaleDate } from '$lib/helpers/date';
 
     function incrementToday(value: number, type: 'day' | 'month' | 'year'): string {

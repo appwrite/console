@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -21,7 +21,7 @@
                 type: 'success',
                 message: `${$collection.name} has been deleted`
             });
-            trackEvent('submit_collection_delete');
+            trackEvent(Submit.CollectionDelete);
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}`
             );
@@ -30,6 +30,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.CollectionDelete);
         }
     };
 </script>

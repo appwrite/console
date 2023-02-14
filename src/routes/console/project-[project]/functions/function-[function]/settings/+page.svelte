@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Box, CardGrid, DropList, DropListItem, Empty, Output, Secret } from '$lib/components';
     import Heading from '$lib/components/heading.svelte';
     import { Roles } from '$lib/components/permissions';
@@ -68,12 +68,13 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_function_update_name');
+            trackEvent(Submit.FunctionUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FunctionUpdateName);
         }
     }
 
@@ -93,12 +94,13 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
-            trackEvent('submit_function_update_permissions');
+            trackEvent(Submit.FunctionUpdatePermissions);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FunctionUpdatePermissions);
         }
     }
 
@@ -119,12 +121,13 @@
                 type: 'success',
                 message: 'Cron Schedule has been updated'
             });
-            trackEvent('submit_function_update_schedule');
+            trackEvent(Submit.FunctionUpdateSchedule);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.FunctionUpdateSchedule);
         }
     }
 
@@ -145,12 +148,13 @@
                 type: 'success',
                 message: 'Timeout has been updated'
             });
-            trackEvent('submit_function_update_timeout');
+            trackEvent(Submit.FunctionUpdateTimeout);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.FunctionUpdateTimeout);
         }
     }
 
@@ -165,12 +169,13 @@
                 type: 'success',
                 message: `${$func.name} variables have been updated`
             });
-            trackEvent('submit_variable_create');
+            trackEvent(Submit.VariableCreate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.VariableCreate);
         }
     }
 
@@ -190,12 +195,13 @@
                 type: 'success',
                 message: `${$func.name} variables have been updated`
             });
-            trackEvent('submit_variable_update');
+            trackEvent(Submit.VariableUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.VariableUpdate);
         }
     }
     async function handleVariableDeleted(variable: Models.Variable) {
@@ -206,12 +212,13 @@
                 type: 'success',
                 message: `Variable has been deleted`
             });
-            trackEvent('submit_variable_delete');
+            trackEvent(Submit.VariableDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.VariableDelete);
         }
     }
 
@@ -354,7 +361,11 @@
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
-                <Button disabled={!data.variables.total} secondary on:click={downloadVariables}>
+                <Button
+                    secondary
+                    event="download_env"
+                    disabled={!data.variables.total}
+                    on:click={downloadVariables}>
                     <span class="icon-download" />
                     <span class="text">Download .env file</span>
                 </Button>
@@ -381,7 +392,7 @@
                                     </TableCell>
 
                                     <TableCell showOverflow title="value">
-                                        <Secret value={variable.value} />
+                                        <Secret copyEvent="variable" value={variable.value} />
                                     </TableCell>
                                     <TableCell showOverflow title="options">
                                         <DropList

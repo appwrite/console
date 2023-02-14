@@ -1,11 +1,12 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -23,21 +24,25 @@
         try {
             isCreating = true;
             const project = await sdkForConsole.projects.create(
-                id ?? 'unique()',
+                id ?? ID.unique(),
                 name,
                 teamId,
                 'default'
             );
             dispatch('created', project);
-            trackEvent('submit_project_create');
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id,
+                teamId
+            });
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
             });
             await goto(`/console/project-${project.$id}`);
-        } catch ({ message }) {
+        } catch (e) {
             isCreating = false;
-            error = message;
+            error = e.message;
+            trackError(e, Submit.ProjectCreate);
         }
     }
 </script>

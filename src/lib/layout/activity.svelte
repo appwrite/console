@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { EmptySearch, Pagination, Trim } from '$lib/components';
+    import { AvatarInitials, EmptySearch, Pagination, Trim } from '$lib/components';
     import {
         TableBody,
         TableHeader,
@@ -11,24 +11,19 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { sdkForConsole } from '$lib/stores/sdk';
     import { PAGE_LIMIT } from '$lib/constants';
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let logs: Models.LogList;
     export let path: string;
     export let offset = 0;
-
-    const getBrowser = (clientCode: string) => {
-        return sdkForConsole.avatars.getBrowser(clientCode, 40, 40);
-    };
 </script>
 
 <Container>
     {#if logs.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={150}>Client</TableCellHead>
+                <TableCellHead width={100}>User</TableCellHead>
                 <TableCellHead width={100}>Event</TableCellHead>
                 <TableCellHead width={80}>Location</TableCellHead>
                 <TableCellHead width={90}>IP</TableCellHead>
@@ -38,28 +33,22 @@
                 {#each logs.logs as log}
                     <TableRow>
                         <TableCell title="Client">
-                            {#if log.clientName}
-                                <div class="u-flex u-cross-center u-gap-12">
-                                    <div class="avatar is-small">
-                                        <img
-                                            height="20"
-                                            width="20"
-                                            src={getBrowser(log.clientCode).toString()}
-                                            alt={log.clientName} />
+                            <div class="u-flex u-cross-center u-gap-12">
+                                {#if log.userEmail}
+                                    {#if log.userName}
+                                        <AvatarInitials size={32} name={log.userName} />
+                                        <Trim>{log.userName}</Trim>
+                                    {:else}
+                                        <AvatarInitials size={32} name={log.userEmail} />
+                                        <Trim>{log.userEmail}</Trim>
+                                    {/if}
+                                {:else}
+                                    <div class="avatar is-size-small ">
+                                        <span class="icon-anonymous" aria-hidden="true" />
                                     </div>
-                                    <Trim>
-                                        {log.clientName}
-                                        {log.clientVersion}
-                                        on {log.osName}
-                                        {log.osVersion}
-                                    </Trim>
-                                </div>
-                            {:else}
-                                <div class="u-flex u-cross-center u-gap-12">
-                                    <span class="avatar  is-color-empty" />
-                                    <p class="text u-trim">Unknown</p>
-                                </div>
-                            {/if}
+                                    <span class="text u-trim">{log.userName ?? 'Anonymous'}</span>
+                                {/if}
+                            </div>
                         </TableCell>
                         <TableCellText title="Event">{log.event}</TableCellText>
 

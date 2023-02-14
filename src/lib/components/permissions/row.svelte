@@ -90,8 +90,14 @@
                                 <span class="user-profile-empty-column" />
                                 <span class="user-profile-info is-only-desktop">
                                     {#if isUser}
-                                        <p class="text u-x-small">{data?.email}</p>
-                                        <p class="text u-x-small">{data?.phone}</p>
+                                        <div class="u-grid u-gap-4">
+                                            {#if data?.email}
+                                                <p class="text u-x-small">Email: {data?.email}</p>
+                                            {/if}
+                                            {#if data?.phone}
+                                                <p class="text u-x-small">Phone: {data?.phone}</p>
+                                            {/if}
+                                        </div>
                                     {:else if isTeam}
                                         <p class="text u-x-small">Members: {data?.total}</p>
                                     {/if}

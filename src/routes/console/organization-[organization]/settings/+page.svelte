@@ -9,7 +9,7 @@
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
     import Delete from '../deleteOrganization.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let name: string;
     let showDelete = false;
@@ -26,12 +26,13 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_organization_update_name');
+            trackEvent(Submit.OrganizationUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.OrganizationUpdateName);
         }
     }
 

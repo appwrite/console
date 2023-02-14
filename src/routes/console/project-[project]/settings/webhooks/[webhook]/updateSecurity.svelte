@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import {
@@ -45,12 +45,13 @@
                 type: 'success',
                 message: 'Webhook security has been updated'
             });
-            trackEvent('submit_webhook_update_security');
+            trackEvent(Submit.WebhookUpdateSecurity);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.WebhookUpdateSecurity);
         }
     }
 </script>

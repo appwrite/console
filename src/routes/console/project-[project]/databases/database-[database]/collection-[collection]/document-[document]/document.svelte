@@ -11,7 +11,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import AttributeForm from './attributeForm.svelte';
 
     let disableUpdate = true;
@@ -62,9 +62,7 @@
 
             currentDoc = JSON.stringify($work);
             invalidate(Dependencies.DOCUMENT);
-            trackEvent('submit_document_update', {
-                type: 'android'
-            });
+            trackEvent(Submit.DocumentUpdate);
             disableUpdate = true;
             addNotification({
                 message: 'Document was updated!',
@@ -75,6 +73,7 @@
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.DocumentUpdate);
         }
     }
 </script>

@@ -55,7 +55,7 @@
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/user-${membership.userId}`}>
                         <TableCellText title="Name">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <AvatarInitials size={32} name={membership.userName} />
                                 <span>{membership.userName ? membership.userName : 'n/a'}</span>
                             </div>

@@ -10,7 +10,7 @@
     import Delete from './delete.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let name: string = null,
         email: string = null,
@@ -32,12 +32,13 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_account_update_name');
+            trackEvent(Submit.AccountUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.AccountUpdateName);
         }
     }
     async function updateEmail() {
@@ -48,12 +49,13 @@
                 message: 'Email has been updated',
                 type: 'success'
             });
-            trackEvent('submit_account_update_email');
+            trackEvent(Submit.AccountUpdateEmail);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.AccountUpdateEmail);
         }
     }
 
@@ -65,12 +67,13 @@
                 message: 'Password has been updated',
                 type: 'success'
             });
-            trackEvent('submit_account_update_password');
+            trackEvent(Submit.AccountUpdatePassword);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.AccountUpdatePassword);
         }
     }
 </script>

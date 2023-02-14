@@ -47,7 +47,7 @@
                 <GridItem1
                     href={`${base}/console/project-${project}/functions/function-${func.$id}`}>
                     <svelte:fragment slot="title">
-                        <div class="u-flex u-gap-32 u-cross-center">
+                        <div class="u-flex u-gap-16 u-cross-center">
                             <div class="avatar is-medium">
                                 <img
                                     src={`${base}/icons/${$app.themeInUse}/color/${
