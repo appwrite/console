@@ -6,6 +6,7 @@
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -23,13 +24,15 @@
         try {
             isCreating = true;
             const project = await sdkForConsole.projects.create(
-                id ?? 'unique()',
+                id ?? ID.unique(),
                 name,
                 teamId,
                 'default'
             );
             dispatch('created', project);
-            trackEvent(Submit.ProjectCreate);
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id
+            });
             addNotification({
                 type: 'success',
                 message: `${name} has been created`

@@ -5,6 +5,7 @@
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -17,14 +18,16 @@
 
     const create = async () => {
         try {
-            const database = await sdkForProject.databases.create(id ? id : 'unique()', name);
+            const database = await sdkForProject.databases.create(id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', database);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
             });
-            trackEvent(Submit.DatabaseCreate);
+            trackEvent(Submit.DatabaseCreate, {
+                customId: !!id
+            });
             name = id = null;
         } catch (error) {
             addNotification({

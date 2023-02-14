@@ -22,7 +22,15 @@ export function trackEvent(name: string, data: object = null): void {
         return;
     }
 
-    const path = get(page).route.id;
+    const currentPage = get(page);
+    const path = currentPage.route.id;
+
+    if (currentPage.params?.project) {
+        data = {
+            ...data,
+            project: currentPage.params.project
+        };
+    }
 
     if (isDevelopment) {
         console.debug(`[Analytics] Event ${name} ${path}`, data);

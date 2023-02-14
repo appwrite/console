@@ -29,7 +29,9 @@
             );
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);
-            trackEvent(Submit.ProjectCreate);
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id
+            });
         } catch (error) {
             loading = false;
             addNotification({
