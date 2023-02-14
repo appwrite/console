@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Alert } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
@@ -10,7 +9,7 @@
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
@@ -103,7 +102,7 @@
             platform === Platform.Web ? $createPlatform.hostname : undefined
         );
 
-        trackEvent('submit_platform_create', {
+        trackEvent(Submit.PlatformCreate, {
             type: platform
         });
 
@@ -114,7 +113,7 @@
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Register your Flutter app</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        <div class="u-flex u-gap-16 u-margin-block-start-8">
+        <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
             <Pill
                 button
                 on:click={() => (platform = Platform.Android)}
@@ -153,10 +152,6 @@
             </Pill>
         </div>
     </svelte:fragment>
-    <Alert type="warning">
-        Note: If you are building your Flutter application for multiple devices, you will have to
-        follow this process for each different device.
-    </Alert>
 
     <FormList isCommonSection>
         <InputText

@@ -11,7 +11,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
@@ -35,12 +35,13 @@
                 type: 'success',
                 message: 'We have sent you an email with a password reset link'
             });
-            trackEvent('submit_account_recover');
+            trackEvent(Submit.AccountRecover);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AccountRecover);
         }
     }
 

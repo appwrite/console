@@ -12,7 +12,7 @@
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
     const create = async () => {
@@ -32,12 +32,15 @@
                 type: 'success'
             });
             wizard.hide();
-            trackEvent('submit_webhook_create');
+            trackEvent(Submit.WebhookCreate, {
+                events: $createWebhook.events
+            });
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.WebhookCreate);
         }
     };
 

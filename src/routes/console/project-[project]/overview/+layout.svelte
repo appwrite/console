@@ -26,7 +26,7 @@
     import { usage } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
-    import { Heading } from '$lib/components';
+    import { Heading, Tab } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { base } from '$app/paths';
     import Realtime from './realtime.svelte';
@@ -198,22 +198,14 @@
                         <span class="icon-cheveron-right" aria-hidden="true" />
                     </button>
                     <ul class="tabs-list" data-sveltekit-noscroll>
-                        <li class="tabs-item">
-                            <a
-                                class="tabs-button"
-                                href={`${path}/platforms`}
-                                class:is-selected={$page.url.pathname === `${path}/platforms`}>
-                                <span class="text">Platforms</span>
-                            </a>
-                        </li>
-                        <li class="tabs-item">
-                            <a
-                                class="tabs-button"
-                                href={`${path}/keys`}
-                                class:is-selected={$page.url.pathname === `${path}/keys`}>
-                                <span class="text">API Keys</span>
-                            </a>
-                        </li>
+                        <Tab
+                            href={`${path}/platforms`}
+                            selected={$page.url.pathname === `${path}/platforms`}
+                            event="platforms">Platforms</Tab>
+                        <Tab
+                            href={`${path}/keys`}
+                            selected={$page.url.pathname === `${path}/keys`}
+                            event="keys">API Keys</Tab>
                     </ul>
                 </div>
 

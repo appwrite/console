@@ -154,7 +154,7 @@
             <TableCellHead width={40} />
         </TableHeader>
         <TableBody>
-            {#each [...$groups].sort(sortRoles) as [role, permission]}
+            {#each [...$groups].sort(sortRoles) as [role, permission] (role)}
                 <TableRow>
                     <TableCell title="Role">
                         <Row {role} />

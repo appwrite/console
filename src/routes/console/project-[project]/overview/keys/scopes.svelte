@@ -77,10 +77,15 @@
     }
 </script>
 
-<div class="u-flex u-cross-center u-main-end">
-    <Button text on:click={deselectAll}>Deselect all</Button>
-    <Button text on:click={selectAll}>Select all</Button>
-</div>
+<ul class="buttons-list u-main-end">
+    <li class="buttons-list-item">
+        <Button text on:click={deselectAll}>Deselect all</Button>
+    </li>
+    <li class="buttons-list-item">
+        <Button text on:click={selectAll}>Select all</Button>
+    </li>
+</ul>
+
 <Collapsible>
     {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Other] as category}
         {@const checked = categoryState(category, scopes)}
@@ -96,8 +101,11 @@
                 {category}
             </svelte:fragment>
             <svelte:fragment slot="subtitle">
-                ({allScopes.filter((n) => n.category === category && scopes.includes(n.scope))
-                    .length} Scopes)
+                {@const scopesLength = allScopes.filter(
+                    (n) => n.category === category && scopes.includes(n.scope)
+                ).length}
+                ({scopesLength}
+                {scopesLength === 1 ? 'Scope' : 'Scopes'})
             </svelte:fragment>
             <div class="form">
                 <FormList>

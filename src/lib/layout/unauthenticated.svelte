@@ -70,7 +70,7 @@
         <div class="u-margin-block-start-40" />
     </section>
     <section class="grid-1-1-col-2 u-flex u-main-center u-cross-center">
-        <div class="container u-flex u-flex-vertical u-cross-center u-height-100-percents">
+        <div class="container u-flex u-flex-vertical u-cross-center u-height-100-percent">
             <div class="u-margin-block-start-auto" />
 
             <div class="u-max-width-500 u-width-full-line">

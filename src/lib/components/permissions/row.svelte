@@ -65,7 +65,7 @@
                     {#if data}
                         {@const isUser = role.startsWith('user')}
                         {@const isTeam = role.startsWith('team')}
-                        {@const isAnonymous = !data.email && !data.phone}
+                        {@const isAnonymous = !data.email && !data.phone && isUser}
                         <div class="user-profile">
                             {#if isAnonymous}
                                 <div class="avatar is-size-small ">
@@ -80,13 +80,7 @@
                             {/if}
                             <span class="user-profile-info is-only-desktop">
                                 <span class="name">
-                                    {data.name
-                                        ? data.name
-                                        : data?.email
-                                        ? data?.email
-                                        : data?.phone
-                                        ? data?.phone
-                                        : '-'}
+                                    {data.name ?? data?.email ?? data?.phone ?? '-'}
                                 </span>
                                 <Output value={data.$id}>{role}</Output>
                             </span>
@@ -96,8 +90,14 @@
                                 <span class="user-profile-empty-column" />
                                 <span class="user-profile-info is-only-desktop">
                                     {#if isUser}
-                                        <p class="text u-x-small">{data?.email}</p>
-                                        <p class="text u-x-small">{data?.phone}</p>
+                                        <div class="u-grid u-gap-4">
+                                            {#if data?.email}
+                                                <p class="text u-x-small">Email: {data?.email}</p>
+                                            {/if}
+                                            {#if data?.phone}
+                                                <p class="text u-x-small">Phone: {data?.phone}</p>
+                                            {/if}
+                                        </div>
                                     {:else if isTeam}
                                         <p class="text u-x-small">Members: {data?.total}</p>
                                     {/if}

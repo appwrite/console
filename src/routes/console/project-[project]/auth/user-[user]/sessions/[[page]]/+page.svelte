@@ -67,17 +67,18 @@
                         <TableCellText title="Session">{session.clientType}</TableCellText>
                         <TableCellText title="Location">{session.countryName}</TableCellText>
                         <TableCellText title="IP">{session.ip}</TableCellText>
-                        <TableCellText title="">
-                            <button
-                                class="button is-only-icon is-text"
-                                aria-label="Delete item"
+                        <TableCell>
+                            <Button
+                                text
+                                round
+                                ariaLabel="Delete item"
                                 on:click={() => {
                                     selectedSessionId = session.$id;
                                     showDelete = true;
                                 }}>
                                 <span class="icon-trash" aria-hidden="true" />
-                            </button>
-                        </TableCellText>
+                            </Button>
+                        </TableCell>
                     </TableRow>
                 {/each}
             </TableBody>

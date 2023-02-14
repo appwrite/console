@@ -64,6 +64,7 @@ function createFeedbackStore() {
             email?: string,
             value?: number
         ) => {
+            if (!growthEndpoint) return;
             const response = await fetch(`${growthEndpoint}/feedback`, {
                 method: 'POST',
                 headers: {

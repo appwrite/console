@@ -45,9 +45,8 @@
             <button
                 class="button is-text u-padding-inline-0"
                 on:click={() => (showDropdown = !showDropdown)}>
-                <h1 class="heading-level-4">
+                <h1 class="heading-level-4 u-flex u-cross-center u-gap-8">
                     <span class="text"> {$organization.name}</span>
-
                     <span
                         class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}
                         aria-hidden="true" />

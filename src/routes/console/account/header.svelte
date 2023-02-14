@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { Tab, Tabs } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { isTabSelected } from '$lib/helpers/load';
@@ -39,7 +39,7 @@
 
     async function logout() {
         await sdkForConsole.account.deleteSession('current');
-        trackEvent('submit_account_logout');
+        trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }
 </script>

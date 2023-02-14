@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { AvatarInitials, CardGrid, DropList, DropListItem, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -23,12 +23,13 @@
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_user_update_verification_email');
+            trackEvent(Submit.UserUpdateVerificationEmail);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateVerificationEmail);
         }
     }
     async function updateVerificationPhone() {
@@ -42,12 +43,13 @@
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_user_update_verification_phone');
+            trackEvent(Submit.UserUpdateVerificationPhone);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateVerificationPhone);
         }
     }
     async function updateStatus() {
@@ -60,12 +62,13 @@
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_user_update_status');
+            trackEvent(Submit.UserUpdateStatus);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateStatus);
         }
     }
 </script>
