@@ -36,8 +36,11 @@ describe('createValueUnitPair', () => {
     const tests: Test[] = [
         { value: 2, expected: { value: 2, unit: 'KB', baseValue: 2048 } },
         { value: 3, expected: { value: 3, unit: 'KB', baseValue: 3072 } },
-        { value: 1024, expected: { value: 1, unit: 'MB', baseValue: 1024 ** 2 } },
-        { unit: 'MB', expected: { value: 1, unit: 'MB', baseValue: 1024 ** 2 } }
+        { value: 1024, expected: { value: 1024, unit: 'KB', baseValue: 1024 ** 2 } },
+        { unit: 'MB', expected: { value: 1, unit: 'MB', baseValue: 1024 ** 2 } },
+        { unit: 'GB', expected: { value: 1 / 1024, unit: 'GB', baseValue: 1024 ** 2 } },
+        { value: 1, expected: { value: 1, unit: 'GB', baseValue: 1024 ** 3 } },
+        { unit: 'Bytes', expected: { value: 1024 ** 3, unit: 'Bytes', baseValue: 1024 ** 3 } }
     ];
 
     tests.forEach((test) => {
