@@ -72,7 +72,9 @@
     });
 
     afterNavigate((navigation) => {
-        trackPageView(navigation.to.route.id);
+        if (navigation.type !== 'enter' && navigation.from?.route?.id !== navigation.to.route.id) {
+            trackPageView(navigation.to.route.id);
+        }
     });
 
     $: {

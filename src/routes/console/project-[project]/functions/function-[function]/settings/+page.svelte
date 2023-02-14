@@ -361,7 +361,11 @@
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
-                <Button disabled={!data.variables.total} secondary on:click={downloadVariables}>
+                <Button
+                    secondary
+                    event="download_env"
+                    disabled={!data.variables.total}
+                    on:click={downloadVariables}>
                     <span class="icon-download" />
                     <span class="text">Download .env file</span>
                 </Button>
@@ -388,7 +392,7 @@
                                     </TableCell>
 
                                     <TableCell showOverflow title="value">
-                                        <Secret value={variable.value} />
+                                        <Secret copyEvent="variable" value={variable.value} />
                                     </TableCell>
                                     <TableCell showOverflow title="options">
                                         <DropList

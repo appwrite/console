@@ -16,6 +16,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@aw-labs/appwrite-console';
 
     const projectId = $page.params.project;
 
@@ -25,7 +26,7 @@
     async function create() {
         try {
             const response = await sdkForProject.functions.create(
-                $createFunction.id ?? 'unique()',
+                $createFunction.id ?? ID.unique(),
                 $createFunction.name,
                 $createFunction.execute,
                 $createFunction.runtime,
@@ -43,7 +44,9 @@
                 message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
-            trackEvent(Submit.FunctionCreate);
+            trackEvent(Submit.FunctionCreate, {
+                customId: !!$createFunction.id
+            });
             wizard.hide();
         } catch (error) {
             addNotification({

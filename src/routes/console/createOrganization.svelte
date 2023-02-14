@@ -8,6 +8,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@aw-labs/appwrite-console';
 
     export let show = false;
 
@@ -20,7 +21,7 @@
 
     const create = async () => {
         try {
-            const org = await sdkForConsole.teams.create(id ?? 'unique()', name);
+            const org = await sdkForConsole.teams.create(id ?? ID.unique(), name);
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
             await goto(`/console/organization-${org.$id}`);
@@ -28,7 +29,9 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            trackEvent(Submit.OrganizationCreate);
+            trackEvent(Submit.OrganizationCreate, {
+                customId: !!id
+            });
             name = null;
             id = null;
             show = false;

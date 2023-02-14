@@ -7,6 +7,7 @@
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -22,7 +23,7 @@
         try {
             const collection = await sdkForProject.databases.createCollection(
                 databaseId,
-                id ? id : 'unique()',
+                id ? id : ID.unique(),
                 name
             );
             showCreate = false;
@@ -32,7 +33,9 @@
                 message: `${name} has been created`
             });
             name = id = null;
-            trackEvent(Submit.CollectionCreate);
+            trackEvent(Submit.CollectionCreate, {
+                customId: !!id
+            });
         } catch (error) {
             addNotification({
                 type: 'error',

@@ -25,7 +25,9 @@
             if ($onboarding) {
                 invalidate(Dependencies.PROJECT);
             }
-            trackEvent(Submit.KeyCreate);
+            trackEvent(Submit.KeyCreate, {
+                scopes: $key.scopes
+            });
             goto(`/console/project-${$page.params.project}/overview/keys/${$id}`);
         } catch (error) {
             addNotification({

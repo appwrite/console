@@ -5,6 +5,7 @@
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -16,7 +17,7 @@
 
     const create = async () => {
         try {
-            const team = await sdkForProject.teams.create(id ?? 'unique()', name);
+            const team = await sdkForProject.teams.create(id ?? ID.unique(), name);
             name = '';
             showCreate = false;
             showCustomId = false;
@@ -24,7 +25,9 @@
                 type: 'success',
                 message: `${team.name} has been created`
             });
-            trackEvent(Submit.TeamCreate);
+            trackEvent(Submit.TeamCreate, {
+                customId: !!id
+            });
             dispatch('created', team);
         } catch (e) {
             error = e.message;

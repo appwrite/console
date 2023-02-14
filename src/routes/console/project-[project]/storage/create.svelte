@@ -5,6 +5,7 @@
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -18,7 +19,7 @@
 
     const create = async () => {
         try {
-            const bucket = await sdkForProject.storage.createBucket(id ? id : 'unique()', name);
+            const bucket = await sdkForProject.storage.createBucket(id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', bucket);
             addNotification({
@@ -26,7 +27,9 @@
                 message: `${name} has been created`
             });
             name = null;
-            trackEvent(Submit.BucketCreate);
+            trackEvent(Submit.BucketCreate, {
+                customId: !!id
+            });
         } catch (e) {
             error = e.message;
             trackError(e, Submit.BucketCreate);
