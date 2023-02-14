@@ -1,4 +1,4 @@
-import { withPrevious } from '$lib/stores/withPrevious';
+import { withPrevious } from '$lib/helpers/withPrevious';
 import { get } from 'svelte/store';
 
 describe('withPrevious', () => {

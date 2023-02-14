@@ -4,10 +4,10 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
-    import { secsToUnit, timeToSeconds } from '$lib/helpers/timeConversion';
+    import { timeToSeconds } from '$lib/helpers/timeConversion';
+    import { createValueUnitPair } from '$lib/helpers/unit';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { withPrevious } from '$lib/stores/withPrevious';
     import { project } from '../../store';
 
     enum Period {
@@ -25,42 +25,20 @@
         { label: 'seconds', value: Period.Seconds }
     ];
 
-    let period = withPrevious(Period.Seconds);
-
-    function getInitialTime() {
-        let t = $project.authDuration;
-
-        if (t >= 86400 && t % 86400 === 0) {
-            period.set(Period.Days, { updateAll: true });
-            return t / 86400;
-        }
-
-        if (t >= 3600 && t % 3600 === 0) {
-            period.set(Period.Hours, { updateAll: true });
-            return t / 3600;
-        }
-
-        if (t >= 60 && t % 60 === 0) {
-            period.set(Period.Minutes, { updateAll: true });
-            return t / 60;
-        }
-
-        return t;
-    }
-
-    let time = getInitialTime();
-
-    period.subscribe((newValue, prev) => {
-        const timeInSecs = timeToSeconds(time, prev);
-        time = secsToUnit(timeInSecs, newValue);
-    });
+    const {
+        value: time,
+        unit: period,
+        baseValue: timeInSecs
+    } = createValueUnitPair($project.authDuration, [
+        { name: Period.Days, value: 86400 },
+        { name: Period.Hours, value: 3600 },
+        { name: Period.Minutes, value: 60 },
+        { name: Period.Seconds, value: 1 }
+    ]);
 
     async function updateSessionLength() {
         try {
-            await sdkForConsole.projects.updateAuthDuration(
-                projectId,
-                timeToSeconds(time, $period)
-            );
+            await sdkForConsole.projects.updateAuthDuration(projectId, $timeInSecs);
             invalidate(Dependencies.PROJECT);
 
             addNotification({
@@ -87,7 +65,7 @@
     <svelte:fragment slot="aside">
         <form class="form u-grid u-gap-16">
             <ul class="form-list is-multiple">
-                <InputNumber id="length" label="Length" bind:value={time} />
+                <InputNumber id="length" label="Length" bind:value={$time} />
                 <InputSelect id="period" label="Time Period" bind:value={$period} {options} />
             </ul>
         </form>
@@ -95,7 +73,7 @@
 
     <svelte:fragment slot="actions">
         <Button
-            disabled={timeToSeconds(time, $period) === $project.authDuration}
+            disabled={timeToSeconds($time, $period) === $project.authDuration}
             on:click={() => {
                 updateSessionLength();
             }}>
