@@ -88,31 +88,23 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
-                projectId,
-                $createPlatform.$id,
-                $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
-            );
-        } else {
-            const response = await sdkForConsole.projects.createPlatform(
-                projectId,
-                platform,
-                $createPlatform.name,
-                platform !== Platform.Web ? $createPlatform.key : undefined,
-                undefined,
-                platform === Platform.Web ? $createPlatform.hostname : undefined
-            );
-
-            trackEvent('submit_platform_create', {
-                type: platform
-            });
-
-            $createPlatform.$id = response.$id;
+            await sdkForConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
 
+        const response = await sdkForConsole.projects.createPlatform(
+            projectId,
+            platform,
+            $createPlatform.name,
+            platform !== Platform.Web ? $createPlatform.key : undefined,
+            undefined,
+            platform === Platform.Web ? $createPlatform.hostname : undefined
+        );
+
+        trackEvent('submit_platform_create', {
+            type: platform
+        });
+
+        $createPlatform.$id = response.$id;
         $createPlatform.type = platform;
     }
 </script>

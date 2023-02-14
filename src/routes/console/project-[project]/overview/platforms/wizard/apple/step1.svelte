@@ -26,16 +26,7 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
-                projectId,
-                $createPlatform.$id,
-                $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
-            );
-
-            return;
+            await sdkForConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
 
         const response = await sdkForConsole.projects.createPlatform(
@@ -52,6 +43,7 @@
         });
 
         $createPlatform.$id = response.$id;
+        $createPlatform.type = platform;
     }
 </script>
 
