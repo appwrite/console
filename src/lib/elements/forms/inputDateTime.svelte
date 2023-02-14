@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let label: string;
     export let showLabel = true;
@@ -39,12 +39,9 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>
+    <Label {required} {optionalText} hide={!showLabel} for={id}>
         {label}
-        <span class:u-hide={!showLabel || !optionalText} class="optional">
-            {optionalText}
-        </span>
-    </label>
+    </Label>
 
     <div class="input-text-wrapper" style="--amount-of-buttons:1; --button-size: 1rem">
         <input
