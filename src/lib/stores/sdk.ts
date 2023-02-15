@@ -44,7 +44,6 @@ const sdkForProject = {
     health: new Health(clientProject),
     locale: new Locale(clientProject),
     project: new Project(clientProject),
-    projects: new Projects(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject)
