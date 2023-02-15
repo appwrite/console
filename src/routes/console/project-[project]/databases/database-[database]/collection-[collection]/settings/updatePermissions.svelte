@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
@@ -38,12 +38,13 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
-            trackEvent('submit_collection_update_permissions');
+            trackEvent(Submit.CollectionUpdatePermissions);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.CollectionUpdatePermissions);
         }
     }
 
@@ -62,7 +63,9 @@
             href="https://appwrite.io/docs/permissions"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Permissions Guide</a> in our documentation.
+            class="link">
+            Permissions Guide
+        </a>.
     </p>
     <svelte:fragment slot="aside">
         {#if collectionPermissions}

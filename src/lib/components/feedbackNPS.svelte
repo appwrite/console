@@ -20,7 +20,6 @@
     async function handleSubmit() {
         try {
             await feedback.submitFeedback('feedback-nps', message, name, email, value);
-            console.log(value, message);
             feedback.switchType('general');
         } catch (error) {
             feedback.switchType('general');

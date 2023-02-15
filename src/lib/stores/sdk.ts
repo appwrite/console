@@ -1,3 +1,4 @@
+import { VARS } from '$lib/system';
 import {
     Account,
     Avatars,
@@ -12,8 +13,8 @@ import {
     Users
 } from '@aw-labs/appwrite-console';
 
-export const endpoint =
-    import.meta.env.VITE_APPWRITE_ENDPOINT?.toString() ?? `${window?.location?.origin}/v1`;
+export const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
+
 const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');
 

@@ -48,7 +48,7 @@
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/teams/team-${team.$id}`}>
                         <TableCell title="Name">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <AvatarInitials size={32} name={team.name} />
                                 <span class="text u-trim">{team.name}</span>
                             </div>

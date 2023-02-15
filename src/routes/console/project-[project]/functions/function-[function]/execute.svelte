@@ -1,6 +1,8 @@
 <script lang="ts">
-    import { afterNavigate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { afterNavigate, goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Code, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
@@ -33,17 +35,21 @@
                 data?.length ? data : undefined,
                 true
             );
+            goto(
+                `${base}/console/project-${$page.params.project}/functions/function-${selectedFunction.$id}/executions`
+            );
             close();
             addNotification({
                 type: 'success',
                 message: `Function has been executed`
             });
-            trackEvent('submit_execution_create');
+            trackEvent(Submit.ExecutionCreate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.ExecutionCreate);
         } finally {
             submitting = false;
         }

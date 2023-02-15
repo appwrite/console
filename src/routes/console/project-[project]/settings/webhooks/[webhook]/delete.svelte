@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -21,13 +21,14 @@
                 type: 'success',
                 message: `${$webhook.name} has been deleted`
             });
-            trackEvent('submit_webhook_delete');
+            trackEvent(Submit.WebhookDelete);
             await goto(`${base}/console/project-${$project.$id}/settings/webhooks`);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.WebhookDelete);
         }
     }
 </script>

@@ -6,10 +6,10 @@
     import { page } from '$app/stores';
     import { uploader } from '$lib/stores/uploader';
     import { bucket } from './store';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Permissions } from '$lib/components/permissions';
     import { addNotification } from '$lib/stores/notifications';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@aw-labs/appwrite-console';
 
     export let showCreate = false;
 
@@ -25,18 +25,20 @@
     async function create() {
         try {
             showCreate = false;
-            await uploader.uploadFile(bucketId, id, files[0], permissions);
+            await uploader.uploadFile(bucketId, id ?? ID.unique(), files[0], permissions);
             files = null;
             showCustomId = false;
-            // uploader.addFile(file);
             dispatch('created');
             addNotification({
                 type: 'success',
                 message: `File has been uploaded`
             });
-            trackEvent('submit_file_create');
-        } catch ({ message }) {
-            error = message;
+            trackEvent(Submit.FileCreate, {
+                customId: !!id
+            });
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.FileCreate);
         }
     }
 
@@ -50,8 +52,10 @@
     <svelte:fragment slot="header">Create File</svelte:fragment>
     <FormList>
         <div>
-            <InputFile bind:files allowedFileExtensions={$bucket.allowedFileExtensions} />
-            <p>Max file size: {calculateSize($bucket.maximumFileSize)}</p>
+            <InputFile
+                bind:files
+                allowedFileExtensions={$bucket.allowedFileExtensions}
+                maxSize={$bucket.maximumFileSize} />
         </div>
 
         {#if !showCustomId}
@@ -72,7 +76,9 @@
                 href="https://appwrite.io/docs/permissions"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="link">Permissions Guide</a> in our documentation.
+                class="link">
+                Permissions Guide
+            </a>.
         </p>
         {#if $bucket.fileSecurity}
             <div class="common-section">

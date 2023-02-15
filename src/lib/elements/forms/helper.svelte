@@ -3,7 +3,7 @@
 </script>
 
 <p
-    class="helper u-margin-block-start-12"
+    class="helper u-margin-block-start-8"
     class:u-color-text-info={type === 'info'}
     class:u-color-text-danger={type === 'error'}
     class:u-color-text-success={type === 'success'}

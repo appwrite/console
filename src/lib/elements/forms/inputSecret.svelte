@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormItem } from '.';
+    import { FormItem, Label } from '.';
 
     export let id: string;
     export let label: string;
@@ -11,16 +11,17 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
-    <div class="input-text-wrapper" style="--amount-of-buttons:1">
+    <Label hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
+    <div class="input-text-wrapper" style=" --amount-of-buttons: 1;">
         {#if showInPlainText}
             <div
                 contenteditable="true"
                 role="textbox"
                 {id}
                 aria-placeholder={placeholder}
-                name={id}
-                type="text"
                 class="input-text  is-resizable"
                 bind:textContent={value} />
         {:else}
@@ -33,17 +34,15 @@
                 autocomplete="off"
                 bind:value />
         {/if}
-        <div class="options-list">
-            <button
-                type="button"
-                on:click={() => (showInPlainText = !showInPlainText)}
-                class="options-list-button"
-                aria-label="show / hide password">
-                <span
-                    class:icon-eye={!showInPlainText}
-                    class:icon-eye-off={showInPlainText}
-                    aria-hidden="true" />
-            </button>
-        </div>
+        <button
+            type="button"
+            on:click={() => (showInPlainText = !showInPlainText)}
+            class="show-password-button"
+            aria-label="show / hide password">
+            <span
+                class:icon-eye={!showInPlainText}
+                class:icon-eye-off={showInPlainText}
+                aria-hidden="true" />
+        </button>
     </div>
 </FormItem>

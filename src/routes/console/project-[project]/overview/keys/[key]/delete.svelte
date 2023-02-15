@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -19,6 +20,7 @@
                 type: 'success',
                 message: `${$key.name} has been deleted`
             });
+            trackEvent(Submit.KeyDelete);
             await invalidate(Dependencies.KEYS);
             await goto(`${base}/console/project-${$project.$id}/overview/keys`);
         } catch (error) {
@@ -26,6 +28,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.KeyDelete);
         }
     }
 </script>

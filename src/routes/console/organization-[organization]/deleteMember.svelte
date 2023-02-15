@@ -8,7 +8,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const dispatch = createEventDispatcher();
 
@@ -30,12 +30,13 @@
                 type: 'success',
                 message: `${selectedMember.userName} was deleted from ${selectedMember.teamName}`
             });
-            trackEvent('submit_member_delete');
+            trackEvent(Submit.MemberDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.MemberDelete);
         }
     };
 

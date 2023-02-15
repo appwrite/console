@@ -64,7 +64,7 @@
                             </Output>
                         </TableCell>
                         <TableCell showOverflow title="value">
-                            <Secret value={variable.value} />
+                            <Secret copyEvent="variable" value={variable.value} />
                         </TableCell>
                         <TableCell showOverflow title="options">
                             <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>

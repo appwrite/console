@@ -32,8 +32,8 @@
             required />
 
         <InputSelect
-            label="Runtimes"
-            id="runtimes"
+            label="Runtime"
+            id="runtime"
             placeholder="Select runtime"
             bind:value={$createFunction.runtime}
             {options}

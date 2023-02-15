@@ -53,7 +53,6 @@
                     !$page.url.pathname.startsWith('/console') &&
                     !$page.url.pathname.startsWith('/invite')
                 ) {
-                    console.log('test');
                     await goto(`${base}/console`, {
                         replaceState: true
                     });
@@ -73,7 +72,9 @@
     });
 
     afterNavigate((navigation) => {
-        trackPageView(navigation.to.routeId);
+        if (navigation.type !== 'enter' && navigation.from?.route?.id !== navigation.to.route.id) {
+            trackPageView(navigation.to.route.id);
+        }
     });
 
     $: {

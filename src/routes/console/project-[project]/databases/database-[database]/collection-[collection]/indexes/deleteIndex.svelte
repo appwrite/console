@@ -7,7 +7,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showDelete = false;
     export let selectedIndex: Models.Index;
@@ -28,12 +28,13 @@
                 message: `Index has been deleted`
             });
             dispatch('deleted');
-            trackEvent('submit_index_delete');
+            trackEvent(Submit.IndexDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.IndexDelete);
         }
     };
 </script>

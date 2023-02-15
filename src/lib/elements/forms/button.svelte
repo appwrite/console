@@ -14,6 +14,9 @@
     export let noMargin = false;
     export let event: string = null;
 
+    //allows to add the disabled attribute to <a> tag without throwing an error
+    let attributes = { disabled } as Record<string, boolean>;
+
     function track() {
         if (!event) {
             return;
@@ -28,7 +31,7 @@
 {#if href}
     <a
         on:click={track}
-        {disabled}
+        {...attributes}
         {href}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}

@@ -1,9 +1,10 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let label: string;
     export let showLabel = true;
+    export let optionalText: string | undefined = undefined;
     export let id: string;
     export let value = '';
     export let required = false;
@@ -38,8 +39,11 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
-    <div class="input-text-wrapper">
+    <Label {required} {optionalText} hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
+    <div class="input-text-wrapper" style="--amount-of-buttons:1; --button-size: 1rem">
         <input
             {id}
             {disabled}

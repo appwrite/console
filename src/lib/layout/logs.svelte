@@ -49,7 +49,7 @@
 {#if $log.data}
     <section class="cover-frame">
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
-            <h1 class="body-text-1" name="title">Function ID: {$log.func.$id}</h1>
+            <h1 class="body-text-1">Function ID: {$log.func.$id}</h1>
             <button
                 on:click={() => ($log.show = false)}
                 class="button is-text is-only-icon"
@@ -83,11 +83,10 @@
                         <div>Size: {size.value} {size.unit}</div>
                     </div>
                     <div class="status u-margin-inline-start-auto">
-                        <div class="u-flex u-flex-vertical u-cross-end">
+                        <div class="status u-margin-inline-start-auto">
                             <Status status={$log.data.status}>{$log.data.status}</Status>
-                            <p class="text">
-                                {calculateTime($log.data.buildTime)}
-                            </p>
+
+                            <time>{calculateTime($log.data.buildTime)}</time>
                         </div>
                     </div>
                 </div>

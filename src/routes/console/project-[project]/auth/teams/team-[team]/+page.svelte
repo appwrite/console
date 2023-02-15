@@ -11,7 +11,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import DeleteTeam from './deleteTeam.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let showDelete = false;
     let teamName: string = null;
@@ -28,12 +28,13 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_team_update_name');
+            trackEvent(Submit.TeamUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.TeamUpdateName);
         }
     }
 </script>
