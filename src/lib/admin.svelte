@@ -68,7 +68,7 @@
         </div>
     {:else}
         <Button round text secondary on:click={() => (show = true)}>
-            <span class="icon-academic-cap" />
+            <span class="icon-beaker" />
         </Button>
     {/if}
 </div>
