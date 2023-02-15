@@ -44,7 +44,7 @@
         }
     });
 
-    function showLogs(execution: Models.Execution) {
+    function showLogs(execution: Models.Execution<Models.Headers>) {
         $log.show = true;
         $log.func = $func;
         $log.data = execution;

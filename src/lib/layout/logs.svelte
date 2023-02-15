@@ -14,7 +14,9 @@
     let selectedTab: string;
     let rawData: string;
 
-    function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
+    function isDeployment(
+        data: Models.Deployment | Models.Execution<Models.Headers>
+    ): data is Models.Deployment {
         if ('buildId' in data) {
             selectedTab = 'logs';
             rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
@@ -22,7 +24,9 @@
         }
     }
 
-    function isExecution(data: Models.Deployment | Models.Execution): data is Models.Execution {
+    function isExecution(
+        data: Models.Deployment | Models.Execution<Models.Headers>
+    ): data is Models.Execution<Models.Headers> {
         if ('trigger' in data) {
             selectedTab = 'response';
             rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
@@ -196,15 +200,24 @@
                         </header>
                         {#if selectedTab === 'logs'}
                             <code class="code-panel-content">
-                                {$log.data.stdout ? $log.data.stdout : 'No logs recorded'}
+                                {$log.data.logs ? $log.data.logs : 'No logs recorded'}
                             </code>
                         {:else if selectedTab === 'errors'}
                             <code class="code-panel-content">
-                                {$log.data.stderr ? $log.data.stderr : 'No errors recorded'}
+                                {$log.data.errors ? $log.data.errors : 'No errors recorded'}
                             </code>
                         {:else}
                             <code class="code-panel-content">
-                                {$log.data.response ? $log.data.response : 'No response recorded'}
+                                STATUS CODE:<br />
+                                {$log.data.statusCode}
+                                <br /><br />
+                                BODY:<br />
+                                {$log.data.body ? $log.data.body : 'No response body recorded'}
+                                <br /><br />
+                                HEADERS:<br />
+                                {$log.data.headers
+                                    ? JSON.stringify($log.data.headers, null, 4)
+                                    : 'No response headers recorded'}
                             </code>
                         {/if}
                     </section>
