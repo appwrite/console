@@ -1,4 +1,4 @@
-import { modeOverwrite } from '$lib/stores/admin.ts';
+import { modeOverwrite } from '$lib/stores/admin';
 import { get } from 'svelte/store';
 
 export enum Mode {

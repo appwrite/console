@@ -15,6 +15,7 @@
     import * as Sentry from '@sentry/svelte';
     import { BrowserTracing } from '@sentry/tracing';
     import Admin from '$lib/admin.svelte';
+    import { ENV } from '$lib/system';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -107,7 +108,9 @@
 
 <Progress />
 
-<Admin />
+{#if ENV.DEV || ENV.PREVIEW}
+    <Admin />
+{/if}
 
 <style lang="scss" global>
     .tippy-box {
