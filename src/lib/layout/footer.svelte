@@ -1,5 +1,6 @@
 <script>
     import { consoleMode, Mode } from '$lib/constants';
+    import { version } from '$routes/console/store';
 
     const currentYear = new Date().getFullYear();
 </script>
@@ -11,6 +12,14 @@
                 <div class="u-flex u-cross-center u-gap-8">
                     {#if consoleMode === Mode.CLOUD}
                         <span class="icon-cloud" />
+                    {/if}
+                    {#if $version}
+                        <a
+                            class="text"
+                            href="https://github.com/appwrite/appwrite/blob/master/CHANGES.md"
+                            target="_blank">
+                            Version {$version}
+                        </a>
                     {/if}
                 </div>
             </li>
@@ -49,5 +58,9 @@
 <style lang="scss">
     .main-footer {
         margin-block-start: auto;
+    }
+
+    [class^='icon-']:not(:hover) {
+        color: hsl(var(--color-neutral-50));
     }
 </style>
