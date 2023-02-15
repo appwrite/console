@@ -85,13 +85,7 @@
 
             <svelte:fragment slot="aside">
                 <ul>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        placeholder="Enter name"
-                        autocomplete={false}
-                        autofocus={true}
-                        bind:value={name} />
+                    <InputText id="name" label="Name" placeholder="Enter name" bind:value={name} />
                 </ul>
             </svelte:fragment>
 
@@ -110,14 +104,12 @@
                         id="email"
                         label="Email"
                         placeholder="Enter email"
-                        autocomplete={false}
                         bind:value={email} />
                     {#if email !== $user.email && email}
                         <InputPassword
                             id="emailPassword"
                             label="Password"
                             placeholder="Enter password"
-                            autocomplete={false}
                             showPasswordButton={true}
                             bind:value={emailPassword} />
                     {/if}
@@ -144,14 +136,12 @@
                         id="oldPassword"
                         label="Old password"
                         placeholder="Enter password"
-                        autocomplete={false}
                         showPasswordButton={true}
                         bind:value={oldPassword} />
                     <InputPassword
                         id="newPassword"
                         label="New password"
                         placeholder="Enter password"
-                        autocomplete={false}
                         showPasswordButton={true}
                         bind:value={newPassword} />
                 </FormList>
