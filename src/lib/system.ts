@@ -1,3 +1,6 @@
+import { modeOverwrite } from '$lib/stores/admin.ts';
+import { get } from 'svelte/store';
+
 export enum Mode {
     CLOUD = 'cloud',
     SELF_HOSTED = 'self-hosted'
@@ -20,4 +23,5 @@ export const ENV = {
     TEST: !!import.meta.env?.VITEST
 };
 
-export const MODE = VARS.CONSOLE_MODE === Mode.CLOUD ? Mode.CLOUD : Mode.SELF_HOSTED;
+export const MODE =
+    get(modeOverwrite) ?? (VARS.CONSOLE_MODE === Mode.CLOUD ? Mode.CLOUD : Mode.SELF_HOSTED);

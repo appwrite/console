@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let href: string;
+    export let href: string = null;
     export let disabled = false;
 </script>
 
