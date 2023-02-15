@@ -1,3 +1,4 @@
+import { Project } from '$lib/sdk/project';
 import { VARS } from '$lib/system';
 import {
     Account,
@@ -42,6 +43,7 @@ const sdkForProject = {
     functions: new Functions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
+    project: new Project(clientProject),
     projects: new Projects(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
