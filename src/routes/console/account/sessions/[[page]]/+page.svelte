@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { Empty, Heading } from '$lib/components';
+    import { Empty, Heading, Trim } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import {
-        Table,
         TableBody,
         TableHeader,
         TableRow,
         TableCellHead,
         TableCell,
-        TableCellText
+        TableCellText,
+        TableScroll
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -17,7 +17,7 @@
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
 
     export let data: PageData;
@@ -28,7 +28,7 @@
 
     const logout = async (session: Models.Session) => {
         await sdkForConsole.account.deleteSession(session.$id);
-        trackEvent('submit_account_delete_session');
+        trackEvent(Submit.AccountDeleteSession);
         if (session.current) {
             await goto(`${base}/login`);
         }
@@ -36,7 +36,7 @@
     };
     const logoutAll = async () => {
         await sdkForConsole.account.deleteSessions();
-        trackEvent('submit_account_delete_all_sessions');
+        trackEvent(Submit.AccountDeleteAllSessions);
         await goto(`${base}/login`);
         invalidate(Dependencies.ACCOUNT_SESSIONS);
     };
@@ -52,40 +52,39 @@
     </div>
 
     {#if data.sessions.total}
-        <Table>
+        <TableScroll>
             <TableHeader>
-                <TableCellHead>Client</TableCellHead>
-                <TableCellHead width={100}>Location</TableCellHead>
-                <TableCellHead width={150}>IP</TableCellHead>
-                <TableCellHead width={100} />
+                <TableCellHead width={250}>Client</TableCellHead>
+                <TableCellHead width={70}>Location</TableCellHead>
+                <TableCellHead width={90}>IP</TableCellHead>
+                <TableCellHead width={60} />
             </TableHeader>
             <TableBody>
                 {#each data.sessions.sessions as session}
                     <TableRow>
                         <TableCell title="Client">
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <div class="u-flex u-cross-center u-gap-12">
-                                    {#if session.clientName}
-                                        <div class="avatar is-small">
-                                            <img
-                                                height="20"
-                                                width="20"
-                                                src={getBrowser(session.clientCode).toString()}
-                                                alt={session.clientName} />
-                                        </div>
-                                        <p class="text u-trim">
-                                            {session.clientName}
-                                            {session.clientVersion}
-                                            on {session.osName}
-                                            {session.osVersion}
-                                        </p>
-                                    {:else}
-                                        <span class="avatar  is-color-empty" />
-                                        <p class="text u-trim">Unknown</p>
-                                    {/if}
+                                {#if session.clientName}
+                                    <div class="avatar is-small">
+                                        <img
+                                            height="20"
+                                            width="20"
+                                            src={getBrowser(session.clientCode).toString()}
+                                            alt={session.clientName} />
+                                    </div>
+                                    <Trim>
+                                        {session.clientName}
+                                        {session.clientVersion}
+                                        on {session.osName}
+                                        {session.osVersion}
+                                    </Trim>
+                                {:else}
+                                    <span class="avatar  is-color-empty" />
+                                    <p class="text u-trim">Unknown</p>
+                                {/if}
+                                <div class="is-only-desktop">
+                                    <Pill>{session.provider}</Pill>
                                 </div>
-
-                                <Pill>{session.provider}</Pill>
                                 {#if session.current}
                                     <Pill success>current session</Pill>
                                 {/if}
@@ -105,7 +104,7 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
     {:else}
         <Empty>
             <div class="u-flex u-flex-vertical u-cross-center">

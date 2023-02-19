@@ -40,21 +40,22 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Members</TableCellHead>
-                <TableCellHead>Created</TableCellHead>
+                <TableCellHead onlyDesktop>Members</TableCellHead>
+                <TableCellHead onlyDesktop>Created</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.teams.teams as team}
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/teams/team-${team.$id}`}>
-                        <TableCell title="ID">
-                            <div class="u-flex u-gap-12">
+                        <TableCell title="Name">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <AvatarInitials size={32} name={team.name} />
                                 <span class="text u-trim">{team.name}</span>
                             </div>
                         </TableCell>
-                        <TableCellText title="Members">{team.total} members</TableCellText>
-                        <TableCellText title="Members">
+                        <TableCellText onlyDesktop title="Members"
+                            >{team.total} members</TableCellText>
+                        <TableCellText onlyDesktop title="Created">
                             {toLocaleDateTime(team.$createdAt)}
                         </TableCellText>
                     </TableRowLink>

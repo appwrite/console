@@ -35,7 +35,7 @@
         </div>
         <Table>
             <TableHeader>
-                <TableCellHead>Browser and Device</TableCellHead>
+                <TableCellHead width={140}>Browser and Device</TableCellHead>
                 <TableCellHead width={140}>Session</TableCellHead>
                 <TableCellHead width={140}>Location</TableCellHead>
                 <TableCellHead width={140}>IP</TableCellHead>
@@ -67,24 +67,25 @@
                         <TableCellText title="Session">{session.clientType}</TableCellText>
                         <TableCellText title="Location">{session.countryName}</TableCellText>
                         <TableCellText title="IP">{session.ip}</TableCellText>
-                        <TableCellText title="">
-                            <button
-                                class="button is-only-icon is-text"
-                                aria-label="Delete item"
+                        <TableCell>
+                            <Button
+                                text
+                                round
+                                ariaLabel="Delete item"
                                 on:click={() => {
                                     selectedSessionId = session.$id;
                                     showDelete = true;
                                 }}>
                                 <span class="icon-trash" aria-hidden="true" />
-                            </button>
-                        </TableCellText>
+                            </Button>
+                        </TableCell>
                     </TableRow>
                 {/each}
             </TableBody>
         </Table>
     {:else}
         <Empty single>
-            <p>No session available</p>
+            <p>No sessions available</p>
             <Button
                 external
                 secondary

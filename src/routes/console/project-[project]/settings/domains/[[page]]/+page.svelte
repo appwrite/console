@@ -4,13 +4,13 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
-        Table,
         TableBody,
         TableCell,
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -22,7 +22,7 @@
     import type { PageData } from './$types';
     import Create from '../create.svelte';
     import Delete from '../delete.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -47,12 +47,13 @@
             }
             await sdkForConsole.projects.updateDomainVerification(projectId, domainId);
             invalidate(Dependencies.DOMAINS);
-            trackEvent('submit_domain_update_verification');
+            trackEvent(Submit.DomainUpdateVerification);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.DomainUpdateVerification);
         } finally {
             isVerifying[domainId] = false;
         }
@@ -68,14 +69,14 @@
         </Button>
     </div>
     {#if data.domains.total}
-        <Table>
+        <TableScroll>
             <TableHeader>
-                <TableCellHead>Domain Name</TableCellHead>
+                <TableCellHead width={150}>Domain Name</TableCellHead>
                 <TableCellHead width={100} />
                 <TableCellHead width={60}>Type</TableCellHead>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Value</TableCellHead>
-                <TableCellHead />
+                <TableCellHead width={90}>Name</TableCellHead>
+                <TableCellHead width={90}>Value</TableCellHead>
+                <TableCellHead width={40} />
             </TableHeader>
             <TableBody>
                 {#each data.domains.domains as domain}
@@ -131,7 +132,7 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
     {:else}
         <Empty
             single

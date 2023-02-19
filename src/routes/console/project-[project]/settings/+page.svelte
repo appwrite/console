@@ -13,10 +13,11 @@
     import Delete from './deleteProject.svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let name: string = null;
     let showDelete = false;
+    let updating = false;
     const endpoint = sdkForConsole.client.config.endpoint;
     const projectId = $page.params.project;
 
@@ -24,7 +25,8 @@
         name ??= $project.name;
     });
 
-    const updateName = async () => {
+    async function updateName() {
+        updating = true;
         try {
             await sdkForConsole.projects.update($project.$id, name);
             invalidate(Dependencies.PROJECT);
@@ -32,16 +34,23 @@
                 type: 'success',
                 message: 'Project name has been updated'
             });
-            trackEvent('submit_project_update_name');
+            trackEvent(Submit.ProjectUpdateName);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.ProjectUpdateName);
         }
-    };
+    }
 
-    const serviceUpdate = async (service: Service) => {
+    $: {
+        // When project name is updated, finalize the updating flow
+        $project.name;
+        updating = false;
+    }
+
+    async function serviceUpdate(service: Service) {
         try {
             await sdkForConsole.projects.updateServiceStatus(
                 $project.$id,
@@ -55,7 +64,7 @@
                     service.value ? 'enabled' : 'disabled'
                 }`
             });
-            trackEvent('submit_project_service', {
+            trackEvent(Submit.ProjectService, {
                 method: service.method,
                 value: service.value
             });
@@ -64,8 +73,9 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.ProjectService);
         }
-    };
+    }
 
     $: services.load($project);
 </script>
@@ -85,6 +95,7 @@
                 <svelte:fragment slot="actions">
                     <Button
                         secondary
+                        event="view_keys"
                         href={`${base}/console/project-${projectId}/overview/keys#integrations`}>
                         View API Keys
                     </Button>
@@ -105,7 +116,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={name === $project.name} submit>Update</Button>
+                    <Button disabled={name === $project.name || updating} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>

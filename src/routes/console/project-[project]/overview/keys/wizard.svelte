@@ -12,6 +12,7 @@
     import { onDestroy } from 'svelte';
     import { onboarding } from '../../store';
     import { Dependencies } from '$lib/constants';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     async function onFinish() {
         try {
@@ -24,12 +25,16 @@
             if ($onboarding) {
                 invalidate(Dependencies.PROJECT);
             }
+            trackEvent(Submit.KeyCreate, {
+                scopes: $key.scopes
+            });
             goto(`/console/project-${$page.params.project}/overview/keys/${$id}`);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.KeyCreate);
         }
     }
 

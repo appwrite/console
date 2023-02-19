@@ -15,7 +15,7 @@
             data.required,
             data.min,
             data.max,
-            data.default ? data.default : undefined,
+            typeof data.default === 'number' ? data.default : undefined,
             data.array
         );
     }

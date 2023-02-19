@@ -1,6 +1,7 @@
 <script lang="ts">
+    import { last } from '$lib/helpers/array';
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let id: string;
     export let label: string;
@@ -10,9 +11,11 @@
     export let autofocus = false;
     export let disabled = false;
     export let readonly = false;
+    export let required = false;
 
     let value = '';
     let element: HTMLInputElement;
+    let hiddenEl: HTMLInputElement;
     let error: string;
 
     onMount(() => {
@@ -34,7 +37,7 @@
         }
         if (['Backspace', 'Delete'].includes(e.key)) {
             if (value.length === 0) {
-                removeValue(tags[tags.length - 1]);
+                removeValue(last(tags));
             }
         }
     };
@@ -48,17 +51,18 @@
     };
 
     const removeValue = (value: string) => {
+        if (readonly) return;
         tags = tags.filter((tag) => tag !== value);
     };
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();
 
-        if (element.validity.valueMissing) {
+        if (hiddenEl.validity.valueMissing) {
             error = 'This field is required';
             return;
         }
-        error = element.validationMessage;
+        error = hiddenEl.validationMessage;
     };
 
     $: if (value) {
@@ -67,7 +71,16 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+    <input
+        class="u-hide"
+        bind:this={hiddenEl}
+        value={tags.join(',')}
+        {required}
+        on:invalid={handleInvalid} />
+    <Label {required} hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
     <div class="input-text-wrapper">
         <div class="tags-input">
             <div class="tags">
@@ -98,8 +111,7 @@
                 bind:value
                 bind:this={element}
                 on:keydown={handleInput}
-                on:blur={addValue}
-                on:invalid={handleInvalid} />
+                on:blur={addValue} />
         </div>
     </div>
     {#if error}

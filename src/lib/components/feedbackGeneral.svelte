@@ -18,13 +18,18 @@
     async function handleSubmit() {
         try {
             await feedback.submitFeedback('feedback-general', message, name, email);
-            show = false;
+
+            addNotification({
+                type: 'success',
+                message: 'Feedback submitted successfully'
+            });
         } catch (error) {
-            show = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
+        } finally {
+            show = false;
         }
     }
 </script>
@@ -34,7 +39,8 @@
         <h4 class="body-text-1">How can we improve?</h4>
         <button
             type="button"
-            class="x-button u-margin-inline-start-auto"
+            class="button is-text is-only-icon u-margin-inline-start-auto"
+            style="--button-size:1.5rem;"
             aria-label="Close Modal"
             title="Close Modal"
             on:click={() => (show = false)}>

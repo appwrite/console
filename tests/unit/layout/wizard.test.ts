@@ -59,7 +59,7 @@ test('shows next step with submit', async () => {
     expect(step1Required).toBeInTheDocument();
     expect(step1Optional).toBeInTheDocument();
 
-    form.submit();
+    form.dispatchEvent(new Event('submit'));
     await tick();
 
     expect(step1).not.toBeInTheDocument();
@@ -72,7 +72,7 @@ test('shows next step with submit', async () => {
     expect(step2First).toBeInTheDocument();
     expect(step2Second).toBeInTheDocument();
 
-    form.submit();
+    form.dispatchEvent(new Event('submit'));
     await tick();
 
     expect(form).not.toBeInTheDocument();
@@ -96,7 +96,8 @@ test('intercepts submit', async () => {
     expect(step1Optional).toBeInTheDocument();
 
     await userEvent.type(step1Required, 'fail');
-    form.submit();
+
+    form.dispatchEvent(new Event('submit'));
     await tick();
 
     expect(step1).toBeInTheDocument();
@@ -104,7 +105,7 @@ test('intercepts submit', async () => {
     expect(step1Optional).toBeInTheDocument();
 
     await userEvent.type(step1Required, 'works');
-    form.submit();
+    form.dispatchEvent(new Event('submit'));
     await tick();
 
     expect(step1).not.toBeInTheDocument();
@@ -117,7 +118,7 @@ test('intercepts submit', async () => {
     expect(step2First).toBeInTheDocument();
     expect(step2Second).toBeInTheDocument();
 
-    form.submit();
+    form.dispatchEvent(new Event('submit'));
     await tick();
 
     expect(form).not.toBeInTheDocument();

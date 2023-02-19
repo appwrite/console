@@ -54,6 +54,11 @@ function createServices() {
                 label: 'Users',
                 method: 'users',
                 value: null
+            },
+            {
+                label: 'GraphQL',
+                method: 'graphql',
+                value: null
             }
         ]
     });
@@ -107,6 +112,11 @@ function createServices() {
                     label: 'Users',
                     method: 'users',
                     value: project.serviceStatusForUsers
+                },
+                {
+                    label: 'GraphQL',
+                    method: 'graphql',
+                    value: project.serviceStatusForGraphql
                 }
             ];
             set({ list });

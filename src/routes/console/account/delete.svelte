@@ -1,27 +1,30 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { invalidate } from '$app/navigation';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
 
     export let showDelete = false;
 
     const deleteAccount = async () => {
         try {
-            await sdkForConsole.users.delete($user.$id);
+            await sdkForConsole.account.updateStatus();
             showDelete = false;
+            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: `Account was deleted `
             });
-            trackEvent('submit_account_delete');
+            trackEvent(Submit.AccountDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AccountDelete);
         }
     };
 </script>

@@ -8,7 +8,7 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let provider: Provider;
 
@@ -35,7 +35,8 @@
                 projectId,
                 provider.name.toLowerCase(),
                 appId,
-                secret
+                secret,
+                enabled
             );
             addNotification({
                 type: 'success',
@@ -43,14 +44,15 @@
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
-            trackEvent('submit_provider_update', {
+            trackEvent(Submit.ProviderUpdate, {
                 provider,
                 enabled
             });
             provider = null;
             invalidate(Dependencies.PROJECT);
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.ProviderUpdate);
         }
     };
 
@@ -102,7 +104,7 @@
             <CopyInput
                 value={`${
                     sdkForConsole.client.config.endpoint
-                }/account/session/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">

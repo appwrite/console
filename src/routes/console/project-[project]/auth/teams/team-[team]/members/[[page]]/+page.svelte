@@ -46,8 +46,8 @@
         <Table>
             <TableHeader>
                 <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Roles</TableCellHead>
-                <TableCellHead>Joined</TableCellHead>
+                <TableCellHead onlyDesktop>Roles</TableCellHead>
+                <TableCellHead onlyDesktop>Joined</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -55,13 +55,13 @@
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/user-${membership.userId}`}>
                         <TableCellText title="Name">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-gap-12 u-cross-center">
                                 <AvatarInitials size={32} name={membership.userName} />
                                 <span>{membership.userName ? membership.userName : 'n/a'}</span>
                             </div>
                         </TableCellText>
-                        <TableCellText title="Roles">{membership.roles}</TableCellText>
-                        <TableCellText title="Joined">
+                        <TableCellText onlyDesktop title="Roles">{membership.roles}</TableCellText>
+                        <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(membership.joined)}
                         </TableCellText>
                         <TableCell>

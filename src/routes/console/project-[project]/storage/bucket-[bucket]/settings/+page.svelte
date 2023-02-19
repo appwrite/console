@@ -1,47 +1,99 @@
+<script lang="ts" context="module">
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+
+    type TUpdateBucketMisc = {
+        successMessage?: string;
+        trackEventName: Submit;
+        trackEventData?: { value: boolean };
+        arePermsDisabled?: boolean;
+    };
+
+    let arePermsDisabled = writable(true);
+
+    export async function updateBucket(updates: Partial<Models.Bucket>, misc: TUpdateBucketMisc) {
+        const bucketData = get(bucket);
+        const values = { ...bucketData, ...updates };
+
+        try {
+            await sdkForProject.storage.updateBucket(
+                values.$id,
+                values.name,
+                values.$permissions,
+                values.fileSecurity,
+                values.enabled,
+                values.maximumFileSize,
+                values.allowedFileExtensions,
+                values.compression,
+                values.encryption,
+                values.antivirus
+            );
+
+            invalidate(Dependencies.BUCKET);
+
+            if (misc.arePermsDisabled !== undefined) {
+                arePermsDisabled.set(misc.arePermsDisabled);
+            }
+
+            addNotification({
+                message: misc.successMessage ?? `${bucketData.name} has been updated`,
+                type: 'success'
+            });
+
+            if (misc.trackEventName) {
+                trackEvent(misc.trackEventName, misc.trackEventData);
+            }
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, misc.trackEventName);
+        }
+    }
+</script>
+
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { Box, CardGrid, Heading } from '$lib/components';
+    import { Permissions } from '$lib/components/permissions';
+    import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
-    import { CardGrid, Box, Heading } from '$lib/components';
-    import { Container } from '$lib/layout';
     import {
-        Form,
         Button,
-        InputText,
-        InputTags,
-        InputNumber,
+        Form,
+        FormList,
         InputSelect,
         InputSwitch,
-        FormList
+        InputTags,
+        InputText
     } from '$lib/elements/forms';
-    import { bucket } from '../store';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { sizeToBytes } from '$lib/helpers/sizeConvertion';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
-    import { onMount } from 'svelte';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { Permissions } from '$lib/components/permissions';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Container } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { onMount } from 'svelte';
+    import { get, writable } from 'svelte/store';
     import Delete from '../deleteBucket.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { bucket } from '../store';
+    import UpdateMaxFileSize from './updateMaxFileSize.svelte';
 
     let showDelete = false;
 
-    let enabled: boolean = null,
-        bucketName: string = null,
-        bucketFileSecurity: boolean = null,
-        bucketPermissions: string[] = null,
-        arePermsDisabled = true,
-        encryption: boolean = null,
-        antivirus: boolean = null,
-        maxSize: number;
-    let byteUnit: 'Bytes' | 'KB' | 'MB' | 'GB' = 'MB',
-        options = [
-            { label: 'Bytes', value: 'Bytes' },
-            { label: 'Kilobytes', value: 'KB' },
-            { label: 'Megabytes', value: 'MB' },
-            { label: 'Gigabytes', value: 'GB' }
-        ];
+    let enabled: boolean = null;
+    let bucketName: string = null;
+    let bucketFileSecurity: boolean = null;
+    let bucketPermissions: string[] = null;
+    let encryption: boolean = null;
+    let antivirus: boolean = null;
+    let compression: string = null;
+
+    const compressionOptions = [
+        { label: 'None', value: 'none' },
+        { label: 'Gzip', value: 'gzip' },
+        { label: 'Zstd', value: 'zstd' }
+    ];
     let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
     let extensions = $bucket.allowedFileExtensions;
     let isExtensionsDisabled = true;
@@ -54,173 +106,106 @@
         bucketPermissions ??= $bucket.$permissions;
         encryption ??= $bucket.encryption;
         antivirus ??= $bucket.antivirus;
+
+        compression ??= $bucket.compression;
     });
+
     $: if (bucketPermissions) {
         if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
-            arePermsDisabled = false;
-        } else arePermsDisabled = true;
+            $arePermsDisabled = false;
+        } else $arePermsDisabled = true;
     }
+
     $: if (extensions) {
         if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
             isExtensionsDisabled = false;
         } else isExtensionsDisabled = true;
     }
 
-    async function toggleBucket() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
+    function toggleBucket() {
+        updateBucket(
+            {
                 enabled
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-            trackEvent('submit_bucket_enable', {
-                value: enabled
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updateName() {
-        try {
-            await sdkForProject.storage.updateBucket($bucket.$id, bucketName);
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: 'Name has been updated',
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_name');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updatePermissions() {
-        try {
-            await sdkForProject.storage.updateBucket($bucket.$id, $bucket.name, bucketPermissions);
-            invalidate(Dependencies.BUCKET);
-            arePermsDisabled = true;
-            addNotification({
-                message: 'Permissions have been updated',
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_permissions');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updateFileSecurity() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                $bucket.$permissions,
-                bucketFileSecurity
-            );
-            invalidate(Dependencies.BUCKET);
-            arePermsDisabled = true;
-            addNotification({
-                message: 'Security has been updated',
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_file_security');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
+            },
+            {
+                trackEventName: Submit.BucketUpdateEnabled,
+                trackEventData: {
+                    value: enabled
+                }
+            }
+        );
     }
 
-    async function updateSecurity() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
+    function updateName() {
+        updateBucket(
+            {
+                name: bucketName
+            },
+            {
+                successMessage: 'Name has been updated',
+                trackEventName: Submit.BucketUpdateName
+            }
+        );
+    }
+
+    function updatePermissions() {
+        updateBucket(
+            {
+                $permissions: bucketPermissions
+            },
+            {
+                successMessage: 'Permissions have been updated',
+                trackEventName: Submit.BucketUpdatePermissions,
+                arePermsDisabled: true
+            }
+        );
+    }
+
+    function updateFileSecurity() {
+        updateBucket(
+            {
+                fileSecurity: bucketFileSecurity
+            },
+            {
+                successMessage: 'Security has been updated',
+                trackEventName: Submit.BucketUpdateFileSecurity,
+                arePermsDisabled: true
+            }
+        );
+    }
+
+    function updateSecurity() {
+        updateBucket(
+            {
                 encryption,
                 antivirus
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_security');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
-    }
-    async function updateMaxSize() {
-        let size = sizeToBytes(maxSize, byteUnit);
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                undefined,
-                size
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_size');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
+            },
+            {
+                trackEventName: Submit.BucketUpdateSecurity
+            }
+        );
     }
 
-    async function updateAllowedExtensions() {
-        try {
-            await sdkForProject.storage.updateBucket(
-                $bucket.$id,
-                $bucket.name,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                extensions
-            );
-            invalidate(Dependencies.BUCKET);
-            addNotification({
-                message: `${$bucket.name} has been updated`,
-                type: 'success'
-            });
-            trackEvent('submit_bucket_update_extensions');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-        }
+    function updateCompression() {
+        updateBucket(
+            {
+                compression
+            },
+            {
+                trackEventName: Submit.BucketUpdateCompression
+            }
+        );
+    }
+
+    function updateAllowedExtensions() {
+        updateBucket(
+            {
+                allowedFileExtensions: extensions
+            },
+            {
+                trackEventName: Submit.BucketUpdateExtensions
+            }
+        );
     }
 </script>
 
@@ -238,8 +223,8 @@
                                 id="toggle"
                                 bind:value={enabled} />
                         </FormList>
-                        <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                        <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                        <p class="text">Created: {toLocaleDateTime($bucket.$createdAt)}</p>
+                        <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                     </div>
                 </svelte:fragment>
 
@@ -279,7 +264,10 @@
                     the <a
                         href="https://appwrite.io/docs/permissions"
                         target="_blank"
-                        rel="noopener noreferrer">Permissions Guide</a> in our documentation.
+                        rel="noopener noreferrer"
+                        class="link">
+                        Permissions Guide
+                    </a>.
                 </p>
                 <svelte:fragment slot="aside">
                     {#if bucketPermissions}
@@ -287,7 +275,7 @@
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
-                    <Button disabled={arePermsDisabled} submit>Update</Button>
+                    <Button disabled={$arePermsDisabled} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -323,7 +311,7 @@
         <Form on:submit={updateSecurity}>
             <CardGrid>
                 <Heading tag="h2" size="7">Update Security Settings</Heading>
-                <p>
+                <p class="text">
                     Enable or disable security services for the bucket including <b>Ecryption</b>
                     and <b>Antivirus scanning.</b>
                 </p>
@@ -333,7 +321,7 @@
                             <label class="choice-item" for="encryption">
                                 <div class="input-text-wrapper">
                                     <input
-                                        label="Encryption"
+                                        name="encryption"
                                         id="encryption"
                                         type="checkbox"
                                         class="switch"
@@ -356,7 +344,7 @@
                             <label class="choice-item" for="antivirus">
                                 <div class="input-text-wrapper">
                                     <input
-                                        label="Antivirus"
+                                        name="antivirus"
                                         id="antivirus"
                                         type="checkbox"
                                         class="switch"
@@ -384,36 +372,42 @@
                     <Button
                         disabled={encryption === $bucket.encryption &&
                             antivirus === $bucket.antivirus}
-                        submit>Update</Button>
+                        submit>
+                        Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
-        <Form on:submit={updateMaxSize}>
+        <Form on:submit={updateCompression}>
             <CardGrid>
-                <Heading tag="h2" size="6">Update Maximum File Size</Heading>
-                <p>Set the maximum file size allowed in the bucket.</p>
+                <Heading tag="h2" size="6">Update Compression Algorithm</Heading>
+                <p class="text">
+                    Choose an algorithm for compression. For files larger than 20MB, compression
+                    will be skipped even if it's enabled.
+                </p>
                 <svelte:fragment slot="aside">
-                    <ul class="u-flex u-gap-12">
-                        <InputNumber
-                            id="size"
-                            label="Size"
-                            placeholder="256"
-                            bind:value={maxSize} />
-                        <InputSelect id="bytes" label="Bytes" {options} bind:value={byteUnit} />
-                    </ul>
+                    <FormList>
+                        <InputSelect
+                            id="compression"
+                            label="Compression algorithm"
+                            options={compressionOptions}
+                            bind:value={compression} />
+                    </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={!maxSize} submit>Update</Button>
+                    <Button disabled={compression === $bucket.compression} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
+
+        <UpdateMaxFileSize />
 
         <Form on:submit={updateAllowedExtensions}>
             <CardGrid>
                 <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
-                <p>
+                <p class="text">
                     A maximum of 100 file extensions can be added. Leave blank to allow all file
                     types.
                 </p>
@@ -452,7 +446,7 @@
 
         <CardGrid danger>
             <Heading tag="h6" size="7">Delete Bucket</Heading>
-            <p>
+            <p class="text">
                 The bucket will be permanently deleted, including all the files within it. This
                 action is irreversible.
             </p>
@@ -461,7 +455,7 @@
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
-                    <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                    <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                 </Box>
             </svelte:fragment>
 

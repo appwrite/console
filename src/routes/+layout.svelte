@@ -49,11 +49,15 @@
         if (!$page.url.pathname.startsWith('/auth')) {
             const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
             if ($user) {
-                if (!$page.url.pathname.startsWith('/console')) {
+                if (
+                    !$page.url.pathname.startsWith('/console') &&
+                    !$page.url.pathname.startsWith('/invite')
+                ) {
                     await goto(`${base}/console`, {
                         replaceState: true
                     });
                 }
+                loading.set(false);
             } else {
                 if (acceptedRoutes.includes($page.url.pathname)) {
                     await goto(`${base}${$page.url.pathname}${$page.url.search}`);
@@ -68,7 +72,9 @@
     });
 
     afterNavigate((navigation) => {
-        trackPageView(navigation.to.routeId);
+        if (navigation.type !== 'enter' && navigation.from?.route?.id !== navigation.to.route.id) {
+            trackPageView(navigation.to.route.id);
+        }
     });
 
     $: {

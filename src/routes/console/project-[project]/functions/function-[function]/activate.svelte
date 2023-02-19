@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -24,12 +24,13 @@
                 message: `Deployment has been activated`
             });
             dispatch('activated');
-            trackEvent('submit_deployment_update');
+            trackEvent(Submit.DeploymentUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.DeploymentUpdate);
         }
     };
 </script>

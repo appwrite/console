@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import CustomId from '$lib/components/customId.svelte';
     import { Dependencies } from '$lib/constants';
@@ -29,13 +29,17 @@
             );
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);
-            trackEvent('submit_project_create');
-        } catch ({ message }) {
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id,
+                teamId: org.$id
+            });
+        } catch (error) {
             loading = false;
             addNotification({
-                message,
+                message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.ProjectCreate);
         }
     }
 

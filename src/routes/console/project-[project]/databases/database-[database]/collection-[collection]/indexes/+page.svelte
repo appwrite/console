@@ -50,9 +50,9 @@
             <Table>
                 <TableHeader>
                     <TableCellHead>Key</TableCellHead>
-                    <TableCellHead>Type</TableCellHead>
-                    <TableCellHead>Attributes</TableCellHead>
-                    <TableCellHead>Asc/Desc</TableCellHead>
+                    <TableCellHead onlyDesktop>Type</TableCellHead>
+                    <TableCellHead onlyDesktop>Attributes</TableCellHead>
+                    <TableCellHead onlyDesktop>Asc/Desc</TableCellHead>
                     <TableCellHead width={30} />
                 </TableHeader>
                 <TableBody>
@@ -72,11 +72,11 @@
                                     {/if}
                                 </div>
                             </TableCell>
-                            <TableCellText title="Type">{index.type}</TableCellText>
-                            <TableCellText title="Attributes">
+                            <TableCellText title="Type" onlyDesktop>{index.type}</TableCellText>
+                            <TableCellText title="Attributes" onlyDesktop>
                                 {index.attributes}
                             </TableCellText>
-                            <TableCellText title="ASC/DESC">
+                            <TableCellText title="ASC/DESC" onlyDesktop>
                                 {index.orders}
                             </TableCellText>
                             <TableCell showOverflow>

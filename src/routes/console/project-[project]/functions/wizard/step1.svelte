@@ -32,8 +32,8 @@
             required />
 
         <InputSelect
-            label="Runtimes"
-            id="runtimes"
+            label="Runtime"
+            id="runtime"
             placeholder="Select runtime"
             bind:value={$createFunction.runtime}
             {options}
@@ -42,9 +42,8 @@
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                    <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Function ID
-                    </span>
+                    <span class="icon-pencil" aria-hidden="true" />
+                    <span class="text">Function ID </span>
                 </Pill>
             </div>
         {:else}
