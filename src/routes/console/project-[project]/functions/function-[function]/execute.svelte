@@ -4,6 +4,8 @@
     import { Code, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import InputText from '$lib/elements/forms/inputText.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -11,15 +13,11 @@
     export let selectedFunction: Models.Function = null;
 
     let show = false;
-    let data: string = null;
-    let showJson = false;
+    let body: string = null;
+    let path: string = null;
+    let method: string = null;
+    let headers: string = null;
     let submitting = false;
-
-    const example = `{
-    firstName: "hello", 
-    lastName:"world", 
-    age:"old"
-}`;
 
     $: if (selectedFunction && !show) {
         show = true;
@@ -27,11 +25,15 @@
 
     const handleSubmit = async () => {
         submitting = true;
+
         try {
             await sdkForProject.functions.createExecution(
                 selectedFunction.$id,
-                data?.length ? data : undefined,
-                true
+                body?.length ? body : undefined,
+                true,
+                path?.length ? path : undefined,
+                method?.length ? method : undefined,
+                headers?.length ? JSON.parse(headers) : undefined
             );
             close();
             addNotification({
@@ -60,12 +62,20 @@
 <Modal bind:show size="big" on:submit={handleSubmit} on:close={close}>
     <svelte:fragment slot="header">Execute Function</svelte:fragment>
     <FormList>
-        <InputTextarea bind:value={data} id="data" label="Custom data (optional)" />
-        <InputChoice type="switchbox" id="json" label="Show example JSON" bind:value={showJson}>
-            Here's an example of some custom data.</InputChoice>
-        {#if showJson}
-            <Code noMargin language="json" withLineNumbers code={example} />
-        {/if}
+        <InputSelect
+            options={[
+                { value: 'GET', label: 'GET' },
+                { value: 'POST', label: 'POST' },
+                { value: 'PUT', label: 'PUT' },
+                { value: 'PATCH', label: 'PATCH' },
+                { value: 'DELETE', label: 'DELETE' }
+            ]}
+            bind:value={method}
+            id="method"
+            label="Method (optional)" />
+        <InputText bind:value={path} id="path" label="Path and query (optional)" />
+        <InputTextarea bind:value={body} id="body" label="Body (optional)" />
+        <InputText bind:value={headers} id="headers" label="Headers (optional, JSON string)" />
     </FormList>
 
     <svelte:fragment slot="footer">
