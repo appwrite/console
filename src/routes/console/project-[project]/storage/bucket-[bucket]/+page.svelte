@@ -1,45 +1,45 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
-        Empty,
-        EmptySearch,
-        Pagination,
         Avatar,
         DropList,
         DropListItem,
         DropListLink,
+        Empty,
+        EmptySearch,
+        Pagination,
         SearchQuery
     } from '$lib/components';
-    import Create from '../create.svelte';
-    import Delete from '../deleteFile.svelte';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
-        TableHeader,
         TableBody,
-        TableRowLink,
-        TableRow,
+        TableCell,
         TableCellHead,
         TableCellText,
-        TableCell
+        TableHeader,
+        TableRow,
+        TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { uploader } from '$lib/stores/uploader';
+    import { wizard } from '$lib/stores/wizard';
+    import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import CreateWizard from './create/create.svelte';
+    import Delete from './deleteFile.svelte';
 
     export let data: PageData;
 
-    let showCreate = false;
     let showDelete = false;
     let showDropdown = [];
     let selectedFile: Models.File = null;
@@ -48,11 +48,6 @@
     const bucketId = $page.params.bucket;
     const getPreview = (fileId: string) =>
         sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
-
-    function fileCreated() {
-        showCreate = false;
-        invalidate(Dependencies.FILES);
-    }
 
     function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -78,8 +73,9 @@
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by filename">
-        <Button on:click={() => (showCreate = true)} event="create_file">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
+        <Button on:click={() => wizard.start(CreateWizard)} event="create_file">
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create file</span>
         </Button>
     </SearchQuery>
 
@@ -97,7 +93,7 @@
                     {#if file.chunksTotal / file.chunksUploaded !== 1}
                         <TableRow>
                             <TableCell title="Name">
-                                <div class="u-flex u-gap-12 u-main-space-between">
+                                <div class="u-flex u-gap-12 u-main-space-between u-cross-center">
                                     <span class="avatar is-size-small is-color-empty" />
 
                                     <span class="text u-trim">{file.name}</span>
@@ -136,7 +132,7 @@
                         <TableRowLink
                             href={`${base}/console/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
                             <TableCell title="Name">
-                                <div class="u-flex u-gap-12">
+                                <div class="u-flex u-gap-12 u-cross-center">
                                     <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
                                     <span class="text u-trim">{file.name}</span>
                                 </div>
@@ -213,11 +209,10 @@
             single
             href="https://appwrite.io/docs/storage#createFile"
             target="file"
-            on:click={() => (showCreate = true)} />
+            on:click={() => wizard.start(CreateWizard)} />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={fileCreated} />
 {#if selectedFile}
     <Delete file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
 {/if}

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { onMount } from 'svelte';
     import { Helper } from '.';
 
     export let label: string = null;
@@ -47,6 +48,10 @@
     }
 
     $: fileArray = files?.length ? Array.from(files) : [];
+
+    onMount(() => {
+        input.files = files;
+    });
 </script>
 
 <input
