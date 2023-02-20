@@ -315,10 +315,7 @@
 
         <svelte:fragment slot="actions">
             <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
-            <a
-                rel="noreferrer"
-                href={`http://${$page.params.function}.${$page.params.project}.functions.localhost`}
-                target="_blank"
+            <a rel="noreferrer" href={`//${$func.url}`} target="_blank"
                 ><Button>
                     <span class="icon-external-link" aria-hidden="true" />
                     <span class="text">Open Function URL</span>
