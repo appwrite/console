@@ -142,6 +142,14 @@
                         Build logs
                     </Button>
                     <Button secondary on:click={() => execute.set($func)}>Execute now</Button>
+                    <a
+                        rel="noreferrer"
+                        href={`http://${$page.params.function}.${$page.params.project}.functions.localhost`}
+                        target="_blank"
+                        ><Button>
+                            <span class="icon-external-link" aria-hidden="true" />
+                            <span class="text">Open Function URL</span>
+                        </Button></a>
                 </svelte:fragment>
             </CardGrid>
         {:else}

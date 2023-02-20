@@ -14,7 +14,7 @@
         </div>
     </div>
     {#if $$slots.actions}
-        <div class="common-section card-separator u-flex u-main-end">
+        <div class="common-section card-separator u-flex u-main-end u-gap-8">
             <slot name="actions" />
         </div>
     {/if}
