@@ -14,7 +14,9 @@
     let selectedTab: string;
     let rawData: string;
 
-    function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
+    function isDeployment(
+        data: Models.Deployment | Models.Execution<Models.Headers>
+    ): data is Models.Deployment {
         if ('buildId' in data) {
             selectedTab = 'logs';
             rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
@@ -22,7 +24,9 @@
         }
     }
 
-    function isExecution(data: Models.Deployment | Models.Execution): data is Models.Execution {
+    function isExecution(
+        data: Models.Deployment | Models.Execution<Models.Headers>
+    ): data is Models.Execution<Models.Headers> {
         if ('trigger' in data) {
             selectedTab = 'response';
             rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
@@ -153,7 +157,6 @@
                     </div>
                     <div class="status u-margin-inline-start-auto">
                         <Status status={$log.data.status}>{$log.data.status}</Status>
-
                         <time>{calculateTime($log.data.duration)}</time>
                     </div>
                 </div>
@@ -165,6 +168,11 @@
                             Response
                         </Tab>
                         <Tab
+                            selected={selectedTab === 'headers'}
+                            on:click={() => (selectedTab = 'headers')}>
+                            Headers
+                        </Tab>
+                        <Tab
                             selected={selectedTab === 'logs'}
                             on:click={() => (selectedTab = 'logs')}>
                             Logs
@@ -173,6 +181,11 @@
                             selected={selectedTab === 'errors'}
                             on:click={() => (selectedTab = 'errors')}>
                             Errors
+                        </Tab>
+                        <Tab
+                            selected={selectedTab === 'statusCode'}
+                            on:click={() => (selectedTab = 'statusCode')}>
+                            Status Code
                         </Tab>
                     </Tabs>
                 </div>
@@ -191,15 +204,27 @@
                         </header>
                         {#if selectedTab === 'logs'}
                             <code class="code-panel-content">
-                                {$log.data.stdout ?? 'No logs recorded'}
+                                {$log.data.stdout ?? $log.data.logs ?? 'No logs recorded'}
                             </code>
                         {:else if selectedTab === 'errors'}
                             <code class="code-panel-content">
-                                {$log.data.stderr ?? 'No errors recorded'}
+                                {$log.data.stderr ?? $log.data.errors ?? 'No errors recorded'}
+                            </code>
+                        {:else if selectedTab === 'headers'}
+                            <code class="code-panel-content">
+                                {$log.data.headers
+                                    ? JSON.stringify($log.data.headers, null, 4)
+                                    : 'No headers recorded'}
+                            </code>
+                        {:else if selectedTab === 'statusCode'}
+                            <code class="code-panel-content">
+                                {$log.data.statusCode ?? 'No status code recorded'}
                             </code>
                         {:else}
                             <code class="code-panel-content">
-                                {$log.data.response ?? 'No response recorded'}
+                                {$log.data.response ??
+                                    $log.data.body ??
+                                    'No response body recorded'}
                             </code>
                         {/if}
                     </section>
