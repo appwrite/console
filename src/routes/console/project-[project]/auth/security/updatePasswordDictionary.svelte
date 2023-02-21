@@ -3,7 +3,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
