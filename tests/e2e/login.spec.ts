@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test';
 
 /*TODO: Things to test in login:
-    - presence of forgot password link
-    - validation message on wrong input
-    - correct response and redirect after login 
-    - logout works
-    - back button does not log out user
-    - forward button does not log in user after logout
-    - limit to total number of login attempts
+    - presence of forgot password link.
+    - validation message on wrong input.
+    - correct response and redirect after login.
+    - logout works.
+    - back button does not log out user.
+    - forward button does not log in user after logout.
+    - limit to total number of login attempts.
     - 
 */
 
