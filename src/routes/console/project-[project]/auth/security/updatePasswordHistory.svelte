@@ -45,7 +45,7 @@
     <CardGrid>
         <Heading tag="h2" size="6">Password History</Heading>
         <p>
-            Maximum nubmer of password history to save for a user. 0 for disabling the password
+            Maximum number of passwords saved per user. Use 0 to disable the password
             history.
         </p>
         <svelte:fragment slot="aside">
