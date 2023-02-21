@@ -2,6 +2,7 @@
     import { Alert, Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
     import { sdkForProject } from '$lib/stores/sdk';
+    import { Mode, MODE } from '$lib/system';
 
     const { endpoint, project } = sdkForProject.client.config;
     const code = `import 'package:appwrite/appwrite.dart';
@@ -11,6 +12,8 @@ client
     .setEndpoint('${endpoint}')
     .setProject('${project}')
     .setSelfSigned(status: true); // For self signed certificates, only use for development`;
+
+    let dismissedAlert = false;
 </script>
 
 <WizardStep>
@@ -26,13 +29,18 @@ client
         Before sending any API calls to your new Appwrite project, make sure your device or emulator
         has network access to your Appwrite project's hostname or IP address.
     </p>
-    <div class="common-section">
-        <Alert type="info">
-            <svelte:fragment slot="title">For self-hosted solutions</svelte:fragment>
-            When connecting to a locally hosted Appwrite project from an emulator or a mobile device,
-            you should use the private IP of the device running your Appwrite project as the hostname
-            of the endpoint instead of localhost. You can also use a service like ngrok to proxy the
-            Appwrite server.
-        </Alert>
-    </div>
+    {#if !dismissedAlert}
+        <div class="common-section">
+            <Alert
+                type="info"
+                dismissible={MODE === Mode.CLOUD}
+                on:dismiss={() => (dismissedAlert = true)}>
+                <svelte:fragment slot="title">For self-hosted solutions</svelte:fragment>
+                When connecting to a locally hosted Appwrite project from an emulator or a mobile device,
+                you should use the private IP of the device running your Appwrite project as the hostname
+                of the endpoint instead of localhost. You can also use a service like ngrok to proxy
+                the Appwrite server.
+            </Alert>
+        </div>
+    {/if}
 </WizardStep>
