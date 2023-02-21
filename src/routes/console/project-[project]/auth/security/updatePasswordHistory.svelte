@@ -3,15 +3,12 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
-    import { createTimeUnitPair } from '$lib/helpers/unit';
+    import { Button, Form, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;
-    const { value, unit, baseValue, units } = createTimeUnitPair($project.authDuration);
-    const options = units.map((v) => ({ label: v.name, value: v.name }));
     let passwordHistory = $project.authPasswordHistory ?? 0;
 
     async function updatePasswordHistoryLimit() {
