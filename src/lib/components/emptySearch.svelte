@@ -5,6 +5,7 @@
     import PaginationInline from './paginationInline.svelte';
 
     export let hidePages = false;
+    export let cardOnly = false;
 </script>
 
 <article class="card u-grid u-cross-center u-width-full-line common-section">
@@ -18,7 +19,9 @@
     </div>
 </article>
 
-<div class="u-flex u-margin-block-start-32 u-main-space-between">
-    <p class="text">Total results: 0</p>
-    <PaginationInline limit={1} offset={0} sum={0} {hidePages} />
-</div>
+{#if !cardOnly}
+    <div class="u-flex u-margin-block-start-32 u-main-space-between">
+        <p class="text">Total results: 0</p>
+        <PaginationInline limit={1} offset={0} sum={0} {hidePages} />
+    </div>
+{/if}

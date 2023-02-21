@@ -35,6 +35,11 @@
             href: `${path}/settings`,
             event: 'settings',
             title: 'Settings'
+        },
+        {
+            href: `${path}/billing`,
+            event: 'billing',
+            title: 'Billing'
         }
     ];
 </script>
