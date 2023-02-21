@@ -6,15 +6,10 @@
     import { Button, Form, FormList, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import { project } from '../../store';
 
     const projectId = $project.$id;
     let passwordDictionary = $project.authPasswordDictionary ?? false;
-
-    onMount(() => {
-        passwordDictionary = $project.authPasswordDictionary ?? false;
-    });
 
     async function updatePasswordDictionary() {
         try {
