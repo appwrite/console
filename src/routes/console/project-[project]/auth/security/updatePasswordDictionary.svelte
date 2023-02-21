@@ -58,7 +58,9 @@
             </FormList>
             <p class="text">
                 When enabled it checks the user's password against the dictionary of most commonly
-                used password. It uses <a
+                used password. It uses <a 
+                    target="_blank"
+                    rel="noopener noreferrer"
                     class="link"
                     href="https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/10k-most-common.txt"
                     >10K most common passwords</a> list.
