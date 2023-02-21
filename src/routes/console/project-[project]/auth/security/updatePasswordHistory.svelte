@@ -7,15 +7,10 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import { project } from '../../store';
 
     const projectId = $project.$id;
     let passwordHistory = $project.authPasswordHistory ?? 0;
-
-    onMount(() => {
-        passwordHistory = $project.authPasswordHistory ?? 0;
-    });
 
     async function updatePasswordHistoryLimit() {
         try {
