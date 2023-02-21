@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
+    import UpdatePasswordHistory from './updatePasswordHistory.svelte';
     import UpdateSessionLength from './updateSessionLength.svelte';
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
     import UpdateUsersLimit from './updateUsersLimit.svelte';
@@ -9,4 +10,5 @@
     <UpdateUsersLimit />
     <UpdateSessionLength />
     <UpdateSessionsLimit />
+    <UpdatePasswordHistory />
 </Container>
