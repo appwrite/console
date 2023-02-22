@@ -8,11 +8,7 @@
 
 <WizardStep>
     <svelte:fragment slot="title">Update Permissions</svelte:fragment>
-    <svelte:fragment slot="subtitle"
-        >Choose who can get access to your buckets and files. For more information, check out the
-        Permissions Guide in our documentation.</svelte:fragment>
-
-    <p class="text">
+    <svelte:fragment slot="subtitle">
         Choose who can access your buckets and files. For more information, check out the
         <a
             href="https://appwrite.io/docs/permissions"
@@ -20,8 +16,8 @@
             rel="noopener noreferrer"
             class="link">
             Permissions Guide
-        </a>.
-    </p>
+        </a>.</svelte:fragment>
+
     {#if $bucket.fileSecurity}
         <div class="common-section">
             <Alert type="info">

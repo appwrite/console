@@ -35,7 +35,7 @@
     import { wizard } from '$lib/stores/wizard';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
-    import CreateWizard from './create/create.svelte';
+    import CreateWizard from './create-file/create.svelte';
     import Delete from './deleteFile.svelte';
 
     export let data: PageData;
