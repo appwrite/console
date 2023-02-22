@@ -11,7 +11,7 @@
         InputText
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdkForConsole, endpoint } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
@@ -51,7 +51,7 @@
     async function invite() {
         try {
             disabled = true;
-            const res = await fetch(`${VARS.APPWRITE_ENDPOINT}/account/invite`, {
+            const res = await fetch(`${endpoint}/account/invite`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
