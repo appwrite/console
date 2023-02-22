@@ -25,10 +25,12 @@
         "@popperjs/core": "^2.11.6",
         "@sentry/svelte": "^7.36.0",
         "@sentry/tracing": "^7.36.0",
+        "@stripe/stripe-js": "^1.47.0",
         "analytics": "^0.8.1",
         "echarts": "^5.4.1",
         "pretty-bytes": "^6.1.0",
         "prismjs": "^1.29.0",
+        "stripe": "^11.11.0",
         "tippy.js": "^6.3.7",
         "web-vitals": "^3.1.1"
     },

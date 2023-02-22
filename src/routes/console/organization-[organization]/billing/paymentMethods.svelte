@@ -1,5 +1,6 @@
 <script lang="ts">
     import { CardGrid, Empty, Heading } from '$lib/components';
+    export let showPayment = false;
 </script>
 
 <CardGrid>
@@ -7,7 +8,7 @@
 
     <p class="text">View or update your organization payment methods here.</p>
     <svelte:fragment slot="aside">
-        <Empty>
+        <Empty on:click={() => (showPayment = true)}>
             <p class="text">Add a payment method</p>
         </Empty>
     </svelte:fragment>

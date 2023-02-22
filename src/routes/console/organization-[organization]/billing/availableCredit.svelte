@@ -6,7 +6,7 @@
     let coupon: string = null;
 
     async function redeem() {
-        const response = await fetch('/v1/account/credit', {
+        const response = await fetch('/v1/billing/credit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

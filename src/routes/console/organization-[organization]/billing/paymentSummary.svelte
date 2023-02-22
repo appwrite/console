@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Box, CardGrid, Heading } from '$lib/components';
+    import { VARS } from '$lib/system';
 </script>
 
 <CardGrid>
@@ -13,5 +14,11 @@
             </svelte:fragment>
             <p class="u-trim-1">X projects</p>
         </Box>
+        {#if VARS.CONSOLE_TIER && VARS.CONSOLE_TIER !== 'base'}
+            <div class="u-flex">
+                <p class="u-bold">Next billing data</p>
+                <p class="text u-margin-inline-start-auto">XX DATE</p>
+            </div>
+        {/if}
     </svelte:fragment>
 </CardGrid>
