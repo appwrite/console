@@ -20,7 +20,7 @@
     import { page } from '$app/stores';
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
-    import { isCloud, VARS } from '$lib/system';
+    import { isCloud } from '$lib/system';
 
     let slug = $page.params.slug;
     let imgLight = LoginLight;
