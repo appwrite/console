@@ -12,7 +12,7 @@
     <svelte:fragment slot="title">Get the SDK</svelte:fragment>
 
     <p>Add Appwrite SDK to your package's pubspec.yaml file. You can view an example here.</p>
-    <Code label="YAML" language="yml" code={example1} withCopy />
+    <Code label="YAML" language="yml" code={example1} withCopy noMargin />
     <p class="common-section">
         You can also install the SDK using the Dart package manager from your terminal:
     </p>
