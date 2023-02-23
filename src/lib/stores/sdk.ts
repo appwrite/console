@@ -13,7 +13,7 @@ import {
     Users
 } from '@aw-labs/appwrite-console';
 
-export const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
+const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
 const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');
