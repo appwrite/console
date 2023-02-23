@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { InputText, Button, FormList } from '$lib/elements/forms';
+    import { InputText, Button, FormList, Label } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
 
     import { publicKey } from './stripe';
@@ -17,16 +17,15 @@
     let isCreating = false;
     let stripe;
     let elements;
-    let card: HTMLDivElement;
-    let address: HTMLDivElement;
+    let cardNumber: HTMLDivElement;
+    let cardExpiry: HTMLDivElement;
     let complete = false;
     const appearance = {
-        theme: $app.themeInUse === 'dark' ? 'night' : 'stripe',
+        theme: $app.themeInUse === 'dark' ? 'stripe' : 'stripe',
         variables: {
             colorPrimary: $app.themeInUse === 'dark' ? '#ffffff' : '#000000'
         }
     };
-
     let paymentIntent;
     let clientSecret;
 
@@ -39,13 +38,30 @@
     });
 
     async function createForm() {
-        const cardElement = elements.create('card');
-        cardElement.mount(card);
+        const cardElement = elements.create('cardNumber', {
+            style: {
+                base: {
+                    height: '40px',
+                    fontSize: '16px',
+                    color: '#32325d',
+                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                    fontSmoothing: 'antialiased',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
+                }
+            }
+        });
+        cardElement.mount(cardNumber);
 
-        const addressElement = elements.create('address');
-        addressElement.mount(address);
+        // cardElement.on('change', (e) => (complete = e.complete));
 
-        cardElement.on('change', (e) => (complete = e.complete));
+        // const cardExpiry = elements.create('cardExpiry');
+        // cardExpiry.mount(cardExpiry);
     }
 
     async function handleSubmit() {
@@ -63,6 +79,10 @@
             trackError(e, Submit.ProjectCreate);
         }
     }
+
+    $: if (show) {
+        createForm();
+    }
 </script>
 
 <Modal {error} on:submit={handleSubmit} size="big" bind:show>
@@ -78,8 +98,14 @@
             disabled={isCreating} />
         <FormItem>
             <div class="input-text-wrapper">
-                <div class="input-text" bind:this={card} />
-                <div bind:this={address} />
+                <Label required for="cardnumber">Card number</Label>
+                <div class="input-text" bind:this={cardNumber} />
+            </div>
+        </FormItem>
+        <FormItem>
+            <div class="input-text-wrapper">
+                <Label required for="cardnumber">Card expiry</Label>
+                <div bind:this={cardExpiry} />
             </div>
         </FormItem>
     </FormList>
