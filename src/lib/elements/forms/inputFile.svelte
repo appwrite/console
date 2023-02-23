@@ -6,7 +6,7 @@
 
     export let label: string = null;
     export let files: FileList;
-    export let list = new DataTransfer();
+
     export let allowedFileExtensions: string[] = [];
     export let maxSize: number = null;
     export let required = false;
@@ -15,16 +15,25 @@
     let input: HTMLInputElement;
     let hovering = false;
 
+    function setFiles(value: FileList) {
+        files = value;
+        input.files = value;
+    }
+
+    function resetFiles() {
+        setFiles(new DataTransfer().files);
+    }
+
     function dropHandler(ev: DragEvent) {
         ev.dataTransfer.dropEffect = 'move';
         hovering = false;
-        if (ev.dataTransfer.items) {
-            for (let i = 0; i < ev.dataTransfer.items.length; i++) {
-                if (ev.dataTransfer.items[i].kind === 'file') {
-                    list.items.clear();
-                    list.items.add(ev.dataTransfer.items[i].getAsFile());
-                    files = list.files;
-                }
+        if (!ev.dataTransfer.items) return;
+
+        for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+            if (ev.dataTransfer.items[i].kind === 'file') {
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(ev.dataTransfer.items[i].getAsFile());
+                setFiles(dataTransfer.files);
             }
         }
     }
@@ -50,7 +59,7 @@
     $: fileArray = files?.length ? Array.from(files) : [];
 
     onMount(() => {
-        input.files = files;
+        setFiles(files);
     });
 </script>
 
@@ -128,7 +137,7 @@
                                 {fileSize.value + fileSize.unit}
                             </span>
                             <button
-                                on:click={() => (files = null)}
+                                on:click={resetFiles}
                                 type="button"
                                 class="button is-text is-only-icon u-margin-inline-start-auto"
                                 aria-label="remove file"
