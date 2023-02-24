@@ -3,7 +3,7 @@
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackPageView } from '$lib/actions/analytics';
+    import { isTrackingAllowed, trackPageView } from '$lib/actions/analytics';
     import { reportWebVitals } from '$lib/helpers/vitals';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
@@ -45,7 +45,7 @@
             });
         }
 
-        if (isCloud) {
+        if (isCloud && isTrackingAllowed()) {
             LogRocket.init('rgthvf/appwrite', {
                 dom: {
                     inputSanitizer: true
