@@ -1,3 +1,5 @@
+import { dev } from '$app/environment';
+
 export enum Mode {
     CLOUD = 'cloud',
     SELF_HOSTED = 'self-hosted'
@@ -14,8 +16,8 @@ export const VARS = {
 };
 
 export const ENV = {
-    DEV: import.meta.env.DEV,
-    PROD: import.meta.env.PROD,
+    DEV: dev,
+    PROD: !dev,
     PREVIEW: VARS.VERCEL_ENV === 'preview',
     TEST: !!import.meta.env?.VITEST
 };

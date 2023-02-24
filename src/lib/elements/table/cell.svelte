@@ -11,6 +11,7 @@
     class:u-overflow-visible={showOverflow}
     class:is-only-desktop={onlyDesktop}
     data-title={title}
-    role="cell">
+    role="cell"
+    data-private>
     <slot />
 </div>
