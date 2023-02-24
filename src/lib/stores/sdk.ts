@@ -1,3 +1,4 @@
+import { Project } from '$lib/sdk/project';
 import { VARS } from '$lib/system';
 import {
     Account,
@@ -42,10 +43,10 @@ const sdkForProject = {
     functions: new Functions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
-    projects: new Projects(clientProject),
+    project: new Project(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject)
 };
 
-export { sdkForConsole, sdkForProject, setProject };
+export { sdkForConsole, sdkForProject, setProject, endpoint };

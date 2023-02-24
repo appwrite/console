@@ -59,7 +59,7 @@
                 }
                 loading.set(false);
             } else {
-                if (acceptedRoutes.includes($page.url.pathname)) {
+                if (acceptedRoutes.some((n) => $page.url.pathname.startsWith(n))) {
                     await goto(`${base}${$page.url.pathname}${$page.url.search}`);
                 } else {
                     await goto(`${base}/login`, {
