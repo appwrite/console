@@ -1,4 +1,5 @@
 import type { Client, Payload } from '@aw-labs/appwrite-console';
+import type { PaymentMethod } from '@stripe/stripe-js';
 
 export class Billing {
     client: Client;
@@ -13,7 +14,7 @@ export class Billing {
         return await this.client.call('GET', uri);
     }
 
-    async createPaymentMethod(teamId: string) {
+    async createPaymentMethod(teamId: string): Promise<PaymentMethod> {
         const path = `/teams/${teamId}/payment-methods`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);

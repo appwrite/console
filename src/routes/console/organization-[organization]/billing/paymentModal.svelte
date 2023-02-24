@@ -1,12 +1,13 @@
 <script lang="ts">
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { InputText, Button, FormList, Label } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
 
-    import { paymentMethods, publicKey } from './store';
+    import { publicKey } from './store';
     import {
         loadStripe,
+        type PaymentMethod,
         type Stripe,
         type StripeElement,
         type StripeElements
@@ -14,7 +15,6 @@
     import { onMount } from 'svelte';
     import FormItem from '$lib/elements/forms/formItem.svelte';
     import { app } from '$lib/stores/app';
-    import { browser } from '$app/environment';
     import { organization } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -31,7 +31,6 @@
     let stripe: Stripe;
 
     let paymentMethod;
-    let paymentIntent;
 
     const styleLight = {
         base: {
