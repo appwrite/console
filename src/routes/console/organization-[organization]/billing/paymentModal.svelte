@@ -1,24 +1,15 @@
 <script lang="ts">
     // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { InputText, Button, FormList, Label } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
-
+    import { InputText, Button, FormList } from '$lib/elements/forms';
     import { publicKey } from './store';
-    import {
-        loadStripe,
-        type PaymentMethod,
-        type Stripe,
-        type StripeElement,
-        type StripeElements
-    } from '@stripe/stripe-js';
+    import { loadStripe, type Stripe, type StripeElements } from '@stripe/stripe-js';
     import { onMount } from 'svelte';
-    import FormItem from '$lib/elements/forms/formItem.svelte';
-    import { app } from '$lib/stores/app';
     import { organization } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { app } from '$lib/stores/app';
 
     export let show = false;
 
@@ -26,40 +17,61 @@
     let error: string;
     let isCreating = false;
     let elements: StripeElements;
-    let cardElement: StripeElement;
-    let cardNumber: HTMLDivElement;
     let stripe: Stripe;
 
     let paymentMethod;
 
-    const styleLight = {
-        base: {
-            fontSize: '16px',
-            color: '#32325d',
+    const apperanceLight = {
+        variables: {
+            colorPrimary: '#606a7b',
+            colorText: '#373B4D',
+            colorBackground: '#FFFFFF',
+            color: '#606a7b',
+            colorDanger: '#df1b41',
             fontFamily: 'Inter, arial, sans-serif',
-            fontSmoothing: 'antialiased',
-            '::placeholder': {
-                color: '#c5c7d8'
-            }
+            borderRadius: '4px'
         },
-        invalid: {
-            color: '#FF4238',
-            iconColor: '#FF4238'
+        rules: {
+            '.Input:hover': {
+                border: 'solid 1px #C4C6D7',
+                boxShadow: 'none'
+            },
+            '.Input:focus': {
+                border: 'solid 1px #C4C6D7',
+                boxShadow: 'none'
+            },
+            '.Input::placeholder': {
+                color: '#C4C6D7'
+            },
+            '.Input--invalid': {
+                border: 'solid 1px var(--colorDanger)',
+                boxShadow: 'none'
+            }
         }
     };
-    const styleDark = {
-        base: {
-            fontSize: '16px',
-            color: '#C5C7D8',
+    const apperanceDark = {
+        variables: {
+            colorPrimary: '#606a7b',
+            colorText: '#C5C7D8',
+            colorBackground: '#161622',
+            color: '#606a7b',
+            colorDanger: '#FF453A',
             fontFamily: 'Inter, arial, sans-serif',
-            fontSmoothing: 'antialiased',
-            '::placeholder': {
-                color: '#606a7b'
-            }
+            borderRadius: '4px'
         },
-        invalid: {
-            color: '#FF4238',
-            iconColor: '#FF4238'
+        rules: {
+            '.Input:hover': {
+                border: 'solid 1px #4F5769',
+                boxShadow: 'none'
+            },
+            '.Input:focus': {
+                border: 'solid 1px #4F5769',
+                boxShadow: 'none'
+            },
+            '.Input--invalid': {
+                border: 'solid 1px var(--colorDanger)',
+                boxShadow: 'none'
+            }
         }
     };
 
@@ -70,32 +82,23 @@
             paymentMethod = await sdkForConsole.billing.createPaymentMethod($organization.$id);
             const options = {
                 clientSecret: paymentMethod.clientSecret,
-                // Fully customizable with appearance API.
-                appearance: {
-                    /*...*/
-                }
+                appearance: $app.themeInUse === 'dark' ? apperanceDark : apperanceLight
             };
             // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
             elements = stripe.elements(options);
-        } catch (error) {
-            addNotification({
-                message: error.toString(),
-                type: 'error'
-            });
+        } catch (e) {
+            error = e.message;
         }
         createForm();
     });
 
     async function createForm() {
-        cardElement = elements.create('card', {
-            style: $app.themeInUse === 'dark' ? styleDark : styleLight
-        });
-        cardElement.mount(cardNumber);
+        const paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
     }
 
     async function handleSubmit() {
         const { error: StripeError } = await stripe.confirmSetup({
-            //`Elements` instance that was used to create the Payment Element
             elements,
             confirmParams: {
                 return_url: 'http://localhost:3000'
@@ -141,12 +144,10 @@
             required
             autofocus={true}
             disabled={isCreating} />
-        <FormItem>
-            <div class="input-text-wrapper">
-                <Label required for="cardnumber">Card number</Label>
-                <div class="input-text" bind:this={cardNumber} />
-            </div>
-        </FormItem>
+
+        <div id="payment-element">
+            <!-- Elements will create form elements here -->
+        </div>
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
