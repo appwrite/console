@@ -28,7 +28,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
             '/auth/oauth2/failure'
         ];
 
-        if (!acceptedRoutes.includes(url.pathname)) {
+        if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
             throw redirect(303, '/login');
         }
     }
