@@ -50,4 +50,4 @@ const sdkForProject = {
     users: new Users(clientProject)
 };
 
-export { sdkForConsole, sdkForProject, setProject, endpoint };
+export { sdkForConsole, sdkForProject, setProject };
