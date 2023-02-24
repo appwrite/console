@@ -15,6 +15,7 @@ import {
 } from '@aw-labs/appwrite-console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
+
 const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');
 
@@ -49,4 +50,4 @@ const sdkForProject = {
     users: new Users(clientProject)
 };
 
-export { sdkForConsole, sdkForProject, setProject, endpoint };
+export { sdkForConsole, sdkForProject, setProject };
