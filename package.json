@@ -30,7 +30,6 @@
         "echarts": "^5.4.1",
         "pretty-bytes": "^6.1.0",
         "prismjs": "^1.29.0",
-        "stripe": "^11.11.0",
         "tippy.js": "^6.3.7",
         "web-vitals": "^3.1.1"
     },

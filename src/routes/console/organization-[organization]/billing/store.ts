@@ -1,9 +1,9 @@
-import { writable } from 'svelte/store';
-import Stripe from 'stripe';
+import { page } from '$app/stores';
+
+import { derived, writable } from 'svelte/store';
 
 export const publicKey = import.meta.env?.VITE_STRIPE_PUBLIC_KEY?.toString() as string | undefined;
 export const secretKey = import.meta.env?.VITE_STRIPE_SECRET_KEY?.toString() as string | undefined;
-export const stripe = new Stripe(secretKey, undefined);
 
 function createCustomerStore() {
     const { subscribe, set } = writable<Stripe.Customer | Stripe.DeletedCustomer>(undefined);
@@ -31,3 +31,5 @@ function createCustomerStore() {
 }
 
 export const customer = createCustomerStore();
+
+export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods);

@@ -18,4 +18,6 @@
     <AvailableCredit />
 </Container>
 
-<PaymentModal bind:show={showPayment} />
+{#if showPayment}
+    <PaymentModal bind:show={showPayment} />
+{/if}

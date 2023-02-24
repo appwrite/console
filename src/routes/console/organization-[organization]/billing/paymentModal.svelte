@@ -4,94 +4,140 @@
     import { InputText, Button, FormList, Label } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
 
-    import { publicKey } from './stripe';
-    import { loadStripe } from '@stripe/stripe-js';
+    import { paymentMethods, publicKey } from './store';
+    import {
+        loadStripe,
+        type Stripe,
+        type StripeElement,
+        type StripeElements
+    } from '@stripe/stripe-js';
     import { onMount } from 'svelte';
     import FormItem from '$lib/elements/forms/formItem.svelte';
     import { app } from '$lib/stores/app';
+    import { browser } from '$app/environment';
+    import { organization } from '$lib/stores/organization';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let show = false;
 
     let name: string;
     let error: string;
     let isCreating = false;
-    let stripe;
-    let elements;
+    let elements: StripeElements;
+    let cardElement: StripeElement;
     let cardNumber: HTMLDivElement;
-    let cardExpiry: HTMLDivElement;
-    let complete = false;
-    const appearance = {
-        theme: $app.themeInUse === 'dark' ? 'stripe' : 'stripe',
-        variables: {
-            colorPrimary: $app.themeInUse === 'dark' ? '#ffffff' : '#000000'
+    let stripe: Stripe;
+
+    let paymentMethod;
+    let paymentIntent;
+
+    const styleLight = {
+        base: {
+            fontSize: '16px',
+            color: '#32325d',
+            fontFamily: 'Inter, arial, sans-serif',
+            fontSmoothing: 'antialiased',
+            '::placeholder': {
+                color: '#c5c7d8'
+            }
+        },
+        invalid: {
+            color: '#FF4238',
+            iconColor: '#FF4238'
         }
     };
-    let paymentIntent;
-    let clientSecret;
+    const styleDark = {
+        base: {
+            fontSize: '16px',
+            color: '#C5C7D8',
+            fontFamily: 'Inter, arial, sans-serif',
+            fontSmoothing: 'antialiased',
+            '::placeholder': {
+                color: '#606a7b'
+            }
+        },
+        invalid: {
+            color: '#FF4238',
+            iconColor: '#FF4238'
+        }
+    };
 
     onMount(async () => {
         stripe = await loadStripe(publicKey);
-        elements = stripe.elements(appearance);
-        // paymentIntent = await createIntent();
-        // clientSecret = paymentIntent.client_secret;
+
+        try {
+            paymentMethod = await sdkForConsole.billing.createPaymentMethod($organization.$id);
+            const options = {
+                clientSecret: paymentMethod.clientSecret,
+                // Fully customizable with appearance API.
+                appearance: {
+                    /*...*/
+                }
+            };
+            // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
+            elements = stripe.elements(options);
+        } catch (error) {
+            addNotification({
+                message: error.toString(),
+                type: 'error'
+            });
+        }
         createForm();
     });
 
     async function createForm() {
-        const cardElement = elements.create('cardNumber', {
-            style: {
-                base: {
-                    height: '40px',
-                    fontSize: '16px',
-                    color: '#32325d',
-                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                    fontSmoothing: 'antialiased',
-                    '::placeholder': {
-                        color: '#aab7c4'
-                    }
-                },
-                invalid: {
-                    color: '#fa755a',
-                    iconColor: '#fa755a'
-                }
-            }
+        cardElement = elements.create('card', {
+            style: $app.themeInUse === 'dark' ? styleDark : styleLight
         });
         cardElement.mount(cardNumber);
-
-        // cardElement.on('change', (e) => (complete = e.complete));
-
-        // const cardExpiry = elements.create('cardExpiry');
-        // cardExpiry.mount(cardExpiry);
     }
 
     async function handleSubmit() {
-        try {
-            isCreating = true;
-
-            trackEvent(Submit.ProjectCreate);
-            addNotification({
-                type: 'success',
-                message: `${name} has been created`
-            });
-        } catch (e) {
-            isCreating = false;
-            error = e.message;
-            trackError(e, Submit.ProjectCreate);
+        const { error: StripeError } = await stripe.confirmSetup({
+            //`Elements` instance that was used to create the Payment Element
+            elements,
+            confirmParams: {
+                return_url: 'http://localhost:3000'
+            },
+            redirect: 'if_required'
+        });
+        if (StripeError) {
+            error = StripeError.message;
+            // trackError(StripeError, Submit.ProjectCreate);
+        } else {
+            if (paymentMethod) {
+                const { error: PaymentError, setupIntent } = await stripe.retrieveSetupIntent(
+                    paymentMethod.clientSecret
+                );
+                if (PaymentError) {
+                    error = PaymentError.message;
+                    // trackError(StripeError, Submit.ProjectCreate);
+                } else if (setupIntent && setupIntent.status === 'succeeded') {
+                    //update payment method
+                    await sdkForConsole.billing.updatePaymentMethod(
+                        $organization.$id,
+                        paymentMethod.$id,
+                        setupIntent.payment_method as string
+                    );
+                    // const paymentElement = elements.getElement('payment');
+                    // paymentElement.destroy();
+                    await invalidate(Dependencies.PAYMENT_METHODS);
+                }
+            }
         }
-    }
-
-    $: if (show) {
-        createForm();
     }
 </script>
 
 <Modal {error} on:submit={handleSubmit} size="big" bind:show>
     <svelte:fragment slot="header">Add Payment Method</svelte:fragment>
-    This payment method will be added to the Acme Org billing details.
+    This payment method will be added to the {$organization.name} billing details.
     <FormList>
         <InputText
             id="name"
             label="Cardholder name"
+            placeholder="Cardholder name"
             bind:value={name}
             required
             autofocus={true}
@@ -100,12 +146,6 @@
             <div class="input-text-wrapper">
                 <Label required for="cardnumber">Card number</Label>
                 <div class="input-text" bind:this={cardNumber} />
-            </div>
-        </FormItem>
-        <FormItem>
-            <div class="input-text-wrapper">
-                <Label required for="cardnumber">Card expiry</Label>
-                <div bind:this={cardExpiry} />
             </div>
         </FormItem>
     </FormList>

@@ -12,6 +12,7 @@ import {
     Teams,
     Users
 } from '@aw-labs/appwrite-console';
+import { Billing } from './billing';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 const clientConsole = new Client();
@@ -31,7 +32,8 @@ const sdkForConsole = {
     locale: new Locale(clientConsole),
     projects: new Projects(clientConsole),
     teams: new Teams(clientConsole),
-    users: new Users(clientConsole)
+    users: new Users(clientConsole),
+    billing: new Billing(clientConsole)
 };
 
 const sdkForProject = {

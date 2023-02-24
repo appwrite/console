@@ -8,12 +8,14 @@ import { Dependencies } from '$lib/constants';
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
     await parent();
     depends(Dependencies.ORGANIZATION);
+    depends(Dependencies.PAYMENT_METHODS);
 
     try {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
             organization: await sdkForConsole.teams.get(params.organization),
+            paymentMethods: await sdkForConsole.billing.listPaymentMethods(params.organization),
             members: await sdkForConsole.teams.listMemberships(params.organization)
         };
     } catch (e) {
