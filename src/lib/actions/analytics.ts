@@ -206,5 +206,13 @@ export enum Submit {
     BucketUpdateExtensions = 'submit_bucket_update_extensions',
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
-    FileUpdatePermissions = 'submit_file_update_permissions'
+    FileUpdatePermissions = 'submit_file_update_permissions',
+    TransferCreate = 'submit_transfer_create',
+    TransferDelete = 'submit_transfer_delete',
+    DestinationCreate = 'submit_destination_create',
+    DestinationDelete = 'submit_destination_delete',
+    DestinationValidate = 'submit_destination_validate',
+    SourceCreate = 'submit_source_create',
+    SourceDelete = 'submit_source_delete',
+    SourceValidate = 'submit_source_validate'
 }

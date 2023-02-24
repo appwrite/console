@@ -5,46 +5,33 @@
     import { Cover, CoverTitle } from '$lib/layout';
 
     const projectId = $page.params.project;
-    const path = `/console/project-${projectId}/settings`;
+    const path = `/console/project-${projectId}/transfers`;
     const tabs = [
         {
             href: path,
-            title: 'Overview',
-            event: 'overview'
-        },
-        {
-            href: `${path}/domains`,
-            title: 'Custom Domains',
-            event: 'domains'
-        },
-        {
-            href: `${path}/webhooks`,
-            title: 'Webhooks',
-            event: 'webhooks'
-        },
-        {
-            href: `${path}/transfers`,
             title: 'Transfers',
-            event: 'transfers'
+            event: 'transfers',
+            hasChildren: true
         },
         {
-            href: `${path}/transfers/sources`,
+            href: `${path}/sources`,
             title: 'Sources',
-            event: 'sources'
+            event: 'sources',
+            hasChildren: true
         },
         {
-            href: `${path}/transfers/destinations`,
+            href: `${path}/destinations`,
             title: 'Destinations',
-            event: 'destinations'
+            event: 'destinations',
+            hasChildren: true
         }
     ];
 </script>
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Settings</CoverTitle>
+        <CoverTitle>Transfers</CoverTitle>
     </svelte:fragment>
-
     <Tabs>
         {#each tabs as tab}
             <Tab

@@ -5,6 +5,7 @@
             label: string;
             component: typeof SvelteComponent;
             optional?: boolean;
+            footer?: boolean;
         }
     >;
 </script>
@@ -128,6 +129,7 @@
                     <svelte:component this={component} />
                 {/if}
             {/each}
+
             <div class="form-footer">
                 <div class="u-flex u-main-end u-gap-12">
                     {#if !isLastStep && sortedSteps[currentStep - 1][1].optional}
@@ -135,7 +137,9 @@
                             Skip optional steps
                         </Button>
                     {/if}
-                    {#if currentStep === 1}
+                    {#if sortedSteps[currentStep - 1][1].footer === false}
+                        <div />
+                    {:else if currentStep === 1}
                         <Button secondary on:click={handleExit}>Cancel</Button>
                         <Button submit>Next</Button>
                     {:else if isLastStep}
