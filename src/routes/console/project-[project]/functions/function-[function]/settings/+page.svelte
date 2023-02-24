@@ -32,6 +32,7 @@
     import { Dependencies } from '$lib/constants';
     import type { PageData } from './$types';
     import { trackEvent } from '$lib/actions/analytics';
+    import InputSwitch from '$lib/elements/forms/inputSwitch.svelte';
 
     export let data: PageData;
 
@@ -47,6 +48,7 @@
     let functionSchedule: string = null;
     let permissions: string[] = [];
     let arePermsDisabled = true;
+    let logging: boolean = null;
 
     const eventSet: Writable<Set<string>> = writable(new Set());
     let showEvents = false;
@@ -57,6 +59,7 @@
         functionName ??= $func.name;
         functionSchedule ??= $func.schedule;
         permissions = $func.execute;
+        logging = $func.logging;
         $eventSet = new Set($func.events);
     });
 
@@ -69,7 +72,8 @@
                 $func.events,
                 $func.schedule,
                 $func.timeout,
-                $func.enabled
+                $func.enabled,
+                $func.logging
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -77,6 +81,32 @@
                 type: 'success'
             });
             trackEvent('submit_function_update_name');
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
+    }
+
+    async function updateLogging() {
+        try {
+            await sdkForProject.functions.update(
+                functionId,
+                functionName,
+                $func.execute,
+                $func.events,
+                $func.schedule,
+                $func.timeout,
+                $func.enabled,
+                logging
+            );
+            invalidate(Dependencies.FUNCTION);
+            addNotification({
+                message: 'Logging has been updated',
+                type: 'success'
+            });
+            trackEvent('submit_function_update_logging');
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -94,7 +124,8 @@
                 $func.events,
                 $func.schedule,
                 $func.timeout,
-                $func.enabled
+                $func.enabled,
+                $func.logging
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -119,7 +150,8 @@
                 Array.from($eventSet),
                 $func.schedule,
                 $func.timeout,
-                $func.enabled
+                $func.enabled,
+                $func.logging
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -144,7 +176,8 @@
                 $func.events,
                 functionSchedule,
                 $func.timeout,
-                $func.enabled
+                $func.enabled,
+                $func.logging
             );
             invalidate(Dependencies.FUNCTION);
 
@@ -170,7 +203,8 @@
                 $func.events,
                 $func.schedule,
                 timeout,
-                $func.enabled
+                $func.enabled,
+                $func.logging
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -342,6 +376,29 @@
                 <Button disabled={functionName === $func.name || !functionName} submit>
                     Update
                 </Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+
+    <Form on:submit={updateLogging}>
+        <CardGrid>
+            <Heading tag="h6" size="7">Update Logging</Heading>
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputSwitch bind:value={logging} id="logging" label="Logging" />
+                </FormList>
+                <p class="text">
+                    When logging is enabled, every execution response will be stored and can be
+                    accessed later. When logging is disabed, no data is stored about executions.
+                </p>
+                <p class="text">
+                    Disabled logging can be useful when transfering privacy-critical data, or for
+                    performance reasons.
+                </p>
+            </svelte:fragment>
+            <svelte:fragment slot="actions">
+                <Button disabled={logging === $func.logging} on:click={updateLogging}
+                    >Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
