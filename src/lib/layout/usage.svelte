@@ -58,7 +58,7 @@
     </div>
     <Card>
         {#if count}
-            <Heading tag="h6" size="6">{last(count).value}</Heading>
+            <Heading tag="h6" size="6">{total(count)}</Heading>
             <p>{countMetadata.title}</p>
             <div class="u-margin-block-start-16" />
             <div class="chart-container">
