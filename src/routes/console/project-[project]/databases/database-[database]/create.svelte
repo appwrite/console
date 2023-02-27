@@ -17,7 +17,7 @@
 
     let name = '';
     let id: string = null;
-    let showCustomId = false;
+    let showCustomId = true;
 
     const create = async () => {
         try {
