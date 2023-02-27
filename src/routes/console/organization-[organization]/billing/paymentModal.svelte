@@ -117,15 +117,19 @@
                     error = PaymentError.message;
                     // trackError(StripeError, Submit.ProjectCreate);
                 } else if (setupIntent && setupIntent.status === 'succeeded') {
-                    //update payment method
-                    await sdkForConsole.billing.updatePaymentMethod(
-                        $organization.$id,
-                        paymentMethod.$id,
-                        setupIntent.payment_method as string
-                    );
-                    // const paymentElement = elements.getElement('payment');
-                    // paymentElement.destroy();
-                    await invalidate(Dependencies.PAYMENT_METHODS);
+                    try {
+                        await sdkForConsole.billing.updatePaymentMethod(
+                            $organization.$id,
+                            paymentMethod.$id,
+                            setupIntent.payment_method as string
+                        );
+                        // const paymentElement = elements.getElement('payment');
+                        // paymentElement.destroy();
+                        await invalidate(Dependencies.PAYMENT_METHODS);
+                        show = false;
+                    } catch (e) {
+                        error = e.message;
+                    }
                 }
             }
         }
