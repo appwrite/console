@@ -35,7 +35,7 @@ export async function updateOAuth({
         );
         addNotification({
             type: 'success',
-            message: `${provider.name} authentication has been ${enabled ? 'enabled' : 'disabled'}`
+            message: `${provider.name} authentication has been updated`
         });
         trackEvent(Submit.ProviderUpdate, {
             provider,
