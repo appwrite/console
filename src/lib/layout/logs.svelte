@@ -14,9 +14,7 @@
     let selectedTab: string;
     let rawData: string;
 
-    function isDeployment(
-        data: Models.Deployment | Models.Execution<Models.Headers>
-    ): data is Models.Deployment {
+    function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
         if ('buildId' in data) {
             selectedTab = 'logs';
             rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
@@ -24,11 +22,9 @@
         }
     }
 
-    function isExecution(
-        data: Models.Deployment | Models.Execution<Models.Headers>
-    ): data is Models.Execution<Models.Headers> {
+    function isExecution(data: Models.Deployment | Models.Execution): data is Models.Execution {
         if ('trigger' in data) {
-            selectedTab = 'response';
+            selectedTab = 'logs';
             rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
             return true;
         }
@@ -163,14 +159,19 @@
                 <div class="tabs u-margin-block-start-48 u-sep-block-end">
                     <Tabs>
                         <Tab
-                            selected={selectedTab === 'response'}
-                            on:click={() => (selectedTab = 'response')}>
-                            Response
+                            selected={selectedTab === 'method'}
+                            on:click={() => (selectedTab = 'method')}>
+                            Method
                         </Tab>
                         <Tab
-                            selected={selectedTab === 'headers'}
-                            on:click={() => (selectedTab = 'headers')}>
-                            Headers
+                            selected={selectedTab === 'path'}
+                            on:click={() => (selectedTab = 'path')}>
+                            Path and query
+                        </Tab>
+                        <Tab
+                            selected={selectedTab === 'agent'}
+                            on:click={() => (selectedTab = 'agent')}>
+                            Agent
                         </Tab>
                         <Tab
                             selected={selectedTab === 'logs'}
@@ -181,11 +182,6 @@
                             selected={selectedTab === 'errors'}
                             on:click={() => (selectedTab = 'errors')}>
                             Errors
-                        </Tab>
-                        <Tab
-                            selected={selectedTab === 'statusCode'}
-                            on:click={() => (selectedTab = 'statusCode')}>
-                            Status Code
                         </Tab>
                     </Tabs>
                 </div>
@@ -204,27 +200,27 @@
                         </header>
                         {#if selectedTab === 'logs'}
                             <code class="code-panel-content">
-                                {$log.data.stdout ?? $log.data.logs ?? 'No logs recorded'}
+                                {$log.data.stdout ?? $log.data.logs ?? 'No logs.'}
                             </code>
                         {:else if selectedTab === 'errors'}
                             <code class="code-panel-content">
-                                {$log.data.stderr ?? $log.data.errors ?? 'No errors recorded'}
-                            </code>
-                        {:else if selectedTab === 'headers'}
-                            <code class="code-panel-content">
-                                {$log.data.headers
-                                    ? JSON.stringify($log.data.headers, null, 4)
-                                    : 'No headers recorded'}
+                                {$log.data.stderr ?? $log.data.errors ?? 'No errors.'}
                             </code>
                         {:else if selectedTab === 'statusCode'}
                             <code class="code-panel-content">
-                                {$log.data.statusCode ?? 'No status code recorded'}
+                                {$log.data.statusCode ?? 'No response status code.'}
                             </code>
-                        {:else}
+                        {:else if selectedTab === 'method'}
                             <code class="code-panel-content">
-                                {$log.data.response ??
-                                    $log.data.body ??
-                                    'No response body recorded'}
+                                {$log.data.method ?? 'No request method.'}
+                            </code>
+                        {:else if selectedTab === 'agent'}
+                            <code class="code-panel-content">
+                                {$log.data.agent ?? 'No request agent.'}
+                            </code>
+                        {:else if selectedTab === 'path'}
+                            <code class="code-panel-content">
+                                {$log.data.path ?? 'No request path.'}
                             </code>
                         {/if}
                     </section>
