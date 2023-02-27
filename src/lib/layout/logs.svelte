@@ -174,6 +174,11 @@
                             Agent
                         </Tab>
                         <Tab
+                            selected={selectedTab === 'statusCode'}
+                            on:click={() => (selectedTab = 'statusCode')}>
+                            Status Code
+                        </Tab>
+                        <Tab
                             selected={selectedTab === 'logs'}
                             on:click={() => (selectedTab = 'logs')}>
                             Logs
@@ -200,27 +205,29 @@
                         </header>
                         {#if selectedTab === 'logs'}
                             <code class="code-panel-content">
-                                {$log.data.stdout ?? $log.data.logs ?? 'No logs.'}
+                                {$log.data.logs ? $log.data.logs : 'No logs.'}
                             </code>
                         {:else if selectedTab === 'errors'}
                             <code class="code-panel-content">
-                                {$log.data.stderr ?? $log.data.errors ?? 'No errors.'}
+                                {$log.data.errors ? $log.data.errors : 'No errors.'}
                             </code>
                         {:else if selectedTab === 'statusCode'}
                             <code class="code-panel-content">
-                                {$log.data.statusCode ?? 'No response status code.'}
+                                {$log.data.statusCode
+                                    ? $log.data.statusCode
+                                    : 'No response status code.'}
                             </code>
                         {:else if selectedTab === 'method'}
                             <code class="code-panel-content">
-                                {$log.data.method ?? 'No request method.'}
+                                {$log.data.method ? $log.data.method : 'No request method.'}
                             </code>
                         {:else if selectedTab === 'agent'}
                             <code class="code-panel-content">
-                                {$log.data.agent ?? 'No request agent.'}
+                                {$log.data.agent ? $log.data.agent : 'No request agent.'}
                             </code>
                         {:else if selectedTab === 'path'}
                             <code class="code-panel-content">
-                                {$log.data.path ?? 'No request path.'}
+                                {$log.data.path ? $log.data.path : 'No request path.'}
                             </code>
                         {/if}
                     </section>
