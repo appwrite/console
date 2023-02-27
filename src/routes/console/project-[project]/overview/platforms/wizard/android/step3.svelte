@@ -21,11 +21,14 @@ val client = Client(context)
         Now that you've downloaded the SDK, it's time to initialze it. Use your project ID, which
         can be found in your project settings page.
     </p>
-    <Code
-        label="Android SDK"
-        labelIcon="android"
-        language="kotlin"
-        {code}
-        withCopy
-        withLineNumbers />
+    <div class="u-margin-block-start-16">
+        <Code
+            label="Android SDK"
+            labelIcon="android"
+            language="kotlin"
+            {code}
+            withCopy
+            withLineNumbers
+            noMargin />
+    </div>
 </WizardStep>

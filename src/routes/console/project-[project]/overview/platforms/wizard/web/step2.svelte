@@ -58,13 +58,23 @@
                     class="link">Rollup</a
                 >), import the Appwrite module when you need it:
             </p>
-            <Code label="Web SDK" labelIcon="code" language="js" code={example1} withCopy />
+            <div class="u-margin-block-start-16">
+                <Code
+                    label="Web SDK"
+                    labelIcon="code"
+                    language="js"
+                    code={example1}
+                    withCopy
+                    noMargin />
+            </div>
         {:else if method === Method.CDN}
             <p>
                 To install with a CDN (content delivery network) add the following scripts to the
                 bottom of your tag, but before you use any Appwrite services:
             </p>
-            <Code label="HTML" language="html" code={example2} withCopy />
+            <div class="u-margin-block-start-16">
+                <Code label="HTML" language="html" code={example2} withCopy noMargin />
+            </div>
         {/if}
     </div>
 </WizardStep>

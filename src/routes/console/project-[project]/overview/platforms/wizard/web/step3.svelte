@@ -19,5 +19,14 @@ client
         Now that you've downloaded the SDK, it's time to initialze it. Use your project ID, which
         can be found in your project settings page.
     </p>
-    <Code label="Web SDK" labelIcon="code" language="js" {code} withCopy withLineNumbers />
+    <div class="u-margin-block-start-16">
+        <Code
+            label="Web SDK"
+            labelIcon="code"
+            language="js"
+            {code}
+            withCopy
+            withLineNumbers
+            noMargin />
+    </div>
 </WizardStep>

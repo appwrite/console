@@ -22,5 +22,13 @@
             noMargin />
     </div>
     <p class="common-section">And add this to your project's build.gradle file:</p>
-    <Code label="Groovy" labelIcon="android" language="kotlin" code={example2} withCopy />
+    <div class="u-margin-block-start-16">
+        <Code
+            label="Groovy"
+            labelIcon="android"
+            language="kotlin"
+            code={example2}
+            withCopy
+            noMargin />
+    </div>
 </WizardStep>
