@@ -15,7 +15,6 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
             header: Header,
             breadcrumbs: Breadcrumbs,
             organization: await sdkForConsole.teams.get(params.organization),
-            paymentMethods: await sdkForConsole.billing.listPaymentMethods(params.organization),
             members: await sdkForConsole.teams.listMemberships(params.organization)
         };
     } catch (e) {
