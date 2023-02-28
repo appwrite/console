@@ -33,7 +33,19 @@ If you are worried about or don’t know where to start, check out the next sect
 
 ## Development
 
-Once you've created a project and installed dependencies with `npm install`, create a `.env` file using `.env.example` as a template.
+### 1. Clone the repository with git 
+```bash
+git clone https://github.com/appwrite/console.git appwrite-console
+```
+
+### 2. Install dependencies with npm
+```bash
+npm install 
+```
+
+### 3. Setup environment variables 
+
+add .env file using .env.example file as a template in project root directory
 
 Finally, start a development server:
 
