@@ -32,7 +32,6 @@
             for (const [key, value] of headers) {
                 jsonHeaders[key] = value;
             }
-            console.log(jsonHeaders);
 
             await sdkForProject.functions.createExecution(
                 selectedFunction.$id,
