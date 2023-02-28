@@ -9,6 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
+    import ExecuteHeaders from './executeHeaders.svelte';
 
     export let selectedFunction: Models.Function = null;
 
@@ -16,7 +17,7 @@
     let body: string = null;
     let path: string = null;
     let method: string = null;
-    let headers: string = null;
+    let headers: [string, string][] = [['', '']];
     let submitting = false;
 
     $: if (selectedFunction && !show) {
@@ -27,13 +28,19 @@
         submitting = true;
 
         try {
+            const jsonHeaders: any = {};
+            for (const [key, value] of headers) {
+                jsonHeaders[key] = value;
+            }
+            console.log(jsonHeaders);
+
             await sdkForProject.functions.createExecution(
                 selectedFunction.$id,
                 body?.length ? body : undefined,
                 true,
                 path?.length ? path : undefined,
                 method?.length ? method : undefined,
-                headers?.length ? JSON.parse(headers) : undefined
+                Object.keys(jsonHeaders).length > 0 ? jsonHeaders : undefined
             );
             close();
             addNotification({
@@ -75,7 +82,10 @@
             label="Method (optional)" />
         <InputText bind:value={path} id="path" label="Path and query (optional)" />
         <InputTextarea bind:value={body} id="body" label="Body (optional)" />
-        <InputText bind:value={headers} id="headers" label="Headers (optional, JSON string)" />
+
+        <div>
+            <ExecuteHeaders bind:headers />
+        </div>
     </FormList>
 
     <svelte:fragment slot="footer">

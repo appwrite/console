@@ -54,8 +54,8 @@
                 <TableCellHead width={90}>Execution ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
-                <TableCellHead width={90}>Trigger</TableCellHead>
-                <TableCellHead width={100}>Duration</TableCellHead>
+                <TableCellHead width={110}>Trigger</TableCellHead>
+                <TableCellHead width={80}>Duration</TableCellHead>
                 <TableCellHead width={40} />
             </TableHeader>
             <TableBody>
@@ -74,12 +74,15 @@
                         </TableCellText>
                         <TableCellText title="Status">
                             <Status status={execution.status}>
-                                {execution.status}
+                                {execution.status} ({execution.statusCode})
                             </Status>
                         </TableCellText>
                         <TableCellText title="Trigger">
                             <Pill>
                                 <span class="text u-trim">{execution.trigger}</span>
+                            </Pill>
+                            <Pill>
+                                <span class="text u-trim">{execution.method}</span>
                             </Pill>
                         </TableCellText>
                         <TableCellText title="Duration">
