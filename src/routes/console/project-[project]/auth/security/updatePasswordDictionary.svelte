@@ -52,13 +52,13 @@
                     label="Password Dictionary" />
             </FormList>
             <p class="text">
-                When enabled it checks the user's password against the dictionary of most commonly
-                used password. It uses <a 
+                Enabling this option prevent users from setting insecure passwords by comparing the
+                user's password with the <a
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link"
                     href="https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/10k-most-common.txt"
-                    >10K most common passwords</a> list.
+                    >10k most commonly used passwords.</a>
             </p>
         </svelte:fragment>
 

@@ -3,7 +3,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputNumber } from '$lib/elements/forms';
+    import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -11,9 +11,13 @@
 
     const projectId = $project.$id;
     let passwordHistory = $project.authPasswordHistory ?? 0;
+    let passwordHistoryEnabled = ($project.authPasswordHistory ?? 0) != 0;
 
     async function updatePasswordHistoryLimit() {
         try {
+            if (!passwordHistoryEnabled) {
+                passwordHistory = 0;
+            }
             const path = '/projects/' + projectId + '/auth/password-history';
             const uri = new URL(sdkForConsole.client.config.endpoint + path);
             await sdkForConsole.client.call(
@@ -45,17 +49,27 @@
 <Form on:submit={updatePasswordHistoryLimit}>
     <CardGrid>
         <Heading tag="h2" size="6">Password History</Heading>
-        <p class="text">
-            Maximum number of passwords saved per user. Maximum is 20. Use 0 to disable the password
-            history.
-        </p>
         <svelte:fragment slot="aside">
+            <FormList>
+                <InputSwitch
+                    bind:value={passwordHistoryEnabled}
+                    id="passwordHisotryEnabled"
+                    label="Password History" />
+            </FormList>
+            <p class="text">
+                Enabling this option prevents users from reusing recent passwords by comparing the
+                new password with their password history.
+            </p>
+            <p class="text">
+                Set the maximum number of passwords saved per user. Maximum 20 passwords.
+            </p>
             <FormList>
                 <InputNumber
                     max={20}
                     min={0}
                     id="max-session"
                     label="Limit"
+                    disabled={!passwordHistoryEnabled}
                     bind:value={passwordHistory} />
             </FormList>
         </svelte:fragment>
