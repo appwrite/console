@@ -18,35 +18,36 @@
 
     export let data: PageData;
     const project = $page.params.project;
+    const databaseId = $page.params.database;
 </script>
 
 <TableScroll>
     <TableHeader>
-        <TableCellHead width={45}>Database ID</TableCellHead>
+        <TableCellHead width={45}>Collection ID</TableCellHead>
         <TableCellHead width={100}>Name</TableCellHead>
         <TableCellHead width={100}>Updated At</TableCellHead>
         <TableCellHead width={100}>Created At</TableCellHead>
     </TableHeader>
     <TableBody>
-        {#each data.databases.databases as database}
+        {#each data.collections.collections as collection}
             <TableRowLink
-                href={`${base}/console/project-${project}/databases/database-${database.$id}`}>
+                href={`${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}>
                 <TableCell title="Deployment ID">
-                    <Copy value={database.$id}>
+                    <Copy value={collection.$id}>
                         <Pill button trim>
                             <span class="icon-duplicate" aria-hidden="true" />
-                            <span class="text u-trim">{database.$id}</span>
+                            <span class="text u-trim">{collection.$id}</span>
                         </Pill>
                     </Copy>
                 </TableCell>
                 <TableCellText title="Name">
-                    {database.name}
+                    {collection.name}
                 </TableCellText>
                 <TableCellText title="Updated">
-                    {toLocaleDateTime(database.$updatedAt)}
+                    {toLocaleDateTime(collection.$updatedAt)}
                 </TableCellText>
                 <TableCellText title="Created">
-                    {toLocaleDateTime(database.$createdAt)}
+                    {toLocaleDateTime(collection.$createdAt)}
                 </TableCellText>
             </TableRowLink>
         {/each}
@@ -54,10 +55,10 @@
 </TableScroll>
 
 <div class="u-flex u-margin-block-start-32 u-main-space-between">
-    <p class="text">Total results: {data.databases.total}</p>
+    <p class="text">Total results: {data.collections.total}</p>
     <Pagination
         offset={data.offset}
         limit={PAGE_LIMIT}
-        sum={data.databases.total}
+        sum={data.collections.total}
         path={`/console/project-${$page.params.project}/databases`} />
 </div>

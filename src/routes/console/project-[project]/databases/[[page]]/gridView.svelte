@@ -19,7 +19,7 @@
             <svelte:fragment slot="title">{database.name}</svelte:fragment>
 
             <Copy value={database.$id}>
-                <Pill button><i class="icon-duplicate" />Database ID</Pill>
+                <Pill button><span class="icon-duplicate" />Database ID</Pill>
             </Copy>
         </GridItem1>
     {/each}
