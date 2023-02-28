@@ -9,7 +9,6 @@
     export let data: PageData;
 
     $: count = data.count;
-    $: errors = data.errors;
 </script>
 
 <Container>
@@ -43,20 +42,6 @@
                     {
                         name: 'Count of function executions over time',
                         data: [...count.map((e) => [e.date, e.value])]
-                    }
-                ]} />
-        </Card>
-    {/if}
-    {#if errors}
-        <Card>
-            <Heading tag="h6" size="6">{total(errors)}</Heading>
-            <p>Errors</p>
-            <div class="u-margin-block-start-16" />
-            <BarChart
-                series={[
-                    {
-                        name: 'Count of function errors over time',
-                        data: [...errors.map((e) => [e.date, e.value])]
                     }
                 ]} />
         </Card>

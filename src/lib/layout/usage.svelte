@@ -2,6 +2,7 @@
     export type UsagePeriods = '24h' | '30d' | '90d';
 
     export function last(set: Models.Metric[]): Models.Metric | null {
+        if (!set) return null;
         return set.slice(-1)[0] ?? null;
     }
 
@@ -25,16 +26,7 @@
 
     export let title: string;
     export let count: Models.Metric[];
-    export let created: Models.Metric[];
-    export let read: Models.Metric[];
-    export let updated: Models.Metric[];
-    export let deleted: Models.Metric[];
-
     export let countMetadata: MetricMetadata;
-    export let createdMetadata: MetricMetadata;
-    export let readMetadata: MetricMetadata;
-    export let updatedMetadata: MetricMetadata;
-    export let deletedMetadata: MetricMetadata;
     export let path: string = null;
 </script>
 
@@ -71,76 +63,6 @@
             </div>
         {/if}
     </Card>
-    <Tiles>
-        <Card isTile>
-            {#if created}
-                <Heading tag="h6" size="6">{total(created)}</Heading>
-                <p>{createdMetadata.title}</p>
-                <div class="u-margin-block-start-16" />
-                <div class="chart-container">
-                    <LineChart
-                        series={[
-                            {
-                                name: createdMetadata.legend,
-                                data: [...created.map((e) => [e.date, e.value])],
-                                color: Colors.Secondary
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-        <Card isTile>
-            {#if read}
-                <Heading tag="h6" size="6">{total(read)}</Heading>
-                <p>{readMetadata.title}</p>
-                <div class="u-margin-block-start-16" />
-                <div class="chart-container">
-                    <LineChart
-                        series={[
-                            {
-                                name: readMetadata.legend,
-                                data: [...read.map((e) => [e.date, e.value])],
-                                color: Colors.Tertiary
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-        <Card isTile>
-            {#if updated}
-                <Heading tag="h6" size="6">{total(updated)}</Heading>
-                <p>{updatedMetadata.title}</p>
-                <div class="u-margin-block-start-16" />
-                <div class="chart-container">
-                    <LineChart
-                        series={[
-                            {
-                                name: updatedMetadata.legend,
-                                data: [...updated.map((e) => [e.date, e.value])],
-                                color: Colors.Quaternary
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-        <Card isTile>
-            {#if deleted}
-                <Heading tag="h6" size="6">{total(deleted)}</Heading>
-                <p>{deletedMetadata.title}</p>
-                <div class="u-margin-block-start-16" />
-                <div class="chart-container">
-                    <LineChart
-                        series={[
-                            {
-                                name: deletedMetadata.legend,
-                                data: [...deleted.map((e) => [e.date, e.value])],
-                                color: Colors.Quinary
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-    </Tiles>
 </Container>
 
 <style lang="scss">

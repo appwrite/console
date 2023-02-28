@@ -12,7 +12,7 @@
 
     const dispatch = createEventDispatcher();
 
-    $: requests = $usage?.requests as unknown as Array<{
+    $: requests = $usage?.requestsTotal as unknown as Array<{
         date: number;
         value: number;
     }>;
@@ -25,7 +25,7 @@
 <div class="u-flex u-gap-16 u-main-space-between">
     <div>
         <div class="heading-level-4">
-            {format(total($usage.requests))}
+            {format(total($usage?.requestsTotal))}
         </div>
         <div>Requests</div>
     </div>
@@ -41,7 +41,7 @@
         </svelte:fragment>
     </DropList>
 </div>
-{#if total($usage.requests) !== 0}
+{#if total($usage?.requestsTotal) !== 0}
     <div style="height: 12rem;">
         <LineChart
             options={{
