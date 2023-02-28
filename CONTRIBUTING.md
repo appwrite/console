@@ -45,7 +45,7 @@ npm install
 
 ### 3. Setup environment variables 
 
-add .env file using .env.example file as a template in project root directory
+Add a `.env` file by copying the `.env.example` file as a template in the project's root directory.
 
 Finally, start a development server:
 
