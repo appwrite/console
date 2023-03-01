@@ -10,18 +10,19 @@ import String, { submitString } from './string.svelte';
 import Url, { submitUrl } from './url.svelte';
 import Datetime, { submitDatetime } from './datetime.svelte';
 import type { Attributes } from '../store';
+import Relationship, { submitRelationship } from './relationship.svelte';
 
 export type Option = {
     name: string;
     component: typeof SvelteComponent;
-    type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime';
+    type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship';
     func: (
         databaseId: string,
         collectionId: string,
         key: string,
         data: Partial<Attributes>
     ) => Promise<void>;
-    format?: 'email' | 'ip' | 'url' | 'enum';
+    format?: 'email' | 'ip' | 'url' | 'enum' | 'relationship';
 };
 
 export const options: Option[] = [
@@ -82,6 +83,13 @@ export const options: Option[] = [
         type: 'string',
         format: 'enum',
         func: submitEnum
+    },
+    {
+        name: 'Relationship',
+        component: Relationship,
+        type: 'relationship',
+        format: 'relationship',
+        func: submitRelationship
     }
 ];
 
