@@ -18,11 +18,9 @@
     import { collection } from '../store';
     import { page } from '$app/stores';
     import { PAGE_LIMIT } from '$lib/constants';
-    import CreateAttribute from '../createAttribute.svelte';
     import { tooltip } from '$lib/actions/tooltip';
 
     export let data: PageData;
-    let showCreateAttribute = false;
 
     function openWizard() {
         wizard.start(Create);
@@ -87,66 +85,56 @@
         </Button>
     </div>
 
-    {#if $collection?.attributes?.length}
-        {#if data.documents.total}
-            <TableScroll isSticky>
-                <TableHeader>
-                    <TableCellHead eyebrow={false}>Document ID</TableCellHead>
-                    {#each columns as column}
-                        <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
-                    {/each}
-                </TableHeader>
-                <TableBody>
-                    {#each data.documents.documents as document}
-                        <TableRowLink
-                            href={`${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$collection.$id}/document-${document.$id}`}>
-                            <TableCell width={230}>
-                                <Copy value={document.$id}>
-                                    <Pill button>
-                                        <span class="icon-duplicate" aria-hidden="true" />
-                                        <span class="text u-trim-start">{document.$id}</span>
-                                    </Pill>
-                                </Copy>
+    {#if data.documents.total}
+        <TableScroll isSticky>
+            <TableHeader>
+                <TableCellHead eyebrow={false}>Document ID</TableCellHead>
+                {#each columns as column}
+                    <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
+                {/each}
+            </TableHeader>
+            <TableBody>
+                {#each data.documents.documents as document}
+                    <TableRowLink
+                        href={`${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$collection.$id}/document-${document.$id}`}>
+                        <TableCell width={230}>
+                            <Copy value={document.$id}>
+                                <Pill button>
+                                    <span class="icon-duplicate" aria-hidden="true" />
+                                    <span class="text u-trim-start">{document.$id}</span>
+                                </Pill>
+                            </Copy>
+                        </TableCell>
+                        {#each columns as column}
+                            {@const formatted = formatColumn(document[column.key])}
+                            <TableCell>
+                                <div
+                                    use:tooltip={{
+                                        content: formatted.whole,
+                                        disabled: !formatted.truncated
+                                    }}>
+                                    {formatted.value}
+                                </div>
                             </TableCell>
-                            {#each columns as column}
-                                {@const formatted = formatColumn(document[column.key])}
-                                <TableCell>
-                                    <div
-                                        use:tooltip={{
-                                            content: formatted.whole,
-                                            disabled: !formatted.truncated
-                                        }}>
-                                        {formatted.value}
-                                    </div>
-                                </TableCell>
-                            {/each}
-                        </TableRowLink>
-                    {/each}
-                </TableBody>
-            </TableScroll>
+                        {/each}
+                    </TableRowLink>
+                {/each}
+            </TableBody>
+        </TableScroll>
 
-            <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {data.documents.total}</p>
-                <Pagination
-                    limit={PAGE_LIMIT}
-                    path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`}
-                    offset={data.offset}
-                    sum={data.documents.total} />
-            </div>
-        {:else}
-            <Empty
-                single
-                href="https://appwrite.io/docs/databases#create-documents"
-                target="document"
-                on:click={openWizard} />
-        {/if}
+        <div class="u-flex common-section u-main-space-between">
+            <p class="text">Total results: {data.documents.total}</p>
+            <Pagination
+                limit={PAGE_LIMIT}
+                path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`}
+                offset={data.offset}
+                sum={data.documents.total} />
+        </div>
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/databases#attributes"
-            target="attribute"
-            on:click={() => (showCreateAttribute = true)} />
+            href="https://appwrite.io/docs/databases#create-documents"
+            target="document"
+            on:click={openWizard} />
     {/if}
 </Container>
-
-<CreateAttribute bind:showCreate={showCreateAttribute} />

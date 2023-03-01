@@ -18,22 +18,54 @@
     import Delete from './deleteAttribute.svelte';
     import Overview from './overview.svelte';
 
+    let showCreateDropdown = false;
     let showDropdown = [];
+    let selectedOption: string = null;
     let selectedAttribute: Attributes = null;
     let showCreate = false;
     let showDelete = false;
     let showOverview = false;
     let showCreateIndex = false;
+
+    const attributesList = [
+        { name: 'String', icon: 'text' },
+        { name: 'Integer', icon: 'hashtag' },
+        { name: 'Float', icon: 'hashtag' },
+        { name: 'Boolean', icon: 'toggle' },
+        { name: 'Datetime', icon: 'calendar' },
+        { name: 'Email', icon: 'mail' },
+        { name: 'IP', icon: 'location-marker' },
+        { name: 'URL', icon: 'link' },
+        { name: 'Enum', icon: 'list' },
+        { name: 'Relationship', icon: 'relationship' }
+    ];
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Attributes</Heading>
 
-        <Button on:click={() => (showCreate = true)} event="create_attribute">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create attribute</span>
-        </Button>
+        <DropList bind:show={showCreateDropdown}>
+            <Button
+                on:click={() => (showCreateDropdown = !showCreateDropdown)}
+                event="create_attribute">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create attribute</span>
+            </Button>
+            <svelte:fragment slot="list">
+                {#each attributesList as attribute}
+                    <DropListItem
+                        icon={attribute.icon}
+                        on:click={() => {
+                            selectedOption = attribute.name;
+                            showCreateDropdown = false;
+                            showCreate = true;
+                        }}>
+                        {attribute.name}
+                    </DropListItem>
+                {/each}
+            </svelte:fragment>
+        </DropList>
     </div>
 
     {#if $attributes.length}
@@ -122,7 +154,7 @@
     {/if}
 </Container>
 
-<Create bind:showCreate />
+<Create bind:showCreate bind:selectedOption />
 <Delete bind:showDelete {selectedAttribute} />
 <Overview bind:showOverview {selectedAttribute} />
 <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />

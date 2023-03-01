@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { option, options } from './attributes/store';
-    import { Button, InputText, FormList, InputSelect } from '$lib/elements/forms';
+    import { Button, InputText, FormList } from '$lib/elements/forms';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';
@@ -11,9 +11,9 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showCreate = false;
+    export let selectedOption = null;
 
     let key: string = null;
-    let selectedOption = null;
     let data: Partial<Attributes> = {
         required: false,
         array: false,
@@ -79,13 +79,6 @@
             </div>
         </div>
 
-        <InputSelect
-            options={options.map((n) => ({ value: n.name, label: n.name }))}
-            id="type"
-            label="Attribute type"
-            placeholder="Select type"
-            bind:value={selectedOption}
-            required />
         {#if selectedOption}
             <svelte:component
                 this={$option.component}
