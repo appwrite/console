@@ -9,9 +9,10 @@
     import { base } from '$app/paths';
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Pill } from '$lib/elements';
 
     export let showCreate = false;
-    export let selectedOption = null;
+    export let selectedOption: string = null;
 
     let key: string = null;
     let data: Partial<Attributes> = {
@@ -62,28 +63,34 @@
     }
 </script>
 
-<Modal size="big" bind:show={showCreate} on:submit={submit}>
-    <svelte:fragment slot="header">Create Attribute</svelte:fragment>
+<Modal size="big" bind:show={showCreate} on:submit={submit} icon={$option?.icon}>
+    <svelte:fragment slot="header"
+        >{selectedOption}
+        {#if selectedOption === 'Relationship'}
+            <Pill>BETA</Pill>
+        {/if}
+    </svelte:fragment>
     <FormList>
-        <div>
-            <InputText
-                id="key"
-                label="Attribute Key"
-                placeholder="Enter Key"
-                bind:value={key}
-                autofocus
-                required />
+        {#if selectedOption !== 'Relationship'}
+            <div>
+                <InputText
+                    id="key"
+                    label="Attribute Key"
+                    placeholder="Enter Key"
+                    bind:value={key}
+                    autofocus
+                    required />
 
-            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-                <span
-                    class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-                    aria-hidden="true" />
-                <span class="text u-line-height-1-5">
-                    Allowed characters: alphanumeric, hyphen, non-leading underscore, period
-                </span>
+                <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+                    <span
+                        class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+                        aria-hidden="true" />
+                    <span class="text u-line-height-1-5">
+                        Allowed characters: alphanumeric, hyphen, non-leading underscore, period
+                    </span>
+                </div>
             </div>
-        </div>
-
+        {/if}
         {#if selectedOption}
             <svelte:component
                 this={$option.component}

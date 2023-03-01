@@ -23,6 +23,7 @@ export type Option = {
         data: Partial<Attributes>
     ) => Promise<void>;
     format?: 'email' | 'ip' | 'url' | 'enum' | 'relationship';
+    icon: string;
 };
 
 export const options: Option[] = [
@@ -30,66 +31,76 @@ export const options: Option[] = [
         name: 'String',
         component: String,
         type: 'string',
-        func: submitString
+        func: submitString,
+        icon: 'text'
     },
     {
         name: 'Integer',
         component: Integer,
         type: 'integer',
-        func: submitInteger
+        func: submitInteger,
+        icon: 'hashtag'
     },
     {
         name: 'Float',
         component: Float,
         type: 'double',
-        func: submitFloat
+        func: submitFloat,
+        icon: 'hashtag'
     },
     {
         name: 'Boolean',
         component: Boolean,
         type: 'boolean',
-        func: submitBoolean
+        func: submitBoolean,
+        icon: 'toggle'
     },
     {
         name: 'Datetime',
         component: Datetime,
         type: 'datetime',
-        func: submitDatetime
+        func: submitDatetime,
+        icon: 'calendar'
     },
     {
         name: 'Email',
         component: Email,
         type: 'string',
         format: 'email',
-        func: submitEmail
+        func: submitEmail,
+        icon: 'mail'
     },
     {
         name: 'IP',
         component: Ip,
         type: 'string',
         format: 'ip',
-        func: submitIp
+        func: submitIp,
+        icon: 'location-marker'
     },
     {
         name: 'URL',
         component: Url,
         type: 'string',
         format: 'url',
-        func: submitUrl
+        func: submitUrl,
+        icon: 'link'
     },
     {
         name: 'Enum',
         component: Enum,
         type: 'string',
         format: 'enum',
-        func: submitEnum
+        func: submitEnum,
+        icon: 'list'
     },
     {
         name: 'Relationship',
         component: Relationship,
         type: 'relationship',
         format: 'relationship',
-        func: submitRelationship
+        func: submitRelationship,
+        icon: 'link'
     }
 ];
 

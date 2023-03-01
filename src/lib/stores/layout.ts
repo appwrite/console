@@ -1,4 +1,4 @@
-import { writable, readable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
 import { browser } from '$app/environment';
 import { PAGE_LIMIT } from '$lib/constants';

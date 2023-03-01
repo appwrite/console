@@ -21,7 +21,9 @@
 </script>
 
 <script lang="ts">
-    import { InputNumber, InputText, InputChoice } from '$lib/elements/forms';
+    import { InputText, InputChoice, InputSelect } from '$lib/elements/forms';
+    import { onMount } from 'svelte';
+    import { database } from '../../store';
 
     export let selectedAttribute: Models.AttributeString;
     export let data: Partial<Models.AttributeString> = {
@@ -30,6 +32,12 @@
         default: null,
         array: false
     };
+
+    let isOneWay = true;
+
+    onMount(async () => {
+        console.log($database);
+    });
 
     $: if (selectedAttribute) {
         ({
@@ -44,30 +52,33 @@
     }
 </script>
 
-<InputNumber
-    id="size"
-    label="Size"
-    bind:value={data.size}
-    required
-    readonly={!!selectedAttribute} />
-<InputText
-    id="default"
-    label="Default value"
-    bind:value={data.default}
-    maxlength={data.size}
-    disabled={data.required || data.array}
-    readonly={!!selectedAttribute} />
-<InputChoice
-    id="required"
-    label="Required"
-    bind:value={data.required}
-    disabled={!!selectedAttribute || data.array}>
-    Indicate whether this is a required attribute
-</InputChoice>
-<InputChoice
-    id="array"
-    label="Array"
-    bind:value={data.array}
-    disabled={!!selectedAttribute || data.required}>
-    Indicate whether this attribute should act as an array
-</InputChoice>
+{#if isOneWay}
+    <!-- <InputSelect id="related" label="Size" bind:value={data.size} required /> -->
+    <InputText
+        id="default"
+        label="Default value"
+        bind:value={data.default}
+        maxlength={data.size}
+        disabled={data.required || data.array}
+        readonly={!!selectedAttribute} />
+    <div>
+        <InputText
+            id="key"
+            label="Attribute Key"
+            placeholder="Enter Key"
+            bind:value={data.key}
+            autofocus
+            required />
+
+        <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+            <span
+                class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+                aria-hidden="true" />
+            <span class="text u-line-height-1-5">
+                Allowed characters: alphanumeric, hyphen, non-leading underscore, period
+            </span>
+        </div>
+    </div>
+{:else}
+    2
+{/if}

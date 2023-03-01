@@ -17,6 +17,7 @@
     import CreateIndex from '../indexes/createIndex.svelte';
     import Delete from './deleteAttribute.svelte';
     import Overview from './overview.svelte';
+    import { options } from './store';
 
     let showCreateDropdown = false;
     let showDropdown = [];
@@ -26,19 +27,6 @@
     let showDelete = false;
     let showOverview = false;
     let showCreateIndex = false;
-
-    const attributesList = [
-        { name: 'String', icon: 'text' },
-        { name: 'Integer', icon: 'hashtag' },
-        { name: 'Float', icon: 'hashtag' },
-        { name: 'Boolean', icon: 'toggle' },
-        { name: 'Datetime', icon: 'calendar' },
-        { name: 'Email', icon: 'mail' },
-        { name: 'IP', icon: 'location-marker' },
-        { name: 'URL', icon: 'link' },
-        { name: 'Enum', icon: 'list' },
-        { name: 'Relationship', icon: 'relationship' }
-    ];
 </script>
 
 <Container>
@@ -53,7 +41,7 @@
                 <span class="text">Create attribute</span>
             </Button>
             <svelte:fragment slot="list">
-                {#each attributesList as attribute}
+                {#each options as attribute}
                     <DropListItem
                         icon={attribute.icon}
                         on:click={() => {
