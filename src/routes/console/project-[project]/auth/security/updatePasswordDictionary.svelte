@@ -13,17 +13,9 @@
 
     async function updatePasswordDictionary() {
         try {
-            const path = '/projects/' + projectId + '/auth/password-dictionary';
-            const uri = new URL(sdkForConsole.client.config.endpoint + path);
-            await sdkForConsole.client.call(
-                'patch',
-                uri,
-                {
-                    'content-type': 'application/json'
-                },
-                {
-                    enabled: passwordDictionary
-                }
+            await sdkForConsole.projects.updateAuthPasswordDictionary(
+                projectId,
+                passwordDictionary
             );
             invalidate(Dependencies.PROJECT);
             addNotification({
@@ -63,7 +55,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={passwordDictionary === $project.passwordDictionary} submit
+            <Button disabled={passwordDictionary === $project.authPasswordDictionary} submit
                 >Update</Button>
         </svelte:fragment>
     </CardGrid>

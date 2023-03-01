@@ -19,7 +19,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import Delete from '../../deleteMember.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 

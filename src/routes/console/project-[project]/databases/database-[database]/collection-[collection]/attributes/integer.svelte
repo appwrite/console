@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { sdkForProject } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitInteger(
         databaseId: string,

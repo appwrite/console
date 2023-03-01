@@ -7,7 +7,7 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import Create from '../create.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { CARD_LIMIT } from '$lib/constants';
 

@@ -9,7 +9,7 @@
     import { cardLimit } from '$lib/stores/layout';
     import { createPersistentPagination } from '$lib/stores/pagination';
     import type { PageData } from './$types';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import Create from '../create.svelte';
     import { CARD_LIMIT } from '$lib/constants';
 

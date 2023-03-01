@@ -10,27 +10,18 @@
     import { project } from '../../store';
 
     const projectId = $project.$id;
-    let passwordHistory = $project.authPasswordHistory ?? 0;
+    let passwordHistory = $project.authPasswordHistory < 1 ? 5 : $project.authPasswordHistory;
     let passwordHistoryEnabled = ($project.authPasswordHistory ?? 0) != 0;
+    let initialPasswordHistoryEnabled = passwordHistoryEnabled;
 
     async function updatePasswordHistoryLimit() {
         try {
-            if (!passwordHistoryEnabled) {
-                passwordHistory = 0;
-            }
-            const path = '/projects/' + projectId + '/auth/password-history';
-            const uri = new URL(sdkForConsole.client.config.endpoint + path);
-            await sdkForConsole.client.call(
-                'patch',
-                uri,
-                {
-                    'content-type': 'application/json'
-                },
-                {
-                    limit: passwordHistory
-                }
+            await sdkForConsole.projects.updateAuthPasswordHistory(
+                projectId,
+                passwordHistoryEnabled ? passwordHistory : 0
             );
             invalidate(Dependencies.PROJECT);
+            initialPasswordHistoryEnabled = passwordHistoryEnabled;
             addNotification({
                 type: 'success',
                 message: 'Updated password history limit.'
@@ -66,7 +57,7 @@
             <FormList>
                 <InputNumber
                     max={20}
-                    min={0}
+                    min={1}
                     id="max-session"
                     label="Limit"
                     disabled={!passwordHistoryEnabled}
@@ -75,7 +66,11 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={passwordHistory === $project.passwordHistory} submit>Update</Button>
+            <Button
+                disabled={(passwordHistory === $project.authPasswordHistory ||
+                    $project.authPasswordHistory === 0) &&
+                    initialPasswordHistoryEnabled === passwordHistoryEnabled}
+                submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -15,7 +15,7 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';

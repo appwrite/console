@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import { sdkForConsole } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
-import type { Models } from '@aw-labs/appwrite-console';
+import type { Models } from '@appwrite.io/console';
 
 function createPlatformStore() {
     const { subscribe, update, set } = writable<Partial<Models.Platform>>({

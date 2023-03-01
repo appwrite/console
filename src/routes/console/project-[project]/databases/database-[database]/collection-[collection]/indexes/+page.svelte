@@ -16,7 +16,7 @@
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
     import CreateAttribute from '../createAttribute.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';

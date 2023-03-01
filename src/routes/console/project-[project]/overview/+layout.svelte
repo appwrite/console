@@ -21,7 +21,7 @@
 </script>
 
 <script lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
     import { onboarding, project } from '../store';

@@ -1,6 +1,6 @@
 import { page } from '$app/stores';
 import { derived, writable } from 'svelte/store';
-import type { Models } from '@aw-labs/appwrite-console';
+import type { Models } from '@appwrite.io/console';
 
 export const newOrgModal = writable<boolean>(false);
 export const newMemberModal = writable<boolean>(false);

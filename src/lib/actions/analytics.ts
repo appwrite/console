@@ -3,7 +3,7 @@ import googleAnalytics from '@analytics/google-analytics';
 import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
-import { AppwriteException } from '@aw-labs/appwrite-console';
+import { AppwriteException } from '@appwrite.io/console';
 import { ENV, MODE, VARS } from '$lib/system';
 
 const analytics = Analytics({

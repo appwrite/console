@@ -14,7 +14,7 @@
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Variable from '../../createVariable.svelte';
     import { execute, func } from '../store';

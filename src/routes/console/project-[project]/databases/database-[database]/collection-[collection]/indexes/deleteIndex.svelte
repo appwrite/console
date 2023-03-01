@@ -4,7 +4,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
     import { sdkForProject } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';

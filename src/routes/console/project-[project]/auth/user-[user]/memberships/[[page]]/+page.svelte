@@ -14,7 +14,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import DeleteMembership from '../../deleteMembership.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { trackEvent } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';

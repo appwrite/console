@@ -11,7 +11,7 @@ import {
     Storage,
     Teams,
     Users
-} from '@aw-labs/appwrite-console';
+} from '@appwrite.io/console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 const clientConsole = new Client();

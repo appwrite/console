@@ -1,5 +1,5 @@
 import { page } from '$app/stores';
-import type { Models } from '@aw-labs/appwrite-console';
+import type { Models } from '@appwrite.io/console';
 import { derived } from 'svelte/store';
 
 export type Attributes =

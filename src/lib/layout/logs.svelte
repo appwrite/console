@@ -9,7 +9,7 @@
     import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     let selectedTab: string;
     let rawData: string;

@@ -12,7 +12,7 @@
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { PAGE_LIMIT } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let logs: Models.LogList;
     export let path: string;
