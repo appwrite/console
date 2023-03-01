@@ -5,38 +5,14 @@
 
     export let data: PageData;
 
-    $: count = data.count;
-    $: created = data.created;
-    $: read = data.read;
-    $: updated = data.updated;
-    $: deleted = data.deleted;
+    $: count = data.usersTotal;
 </script>
 
 <Usage
     title="Users"
     path={`/console/project-${$page.params.project}/auth/usage`}
     {count}
-    {created}
-    {read}
-    {updated}
-    {deleted}
     countMetadata={{
         legend: 'Users',
         title: 'Registered users'
-    }}
-    createdMetadata={{
-        legend: 'Create',
-        title: 'Users created'
-    }}
-    readMetadata={{
-        legend: 'Read',
-        title: 'Users read'
-    }}
-    updatedMetadata={{
-        legend: 'Update',
-        title: 'Users updated'
-    }}
-    deletedMetadata={{
-        legend: 'Delete',
-        title: 'Users deleted'
     }} />
