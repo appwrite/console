@@ -28,7 +28,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteTeam} warning>
+<Modal bind:show={showDelete} on:submit={deleteTeam} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete Team</svelte:fragment>
 
     <p>

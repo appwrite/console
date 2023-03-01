@@ -32,7 +32,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteUser} warning>
+<Modal bind:show={showDelete} on:submit={deleteUser} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete User</svelte:fragment>
     <p>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
     <svelte:fragment slot="footer">

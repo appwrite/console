@@ -39,7 +39,7 @@
     };
 </script>
 
-<Modal warning={true} on:submit={handleDelete} bind:show={showDelete}>
+<Modal icon="exclamation" state="warning" on:submit={handleDelete} bind:show={showDelete}>
     <svelte:fragment slot="header">Delete Index</svelte:fragment>
 
     <p>

@@ -25,7 +25,6 @@
     let showCreateIndex = false;
     let showOverview = false;
     let showDelete = false;
-    let showCreateAttribute = false;
 
     const handleDelete = async () => {
         invalidate(Dependencies.COLLECTION);

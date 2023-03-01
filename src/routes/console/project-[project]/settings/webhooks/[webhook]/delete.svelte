@@ -33,7 +33,7 @@
     }
 </script>
 
-<Modal bind:show={showDelete} on:submit={handleDelete} warning>
+<Modal bind:show={showDelete} on:submit={handleDelete} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete Webhook</svelte:fragment>
     <p>Are you sure you want to delete <b>{$webhook.name}</b> from '{$project.name}'?</p>
     <svelte:fragment slot="footer">

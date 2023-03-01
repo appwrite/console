@@ -5,7 +5,9 @@
 
     export let show = false;
     export let size: 'small' | 'big' = null;
-    export let warning = false;
+    // export let WASD = false;
+    export let icon: string = null;
+    export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;
     export let closable = true;
 
@@ -80,9 +82,14 @@
         <!-- svelte-ignore a11y-no-redundant-roles -->
         <form class="modal-form" role="form" on:submit|preventDefault>
             <header class="modal-header">
-                {#if warning}
-                    <div class="avatar is-warning is-medium">
-                        <span class="icon-exclamation" aria-hidden="true" />
+                {#if icon}
+                    <div
+                        class="avatar is-medium"
+                        class:is-success={state === 'success'}
+                        class:is-warning={state === 'warning'}
+                        class:is-danger={state === 'error'}
+                        class:is-info={state === 'info'}>
+                        <span class={`icon-${icon}`} aria-hidden="true" />
                     </div>
                 {/if}
                 <h4 class="modal-title heading-level-5">

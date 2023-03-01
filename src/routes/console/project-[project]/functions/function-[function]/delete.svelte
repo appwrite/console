@@ -34,7 +34,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={handleSubmit} warning>
+<Modal bind:show={showDelete} on:submit={handleSubmit} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete Deployment</svelte:fragment>
     <p>Are you sure you want to delete this deployment?</p>
     <svelte:fragment slot="footer">
