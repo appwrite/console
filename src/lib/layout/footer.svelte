@@ -43,7 +43,7 @@
                 <span class="text">ⓒ {currentYear} Appwrite. All rights reserved.</span>
             </li>
             <li class="inline-links-item u-flex u-gap-8">
-                <a href="https://github.com/appwrite/console" target="_blank" rel="noreferrer">
+                <a href="https://github.com/appwrite/appwrite" target="_blank" rel="noreferrer">
                     <span class="icon-github" aria-hidden="true" aria-label="Appwrite on Github" />
                 </a>
                 <a href="https://appwrite.io/discord" target="_blank" rel="noreferrer">
