@@ -19,6 +19,13 @@
     const project = $page.params.project;
     const databaseId = $page.params.database;
 
+    let columns = [
+        { id: '$id', name: 'Collection ID', show: true, width: 50 },
+        { id: 'name', name: 'Name', show: true, width: 120 },
+        { id: '$createdAt', name: 'Created', show: true, width: 120 },
+        { id: '$updatedAt', name: 'Updated', show: true, width: 120 }
+    ];
+
     async function handleCreate(event: CustomEvent<Models.Collection>) {
         showCreate = false;
         await goto(
@@ -36,7 +43,7 @@
         <Heading tag="h2" size="5">Collections</Heading>
 
         <div class="u-flex u-gap-16">
-            <ViewSelector>test</ViewSelector>
+            <ViewSelector bind:columns />
 
             <Button on:click={() => (showCreate = true)} event="create_collection">
                 <span class="icon-plus" aria-hidden="true" />
@@ -47,7 +54,7 @@
 
     {#if data.collections.total}
         {#if $preferredView === 'list'}
-            <TableView {data} />
+            <TableView {data} {columns} />
         {:else}
             <GridView {data} bind:showCreate />
         {/if}

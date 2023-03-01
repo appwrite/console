@@ -17,37 +17,53 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
+    export let columns: {
+        id: string;
+        name: string;
+        width: number;
+        show: boolean;
+    }[];
     const project = $page.params.project;
 </script>
 
 <TableScroll>
     <TableHeader>
-        <TableCellHead width={45}>Database ID</TableCellHead>
-        <TableCellHead width={100}>Name</TableCellHead>
-        <TableCellHead width={100}>Updated At</TableCellHead>
-        <TableCellHead width={100}>Created At</TableCellHead>
+        {#each columns as column}
+            {#if column.show}
+                <TableCellHead width={column.width}>{column.name}</TableCellHead>
+            {/if}
+        {/each}
     </TableHeader>
     <TableBody>
         {#each data.databases.databases as database}
             <TableRowLink
                 href={`${base}/console/project-${project}/databases/database-${database.$id}`}>
-                <TableCell title="Deployment ID">
-                    <Copy value={database.$id}>
-                        <Pill button trim>
-                            <span class="icon-duplicate" aria-hidden="true" />
-                            <span class="text u-trim">{database.$id}</span>
-                        </Pill>
-                    </Copy>
-                </TableCell>
-                <TableCellText title="Name">
-                    {database.name}
-                </TableCellText>
-                <TableCellText title="Updated">
-                    {toLocaleDateTime(database.$updatedAt)}
-                </TableCellText>
-                <TableCellText title="Created">
-                    {toLocaleDateTime(database.$createdAt)}
-                </TableCellText>
+                {#each columns as column}
+                    {#if column.show}
+                        {#if column.id === '$id'}
+                            <TableCell title={column.name}>
+                                <Copy value={database.$id}>
+                                    <Pill button trim>
+                                        <span class="icon-duplicate" aria-hidden="true" />
+                                        <span class="text u-trim">{database.$id}</span>
+                                    </Pill>
+                                </Copy>
+                            </TableCell>
+                        {:else if column.id === 'name'}
+                            <TableCellText title={column.name}>
+                                {database.name}
+                            </TableCellText>
+                        {:else if column.id === '$updatedAt'}
+                            <TableCellText title={column.name}>
+                                {toLocaleDateTime(database.$updatedAt)}
+                            </TableCellText>
+                        {:else if column.id === '$createdAt'}
+                            <TableCellText title={column.name}>
+                                {toLocaleDateTime(database.$createdAt)}
+                            </TableCellText>
+                        {/if}
+                    {/if}
+                {/each}
             </TableRowLink>
         {/each}
     </TableBody>

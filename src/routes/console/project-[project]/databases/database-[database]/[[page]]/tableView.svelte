@@ -17,38 +17,54 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
+    export let columns: {
+        id: string;
+        name: string;
+        width: number;
+        show: boolean;
+    }[];
     const project = $page.params.project;
     const databaseId = $page.params.database;
 </script>
 
 <TableScroll>
     <TableHeader>
-        <TableCellHead width={45}>Collection ID</TableCellHead>
-        <TableCellHead width={100}>Name</TableCellHead>
-        <TableCellHead width={100}>Updated At</TableCellHead>
-        <TableCellHead width={100}>Created At</TableCellHead>
+        {#each columns as column}
+            {#if column.show}
+                <TableCellHead width={column.width}>{column.name}</TableCellHead>
+            {/if}
+        {/each}
     </TableHeader>
     <TableBody>
         {#each data.collections.collections as collection}
             <TableRowLink
                 href={`${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}>
-                <TableCell title="Deployment ID">
-                    <Copy value={collection.$id}>
-                        <Pill button trim>
-                            <span class="icon-duplicate" aria-hidden="true" />
-                            <span class="text u-trim">{collection.$id}</span>
-                        </Pill>
-                    </Copy>
-                </TableCell>
-                <TableCellText title="Name">
-                    {collection.name}
-                </TableCellText>
-                <TableCellText title="Updated">
-                    {toLocaleDateTime(collection.$updatedAt)}
-                </TableCellText>
-                <TableCellText title="Created">
-                    {toLocaleDateTime(collection.$createdAt)}
-                </TableCellText>
+                {#each columns as column}
+                    {#if column.show}
+                        {#if column.id === '$id'}
+                            <TableCell title={column.name}>
+                                <Copy value={collection.$id}>
+                                    <Pill button trim>
+                                        <span class="icon-duplicate" aria-hidden="true" />
+                                        <span class="text u-trim">{collection.$id}</span>
+                                    </Pill>
+                                </Copy>
+                            </TableCell>
+                        {:else if column.id === 'name'}
+                            <TableCellText title={column.name}>
+                                {collection.name}
+                            </TableCellText>
+                        {:else if column.id === '$updatedAt'}
+                            <TableCellText title={column.name}>
+                                {toLocaleDateTime(collection.$updatedAt)}
+                            </TableCellText>
+                        {:else if column.id === '$createdAt'}
+                            <TableCellText title={column.name}>
+                                {toLocaleDateTime(collection.$createdAt)}
+                            </TableCellText>
+                        {/if}
+                    {/if}
+                {/each}
             </TableRowLink>
         {/each}
     </TableBody>

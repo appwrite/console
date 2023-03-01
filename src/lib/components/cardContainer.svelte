@@ -1,9 +1,8 @@
 <script lang="ts">
     import { Empty } from '$lib/components';
-    import { cardLimit } from '$lib/stores/layout';
+    import { CARD_LIMIT } from '$lib/constants';
 
     export let offset = 0;
-    export let limit = $cardLimit;
     export let total = 0;
     export let event: string = null;
 </script>
@@ -13,7 +12,7 @@
     style={`--grid-gap:1.5rem; --grid-item-size:${total > 3 ? '22rem' : '25rem'};`}>
     <slot />
 
-    {#if total > 3 ? total < limit + offset : total % 2 !== 0}
+    {#if total > 3 ? total < CARD_LIMIT + offset : total % 2 !== 0}
         <Empty on:click target={event}>
             <slot name="empty" />
         </Empty>

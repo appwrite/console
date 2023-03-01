@@ -1,6 +1,7 @@
 import { writable, readable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
 import { browser } from '$app/environment';
+import { PAGE_LIMIT } from '$lib/constants';
 
 export type Tab = {
     href: string;
@@ -27,13 +28,22 @@ export function updateLayout(args: updateLayoutArguments) {
     breadcrumb.set(args.breadcrumb ?? null);
 }
 
-export const pageLimit = readable(12); // default page limit
-export const cardLimit = readable(6); // default card limit
+export const customPageLimit = writable<number>(
+    browser
+        ? sessionStorage.getItem('customPageLimit')?.length
+            ? parseInt(sessionStorage.getItem('customPageLimit'))
+            : PAGE_LIMIT
+        : PAGE_LIMIT
+);
 
 export const preferredView = writable<View>(
     browser ? (sessionStorage.getItem('prefferedView') as View) : 'grid'
 );
 
 if (browser) {
+    console.log(sessionStorage.getItem('customPageLimit'));
     preferredView.subscribe((u) => sessionStorage.setItem('prefferedView', u ?? 'grid'));
+    customPageLimit.subscribe((u) =>
+        sessionStorage.setItem('customPageLimit', u.toString() ?? PAGE_LIMIT.toString())
+    );
 }

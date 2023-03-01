@@ -15,7 +15,6 @@
 <CardContainer total={data.databases.total} on:click={() => (showCreate = true)} event="database">
     {#each data.databases.databases as database}
         <GridItem1 href={`${base}/console/project-${project}/databases/database-${database.$id}`}>
-            <!-- <svelte:fragment slot="eyebrow">X Collections</svelte:fragment> -->
             <svelte:fragment slot="title">{database.name}</svelte:fragment>
 
             <Copy value={database.$id}>
@@ -24,7 +23,7 @@
         </GridItem1>
     {/each}
     <svelte:fragment slot="empty">
-        <p>Create a new database</p>
+        <p class="text">Create a new database</p>
     </svelte:fragment>
 </CardContainer>
 

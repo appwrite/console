@@ -6,14 +6,13 @@
     import { Pill } from '$lib/elements';
     import { createPersistentPagination } from '$lib/stores/pagination';
     import type { PageData } from './$types';
-    import { cardLimit } from '$lib/stores/layout';
 
     export let data: PageData;
     export let showCreate = false;
 
     const databaseId = $page.params.database;
     const project = $page.params.project;
-    const offset = createPersistentPagination($cardLimit);
+    const offset = createPersistentPagination(CARD_LIMIT);
 </script>
 
 <CardContainer
