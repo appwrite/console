@@ -13,7 +13,7 @@ client
     .setProject('${project}')
     .setSelfSigned(status: true); // For self signed certificates, only use for development`;
 
-    let dismissedAlert = false;
+    let showAlert = true;
 </script>
 
 <WizardStep>
@@ -29,12 +29,12 @@ client
         Before sending any API calls to your new Appwrite project, make sure your device or emulator
         has network access to your Appwrite project's hostname or IP address.
     </p>
-    {#if !dismissedAlert}
+    {#if showAlert}
         <div class="common-section">
             <Alert
                 type="info"
                 dismissible={MODE === Mode.CLOUD}
-                on:dismiss={() => (dismissedAlert = true)}>
+                on:dismiss={() => (showAlert = false)}>
                 <svelte:fragment slot="title">For self-hosted solutions</svelte:fragment>
                 When connecting to a locally hosted Appwrite project from an emulator or a mobile device,
                 you should use the private IP of the device running your Appwrite project as the hostname
