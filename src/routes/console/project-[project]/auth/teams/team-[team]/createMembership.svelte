@@ -21,9 +21,11 @@
         try {
             const user = await sdkForProject.teams.createMembership(
                 teamId,
-                email,
                 roles,
                 url,
+                email,
+                '',
+                '',
                 name
             );
             addNotification({

@@ -34,9 +34,11 @@
         try {
             await sdkForConsole.teams.createMembership(
                 $organization.$id,
-                member.userEmail,
                 member.roles,
                 url,
+                member.userEmail,
+                '',
+                '',
                 member.userName
             );
             addNotification({
