@@ -1,10 +1,10 @@
-import Analytics from 'analytics';
-import googleAnalytics from '@analytics/google-analytics';
-import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
 import { AppwriteException } from '@appwrite.io/console';
 import { ENV, MODE, VARS } from '$lib/system';
+import googleAnalytics from '@analytics/google-analytics';
+import Analytics from 'analytics';
+import { get } from 'svelte/store';
 
 const analytics = Analytics({
     app: 'appwrite',

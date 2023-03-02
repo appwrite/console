@@ -1,7 +1,7 @@
+import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
 
-/** @type {import('vite').UserConfig} */
-const config = {
+const config = defineConfig({
     plugins: [sveltekit()],
     optimizeDeps: {
         include: ['echarts', 'prismjs']
@@ -18,16 +18,15 @@ const config = {
     server: {
         port: 3000
     }
-};
+});
 
-/** @type {import('vite').UserConfig} */
-const testConfig = {
+const testConfig = defineConfig({
     resolve: {
         // hotfix for https://github.com/vitest-dev/vitest/issues/2834
         conditions: ['browser']
     },
     test: {
-        include: ['tests/**/*.test.ts'],
+        include: ['tests/unit/**/*.test.ts'],
         environment: 'jsdom',
         globals: true,
         threads: true,
@@ -36,7 +35,7 @@ const testConfig = {
             inline: ['@analytics/type-utils']
         }
     }
-};
+});
 
 export default process.env.VITEST
     ? {
