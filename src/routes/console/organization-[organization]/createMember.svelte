@@ -21,9 +21,11 @@
         try {
             const team = await sdkForConsole.teams.createMembership(
                 $organization.$id,
-                email,
                 ['owner'],
                 url,
+                email,
+                '',
+                '',
                 name
             );
             invalidate(Dependencies.ACCOUNT);
