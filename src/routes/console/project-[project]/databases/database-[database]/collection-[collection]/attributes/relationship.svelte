@@ -21,9 +21,11 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputChoice, InputSelect } from '$lib/elements/forms';
+    import { InputText, InputSelect, Button } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { database } from '../../store';
+    import { page } from '$app/stores';
+    import { Box } from '$lib/components';
+    import { collection } from '../store';
 
     export let selectedAttribute: Models.AttributeString;
     export let data: Partial<Models.AttributeString> = {
@@ -33,11 +35,29 @@
         array: false
     };
 
+    const databaseId = $page.params.database;
+    const oneWay = [
+        { value: 'one', label: 'One to one' },
+        { value: 'many', label: 'One to many' }
+    ];
+    const twoWay = [
+        { value: 'one', label: 'One to one' },
+        { value: 'many', label: 'One to many' },
+        { value: 'manyOne', label: 'Many to one' },
+        { value: 'manyMany', label: 'Many to many' }
+    ];
+    let collections: Models.Collection[] = [];
     let isOneWay = true;
 
     onMount(async () => {
-        console.log($database);
+        const collectionList = await getCollections();
+        collections = collectionList.collections.filter((n) => n.$id !== $collection.$id);
+        data.relation = 'one';
     });
+
+    async function getCollections() {
+        return await sdkForProject.databases.listCollections(databaseId);
+    }
 
     $: if (selectedAttribute) {
         ({
@@ -52,15 +72,18 @@
     }
 </script>
 
-{#if isOneWay}
-    <!-- <InputSelect id="related" label="Size" bind:value={data.size} required /> -->
-    <InputText
-        id="default"
-        label="Default value"
-        bind:value={data.default}
-        maxlength={data.size}
-        disabled={data.required || data.array}
-        readonly={!!selectedAttribute} />
+<Button secondary on:click={() => (isOneWay = true)} disabled={isOneWay}>One</Button>
+<Button secondary on:click={() => (isOneWay = false)} disabled={!isOneWay}>Two</Button>
+
+<InputSelect
+    id="related"
+    label="Related Collection"
+    bind:value={data.related}
+    required
+    placeholder="Select a collection"
+    options={collections?.map((n) => ({ value: n.$id, label: n.name }))} />
+{#if data?.related}
+    {@const selectedCol = collections.find((n) => n.$id === data.related)}
     <div>
         <InputText
             id="key"
@@ -79,6 +102,40 @@
             </span>
         </div>
     </div>
-{:else}
-    2
+    {#if !isOneWay}
+        <div>
+            <InputText
+                id="keyRelated"
+                label="Attribute Key "
+                placeholder="Enter Key"
+                bind:value={data.keyRelated}
+                autofocus
+                required />
+
+            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+                <span
+                    class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+                    aria-hidden="true" />
+                <span class="text u-line-height-1-5">
+                    Allowed characters: alphanumeric, hyphen, non-leading underscore, period
+                </span>
+            </div>
+        </div>
+    {/if}
+
+    <InputSelect
+        id="relationship"
+        label="Reraltion"
+        bind:value={data.relation}
+        required
+        placeholder="Select a relation"
+        options={isOneWay ? oneWay : twoWay} />
+
+    <Box>
+        {$collection.name} -> {selectedCol.name}
+    </Box>
+    <p>
+        <b> {$collection.name}</b> has {data.relation === 'one' ? 'one' : 'many'}
+        <b>{selectedCol.name}</b>
+    </p>
 {/if}
