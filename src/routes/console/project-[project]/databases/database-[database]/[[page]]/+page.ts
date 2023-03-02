@@ -3,10 +3,10 @@ import { sdkForProject } from '$lib/stores/sdk';
 import { pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
-import { preferredView } from '$lib/stores/layout';
 import { get } from 'svelte/store';
+import { prefs } from '$lib/stores/user';
 
-const limit = get(preferredView) === 'list' ? PAGE_LIMIT : CARD_LIMIT;
+const limit = get(prefs)?.prefferedView === 'list' ? PAGE_LIMIT : CARD_LIMIT;
 
 export const load: PageLoad = async ({ params, parent }) => {
     await parent();

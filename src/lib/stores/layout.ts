@@ -36,13 +36,7 @@ export const customPageLimit = writable<number>(
         : PAGE_LIMIT
 );
 
-export const preferredView = writable<View>(
-    browser ? (sessionStorage.getItem('prefferedView') as View) : 'grid'
-);
-
 if (browser) {
-    console.log(sessionStorage.getItem('customPageLimit'));
-    preferredView.subscribe((u) => sessionStorage.setItem('prefferedView', u ?? 'grid'));
     customPageLimit.subscribe((u) =>
         sessionStorage.setItem('customPageLimit', u.toString() ?? PAGE_LIMIT.toString())
     );
