@@ -33,17 +33,19 @@ If you are worried about or don’t know where to start, check out the next sect
 
 ## Development
 
-### 1. Clone the repository with git 
+### 1. Clone the repository with git
+
 ```bash
 git clone https://github.com/appwrite/console.git appwrite-console
 ```
 
 ### 2. Install dependencies with npm
+
 ```bash
-npm install 
+npm install
 ```
 
-### 3. Setup environment variables 
+### 3. Setup environment variables
 
 Add a `.env` file by copying the `.env.example` file as a template in the project's root directory.
 
