@@ -52,7 +52,8 @@
             {disabled}
             bind:this={element}
             bind:value
-            on:invalid={handleInvalid}>
+            on:invalid={handleInvalid}
+            on:change>
             {#if placeholder}
                 <option value={null} disabled selected hidden>{placeholder}</option>
             {/if}

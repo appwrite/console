@@ -1,8 +1,8 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Copy, Pagination } from '$lib/components';
-    import { PAGE_LIMIT } from '$lib/constants';
+    import { Copy, CustomPagination } from '$lib/components';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import {
         TableBody,
@@ -69,11 +69,10 @@
     </TableBody>
 </TableScroll>
 
-<div class="u-flex u-margin-block-start-32 u-main-space-between">
-    <p class="text">Total results: {data.databases.total}</p>
-    <Pagination
-        offset={data.offset}
-        limit={PAGE_LIMIT}
-        sum={data.databases.total}
-        path={`/console/project-${$page.params.project}/databases`} />
-</div>
+<CustomPagination
+    limit={PAGE_LIMIT}
+    name="Databases"
+    path={`/console/project-${$page.params.project}/databases`}
+    offset={data.offset}
+    total={data.databases.total}
+    dependencies={[Dependencies.DATABASES]} />

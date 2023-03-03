@@ -15,7 +15,6 @@ export const load: PageLoad = async ({ params, parent, depends }) => {
     const limit = get(prefs)?.preferredView === 'list' ? get(customPageLimit) : CARD_LIMIT;
 
     const offset = pageToOffset(page, limit);
-    console.log(offset);
 
     return {
         offset,

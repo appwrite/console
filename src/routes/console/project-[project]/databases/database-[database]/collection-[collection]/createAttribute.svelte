@@ -26,9 +26,9 @@
     async function submit() {
         try {
             await $option.func(databaseId, collectionId, key, data);
-            invalidate(Dependencies.COLLECTION);
+            await Promise.allSettled([invalidate(Dependencies.COLLECTION)]);
             if (!$page.url.pathname.includes('attributes')) {
-                goto(
+                await goto(
                     `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
                 );
             }

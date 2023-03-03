@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import { sdkForProject } from '$lib/stores/sdk';
 
     export async function submitRelationship(
@@ -21,10 +21,10 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputSelect, Button } from '$lib/elements/forms';
+    import { InputText, InputSelect, Button, InputSelectSearch } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { Box } from '$lib/components';
+    import { Box, LabelCard } from '$lib/components';
     import { collection } from '../store';
 
     export let selectedAttribute: Models.AttributeString;
@@ -46,6 +46,7 @@
         { value: 'manyOne', label: 'Many to one' },
         { value: 'manyMany', label: 'Many to many' }
     ];
+    let search: string = null;
     let collections: Models.Collection[] = [];
     let isOneWay = true;
 
@@ -56,7 +57,20 @@
     });
 
     async function getCollections() {
-        return await sdkForProject.databases.listCollections(databaseId);
+        if (search) {
+            const collections = await sdkForProject.databases.listCollections(databaseId, [
+                Query.startsWith(search),
+                Query.orderDesc('$createdAt')
+            ]);
+            return collections;
+        } else {
+            const collections = await sdkForProject.databases.listCollections(databaseId);
+            return collections;
+        }
+    }
+
+    $: if (search) {
+        getCollections();
     }
 
     $: if (selectedAttribute) {
@@ -72,9 +86,32 @@
     }
 </script>
 
+<ul class="grid-box" style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem;">
+    <li>
+        <LabelCard name="relationship" group="relationship" value="one">
+            <svelte:fragment slot="title">One-way relationship</svelte:fragment>
+            One Relation attribute within this collection
+        </LabelCard>
+    </li>
+    <li>
+        <LabelCard name="relationship" group="relationship" value="two">
+            <svelte:fragment slot="title">Two-way relationship</svelte:fragment>
+            One Relation attribute within this collection and another within the related collection
+        </LabelCard>
+    </li>
+</ul>
+
 <Button secondary on:click={() => (isOneWay = true)} disabled={isOneWay}>One</Button>
 <Button secondary on:click={() => (isOneWay = false)} disabled={!isOneWay}>Two</Button>
 
+<InputSelectSearch
+    id="related"
+    label="Related Collection"
+    bind:search
+    bind:value={data.related}
+    required
+    placeholder="Select a collection"
+    options={collections?.map((n) => ({ value: n.$id, label: n.name }))} />
 <InputSelect
     id="related"
     label="Related Collection"

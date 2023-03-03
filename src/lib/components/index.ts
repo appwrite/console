@@ -47,3 +47,5 @@ export { default as Status } from './status.svelte';
 export { default as Heading } from './heading.svelte';
 export { default as Output } from './output.svelte';
 export { default as ViewSelector } from './viewSelector.svelte';
+export { default as LabelCard } from './labelCard.svelte';
+export { default as CustomPagination } from './customPagination.svelte';
