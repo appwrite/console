@@ -3,11 +3,11 @@
     import { FormItem } from '.';
 
     export let value = '';
+    export let autofocus = true;
 
     let element: HTMLInputElement;
     let icon = 'info';
     const pattern = String.raw`^[a-zA-Z0-9][a-zA-Z0-9._-]*$`;
-    const autofocus = true;
 
     onMount(() => {
         if (element && autofocus) {

@@ -26,7 +26,7 @@
         <Button secondary on:click={() => (showSelectColumns = true)}>
             <span class="icon-view-board" />
             <span class="text">Columns</span>
-            <span class="text">{selectedColumnsNumber}</span>
+            <span class="inline-tag">{selectedColumnsNumber}</span>
         </Button>
         <svelte:fragment slot="list">
             {#each columns as column}
@@ -40,23 +40,27 @@
     </DropList>
 {/if}
 
-<ul class="buttons-list">
-    <li class="buttons-list-item">
-        <Button
-            text
-            disabled={$prefs.preferredView === 'list'}
-            on:click={() => prefs.updatePrefs({ ...$prefs, preferredView: 'list' })}>
-            <span class="icon-view-list" />
-        </Button>
-    </li>
-    <li class="buttons-list-item">
-        <Button
-            text
-            disabled={$prefs.preferredView === 'grid'}
-            on:click={() => {
-                prefs.updatePrefs({ ...$prefs, preferredView: 'grid' });
-            }}>
-            <span class="icon-view-grid" />
-        </Button>
-    </li>
-</ul>
+<div class="icon-toggle">
+    <ul class="icon-toggle-list">
+        <li class="icon-toggle-item">
+            <button
+                class="icon-toggle-button"
+                aria-label="List View"
+                type="button"
+                class:is-selected={$prefs.preferredView === 'list'}
+                on:click={() => prefs.updatePrefs({ ...$prefs, preferredView: 'list' })}>
+                <span class="icon-view-list" aria-hidden="true" />
+            </button>
+        </li>
+        <li class="icon-toggle-item">
+            <button
+                class="icon-toggle-button"
+                aria-label="Grid View"
+                type="button"
+                class:is-selected={$prefs.preferredView === 'grid'}
+                on:click={() => prefs.updatePrefs({ ...$prefs, preferredView: 'grid' })}>
+                <span class="icon-view-grid" aria-hidden="true" />
+            </button>
+        </li>
+    </ul>
+</div>

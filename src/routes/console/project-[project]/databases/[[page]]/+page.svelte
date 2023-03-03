@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
     import { Empty, Heading, ViewSelector } from '$lib/components';
     import { Container } from '$lib/layout';
@@ -11,6 +11,7 @@
     import GridView from './gridView.svelte';
     import TableView from './tableView.svelte';
     import { prefs } from '$lib/stores/user';
+    import { Dependencies } from '$lib/constants';
 
     export let data: PageData;
     const project = $page.params.project;
@@ -27,6 +28,12 @@
         showCreate = false;
         await goto(`${base}/console/project-${project}/databases/database-${event.detail.$id}`);
     }
+
+    $: prefs.subscribe((prefs) => {
+        if (prefs?.preferredView) {
+            invalidate(Dependencies.DATABASES);
+        }
+    });
 </script>
 
 <Container>
