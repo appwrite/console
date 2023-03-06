@@ -1,8 +1,8 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { CardContainer, Copy, GridItem1, Pagination } from '$lib/components';
-    import { CARD_LIMIT } from '$lib/constants';
+    import { CardContainer, Copy, CustomPagination, GridItem1 } from '$lib/components';
+    import { CARD_LIMIT, Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { createPersistentPagination } from '$lib/stores/pagination';
     import type { PageData } from './$types';
@@ -39,11 +39,10 @@
     </svelte:fragment>
 </CardContainer>
 
-<div class="u-flex u-margin-block-start-32 u-main-space-between">
-    <p class="text">Total results: {data.collections.total}</p>
-    <Pagination
-        limit={CARD_LIMIT}
-        path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}`}
-        offset={data.offset}
-        sum={data.collections.total} />
-</div>
+<CustomPagination
+    limit={CARD_LIMIT}
+    name="Collections"
+    path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}`}
+    offset={data.offset}
+    total={data.collections.total}
+    dependencies={[Dependencies.DATABASE]} />
