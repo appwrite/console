@@ -14,6 +14,7 @@
     };
 
     export let columns: Writable<Column[]>;
+    export let showToggle = true;
     const pathname = $page.url.pathname;
     let showSelectColumns = false;
 
@@ -46,7 +47,7 @@
 {#if $prefs?.preferredView === 'list'}
     <DropList bind:show={showSelectColumns} scrollable={true}>
         <Button secondary on:click={() => (showSelectColumns = true)}>
-            <span class="icon-view-board" />
+            <span class="icon-view-board" aria-hidden="true" aria-label="columns" />
             <span class="text">Columns</span>
             <span class="inline-tag">{selectedColumnsNumber}</span>
         </Button>
@@ -62,27 +63,29 @@
     </DropList>
 {/if}
 
-<div class="icon-toggle">
-    <ul class="icon-toggle-list">
-        <li class="icon-toggle-item">
-            <button
-                class="icon-toggle-button"
-                aria-label="List View"
-                type="button"
-                class:is-selected={$prefs.preferredView === 'list'}
-                on:click={() => prefs.updatePrefs({ ...$prefs, preferredView: 'list' })}>
-                <span class="icon-view-list" aria-hidden="true" />
-            </button>
-        </li>
-        <li class="icon-toggle-item">
-            <button
-                class="icon-toggle-button"
-                aria-label="Grid View"
-                type="button"
-                class:is-selected={$prefs.preferredView === 'grid'}
-                on:click={() => prefs.updatePrefs({ ...$prefs, preferredView: 'grid' })}>
-                <span class="icon-view-grid" aria-hidden="true" />
-            </button>
-        </li>
-    </ul>
-</div>
+{#if showToggle}
+    <div class="icon-toggle">
+        <ul class="icon-toggle-list">
+            <li class="icon-toggle-item">
+                <button
+                    class="icon-toggle-button"
+                    aria-label="List View"
+                    type="button"
+                    class:is-selected={$prefs.preferredView === 'list'}
+                    on:click={() => prefs.updatePrefs({ ...$prefs, preferredView: 'list' })}>
+                    <span class="icon-view-list" aria-hidden="true" />
+                </button>
+            </li>
+            <li class="icon-toggle-item">
+                <button
+                    class="icon-toggle-button"
+                    aria-label="Grid View"
+                    type="button"
+                    class:is-selected={$prefs.preferredView === 'grid'}
+                    on:click={() => prefs.updatePrefs({ ...$prefs, preferredView: 'grid' })}>
+                    <span class="icon-view-grid" aria-hidden="true" />
+                </button>
+            </li>
+        </ul>
+    </div>
+{/if}

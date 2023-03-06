@@ -16,16 +16,10 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Writable } from 'svelte/store';
     import type { PageData } from './$types';
+    import type { Column } from './store';
 
     export let data: PageData;
-    export let columns: Writable<
-        {
-            id: string;
-            name: string;
-            width: number;
-            show: boolean;
-        }[]
-    >;
+    export let columns: Writable<Column[]>;
     const project = $page.params.project;
     const databaseId = $page.params.database;
 </script>

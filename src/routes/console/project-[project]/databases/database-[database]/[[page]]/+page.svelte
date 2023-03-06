@@ -11,7 +11,7 @@
     import GridView from './gridView.svelte';
     import TableView from './tableView.svelte';
     import { prefs } from '$lib/stores/user';
-    import { columns } from '../../[[page]]/store';
+    import { columns } from './store';
 
     export let data: PageData;
     let showCreate = false;

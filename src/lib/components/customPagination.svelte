@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import type { Dependencies } from '$lib/constants';
     import { InputSelect } from '$lib/elements/forms';
     import { customPageLimit } from '$lib/stores/layout';
@@ -21,8 +21,6 @@
     ];
 
     async function limitChange() {
-        const currentPage = Math.floor(offset / $customPageLimit + 1);
-        const newPage = Math.floor((offset + 1) / limit);
         $customPageLimit = limit;
 
         await Promise.allSettled([
@@ -30,9 +28,6 @@
                 invalidate(dependency);
             })
         ]);
-        if (currentPage !== newPage) {
-            await goto(path + (newPage > 1 ? `/${newPage}` : ``), { replaceState: true });
-        }
     }
 </script>
 
