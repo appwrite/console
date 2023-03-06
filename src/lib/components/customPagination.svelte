@@ -2,7 +2,8 @@
     import { invalidate } from '$app/navigation';
     import type { Dependencies } from '$lib/constants';
     import { InputSelect } from '$lib/elements/forms';
-    import { customPageLimit } from '$lib/stores/layout';
+    import { prefs } from '$lib/stores/user';
+    import { onMount } from 'svelte';
     import { Pagination } from '.';
     export let total: number;
     export let offset: number;
@@ -20,8 +21,13 @@
         { label: '192', value: 192 }
     ];
 
+    onMount(() => {
+        prefs.load();
+        $prefs?.pageLimit && (limit = $prefs.pageLimit);
+    });
+
     async function limitChange() {
-        $customPageLimit = limit;
+        prefs.updatePrefs({ ...$prefs, pageLimit: limit });
 
         await Promise.allSettled([
             dependencies.forEach((dependency) => {

@@ -1,7 +1,5 @@
 import { writable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
-import { browser } from '$app/environment';
-import { PAGE_LIMIT } from '$lib/constants';
 
 export type Tab = {
     href: string;
@@ -26,18 +24,4 @@ export const breadcrumb = writable<typeof SvelteComponent>();
 export function updateLayout(args: updateLayoutArguments) {
     header.set(args.header ?? null);
     breadcrumb.set(args.breadcrumb ?? null);
-}
-
-export const customPageLimit = writable<number>(
-    browser
-        ? sessionStorage.getItem('customPageLimit')?.length
-            ? parseInt(sessionStorage.getItem('customPageLimit'))
-            : PAGE_LIMIT
-        : PAGE_LIMIT
-);
-
-if (browser) {
-    customPageLimit.subscribe((u) =>
-        sessionStorage.setItem('customPageLimit', u.toString() ?? PAGE_LIMIT.toString())
-    );
 }

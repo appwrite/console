@@ -6,11 +6,14 @@ import type { PageLoad } from './$types';
 import { get } from 'svelte/store';
 import { prefs } from '$lib/stores/user';
 
-const limit = get(prefs)?.prefferedView === 'list' ? PAGE_LIMIT : CARD_LIMIT;
-
 export const load: PageLoad = async ({ params, parent, url }) => {
     await parent();
     const page = Number(params.page);
+
+    const customPrefs = get(prefs);
+
+    const limit =
+        customPrefs?.preferredView === 'list' ? customPrefs?.pageLimit ?? PAGE_LIMIT : CARD_LIMIT;
     const offset = pageToOffset(page, limit);
 
     const collections = await sdkForProject.databases.listCollections(params.database, [

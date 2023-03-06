@@ -32,7 +32,8 @@ if (browser) {
         await prefs.load();
         if (!get(prefs)?.preferredView) {
             prefs.updatePrefs({
-                preferredView: 'grid'
+                preferredView: 'grid',
+                pageLimit: 6
             });
         }
     }
