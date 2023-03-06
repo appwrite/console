@@ -12,17 +12,12 @@
     import TableView from './tableView.svelte';
     import { prefs } from '$lib/stores/user';
     import { Dependencies } from '$lib/constants';
+    import { columns } from './store';
 
     export let data: PageData;
     const project = $page.params.project;
 
     let showCreate = false;
-    let columns = [
-        { id: '$id', name: 'Database ID', show: true, width: 50 },
-        { id: 'name', name: 'Name', show: true, width: 120 },
-        { id: '$createdAt', name: 'Created', show: true, width: 120 },
-        { id: '$updatedAt', name: 'Updated', show: true, width: 120 }
-    ];
 
     async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;
@@ -41,7 +36,7 @@
         <Heading tag="h2" size="5">Databases</Heading>
 
         <div class="u-flex u-gap-16">
-            <ViewSelector bind:columns />
+            <ViewSelector {columns} />
 
             <Button on:click={() => (showCreate = true)} event="create_database">
                 <span class="icon-plus" aria-hidden="true" />

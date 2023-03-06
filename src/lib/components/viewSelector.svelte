@@ -2,6 +2,9 @@
     import { Button, InputChoice } from '$lib/elements/forms';
     import { DropList } from '.';
     import { prefs } from '$lib/stores/user';
+    import { page } from '$app/stores';
+    import { onMount } from 'svelte';
+    import type { Writable } from 'svelte/store';
 
     type Column = {
         id: string;
@@ -10,15 +13,34 @@
         width?: number;
     };
 
+    export let columns: Writable<Column[]>;
+    const pathname = $page.url.pathname;
     let showSelectColumns = false;
-    export let columns: Column[];
 
-    $: selectedColumnsNumber = columns.reduce((acc, column) => {
+    onMount(() => {
+        updateColumns();
+    });
+
+    function updateColumns() {
+        if ($prefs?.[pathname]) {
+            $columns.forEach((column, i) => {
+                column.show = $prefs[pathname][i];
+            });
+            $columns = $columns;
+        }
+    }
+
+    $: selectedColumnsNumber = $columns.reduce((acc, column) => {
         if (column.show) {
             acc++;
         }
         return acc;
     }, 0);
+
+    columns.subscribe((columns) => {
+        const columnsArray = columns.map((column) => column.show);
+        prefs.updatePrefs({ ...$prefs, [pathname]: columnsArray });
+    });
 </script>
 
 {#if $prefs?.preferredView === 'list'}
@@ -29,7 +51,7 @@
             <span class="inline-tag">{selectedColumnsNumber}</span>
         </Button>
         <svelte:fragment slot="list">
-            {#each columns as column}
+            {#each $columns as column}
                 <InputChoice
                     id={column.id}
                     label={column.name}

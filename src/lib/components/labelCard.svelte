@@ -5,9 +5,13 @@
     export let disabled = false;
     export let padding: number = 1;
     export let icon: string = null;
+    export let fullHeight = true;
 </script>
 
-<label class="card is-allow-focus u-cursor-pointer" style={`--card-padding:${padding}rem`}>
+<label
+    class="card is-allow-focus u-cursor-pointer"
+    class:u-height-100-percent={fullHeight}
+    style={`--card-padding:${padding}rem`}>
     <div class="u-flex u-gap-16">
         <input type="radio" {name} disabled bind:group bind:value />
         <div class="u-flex u-flex-vertical u-gap-4">

@@ -11,19 +11,13 @@
     import GridView from './gridView.svelte';
     import TableView from './tableView.svelte';
     import { prefs } from '$lib/stores/user';
+    import { columns } from '../../[[page]]/store';
 
     export let data: PageData;
     let showCreate = false;
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
-
-    let columns = [
-        { id: '$id', name: 'Collection ID', show: true, width: 50 },
-        { id: 'name', name: 'Name', show: true, width: 120 },
-        { id: '$createdAt', name: 'Created', show: true, width: 120 },
-        { id: '$updatedAt', name: 'Updated', show: true, width: 120 }
-    ];
 
     async function handleCreate(event: CustomEvent<Models.Collection>) {
         showCreate = false;
@@ -38,7 +32,7 @@
         <Heading tag="h2" size="5">Collections</Heading>
 
         <div class="u-flex u-gap-16">
-            <ViewSelector bind:columns />
+            <ViewSelector {columns} />
 
             <Button on:click={() => (showCreate = true)} event="create_collection">
                 <span class="icon-plus" aria-hidden="true" />

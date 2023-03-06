@@ -7,18 +7,20 @@
     export let scrollable = false;
     export let childStart = false;
     export let noArrow = false;
+    export let noStyle = false;
     export let width: string = null;
+    export let fullWidth = false;
+    export let position: 'relative' | 'static' = 'relative';
 </script>
 
-<Drop bind:show {placement} {childStart} {noArrow}>
+<Drop bind:show {placement} {childStart} {noArrow} {noStyle} {fullWidth}>
     <slot />
     <svelte:fragment slot="list">
         <div
             class="drop is-no-arrow"
-            style={`${
-                width
-                    ? `--drop-width-size-desktop:${width}rem; position:relative`
-                    : ' position:relative'
+            class:u-max-width-100-percent={fullWidth}
+            style={`${width ? `--drop-width-size-desktop:${width}rem; ` : ''} ${
+                position === 'static' ? 'position:static' : 'position:relative'
             }`}>
             {#if $$slots.list}
                 <section

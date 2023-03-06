@@ -14,21 +14,18 @@
         TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import type { Writable } from 'svelte/store';
     import type { PageData } from './$types';
+    import type { Column } from './store';
 
     export let data: PageData;
-    export let columns: {
-        id: string;
-        name: string;
-        width: number;
-        show: boolean;
-    }[];
+    export let columns: Writable<Column[]>;
     const project = $page.params.project;
 </script>
 
 <TableScroll>
     <TableHeader>
-        {#each columns as column}
+        {#each $columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.name}</TableCellHead>
             {/if}
@@ -38,7 +35,7 @@
         {#each data.databases.databases as database}
             <TableRowLink
                 href={`${base}/console/project-${project}/databases/database-${database.$id}`}>
-                {#each columns as column}
+                {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}
                             <TableCell title={column.name}>

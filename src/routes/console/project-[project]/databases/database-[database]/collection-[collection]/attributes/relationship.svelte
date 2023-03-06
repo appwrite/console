@@ -86,20 +86,22 @@
     }
 </script>
 
-<ul class="grid-box" style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem;">
-    <li>
-        <LabelCard name="relationship" group="relationship" value="one">
-            <svelte:fragment slot="title">One-way relationship</svelte:fragment>
-            One Relation attribute within this collection
-        </LabelCard>
-    </li>
-    <li>
-        <LabelCard name="relationship" group="relationship" value="two">
-            <svelte:fragment slot="title">Two-way relationship</svelte:fragment>
-            One Relation attribute within this collection and another within the related collection
-        </LabelCard>
-    </li>
-</ul>
+<li>
+    <ul class="grid-box" style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem;">
+        <li>
+            <LabelCard name="relationship" group="relationship" value="one">
+                <svelte:fragment slot="title">One-way relationship</svelte:fragment>
+                One Relation attribute within this collection
+            </LabelCard>
+        </li>
+        <li>
+            <LabelCard name="relationship" group="relationship" value="two">
+                <svelte:fragment slot="title">Two-way relationship</svelte:fragment>
+                One Relation attribute within this collection and another within the related collection
+            </LabelCard>
+        </li>
+    </ul>
+</li>
 
 <Button secondary on:click={() => (isOneWay = true)} disabled={isOneWay}>One</Button>
 <Button secondary on:click={() => (isOneWay = false)} disabled={!isOneWay}>Two</Button>

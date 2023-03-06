@@ -38,42 +38,45 @@
     };
 </script>
 
-<DropList bind:show={hasFocus} noArrow scrollable placement={'bottom-end'}>
-    <form class="form u-width-full-line u-max-width-500">
-        <ul class="form-list">
-            <FormItem>
-                <Label {required} {optionalText} hide={!showLabel} for={id}>
-                    {label}
-                </Label>
+<li class="u-position-relative form-item">
+    <DropList
+        bind:show={hasFocus}
+        noStyle
+        noArrow
+        scrollable
+        placement="bottom-end"
+        position="static"
+        fullWidth={true}>
+        <Label {required} {optionalText} hide={!showLabel} for={id}>
+            {label}
+        </Label>
 
-                <div class="custom-select">
-                    <div class="select u-width-full-line">
-                        <input
-                            type="text"
-                            class="input-text"
-                            {placeholder}
-                            {disabled}
-                            {required}
-                            bind:value={search}
-                            bind:this={element}
-                            on:focus={() => (hasFocus = true)}
-                            on:input={valueChange} />
-                        <span class="icon-cheveron-down" aria-hidden="true" />
-                    </div>
-                </div>
-            </FormItem>
-        </ul>
-    </form>
-    <svelte:fragment slot="list">
-        {#each options as option}
-            <li class="drop-list-item">
-                <button
-                    class="drop-button"
-                    type="button"
-                    on:click|preventDefault={() => (value = option.value)}>
-                    <span class="text">{option.label}</span>
-                </button>
-            </li>
-        {/each}
-    </svelte:fragment>
-</DropList>
+        <div class="custom-select">
+            <div class="select u-width-full-line">
+                <input
+                    type="text"
+                    class="input-text"
+                    {placeholder}
+                    {disabled}
+                    {required}
+                    bind:value={search}
+                    bind:this={element}
+                    on:focus={() => (hasFocus = true)}
+                    on:input={valueChange} />
+                <span class="icon-cheveron-down" aria-hidden="true" />
+            </div>
+        </div>
+        <svelte:fragment slot="list">
+            {#each options as option}
+                <li class="drop-list-item">
+                    <button
+                        class="drop-button"
+                        type="button"
+                        on:click|preventDefault={() => (value = option.value)}>
+                        <span class="text">{option.label}</span>
+                    </button>
+                </li>
+            {/each}
+        </svelte:fragment>
+    </DropList>
+</li>
