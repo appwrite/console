@@ -1,19 +1,19 @@
 <script lang="ts">
-    import { afterNavigate, goto } from '$app/navigation';
-    import { page } from '$app/stores';
-    import { user } from '$lib/stores/user';
-    import { onCLS, onFID, onLCP, onFCP, onINP, onTTFB } from 'web-vitals';
-    import { reportWebVitals } from '$lib/helpers/vitals';
-    import { onMount } from 'svelte';
-    import { base } from '$app/paths';
     import { browser, dev } from '$app/environment';
-    import { app } from '$lib/stores/app';
-    import { Progress, Notifications } from '$lib/layout';
-    import { loading } from './store';
-    import Loading from './loading.svelte';
+    import { afterNavigate, goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
     import { trackPageView } from '$lib/actions/analytics';
+    import { reportWebVitals } from '$lib/helpers/vitals';
+    import { Notifications, Progress } from '$lib/layout';
+    import { app } from '$lib/stores/app';
+    import { user } from '$lib/stores/user';
     import * as Sentry from '@sentry/svelte';
     import { BrowserTracing } from '@sentry/tracing';
+    import { onMount } from 'svelte';
+    import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
+    import Loading from './loading.svelte';
+    import { loading } from './store';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -59,7 +59,7 @@
                 }
                 loading.set(false);
             } else {
-                if (acceptedRoutes.includes($page.url.pathname)) {
+                if (acceptedRoutes.some((n) => $page.url.pathname.startsWith(n))) {
                     await goto(`${base}${$page.url.pathname}${$page.url.search}`);
                 } else {
                     await goto(`${base}/login`, {
