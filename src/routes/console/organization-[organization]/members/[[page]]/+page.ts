@@ -4,7 +4,7 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@aw-labs/appwrite-console';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, parent }) => {
+export const load: PageLoad = async ({ params }) => {
     const page = Number(params.page);
     const offset = pageToOffset(page, PAGE_LIMIT);
 

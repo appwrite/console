@@ -5,7 +5,7 @@ import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import { error } from '@sveltejs/kit';
 
-export const load: LayoutLoad = async ({ params, parent, depends }) => {
+export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.DATABASE);
 
     try {

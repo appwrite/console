@@ -5,7 +5,7 @@ import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import { error } from '@sveltejs/kit';
 
-export const load: LayoutLoad = async ({ params, parent, depends }) => {
+export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.BUCKET);
 
     try {
