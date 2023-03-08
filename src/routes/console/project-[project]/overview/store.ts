@@ -1,4 +1,4 @@
-import { sdkForConsole, sdkForProject } from '$lib/stores/sdk';
+import { sdk, sdkForConsole, sdkForProject } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable, type Writable } from 'svelte/store';

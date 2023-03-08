@@ -1,5 +1,5 @@
 import { Dependencies } from '$lib/constants';
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk, sdkForConsole } from '$lib/stores/sdk';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import type { LayoutLoad } from './$types';

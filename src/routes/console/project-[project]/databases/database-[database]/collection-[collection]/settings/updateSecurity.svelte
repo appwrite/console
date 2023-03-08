@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 

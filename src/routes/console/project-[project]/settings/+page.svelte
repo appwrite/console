@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';

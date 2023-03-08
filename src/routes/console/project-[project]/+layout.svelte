@@ -1,6 +1,6 @@
 <script lang="ts">
     import { UploadBox } from '$lib/components';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { onDestroy, onMount } from 'svelte';
     import { stats } from './store';
 

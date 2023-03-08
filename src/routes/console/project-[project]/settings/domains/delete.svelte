@@ -2,7 +2,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { project } from '../../store';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';

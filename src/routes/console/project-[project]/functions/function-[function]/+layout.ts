@@ -1,4 +1,4 @@
-import { sdkForProject } from '$lib/stores/sdk';
+import { sdk, sdkForProject } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';

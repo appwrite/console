@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
 
     export let showDeleteAll = false;

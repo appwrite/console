@@ -18,7 +18,7 @@
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container } from '$lib/layout';
     import { log } from '$lib/stores/logs';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { onDestroy, onMount } from 'svelte';
     import { func } from '../../store';
     import CreateDeployment from '../../create.svelte';

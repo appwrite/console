@@ -1,6 +1,6 @@
 import { CARD_LIMIT } from '$lib/constants';
 import { pageToOffset } from '$lib/helpers/load';
-import { sdkForProject } from '$lib/stores/sdk';
+import { sdk, sdkForProject } from '$lib/stores/sdk';
 import { Query } from '@aw-labs/appwrite-console';
 import type { PageLoad } from './$types';
 

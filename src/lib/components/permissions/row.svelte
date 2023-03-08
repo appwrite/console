@@ -1,6 +1,6 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { tick } from 'svelte';
     import { AvatarInitials } from '../';

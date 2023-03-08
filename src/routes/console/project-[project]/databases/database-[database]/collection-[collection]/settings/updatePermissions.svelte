@@ -8,7 +8,7 @@
     import { Button } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 

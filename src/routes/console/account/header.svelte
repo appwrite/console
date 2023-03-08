@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
 
     const path = `/console/account`;

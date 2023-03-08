@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let selectedFunction: Models.Function = null;

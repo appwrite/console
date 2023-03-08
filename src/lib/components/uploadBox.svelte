@@ -1,7 +1,7 @@
 <script lang="ts">
     import { uploader } from '$lib/stores/uploader';
     import { Pill } from '$lib/elements';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { Avatar } from '$lib/components';
     import { base } from '$app/paths';
     import { page } from '$app/stores';

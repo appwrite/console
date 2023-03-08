@@ -1,5 +1,5 @@
 import { Dependencies } from '$lib/constants';
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk, sdkForConsole } from '$lib/stores/sdk';
 import { error } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
 

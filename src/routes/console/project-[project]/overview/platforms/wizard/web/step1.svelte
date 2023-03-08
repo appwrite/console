@@ -4,7 +4,7 @@
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from '../store';
     import { app } from '$lib/stores/app';

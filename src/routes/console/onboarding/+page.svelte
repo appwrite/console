@@ -9,7 +9,7 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { ID } from '@aw-labs/appwrite-console';
 
     let name: string;

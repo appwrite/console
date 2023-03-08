@@ -5,7 +5,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
     import { project } from '../../store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';

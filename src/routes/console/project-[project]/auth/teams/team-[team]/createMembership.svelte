@@ -4,7 +4,7 @@
     import { Modal, Alert } from '$lib/components';
     import { Button, InputEmail, InputText, InputTags, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;

@@ -12,7 +12,7 @@
         TableScroll
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@aw-labs/appwrite-console';

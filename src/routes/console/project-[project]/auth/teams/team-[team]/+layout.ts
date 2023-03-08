@@ -1,6 +1,6 @@
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
-import { sdkForProject } from '$lib/stores/sdk';
+import { sdk, sdkForProject } from '$lib/stores/sdk';
 import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { error } from '@sveltejs/kit';

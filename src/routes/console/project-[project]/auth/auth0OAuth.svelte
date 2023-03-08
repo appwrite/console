@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { Modal, CopyInput, Alert } from '$lib/components';
     import { Button, InputPassword, InputText, InputSwitch, FormList } from '$lib/elements/forms';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';

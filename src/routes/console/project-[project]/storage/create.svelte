@@ -4,7 +4,7 @@
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 

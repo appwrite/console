@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, InputFile } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;

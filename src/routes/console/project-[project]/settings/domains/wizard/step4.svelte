@@ -1,6 +1,6 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { domain } from './store';
     import { project } from '../../../store';
     import CnameTable from './cnameTable.svelte';

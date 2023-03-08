@@ -1,6 +1,6 @@
 import Header from './header.svelte';
 import Breadcrumbs from './breadcrumbs.svelte';
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk, sdkForConsole } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 

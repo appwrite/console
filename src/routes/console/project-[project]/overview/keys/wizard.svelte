@@ -6,7 +6,7 @@
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import { key } from './wizard/store';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
     import { onDestroy } from 'svelte';

@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from '$lib/elements/forms/button.svelte';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { domain } from './store';
     import { project } from '../../../store';
     import { addNotification } from '$lib/stores/notifications';

@@ -1,5 +1,5 @@
 import { Query } from '@aw-labs/appwrite-console';
-import { sdkForProject } from '$lib/stores/sdk';
+import { sdk, sdkForProject } from '$lib/stores/sdk';
 import { pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';

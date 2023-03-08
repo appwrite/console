@@ -2,7 +2,7 @@
     import { Button, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';

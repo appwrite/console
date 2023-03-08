@@ -1,5 +1,5 @@
 import { Dependencies } from '$lib/constants';
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk, sdkForConsole } from '$lib/stores/sdk';
 import { selectedTab } from '../store';
 import type { PageLoad } from './$types';
 

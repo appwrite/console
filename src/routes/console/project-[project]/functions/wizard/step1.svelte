@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { InputText, InputSelect, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createFunction } from './store';
 

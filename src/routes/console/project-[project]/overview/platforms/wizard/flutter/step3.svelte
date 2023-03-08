@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Alert, Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
 
     const { endpoint, project } = sdkForProject().client.config;
     const code = `import 'package:appwrite/appwrite.dart';

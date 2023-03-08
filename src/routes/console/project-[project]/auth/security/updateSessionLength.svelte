@@ -6,7 +6,7 @@
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { createTimeUnitPair } from '$lib/helpers/unit';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;

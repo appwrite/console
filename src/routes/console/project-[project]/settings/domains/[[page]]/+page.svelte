@@ -14,7 +14,7 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';

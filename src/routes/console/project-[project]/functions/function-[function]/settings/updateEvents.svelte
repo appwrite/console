@@ -12,7 +12,7 @@
     import TableList from '$lib/elements/table/tableList.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { writable, type Writable } from 'svelte/store';
     import { func } from '../store';
     import { EventModal } from '$lib/components';

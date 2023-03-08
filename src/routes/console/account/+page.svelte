@@ -4,7 +4,7 @@
     import { Container } from '$lib/layout';
     import { onMount } from 'svelte';
     import { user } from '$lib/stores/user';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import Delete from './delete.svelte';

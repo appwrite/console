@@ -12,7 +12,7 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import DeleteAllSessions from '../../deleteAllSessions.svelte';
     import DeleteSessions from '../../deleteSession.svelte';
     import type { PageData } from './$types';

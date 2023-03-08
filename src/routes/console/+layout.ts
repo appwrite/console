@@ -1,4 +1,4 @@
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk, sdkForConsole } from '$lib/stores/sdk';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async () => {

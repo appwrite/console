@@ -15,7 +15,7 @@
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { onMount, SvelteComponent } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';

@@ -11,7 +11,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateOrganization from '../../../createOrganization.svelte';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { CARD_LIMIT } from '$lib/constants';
     import type { PageData } from './$types';
 

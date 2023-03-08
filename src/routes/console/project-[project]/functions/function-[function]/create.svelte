@@ -1,7 +1,7 @@
 <script lang="ts">
     import { InputChoice, Button, InputText, InputFile, FormList } from '$lib/elements/forms';
     import { Modal, Collapsible, CollapsibleItem, Tabs, Tab, Code } from '$lib/components';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher, onMount } from 'svelte';
     import { page } from '$app/stores';
     import GithubLight from '$lib/images/github-illustration-light.svg';

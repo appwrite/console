@@ -3,7 +3,7 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;

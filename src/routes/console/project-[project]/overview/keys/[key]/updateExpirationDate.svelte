@@ -6,7 +6,7 @@
     import { Button, Form, FormList } from '$lib/elements/forms';
     import { diffDays } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import ExpirationInput from '../expirationInput.svelte';
     import { key } from './store';

@@ -4,7 +4,7 @@
     import { InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../store';
     import { authMethods, type AuthMethod } from '$lib/stores/auth-methods';
     import { OAuthProviders } from '$lib/stores/oauth-providers';

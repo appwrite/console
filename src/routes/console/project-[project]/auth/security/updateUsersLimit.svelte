@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;

@@ -13,7 +13,7 @@
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk, sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { onMount } from 'svelte';
     import Variable from '../../createVariable.svelte';

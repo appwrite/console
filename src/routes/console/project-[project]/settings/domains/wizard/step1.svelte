@@ -2,7 +2,7 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { FormList, InputDomain } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import { domain } from './store';
 

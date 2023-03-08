@@ -13,7 +13,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { organization, members, newMemberModal } from '$lib/stores/organization';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk, sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
