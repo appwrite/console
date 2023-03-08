@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -25,6 +26,7 @@
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}`
             );
+            invalidate(Dependencies.DATABASE);
         } catch (error) {
             addNotification({
                 type: 'error',

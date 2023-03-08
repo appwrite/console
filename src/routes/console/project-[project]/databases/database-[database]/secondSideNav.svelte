@@ -1,0 +1,34 @@
+<script lang="ts">
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { showCreate } from './store';
+    import type { PageData } from './[[page]]/$types';
+
+    $: data = $page.data as PageData;
+    const project = $page.params.project;
+    const databaseId = $page.params.database;
+
+    $: console.log(data);
+</script>
+
+<section class="drop-section u-flex-vertical u-gap-8">
+    <h5 class="eyebrow-heading-3 u-padding-block-12">Collections</h5>
+    <button
+        class="button is-text is-full-width u-main-start u-padding-inline-0"
+        on:click={() => ($showCreate = true)}>
+        <span class="icon-plus" aria-hidden="true" />
+        <span class="text">Create collection</span>
+    </button>
+    {#if data?.allCollections?.total}
+        <ul class="drop-list">
+            {#each data.allCollections.collections as collection}
+                {@const href = `${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}/documents`}
+                <li class="drop-list-item">
+                    <a class="drop-button" {href}>
+                        <span class="text">{collection.name}</span>
+                    </a>
+                </li>
+            {/each}
+        </ul>
+    {/if}
+</section>
