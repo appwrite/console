@@ -6,7 +6,6 @@ import { error } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
-    await parent();
     depends(Dependencies.ORGANIZATION);
 
     try {

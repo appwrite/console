@@ -6,7 +6,6 @@ import { Dependencies } from '$lib/constants';
 import { error } from '@sveltejs/kit';
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
-    await parent();
     depends(Dependencies.BUCKET);
 
     try {

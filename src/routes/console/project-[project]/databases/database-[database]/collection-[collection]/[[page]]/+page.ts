@@ -1,11 +1,10 @@
-import { Query } from '@aw-labs/appwrite-console';
-import { sdkForProject } from '$lib/stores/sdk';
-import { pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+import { pageToOffset } from '$lib/helpers/load';
+import { sdkForProject } from '$lib/stores/sdk';
+import { Query } from '@aw-labs/appwrite-console';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, parent, depends }) => {
-    await parent();
+export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.DOCUMENTS);
     const page = Number(params.page);
     const offset = pageToOffset(page, PAGE_LIMIT);

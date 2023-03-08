@@ -6,7 +6,6 @@ import Header from './header.svelte';
 import { error } from '@sveltejs/kit';
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
-    await parent();
     depends(Dependencies.FUNCTION);
 
     try {

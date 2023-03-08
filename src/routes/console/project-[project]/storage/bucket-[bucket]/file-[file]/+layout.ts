@@ -6,7 +6,6 @@ import type { LayoutLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
-    await parent();
     depends(Dependencies.FILE);
 
     try {

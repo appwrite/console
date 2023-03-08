@@ -5,7 +5,6 @@ import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent, depends }) => {
-    await parent();
     depends(Dependencies.EXECUTIONS);
     const page = Number(params.page);
     const offset = pageToOffset(page, PAGE_LIMIT);
