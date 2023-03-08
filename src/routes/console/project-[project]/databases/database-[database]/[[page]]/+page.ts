@@ -10,7 +10,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     return {
         offset,
-        collections: await sdkForProject.databases.listCollections(params.database, [
+        collections: await sdkForProject().databases.listCollections(params.database, [
             Query.limit(CARD_LIMIT),
             Query.offset(offset),
             Query.orderDesc('$createdAt')

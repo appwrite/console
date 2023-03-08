@@ -15,7 +15,7 @@
 
     const deleteMembership = async () => {
         try {
-            await sdkForProject.teams.deleteMembership(
+            await sdkForProject().teams.deleteMembership(
                 selectedMembership.teamId,
                 selectedMembership.$id
             );

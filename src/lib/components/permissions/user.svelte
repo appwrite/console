@@ -31,7 +31,7 @@
 
     async function request() {
         if (!show) return;
-        results = await sdkForProject.users.list([Query.limit(5), Query.offset(offset)], search);
+        results = await sdkForProject().users.list([Query.limit(5), Query.offset(offset)], search);
     }
 
     function onSelection(event: Event, role: string) {

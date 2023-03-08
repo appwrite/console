@@ -21,7 +21,7 @@
 
     const create = async () => {
         try {
-            const collection = await sdkForProject.databases.createCollection(
+            const collection = await sdkForProject().databases.createCollection(
                 databaseId,
                 id ? id : ID.unique(),
                 name

@@ -15,7 +15,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteDocument(
+            await sdkForProject().databases.deleteDocument(
                 databaseId,
                 $page.params.collection,
                 $page.params.document

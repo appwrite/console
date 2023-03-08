@@ -33,7 +33,7 @@
 
     async function create() {
         try {
-            await sdkForProject.databases.createDocument(
+            await sdkForProject().databases.createDocument(
                 databaseId,
                 collectionId,
                 $createDocument.id ?? ID.unique(),

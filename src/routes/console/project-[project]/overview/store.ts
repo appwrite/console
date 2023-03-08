@@ -13,7 +13,7 @@ export const usage = cachedStore<
     return {
         load: async (projectId, range) => {
             const usages = isCloud
-                ? await sdkForProject.project.getUsage(range)
+                ? await sdkForProject().project.getUsage(range)
                 : await sdkForConsole.projects.getUsage(projectId, range);
             set(usages);
         }

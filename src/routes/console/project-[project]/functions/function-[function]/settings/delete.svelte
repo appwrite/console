@@ -13,7 +13,7 @@
 
     const handleSubmit = async () => {
         try {
-            await sdkForProject.functions.delete(functionId);
+            await sdkForProject().functions.delete(functionId);
             showDelete = false;
             addNotification({
                 type: 'success',

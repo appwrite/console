@@ -15,7 +15,7 @@
         const values = { ...bucketData, ...updates };
 
         try {
-            await sdkForProject.storage.updateBucket(
+            await sdkForProject().storage.updateBucket(
                 values.$id,
                 values.name,
                 values.$permissions,

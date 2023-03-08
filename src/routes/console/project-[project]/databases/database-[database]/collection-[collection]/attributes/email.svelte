@@ -9,7 +9,7 @@
         key: string,
         data: Partial<Models.AttributeEmail>
     ) {
-        await sdkForProject.databases.createEmailAttribute(
+        await sdkForProject().databases.createEmailAttribute(
             databaseId,
             collectionId,
             key,

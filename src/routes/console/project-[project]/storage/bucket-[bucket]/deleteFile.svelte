@@ -14,7 +14,7 @@
 
     const deleteFile = async () => {
         try {
-            await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
+            await sdkForProject().storage.deleteFile(file.bucketId, file.$id);
             showDelete = false;
             dispatch('deleted', file);
             addNotification({

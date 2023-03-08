@@ -20,7 +20,7 @@
 
     async function updateName() {
         try {
-            await sdkForProject.databases.updateCollection(
+            await sdkForProject().databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 collectionName,

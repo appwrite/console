@@ -20,7 +20,7 @@
             const variables = await parseFile(files[0]);
             for (const variable of variables) {
                 try {
-                    await sdkForProject.functions.createVariable(
+                    await sdkForProject().functions.createVariable(
                         functionId,
                         variable.key,
                         variable.value

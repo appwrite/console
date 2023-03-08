@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeBoolean>
     ) {
-        await sdkForProject.databases.createBooleanAttribute(
+        await sdkForProject().databases.createBooleanAttribute(
             databaseId,
             collectionId,
             key,

@@ -27,10 +27,10 @@
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
+        sdkForProject().storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
         '&mode=admin';
     const getView = (fileId: string) =>
-        sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
+        sdkForProject().storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
 
     $: if (filePermissions) {
         if (symmetricDifference(filePermissions, $file.$permissions).length) {
@@ -40,14 +40,14 @@
 
     function downloadFile() {
         return (
-            sdkForProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
+            sdkForProject().storage.getFileDownload($file.bucketId, $file.$id).toString() +
             '&mode=admin'
         );
     }
 
     async function updatePermissions() {
         try {
-            await sdkForProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
+            await sdkForProject().storage.updateFile($file.bucketId, $file.$id, filePermissions);
             invalidate(Dependencies.FILE);
             arePermsDisabled = true;
             addNotification({

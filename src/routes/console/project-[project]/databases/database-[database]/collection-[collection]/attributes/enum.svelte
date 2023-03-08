@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeEnum>
     ) {
-        await sdkForProject.databases.createEnumAttribute(
+        await sdkForProject().databases.createEnumAttribute(
             databaseId,
             collectionId,
             key,

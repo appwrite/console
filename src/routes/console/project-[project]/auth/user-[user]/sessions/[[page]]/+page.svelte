@@ -23,7 +23,8 @@
     let showDeleteAll = false;
     let selectedSessionId: string;
 
-    const getBrowser = (clientCode: string) => sdkForProject.avatars.getBrowser(clientCode, 40, 40);
+    const getBrowser = (clientCode: string) =>
+        sdkForProject().avatars.getBrowser(clientCode, 40, 40);
 </script>
 
 <Container>

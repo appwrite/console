@@ -22,7 +22,7 @@
 
     async function updatePermissions() {
         try {
-            await sdkForProject.databases.updateDocument(
+            await sdkForProject().databases.updateDocument(
                 $doc.$databaseId,
                 $doc.$collectionId,
                 $doc.$id,

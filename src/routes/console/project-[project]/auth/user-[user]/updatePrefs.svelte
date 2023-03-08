@@ -35,7 +35,7 @@
         try {
             let updatedPrefs = Object.fromEntries(prefs);
 
-            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
+            await sdkForProject().users.updatePrefs($user.$id, updatedPrefs);
             invalidate(Dependencies.USER);
             arePrefsDisabled = true;
 

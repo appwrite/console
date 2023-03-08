@@ -12,7 +12,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            function: await sdkForProject.functions.get(params.function)
+            function: await sdkForProject().functions.get(params.function)
         };
     } catch (e) {
         throw error(e.code, e.message);

@@ -3,7 +3,7 @@ import type { Models } from '@aw-labs/appwrite-console';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent }) => {
-    const response = await sdkForProject.storage.getBucketUsage(
+    const response = await sdkForProject().storage.getBucketUsage(
         params.bucket,
         params.period ?? '30d'
     );

@@ -25,7 +25,7 @@
     }
     async function create() {
         try {
-            const response = await sdkForProject.functions.create(
+            const response = await sdkForProject().functions.create(
                 $createFunction.id ?? ID.unique(),
                 $createFunction.name,
                 $createFunction.execute,
@@ -36,7 +36,7 @@
             );
             $createFunction.vars.forEach(
                 async (v) =>
-                    await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
+                    await sdkForProject().functions.createVariable(response.$id, v.key, v.value)
             );
             await invalidate(Dependencies.FUNCTIONS);
             goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);

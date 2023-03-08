@@ -13,7 +13,7 @@
 
     const deleteUser = async () => {
         try {
-            await sdkForProject.storage.deleteBucket($bucket.$id);
+            await sdkForProject().storage.deleteBucket($bucket.$id);
             showDelete = false;
             addNotification({
                 type: 'success',

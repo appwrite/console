@@ -24,7 +24,7 @@
 
     async function updatePermissions() {
         try {
-            await sdkForProject.databases.updateCollection(
+            await sdkForProject().databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 $collection.name,

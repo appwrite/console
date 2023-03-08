@@ -17,7 +17,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteIndex(
+            await sdkForProject().databases.deleteIndex(
                 databaseId,
                 $collection.$id,
                 selectedIndex.key

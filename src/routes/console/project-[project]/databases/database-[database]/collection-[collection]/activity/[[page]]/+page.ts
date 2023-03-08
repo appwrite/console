@@ -10,9 +10,10 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     return {
         offset,
-        logs: await sdkForProject.databases.listCollectionLogs(params.database, params.collection, [
-            Query.limit(PAGE_LIMIT),
-            Query.offset(offset)
-        ])
+        logs: await sdkForProject().databases.listCollectionLogs(
+            params.database,
+            params.collection,
+            [Query.limit(PAGE_LIMIT), Query.offset(offset)]
+        )
     };
 };

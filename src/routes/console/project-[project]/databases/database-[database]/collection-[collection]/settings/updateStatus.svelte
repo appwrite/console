@@ -21,7 +21,7 @@
 
     async function toggleCollection() {
         try {
-            await sdkForProject.databases.updateCollection(
+            await sdkForProject().databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 $collection.name,

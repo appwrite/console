@@ -13,7 +13,7 @@
 
     const deleteAllSessions = async () => {
         try {
-            await sdkForProject.users.deleteSessions($page.params.user);
+            await sdkForProject().users.deleteSessions($page.params.user);
             invalidate(Dependencies.SESSIONS);
             showDeleteAll = false;
             addNotification({

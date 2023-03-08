@@ -12,7 +12,7 @@
     let options = [];
 
     onMount(async () => {
-        let runtimes = await sdkForProject.functions.listRuntimes();
+        let runtimes = await sdkForProject().functions.listRuntimes();
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id

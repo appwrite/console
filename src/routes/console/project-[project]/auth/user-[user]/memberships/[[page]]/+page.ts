@@ -3,6 +3,6 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent }) => {
     return {
-        memberships: await sdkForProject.users.listMemberships(params.user)
+        memberships: await sdkForProject().users.listMemberships(params.user)
     };
 };

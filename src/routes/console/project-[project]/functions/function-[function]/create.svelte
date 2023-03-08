@@ -91,7 +91,7 @@
 
     async function create() {
         try {
-            await sdkForProject.functions.createDeployment(
+            await sdkForProject().functions.createDeployment(
                 functionId,
                 entrypoint,
                 files[0],

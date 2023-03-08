@@ -71,7 +71,7 @@ const createUploader = () => {
                 n.files.unshift(newFile);
                 return n;
             });
-            const uploadedFile = await sdkForProject.storage.createFile(
+            const uploadedFile = await sdkForProject().storage.createFile(
                 bucketId,
                 id ?? 'unique()',
                 file,

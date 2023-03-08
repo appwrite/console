@@ -9,7 +9,7 @@
     let hovering = false;
 
     const getPreview = (fileId: string, bucketId: string) =>
-        sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+        sdkForProject().storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 </script>
 
 {#if $uploader?.isOpen}

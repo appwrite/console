@@ -10,7 +10,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     return {
         offset,
-        buckets: await sdkForProject.storage.listBuckets([
+        buckets: await sdkForProject().storage.listBuckets([
             Query.limit(CARD_LIMIT),
             Query.offset(offset),
             Query.orderDesc('$createdAt')

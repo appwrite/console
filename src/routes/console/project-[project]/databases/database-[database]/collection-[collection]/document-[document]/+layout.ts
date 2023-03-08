@@ -11,7 +11,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     const { collection } = await parent();
 
     try {
-        const document = await sdkForProject.databases.getDocument(
+        const document = await sdkForProject().databases.getDocument(
             params.database,
             params.collection,
             params.document

@@ -16,7 +16,7 @@
 
     async function updateEmail() {
         try {
-            await sdkForProject.users.updateEmail($user.$id, userEmail);
+            await sdkForProject().users.updateEmail($user.$id, userEmail);
             invalidate(Dependencies.USER);
             addNotification({
                 message: 'Email has been updated',

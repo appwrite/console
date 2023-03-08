@@ -14,7 +14,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.delete(databaseId);
+            await sdkForProject().databases.delete(databaseId);
             showDelete = false;
             addNotification({
                 type: 'success',

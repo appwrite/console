@@ -16,7 +16,7 @@
 
     async function updatePhone() {
         try {
-            await sdkForProject.users.updatePhone($user.$id, userPhone);
+            await sdkForProject().users.updatePhone($user.$id, userPhone);
             invalidate(Dependencies.USER);
             addNotification({
                 message: 'Phone has been updated',

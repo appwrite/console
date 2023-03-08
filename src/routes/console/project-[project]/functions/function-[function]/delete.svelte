@@ -13,7 +13,7 @@
 
     const handleSubmit = async () => {
         try {
-            await sdkForProject.functions.deleteDeployment(
+            await sdkForProject().functions.deleteDeployment(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );

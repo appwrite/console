@@ -47,7 +47,7 @@
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+        sdkForProject().storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
     function fileCreated() {
         showCreate = false;
@@ -62,7 +62,7 @@
 
     async function deleteFile(file: Models.File) {
         try {
-            await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
+            await sdkForProject().storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
             invalidate(Dependencies.FILES);
             trackEvent(Submit.FileDelete);

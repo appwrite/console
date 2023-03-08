@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeFloat>
     ) {
-        await sdkForProject.databases.createFloatAttribute(
+        await sdkForProject().databases.createFloatAttribute(
             databaseId,
             collectionId,
             key,

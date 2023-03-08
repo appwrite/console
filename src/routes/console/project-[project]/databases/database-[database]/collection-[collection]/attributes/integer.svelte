@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeInteger>
     ) {
-        await sdkForProject.databases.createIntegerAttribute(
+        await sdkForProject().databases.createIntegerAttribute(
             databaseId,
             collectionId,
             key,

@@ -4,7 +4,7 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { period } = params;
-    const response = await sdkForProject.databases.getUsage(period ?? '30d');
+    const response = await sdkForProject().databases.getUsage(period ?? '30d');
 
     return {
         count: response.databasesCount as unknown as Models.Metric[],

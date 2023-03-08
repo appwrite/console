@@ -14,7 +14,7 @@
 
     const deleteUser = async () => {
         try {
-            await sdkForProject.users.delete($user.$id);
+            await sdkForProject().users.delete($user.$id);
             showDelete = false;
             addNotification({
                 type: 'success',

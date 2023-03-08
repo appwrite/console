@@ -13,7 +13,7 @@
 
     const deleteSession = async () => {
         try {
-            await sdkForProject.users.deleteSession($page.params.user, selectedSessionId);
+            await sdkForProject().users.deleteSession($page.params.user, selectedSessionId);
             invalidate(Dependencies.SESSIONS);
             addNotification({
                 type: 'success',

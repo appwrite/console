@@ -10,7 +10,7 @@
 
     async function updatePassword() {
         try {
-            await sdkForProject.users.updatePassword($user.$id, newPassword);
+            await sdkForProject().users.updatePassword($user.$id, newPassword);
             newPassword = null;
             addNotification({
                 message: 'Password has been updated',

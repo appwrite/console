@@ -3,7 +3,7 @@
     import { WizardStep } from '$lib/layout';
     import { sdkForProject } from '$lib/stores/sdk';
 
-    const { endpoint, project } = sdkForProject.client.config;
+    const { endpoint, project } = sdkForProject().client.config;
     const code = `import Appwrite
 
 let client = Client()

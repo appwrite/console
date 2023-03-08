@@ -17,7 +17,7 @@
 
     const create = async () => {
         try {
-            const team = await sdkForProject.teams.create(id ?? ID.unique(), name);
+            const team = await sdkForProject().teams.create(id ?? ID.unique(), name);
             name = '';
             showCreate = false;
             showCustomId = false;

@@ -3,7 +3,7 @@ import { sdkForProject } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent }) => {
-    const response = await sdkForProject.functions.getFunctionUsage(
+    const response = await sdkForProject().functions.getFunctionUsage(
         params.function,
         params.period ?? '30d'
     );

@@ -16,7 +16,7 @@
 
     async function updateName() {
         try {
-            await sdkForProject.users.updateName($user.$id, userName);
+            await sdkForProject().users.updateName($user.$id, userName);
             invalidate(Dependencies.USER);
             addNotification({
                 message: 'Name has been updated',

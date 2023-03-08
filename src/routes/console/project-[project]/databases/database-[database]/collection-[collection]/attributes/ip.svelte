@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeIp>
     ) {
-        await sdkForProject.databases.createIpAttribute(
+        await sdkForProject().databases.createIpAttribute(
             databaseId,
             collectionId,
             key,

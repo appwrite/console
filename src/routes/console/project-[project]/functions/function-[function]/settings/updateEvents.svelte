@@ -29,7 +29,7 @@
 
     async function updateEvents() {
         try {
-            await sdkForProject.functions.update(
+            await sdkForProject().functions.update(
                 functionId,
                 $func.name,
                 $func.execute,

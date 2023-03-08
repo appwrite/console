@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeUrl>
     ) {
-        await sdkForProject.databases.createUrlAttribute(
+        await sdkForProject().databases.createUrlAttribute(
             databaseId,
             collectionId,
             key,

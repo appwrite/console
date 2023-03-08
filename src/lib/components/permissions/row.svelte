@@ -18,11 +18,11 @@
         const role = permission.split(':')[0];
         const id = permission.split(':')[1].split('/')[0];
         if (role === 'user') {
-            const user = await sdkForProject.users.get(id);
+            const user = await sdkForProject().users.get(id);
             return user;
         }
         if (role === 'team') {
-            const team = await sdkForProject.teams.get(id);
+            const team = await sdkForProject().teams.get(id);
             return team;
         }
     }

@@ -5,6 +5,6 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ params, parent, depends }) => {
     depends(Dependencies.SESSIONS);
     return {
-        sessions: await sdkForProject.users.listSessions(params.user)
+        sessions: await sdkForProject().users.listSessions(params.user)
     };
 };

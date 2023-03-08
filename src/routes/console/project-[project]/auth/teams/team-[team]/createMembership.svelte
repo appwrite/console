@@ -19,7 +19,7 @@
         const url = `${$page.url.origin}/console/project-${$page.params.project}/auth/teams/team-${$page.params.team}/members`;
 
         try {
-            const user = await sdkForProject.teams.createMembership(
+            const user = await sdkForProject().teams.createMembership(
                 teamId,
                 email,
                 roles,

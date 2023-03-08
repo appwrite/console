@@ -30,7 +30,7 @@
     const handleSubmit = async () => {
         submitting = true;
         try {
-            await sdkForProject.functions.createExecution(
+            await sdkForProject().functions.createExecution(
                 selectedFunction.$id,
                 data?.length ? data : undefined,
                 true

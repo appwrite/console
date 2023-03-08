@@ -13,7 +13,7 @@ export const load: PageLoad = async ({ params, parent, depends, url }) => {
     return {
         offset,
         search,
-        files: await sdkForProject.storage.listFiles(
+        files: await sdkForProject().storage.listFiles(
             params.bucket,
             [Query.limit(PAGE_LIMIT), Query.offset(offset), Query.orderDesc('$createdAt')],
             search

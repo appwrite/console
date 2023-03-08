@@ -13,7 +13,7 @@
 
     const deleteFile = async () => {
         try {
-            await sdkForProject.storage.deleteFile($file.bucketId, $file.$id);
+            await sdkForProject().storage.deleteFile($file.bucketId, $file.$id);
             showDelete = false;
             await goto(
                 `${base}/console/project-${$page.params.project}/storage/bucket-${$file.bucketId}`

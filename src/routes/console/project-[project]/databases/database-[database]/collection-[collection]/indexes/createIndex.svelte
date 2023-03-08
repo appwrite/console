@@ -59,7 +59,7 @@
         creating = true;
 
         try {
-            await sdkForProject.databases.createIndex(
+            await sdkForProject().databases.createIndex(
                 databaseId,
                 $collection.$id,
                 key,

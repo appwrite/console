@@ -15,7 +15,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteCollection(databaseId, $collection.$id);
+            await sdkForProject().databases.deleteCollection(databaseId, $collection.$id);
             showDelete = false;
             addNotification({
                 type: 'success',

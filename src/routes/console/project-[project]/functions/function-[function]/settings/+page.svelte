@@ -54,7 +54,7 @@
 
     async function updateName() {
         try {
-            await sdkForProject.functions.update(
+            await sdkForProject().functions.update(
                 functionId,
                 functionName,
                 $func.execute,
@@ -80,7 +80,7 @@
 
     async function updatePermissions() {
         try {
-            await sdkForProject.functions.update(
+            await sdkForProject().functions.update(
                 functionId,
                 $func.name,
                 permissions,
@@ -106,7 +106,7 @@
 
     async function updateSchedule() {
         try {
-            await sdkForProject.functions.update(
+            await sdkForProject().functions.update(
                 functionId,
                 $func.name,
                 $func.execute,
@@ -133,7 +133,7 @@
 
     async function updateTimeout() {
         try {
-            await sdkForProject.functions.update(
+            await sdkForProject().functions.update(
                 functionId,
                 $func.name,
                 $func.execute,
@@ -162,7 +162,11 @@
         const variable = event.detail;
 
         try {
-            await sdkForProject.functions.createVariable(functionId, variable.key, variable.value);
+            await sdkForProject().functions.createVariable(
+                functionId,
+                variable.key,
+                variable.value
+            );
             showVariablesModal = false;
             invalidate(Dependencies.VARIABLES);
             addNotification({
@@ -182,7 +186,7 @@
     async function handleVariableUpdated(event: CustomEvent<Models.Variable>) {
         const variable = event.detail;
         try {
-            await sdkForProject.functions.updateVariable(
+            await sdkForProject().functions.updateVariable(
                 functionId,
                 variable.$id,
                 variable.key,
@@ -206,7 +210,7 @@
     }
     async function handleVariableDeleted(variable: Models.Variable) {
         try {
-            await sdkForProject.functions.deleteVariable(variable.functionId, variable.$id);
+            await sdkForProject().functions.deleteVariable(variable.functionId, variable.$id);
             invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',

@@ -18,7 +18,7 @@
 
     const create = async () => {
         try {
-            const database = await sdkForProject.databases.create(id ? id : ID.unique(), name);
+            const database = await sdkForProject().databases.create(id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', database);
             addNotification({

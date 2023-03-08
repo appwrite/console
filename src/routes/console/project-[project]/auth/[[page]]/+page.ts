@@ -13,7 +13,7 @@ export const load: PageLoad = async ({ params, parent, url }) => {
         offset,
         search,
         page,
-        users: await sdkForProject.users.list(
+        users: await sdkForProject().users.list(
             [Query.limit(PAGE_LIMIT), Query.offset(offset), Query.orderDesc('$createdAt')],
             search
         )

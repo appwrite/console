@@ -17,7 +17,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteAttribute(
+            await sdkForProject().databases.deleteAttribute(
                 databaseId,
                 $collection.$id,
                 selectedAttribute.key

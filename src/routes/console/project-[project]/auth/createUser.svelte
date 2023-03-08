@@ -25,7 +25,7 @@
 
     const create = async () => {
         try {
-            const user = await sdkForProject.users.create(
+            const user = await sdkForProject().users.create(
                 id ?? ID.unique(),
                 mail,
                 phone,
