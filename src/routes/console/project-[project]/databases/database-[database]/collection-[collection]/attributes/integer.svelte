@@ -19,6 +19,23 @@
             data.array
         );
     }
+
+    export async function updateInteger(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeInteger>
+    ) {
+        await sdkForProject.databases.createIntegerAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.required,
+            data.min,
+            data.max,
+            typeof data.default === 'number' ? data.default : undefined,
+            data.array
+        );
+    }
 </script>
 
 <script lang="ts">

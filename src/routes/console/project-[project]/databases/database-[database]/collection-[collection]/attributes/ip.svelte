@@ -17,6 +17,20 @@
             data.array
         );
     }
+    export async function updateIp(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeIp>
+    ) {
+        await sdkForProject.databases.createIpAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.required,
+            data.default ? data.default : undefined,
+            data.array
+        );
+    }
 </script>
 
 <script lang="ts">

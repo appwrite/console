@@ -1,7 +1,7 @@
 <script lang="ts">
     export let name: string;
     export let group: string;
-    export let value: unknown;
+    export let value: string | number | boolean;
     export let disabled = false;
     export let padding: number = 1;
     export let icon: string = null;
@@ -13,7 +13,7 @@
     class:u-height-100-percent={fullHeight}
     style={`--card-padding:${padding}rem`}>
     <div class="u-flex u-gap-16">
-        <input type="radio" {name} disabled bind:group bind:value />
+        <input type="radio" {name} {disabled} {value} bind:group on:click />
         <div class="u-flex u-flex-vertical u-gap-4">
             <h4 class="body-text-2"><slot name="title" /></h4>
             <p class="u-color-text-gray">

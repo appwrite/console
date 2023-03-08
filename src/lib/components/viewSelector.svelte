@@ -8,7 +8,7 @@
 
     type Column = {
         id: string;
-        name: string;
+        title: string;
         show: boolean;
         width?: number;
     };
@@ -55,7 +55,7 @@
             {#each $columns as column}
                 <InputChoice
                     id={column.id}
-                    label={column.name}
+                    label={column.title}
                     bind:value={column.show}
                     disabled={selectedColumnsNumber <= 1 && column.show} />
             {/each}
@@ -64,11 +64,11 @@
 {/if}
 
 {#if showToggle}
-    <div class="icon-toggle">
-        <ul class="icon-toggle-list">
-            <li class="icon-toggle-item">
+    <div class="toggle-button">
+        <ul class="toggle-button-list">
+            <li class="toggle-button-item">
                 <button
-                    class="icon-toggle-button"
+                    class="toggle-button-element"
                     aria-label="List View"
                     type="button"
                     class:is-selected={$prefs.preferredView === 'list'}
@@ -76,9 +76,9 @@
                     <span class="icon-view-list" aria-hidden="true" />
                 </button>
             </li>
-            <li class="icon-toggle-item">
+            <li class="toggle-button-item">
                 <button
-                    class="icon-toggle-button"
+                    class="toggle-button-element"
                     aria-label="Grid View"
                     type="button"
                     class:is-selected={$prefs.preferredView === 'grid'}

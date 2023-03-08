@@ -7,7 +7,7 @@
         TableCellHead,
         TableCell
     } from '$lib/elements/table';
-    import { Empty, Copy, Heading, Pagination } from '$lib/components';
+    import { Empty, Copy, Heading, Pagination, ViewSelector } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
@@ -20,6 +20,8 @@
     import { PAGE_LIMIT } from '$lib/constants';
     import CreateAttribute from '../createAttribute.svelte';
     import { tooltip } from '$lib/actions/tooltip';
+    import { columns } from './store';
+    import { onMount } from 'svelte';
 
     export let data: PageData;
     let showCreateAttribute = false;
@@ -28,12 +30,15 @@
         wizard.start(Create);
     }
 
-    $: columns = [
-        ...$collection.attributes.map((attribute) => ({
-            key: attribute.key,
-            title: attribute.key
-        }))
-    ];
+    onMount(() => {
+        columns.set([
+            ...$collection.attributes.map((attribute) => ({
+                id: attribute.key,
+                title: attribute.key,
+                show: true
+            }))
+        ]);
+    });
 
     function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
@@ -77,14 +82,16 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Documents</Heading>
-
-        <Button
-            disabled={!$collection?.attributes?.length}
-            on:click={openWizard}
-            event="create_document">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create document</span>
-        </Button>
+        <div class="u-flex u-gap-16">
+            <ViewSelector showToggle={false} {columns} />
+            <Button
+                disabled={!$collection?.attributes?.length}
+                on:click={openWizard}
+                event="create_document">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create document</span>
+            </Button>
+        </div>
     </div>
 
     {#if $collection?.attributes?.length}
@@ -92,8 +99,10 @@
             <TableScroll isSticky>
                 <TableHeader>
                     <TableCellHead eyebrow={false}>Document ID</TableCellHead>
-                    {#each columns as column}
-                        <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
+                    {#each $columns as column}
+                        {#if column.show}
+                            <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
+                        {/if}
                     {/each}
                 </TableHeader>
                 <TableBody>
@@ -108,17 +117,19 @@
                                     </Pill>
                                 </Copy>
                             </TableCell>
-                            {#each columns as column}
-                                {@const formatted = formatColumn(document[column.key])}
-                                <TableCell>
-                                    <div
-                                        use:tooltip={{
-                                            content: formatted.whole,
-                                            disabled: !formatted.truncated
-                                        }}>
-                                        {formatted.value}
-                                    </div>
-                                </TableCell>
+                            {#each $columns as column}
+                                {#if column.show}
+                                    {@const formatted = formatColumn(document[column.id])}
+                                    <TableCell>
+                                        <div
+                                            use:tooltip={{
+                                                content: formatted.whole,
+                                                disabled: !formatted.truncated
+                                            }}>
+                                            {formatted.value}
+                                        </div>
+                                    </TableCell>
+                                {/if}
                             {/each}
                         </TableRowLink>
                     {/each}

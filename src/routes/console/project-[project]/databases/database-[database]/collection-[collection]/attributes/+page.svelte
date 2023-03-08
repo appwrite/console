@@ -16,8 +16,8 @@
     import Create from '../createAttribute.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import Delete from './deleteAttribute.svelte';
-    import Overview from './overview.svelte';
     import { options } from './store';
+    import Edit from './edit.svelte';
 
     let showCreateDropdown = false;
     let showDropdown = [];
@@ -25,7 +25,7 @@
     let selectedAttribute: Attributes = null;
     let showCreate = false;
     let showDelete = false;
-    let showOverview = false;
+    let showEdit = false;
     let showCreateIndex = false;
 </script>
 
@@ -104,25 +104,32 @@
                                 </button>
                                 <svelte:fragment slot="list">
                                     <DropListItem
-                                        icon="eye"
+                                        icon="pencil"
                                         on:click={() => {
                                             selectedAttribute = attribute;
-                                            showOverview = true;
+                                            showEdit = true;
                                             showDropdown[index] = false;
-                                        }}>Overview</DropListItem>
+                                        }}>
+                                        Edit
+                                    </DropListItem>
+
                                     <DropListItem
                                         icon="plus"
                                         on:click={() => {
                                             selectedAttribute = attribute;
                                             showCreateIndex = true;
                                             showDropdown[index] = false;
-                                        }}>Create Index</DropListItem>
+                                        }}>
+                                        Create Index
+                                    </DropListItem>
                                     <DropListItem
                                         icon="trash"
                                         on:click={() => {
                                             selectedAttribute = attribute;
                                             showDelete = true;
-                                        }}>Delete</DropListItem>
+                                        }}>
+                                        Delete
+                                    </DropListItem>
                                 </svelte:fragment>
                             </DropList>
                         </TableCell>
@@ -144,5 +151,5 @@
 
 <Create bind:showCreate bind:selectedOption />
 <Delete bind:showDelete {selectedAttribute} />
-<Overview bind:showOverview {selectedAttribute} />
+<Edit bind:showEdit {selectedAttribute} />
 <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />

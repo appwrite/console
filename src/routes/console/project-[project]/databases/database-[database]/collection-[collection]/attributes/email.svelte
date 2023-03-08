@@ -18,6 +18,21 @@
             data.array
         );
     }
+
+    export async function updateEmail(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeEmail>
+    ) {
+        await sdkForProject.databases.createEmailAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.required,
+            data.default ? data.default : undefined,
+            data.array
+        );
+    }
 </script>
 
 <script lang="ts">

@@ -17,6 +17,21 @@
             data.array
         );
     }
+
+    export async function updateDatetime(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeDatetime>
+    ) {
+        await sdkForProject.databases.createDatetimeAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.required,
+            data.default ? data.default : undefined,
+            data.array
+        );
+    }
 </script>
 
 <script lang="ts">

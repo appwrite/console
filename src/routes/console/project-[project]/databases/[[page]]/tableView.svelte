@@ -27,7 +27,7 @@
     <TableHeader>
         {#each $columns as column}
             {#if column.show}
-                <TableCellHead width={column.width}>{column.name}</TableCellHead>
+                <TableCellHead width={column.width}>{column.title}</TableCellHead>
             {/if}
         {/each}
     </TableHeader>
@@ -38,7 +38,7 @@
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}
-                            <TableCell title={column.name}>
+                            <TableCell title={column.title}>
                                 <Copy value={database.$id}>
                                     <Pill button trim>
                                         <span class="icon-duplicate" aria-hidden="true" />
@@ -47,15 +47,15 @@
                                 </Copy>
                             </TableCell>
                         {:else if column.id === 'name'}
-                            <TableCellText title={column.name}>
+                            <TableCellText title={column.title}>
                                 {database.name}
                             </TableCellText>
                         {:else if column.id === '$updatedAt'}
-                            <TableCellText title={column.name}>
+                            <TableCellText title={column.title}>
                                 {toLocaleDateTime(database.$updatedAt)}
                             </TableCellText>
                         {:else if column.id === '$createdAt'}
-                            <TableCellText title={column.name}>
+                            <TableCellText title={column.title}>
                                 {toLocaleDateTime(database.$createdAt)}
                             </TableCellText>
                         {/if}

@@ -18,6 +18,22 @@
             data.array
         );
     }
+
+    export async function updateEnum(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeEnum>
+    ) {
+        await sdkForProject.databases.createEnumAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.elements,
+            data.required,
+            data.default ? data.default : undefined,
+            data.array
+        );
+    }
 </script>
 
 <script lang="ts">

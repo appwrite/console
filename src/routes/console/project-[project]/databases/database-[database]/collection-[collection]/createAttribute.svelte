@@ -9,7 +9,6 @@
     import { base } from '$app/paths';
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Pill } from '$lib/elements';
 
     export let showCreate = false;
     export let selectedOption: string = null;
@@ -25,7 +24,7 @@
 
     async function submit() {
         try {
-            await $option.func(databaseId, collectionId, key, data);
+            await $option.create(databaseId, collectionId, key, data);
             await Promise.allSettled([invalidate(Dependencies.COLLECTION)]);
             if (!$page.url.pathname.includes('attributes')) {
                 await goto(
@@ -64,10 +63,12 @@
 </script>
 
 <Modal size="big" bind:show={showCreate} on:submit={submit} icon={$option?.icon}>
-    <svelte:fragment slot="header"
-        >{selectedOption}
+    <svelte:fragment slot="header">
+        {selectedOption}
         {#if selectedOption === 'Relationship'}
-            <Pill>BETA</Pill>
+            <div class="tag eyebrow-heading-3">
+                <span class="text u-x-small">Beta</span>
+            </div>
         {/if}
     </svelte:fragment>
     <FormList>

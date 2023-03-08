@@ -18,14 +18,32 @@
             data.array
         );
     }
+
+    export async function updateRelationship(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeString>
+    ) {
+        await sdkForProject.databases.createStringAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.size,
+            data.required,
+            data.default ? (data.default as string) : undefined,
+            data.array
+        );
+    }
 </script>
 
 <script lang="ts">
-    import { InputText, InputSelect, Button, InputSelectSearch } from '$lib/elements/forms';
+    import { InputText, InputSelect, InputSelectSearch } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { Box, LabelCard } from '$lib/components';
+    import { LabelCard } from '$lib/components';
     import { collection } from '../store';
+    import arrowOne from './arrow-one.svg';
+    import arrowTwo from './arrow-two.svg';
 
     export let selectedAttribute: Models.AttributeString;
     export let data: Partial<Models.AttributeString> = {
@@ -46,22 +64,30 @@
         { value: 'manyOne', label: 'Many to one' },
         { value: 'manyMany', label: 'Many to many' }
     ];
+
+    const deleteOptions = [
+        { value: 'cascade', label: 'Cascade' },
+        { value: 'null', label: 'Null' },
+        { value: 'restrict', label: 'Restrict' }
+    ];
     let search: string = null;
-    let collections: Models.Collection[] = [];
-    let isOneWay = true;
+    let collectionList: Models.CollectionList;
+
+    let way = 'one';
 
     onMount(async () => {
-        const collectionList = await getCollections();
-        collections = collectionList.collections.filter((n) => n.$id !== $collection.$id);
+        collectionList = await getCollections();
         data.relation = 'one';
     });
 
-    async function getCollections() {
+    async function getCollections(search: string = null) {
         if (search) {
-            const collections = await sdkForProject.databases.listCollections(databaseId, [
-                Query.startsWith(search),
-                Query.orderDesc('$createdAt')
-            ]);
+            const collections = await sdkForProject.databases.listCollections(
+                databaseId,
+                [Query.orderDesc('$createdAt')],
+                search
+            );
+            console.log(collections);
             return collections;
         } else {
             const collections = await sdkForProject.databases.listCollections(databaseId);
@@ -69,9 +95,8 @@
         }
     }
 
-    $: if (search) {
-        getCollections();
-    }
+    $: getCollections(search);
+    $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
     $: if (selectedAttribute) {
         ({
@@ -89,22 +114,19 @@
 <li>
     <ul class="grid-box" style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem;">
         <li>
-            <LabelCard name="relationship" group="relationship" value="one">
+            <LabelCard name="relationship" bind:group={way} value="one">
                 <svelte:fragment slot="title">One-way relationship</svelte:fragment>
                 One Relation attribute within this collection
             </LabelCard>
         </li>
         <li>
-            <LabelCard name="relationship" group="relationship" value="two">
+            <LabelCard name="relationship" bind:group={way} value="two">
                 <svelte:fragment slot="title">Two-way relationship</svelte:fragment>
                 One Relation attribute within this collection and another within the related collection
             </LabelCard>
         </li>
     </ul>
 </li>
-
-<Button secondary on:click={() => (isOneWay = true)} disabled={isOneWay}>One</Button>
-<Button secondary on:click={() => (isOneWay = false)} disabled={!isOneWay}>Two</Button>
 
 <InputSelectSearch
     id="related"
@@ -114,13 +136,7 @@
     required
     placeholder="Select a collection"
     options={collections?.map((n) => ({ value: n.$id, label: n.name }))} />
-<InputSelect
-    id="related"
-    label="Related Collection"
-    bind:value={data.related}
-    required
-    placeholder="Select a collection"
-    options={collections?.map((n) => ({ value: n.$id, label: n.name }))} />
+
 {#if data?.related}
     {@const selectedCol = collections.find((n) => n.$id === data.related)}
     <div>
@@ -141,7 +157,7 @@
             </span>
         </div>
     </div>
-    {#if !isOneWay}
+    {#if way === 'two'}
         <div>
             <InputText
                 id="keyRelated"
@@ -168,13 +184,29 @@
         bind:value={data.relation}
         required
         placeholder="Select a relation"
-        options={isOneWay ? oneWay : twoWay} />
+        options={way === 'one' ? oneWay : twoWay} />
 
-    <Box>
-        {$collection.name} -> {selectedCol.name}
-    </Box>
-    <p>
+    <div class="box">
+        <div class="u-flex u-align u-cross-center u-main-center	u-gap-32 ">
+            <span>{$collection.name}</span>
+            {#if way === 'one'}
+                <img src={arrowOne} alt={'One way realationship'} />
+            {:else}
+                <img src={arrowTwo} alt={'Two way relationship'} />
+            {/if}
+            <span>{selectedCol.name}</span>
+        </div>
+    </div>
+    <p class="u-text-center	">
         <b> {$collection.name}</b> has {data.relation === 'one' ? 'one' : 'many'}
         <b>{selectedCol.name}</b>
     </p>
+
+    <InputSelect
+        id="deleting"
+        label="On deleting a document"
+        bind:value={data.del}
+        required
+        placeholder="Select a deletion method"
+        options={deleteOptions} />
 {/if}

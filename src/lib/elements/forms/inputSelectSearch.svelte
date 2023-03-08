@@ -1,7 +1,7 @@
 <script lang="ts">
     import { DropList } from '$lib/components';
     import { onMount } from 'svelte';
-    import { FormItem, Label } from '.';
+    import { Label } from '.';
 
     export let id: string;
     export let label: string;
@@ -30,6 +30,8 @@
     });
 
     const valueChange = (event: Event) => {
+        hasFocus = false;
+
         clearTimeout(timer);
         timer = setTimeout(() => {
             const target = event.target as HTMLInputElement;
@@ -72,7 +74,10 @@
                     <button
                         class="drop-button"
                         type="button"
-                        on:click|preventDefault={() => (value = option.value)}>
+                        on:click|preventDefault={() => {
+                            value = option.value;
+                            search = option.label;
+                        }}>
                         <span class="text">{option.label}</span>
                     </button>
                 </li>

@@ -1,27 +1,28 @@
 import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
-import Boolean, { submitBoolean } from './boolean.svelte';
-import Email, { submitEmail } from './email.svelte';
-import Enum, { submitEnum } from './enum.svelte';
-import Float, { submitFloat } from './float.svelte';
-import Integer, { submitInteger } from './integer.svelte';
-import Ip, { submitIp } from './ip.svelte';
-import String, { submitString } from './string.svelte';
-import Url, { submitUrl } from './url.svelte';
-import Datetime, { submitDatetime } from './datetime.svelte';
+import Boolean, { submitBoolean, updateBoolean } from './boolean.svelte';
+import Email, { submitEmail, updateEmail } from './email.svelte';
+import Enum, { submitEnum, updateEnum } from './enum.svelte';
+import Float, { submitFloat, updateFloat } from './float.svelte';
+import Integer, { submitInteger, updateInteger } from './integer.svelte';
+import Ip, { submitIp, updateIp } from './ip.svelte';
+import String, { submitString, updateString } from './string.svelte';
+import Url, { submitUrl, updateUrl } from './url.svelte';
+import Datetime, { submitDatetime, updateDatetime } from './datetime.svelte';
 import type { Attributes } from '../store';
-import Relationship, { submitRelationship } from './relationship.svelte';
+import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
 
 export type Option = {
     name: string;
     component: typeof SvelteComponent;
     type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship';
-    func: (
+    create: (
         databaseId: string,
         collectionId: string,
         key: string,
         data: Partial<Attributes>
     ) => Promise<void>;
+    update: (databaseId: string, collectionId: string, data: Partial<Attributes>) => Promise<void>;
     format?: 'email' | 'ip' | 'url' | 'enum' | 'relationship';
     icon: string;
 };
@@ -31,35 +32,40 @@ export const options: Option[] = [
         name: 'String',
         component: String,
         type: 'string',
-        func: submitString,
+        create: submitString,
+        update: updateString,
         icon: 'text'
     },
     {
         name: 'Integer',
         component: Integer,
         type: 'integer',
-        func: submitInteger,
+        create: submitInteger,
+        update: updateInteger,
         icon: 'hashtag'
     },
     {
         name: 'Float',
         component: Float,
         type: 'double',
-        func: submitFloat,
+        create: submitFloat,
+        update: updateFloat,
         icon: 'hashtag'
     },
     {
         name: 'Boolean',
         component: Boolean,
         type: 'boolean',
-        func: submitBoolean,
+        create: submitBoolean,
+        update: updateBoolean,
         icon: 'toggle'
     },
     {
         name: 'Datetime',
         component: Datetime,
         type: 'datetime',
-        func: submitDatetime,
+        create: submitDatetime,
+        update: updateDatetime,
         icon: 'calendar'
     },
     {
@@ -67,7 +73,8 @@ export const options: Option[] = [
         component: Email,
         type: 'string',
         format: 'email',
-        func: submitEmail,
+        create: submitEmail,
+        update: updateEmail,
         icon: 'mail'
     },
     {
@@ -75,7 +82,8 @@ export const options: Option[] = [
         component: Ip,
         type: 'string',
         format: 'ip',
-        func: submitIp,
+        create: submitIp,
+        update: updateIp,
         icon: 'location-marker'
     },
     {
@@ -83,7 +91,8 @@ export const options: Option[] = [
         component: Url,
         type: 'string',
         format: 'url',
-        func: submitUrl,
+        create: submitUrl,
+        update: updateUrl,
         icon: 'link'
     },
     {
@@ -91,7 +100,8 @@ export const options: Option[] = [
         component: Enum,
         type: 'string',
         format: 'enum',
-        func: submitEnum,
+        create: submitEnum,
+        update: updateEnum,
         icon: 'list'
     },
     {
@@ -99,7 +109,8 @@ export const options: Option[] = [
         component: Relationship,
         type: 'relationship',
         format: 'relationship',
-        func: submitRelationship,
+        create: submitRelationship,
+        update: updateRelationship,
         icon: 'link'
     }
 ];

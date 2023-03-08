@@ -17,6 +17,21 @@
             data.array
         );
     }
+
+    export async function updateUrl(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeUrl>
+    ) {
+        await sdkForProject.databases.createUrlAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.required,
+            data.default ? data.default : undefined,
+            data.array
+        );
+    }
 </script>
 
 <script lang="ts">

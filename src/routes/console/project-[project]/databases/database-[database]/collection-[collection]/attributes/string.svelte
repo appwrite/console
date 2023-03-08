@@ -18,6 +18,21 @@
             data.array
         );
     }
+    export async function updateString(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeString>
+    ) {
+        await sdkForProject.databases.createStringAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.size,
+            data.required,
+            data.default ? (data.default as string) : undefined,
+            data.array
+        );
+    }
 </script>
 
 <script lang="ts">
@@ -30,6 +45,7 @@
         default: null,
         array: false
     };
+    export let editing = true;
 
     $: if (selectedAttribute) {
         ({
@@ -49,7 +65,7 @@
     label="Size"
     bind:value={data.size}
     required
-    readonly={!!selectedAttribute} />
+    readonly={!!selectedAttribute || editing} />
 <InputText
     id="default"
     label="Default value"
