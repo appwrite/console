@@ -8,7 +8,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import Scopes from '../scopes.svelte';
@@ -29,7 +29,7 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.projects.updateKey(
+            await sdk.forConsole.projects.updateKey(
                 $project.$id,
                 $key.$id,
                 name,
@@ -53,7 +53,7 @@
 
     async function updateScopes() {
         try {
-            await sdkForConsole.projects.updateKey(
+            await sdk.forConsole.projects.updateKey(
                 $project.$id,
                 $key.$id,
                 $key.name,

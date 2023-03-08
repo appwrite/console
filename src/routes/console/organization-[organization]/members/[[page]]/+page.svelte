@@ -13,7 +13,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { organization, members, newMemberModal } from '$lib/stores/organization';
-    import { sdk, sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
@@ -32,7 +32,7 @@
     const deleted = () => invalidate(Dependencies.ACCOUNT);
     const resend = async (member: Models.Membership) => {
         try {
-            await sdkForConsole.teams.createMembership(
+            await sdk.forConsole.teams.createMembership(
                 $organization.$id,
                 member.userEmail,
                 member.roles,

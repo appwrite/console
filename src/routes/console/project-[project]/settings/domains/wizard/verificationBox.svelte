@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from '$lib/elements/forms/button.svelte';
-    import { sdk, sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { domain } from './store';
     import { project } from '../../../store';
     import { addNotification } from '$lib/stores/notifications';
@@ -14,7 +14,7 @@
     const verifyDomain = async () => {
         isVerifying = true;
         try {
-            const result = await sdkForConsole.projects.updateDomainVerification(
+            const result = await sdk.forConsole.projects.updateDomainVerification(
                 projectId,
                 $domain.$id
             );

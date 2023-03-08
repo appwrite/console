@@ -19,18 +19,6 @@ const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');
 
-export const sdkForConsole = {
-    client: clientConsole,
-    account: new Account(clientConsole),
-    avatars: new Avatars(clientConsole),
-    functions: new Functions(clientConsole),
-    health: new Health(clientConsole),
-    locale: new Locale(clientConsole),
-    projects: new Projects(clientConsole),
-    teams: new Teams(clientConsole),
-    users: new Users(clientConsole)
-};
-
 export function sdkForProject() {
     const clientProject = new Client();
     clientProject.setEndpoint(endpoint).setMode('admin');

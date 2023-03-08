@@ -11,14 +11,14 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateOrganization from '../../../createOrganization.svelte';
-    import { sdk, sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { CARD_LIMIT } from '$lib/constants';
     import type { PageData } from './$types';
 
     export let data: PageData;
 
     const getMemberships = async (teamId: string) => {
-        const memberships = await sdkForConsole.teams.listMemberships(teamId);
+        const memberships = await sdk.forConsole.teams.listMemberships(teamId);
         return memberships.memberships.map((team) => team.userName);
     };
 

@@ -9,7 +9,7 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { ID } from '@aw-labs/appwrite-console';
 
     let name: string;
@@ -21,7 +21,7 @@
         try {
             loading = true;
             const org = await createOrganization();
-            const project = await sdkForConsole.projects.create(
+            const project = await sdk.forConsole.projects.create(
                 id ?? ID.unique(),
                 name,
                 org.$id,
@@ -44,7 +44,7 @@
     }
 
     async function createOrganization() {
-        return await sdkForConsole.teams.create(ID.unique(), 'Personal Projects');
+        return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
     }
 </script>
 

@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { Button, Form, FormList, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
@@ -22,7 +22,7 @@
 
     const acceptInvite = async () => {
         try {
-            await sdkForConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
+            await sdk.forConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'

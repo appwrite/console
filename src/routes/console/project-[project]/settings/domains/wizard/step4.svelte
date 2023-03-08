@@ -1,6 +1,6 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
-    import { sdk, sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { domain } from './store';
     import { project } from '../../../store';
     import CnameTable from './cnameTable.svelte';
@@ -11,7 +11,7 @@
     let certificate = false;
     const checkCertificate = () => {
         setTimeout(async () => {
-            const result = await sdkForConsole.projects.getDomain(projectId, $domain.$id);
+            const result = await sdk.forConsole.projects.getDomain(projectId, $domain.$id);
             if (!result.certificateId) {
                 checkCertificate();
                 return;

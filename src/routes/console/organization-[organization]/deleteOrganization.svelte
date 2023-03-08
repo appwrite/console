@@ -2,7 +2,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { organization, organizationList } from '$lib/stores/organization';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
@@ -13,7 +13,7 @@
 
     const deleteOrg = async () => {
         try {
-            await sdkForConsole.teams.delete($organization.$id);
+            await sdk.forConsole.teams.delete($organization.$id);
             addNotification({
                 type: 'success',
                 message: `${$organization.name} has been deleted`
