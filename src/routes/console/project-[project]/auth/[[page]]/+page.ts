@@ -4,7 +4,7 @@ import { pageToOffset } from '$lib/helpers/load';
 import { PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, parent, url }) => {
+export const load: PageLoad = async ({ params, url }) => {
     const page = Number(params.page);
     const offset = pageToOffset(page, PAGE_LIMIT);
     const search = url.search.slice(1) ?? undefined;

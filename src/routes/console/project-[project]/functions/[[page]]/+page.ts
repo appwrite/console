@@ -4,7 +4,7 @@ import { pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, parent, depends }) => {
+export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.FUNCTIONS);
     const page = Number(params.page);
     const offset = pageToOffset(page, CARD_LIMIT);
