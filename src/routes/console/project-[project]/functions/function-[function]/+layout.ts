@@ -1,4 +1,4 @@
-import { sdk, sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
@@ -12,7 +12,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            function: await sdkForProject().functions.get(params.function)
+            function: await sdk.forProject.functions.get(params.function)
         };
     } catch (e) {
         throw error(e.code, e.message);

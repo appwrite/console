@@ -3,7 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
@@ -17,7 +17,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject().databases.deleteIndex(
+            await sdk.forProject.databases.deleteIndex(
                 databaseId,
                 $collection.$id,
                 selectedIndex.key

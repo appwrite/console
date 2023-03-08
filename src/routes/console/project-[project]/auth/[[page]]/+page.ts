@@ -1,5 +1,5 @@
 import { Query } from '@aw-labs/appwrite-console';
-import { sdk, sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { pageToOffset } from '$lib/helpers/load';
 import { PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
@@ -13,7 +13,7 @@ export const load: PageLoad = async ({ params, parent, url }) => {
         offset,
         search,
         page,
-        users: await sdkForProject().users.list(
+        users: await sdk.forProject.users.list(
             [Query.limit(PAGE_LIMIT), Query.offset(offset), Query.orderDesc('$createdAt')],
             search
         )

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { uploader } from '$lib/stores/uploader';
     import { Pill } from '$lib/elements';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Avatar } from '$lib/components';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -9,7 +9,7 @@
     let hovering = false;
 
     const getPreview = (fileId: string, bucketId: string) =>
-        sdkForProject().storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+        sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 </script>
 
 {#if $uploader?.isOpen}

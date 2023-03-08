@@ -1,9 +1,9 @@
 import type { Models } from '@aw-labs/appwrite-console';
-import { sdk, sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent }) => {
-    const response = await sdkForProject().functions.getFunctionUsage(
+    const response = await sdk.forProject.functions.getFunctionUsage(
         params.function,
         params.period ?? '30d'
     );

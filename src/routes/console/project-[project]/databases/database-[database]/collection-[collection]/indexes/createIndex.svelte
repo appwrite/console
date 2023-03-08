@@ -8,7 +8,7 @@
     import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { indexes, type Attributes } from '../store';
     import { collection } from '../store';
     import Select from './select.svelte';
@@ -59,7 +59,7 @@
         creating = true;
 
         try {
-            await sdkForProject().databases.createIndex(
+            await sdk.forProject.databases.createIndex(
                 databaseId,
                 $collection.$id,
                 key,

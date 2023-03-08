@@ -6,14 +6,14 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { file } from './store';
 
     export let showDelete = false;
 
     const deleteFile = async () => {
         try {
-            await sdkForProject().storage.deleteFile($file.bucketId, $file.$id);
+            await sdk.forProject.storage.deleteFile($file.bucketId, $file.$id);
             showDelete = false;
             await goto(
                 `${base}/console/project-${$page.params.project}/storage/bucket-${$file.bucketId}`

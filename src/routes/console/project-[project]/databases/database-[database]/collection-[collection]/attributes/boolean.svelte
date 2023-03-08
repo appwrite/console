@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import type { Models } from '@aw-labs/appwrite-console';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitBoolean(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeBoolean>
     ) {
-        await sdkForProject().databases.createBooleanAttribute(
+        await sdk.forProject.databases.createBooleanAttribute(
             databaseId,
             collectionId,
             key,

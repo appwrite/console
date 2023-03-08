@@ -1,10 +1,10 @@
 import type { Models } from '@aw-labs/appwrite-console';
-import { sdk, sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { period } = params;
-    const response = await sdkForProject().databases.getUsage(period ?? '30d');
+    const response = await sdk.forProject.databases.getUsage(period ?? '30d');
 
     return {
         count: response.databasesCount as unknown as Models.Metric[],

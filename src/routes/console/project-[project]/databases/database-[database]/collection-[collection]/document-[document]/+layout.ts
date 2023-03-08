@@ -1,4 +1,4 @@
-import { sdk, sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
@@ -11,7 +11,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     const { collection } = await parent();
 
     try {
-        const document = await sdkForProject().databases.getDocument(
+        const document = await sdk.forProject.databases.getDocument(
             params.database,
             params.collection,
             params.document

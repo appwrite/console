@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import type { Models } from '@aw-labs/appwrite-console';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitString(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdkForProject().databases.createStringAttribute(
+        await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             key,

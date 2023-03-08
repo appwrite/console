@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, InputFile } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -20,7 +20,7 @@
             const variables = await parseFile(files[0]);
             for (const variable of variables) {
                 try {
-                    await sdkForProject().functions.createVariable(
+                    await sdk.forProject.functions.createVariable(
                         functionId,
                         variable.key,
                         variable.value

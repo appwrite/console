@@ -4,7 +4,7 @@
     import { Modal, Alert } from '$lib/components';
     import { Button, InputEmail, InputText, InputTags, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -19,7 +19,7 @@
         const url = `${$page.url.origin}/console/project-${$page.params.project}/auth/teams/team-${$page.params.team}/members`;
 
         try {
-            const user = await sdkForProject().teams.createMembership(
+            const user = await sdk.forProject.teams.createMembership(
                 teamId,
                 email,
                 roles,

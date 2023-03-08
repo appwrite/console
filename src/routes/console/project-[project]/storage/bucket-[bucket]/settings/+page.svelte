@@ -15,7 +15,7 @@
         const values = { ...bucketData, ...updates };
 
         try {
-            await sdkForProject().storage.updateBucket(
+            await sdk.forProject.storage.updateBucket(
                 values.$id,
                 values.name,
                 values.$permissions,
@@ -71,7 +71,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { onMount } from 'svelte';
     import { get, writable } from 'svelte/store';

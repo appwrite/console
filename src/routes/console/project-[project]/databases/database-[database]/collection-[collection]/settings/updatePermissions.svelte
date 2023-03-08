@@ -8,7 +8,7 @@
     import { Button } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
@@ -24,7 +24,7 @@
 
     async function updatePermissions() {
         try {
-            await sdkForProject().databases.updateCollection(
+            await sdk.forProject.databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 $collection.name,

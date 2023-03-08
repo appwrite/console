@@ -6,7 +6,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { collection } from '../store';
 
     export let showDelete = false;
@@ -15,7 +15,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject().databases.deleteDocument(
+            await sdk.forProject.databases.deleteDocument(
                 databaseId,
                 $page.params.collection,
                 $page.params.document

@@ -6,7 +6,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let showDelete = false;
@@ -14,7 +14,7 @@
 
     const deleteTeam = async () => {
         try {
-            await sdkForProject().teams.delete(team.$id);
+            await sdk.forProject.teams.delete(team.$id);
             showDelete = false;
             trackEvent(Submit.TeamDelete);
             await goto(`${base}/console/project-${$page.params.project}/auth/teams`);

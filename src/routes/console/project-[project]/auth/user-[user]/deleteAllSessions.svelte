@@ -6,14 +6,14 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
 
     export let showDeleteAll = false;
 
     const deleteAllSessions = async () => {
         try {
-            await sdkForProject().users.deleteSessions($page.params.user);
+            await sdk.forProject.users.deleteSessions($page.params.user);
             invalidate(Dependencies.SESSIONS);
             showDeleteAll = false;
             addNotification({

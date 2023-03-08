@@ -1,4 +1,4 @@
-import { sdk, sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
@@ -12,7 +12,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            database: await sdkForProject().databases.get(params.database)
+            database: await sdk.forProject.databases.get(params.database)
         };
     } catch (e) {
         throw error(e.code, e.message);
