@@ -17,6 +17,12 @@
             hasChildren: true
         },
         {
+            href: `${path}/domains`,
+            title: 'Domains',
+            event: 'domains',
+            hasChildren: true
+        },
+        {
             href: `${path}/usage`,
             title: 'Usage',
             event: 'sage',

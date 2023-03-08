@@ -7,6 +7,7 @@ import {
     Health,
     Locale,
     Projects,
+    Proxy,
     Storage,
     Teams,
     Users
@@ -33,7 +34,8 @@ const sdkForConsole = {
     locale: new Locale(clientConsole),
     projects: new Projects(clientConsole),
     teams: new Teams(clientConsole),
-    users: new Users(clientConsole)
+    users: new Users(clientConsole),
+    proxy: new Proxy(clientConsole)
 };
 
 const sdkForProject = {
@@ -48,7 +50,8 @@ const sdkForProject = {
     projects: new Projects(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
-    users: new Users(clientProject)
+    users: new Users(clientProject),
+    proxy: new Proxy(clientProject)
 };
 
 export { sdkForConsole, sdkForProject, setProject, endpoint };
