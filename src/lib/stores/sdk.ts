@@ -1,3 +1,4 @@
+import { getProjectId } from '$lib/helpers/project';
 import { Project } from '$lib/sdk/project';
 import { VARS } from '$lib/system';
 import {
@@ -48,10 +49,9 @@ export const sdk = {
         users: new Users(clientConsole)
     },
     get forProject() {
-        const pathname = window.location.pathname;
-        const projectMatch = pathname.match(/project-([a-zA-Z0-9]+)/);
-        if (projectMatch && projectMatch[1] !== clientProject.config.project) {
-            clientProject.setProject(projectMatch[1]);
+        const projectId = getProjectId();
+        if (projectId && projectId !== clientProject.config.project) {
+            clientProject.setProject(projectId);
         }
 
         return sdkForProject;
