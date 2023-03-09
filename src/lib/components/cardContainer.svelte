@@ -9,7 +9,8 @@
 
 <ul
     class="grid-box common-section u-margin-block-start-32"
-    style={`--grid-gap:1.5rem; --grid-item-size:${total > 3 ? '22rem' : '25rem'};`}>
+    style={`--grid-gap:1.5rem; --grid-item-size:${total > 3 ? '22rem' : '25rem'};`}
+    data-private>
     <slot />
 
     {#if total > 3 ? total < CARD_LIMIT + offset : total % 2 !== 0}

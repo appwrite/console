@@ -10,7 +10,7 @@ const analytics = Analytics({
     app: 'appwrite',
     plugins: [
         googleAnalytics({
-            measurementIds: [VARS.GOOGLE_ANALYTICS ?? 'G-R4YJ9JN8L4']
+            measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
         })
     ]
 });
@@ -88,7 +88,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
     });
 }
 
-function isTrackingAllowed() {
+export function isTrackingAllowed() {
     if (ENV.TEST) {
         return;
     }
