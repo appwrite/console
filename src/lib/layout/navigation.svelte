@@ -19,7 +19,7 @@
     }
 </script>
 
-<div class="side-nav" class:hasSecondSideNav>
+<div class="side-nav" class:hasSecondSideNav class:is-open-level-2={hasSecondSideNav}>
     <div class="side-nav-level-1" class:is-narrow={narrow}>
         {#if project}
             <div class="side-nav-main">
@@ -32,7 +32,8 @@
                                     `${projectPath}/overview`
                                 )}
                                 on:click={() => trackEvent('click_menu_overview')}
-                                href={projectPath}>
+                                href={projectPath}
+                                title="Overview">
                                 <span class="icon-chart-bar" aria-hidden="true" />
                                 <span class="text">Overview</span>
                             </a>
@@ -44,7 +45,8 @@
                                     `${projectPath}/auth`
                                 )}
                                 on:click={() => trackEvent('click_menu_auth')}
-                                href={`${projectPath}/auth`}>
+                                href={`${projectPath}/auth`}
+                                title="Auth">
                                 <span class="icon-user-group" aria-hidden="true" />
                                 <span class="text">Auth</span>
                             </a>
@@ -56,7 +58,8 @@
                                     `${projectPath}/databases`
                                 )}
                                 on:click={() => trackEvent('click_menu_databases')}
-                                href={`${projectPath}/databases`}>
+                                href={`${projectPath}/databases`}
+                                title="Databases">
                                 <span class="icon-database" aria-hidden="true" />
                                 <span class="text">Databases</span>
                             </a>
@@ -68,7 +71,8 @@
                                     `${projectPath}/functions`
                                 )}
                                 on:click={() => trackEvent('click_menu_functions')}
-                                href={`${projectPath}/functions`}>
+                                href={`${projectPath}/functions`}
+                                title="Functions">
                                 <span class="icon-lightning-bolt" aria-hidden="true" />
                                 <span class="text">Functions</span>
                             </a>
@@ -80,7 +84,8 @@
                                     `${projectPath}/storage`
                                 )}
                                 on:click={() => trackEvent('click_menu_storage')}
-                                href={`${projectPath}/storage`}>
+                                href={`${projectPath}/storage`}
+                                title="Storage">
                                 <span class="icon-folder" aria-hidden="true" />
                                 <span class="text">Storage</span>
                             </a>
@@ -95,9 +100,8 @@
                         class="drop-button"
                         href={`${projectPath}/settings`}
                         on:click={() => trackEvent('click_menu_settings')}
-                        class:is-selected={$page.url.pathname.startsWith(
-                            `${projectPath}/settings`
-                        )}>
+                        class:is-selected={$page.url.pathname.startsWith(`${projectPath}/settings`)}
+                        title="Settings">
                         <span class="icon-cog" aria-hidden="true" />
                         <span class="text">Settings</span>
                     </a>

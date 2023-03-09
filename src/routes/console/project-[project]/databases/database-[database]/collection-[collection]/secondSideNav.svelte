@@ -13,7 +13,13 @@
 </script>
 
 <section class="drop-section u-flex-vertical u-gap-8">
-    <h5 class="eyebrow-heading-3 u-padding-block-12">Collections</h5>
+    <a
+        class="u-flex u-cross-center u-sep-block-end u-padding-block-12 is-not-desktop"
+        href={`${base}/console/project-${project}/databases/database-${databaseId}`}>
+        <span class="icon-cheveron-left" aria-hidden="true" />
+        <h5 class="eyebrow-heading-3 u-margin-inline-auto">Collections</h5>
+    </a>
+    <h5 class="eyebrow-heading-3 u-padding-block-12 is-not-mobile">Collections</h5>
     <button
         class="button is-text is-full-width u-main-start u-padding-inline-0"
         on:click={() => ($showCreate = true)}>
