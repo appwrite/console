@@ -2,6 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
     import { slide } from '$lib/helpers/transition';
 
     $: project = $page.params.project;
@@ -33,7 +34,11 @@
                                 )}
                                 on:click={() => trackEvent('click_menu_overview')}
                                 href={projectPath}
-                                title="Overview">
+                                use:tooltip={{
+                                    content: 'Overview',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
                                 <span class="icon-chart-bar" aria-hidden="true" />
                                 <span class="text">Overview</span>
                             </a>
@@ -46,7 +51,11 @@
                                 )}
                                 on:click={() => trackEvent('click_menu_auth')}
                                 href={`${projectPath}/auth`}
-                                title="Auth">
+                                use:tooltip={{
+                                    content: 'Auth',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
                                 <span class="icon-user-group" aria-hidden="true" />
                                 <span class="text">Auth</span>
                             </a>
@@ -59,7 +68,11 @@
                                 )}
                                 on:click={() => trackEvent('click_menu_databases')}
                                 href={`${projectPath}/databases`}
-                                title="Databases">
+                                use:tooltip={{
+                                    content: 'Databases',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
                                 <span class="icon-database" aria-hidden="true" />
                                 <span class="text">Databases</span>
                             </a>
@@ -72,7 +85,11 @@
                                 )}
                                 on:click={() => trackEvent('click_menu_functions')}
                                 href={`${projectPath}/functions`}
-                                title="Functions">
+                                use:tooltip={{
+                                    content: 'Functions',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
                                 <span class="icon-lightning-bolt" aria-hidden="true" />
                                 <span class="text">Functions</span>
                             </a>
@@ -85,7 +102,11 @@
                                 )}
                                 on:click={() => trackEvent('click_menu_storage')}
                                 href={`${projectPath}/storage`}
-                                title="Storage">
+                                use:tooltip={{
+                                    content: 'Storage',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
                                 <span class="icon-folder" aria-hidden="true" />
                                 <span class="text">Storage</span>
                             </a>
