@@ -5,8 +5,9 @@
     import type { PageData } from './[[page]]/$types';
 
     $: data = $page.data as PageData;
-    const project = $page.params.project;
-    const databaseId = $page.params.database;
+    $: project = $page.params.project;
+    $: databaseId = $page.params.database;
+    $: collectionId = $page.params.collection;
 
     $: console.log(data);
 </script>
@@ -23,8 +24,9 @@
         <ul class="drop-list">
             {#each data.allCollections.collections as collection}
                 {@const href = `${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}/documents`}
+                {@const isSelected = collectionId === collection.$id}
                 <li class="drop-list-item">
-                    <a class="drop-button" {href}>
+                    <a class="drop-button" class:is-selected={isSelected} {href}>
                         <span class="text">{collection.name}</span>
                     </a>
                 </li>

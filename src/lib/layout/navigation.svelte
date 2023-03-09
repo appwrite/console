@@ -2,6 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { slide } from '$lib/helpers/transition';
 
     $: project = $page.params.project;
     $: projectPath = `${base}/console/project-${project}`;
@@ -18,7 +19,7 @@
     }
 </script>
 
-<div class="side-nav">
+<div class="side-nav" class:hasSecondSideNav>
     <div class="side-nav-level-1" class:is-narrow={narrow}>
         {#if project}
             <div class="side-nav-main">
@@ -118,7 +119,7 @@
     </div>
 
     {#if secondSideNav}
-        <div class="side-nav-level-2 is-open">
+        <div class="side-nav-level-2 is-open" transition:slide={{ axis: 'x', duration: 250 }}>
             <div class="side-nav-main">
                 <svelte:component this={secondSideNav} />
             </div>
