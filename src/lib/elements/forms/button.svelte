@@ -1,5 +1,7 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
+    import { getContext } from 'svelte';
+    import type { FormContext } from './form.svelte';
 
     export let submit = false;
     export let secondary = false;
@@ -16,6 +18,18 @@
 
     //allows to add the disabled attribute to <a> tag without throwing an error
     let attributes = { disabled } as Record<string, boolean>;
+
+    let formDisabled = false;
+
+    if (submit) {
+        const { isSubmitting } = getContext<FormContext>('form');
+
+        isSubmitting.subscribe((value) => {
+            formDisabled = value;
+        });
+    }
+
+    $: actualDisabled = formDisabled || disabled;
 
     function track() {
         if (!event) {
@@ -49,7 +63,7 @@
     <button
         on:click
         on:click={track}
-        {disabled}
+        disabled={actualDisabled}
         class="button"
         class:is-only-icon={round}
         class:is-secondary={secondary}
