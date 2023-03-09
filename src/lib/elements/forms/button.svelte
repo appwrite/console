@@ -17,14 +17,14 @@
     export let noMargin = false;
     export let event: string = null;
 
-    //allows to add the disabled attribute to <a> tag without throwing an error
-    let attributes = { disabled } as Record<string, boolean>;
-
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
         : readable(false);
 
-    $: actualDisabled = $isSubmitting || disabled;
+    $: internalDisabled = $isSubmitting || disabled;
+
+    //allows to add the disabled attribute to <a> tag without throwing an error
+    $: attributes = { internalDisabled } as Record<string, boolean>;
 
     function track() {
         if (!event) {
@@ -58,7 +58,7 @@
     <button
         on:click
         on:click={track}
-        disabled={actualDisabled}
+        disabled={internalDisabled}
         class="button"
         class:is-only-icon={round}
         class:is-secondary={secondary}
