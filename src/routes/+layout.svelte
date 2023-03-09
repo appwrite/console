@@ -34,23 +34,26 @@
             onTTFB(reportWebVitals);
         }
 
-        /**
-         * Sentry Error Logging
-         */
         if (ENV.PROD) {
+            /**
+             * Sentry Error Logging
+             */
             Sentry.init({
                 dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
                 integrations: [new BrowserTracing()],
                 tracesSampleRate: 1.0
             });
-        }
 
-        if (isCloud && isTrackingAllowed()) {
-            LogRocket.init('rgthvf/appwrite', {
-                dom: {
-                    inputSanitizer: true
-                }
-            });
+            /**
+             * LogRocket
+             */
+            if (isCloud && isTrackingAllowed()) {
+                LogRocket.init('rgthvf/appwrite', {
+                    dom: {
+                        inputSanitizer: true
+                    }
+                });
+            }
         }
 
         /**

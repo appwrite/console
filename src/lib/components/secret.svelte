@@ -8,7 +8,7 @@
     export let copyEvent: string = null;
 </script>
 
-<div class="interactive-text-output" class:is-textarea={show}>
+<div class="interactive-text-output" class:is-textarea={show} data-private>
     {#if show}
         <span class="text u-line-height-1-5 u-break-all">{value}</span>
     {:else}
