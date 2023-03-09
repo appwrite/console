@@ -6,7 +6,6 @@
     import { doc } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import Document from './document.svelte';
     import Delete from './delete.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { Permissions } from '$lib/components/permissions';
@@ -66,7 +65,6 @@
             </div>
         </svelte:fragment>
     </CardGrid>
-    <Document />
     <CardGrid>
         <Heading tag="h6" size="7">Update Permissions</Heading>
         <p>

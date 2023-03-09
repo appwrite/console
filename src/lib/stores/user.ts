@@ -26,15 +26,3 @@ export const prefs = cachedStore<
         store.set(prefs);
     }
 }));
-
-if (browser) {
-    if (!get(prefs)) {
-        await prefs.load();
-        if (!get(prefs)?.preferredView) {
-            prefs.updatePrefs({
-                preferredView: 'grid',
-                pageLimit: 6
-            });
-        }
-    }
-}

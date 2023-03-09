@@ -45,7 +45,7 @@
         default: null,
         array: false
     };
-    export let editing = true;
+    export let editing = false;
 
     $: if (selectedAttribute) {
         ({

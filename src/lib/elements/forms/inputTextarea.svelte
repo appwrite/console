@@ -53,7 +53,15 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
+        {#if maxlength}
+            <span class="text-counter">
+                <span class="text-counter-count">{value?.length ?? 0}</span>
+                <span class="text-counter-separator" />
+                <span class="text-counter-max">{maxlength}</span>
+            </span>
+        {/if}
     </div>
+
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}

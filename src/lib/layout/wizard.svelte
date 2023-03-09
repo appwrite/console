@@ -99,7 +99,7 @@
 
         <slot name="header" />
         <button
-            class="button is-text is-only-icon"
+            class="button is-text is-only-icon u-margin-inline-start-auto"
             style="--button-size:1.5rem;"
             aria-label="close wizard"
             on:click={handleExit}>

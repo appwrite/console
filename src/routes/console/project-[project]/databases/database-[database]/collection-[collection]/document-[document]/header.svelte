@@ -18,6 +18,12 @@
             event: 'overview'
         },
         {
+            href: `${path}/data`,
+            title: 'Data',
+            event: 'data',
+            hasChildren: true
+        },
+        {
             href: `${path}/activity`,
             title: 'Activity',
             event: 'activity',

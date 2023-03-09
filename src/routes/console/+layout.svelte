@@ -10,13 +10,24 @@
     import { feedback } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
     import { newOrgModal } from '$lib/stores/organization';
+    import { prefs } from '$lib/stores/user';
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { loading } from '../store';
     import Create from './createOrganization.svelte';
 
-    onMount(() => {
+    onMount(async () => {
         loading.set(false);
+
+        if (!$prefs) {
+            await prefs.load();
+            if (!$prefs?.preferredView) {
+                prefs.updatePrefs({
+                    preferredView: 'grid',
+                    pageLimit: 6
+                });
+            }
+        }
 
         setInterval(() => {
             checkForFeedback(INTERVAL);

@@ -8,26 +8,18 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { collection } from '../store';
+    import { attributes, collection } from '../store';
 
     const databaseId = $page.params.database;
 
-    let displayNames: string = null;
+    let displayNames: string[] = null;
 
     onMount(() => {
-        displayNames ??= $collection.name;
+        displayNames ??= [];
     });
 
     async function updateDisplayName() {
         try {
-            await sdkForProject.databases.updateCollection(
-                databaseId,
-                $collection.$id,
-                displayNames,
-                $collection.$permissions,
-                $collection.documentSecurity,
-                $collection.enabled
-            );
             invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Name has been updated',
@@ -42,6 +34,19 @@
             trackError(error, Submit.CollectionUpdateName);
         }
     }
+
+    $: options = $attributes
+        .filter((attr) => attr.type === 'string' && attr?.size <= 50)
+        .map((attr) => {
+            return {
+                value: attr.key,
+                label: attr.key
+            };
+        });
+
+    $: addAttributeDisabled =
+        displayNames?.length >= 5 ||
+        (displayNames?.length && !displayNames[displayNames?.length - 1]);
 </script>
 
 <Form on:submit={updateDisplayName}>
@@ -60,14 +65,28 @@
                     showLabel={false}
                     placeholder="Document ID"
                     disabled />
-                {#each displayNames as name, i}
-                    <InputSelectSearch
-                        id={name}
-                        label={name}
-                        showLabel={false}
-                        placeholder="Select attribute"
-                        bind:value={displayNames[i]} />
-                {/each}
+                {#if displayNames?.length}
+                    {#each displayNames as name, i}
+                        <InputSelectSearch
+                            id={name}
+                            label={name}
+                            showLabel={false}
+                            placeholder="Select attribute"
+                            bind:value={displayNames[i]}
+                            {options} />
+                    {/each}
+                {/if}
+                <Button
+                    noMargin
+                    text
+                    disabled={addAttributeDisabled}
+                    on:click={() => {
+                        displayNames[displayNames.length] = null;
+                        displayNames = displayNames;
+                    }}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Add attribute</span>
+                </Button>
             </ul>
         </svelte:fragment>
 
