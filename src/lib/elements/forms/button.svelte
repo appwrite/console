@@ -1,6 +1,6 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
-    import { getContext } from 'svelte';
+    import { getContext, hasContext } from 'svelte';
     import type { FormContext } from './form.svelte';
 
     export let submit = false;
@@ -22,11 +22,13 @@
     let formDisabled = false;
 
     if (submit) {
-        const { isSubmitting } = getContext<FormContext>('form');
+        if (hasContext('form')) {
+            const { isSubmitting } = getContext<FormContext>('form');
 
-        isSubmitting.subscribe((value) => {
-            formDisabled = value;
-        });
+            isSubmitting.subscribe((value) => {
+                formDisabled = value;
+            });
+        }
     }
 
     $: actualDisabled = formDisabled || disabled;
