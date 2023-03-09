@@ -57,4 +57,4 @@
     }
 </script>
 
-<Wizard title="Upload file" steps={stepComponents} on:exit={createFile.reset} on:finish={create} />
+<Wizard title="Create file" steps={stepComponents} on:exit={createFile.reset} on:finish={create} />
