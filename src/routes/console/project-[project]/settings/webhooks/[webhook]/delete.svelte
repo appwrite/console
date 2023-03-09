@@ -35,7 +35,9 @@
 
 <Modal bind:show={showDelete} on:submit={handleDelete} warning>
     <svelte:fragment slot="header">Delete Webhook</svelte:fragment>
-    <p>Are you sure you want to delete <b>{$webhook.name}</b> from '{$project.name}'?</p>
+    <p data-private>
+        Are you sure you want to delete <b>{$webhook.name}</b> from '{$project.name}'?
+    </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>
