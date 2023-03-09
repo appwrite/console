@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { showCreate } from './store';
+    import { showCreate } from '../store';
     import type { PageData } from './[[page]]/$types';
 
     $: data = $page.data as PageData;
