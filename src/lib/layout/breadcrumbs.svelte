@@ -18,7 +18,7 @@
 <nav class="breadcrumbs is-only-desktop" aria-label="breadcrumb">
     <ol class="breadcrumbs-list">
         {#each breadcrumbs as breadcrumb}
-            <li class="breadcrumbs-item">
+            <li class="breadcrumbs-item" data-private>
                 {#if breadcrumb.href}
                     <a href={breadcrumb.href} title={breadcrumb.title} on:click={track}>
                         {breadcrumb.title}
