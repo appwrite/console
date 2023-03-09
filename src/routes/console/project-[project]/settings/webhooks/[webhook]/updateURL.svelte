@@ -45,7 +45,7 @@
     }
 </script>
 
-<Form on:submit={updateUrl}>
+<Form onSubmit={updateUrl}>
     <CardGrid>
         <Heading tag="h2" size="7">Update Url</Heading>
 

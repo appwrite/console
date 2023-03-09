@@ -32,7 +32,7 @@
     }
 </script>
 
-<Modal bind:show on:submit={regenerate}>
+<Modal bind:show onSubmit={regenerate}>
     <svelte:fragment slot="header">Regenerate Key</svelte:fragment>
     <p class="u-text">
         Are you sure you want to generate a new Signature Key?

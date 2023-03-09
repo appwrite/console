@@ -37,7 +37,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteMembership} warning>
+<Modal bind:show={showDelete} onSubmit={deleteMembership} warning>
     <svelte:fragment slot="header">Delete Member</svelte:fragment>
     <p data-private>
         Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?

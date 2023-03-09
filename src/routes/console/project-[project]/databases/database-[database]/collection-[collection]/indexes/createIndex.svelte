@@ -101,7 +101,7 @@
     }
 </script>
 
-<Modal bind:error size="big" on:submit={create} bind:show={showCreateIndex}>
+<Modal bind:error size="big" onSubmit={create} bind:show={showCreateIndex}>
     <svelte:fragment slot="header">Create Index</svelte:fragment>
     <FormList>
         <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />

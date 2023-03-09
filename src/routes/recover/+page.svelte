@@ -70,7 +70,7 @@
     <svelte:fragment slot="title">Password Recovery</svelte:fragment>
     <svelte:fragment>
         {#if userId && secret}
-            <Form on:submit={setPassword}>
+            <Form onSubmit={setPassword}>
                 <FormList>
                     <InputPassword
                         label="New password"
@@ -94,7 +94,7 @@
                 </FormList>
             </Form>
         {:else}
-            <Form on:submit={recover}>
+            <Form onSubmit={recover}>
                 <FormList>
                     <InputEmail
                         id="email"

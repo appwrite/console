@@ -43,7 +43,7 @@
     $: isExpired = !alertsDismissed && $key.expire !== null && new Date($key.expire) < new Date();
 </script>
 
-<Form on:submit={updateExpire}>
+<Form onSubmit={updateExpire}>
     <CardGrid>
         <Heading tag="h6" size="7">Update Expiration Date</Heading>
         <p class="text">Set a date after which your API Key will expire.</p>

@@ -94,7 +94,7 @@
 <Unauthenticated {imgLight} {imgDark}>
     <svelte:fragment slot="title">{title}</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={invite}>
+        <Form onSubmit={invite}>
             <FormList>
                 <InputText
                     id="name"

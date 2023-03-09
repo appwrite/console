@@ -33,7 +33,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={handleDelete} warning>
+<Modal bind:show={showDelete} onSubmit={handleDelete} warning>
     <svelte:fragment slot="header">Delete Project</svelte:fragment>
     <p>
         <b>This project will be deleted</b>, along with all of its metadata, stats, and other

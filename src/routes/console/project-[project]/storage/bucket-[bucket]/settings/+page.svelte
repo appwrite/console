@@ -211,7 +211,7 @@
 
 <Container>
     {#if $bucket}
-        <Form on:submit={toggleBucket}>
+        <Form onSubmit={toggleBucket}>
             <CardGrid>
                 <Heading tag="h2" size="7">{$bucket.name}</Heading>
 
@@ -234,7 +234,7 @@
             </CardGrid>
         </Form>
 
-        <Form on:submit={updateName}>
+        <Form onSubmit={updateName}>
             <CardGrid>
                 <Heading tag="h6" size="7">Update Name</Heading>
                 <svelte:fragment slot="aside">
@@ -256,7 +256,7 @@
             </CardGrid>
         </Form>
 
-        <Form on:submit={updatePermissions}>
+        <Form onSubmit={updatePermissions}>
             <CardGrid>
                 <Heading tag="h6" size="7">Update Permissions</Heading>
                 <p class="text">
@@ -280,7 +280,7 @@
             </CardGrid>
         </Form>
 
-        <Form on:submit={updateFileSecurity}>
+        <Form onSubmit={updateFileSecurity}>
             <CardGrid>
                 <Heading tag="h6" size="7">Update File Security</Heading>
                 <svelte:fragment slot="aside">
@@ -308,7 +308,7 @@
             </CardGrid>
         </Form>
 
-        <Form on:submit={updateSecurity}>
+        <Form onSubmit={updateSecurity}>
             <CardGrid>
                 <Heading tag="h2" size="7">Update Security Settings</Heading>
                 <p class="text">
@@ -379,7 +379,7 @@
             </CardGrid>
         </Form>
 
-        <Form on:submit={updateCompression}>
+        <Form onSubmit={updateCompression}>
             <CardGrid>
                 <Heading tag="h2" size="6">Update Compression Algorithm</Heading>
                 <p class="text">
@@ -404,7 +404,7 @@
 
         <UpdateMaxFileSize />
 
-        <Form on:submit={updateAllowedExtensions}>
+        <Form onSubmit={updateAllowedExtensions}>
             <CardGrid>
                 <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
                 <p class="text">

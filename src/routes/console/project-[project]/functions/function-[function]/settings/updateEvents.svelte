@@ -76,7 +76,7 @@
     }
 </script>
 
-<Form on:submit={updateEvents}>
+<Form onSubmit={updateEvents}>
     <CardGrid>
         <Heading tag="h6" size="7">Update Events</Heading>
         <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>

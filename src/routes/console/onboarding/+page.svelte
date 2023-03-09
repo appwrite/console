@@ -50,7 +50,7 @@
 
 <Container overlapCover size="large">
     <Card>
-        <Form on:submit={createProject}>
+        <Form onSubmit={createProject}>
             <FormList>
                 <InputText
                     id="name"

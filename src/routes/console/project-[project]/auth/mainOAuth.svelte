@@ -54,7 +54,7 @@
     };
 </script>
 
-<Modal {error} size="big" show on:submit={update} on:close>
+<Modal {error} size="big" show onSubmit={update} on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>

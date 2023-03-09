@@ -46,7 +46,7 @@
 <Unauthenticated>
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={login}>
+        <Form onSubmit={login}>
             <FormList>
                 <InputEmail
                     id="email"

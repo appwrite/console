@@ -48,7 +48,7 @@
     }
 </script>
 
-<Modal size="big" {error} bind:show={showCreate} on:submit={create}>
+<Modal size="big" {error} bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Create File</svelte:fragment>
     <FormList>
         <div>

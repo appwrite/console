@@ -64,7 +64,7 @@
     }
 </script>
 
-<Form on:submit={updateEvents}>
+<Form onSubmit={updateEvents}>
     <CardGrid>
         <Heading tag="h6" size="7">Update Events</Heading>
         <p class="text">

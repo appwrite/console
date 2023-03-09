@@ -31,7 +31,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteUser} warning>
+<Modal bind:show={showDelete} onSubmit={deleteUser} warning>
     <svelte:fragment slot="header">Delete Bucket</svelte:fragment>
     <p data-private>Are you sure you want to delete <b>{$bucket.name}</b>?</p>
     <svelte:fragment slot="footer">

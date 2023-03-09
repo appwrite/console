@@ -54,7 +54,7 @@
     }
 </script>
 
-<Form on:submit={updatePrefs}>
+<Form onSubmit={updatePrefs}>
     <CardGrid>
         <Heading tag="h6" size="7">User Preferences</Heading>
         <p>

@@ -63,7 +63,7 @@
     afterNavigate(close);
 </script>
 
-<Modal bind:show size="big" on:submit={handleSubmit} on:close={close}>
+<Modal bind:show size="big" onSubmit={handleSubmit} on:close={close}>
     <svelte:fragment slot="header">Execute Function</svelte:fragment>
     <FormList>
         <InputTextarea bind:value={data} id="data" label="Custom data (optional)" />
