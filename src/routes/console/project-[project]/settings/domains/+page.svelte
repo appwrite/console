@@ -5,4 +5,4 @@
     export let data: PageData;
 </script>
 
-<DomainContainer rules={data.rules} resourceType="function" resourceId={data.function.$id} />
+<DomainContainer rules={data.rules} resourceType="api" resourceId="" />

@@ -59,6 +59,11 @@ function createServices() {
                 label: 'GraphQL',
                 method: 'graphql',
                 value: null
+            },
+            {
+                label: 'Proxy',
+                method: 'proxy',
+                value: null
             }
         ]
     });
@@ -117,6 +122,11 @@ function createServices() {
                     label: 'GraphQL',
                     method: 'graphql',
                     value: project.serviceStatusForGraphql
+                },
+                {
+                    label: 'Proxy',
+                    method: 'proxy',
+                    value: project.serviceStatusForProxy
                 }
             ];
             set({ list });

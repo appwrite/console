@@ -174,5 +174,15 @@ export const scopes: {
         scope: 'health.read',
         description: "Access to read your project's health status",
         category: 'Other'
+    },
+    {
+        scope: 'rules.read',
+        description: "Access to read your project's proxy rules",
+        category: 'Other'
+    },
+    {
+        scope: 'rules.write',
+        description: "Access to create, update, and delete your project's proxy rules",
+        category: 'Other'
     }
 ];

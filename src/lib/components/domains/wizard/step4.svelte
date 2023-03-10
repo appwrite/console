@@ -2,11 +2,8 @@
     import { WizardStep } from '$lib/layout';
     import { sdkForProject } from '$lib/stores/sdk';
     import { rule } from './store';
-    import { project } from '../../../../store';
     import CnameTable from './cnameTable.svelte';
     import VerificationBox from './verificationBox.svelte';
-
-    const projectId = $project.$id;
 
     let status = 'verifying';
     const checkCertificate = () => {

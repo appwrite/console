@@ -3,7 +3,6 @@
     import CnameTable from './cnameTable.svelte';
     import VerificationBox from './verificationBox.svelte';
 
-    let isVerifying = false;
     let isVerified = false;
 </script>
 
@@ -19,7 +18,7 @@
         <p>Changes may take some time to take effect depending on your provider.</p>
 
         <div class="container u-padding-inline-0">
-            <VerificationBox {isVerifying} bind:isVerified />
+            <VerificationBox bind:isVerified />
         </div>
     </div>
 </WizardStep>

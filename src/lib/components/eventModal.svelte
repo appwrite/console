@@ -83,6 +83,11 @@
                 { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
                 { name: 'delete' }
             ]
+        },
+        {
+            name: 'rules',
+            resources: [],
+            actions
         }
     ];
 
@@ -200,23 +205,25 @@
         </div>
     </div>
     {#if selectedService}
-        <div>
-            <p class="u-text">Choose a resource (optional)</p>
-            <div class="u-flex u-gap-8 u-margin-block-start-8">
-                {#each selectedService.resources as resource}
-                    <Pill
-                        disabled={showInput}
-                        selected={resource.name === selectedResource?.name}
-                        button
-                        on:click={() => {
-                            selectedResource === resource
-                                ? (selectedResource = null)
-                                : (selectedResource = resource);
-                            inputData = null;
-                        }}>{resource.name}</Pill>
-                {/each}
+        {#if selectedService.resources.length > 0}
+            <div>
+                <p class="u-text">Choose a resource (optional)</p>
+                <div class="u-flex u-gap-8 u-margin-block-start-8">
+                    {#each selectedService.resources as resource}
+                        <Pill
+                            disabled={showInput}
+                            selected={resource.name === selectedResource?.name}
+                            button
+                            on:click={() => {
+                                selectedResource === resource
+                                    ? (selectedResource = null)
+                                    : (selectedResource = resource);
+                                inputData = null;
+                            }}>{resource.name}</Pill>
+                    {/each}
+                </div>
             </div>
-        </div>
+        {/if}
         <div>
             <p class="u-text">Choose an action (optional)</p>
             <div class="u-flex u-gap-8 u-margin-block-start-8">

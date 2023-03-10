@@ -3,7 +3,7 @@
     import { beforeNavigate, invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { rule } from './wizard/store';
+    import { rule, ruleResource } from './wizard/store';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import Step3 from './wizard/step3.svelte';
@@ -11,8 +11,12 @@
     import { onDestroy } from 'svelte';
     import { Dependencies } from '$lib/constants';
 
+    export let resourceType: string;
+    export let resourceId: string;
+
     onDestroy(() => {
         rule.set({ $id: '', domain: '' });
+        ruleResource.set({ type: '', id: '' });
     });
 
     beforeNavigate(() => {
