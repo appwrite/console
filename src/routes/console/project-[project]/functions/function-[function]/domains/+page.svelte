@@ -11,6 +11,7 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
@@ -41,7 +42,8 @@
                 invalidate(Dependencies.RULES);
                 return;
             }
-            // await sdkForConsole.projects.updateDomainVerification(projectId, ruleId);
+
+            await sdkForProject.proxy.updateRuleVerification(ruleId);
             invalidate(Dependencies.RULES);
             trackEvent('submit_domain_update_verification');
         } catch (error) {
@@ -88,12 +90,12 @@
 
                         <TableCell title="Actions">
                             <div class="u-flex u-gap-8 u-cross-center u-main-end">
-                                {#if (rule.status === 'created') | (rule.status === 'verifying')}
+                                {#if rule.status === 'verifying' || isVerifying[rule.$id]}
                                     <!-- TODO: remove inline styles -->
                                     <div
                                         class="loader"
                                         style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem" />
-                                {:else if rule.status === 'failed'}
+                                {:else if rule.status === 'failed' || rule.status === 'created'}
                                     <!-- TODO: remove inline styles -->
                                     <button
                                         class="button is-text is-only-icon u-padding-inline-0"

@@ -5,6 +5,10 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { func } from '../store';
     import { rule } from './store';
+    import { wizard } from '$lib/stores/wizard';
+    import { addNotification } from '$lib/stores/notifications';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const createDomain = async () => {
         if ($rule.$id) {
@@ -13,7 +17,18 @@
 
         const newRule = await sdkForProject.proxy.createRule($rule.domain, 'function', $func.$id);
         $rule = newRule;
+
+        invalidate(Dependencies.RULES);
         trackEvent('submit_rule_create');
+
+        addNotification({
+            type: 'success',
+            message: `Domain has been created.`
+        });
+
+        if (newRule.status === 'verified') {
+            wizard.hide();
+        }
     };
 </script>
 

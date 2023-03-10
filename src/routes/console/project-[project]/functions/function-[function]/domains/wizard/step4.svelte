@@ -1,6 +1,6 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { rule } from './store';
     import { project } from '../../../../store';
     import CnameTable from './cnameTable.svelte';
@@ -8,15 +8,15 @@
 
     const projectId = $project.$id;
 
-    let certificate = false;
+    let status = 'verifying';
     const checkCertificate = () => {
         setTimeout(async () => {
-            const result = await sdkForConsole.projects.getDomain(projectId, $rule.$id);
-            if (!result.certificateId) {
+            const result = await sdkForProject.proxy.getRule($rule.$id);
+            status = result.status;
+
+            if (result.status === 'verifying') {
                 checkCertificate();
-                return;
             }
-            certificate = true;
         }, 2000);
     };
     checkCertificate();
@@ -34,19 +34,24 @@
         <VerificationBox isVerifying={false} isVerified={true} />
         <div class="box">
             <div class="u-flex u-gap-16 u-cross-center">
-                {#if !certificate}
+                {#if status === 'verifying'}
                     <div
                         class="loader"
                         style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem" />
+                    <p class="u-stretch">Generating SSL certificate</p>
+                {:else if status === 'failed'}
+                    <span
+                        class="icon-x"
+                        aria-hidden="true"
+                        style="color: hsl(var(--color-neutral-50))" />
+                    <p class="u-stretch">Generation of SSL certificate failed</p>
                 {:else}
                     <span
                         class="icon-check"
                         aria-hidden="true"
                         style="color: hsl(var(--color-neutral-50))" />
+                    <p class="u-stretch">Generated SSL certificate</p>
                 {/if}
-                <p class="u-stretch">
-                    {!certificate ? 'Generating SSL certificate' : 'Generated SSL certificate'}
-                </p>
             </div>
         </div>
     </div>
