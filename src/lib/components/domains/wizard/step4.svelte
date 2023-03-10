@@ -36,7 +36,7 @@
                         class="loader"
                         style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem" />
                     <p class="u-stretch">Generating SSL certificate</p>
-                {:else if status === 'failed'}
+                {:else if status === 'unverified'}
                     <span
                         class="icon-x"
                         aria-hidden="true"

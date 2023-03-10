@@ -98,8 +98,9 @@
                         </TableCellText>
                         <TableCellText title="Status">
                             <Pill
-                                warning={rule.status !== 'verified'}
-                                success={rule.status === 'verified'}>
+                                danger={rule.status === 'unverified'}
+                                success={rule.status === 'verified'}
+                                info={rule.status === 'created' || rule.status === 'verifying'}>
                                 {rule.status}
                             </Pill>
                         </TableCellText>
@@ -112,14 +113,14 @@
                                     <div
                                         class="loader"
                                         style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem" />
-                                {:else if rule.status === 'failed' || rule.status === 'created'}
+                                {:else if rule.status === 'unverified' || rule.status === 'created'}
                                     <!-- TODO: remove inline styles -->
                                     <button
                                         class="button is-text is-only-icon u-padding-inline-0"
                                         style="--p-button-size: var(--button-size, 2.0rem);"
                                         aria-label="Verify item"
                                         on:click={() => refreshDomain(rule)}>
-                                        <span class="icon-refresh" aria-hidden="true" />
+                                        <span class="icon-key" aria-hidden="true" />
                                     </button>
                                 {/if}
                                 <!-- TODO: remove inline styles -->

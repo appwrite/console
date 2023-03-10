@@ -5,10 +5,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Pill } from '$lib/elements';
 
+    let isTouched = false;
     export let isVerifying = false;
     export let isVerified = false;
 
     const verifyDomain = async () => {
+        isTouched = true;
         try {
             isVerifying = true;
             const newRule = await sdkForProject.proxy.updateRuleVerification($rule.$id);
@@ -36,7 +38,7 @@
             <div
                 class="loader"
                 style="color: hsl(var(--color-neutral-50)); inline-size: 1.5rem; block-size: 1.5rem" />
-        {:else}
+        {:else if isTouched}
             <Pill danger>
                 <span
                     class="icon-exclamation-circle"
