@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import type { Models } from '@aw-labs/appwrite-console';
-    import Create from './create.svelte';
+    import CreateCollection from './createCollection.svelte';
     import { showCreate } from './store';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -25,4 +25,4 @@
 
 <slot />
 
-<Create bind:showCreate={$showCreate} on:created={handleCreate} />
+<CreateCollection bind:showCreate={$showCreate} on:created={handleCreate} />
