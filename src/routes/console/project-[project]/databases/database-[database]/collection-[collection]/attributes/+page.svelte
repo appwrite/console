@@ -1,23 +1,23 @@
 <script lang="ts">
+    import { DropList, DropListItem, Empty, Heading } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
-        TableHeader,
         TableBody,
-        TableRow,
+        TableCell,
         TableCellHead,
         TableCellText,
-        TableCell
+        TableHeader,
+        TableRow
     } from '$lib/elements/table';
-    import { Button } from '$lib/elements/forms';
-    import { DropList, DropListItem, Empty, Heading } from '$lib/components';
-    import { attributes, type Attributes } from '../store';
     import { Container } from '$lib/layout';
-    import { Pill } from '$lib/elements';
     import Create from '../createAttribute.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
+    import { attributes, type Attributes } from '../store';
     import Delete from './deleteAttribute.svelte';
-    import { options } from './store';
     import Edit from './edit.svelte';
+    import { options } from './store';
 
     let showCreateDropdown = false;
     let showDropdown = [];
