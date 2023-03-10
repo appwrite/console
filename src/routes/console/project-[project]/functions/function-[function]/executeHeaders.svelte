@@ -4,9 +4,9 @@
     export let headers: [string, string][];
 </script>
 
-<label class="label">Headers</label>
+<label class="label" for="headers">Headers</label>
 
-<ul class="form-list">
+<ul class="form-list" id="headers">
     {#if headers}
         {#each headers as [key, value], index}
             <li class="form-item is-multiple">

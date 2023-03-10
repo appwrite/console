@@ -11,9 +11,6 @@
     import { onDestroy } from 'svelte';
     import { Dependencies } from '$lib/constants';
 
-    export let resourceType: string;
-    export let resourceId: string;
-
     onDestroy(() => {
         rule.set({ $id: '', domain: '' });
         ruleResource.set({ type: '', id: '' });

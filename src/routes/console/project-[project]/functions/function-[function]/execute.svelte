@@ -1,9 +1,9 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
     import { trackEvent } from '$lib/actions/analytics';
-    import { Code, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
+    import { InputTextarea, FormList } from '$lib/elements/forms';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import InputText from '$lib/elements/forms/inputText.svelte';
     import { addNotification } from '$lib/stores/notifications';
