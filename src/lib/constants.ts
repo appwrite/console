@@ -32,7 +32,8 @@ export enum Dependencies {
     KEYS = 'dependency:keys',
     DOMAINS = 'dependency:domains',
     WEBHOOK = 'dependency:webhook',
-    WEBHOOKS = 'dependency:webhooks'
+    WEBHOOKS = 'dependency:webhooks',
+    BACKUPS = 'dependency:webhooks'
 }
 
 export const scopes: {

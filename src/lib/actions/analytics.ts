@@ -194,6 +194,7 @@ export enum Submit {
     WebhookUpdateEvents = 'submit_webhook_update_events',
     WebhookUpdateName = 'submit_webhook_update_name',
     WebhookUpdateSecurity = 'submit_webhook_update_security',
+    BackupCreate = 'submit_backup_create',
     BucketCreate = 'submit_bucket_create',
     BucketDelete = 'submit_bucket_delete',
     BucketUpdateEnabled = 'submit_bucket_update_enabled',
