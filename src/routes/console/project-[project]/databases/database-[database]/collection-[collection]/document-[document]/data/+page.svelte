@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { CardGrid, Heading } from '$lib/components';
-    import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { sdkForProject } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -14,9 +13,8 @@
     import { collection } from '../../store';
     import { Container } from '$lib/layout';
     import AttributeItem from '../attributeItem.svelte';
+    import { difference } from '$lib/helpers/array';
 
-    let disableUpdate = true;
-    let currentDoc: string;
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
     const documentId = $page.params.document;
@@ -39,18 +37,6 @@
             }, {}) as Models.Document
     );
 
-    onMount(async () => {
-        currentDoc = JSON.stringify($work);
-    });
-
-    $: {
-        if (currentDoc !== JSON.stringify($work)) {
-            disableUpdate = false;
-        } else {
-            disableUpdate = true;
-        }
-    }
-
     async function updateData() {
         try {
             await sdkForProject.databases.updateDocument(
@@ -61,10 +47,8 @@
                 $work.$permissions
             );
 
-            currentDoc = JSON.stringify($work);
             invalidate(Dependencies.DOCUMENT);
             trackEvent(Submit.DocumentUpdate);
-            disableUpdate = true;
             addNotification({
                 message: 'Document was updated!',
                 type: 'success'
@@ -94,7 +78,14 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={disableUpdate} on:click={() => updateData()}>Update</Button>
+                    <Button
+                        disabled={attribute?.array
+                            ? !difference(
+                                  Array.from($work?.[attribute.key]),
+                                  Array.from($doc?.[attribute.key])
+                              ).length
+                            : $work?.[attribute.key] === $doc?.[attribute.key]}
+                        on:click={() => updateData()}>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         {/each}

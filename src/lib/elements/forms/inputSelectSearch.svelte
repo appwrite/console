@@ -38,6 +38,8 @@
             search = target.value;
         }, debounce);
     };
+
+    $: console.log(options);
 </script>
 
 <li class="u-position-relative form-item">
@@ -54,7 +56,7 @@
         </Label>
 
         <div class="custom-select">
-            <div class="select u-width-full-line">
+            <div class="input-text-wrapper" style="--amount-of-buttons:2">
                 <input
                     type="text"
                     class="input-text"
@@ -65,23 +67,44 @@
                     bind:this={element}
                     on:focus={() => (hasFocus = true)}
                     on:input={valueChange} />
-                <span class="icon-cheveron-down" aria-hidden="true" />
+
+                <div class="options-list">
+                    <button
+                        class="options-list-button"
+                        aria-label="clear field"
+                        type="button"
+                        on:click|preventDefault={() => {
+                            element.value = null;
+                        }}>
+                        <span class="icon-x" aria-hidden="true" />
+                    </button>
+                    <button class="options-list-button" type="button">
+                        <span class="icon-cheveron-down" aria-hidden="true" />
+                    </button>
+                </div>
             </div>
         </div>
         <svelte:fragment slot="list">
-            {#each options as option}
+            {#if options?.length}
+                {#each options as option}
+                    <li class="drop-list-item">
+                        <button
+                            class="drop-button"
+                            type="button"
+                            on:click|preventDefault={() => {
+                                value = option.value;
+                                search = option.label;
+                                hasFocus = false;
+                            }}>
+                            <span class="text">{option.label}</span>
+                        </button>
+                    </li>
+                {/each}
+            {:else}
                 <li class="drop-list-item">
-                    <button
-                        class="drop-button"
-                        type="button"
-                        on:click|preventDefault={() => {
-                            value = option.value;
-                            search = option.label;
-                        }}>
-                        <span class="text">{option.label}</span>
-                    </button>
+                    <span class="text">There are no documents that match your search</span>
                 </li>
-            {/each}
+            {/if}
         </svelte:fragment>
     </DropList>
 </li>

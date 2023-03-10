@@ -87,11 +87,10 @@
                 [Query.orderDesc('$createdAt')],
                 search
             );
-            console.log(collections);
-            return collections;
+            collectionList = collections;
         } else {
             const collections = await sdkForProject.databases.listCollections(databaseId);
-            return collections;
+            collectionList = collections;
         }
     }
 
@@ -135,7 +134,7 @@
     bind:value={data.related}
     required
     placeholder="Select a collection"
-    options={collections?.map((n) => ({ value: n.$id, label: n.name }))} />
+    options={collectionList?.collections?.map((n) => ({ value: n.$id, label: n.name })) ?? []} />
 
 {#if data?.related}
     {@const selectedCol = collections.find((n) => n.$id === data.related)}

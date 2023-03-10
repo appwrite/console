@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
     import type { Attributes } from '../store';
@@ -44,9 +44,22 @@
 
 <Modal icon="exclamation" state="warning" bind:show={showDelete} on:submit={handleDelete}>
     <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
-    <p data-private>
+    <p class="text" data-private>
         Are you sure you want to delete <b>'{selectedAttribute?.key}' from {$collection?.name}</b>?
     </p>
+    {#if selectedAttribute?.type === 'relationship'}
+        <div class="u-flex u-flex-vertical u-gap-24">
+            <p class="text">
+                Are you sure you want to delete reviews from Movie? This is a two way relationship
+                and the corresponding relationship will also be deleted.
+            </p>
+            <p class="text"><b>This action is irreversible.</b></p>
+            <InputChoice id="delete" label="Delete" showLabel={false}>
+                Delete relationship between ??? to ???
+            </InputChoice>
+        </div>
+    {/if}
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

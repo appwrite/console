@@ -7,7 +7,7 @@
         TableCellHead,
         TableCell
     } from '$lib/elements/table';
-    import { Empty, Copy, Heading, Pagination, ViewSelector } from '$lib/components';
+    import { Empty, Copy, Heading, ViewSelector, CustomPagination } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
@@ -17,7 +17,7 @@
     import type { PageData } from './$types';
     import { collection } from '../store';
     import { page } from '$app/stores';
-    import { PAGE_LIMIT } from '$lib/constants';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import CreateAttribute from '../createAttribute.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import { columns } from './store';
@@ -56,6 +56,7 @@
     }
 
     function formatColumn(column: unknown) {
+        console.log(column);
         let formattedColumn: string;
 
         if (typeof column === 'string') {
@@ -136,14 +137,13 @@
                 </TableBody>
             </TableScroll>
 
-            <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {data.documents.total}</p>
-                <Pagination
-                    limit={PAGE_LIMIT}
-                    path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`}
-                    offset={data.offset}
-                    sum={data.documents.total} />
-            </div>
+            <CustomPagination
+                limit={PAGE_LIMIT}
+                name="Documents"
+                path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`}
+                offset={data.offset}
+                total={data.documents.total}
+                dependencies={[Dependencies.DOCUMENTS]} />
         {:else}
             <Empty
                 single

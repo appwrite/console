@@ -4,6 +4,7 @@
     import Datetime from './attributes/datetime.svelte';
     import Enum from './attributes/enum.svelte';
     import Integer from './attributes/integer.svelte';
+    import Relationship from './attributes/relationship.svelte';
     import String from './attributes/string.svelte';
     import Url from './attributes/url.svelte';
 
@@ -34,7 +35,8 @@
         ip: String,
         url: Url,
         email: String,
-        enum: Enum
+        enum: Enum,
+        relationship: Relationship
     };
 </script>
 
