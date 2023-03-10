@@ -8,8 +8,6 @@
     $: project = $page.params.project;
     $: databaseId = $page.params.database;
     $: collectionId = $page.params.collection;
-
-    $: console.log(data);
 </script>
 
 <section class="drop-section u-flex-vertical u-gap-8">

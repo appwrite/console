@@ -4,7 +4,7 @@ import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import { error } from '@sveltejs/kit';
-import SecondSideNav from './secondSideNav.svelte';
+import SubNavigation from './subNavigation.svelte';
 import { Query } from '@aw-labs/appwrite-console';
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
@@ -19,7 +19,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
                 params.database,
                 params.collection
             ),
-            secondSideNav: SecondSideNav,
+            subNavigation: SubNavigation,
             allCollections: await sdkForProject.databases.listCollections(params.database, [
                 Query.orderDesc('$createdAt')
             ])

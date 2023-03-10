@@ -8,19 +8,29 @@
     $: project = $page.params.project;
     $: projectPath = `${base}/console/project-${project}`;
 
-    $: secondSideNav = $page.data.secondSideNav;
+    $: subNavigation = $page.data.subNavigation;
     // We need to have this second variable, because we only want narrow
     // to change automatically if we change from having a second side nav to
     // not having one, not when the second side nav changes to a different value.
-    $: hasSecondSideNav = !!secondSideNav;
+    $: hasSubNavigation = !!subNavigation;
 
     let narrow = false;
     $: {
-        narrow = hasSecondSideNav;
+        narrow = hasSubNavigation;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+        // If Alt + S is pressed
+        if (hasSubNavigation && event.altKey && event.key === 's') {
+            event.preventDefault();
+            narrow = !narrow;
+        }
     }
 </script>
 
-<div class="side-nav" class:hasSecondSideNav class:is-open-level-2={hasSecondSideNav}>
+<svelte:window on:keydown={handleKeyDown} />
+
+<div class="side-nav" class:hasSubNavigation class:is-open-level-2={hasSubNavigation}>
     <div class="side-nav-level-1" class:is-narrow={narrow}>
         {#if project}
             <div class="side-nav-main">
@@ -130,11 +140,14 @@
             </div>
         {/if}
 
-        {#if secondSideNav}
+        {#if subNavigation}
             <button
                 class="side-nav-button button is-small is-secondary is-not-mobile"
                 aria-label="resize menu"
-                on:click={() => (narrow = !narrow)}>
+                on:click={() => (narrow = !narrow)}
+                use:tooltip={{
+                    content: 'Alt + S'
+                }}>
                 <span
                     class:icon-cheveron-right={narrow}
                     class:icon-cheveron-left={!narrow}
@@ -143,10 +156,10 @@
         {/if}
     </div>
 
-    {#if secondSideNav}
+    {#if subNavigation}
         <div class="side-nav-level-2 is-open" transition:slide={{ axis: 'x', duration: 250 }}>
             <div class="side-nav-main">
-                <svelte:component this={secondSideNav} />
+                <svelte:component this={subNavigation} />
             </div>
         </div>
     {/if}
