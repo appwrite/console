@@ -1,13 +1,10 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { Empty, Status } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
-        TableRowLink,
         TableCellHead,
         TableCell,
         TableCellText,
@@ -16,7 +13,6 @@
     import { Container } from '$lib/layout';
     import type { PageData } from './$types';
     import Heading from '$lib/components/heading.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
     import Create from './create.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
@@ -27,8 +23,6 @@
     async function handleCreate() {
         showCreate = false;
     }
-
-    const projectId = $page.params.project;
 
     console.log(data.backups);
 </script>
@@ -51,27 +45,32 @@
                 <TableCellHead>Name</TableCellHead>
                 <TableCellHead>Created</TableCellHead>
                 <TableCellHead width={80}>Status</TableCellHead>
+                <TableCellHead>Delete</TableCellHead>
+                <TableCellHead>Restore</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.backups.backups as backup}
-                    <TableRowLink
-                        href={`${base}/console/project-${projectId}/settings/webhooks/${backup.$id}`}>
-                        <TableCell title="Name">
-                            <div class="u-flex u-main-space-between">
-                                {backup.name}
-                                <!-- {#if webhook.security === false}
-                                    <Pill>SLL/TLS disabled</Pill>
-                                {/if} -->
-                            </div>
-                        </TableCell>
-                        <TableCellText title="Created"
-                            >{toLocaleDateTime(backup.$createdAt)}</TableCellText>
-                        <TableCellText title="Status">
-                            <Status status={backup.status}>
-                                {backup.status}
-                            </Status>
-                        </TableCellText>
-                    </TableRowLink>
+                    <TableCell title="Name">
+                        <div class="u-flex u-main-space-between">
+                            {backup.name}
+                            <!-- {#if webhook.security === false}
+                                <Pill>SLL/TLS disabled</Pill>
+                            {/if} -->
+                        </div>
+                    </TableCell>
+                    <TableCellText title="Created"
+                        >{toLocaleDateTime(backup.$createdAt)}</TableCellText>
+                    <TableCellText title="Status">
+                        <Status status={backup.status}>
+                            {backup.status}
+                        </Status>
+                    </TableCellText>
+                    <TableCellText title="Delete">
+                        <Button secondary>Delete</Button>
+                    </TableCellText>
+                    <TableCellText title="Restore">
+                        <Button secondary>Restore</Button>
+                    </TableCellText>
                 {/each}
             </TableBody>
         </Table>
