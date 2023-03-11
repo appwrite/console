@@ -31,7 +31,7 @@
 
     const update = async () => {
         try {
-            await sdkForConsole.projects.updateOAuth2(
+            await sdkForConsole.project.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
                 appId,

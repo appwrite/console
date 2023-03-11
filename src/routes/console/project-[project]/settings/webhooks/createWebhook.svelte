@@ -17,7 +17,7 @@
     const projectId = $page.params.project;
     const create = async () => {
         try {
-            await sdkForConsole.projects.createWebhook(
+            await sdkForConsole.project.createWebhook(
                 projectId,
                 $createWebhook.name,
                 $createWebhook.events,

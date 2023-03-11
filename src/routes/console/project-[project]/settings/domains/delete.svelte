@@ -14,7 +14,7 @@
 
     const deleteDomain = async () => {
         try {
-            await sdkForConsole.projects.deleteDomain($project.$id, selectedDomain.$id);
+            await sdkForConsole.project.deleteDomain($project.$id, selectedDomain.$id);
             invalidate(Dependencies.DOMAINS);
             showDelete = false;
             addNotification({

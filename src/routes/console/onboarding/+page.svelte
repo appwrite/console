@@ -21,7 +21,7 @@
         try {
             loading = true;
             const org = await createOrganization();
-            const project = await sdkForConsole.projects.create(
+            const project = await sdkForConsole.project.create(
                 id ?? ID.unique(),
                 name,
                 org.$id,

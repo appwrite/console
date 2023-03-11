@@ -10,7 +10,7 @@ export const load: PageLoad = async ({ params }) => {
 
     return {
         offset,
-        projects: await sdkForConsole.projects.list([
+        projects: await sdkForConsole.admin.listProjects([
             Query.offset(offset),
             Query.limit(CARD_LIMIT),
             Query.equal('teamId', params.organization),

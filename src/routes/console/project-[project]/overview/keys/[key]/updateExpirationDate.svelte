@@ -15,7 +15,7 @@
 
     async function updateExpire() {
         try {
-            await sdkForConsole.projects.updateKey(
+            await sdkForConsole.project.updateKey(
                 $project.$id,
                 $key.$id,
                 $key.name,

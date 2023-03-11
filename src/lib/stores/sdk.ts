@@ -1,13 +1,14 @@
 import { VARS } from '$lib/system';
 import {
     Account,
+    Admin,
     Avatars,
     Client,
     Databases,
     Functions,
     Health,
     Locale,
-    Projects,
+    Project,
     Storage,
     Teams,
     Users
@@ -25,11 +26,12 @@ const setProject = (projectId: string): Client => clientProject.setProject(proje
 const sdkForConsole = {
     client: clientConsole,
     account: new Account(clientConsole),
+    admin: new Admin(clientConsole),
     avatars: new Avatars(clientConsole),
     functions: new Functions(clientConsole),
     health: new Health(clientConsole),
     locale: new Locale(clientConsole),
-    projects: new Projects(clientConsole),
+    project: new Project(clientConsole),
     teams: new Teams(clientConsole),
     users: new Users(clientConsole)
 };
@@ -37,12 +39,13 @@ const sdkForConsole = {
 const sdkForProject = {
     client: clientProject,
     account: new Account(clientProject),
+    admin: new Admin(clientConsole),
     avatars: new Avatars(clientProject),
     databases: new Databases(clientProject),
     functions: new Functions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
-    projects: new Projects(clientProject),
+    projects: new Project(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject)

@@ -6,6 +6,6 @@ export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.WEBHOOKS);
 
     return {
-        webhooks: await sdkForConsole.projects.listWebhooks(params.project)
+        webhooks: await sdkForConsole.project.listWebhooks(params.project)
     };
 };

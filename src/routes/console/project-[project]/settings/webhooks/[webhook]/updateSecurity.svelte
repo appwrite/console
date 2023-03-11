@@ -30,7 +30,7 @@
 
     async function updateSecurity() {
         try {
-            await sdkForConsole.projects.updateWebhook(
+            await sdkForConsole.project.updateWebhook(
                 projectId,
                 $webhook.$id,
                 $webhook.name,

@@ -11,7 +11,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     }
 
     try {
-        const project = await sdkForConsole.projects.get(params.project);
+        const project = await sdkForConsole.project.get(params.project);
         localStorage.setItem('project', project.$id);
         localStorage.setItem('organization', project.teamId);
 

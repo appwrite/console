@@ -8,6 +8,6 @@ selectedTab.set('keys');
 export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.KEYS);
     return {
-        keys: await sdkForConsole.projects.listKeys(params.project)
+        keys: await sdkForConsole.project.listKeys(params.project)
     };
 };

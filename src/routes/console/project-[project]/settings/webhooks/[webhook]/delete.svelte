@@ -14,7 +14,7 @@
 
     async function handleDelete() {
         try {
-            await sdkForConsole.projects.deleteWebhook($project.$id, $webhook.$id);
+            await sdkForConsole.project.deleteWebhook($project.$id, $webhook.$id);
             await invalidate(Dependencies.WEBHOOKS);
             showDelete = false;
             addNotification({

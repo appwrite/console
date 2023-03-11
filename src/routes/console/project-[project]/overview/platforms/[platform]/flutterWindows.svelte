@@ -18,7 +18,7 @@
 
     const updateHostname = async () => {
         try {
-            await sdkForConsole.projects.updatePlatform(
+            await sdkForConsole.projectatePlatform(
                 $project.$id,
                 $platform.$id,
                 $platform.name,

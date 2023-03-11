@@ -45,7 +45,7 @@
                 invalidate(Dependencies.DOMAINS);
                 return;
             }
-            await sdkForConsole.projects.updateDomainVerification(projectId, domainId);
+            await sdkForConsole.project.updateDomainVerification(projectId, domainId);
             invalidate(Dependencies.DOMAINS);
             trackEvent(Submit.DomainUpdateVerification);
         } catch (error) {

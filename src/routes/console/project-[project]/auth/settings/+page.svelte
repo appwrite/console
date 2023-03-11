@@ -22,7 +22,7 @@
 
     async function authUpdate(box: AuthMethod) {
         try {
-            await sdkForConsole.projects.updateAuthStatus(projectId, box.method, box.value);
+            await sdkForConsole.project.updateAuthStatus(projectId, box.method, box.value);
             addNotification({
                 type: 'success',
                 message: `${box.label} authentication has been ${

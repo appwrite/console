@@ -8,6 +8,6 @@ selectedTab.set('platforms');
 export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.PLATFORMS);
     return {
-        platforms: await sdkForConsole.projects.listPlatforms(params.project)
+        platforms: await sdkForConsole.project.listPlatforms(params.project)
     };
 };

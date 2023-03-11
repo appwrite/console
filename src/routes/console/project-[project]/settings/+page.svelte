@@ -28,7 +28,7 @@
     async function updateName() {
         updating = true;
         try {
-            await sdkForConsole.projects.update($project.$id, name);
+            await sdkForConsole.project.update($project.$id, name);
             invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -52,7 +52,7 @@
 
     async function serviceUpdate(service: Service) {
         try {
-            await sdkForConsole.projects.updateServiceStatus(
+            await sdkForConsole.project.updateServiceStatus(
                 $project.$id,
                 service.method,
                 service.value

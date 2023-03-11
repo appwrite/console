@@ -9,10 +9,10 @@
     const projectId = $project.$id;
     const createDomain = async () => {
         if ($domain.$id) {
-            await sdkForConsole.projects.deleteDomain(projectId, $domain.$id);
+            await sdkForConsole.project.deleteDomain(projectId, $domain.$id);
         }
 
-        const { $id } = await sdkForConsole.projects.createDomain(projectId, $domain.domain);
+        const { $id } = await sdkForConsole.project.createDomain(projectId, $domain.domain);
         $domain.$id = $id;
         trackEvent(Submit.DomainCreate);
     };

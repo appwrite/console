@@ -47,7 +47,7 @@
     async function updateName() {
         updating = true;
         try {
-            await sdkForConsole.projects.updatePlatform(
+            await sdkForConsole.project.updatePlatform(
                 $project.$id,
                 $platform.$id,
                 name,

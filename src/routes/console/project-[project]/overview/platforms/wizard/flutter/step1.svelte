@@ -87,10 +87,10 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.deletePlatform(projectId, $createPlatform.$id);
+            await sdkForConsole.project.deletePlatform(projectId, $createPlatform.$id);
         }
 
-        const response = await sdkForConsole.projects.createPlatform(
+        const response = await sdkForConsole.project.createPlatform(
             projectId,
             platform,
             $createPlatform.name,

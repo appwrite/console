@@ -31,7 +31,7 @@
     async function updateLimit() {
         submitting = true;
         try {
-            await sdkForConsole.projects.updateAuthLimit(projectId, isLimited ? newLimit : 0);
+            await sdkForConsole.project.updateAuthLimit(projectId, isLimited ? newLimit : 0);
             invalidate(Dependencies.PROJECT).then(() => (submitting = false));
             addNotification({
                 type: 'success',

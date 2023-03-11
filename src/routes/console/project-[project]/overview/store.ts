@@ -11,7 +11,7 @@ export const usage = cachedStore<
 >('projectUsage', function ({ set }) {
     return {
         load: async (projectId, range) => {
-            const usages = await sdkForConsole.projects.getUsage(projectId, range);
+            const usages = await sdkForConsole.project.getUsage(projectId, range);
             set(usages);
         }
     };

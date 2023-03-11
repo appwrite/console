@@ -19,7 +19,7 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.projects.updateWebhook(
+            await sdkForConsole.projectupdateWebhook(
                 projectId,
                 $webhook.$id,
                 name,

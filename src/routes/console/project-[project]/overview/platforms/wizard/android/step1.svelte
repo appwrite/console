@@ -16,7 +16,7 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
+            await sdkForConsole.project.updatePlatform(
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
@@ -28,7 +28,7 @@
             return;
         }
 
-        const platform = await sdkForConsole.projects.createPlatform(
+        const platform = await sdkForConsole.project.createPlatform(
             projectId,
             'android',
             $createPlatform.name,

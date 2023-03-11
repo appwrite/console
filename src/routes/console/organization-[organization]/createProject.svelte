@@ -23,7 +23,7 @@
     async function create() {
         try {
             isCreating = true;
-            const project = await sdkForConsole.projects.create(
+            const project = await sdkForConsole.project.create(
                 id ?? ID.unique(),
                 name,
                 teamId,

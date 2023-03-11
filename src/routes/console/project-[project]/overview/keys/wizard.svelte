@@ -16,7 +16,7 @@
 
     async function onFinish() {
         try {
-            const { $id } = await sdkForConsole.projects.createKey(
+            const { $id } = await sdkForConsole.project.createKey(
                 $page.params.project,
                 $key.name,
                 $key.scopes,

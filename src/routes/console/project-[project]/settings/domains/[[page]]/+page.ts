@@ -7,6 +7,6 @@ export const load: PageLoad = async ({ params, parent, depends }) => {
     depends(Dependencies.DOMAINS);
 
     return {
-        domains: await sdkForConsole.projects.listDomains(params.project)
+        domains: await sdkForConsole.project.listDomains(params.project)
     };
 };

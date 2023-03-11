@@ -11,7 +11,7 @@
     let certificate = false;
     const checkCertificate = () => {
         setTimeout(async () => {
-            const result = await sdkForConsole.projects.getDomain(projectId, $domain.$id);
+            const result = await sdkForConsole.project.getDomain(projectId, $domain.$id);
             if (!result.certificateId) {
                 checkCertificate();
                 return;
