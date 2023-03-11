@@ -21,6 +21,11 @@
             href: `${path}/webhooks`,
             title: 'Webhooks',
             event: 'webhooks'
+        },
+        {
+            href: `${path}/variables`,
+            title: 'Shared Variables',
+            event: 'sharedVariables'
         }
     ];
 </script>

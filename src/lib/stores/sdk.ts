@@ -7,13 +7,12 @@ import {
     Health,
     Locale,
     Projects,
+    Project,
     Proxy,
     Storage,
     Teams,
     Users
 } from '@aw-labs/appwrite-console';
-
-import { Project } from './project';
 
 const endpoint =
     import.meta.env.VITE_APPWRITE_ENDPOINT?.toString() ?? `${window?.location?.origin}/v1`;

@@ -87,7 +87,7 @@
         optional: true
     });
     stepsComponents.set(5, {
-        label: 'Variables',
+        label: 'Environment Variables',
         component: Step5,
         optional: true
     });

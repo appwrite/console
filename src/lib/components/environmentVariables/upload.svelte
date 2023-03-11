@@ -1,4 +1,6 @@
 <script lang="ts">
+    // TODO: This is outdated. Update before using
+
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Modal } from '$lib/components';
@@ -28,7 +30,7 @@
                     invalidate(Dependencies.VARIABLES);
                     addNotification({
                         type: 'success',
-                        message: 'Variable uploaded'
+                        message: 'Environment Variables uploaded'
                     });
                 } catch (error) {
                     addNotification({
@@ -60,9 +62,10 @@
 </script>
 
 <Modal bind:show on:submit={handleSubmit}>
-    <svelte:fragment slot="header">Upload Variables</svelte:fragment>
+    <svelte:fragment slot="header">Upload Environment Variables</svelte:fragment>
     <p>
-        Upload multiple variables via a .env file that will be passed to your function at runtime.
+        Upload multiple environment variables via a .env file that will be passed to your function
+        at runtime and during build.
     </p>
 
     <InputFile bind:files label="Attach a file" />

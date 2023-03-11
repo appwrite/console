@@ -1,13 +1,5 @@
 <script lang="ts">
-    import {
-        CardGrid,
-        Box,
-        DropList,
-        DropListItem,
-        Copy,
-        Empty,
-        EventModal
-    } from '$lib/components';
+    import { CardGrid, Box, Empty, EventModal } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputNumber, InputText, InputCron, Form, FormList } from '$lib/elements/forms';
     import { base } from '$app/paths';
@@ -18,9 +10,6 @@
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import type { Models } from '@aw-labs/appwrite-console';
-    import Variable from '../../createVariable.svelte';
-    // import Upload from './uploadVariables.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Roles } from '$lib/components/permissions';
     import { symmetricDifference } from '$lib/helpers/array';
@@ -33,22 +22,21 @@
     import type { PageData } from './$types';
     import { trackEvent } from '$lib/actions/analytics';
     import InputSwitch from '$lib/elements/forms/inputSwitch.svelte';
+    import Variables from '$lib/components/environmentVariables/variables.svelte';
 
     export let data: PageData;
 
     const functionId = $page.params.function;
     let showDelete = false;
-    let selectedVar: Models.Variable = null;
     // let showVariablesUpload = false;
-    let showVariablesModal = false;
-    let showVariablesValue = [];
-    let showVariablesDropdown = [];
     let timeout: number = null;
     let functionName: string = null;
     let functionSchedule: string = null;
     let permissions: string[] = [];
     let arePermsDisabled = true;
     let logging: boolean = null;
+
+    // TODO: @Meldiron implement "Promote"
 
     const eventSet: Writable<Set<string>> = writable(new Set());
     let showEvents = false;
@@ -221,89 +209,6 @@
         }
     }
 
-    async function handleVariableCreated(event: CustomEvent<Models.Variable>) {
-        const variable = event.detail;
-
-        try {
-            await sdkForProject.functions.createVariable(functionId, variable.key, variable.value);
-            showVariablesModal = false;
-            invalidate(Dependencies.VARIABLES);
-            addNotification({
-                type: 'success',
-                message: `${$func.name} variables have been updated`
-            });
-            trackEvent('submit_variable_create');
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    }
-
-    async function handleVariableUpdated(event: CustomEvent<Models.Variable>) {
-        const variable = event.detail;
-        try {
-            await sdkForProject.functions.updateVariable(
-                functionId,
-                variable.$id,
-                variable.key,
-                variable.value
-            );
-            selectedVar = null;
-            showVariablesModal = false;
-            invalidate(Dependencies.VARIABLES);
-            addNotification({
-                type: 'success',
-                message: `${$func.name} variables have been updated`
-            });
-            trackEvent('submit_variable_update');
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    }
-    async function handleVariableDeleted(variable: Models.Variable) {
-        try {
-            await sdkForProject.functions.deleteVariable(variable.functionId, variable.$id);
-            invalidate(Dependencies.VARIABLES);
-            addNotification({
-                type: 'success',
-                message: `Variable has been deleted`
-            });
-            trackEvent('submit_variable_delete');
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    }
-
-    function downloadVariables() {
-        if (data.variables.total) {
-            let content = data.variables.variables
-                .map((variable) => `${variable.key}=${variable.value}`)
-                .join('\n');
-            const file = new File([content], '.env', {
-                type: 'application/x-envoy'
-            });
-
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(file);
-
-            link.href = url;
-            link.download = file.name;
-            document.body.appendChild(link);
-            link.click();
-
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        }
-    }
-
     function handleEvent(event: CustomEvent) {
         eventSet.set($eventSet.add(event.detail));
     }
@@ -318,6 +223,18 @@
         if (symmetricDifference(Array.from($eventSet), $func.events).length) {
             areEventsDisabled = false;
         } else areEventsDisabled = true;
+    }
+
+    async function deleteVariable(variableId: string) {
+        await sdkForProject.functions.deleteVariable($func.$id, variableId);
+    }
+
+    async function createVariable(key: string, value: string) {
+        await sdkForProject.functions.createVariable($func.$id, key, value);
+    }
+
+    async function updateVariable(variableId: string, key: string, value: string) {
+        await sdkForProject.functions.updateVariable($func.$id, variableId, key, value);
     }
 </script>
 
@@ -510,120 +427,19 @@
     </Form>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Update Function Variables</Heading>
-        <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
+        <Heading tag="h6" size="7">Update Function Environment Variables</Heading>
+        <p>
+            Set the environment variables (or secret keys) that will be passed to your function at
+            runtime and during build.
+        </p>
+
         <svelte:fragment slot="aside">
-            <div class="u-flex u-margin-inline-start-auto u-gap-16">
-                <Button secondary on:click={downloadVariables}>
-                    <span class="icon-download" />
-                    <span class="text">Download .env file</span>
-                </Button>
-                <!-- <Button secondary on:click={() => (showVariablesUpload = true)}>
-                    <span class="icon-upload" />
-                    <span class="text">Import .env file</span>
-                </Button> -->
-            </div>
-            <table class="table is-remove-outer-styles">
-                <thead class="table-thead">
-                    <tr class="table-row">
-                        <th class="table-thead-col">
-                            <span class="eyebrow-heading-3">Key</span>
-                        </th>
-                        <th class="table-thead-col">
-                            <span class="eyebrow-heading-3">Value</span>
-                        </th>
-                        <th class="table-thead-col" style="--p-col-width:40" />
-                    </tr>
-                </thead>
-                <tbody class="table-tbody">
-                    {#if data.variables.total}
-                        {#each data.variables.variables as variable, i}
-                            <tr class="table-row">
-                                <td class="table-col" data-title="Key">
-                                    <span class="text">{variable.key}</span>
-                                </td>
-                                <td class="table-col u-overflow-visible" data-title="value">
-                                    <div class="interactive-text-output">
-                                        {#if showVariablesValue[i]}
-                                            <span class="text">{variable.value}</span>
-                                        {:else}
-                                            <span class="text">••••••••</span>
-                                        {/if}
-                                        <div class="u-flex u-cross-child-start u-gap-8">
-                                            <button
-                                                on:click|preventDefault={() =>
-                                                    (showVariablesValue[i] =
-                                                        !showVariablesValue[i])}
-                                                class="interactive-text-output-button"
-                                                aria-label="show hidden text">
-                                                {#if showVariablesValue[i]}
-                                                    <span class="icon-eye-off" aria-hidden="true" />
-                                                {:else}
-                                                    <span class="icon-eye" aria-hidden="true" />
-                                                {/if}
-                                            </button>
-                                            <Copy bind:value={variable.value}>
-                                                <button
-                                                    class="interactive-text-output-button"
-                                                    aria-label="copy text">
-                                                    <span
-                                                        class="icon-duplicate"
-                                                        aria-hidden="true" />
-                                                </button>
-                                            </Copy>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="table-col u-overflow-visible" data-title="options">
-                                    <DropList
-                                        bind:show={showVariablesDropdown[i]}
-                                        placement="bottom-start"
-                                        noArrow>
-                                        <button
-                                            class="button is-text is-only-icon"
-                                            aria-label="more options"
-                                            on:click|preventDefault={() =>
-                                                (showVariablesDropdown[i] =
-                                                    !showVariablesDropdown[i])}>
-                                            <span class="icon-dots-horizontal" aria-hidden="true" />
-                                        </button>
-                                        <svelte:fragment slot="list">
-                                            <DropListItem
-                                                icon="pencil"
-                                                on:click={() => {
-                                                    selectedVar = variable;
-                                                    showVariablesDropdown[i] = false;
-                                                    showVariablesModal = true;
-                                                }}>
-                                                Edit
-                                            </DropListItem>
-                                            <DropListItem
-                                                icon="trash"
-                                                on:click={async () => {
-                                                    handleVariableDeleted(variable);
-                                                    showVariablesDropdown[i] = false;
-                                                }}>
-                                                Delete
-                                            </DropListItem>
-                                        </svelte:fragment>
-                                    </DropList>
-                                </td>
-                            </tr>
-                        {/each}
-                    {/if}
-                </tbody>
-            </table>
-            <div class="u-flex u-margin-block-start-16">
-                <button
-                    class="button is-text u-padding-inline-0"
-                    type="button"
-                    on:click={() => {
-                        showVariablesModal = true;
-                    }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create variable</span>
-                </button>
-            </div>
+            <Variables
+                isShared={false}
+                variables={data.variables}
+                {deleteVariable}
+                {createVariable}
+                {updateVariable} />
         </svelte:fragment>
     </CardGrid>
 
@@ -649,12 +465,6 @@
 </Container>
 
 <Delete bind:showDelete />
-{#if showVariablesModal}
-    <Variable
-        bind:selectedVar
-        bind:showCreate={showVariablesModal}
-        on:created={handleVariableCreated}
-        on:updated={handleVariableUpdated} />
-{/if}
+
 <!-- <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} /> -->
 <EventModal bind:show={showEvents} on:created={handleEvent} />
