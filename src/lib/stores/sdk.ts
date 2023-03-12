@@ -51,7 +51,7 @@ const sdkForProject = {
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
-    appwriteProject: new AppwriteProject(clientConsole),
+    appwriteProject: new AppwriteProject(clientProject)
 };
 
 export { sdkForConsole, sdkForProject, setProject };
