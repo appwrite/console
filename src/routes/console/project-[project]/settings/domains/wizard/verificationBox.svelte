@@ -14,7 +14,7 @@
     const verifyDomain = async () => {
         isVerifying = true;
         try {
-            const result = await sdkForConsole.projectpdateDomainVerification(
+            const result = await sdkForConsole.project.updateDomainVerification(
                 projectId,
                 $domain.$id
             );
