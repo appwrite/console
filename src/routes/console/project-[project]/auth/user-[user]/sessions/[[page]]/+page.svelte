@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty } from '$lib/components';
+    import { EmptySearch } from '$lib/components';
     import {
         Table,
         TableBody,
@@ -84,19 +84,18 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty single>
-            <p>No sessions available</p>
-            <Button
-                external
-                secondary
-                href="https://appwrite.io/docs/server/auth?sdk=nodejs-default#usersGetSessions">
-                Documentation
-            </Button>
-        </Empty>
+        <EmptySearch>
+            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
+                <p class="text u-line-height-1-5">No sessions available</p>
+                <Button
+                    external
+                    secondary
+                    href="https://appwrite.io/docs/server/auth?sdk=nodejs-default#usersGetSessions">
+                    Documentation
+                </Button>
+            </div>
+        </EmptySearch>
     {/if}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {data.sessions.total}</p>
-    </div>
 </Container>
 
 <DeleteSessions {selectedSessionId} bind:showDelete />

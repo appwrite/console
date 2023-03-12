@@ -1,18 +1,19 @@
 <script lang="ts">
-    import Shell from '$lib/layout/shell.svelte';
-    import SideNavigation from '$lib/layout/navigation.svelte';
-    import Header from '$lib/layout/header.svelte';
-    import { newOrgModal } from '$lib/stores/organization';
-    import Create from './createOrganization.svelte';
-    import { page } from '$app/stores';
     import { beforeNavigate } from '$app/navigation';
-    import { wizard } from '$lib/stores/wizard';
+    import { page } from '$app/stores';
+    import { INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
+    import Footer from '$lib/layout/footer.svelte';
+    import Header from '$lib/layout/header.svelte';
+    import SideNavigation from '$lib/layout/navigation.svelte';
+    import Shell from '$lib/layout/shell.svelte';
+    import { feedback } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
+    import { newOrgModal } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { loading } from '../store';
-    import { feedback } from '$lib/stores/app';
-    import { INTERVAL } from '$lib/constants';
+    import Create from './createOrganization.svelte';
 
     onMount(() => {
         loading.set(false);
@@ -50,14 +51,10 @@
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/onboarding')}>
-    <svelte:fragment slot="header">
-        <Header />
-    </svelte:fragment>
-    <svelte:fragment slot="side">
-        <SideNavigation />
-    </svelte:fragment>
+    <Header slot="header" />
+    <SideNavigation slot="side" />
     <slot />
-    <footer class="main-footer" />
+    <Footer slot="footer" />
 </Shell>
 
 {#if $wizard.show && $wizard.component}
