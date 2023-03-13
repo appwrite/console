@@ -81,9 +81,15 @@
     .main-side {
         z-index: 25;
     }
+
     @media (max-width: 550.99px), (min-width: 551px) and (max-width: 1198.99px) {
         .main-side {
             top: 4.5rem;
+        }
+    }
+    @media (min-width: 1199px) {
+        .grid-with-side {
+            grid-template-columns: auto 1fr !important;
         }
     }
 </style>
