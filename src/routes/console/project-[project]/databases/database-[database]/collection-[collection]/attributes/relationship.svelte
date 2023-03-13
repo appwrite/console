@@ -123,6 +123,14 @@
     $: if (data.required || data.array) {
         data.default = null;
     }
+
+    $: console.log(data.related);
+
+    $: if (data.related && !data.key) {
+        const collection = collectionList.collections.find((n) => n.$id === data.related);
+        // data key = data related in snake case
+        data.key = collection.name.replace(/\s+/g, '_').toLowerCase();
+    }
 </script>
 
 <li>
