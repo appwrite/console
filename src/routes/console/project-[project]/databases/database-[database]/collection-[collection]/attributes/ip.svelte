@@ -36,12 +36,9 @@
 <script lang="ts">
     import { InputText, InputChoice } from '$lib/elements/forms';
 
-    export let selectedAttribute: Models.AttributeIp;
+    export let editing = false;
     export let data: Partial<Models.AttributeIp>;
 
-    $: if (selectedAttribute) {
-        ({ required: data.required, array: data.array, default: data.default } = selectedAttribute);
-    }
     $: if (data.required || data.array) {
         data.default = null;
     }
@@ -51,19 +48,10 @@
     id="default"
     label="Default value"
     bind:value={data.default}
-    disabled={data.required || data.array}
-    readonly={!!selectedAttribute} />
-<InputChoice
-    id="required"
-    label="Required"
-    bind:value={data.required}
-    disabled={!!selectedAttribute || data.array}>
+    disabled={data.required || data.array} />
+<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
-<InputChoice
-    id="array"
-    label="Array"
-    bind:value={data.array}
-    disabled={!!selectedAttribute || data.required}>
+<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
     Indicate whether this attribute should act as an array
 </InputChoice>

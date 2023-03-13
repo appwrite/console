@@ -24,7 +24,7 @@
         await goto(`${base}/console/project-${project}/databases/database-${event.detail.$id}`);
     }
 
-    $: prefs.subscribe((prefs) => {
+    prefs.subscribe((prefs) => {
         if (prefs?.preferredView) {
             invalidate(Dependencies.DATABASES);
         }

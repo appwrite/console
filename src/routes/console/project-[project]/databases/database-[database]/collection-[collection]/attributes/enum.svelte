@@ -39,7 +39,7 @@
 <script lang="ts">
     import { InputChoice, InputSelect, InputTags } from '$lib/elements/forms';
 
-    export let selectedAttribute: Models.AttributeEnum;
+    export let editing = false;
     export let data: Partial<Models.AttributeEnum>;
 
     $: options =
@@ -47,15 +47,6 @@
             value: e,
             label: e
         })) ?? [];
-
-    $: if (selectedAttribute) {
-        ({
-            required: data.required,
-            array: data.array,
-            elements: data.elements,
-            default: data.default
-        } = selectedAttribute);
-    }
 
     $: if (data.required || data.array) {
         data.default = null;
@@ -67,25 +58,16 @@
     label="Elements"
     bind:tags={data.elements}
     placeholder="Add elements here"
-    readonly={!!selectedAttribute}
     required />
 <InputSelect
     id="default"
     label="Default value"
     bind:options
     bind:value={data.default}
-    disabled={!!selectedAttribute || data.required} />
-<InputChoice
-    id="required"
-    label="Required"
-    bind:value={data.required}
-    disabled={!!selectedAttribute || data.array}>
+    disabled={data.required} />
+<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
-<InputChoice
-    id="array"
-    label="Array"
-    bind:value={data.array}
-    disabled={!!selectedAttribute || data.required}>
+<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
     Indicate whether this attribute should act as an array
 </InputChoice>

@@ -5,7 +5,6 @@
 
     export let show = false;
     export let size: 'small' | 'big' = null;
-    // export let WASD = false;
     export let icon: string = null;
     export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;

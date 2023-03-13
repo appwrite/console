@@ -77,7 +77,7 @@
     class="drop-tooltip"
     class:u-width-full-line={fullWidth}
     bind:this={tooltip}
-    style="z-index: 10">
+    style:z-index="10">
     <div class="drop-arrow" class:u-hide={!show || (show && noArrow)} bind:this={arrow} />
     {#if show}
         <slot name="list" />

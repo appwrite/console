@@ -37,18 +37,12 @@
 <script lang="ts">
     import { InputChoice, InputSelect } from '$lib/elements/forms';
 
-    export let selectedAttribute: Models.AttributeBoolean = null;
+    export let editing = false;
     export let data: Partial<Models.AttributeBoolean> = {
         required: false,
         array: false,
         default: null
     };
-
-    $: if (selectedAttribute) {
-        data.required = selectedAttribute.required;
-        data.array = selectedAttribute.array;
-        data.default = selectedAttribute.default;
-    }
 
     $: if (data.required || data.array) {
         data.default = null;
@@ -65,18 +59,10 @@
         { label: 'False', value: false }
     ]}
     bind:value={data.default}
-    disabled={!!selectedAttribute || data.array || data.required} />
-<InputChoice
-    id="required"
-    label="Required"
-    bind:value={data.required}
-    disabled={!!selectedAttribute || data.array}>
+    disabled={data.array || data.required} />
+<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
-<InputChoice
-    id="array"
-    label="Array"
-    bind:value={data.array}
-    disabled={!!selectedAttribute || data.required}>
+<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
     Indicate whether this attribute should act as an array
 </InputChoice>
