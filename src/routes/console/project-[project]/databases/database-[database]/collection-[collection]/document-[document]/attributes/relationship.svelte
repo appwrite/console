@@ -1,6 +1,8 @@
 <script lang="ts">
     import { Button, InputSelectSearch } from '$lib/elements/forms';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
+    import { onMount } from 'svelte';
 
     export let id: string;
     export let label: string;
@@ -9,10 +11,39 @@
     export let optionalText: string | undefined = undefined;
 
     let addRelationship = false;
+    let search: string = null;
+    let collectionList: Models.CollectionList;
+
+    onMount(async () => {
+        collectionList = await getCollections();
+    });
+
+    async function getCollections(search: string = null) {
+        if (search) {
+            const collections = await sdkForProject.databases.listCollections(
+                attribute.related,
+                [Query.orderDesc('$createdAt')],
+                search
+            );
+            return collections;
+        } else {
+            const collections = await sdkForProject.databases.listCollections(attribute.related);
+            return collections;
+        }
+    }
+    // Reactive statements
+    $: getCollections(search).then((res) => (collectionList = res));
 </script>
 
 {#if attribute.direction === 'one'}
-    <InputSelectSearch {id} {label} {optionalText} required={attribute.required} bind:value />
+    <InputSelectSearch
+        {id}
+        {label}
+        {optionalText}
+        required={attribute.required}
+        bind:value
+        options={collectionList?.collections?.map((n) => ({ value: n.$id, label: n.name })) ??
+            []} />
 {:else if attribute.direction === 'many'}
     <div class="u-width-full-line u-max-width-600" />
 
@@ -33,7 +64,16 @@
 
         <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
             {#if addRelationship === false}
-                <InputSelectSearch {id} {label} {optionalText} required bind:value />
+                <InputSelectSearch
+                    {id}
+                    {label}
+                    {optionalText}
+                    required
+                    bind:value
+                    options={collectionList?.collections?.map((n) => ({
+                        value: n.$id,
+                        label: n.name
+                    })) ?? []} />
             {/if}
             {#each attribute?.relationships as relationship}
                 <li class="u-flex u-gap-16">

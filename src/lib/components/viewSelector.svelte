@@ -47,7 +47,7 @@
 {#if $prefs?.preferredView === 'list'}
     <DropList bind:show={showSelectColumns} scrollable={true}>
         <Button secondary on:click={() => (showSelectColumns = true)}>
-            <span class="icon-view-board" aria-hidden="true" aria-label="columns" />
+            <span class="icon-view-boards u-opacity-50	" aria-hidden="true" aria-label="columns" />
             <span class="text">Columns</span>
             <span class="inline-tag">{selectedColumnsNumber}</span>
         </Button>

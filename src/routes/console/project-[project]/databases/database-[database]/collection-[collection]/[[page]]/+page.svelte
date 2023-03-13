@@ -22,9 +22,14 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { columns } from './store';
     import { onMount } from 'svelte';
+    import RelationshipsModal from './relationshipsModal.svelte';
 
     export let data: PageData;
+    const projectId = $page.params.project;
+    const databaseId = $page.params.database;
     let showCreateAttribute = false;
+    let showRelationships = false;
+    let selectedRelationship: string[] = null;
 
     function openWizard() {
         wizard.start(Create);
@@ -35,6 +40,7 @@
             ...$collection.attributes.map((attribute) => ({
                 id: attribute.key,
                 title: attribute.key,
+                type: attribute.type,
                 show: true
             }))
         ]);
@@ -56,7 +62,6 @@
     }
 
     function formatColumn(column: unknown) {
-        console.log(column);
         let formattedColumn: string;
 
         if (typeof column === 'string') {
@@ -109,7 +114,7 @@
                 <TableBody>
                     {#each data.documents.documents as document}
                         <TableRowLink
-                            href={`${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$collection.$id}/document-${document.$id}`}>
+                            href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
                             <TableCell width={230}>
                                 <Copy value={document.$id}>
                                     <Pill button>
@@ -118,18 +123,39 @@
                                     </Pill>
                                 </Copy>
                             </TableCell>
+
                             {#each $columns as column}
                                 {#if column.show}
-                                    {@const formatted = formatColumn(document[column.id])}
-                                    <TableCell>
-                                        <div
-                                            use:tooltip={{
-                                                content: formatted.whole,
-                                                disabled: !formatted.truncated
-                                            }}>
-                                            {formatted.value}
-                                        </div>
-                                    </TableCell>
+                                    {#if column.type === 'relationship'}
+                                        {#if column.direction === 'one'}
+                                            <TableCell title={column.title}>
+                                                {document[column.id]}
+                                            </TableCell>
+                                        {:else}
+                                            <TableCell>
+                                                {@const itemsNum = column?.data?.lenght}
+                                                <Button
+                                                    on:click={() => {
+                                                        showRelationships = true;
+                                                        selectedRelationship = document;
+                                                    }}
+                                                    disabled={!itemsNum}>
+                                                    Items <span class="inline-tag">{itemsNum}</span>
+                                                </Button>
+                                            </TableCell>
+                                        {/if}
+                                    {:else}
+                                        {@const formatted = formatColumn(document[column.id])}
+                                        <TableCell>
+                                            <div
+                                                use:tooltip={{
+                                                    content: formatted.whole,
+                                                    disabled: !formatted.truncated
+                                                }}>
+                                                {formatted.value}
+                                            </div>
+                                        </TableCell>
+                                    {/if}
                                 {/if}
                             {/each}
                         </TableRowLink>
@@ -161,3 +187,4 @@
 </Container>
 
 <CreateAttribute bind:showCreate={showCreateAttribute} />
+<RelationshipsModal bind:show={showRelationships} {selectedRelationship} />
