@@ -8,6 +8,10 @@
     $: project = $page.params.project;
     $: databaseId = $page.params.database;
     $: collectionId = $page.params.collection;
+
+    $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
+        a.name.localeCompare(b.name)
+    );
 </script>
 
 <section class="drop-section u-flex-vertical u-gap-8">
@@ -26,7 +30,7 @@
     </button>
     {#if data?.allCollections?.total}
         <ul class="drop-list">
-            {#each data.allCollections.collections as collection}
+            {#each sortedCollections as collection}
                 {@const href = `${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}/documents`}
                 {@const isSelected = collectionId === collection.$id}
                 <li class="drop-list-item">
