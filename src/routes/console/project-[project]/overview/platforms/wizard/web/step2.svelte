@@ -14,7 +14,7 @@
 
     const example1 = `import { Client } from 'appwrite';`;
     const example2 =
-          `<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}"></script>
+          `<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}"></script` + `>`
 <script>
     const { Client } = Appwrite;
 </script` + `>`; // Prevent svelte from processing the closing script tag
