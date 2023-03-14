@@ -381,7 +381,7 @@
 
         <Form on:submit={updateCompression}>
             <CardGrid>
-                <Heading tag="h2" size="6">Update Compression Algorithm</Heading>
+                <Heading tag="h2" size="6">Compression</Heading>
                 <p class="text">
                     Choose an algorithm for compression. For files larger than 20MB, compression
                     will be skipped even if it's enabled.
@@ -390,7 +390,7 @@
                     <FormList>
                         <InputSelect
                             id="compression"
-                            label="Compression algorithm"
+                            label="Algorithm"
                             options={compressionOptions}
                             bind:value={compression} />
                     </FormList>
