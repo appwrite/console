@@ -10,6 +10,8 @@
         unsubscribe = sdkForConsole.client.subscribe('console', (response) => {
             if (response.events.includes('functions.*.deployments.*')) {
                 invalidate(Dependencies.DEPLOYMENTS);
+            } else if (response.events.includes('rules.*')) {
+                invalidate(Dependencies.RULES);
             }
         });
     });

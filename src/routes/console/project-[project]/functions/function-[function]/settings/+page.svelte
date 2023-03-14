@@ -36,8 +36,6 @@
     let arePermsDisabled = true;
     let logging: boolean = null;
 
-    // TODO: @Meldiron implement "Promote"
-
     const eventSet: Writable<Set<string>> = writable(new Set());
     let showEvents = false;
     let areEventsDisabled = true;

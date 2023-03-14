@@ -209,21 +209,6 @@
                                             <span class="icon-duplicate" aria-hidden="true" />
                                         </button>
                                     </Copy>
-
-                                    <button
-                                        type="button"
-                                        on:click={() => {
-                                            snippetKey = variable.key;
-                                            showSnippet = true;
-                                        }}
-                                        use:tooltip={{
-                                            content: 'Code snippets',
-                                            hideOnClick: false
-                                        }}
-                                        class="interactive-text-output-button"
-                                        aria-label="copy code">
-                                        <span class="icon-code" aria-hidden="true" />
-                                    </button>
                                 </div>
                             </div>
                         </td>
@@ -240,6 +225,14 @@
                                     <span class="icon-dots-horizontal" aria-hidden="true" />
                                 </button>
                                 <svelte:fragment slot="list">
+                                    <DropListItem
+                                        icon="code"
+                                        on:click={() => {
+                                            snippetKey = variable.key;
+                                            showSnippet = true;
+                                        }}>
+                                        Code snippets
+                                    </DropListItem>
                                     <DropListItem
                                         icon="pencil"
                                         on:click={() => {
@@ -281,7 +274,7 @@
                 showVariablesModal = true;
             }}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create environment variables</span>
+            <span class="text">Create environment variable</span>
         </button>
     </div>
 {:else}
@@ -291,7 +284,7 @@
 
 {#if !isShared && !isWizard}
     <Alert type="info">
-        Shared variables from <a href={sharedVariablesUrl} class="link">project settings</a> are also
+        Global variables from <a href={sharedVariablesUrl} class="link">project settings</a> are also
         available. When there is name conflict, function variable is used.
     </Alert>
 {/if}
@@ -307,7 +300,7 @@
 
 {#if !isShared}
     <Modal bind:show={showPromote} on:submit={() => handlePromote(promoteVariable)} warning>
-        <svelte:fragment slot="header">Promote To Shared Variable</svelte:fragment>
+        <svelte:fragment slot="header">Promote To Global Variable</svelte:fragment>
         <p>
             Are you sure you want to promote <code>{promoteVariable.key}</code>? This will move
             variable into project settings and make it visible to all services.

@@ -24,8 +24,8 @@
         },
         {
             href: `${path}/variables`,
-            title: 'Shared Variables',
-            event: 'sharedVariables'
+            title: 'Global Variables',
+            event: 'globalVariables'
         }
     ];
 </script>

@@ -22,12 +22,14 @@
     import Delete from './delete.svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { ruleResource } from './wizard/store';
+    import Logs from './logs.svelte';
 
     export let rules: Models.ProxyRuleList;
     export let resourceType: string;
     export let resourceId: string;
 
     let showDelete = false;
+    let showLogs = false;
     let selectedRule: Models.ProxyRule;
     let isVerifying = {};
 
@@ -75,9 +77,9 @@
     {#if rules.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={200}>Domain Name</TableCellHead>
-                <TableCellHead width={50}>Status</TableCellHead>
-                <TableCellHead width={250} />
+                <TableCellHead width={300}>Domain Name</TableCellHead>
+                <TableCellHead width={100}>Status</TableCellHead>
+                <TableCellHead width={150} />
                 <TableCellHead width={40}>Actions</TableCellHead>
             </TableHeader>
             <TableBody>
@@ -123,6 +125,20 @@
                                         <span class="icon-key" aria-hidden="true" />
                                     </button>
                                 {/if}
+                                {#if rule.status === 'unverified' || rule.status === 'verified'}
+                                    <!-- TODO: remove inline styles -->
+                                    <button
+                                        class="button is-text is-only-icon u-padding-inline-0"
+                                        style="--p-button-size: var(--button-size, 2.0rem);"
+                                        aria-label="Verify item"
+                                        on:click={() => {
+                                            showLogs = true;
+                                            selectedRule = rule;
+                                        }}>
+                                        <span class="icon-terminal" aria-hidden="true" />
+                                    </button>
+                                {/if}
+
                                 <!-- TODO: remove inline styles -->
                                 <button
                                     class="button tooltip is-text is-only-icon u-padding-inline-0"
@@ -153,3 +169,5 @@
 </Container>
 
 <Delete bind:showDelete bind:selectedRule />
+
+<Logs bind:showLogs logs={selectedRule?.logs ? selectedRule?.logs : 'No logs recorded.'} />

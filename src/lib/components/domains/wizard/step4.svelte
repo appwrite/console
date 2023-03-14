@@ -1,20 +1,33 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { rule } from './store';
+    import { sdkForConsole, sdkForProject } from '$lib/stores/sdk';
     import CnameTable from './cnameTable.svelte';
     import VerificationBox from './verificationBox.svelte';
+    import { onDestroy, onMount } from 'svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { rule } from './store';
 
     let status = 'verifying';
-    const checkCertificate = () => {
-        setTimeout(async () => {
-            const result = await sdkForProject.proxy.getRule($rule.$id);
-            status = result.status;
 
-            if (result.status === 'verifying') {
-                checkCertificate();
+    let unsubscribe: { (): void };
+
+    onMount(() => {
+        unsubscribe = sdkForConsole.client.subscribe<Models.ProxyRule>('console', (response) => {
+            if (response.events.includes(`rules.${$rule.$id}`)) {
+                status = response.payload.status;
             }
-        }, 2000);
+        });
+    });
+
+    onDestroy(() => {
+        if (unsubscribe) {
+            unsubscribe();
+        }
+    });
+
+    const checkCertificate = async () => {
+        const result = await sdkForProject.proxy.getRule($rule.$id);
+        status = result.status;
     };
     checkCertificate();
 </script>
