@@ -1,57 +1,31 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { AvatarInitials, Heading, Pagination } from '$lib/components';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
-        TableHeader,
         TableBody,
-        TableCellHead,
         TableCell,
+        TableCellHead,
         TableCellText,
+        TableHeader,
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { AvatarInitials, Heading, Pagination } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { organization, members, newMemberModal } from '$lib/stores/organization';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
-    import { addNotification } from '$lib/stores/notifications';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-    import Delete from '../../deleteMember.svelte';
+    import { members, newMemberModal } from '$lib/stores/organization';
     import type { Models } from '@aw-labs/appwrite-console';
+    import Delete from '../../deleteMember.svelte';
     import type { PageData } from './$types';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let data: PageData;
 
     let selectedMember: Models.Membership;
     let showDelete = false;
 
-    const url = `${$page.url.origin}/console/`;
     const deleted = () => invalidate(Dependencies.ACCOUNT);
-    const resend = async (member: Models.Membership) => {
-        try {
-            await sdkForConsole.teams.createMembership(
-                $organization.$id,
-                member.userEmail,
-                member.roles,
-                url,
-                member.userName
-            );
-            addNotification({
-                type: 'success',
-                message: `Invite has been sent to ${member.userEmail}`
-            });
-            trackEvent(Submit.MemberCreate);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error
-            });
-            trackError(error, Submit.MemberCreate);
-        }
-    };
 </script>
 
 <Container>
@@ -69,7 +43,6 @@
             <TableHeader>
                 <TableCellHead width={140}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
-                <TableCellHead width={90}>Role</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -87,17 +60,6 @@
                             </div>
                         </TableCell>
                         <TableCellText title="Email">{member.userEmail}</TableCellText>
-                        <TableCell title="Roles">
-                            {#if member.invited && !member.joined}
-                                <Button
-                                    secondary
-                                    event="invite_resend"
-                                    on:click={() => resend(member)}>Resend</Button>
-                            {:else}
-                                {member.roles}
-                            {/if}
-                        </TableCell>
-
                         <TableCell>
                             <button
                                 class="button is-only-icon is-text"
