@@ -47,10 +47,14 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if $log.data}
-    <section class="cover-frame">
+    <section class="cover-frame" data-private>
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
-            <h1 class="body-text-1" name="title">Function ID: {$log.func.$id}</h1>
-            <button on:click={() => ($log.show = false)} class="x-button" aria-label="close popup">
+            <h1 class="body-text-1">Function ID: {$log.func.$id}</h1>
+            <button
+                on:click={() => ($log.show = false)}
+                class="button is-text is-only-icon"
+                style="--button-size:1.5rem;"
+                aria-label="close popup">
                 <span class="icon-x" aria-hidden="true" />
             </button>
         </header>
@@ -79,11 +83,10 @@
                         <div>Size: {size.value} {size.unit}</div>
                     </div>
                     <div class="status u-margin-inline-start-auto">
-                        <div class="u-flex u-flex-vertical u-cross-end">
+                        <div class="status u-margin-inline-start-auto">
                             <Status status={$log.data.status}>{$log.data.status}</Status>
-                            <p class="text">
-                                {calculateTime($log.data.buildTime)}
-                            </p>
+
+                            <time>{calculateTime($log.data.buildTime)}</time>
                         </div>
                     </div>
                 </div>
@@ -116,11 +119,13 @@
                         </header>
                         {#if selectedTab === 'logs'}
                             <code class="code-panel-content">
-                                {$log.data.buildStdout ?? 'No logs recorded'}
+                                {$log.data.buildStdout ? $log.data.buildStdout : 'No logs recorded'}
                             </code>
                         {:else}
                             <code class="code-panel-content">
-                                {$log.data.buildStderr ?? 'No errors recorded'}
+                                {$log.data.buildStderr
+                                    ? $log.data.buildStderr
+                                    : 'No errors recorded'}
                             </code>
                         {/if}
                     </section>
@@ -149,7 +154,7 @@
                             Created at: {toLocaleDateTime($log.data.$createdAt)}</time>
                     </div>
                     <div>
-                        <p>Triggered by: {$log.data.trigger}</p>
+                        <p>Triggered by: <b>{$log.data.trigger}</b></p>
                     </div>
                     <div class="status u-margin-inline-start-auto">
                         <Status status={$log.data.status}>{$log.data.status}</Status>
@@ -191,15 +196,15 @@
                         </header>
                         {#if selectedTab === 'logs'}
                             <code class="code-panel-content">
-                                {$log.data.stdout ?? 'No logs recorded'}
+                                {$log.data.stdout ? $log.data.stdout : 'No logs recorded'}
                             </code>
                         {:else if selectedTab === 'errors'}
                             <code class="code-panel-content">
-                                {$log.data.stderr ?? 'No errors recorded'}
+                                {$log.data.stderr ? $log.data.stderr : 'No errors recorded'}
                             </code>
                         {:else}
                             <code class="code-panel-content">
-                                {$log.data.response ?? 'No response recorded'}
+                                {$log.data.response ? $log.data.response : 'No response recorded'}
                             </code>
                         {/if}
                     </section>

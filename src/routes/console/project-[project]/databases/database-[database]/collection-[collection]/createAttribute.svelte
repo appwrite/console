@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import type { Attributes } from './store';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -36,12 +36,13 @@
                 message: `Attribute ${key} has been created`
             });
             showCreate = false;
-            trackEvent('submit_attribute_create');
+            trackEvent(Submit.AttributeCreate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AttributeCreate);
         }
     }
 
@@ -53,6 +54,11 @@
         key = null;
         selectedOption = null;
         $option = null;
+        data = {
+            required: false,
+            array: false,
+            default: null
+        };
     }
 </script>
 

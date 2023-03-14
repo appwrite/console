@@ -5,11 +5,13 @@
 
     // TODO: metric type is wrong
     export function last(set: Array<unknown>): Models.Metric | null {
+        if (!set) return null;
         return (set as Models.Metric[]).slice(-1)[0] ?? null;
     }
 
     // TODO: metric type is wrong
     export function total(set: Array<unknown>): number {
+        if (!set) return 0;
         return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
     }
 
@@ -26,7 +28,7 @@
     import { usage } from './store';
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
-    import { Heading } from '$lib/components';
+    import { Heading, Tab } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { base } from '$app/paths';
     import Realtime from './realtime.svelte';
@@ -65,7 +67,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(last($usage.storage).value)}
+                {@const storage = humanFileSize(total($usage.storage) ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -89,14 +91,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.documents).value)}
+                                        {format(total($usage.documents) ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(last($usage.databases).value)}
+                                        Databases: {format(total($usage.databases) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -124,7 +126,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(last($usage.buckets).value)}
+                                        Buckets: {format(total($usage.buckets) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -144,7 +146,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.users).value)}
+                                        {format(total($usage.users) ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -165,7 +167,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(last($usage.executions).value)}
+                                        {format(total($usage.executions) ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>
@@ -197,22 +199,14 @@
                         <span class="icon-cheveron-right" aria-hidden="true" />
                     </button>
                     <ul class="tabs-list" data-sveltekit-noscroll>
-                        <li class="tabs-item">
-                            <a
-                                class="tabs-button"
-                                href={`${path}/platforms`}
-                                class:is-selected={$page.url.pathname === `${path}/platforms`}>
-                                <span class="text">Platforms</span>
-                            </a>
-                        </li>
-                        <li class="tabs-item">
-                            <a
-                                class="tabs-button"
-                                href={`${path}/keys`}
-                                class:is-selected={$page.url.pathname === `${path}/keys`}>
-                                <span class="text">API Keys</span>
-                            </a>
-                        </li>
+                        <Tab
+                            href={`${path}/platforms`}
+                            selected={$page.url.pathname === `${path}/platforms`}
+                            event="platforms">Platforms</Tab>
+                        <Tab
+                            href={`${path}/keys`}
+                            selected={$page.url.pathname === `${path}/keys`}
+                            event="keys">API Keys</Tab>
                     </ul>
                 </div>
 

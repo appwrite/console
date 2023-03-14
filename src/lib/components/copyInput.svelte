@@ -1,5 +1,6 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
+    import { copy } from '$lib/helpers/copy';
 
     import { addNotification } from '$lib/stores/notifications';
 
@@ -9,13 +10,14 @@
 
     let content = 'Click to copy';
 
-    const copy = async () => {
-        try {
-            await navigator.clipboard.writeText(value);
+    const handleCopy = async () => {
+        const success = await copy(value);
+
+        if (success) {
             content = 'Copied';
-        } catch (error) {
+        } else {
             addNotification({
-                message: error.message,
+                message: 'Unable to copy to clipboard',
                 type: 'error'
             });
         }
@@ -29,9 +31,9 @@
         <div class="options-list">
             <button
                 type="button"
-                class="input-button"
+                class="options-list-button"
                 aria-label="Click to copy."
-                on:click={copy}
+                on:click={handleCopy}
                 on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
                 use:tooltip={{
                     content,

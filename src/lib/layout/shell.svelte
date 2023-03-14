@@ -41,22 +41,23 @@
 
 <main
     class:grid-with-side={showSideNavigation}
-    class:grid={!showSideNavigation}
     class:is-open={isOpen}
     class:u-hide={$wizard.show || $log.show}>
     <header class="main-header u-padding-inline-end-0">
         <button
             class:u-hide={!showSideNavigation}
-            class="icon-button is-no-desktop"
+            class="icon-button is-not-desktop"
             aria-label="Open Menu"
             on:click={toggleMenu}>
             <span class:icon-x={isOpen} class:icon-menu={!isOpen} aria-hidden="true" />
         </button>
         <slot name="header" />
     </header>
-    <nav class="main-side">
-        <slot name="side" />
-    </nav>
+    {#if showSideNavigation}
+        <nav class="main-side">
+            <slot name="side" />
+        </nav>
+    {/if}
     <section class="main-content">
         {#if $page.data?.header}
             <svelte:component this={$page.data.header} />
@@ -64,11 +65,17 @@
 
         <slot />
     </section>
+    <slot name="footer" />
 </main>
 
-<style>
-    .grid-with-side {
+<style lang="scss">
+    main {
         min-height: 100vh;
+
+        &:not(.grid-with-side) {
+            display: flex;
+            flex-direction: column;
+        }
     }
 
     .main-side {

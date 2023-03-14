@@ -8,7 +8,7 @@
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -32,10 +32,11 @@
                 type: 'success',
                 message: `Invite has been sent to ${email}`
             });
-            trackEvent('submit_member_create');
+            trackEvent(Submit.MemberCreate);
             dispatch('created', team);
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.MemberCreate);
         }
     };
 
@@ -55,7 +56,11 @@
             placeholder="Enter email"
             autofocus={true}
             bind:value={email} />
-        <InputText id="name" label="Name (optional)" placeholder="Enter name" bind:value={name} />
+        <InputText
+            id="member-name"
+            label="Name (optional)"
+            placeholder="Enter name"
+            bind:value={name} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

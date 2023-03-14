@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty } from '$lib/components';
+    import { EmptySearch } from '$lib/components';
     import {
         Table,
         TableBody,
@@ -35,7 +35,7 @@
         </div>
         <Table>
             <TableHeader>
-                <TableCellHead>Browser and Device</TableCellHead>
+                <TableCellHead width={140}>Browser and Device</TableCellHead>
                 <TableCellHead width={140}>Session</TableCellHead>
                 <TableCellHead width={140}>Location</TableCellHead>
                 <TableCellHead width={140}>IP</TableCellHead>
@@ -67,35 +67,35 @@
                         <TableCellText title="Session">{session.clientType}</TableCellText>
                         <TableCellText title="Location">{session.countryName}</TableCellText>
                         <TableCellText title="IP">{session.ip}</TableCellText>
-                        <TableCellText title="">
-                            <button
-                                class="button is-only-icon is-text"
-                                aria-label="Delete item"
+                        <TableCell>
+                            <Button
+                                text
+                                round
+                                ariaLabel="Delete item"
                                 on:click={() => {
                                     selectedSessionId = session.$id;
                                     showDelete = true;
                                 }}>
                                 <span class="icon-trash" aria-hidden="true" />
-                            </button>
-                        </TableCellText>
+                            </Button>
+                        </TableCell>
                     </TableRow>
                 {/each}
             </TableBody>
         </Table>
     {:else}
-        <Empty single>
-            <p>No session available</p>
-            <Button
-                external
-                secondary
-                href="https://appwrite.io/docs/server/auth?sdk=nodejs-default#usersGetSessions">
-                Documentation
-            </Button>
-        </Empty>
+        <EmptySearch>
+            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
+                <p class="text u-line-height-1-5">No sessions available</p>
+                <Button
+                    external
+                    secondary
+                    href="https://appwrite.io/docs/server/auth?sdk=nodejs-default#usersGetSessions">
+                    Documentation
+                </Button>
+            </div>
+        </EmptySearch>
     {/if}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {data.sessions.total}</p>
-    </div>
 </Container>
 
 <DeleteSessions {selectedSessionId} bind:showDelete />

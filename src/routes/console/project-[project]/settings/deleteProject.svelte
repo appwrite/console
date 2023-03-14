@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button, FormList, InputPassword, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -21,13 +21,14 @@
                 type: 'success',
                 message: `${$project.name} has been deleted`
             });
-            trackEvent('submit_project_delete');
+            trackEvent(Submit.ProjectDelete);
             await goto(`${base}/console`);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.ProjectDelete);
         }
     };
 </script>
@@ -43,7 +44,7 @@
         <InputText
             label={`Enter "${$project.name}" to continue`}
             placeholder="Enter name"
-            id="name"
+            id="project-name"
             autofocus
             required
             bind:value={name} />

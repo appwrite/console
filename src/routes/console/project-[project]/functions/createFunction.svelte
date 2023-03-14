@@ -15,7 +15,8 @@
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@aw-labs/appwrite-console';
 
     const projectId = $page.params.project;
 
@@ -25,7 +26,7 @@
     async function create() {
         try {
             const response = await sdkForProject.functions.create(
-                $createFunction.id ?? 'unique()',
+                $createFunction.id ?? ID.unique(),
                 $createFunction.name,
                 $createFunction.execute,
                 $createFunction.runtime,
@@ -43,13 +44,16 @@
                 message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
-            trackEvent('submit_function_create');
+            trackEvent(Submit.FunctionCreate, {
+                customId: !!$createFunction.id
+            });
             wizard.hide();
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FunctionCreate);
         }
     }
 
@@ -68,7 +72,7 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Function Details',
+        label: 'Details',
         component: Step1
     });
     stepsComponents.set(2, {
@@ -82,7 +86,7 @@
         optional: true
     });
     stepsComponents.set(4, {
-        label: 'Scheduling',
+        label: 'Schedule',
         component: Step4,
         optional: true
     });

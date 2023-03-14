@@ -1,17 +1,17 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button, InputText, FormList, InputSelect } from '$lib/elements/forms';
-    import { collection } from '../store';
-    import { onMount } from 'svelte';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
+    import { goto, invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import type { Attributes } from '../store';
-    import { invalidate } from '$app/navigation';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import Select from './select.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { indexes, type Attributes } from '../store';
+    import { collection } from '../store';
+    import Select from './select.svelte';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
@@ -19,7 +19,7 @@
     const databaseId = $page.params.database;
 
     let error: string;
-    let key: string = null;
+    let key = `index_${$indexes.length + 1}`;
     let types = [
         { value: 'key', label: 'Key' },
         { value: 'unique', label: 'Unique' },
@@ -32,25 +32,31 @@
         label: attribute.key
     }));
     let attributeList = [{ value: '', order: '' }];
+    let creating = false;
 
-    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
-
-    onMount(() => {
-        if (!externalAttribute) return;
-        attributeList = [{ value: externalAttribute.key, order: 'ASC' }];
-    });
+    function initialize() {
+        attributeList = externalAttribute
+            ? [{ value: externalAttribute.key, order: 'ASC' }]
+            : [{ value: '', order: 'ASC' }];
+        selectedType = 'key';
+        key = `index_${$indexes.length + 1}`;
+    }
 
     $: if (showCreateIndex) {
-        attributeList = [{ value: '', order: '' }];
-        selectedType = 'key';
-        key = null;
+        error = null;
+        initialize();
     }
+
+    $: addAttributeDisabled =
+        !attributeList.at(-1)?.value || !attributeList.at(-1)?.order || creating;
 
     async function create() {
         if (!(key && selectedType && !addAttributeDisabled)) {
             error = 'All fields are required';
             return;
         }
+
+        creating = true;
 
         try {
             await sdkForProject.databases.createIndex(
@@ -61,19 +67,29 @@
                 attributeList.map((a) => a.value),
                 attributeList.map((a) => a.order)
             );
-            invalidate(Dependencies.COLLECTION);
+            await Promise.allSettled([
+                invalidate(Dependencies.COLLECTION),
+                invalidate(Dependencies.DATABASE)
+            ]);
+
+            goto(
+                `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
+            );
+
             addNotification({
                 message: 'Index has been created',
                 type: 'success'
             });
-            trackEvent('submit_index_create');
+            trackEvent(Submit.IndexCreate);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.IndexCreate);
         } finally {
             showCreateIndex = false;
+            creating = false;
         }
     }
 
@@ -140,6 +156,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreateIndex = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button submit disabled={creating}>Create</Button>
     </svelte:fragment>
 </Modal>

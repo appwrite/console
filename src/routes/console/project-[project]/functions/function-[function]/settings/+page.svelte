@@ -1,37 +1,35 @@
 <script lang="ts">
-    import {
-        CardGrid,
-        Box,
-        DropList,
-        DropListItem,
-        Copy,
-        Empty,
-        EventModal
-    } from '$lib/components';
-    import { Container } from '$lib/layout';
-    import { Button, InputNumber, InputText, InputCron, Form, FormList } from '$lib/elements/forms';
+    import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Box, CardGrid, DropList, DropListItem, Empty, Output, Secret } from '$lib/components';
+    import Heading from '$lib/components/heading.svelte';
+    import { Roles } from '$lib/components/permissions';
+    import { Dependencies } from '$lib/constants';
+    import { Button, Form, FormList, InputCron, InputNumber, InputText } from '$lib/elements/forms';
+    import { symmetricDifference } from '$lib/helpers/array';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { execute, func } from '../store';
-    import Delete from './delete.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
-    import { page } from '$app/stores';
     import type { Models } from '@aw-labs/appwrite-console';
+    import { onMount } from 'svelte';
     import Variable from '../../createVariable.svelte';
+    import { execute, func } from '../store';
     // import Upload from './uploadVariables.svelte';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Roles } from '$lib/components/permissions';
-    import { symmetricDifference } from '$lib/helpers/array';
-    import TableList from '$lib/elements/table/tableList.svelte';
-    import { TableCell, TableCellText } from '$lib/elements/table';
-    import Heading from '$lib/components/heading.svelte';
-    import { writable, type Writable } from 'svelte/store';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import {
+        Table,
+        TableBody,
+        TableCell,
+        TableCellHead,
+        TableHeader,
+        TableRow
+    } from '$lib/elements/table';
     import type { PageData } from './$types';
-    import { trackEvent } from '$lib/actions/analytics';
+    import Delete from './delete.svelte';
+    import UpdateEvents from './updateEvents.svelte';
 
     export let data: PageData;
 
@@ -40,7 +38,6 @@
     let selectedVar: Models.Variable = null;
     // let showVariablesUpload = false;
     let showVariablesModal = false;
-    let showVariablesValue = [];
     let showVariablesDropdown = [];
     let timeout: number = null;
     let functionName: string = null;
@@ -48,16 +45,11 @@
     let permissions: string[] = [];
     let arePermsDisabled = true;
 
-    const eventSet: Writable<Set<string>> = writable(new Set());
-    let showEvents = false;
-    let areEventsDisabled = true;
-
     onMount(async () => {
         timeout ??= $func.timeout;
         functionName ??= $func.name;
         functionSchedule ??= $func.schedule;
         permissions = $func.execute;
-        $eventSet = new Set($func.events);
     });
 
     async function updateName() {
@@ -76,12 +68,13 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_function_update_name');
+            trackEvent(Submit.FunctionUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FunctionUpdateName);
         }
     }
 
@@ -101,37 +94,13 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
-            trackEvent('submit_function_update_permissions');
+            trackEvent(Submit.FunctionUpdatePermissions);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-        }
-    }
-
-    async function updateEvents() {
-        try {
-            await sdkForProject.functions.update(
-                functionId,
-                $func.name,
-                $func.execute,
-                Array.from($eventSet),
-                $func.schedule,
-                $func.timeout,
-                $func.enabled
-            );
-            invalidate(Dependencies.FUNCTION);
-            addNotification({
-                message: 'Permissions have been updated',
-                type: 'success'
-            });
-            trackEvent('submit_function_update_events');
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
+            trackError(error, Submit.FunctionUpdatePermissions);
         }
     }
 
@@ -150,14 +119,15 @@
 
             addNotification({
                 type: 'success',
-                message: 'CRON Schedule has been updated'
+                message: 'Cron Schedule has been updated'
             });
-            trackEvent('submit_function_update_schedule');
+            trackEvent(Submit.FunctionUpdateSchedule);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.FunctionUpdateSchedule);
         }
     }
 
@@ -178,12 +148,13 @@
                 type: 'success',
                 message: 'Timeout has been updated'
             });
-            trackEvent('submit_function_update_timeout');
+            trackEvent(Submit.FunctionUpdateTimeout);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.FunctionUpdateTimeout);
         }
     }
 
@@ -198,12 +169,13 @@
                 type: 'success',
                 message: `${$func.name} variables have been updated`
             });
-            trackEvent('submit_variable_create');
+            trackEvent(Submit.VariableCreate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.VariableCreate);
         }
     }
 
@@ -223,12 +195,13 @@
                 type: 'success',
                 message: `${$func.name} variables have been updated`
             });
-            trackEvent('submit_variable_update');
+            trackEvent(Submit.VariableUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.VariableUpdate);
         }
     }
     async function handleVariableDeleted(variable: Models.Variable) {
@@ -239,12 +212,13 @@
                 type: 'success',
                 message: `Variable has been deleted`
             });
-            trackEvent('submit_variable_delete');
+            trackEvent(Submit.VariableDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.VariableDelete);
         }
     }
 
@@ -270,20 +244,10 @@
         }
     }
 
-    function handleEvent(event: CustomEvent) {
-        eventSet.set($eventSet.add(event.detail));
-    }
-
     $: if (permissions) {
         if (symmetricDifference(permissions, $func.execute).length) {
             arePermsDisabled = false;
         } else arePermsDisabled = true;
-    }
-
-    $: if ($eventSet) {
-        if (symmetricDifference(Array.from($eventSet), $func.events).length) {
-            areEventsDisabled = false;
-        } else areEventsDisabled = true;
     }
 </script>
 
@@ -300,7 +264,7 @@
             <div>
                 <Heading tag="h6" size="7">{$func.name}</Heading>
 
-                <p>{$func.runtime}</p>
+                <p class="text u-capitalize">{$func.runtime}</p>
             </div>
         </div>
         <svelte:fragment slot="aside">
@@ -346,7 +310,13 @@
             <Heading tag="h6" size="7">Execute Access</Heading>
             <p>
                 Choose who can execute this function using the client API. For more information,
-                check out the Permissions Guide in our documentation.
+                check out the <a
+                    href="https://appwrite.io/docs/permissions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link">
+                    Permissions Guide
+                </a>.
             </p>
             <svelte:fragment slot="aside">
                 <Roles bind:roles={permissions} />
@@ -358,66 +328,24 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updateEvents}>
-        <CardGrid>
-            <Heading tag="h6" size="7">Update Events</Heading>
-            <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
-            <svelte:fragment slot="aside">
-                {#if $eventSet.size}
-                    <TableList>
-                        {#each Array.from($eventSet) as event}
-                            <li class="table-row">
-                                <TableCellText title="id">
-                                    {event}
-                                </TableCellText>
-                                <TableCell showOverflow title="options" width={40}>
-                                    <button
-                                        class="button is-text is-only-icon"
-                                        aria-label="delete id"
-                                        on:click|preventDefault={() => {
-                                            $eventSet.delete(event);
-                                            eventSet.set($eventSet);
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </button>
-                                </TableCell>
-                            </li>
-                        {/each}
-                    </TableList>
-
-                    <div class="u-flex u-margin-block-start-16">
-                        <Button text noMargin on:click={() => (showEvents = true)}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="u-text">Add event</span>
-                        </Button>
-                    </div>
-                {:else}
-                    <Empty on:click={() => (showEvents = true)}>Add an event to get started</Empty>
-                {/if}
-            </svelte:fragment>
-
-            <svelte:fragment slot="actions">
-                <Button disabled={areEventsDisabled} submit>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-    </Form>
+    <UpdateEvents />
 
     <Form on:submit={updateSchedule}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update CRON Schedule</Heading>
+            <Heading tag="h6" size="7">Update Schedule</Heading>
             <p>
-                Set a CRON schedule to trigger your function. Leave blank for no schedule. <a
-                    href="https://appwrite.io/docs/functions#createFunction"
+                Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
+                    href="https://en.wikipedia.org/wiki/Cron"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
-                    More details on CRON syntax here.</a>
+                    More details on Cron syntax here.</a>
             </p>
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputCron
                         bind:value={functionSchedule}
-                        label="Schedule (CRON Syntax)"
+                        label="Schedule (Cron Syntax)"
                         id="schedule" />
                 </FormList>
             </svelte:fragment>
@@ -427,6 +355,102 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
+
+    <CardGrid>
+        <Heading tag="h6" size="7">Update Variables</Heading>
+        <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
+        <svelte:fragment slot="aside">
+            <div class="u-flex u-margin-inline-start-auto u-gap-16">
+                <Button
+                    secondary
+                    event="download_env"
+                    disabled={!data.variables.total}
+                    on:click={downloadVariables}>
+                    <span class="icon-download" />
+                    <span class="text">Download .env file</span>
+                </Button>
+                <!-- <Button secondary on:click={() => (showVariablesUpload = true)}>
+                    <span class="icon-upload" />
+                    <span class="text">Import .env file</span>
+                </Button> -->
+            </div>
+            {#if data.variables.total}
+                <div class="u-flex u-flex-vertical u-gap-16">
+                    <Table noMargin noStyles>
+                        <TableHeader>
+                            <TableCellHead>Key</TableCellHead>
+                            <TableCellHead>Value</TableCellHead>
+                            <TableCellHead width={30} />
+                        </TableHeader>
+                        <TableBody>
+                            {#each data.variables.variables as variable, i}
+                                <TableRow>
+                                    <TableCell title="key">
+                                        <Output value={variable.key}>
+                                            {variable.key}
+                                        </Output>
+                                    </TableCell>
+
+                                    <TableCell showOverflow title="value">
+                                        <Secret copyEvent="variable" value={variable.value} />
+                                    </TableCell>
+                                    <TableCell showOverflow title="options">
+                                        <DropList
+                                            bind:show={showVariablesDropdown[i]}
+                                            placement="bottom-start"
+                                            noArrow>
+                                            <Button
+                                                text
+                                                round
+                                                ariaLabel="more options"
+                                                on:click={() =>
+                                                    (showVariablesDropdown[i] =
+                                                        !showVariablesDropdown[i])}>
+                                                <span
+                                                    class="icon-dots-horizontal"
+                                                    aria-hidden="true" />
+                                            </Button>
+                                            <svelte:fragment slot="list">
+                                                <DropListItem
+                                                    icon="pencil"
+                                                    on:click={() => {
+                                                        selectedVar = variable;
+                                                        showVariablesDropdown[i] = false;
+                                                        showVariablesModal = true;
+                                                    }}>
+                                                    Edit
+                                                </DropListItem>
+                                                <DropListItem
+                                                    icon="trash"
+                                                    on:click={async () => {
+                                                        handleVariableDeleted(variable);
+                                                        showVariablesDropdown[i] = false;
+                                                    }}>
+                                                    Delete
+                                                </DropListItem>
+                                            </svelte:fragment>
+                                        </DropList>
+                                    </TableCell>
+                                </TableRow>
+                            {/each}
+                        </TableBody>
+                    </Table>
+                    <Button
+                        text
+                        noMargin
+                        on:click={() => {
+                            showVariablesModal = true;
+                        }}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create variable</span>
+                    </Button>
+                </div>
+            {:else}
+                <Empty on:click={() => (showVariablesModal = !showVariablesModal)}
+                    >Create a variable to get started</Empty>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
 
     <Form on:submit={updateTimeout}>
         <CardGrid>
@@ -451,124 +475,6 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-
-    <CardGrid>
-        <Heading tag="h6" size="7">Update Function Variables</Heading>
-        <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
-        <svelte:fragment slot="aside">
-            <div class="u-flex u-margin-inline-start-auto u-gap-16">
-                <Button secondary on:click={downloadVariables}>
-                    <span class="icon-download" />
-                    <span class="text">Download .env file</span>
-                </Button>
-                <!-- <Button secondary on:click={() => (showVariablesUpload = true)}>
-                    <span class="icon-upload" />
-                    <span class="text">Import .env file</span>
-                </Button> -->
-            </div>
-            <table class="table is-remove-outer-styles">
-                <thead class="table-thead">
-                    <tr class="table-row">
-                        <th class="table-thead-col">
-                            <span class="eyebrow-heading-3">Key</span>
-                        </th>
-                        <th class="table-thead-col">
-                            <span class="eyebrow-heading-3">Value</span>
-                        </th>
-                        <th class="table-thead-col" style="--p-col-width:40" />
-                    </tr>
-                </thead>
-                <tbody class="table-tbody">
-                    {#if data.variables.total}
-                        {#each data.variables.variables as variable, i}
-                            <tr class="table-row">
-                                <td class="table-col" data-title="Key">
-                                    <span class="text">{variable.key}</span>
-                                </td>
-                                <td class="table-col u-overflow-visible" data-title="value">
-                                    <div class="interactive-text-output">
-                                        {#if showVariablesValue[i]}
-                                            <span class="text">{variable.value}</span>
-                                        {:else}
-                                            <span class="text">••••••••</span>
-                                        {/if}
-                                        <div class="u-flex u-cross-child-start u-gap-8">
-                                            <button
-                                                on:click|preventDefault={() =>
-                                                    (showVariablesValue[i] =
-                                                        !showVariablesValue[i])}
-                                                class="interactive-text-output-button"
-                                                aria-label="show hidden text">
-                                                {#if showVariablesValue[i]}
-                                                    <span class="icon-eye-off" aria-hidden="true" />
-                                                {:else}
-                                                    <span class="icon-eye" aria-hidden="true" />
-                                                {/if}
-                                            </button>
-                                            <Copy bind:value={variable.value}>
-                                                <button
-                                                    class="interactive-text-output-button"
-                                                    aria-label="copy text">
-                                                    <span
-                                                        class="icon-duplicate"
-                                                        aria-hidden="true" />
-                                                </button>
-                                            </Copy>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="table-col u-overflow-visible" data-title="options">
-                                    <DropList
-                                        bind:show={showVariablesDropdown[i]}
-                                        placement="bottom-start"
-                                        noArrow>
-                                        <button
-                                            class="button is-text is-only-icon"
-                                            aria-label="more options"
-                                            on:click|preventDefault={() =>
-                                                (showVariablesDropdown[i] =
-                                                    !showVariablesDropdown[i])}>
-                                            <span class="icon-dots-horizontal" aria-hidden="true" />
-                                        </button>
-                                        <svelte:fragment slot="list">
-                                            <DropListItem
-                                                icon="pencil"
-                                                on:click={() => {
-                                                    selectedVar = variable;
-                                                    showVariablesDropdown[i] = false;
-                                                    showVariablesModal = true;
-                                                }}>
-                                                Edit
-                                            </DropListItem>
-                                            <DropListItem
-                                                icon="trash"
-                                                on:click={async () => {
-                                                    handleVariableDeleted(variable);
-                                                    showVariablesDropdown[i] = false;
-                                                }}>
-                                                Delete
-                                            </DropListItem>
-                                        </svelte:fragment>
-                                    </DropList>
-                                </td>
-                            </tr>
-                        {/each}
-                    {/if}
-                </tbody>
-            </table>
-            <div class="u-flex u-margin-block-start-16">
-                <button
-                    class="button is-text u-padding-inline-0"
-                    type="button"
-                    on:click={() => {
-                        showVariablesModal = true;
-                    }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create variable</span>
-                </button>
-            </div>
-        </svelte:fragment>
-    </CardGrid>
 
     <CardGrid danger>
         <Heading tag="h6" size="7">Delete Function</Heading>
@@ -599,5 +505,3 @@
         on:created={handleVariableCreated}
         on:updated={handleVariableUpdated} />
 {/if}
-<!-- <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} /> -->
-<EventModal bind:show={showEvents} on:created={handleEvent} />

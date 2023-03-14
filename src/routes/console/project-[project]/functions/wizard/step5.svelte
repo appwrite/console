@@ -2,14 +2,13 @@
     import { WizardStep } from '$lib/layout';
     import { createFunction } from './store';
     import Create from '../createVariable.svelte';
-    import { DropList, DropListItem, Secret, Empty } from '$lib/components';
+    import { DropList, DropListItem, Secret, Empty, Output } from '$lib/components';
     import type { Models } from '@aw-labs/appwrite-console';
     import {
         Table,
         TableBody,
         TableCell,
         TableCellHead,
-        TableCellText,
         TableHeader,
         TableRow
     } from '$lib/elements/table';
@@ -59,21 +58,23 @@
             <TableBody>
                 {#each $createFunction.vars as variable, i}
                     <TableRow>
-                        <TableCellText title="key">
-                            {variable.key}
-                        </TableCellText>
+                        <TableCell title="key">
+                            <Output value={variable.key}>
+                                {variable.key}
+                            </Output>
+                        </TableCell>
                         <TableCell showOverflow title="value">
-                            <Secret value={variable.value} />
+                            <Secret copyEvent="variable" value={variable.value} />
                         </TableCell>
                         <TableCell showOverflow title="options">
                             <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>
-                                <button
-                                    class="button is-text is-only-icon"
-                                    aria-label="more options"
-                                    on:click|preventDefault={() =>
-                                        (showDropdown[i] = !showDropdown[i])}>
+                                <Button
+                                    text
+                                    round
+                                    ariaLabel="more options"
+                                    on:click={() => (showDropdown[i] = !showDropdown[i])}>
                                     <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
+                                </Button>
                                 <svelte:fragment slot="list">
                                     <DropListItem
                                         icon="pencil"

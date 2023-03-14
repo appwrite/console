@@ -40,6 +40,7 @@
             default: data.default
         } = selectedAttribute);
     }
+
     $: if (data.required || data.array) {
         data.default = null;
     }
@@ -50,7 +51,8 @@
     label="Elements"
     bind:tags={data.elements}
     placeholder="Add elements here"
-    readonly={!!selectedAttribute} />
+    readonly={!!selectedAttribute}
+    required />
 <InputSelect
     id="default"
     label="Default value"

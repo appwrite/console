@@ -7,7 +7,8 @@
     import { Unauthenticated } from '$lib/layout';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Alert } from '$lib/components';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;
@@ -27,12 +28,13 @@
                 message: 'Successfully logged in.'
             });
             await goto(`${base}/console/organization-${teamId}`);
-            trackEvent('submit_membership_update_status');
+            trackEvent(Submit.MembershipUpdateStatus);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.MembershipUpdateStatus);
         }
     };
 </script>
@@ -42,10 +44,22 @@
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Invite</svelte:fragment>
+    <svelte:fragment slot="title">
+        {#if !userId || !secret || !membershipId || !teamId}
+            Invalid invite
+        {:else}
+            Invite
+        {/if}
+    </svelte:fragment>
     <svelte:fragment>
         {#if !userId || !secret || !membershipId || !teamId}
-            <p class="text">Invalid invite link.</p>
+            <Alert type="warning">
+                <svelte:fragment slot="title">The invite link is not valid</svelte:fragment>
+                Please ask the project owner to send you a new invite.
+            </Alert>
+            <div class="u-flex u-main-end u-margin-block-start-40	">
+                <Button href={`${base}/register`}>Sign up to Appwrite</Button>
+            </div>
         {:else}
             <p class="text">You have been invited to join a team project on Appwrite</p>
             <Form on:submit={acceptInvite}>

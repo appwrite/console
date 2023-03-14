@@ -2,39 +2,44 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { clickOnEnter } from '$lib/helpers/a11y';
+    import { copy } from '$lib/helpers/copy';
     import { addNotification } from '$lib/stores/notifications';
 
     export let value: string;
     export let event: string = null;
+    export let eventContext = 'click_id_tag';
+    export let appendTo: Parameters<typeof tooltip>['1']['appendTo'] = undefined;
 
     let content = 'Click to copy';
 
-    const copy = async () => {
-        try {
-            await navigator.clipboard.writeText(value);
+    async function handleClick() {
+        const success = await copy(value);
+
+        if (success) {
             content = 'Copied';
-        } catch (error) {
+        } else {
             addNotification({
-                message: error.message,
+                message: 'Unable to copy to clipboard',
                 type: 'error'
             });
-        } finally {
-            if (event) {
-                trackEvent('click_id_tag', {
-                    name: event
-                });
-            }
         }
-    };
+
+        if (event) {
+            trackEvent(eventContext, {
+                name: event
+            });
+        }
+    }
 </script>
 
 <span
-    on:click|preventDefault={copy}
+    on:click|preventDefault={handleClick}
     on:keyup={clickOnEnter}
     on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
     use:tooltip={{
         content,
-        hideOnClick: false
+        hideOnClick: false,
+        appendTo
     }}>
     <slot />
 </span>

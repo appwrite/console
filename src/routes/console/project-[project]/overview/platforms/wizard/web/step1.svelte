@@ -10,9 +10,10 @@
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
-    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.app'];
+    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
     async function beforeSubmit() {
@@ -37,6 +38,11 @@
             undefined,
             $createPlatform.hostname
         );
+
+        trackEvent(Submit.PlatformCreate, {
+            type: 'web'
+        });
+
         $createPlatform.$id = platform.$id;
     }
 </script>

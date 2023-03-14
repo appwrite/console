@@ -8,6 +8,7 @@
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
@@ -31,10 +32,14 @@
             projectId,
             'android',
             $createPlatform.name,
+            $createPlatform.key,
             undefined,
-            undefined,
-            $createPlatform.hostname
+            undefined
         );
+
+        trackEvent(Submit.PlatformCreate, {
+            type: 'android'
+        });
 
         $createPlatform.$id = platform.$id;
     }
@@ -50,11 +55,11 @@
             required
             bind:value={$createPlatform.name} />
         <InputText
-            id="hostname"
+            id="key"
             label="Package Name"
             placeholder="com.company.appname"
             tooltip="Your package name is generally the applicationId in your app-level build.gradle file."
             required
-            bind:value={$createPlatform.hostname} />
+            bind:value={$createPlatform.key} />
     </FormList>
 </WizardStep>

@@ -8,6 +8,7 @@
 
     $: attr = selectedAttribute as {
         type?: string;
+        size?: string;
         format?: string;
         array?: boolean;
         required?: boolean;
@@ -31,6 +32,9 @@
                 bind:value={attr.key}
                 disabled />
             <InputText id="type" label="Type" value={attr.type ?? ''} readonly />
+            {#if attr.size}
+                <InputText id="size" label="Size" value={attr.size} readonly />
+            {/if}
             {#if attr.format}
                 <InputText id="format" label="Format" value={attr.format} readonly />
             {/if}

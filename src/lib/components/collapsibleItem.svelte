@@ -1,9 +1,10 @@
 <script lang="ts">
     export let withIndentation = false;
+    export let open = false;
 </script>
 
 <li class="collapsible-item">
-    <details class="collapsible-wrapper">
+    <details class="collapsible-wrapper" {open}>
         <summary class="collapsible-button">
             <slot name="beforetitle" />
             <div>

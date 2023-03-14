@@ -1,84 +1,18 @@
-<script lang="ts">
-    import { Pill } from '$lib/elements';
-    import { CardGrid, Box, Heading } from '$lib/components';
-    import { Container } from '$lib/layout';
-    import {
-        Form,
-        Button,
-        InputText,
-        InputTags,
-        InputNumber,
-        InputSelect,
-        InputSwitch,
-        FormList
-    } from '$lib/elements/forms';
-    import { bucket } from '../store';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { sizeToBytes } from '$lib/helpers/sizeConvertion';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
-    import { onMount } from 'svelte';
-    import { symmetricDifference } from '$lib/helpers/array';
-    import { Permissions } from '$lib/components/permissions';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import Delete from '../deleteBucket.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
-    import { writable } from 'svelte/store';
-    import type { Models } from '@aw-labs/appwrite-console';
-
-    let showDelete = false;
-
-    let enabled: boolean = null,
-        bucketName: string = null,
-        bucketFileSecurity: boolean = null,
-        bucketPermissions: string[] = null,
-        arePermsDisabled = true,
-        encryption: boolean = null,
-        antivirus: boolean = null,
-        maxSize: number;
-    let byteUnit = writable('KB');
-    let sizeInBytes: number = null;
-    const options = [
-        { label: 'Bytes', value: 'Bytes' },
-        { label: 'Kilobytes', value: 'KB' },
-        { label: 'Megabytes', value: 'MB' },
-        { label: 'Gigabytes', value: 'GB' }
-    ];
-    let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
-    let extensions = $bucket.allowedFileExtensions;
-    let isExtensionsDisabled = true;
-
-    onMount(async () => {
-        enabled ??= $bucket.enabled;
-        bucketName ??= $bucket.name;
-        bucketName ??= $bucket.name;
-        bucketFileSecurity ??= $bucket.fileSecurity;
-        bucketPermissions ??= $bucket.$permissions;
-        encryption ??= $bucket.encryption;
-        antivirus ??= $bucket.antivirus;
-        maxSize = $bucket.maximumFileSize / 1024;
-    });
-    $: if (bucketPermissions) {
-        if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
-            arePermsDisabled = false;
-        } else arePermsDisabled = true;
-    }
-    $: if (extensions) {
-        if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
-            isExtensionsDisabled = false;
-        } else isExtensionsDisabled = true;
-    }
+<script lang="ts" context="module">
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     type TUpdateBucketMisc = {
         successMessage?: string;
-        trackEventName: string;
+        trackEventName: Submit;
         trackEventData?: { value: boolean };
         arePermsDisabled?: boolean;
     };
 
-    async function updateBucket(updates: Partial<Models.Bucket>, misc: TUpdateBucketMisc) {
-        const values = { ...$bucket, ...updates };
+    let arePermsDisabled = writable(true);
+
+    export async function updateBucket(updates: Partial<Models.Bucket>, misc: TUpdateBucketMisc) {
+        const bucketData = get(bucket);
+        const values = { ...bucketData, ...updates };
 
         try {
             await sdkForProject.storage.updateBucket(
@@ -97,11 +31,11 @@
             invalidate(Dependencies.BUCKET);
 
             if (misc.arePermsDisabled !== undefined) {
-                arePermsDisabled = misc.arePermsDisabled;
+                arePermsDisabled.set(misc.arePermsDisabled);
             }
 
             addNotification({
-                message: misc.successMessage ?? `${$bucket.name} has been updated`,
+                message: misc.successMessage ?? `${bucketData.name} has been updated`,
                 type: 'success'
             });
 
@@ -113,7 +47,79 @@
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, misc.trackEventName);
         }
+    }
+</script>
+
+<script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { Box, CardGrid, Heading } from '$lib/components';
+    import { Permissions } from '$lib/components/permissions';
+    import { Dependencies } from '$lib/constants';
+    import { Pill } from '$lib/elements';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputSelect,
+        InputSwitch,
+        InputTags,
+        InputText
+    } from '$lib/elements/forms';
+    import { symmetricDifference } from '$lib/helpers/array';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Container } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { onMount } from 'svelte';
+    import { get, writable } from 'svelte/store';
+    import Delete from '../deleteBucket.svelte';
+    import { bucket } from '../store';
+    import UpdateMaxFileSize from './updateMaxFileSize.svelte';
+
+    let showDelete = false;
+
+    let enabled: boolean = null;
+    let bucketName: string = null;
+    let bucketFileSecurity: boolean = null;
+    let bucketPermissions: string[] = null;
+    let encryption: boolean = null;
+    let antivirus: boolean = null;
+    let compression: string = null;
+
+    const compressionOptions = [
+        { label: 'None', value: 'none' },
+        { label: 'Gzip', value: 'gzip' },
+        { label: 'Zstd', value: 'zstd' }
+    ];
+    let suggestedExtensions = ['jpg', 'png', 'svg', 'gif', 'html', 'pdf', 'mp4'];
+    let extensions = $bucket.allowedFileExtensions;
+    let isExtensionsDisabled = true;
+
+    onMount(async () => {
+        enabled ??= $bucket.enabled;
+        bucketName ??= $bucket.name;
+        bucketName ??= $bucket.name;
+        bucketFileSecurity ??= $bucket.fileSecurity;
+        bucketPermissions ??= $bucket.$permissions;
+        encryption ??= $bucket.encryption;
+        antivirus ??= $bucket.antivirus;
+
+        compression ??= $bucket.compression;
+    });
+
+    $: if (bucketPermissions) {
+        if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
+            $arePermsDisabled = false;
+        } else $arePermsDisabled = true;
+    }
+
+    $: if (extensions) {
+        if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
+            isExtensionsDisabled = false;
+        } else isExtensionsDisabled = true;
     }
 
     function toggleBucket() {
@@ -122,7 +128,7 @@
                 enabled
             },
             {
-                trackEventName: 'submit_bucket_enable',
+                trackEventName: Submit.BucketUpdateEnabled,
                 trackEventData: {
                     value: enabled
                 }
@@ -137,7 +143,7 @@
             },
             {
                 successMessage: 'Name has been updated',
-                trackEventName: 'submit_bucket_update_name'
+                trackEventName: Submit.BucketUpdateName
             }
         );
     }
@@ -149,7 +155,7 @@
             },
             {
                 successMessage: 'Permissions have been updated',
-                trackEventName: 'submit_bucket_update_permissions',
+                trackEventName: Submit.BucketUpdatePermissions,
                 arePermsDisabled: true
             }
         );
@@ -162,7 +168,7 @@
             },
             {
                 successMessage: 'Security has been updated',
-                trackEventName: 'submit_bucket_update_file_security',
+                trackEventName: Submit.BucketUpdateFileSecurity,
                 arePermsDisabled: true
             }
         );
@@ -175,19 +181,18 @@
                 antivirus
             },
             {
-                trackEventName: 'submit_bucket_update_security'
+                trackEventName: Submit.BucketUpdateSecurity
             }
         );
     }
 
-    function updateMaxSize() {
-        const size = sizeToBytes(maxSize, $byteUnit);
+    function updateCompression() {
         updateBucket(
             {
-                maximumFileSize: size
+                compression
             },
             {
-                trackEventName: 'submit_bucket_update_size'
+                trackEventName: Submit.BucketUpdateCompression
             }
         );
     }
@@ -198,25 +203,9 @@
                 allowedFileExtensions: extensions
             },
             {
-                trackEventName: 'submit_bucket_update_extensions'
+                trackEventName: Submit.BucketUpdateExtensions
             }
         );
-    }
-
-    byteUnit.subscribe((b) => {
-        if (b === 'Bytes') {
-            maxSize = sizeInBytes;
-        } else if (b === 'KB') {
-            maxSize = sizeInBytes / 1024;
-        } else if (b === 'MB') {
-            maxSize = sizeInBytes / 1024 / 1024;
-        } else if (b === 'GB') {
-            maxSize = sizeInBytes / 1024 / 1024 / 1024;
-        }
-    });
-
-    $: if (maxSize) {
-        sizeInBytes = sizeToBytes(maxSize, $byteUnit);
     }
 </script>
 
@@ -234,8 +223,8 @@
                                 id="toggle"
                                 bind:value={enabled} />
                         </FormList>
-                        <p>Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                        <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                        <p class="text">Created: {toLocaleDateTime($bucket.$createdAt)}</p>
+                        <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                     </div>
                 </svelte:fragment>
 
@@ -276,7 +265,9 @@
                         href="https://appwrite.io/docs/permissions"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="link">Permissions Guide</a> in our documentation.
+                        class="link">
+                        Permissions Guide
+                    </a>.
                 </p>
                 <svelte:fragment slot="aside">
                     {#if bucketPermissions}
@@ -284,7 +275,7 @@
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
-                    <Button disabled={arePermsDisabled} submit>Update</Button>
+                    <Button disabled={$arePermsDisabled} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -320,7 +311,7 @@
         <Form on:submit={updateSecurity}>
             <CardGrid>
                 <Heading tag="h2" size="7">Update Security Settings</Heading>
-                <p>
+                <p class="text">
                     Enable or disable security services for the bucket including <b>Ecryption</b>
                     and <b>Antivirus scanning.</b>
                 </p>
@@ -330,7 +321,7 @@
                             <label class="choice-item" for="encryption">
                                 <div class="input-text-wrapper">
                                     <input
-                                        label="Encryption"
+                                        name="encryption"
                                         id="encryption"
                                         type="checkbox"
                                         class="switch"
@@ -353,7 +344,7 @@
                             <label class="choice-item" for="antivirus">
                                 <div class="input-text-wrapper">
                                     <input
-                                        label="Antivirus"
+                                        name="antivirus"
                                         id="antivirus"
                                         type="checkbox"
                                         class="switch"
@@ -381,40 +372,42 @@
                     <Button
                         disabled={encryption === $bucket.encryption &&
                             antivirus === $bucket.antivirus}
-                        submit
-                        >Update
+                        submit>
+                        Update
                     </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
-        <Form on:submit={updateMaxSize}>
+        <Form on:submit={updateCompression}>
             <CardGrid>
-                <Heading tag="h2" size="6">Update Maximum File Size</Heading>
-                <p>Set the maximum file size allowed in the bucket.</p>
+                <Heading tag="h2" size="6">Update Compression Algorithm</Heading>
+                <p class="text">
+                    Choose an algorithm for compression. For files larger than 20MB, compression
+                    will be skipped even if it's enabled.
+                </p>
                 <svelte:fragment slot="aside">
-                    <ul class="u-flex u-gap-12">
-                        <InputNumber
-                            id="size"
-                            label="Size"
-                            placeholder={$bucket.maximumFileSize.toString()}
-                            bind:value={maxSize} />
-                        <InputSelect id="bytes" label="Bytes" {options} bind:value={$byteUnit} />
-                    </ul>
+                    <FormList>
+                        <InputSelect
+                            id="compression"
+                            label="Compression algorithm"
+                            options={compressionOptions}
+                            bind:value={compression} />
+                    </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={sizeInBytes === $bucket.maximumFileSize} submit
-                        >Update
-                    </Button>
+                    <Button disabled={compression === $bucket.compression} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
+
+        <UpdateMaxFileSize />
 
         <Form on:submit={updateAllowedExtensions}>
             <CardGrid>
                 <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
-                <p>
+                <p class="text">
                     A maximum of 100 file extensions can be added. Leave blank to allow all file
                     types.
                 </p>
@@ -453,7 +446,7 @@
 
         <CardGrid danger>
             <Heading tag="h6" size="7">Delete Bucket</Heading>
-            <p>
+            <p class="text">
                 The bucket will be permanently deleted, including all the files within it. This
                 action is irreversible.
             </p>
@@ -462,7 +455,7 @@
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
-                    <p>Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                    <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                 </Box>
             </svelte:fragment>
 

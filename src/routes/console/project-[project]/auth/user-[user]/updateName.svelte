@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
@@ -22,12 +22,13 @@
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_user_update_name');
+            trackEvent(Submit.UserUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateName);
         }
     }
 </script>
@@ -37,7 +38,7 @@
         <Heading tag="h6" size="7">Update Name</Heading>
 
         <svelte:fragment slot="aside">
-            <ul>
+            <ul data-private>
                 <InputText
                     id="name"
                     label="Name"

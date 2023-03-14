@@ -20,7 +20,6 @@
     async function handleSubmit() {
         try {
             await feedback.submitFeedback('feedback-nps', message, name, email, value);
-            console.log(value, message);
             feedback.switchType('general');
         } catch (error) {
             feedback.switchType('general');
@@ -37,7 +36,8 @@
         <h4 class="body-text-1">How are we doing?</h4>
         <button
             type="button"
-            class="x-button u-margin-inline-start-auto"
+            class="button is-text is-only-icon u-margin-inline-start-auto"
+            style="--button-size:1.5rem;"
             aria-label="Close Modal"
             title="Close Modal"
             on:click={() => (show = false)}>

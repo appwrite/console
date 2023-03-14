@@ -9,7 +9,7 @@
     import type { Attributes } from '../store';
     import { sdkForProject } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
@@ -28,7 +28,7 @@
                 type: 'success',
                 message: `Attribute has been deleted`
             });
-            trackEvent('submit_attribute_delete');
+            trackEvent(Submit.AttributeDelete);
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${$page.params.collection}/attributes`
             );
@@ -37,13 +37,14 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AttributeDelete);
         }
     };
 </script>
 
 <Modal warning={true} bind:show={showDelete} on:submit={handleDelete}>
     <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
-    <p>
+    <p data-private>
         Are you sure you want to delete <b>'{selectedAttribute?.key}' from {$collection?.name}</b>?
     </p>
     <svelte:fragment slot="footer">

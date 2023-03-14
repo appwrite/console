@@ -39,6 +39,20 @@
 
     export let data: PageData;
 
+    enum PlatformTypes {
+        'apple-ios' = 'iOS',
+        'apple-macos' = 'macOS',
+        'apple-watchos' = 'watchOS',
+        'apple-tvos' = 'tvOS',
+        'android' = 'Android',
+        'flutter-android' = 'Android',
+        'flutter-ios' = 'iOS',
+        'flutter-linux' = 'Linux',
+        'flutter-macos' = 'macOS',
+        'flutter-windows' = 'Windows',
+        'flutter-web' = 'Web',
+        'web' = 'Web'
+    }
     let showDropdown = false;
     let showDropdownEmpty = false;
     const path = `/console/project-${$page.params.project}/overview/platforms`;
@@ -83,12 +97,13 @@
 {#if data.platforms.platforms.length}
     <div
         class="grid-box u-margin-block-start-32"
-        style="--grid-gap:1.5rem; --grid-item-size:20rem;">
+        style="--grid-gap:1.5rem; --grid-item-size:20rem;"
+        data-private>
         {#each data.platforms.platforms as platform}
             <a class="card" href={`${path}/${platform.$id}`}>
                 <div class="grid-item-1" style="min-block-size: calc(182 / 16 * 1rem)">
                     <div class="grid-item-1-start-start">
-                        <div class="u-flex u-gap-8 u-cross-center">
+                        <div class="u-flex u-gap-16 u-cross-center">
                             <div class="avatar is-medium" aria-hidden="true">
                                 <img
                                     src={`${base}/icons/${$app.themeInUse}/${getPlatformInfo(
@@ -96,7 +111,10 @@
                                     )}.svg`}
                                     alt="technology" />
                             </div>
-                            <span class="text">{platform.name}</span>
+                            <div>
+                                <Heading size="6" tag="h3">{platform.name}</Heading>
+                                <p class="text">{PlatformTypes[platform.type]}</p>
+                            </div>
                         </div>
                     </div>
 

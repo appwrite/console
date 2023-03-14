@@ -20,4 +20,7 @@ export { default as InputChoice } from './inputChoice.svelte';
 export { default as InputPhone } from './inputPhone.svelte';
 export { default as InputCron } from './inputCron.svelte';
 export { default as InputURL } from './inputURL.svelte';
+export { default as InputId } from './inputId.svelte';
+export { default as InputSecret } from './inputSecret.svelte';
 export { default as Helper } from './helper.svelte';
+export { default as Label } from './label.svelte';

@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -20,19 +20,20 @@
                 message: `Function has been deleted`
             });
             await goto(`${base}/console/project-${$page.params.project}/functions`);
-            trackEvent('submit_function_delete');
+            trackEvent(Submit.FunctionDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.FunctionDelete);
         }
     };
 </script>
 
 <Modal bind:show={showDelete} on:submit={handleSubmit} warning>
     <svelte:fragment slot="header">Delete Function</svelte:fragment>
-    <p>
+    <p data-private>
         Are you sure you want to delete this function and all associated deployments from your
         project?
     </p>

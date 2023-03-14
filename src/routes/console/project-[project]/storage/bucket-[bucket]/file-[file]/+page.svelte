@@ -14,7 +14,7 @@
     import Delete from './deleteFile.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { bucket } from '../store';
 
     let showFileAlert = true;
@@ -54,12 +54,13 @@
                 message: 'Permissions have been updated',
                 type: 'success'
             });
-            trackEvent('submit_file_update_permissions');
+            trackEvent(Submit.FileUpdatePermissions);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FileUpdatePermissions);
         }
     }
 </script>
@@ -67,9 +68,9 @@
 <Container>
     {#if $file}
         <CardGrid>
-            <div class="u-flex u-gap-16">
+            <div class="u-flex u-gap-16" data-private>
                 <a
-                    href={downloadFile()}
+                    href={getView($file.$id)}
                     class="file-preview is-with-image"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -152,14 +153,11 @@
 
         <CardGrid danger>
             <Heading tag="h6" size="7">Delete File</Heading>
-            <p>
-                The file will be permanently deleted, including all the files within it. This action
-                is irreversible.
-            </p>
+            <p>The file will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold u-trim-1">{$file.name}</h6>
+                        <h6 class="u-bold u-trim-1" data-private>{$file.name}</h6>
                     </svelte:fragment>
                     <p>
                         Last Updated: {toLocaleDateTime($file.$updatedAt)}

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { AvatarInitials, CardGrid, DropList, DropListItem, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -23,12 +23,13 @@
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_user_update_verification_email');
+            trackEvent(Submit.UserUpdateVerificationEmail);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateVerificationEmail);
         }
     }
     async function updateVerificationPhone() {
@@ -42,36 +43,38 @@
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_user_update_verification_phone');
+            trackEvent(Submit.UserUpdateVerificationPhone);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateVerificationPhone);
         }
     }
     async function updateStatus() {
         try {
             await sdkForProject.users.updateStatus($user.$id, !$user.status);
-            invalidate(Dependencies.USER);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.status ? 'blocked' : 'unblocked'
+                    $user.status ? 'unblocked' : 'blocked'
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_user_update_status');
+            trackEvent(Submit.UserUpdateStatus);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateStatus);
         }
     }
 </script>
 
 <CardGrid>
-    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
+    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
         {#if $user.email || $user.phone}
             {#if $user.name}
                 <AvatarInitials size={48} name={$user.name} />
@@ -89,7 +92,7 @@
     </div>
     <svelte:fragment slot="aside">
         <div class="u-flex u-main-space-between">
-            <div>
+            <div data-private>
                 {#if $user.email}
                     <p class="title">{$user.email}</p>
                 {/if}

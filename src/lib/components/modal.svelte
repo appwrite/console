@@ -81,7 +81,7 @@
         <form class="modal-form" role="form" on:submit|preventDefault>
             <header class="modal-header">
                 {#if warning}
-                    <div class="avatar is-color-orange is-medium">
+                    <div class="avatar is-warning is-medium">
                         <span class="icon-exclamation" aria-hidden="true" />
                     </div>
                 {/if}
@@ -91,7 +91,8 @@
                 {#if closable}
                     <button
                         type="button"
-                        class="x-button"
+                        class="button is-text is-only-icon"
+                        style="--button-size:1.5rem;"
                         aria-label="Close Modal"
                         title="Close Modal"
                         on:click={() =>

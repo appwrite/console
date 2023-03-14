@@ -1,12 +1,12 @@
 <script lang="ts">
     import {
-        Table,
         TableHeader,
         TableBody,
         TableCellHead,
         TableCell,
         TableCellText,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { AvatarInitials, Heading, Pagination } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -21,7 +21,7 @@
     import Delete from '../../deleteMember.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -43,12 +43,13 @@
                 type: 'success',
                 message: `Invite has been sent to ${member.userEmail}`
             });
-            trackEvent('submit_member_create');
+            trackEvent(Submit.MemberCreate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error
             });
+            trackError(error, Submit.MemberCreate);
         }
     };
 </script>
@@ -64,11 +65,11 @@
             </Button>
         </div>
 
-        <Table>
+        <TableScroll>
             <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead>Email</TableCellHead>
-                <TableCellHead width={100}>Role</TableCellHead>
+                <TableCellHead width={140}>Name</TableCellHead>
+                <TableCellHead width={120}>Email</TableCellHead>
+                <TableCellHead width={90}>Role</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -112,7 +113,7 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.organizationMembers.total}</p>
             <Pagination

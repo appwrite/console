@@ -2,11 +2,6 @@ export const PAGE_LIMIT = 12; // default page limit
 export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 
-export enum Mode {
-    CLOUD = 'mode:cloud',
-    SELF_HOSTED = 'mode:self-hosted'
-}
-
 export enum Dependencies {
     ORGANIZATION = 'dependency:organization',
     PROJECT = 'dependency:project',
@@ -172,5 +167,89 @@ export const scopes: {
         scope: 'health.read',
         description: "Access to read your project's health status",
         category: 'Other'
+    }
+];
+
+export type EventService = {
+    name: string;
+    resources: EventResource[];
+    actions?: EventAction[];
+};
+
+export type EventResource = {
+    name: string;
+    actions?: EventAction[];
+};
+
+export type EventAction = {
+    name: string;
+    attributes?: string[];
+};
+
+export const eventServices: Array<EventService> = [
+    {
+        name: 'buckets',
+        resources: [
+            {
+                name: 'files',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'databases',
+        resources: [
+            {
+                name: 'collections',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            },
+            {
+                name: 'documents',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'functions',
+        resources: [
+            {
+                name: 'deployments',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            },
+            {
+                name: 'executions',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'teams',
+        resources: [
+            {
+                name: 'memberships',
+                actions: [
+                    { name: 'create' },
+                    { name: 'update', attributes: ['status'] },
+                    { name: 'delete' }
+                ]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'users',
+        resources: [
+            { name: 'recovery', actions: [{ name: 'create' }, { name: 'delete' }] },
+            { name: 'sessions', actions: [{ name: 'create' }, { name: 'delete' }] },
+            { name: 'verification', actions: [{ name: 'create' }, { name: 'delete' }] }
+        ],
+        actions: [
+            { name: 'create' },
+            { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
+            { name: 'delete' }
+        ]
     }
 ];

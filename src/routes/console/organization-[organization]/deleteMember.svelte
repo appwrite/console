@@ -8,7 +8,7 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const dispatch = createEventDispatcher();
 
@@ -30,12 +30,13 @@
                 type: 'success',
                 message: `${selectedMember.userName} was deleted from ${selectedMember.teamName}`
             });
-            trackEvent('submit_member_delete');
+            trackEvent(Submit.MemberDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.MemberDelete);
         }
     };
 
@@ -46,7 +47,7 @@
     <svelte:fragment slot="header">
         {isUser ? 'Leave Organization' : 'Delete Member'}
     </svelte:fragment>
-    <p>
+    <p data-private>
         {isUser
             ? `Are you sure you want to leave '${selectedMember?.teamName}'?`
             : `Are you sure you want to delete ${selectedMember?.userName} from '${selectedMember?.teamName}'?`}

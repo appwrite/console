@@ -72,13 +72,13 @@ test('shows text input - maxlength', () => {
 });
 
 test('state', async () => {
-    const { component, getByLabelText } = render(InputText, {
+    const { component, container } = render(InputText, {
         id: 'input',
         label: 'input',
         value: ''
     });
-    const input = getByLabelText('input');
 
+    const input = container.querySelector('input');
     expect(component.value).toEqual('');
     await userEvent.type(input, 'lorem');
     expect(component.value).toEqual('lorem');

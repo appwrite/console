@@ -19,7 +19,9 @@
     let showFeedback = false;
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { goto } from '$app/navigation';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
@@ -30,6 +32,12 @@
             feedback.toggleNotification();
             feedback.addVisualization();
         }
+    }
+
+    async function logout() {
+        await sdkForConsole.account.deleteSession('current');
+        trackEvent(Submit.AccountLogout);
+        await goto(`${base}/login`);
     }
 
     function onBlur(event: MouseEvent) {
@@ -85,7 +93,7 @@
             <span class="text">Support</span>
         </a>
     </nav>
-    <nav class="u-flex u-height-100-percents u-sep-inline-start">
+    <nav class="u-flex u-height-100-percent u-sep-inline-start">
         {#if $user}
             <div class="drop-wrapper" class:is-open={showDropdown} bind:this={droplistElement}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
@@ -106,9 +114,9 @@
                     <div
                         class="drop is-no-arrow is-block-end is-inline-end"
                         transition:slide={{ duration: 100 }}>
-                        <section class="drop-section u-overflow-y-auto u-max-height-200">
-                            <ul class="drop-list">
-                                {#if $organizationList?.total}
+                        {#if $organizationList?.total}
+                            <section class="drop-section u-overflow-y-auto u-max-height-200">
+                                <ul class="drop-list">
                                     {#each $organizationList.teams as org}
                                         <DropListLink
                                             href={`${base}/console/organization-${org.$id}`}
@@ -116,9 +124,9 @@
                                                 showDropdown = false;
                                             }}>{org.name}</DropListLink>
                                     {/each}
-                                {/if}
-                            </ul>
-                        </section>
+                                </ul>
+                            </section>
+                        {/if}
                         <section class="drop-section">
                             <ul class="drop-list">
                                 <DropListItem
@@ -134,6 +142,14 @@
                                     on:click={() => (showDropdown = false)}>
                                     Your Account
                                 </DropListLink>
+                                <DropListItem
+                                    icon="logout-right"
+                                    on:click={() => {
+                                        showDropdown = false;
+                                        logout();
+                                    }}>
+                                    Sign Out
+                                </DropListItem>
                             </ul>
                         </section>
                         <section class="drop-section">

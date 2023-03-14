@@ -9,6 +9,7 @@
     import type { ECharts } from 'echarts/core';
     import type { BarSeriesOption, LineSeriesOption } from 'echarts/charts';
     import type { EChartsOption } from 'echarts';
+    import { wizard } from '$lib/stores/wizard';
 
     registerTheme('light', { ...base, ...light });
     registerTheme('dark', { ...base, ...dark });
@@ -70,7 +71,7 @@
 
     let timeoutId: unknown;
     const onResize = () => {
-        if (timeoutId == undefined) {
+        if (timeoutId == undefined && !$wizard.show) {
             timeoutId = setTimeout(() => {
                 if (chart && !chart.isDisposed()) {
                     chart.resize();
@@ -79,6 +80,10 @@
             }, 250);
         }
     };
+
+    $: if (!$wizard.show) {
+        onResize();
+    }
 </script>
 
 <svelte:window on:resize={onResize} />
