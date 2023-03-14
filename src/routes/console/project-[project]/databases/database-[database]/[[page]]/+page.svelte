@@ -2,7 +2,16 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Copy, GridItem1, CardContainer, Heading, Pagination } from '$lib/components';
+    import {
+        Empty,
+        EmptySearch,
+        Copy,
+        GridItem1,
+        CardContainer,
+        Heading,
+        Pagination,
+        SearchQuery
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -29,13 +38,15 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
+    <div class="u-flex u-flex-vertical u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Collections</Heading>
 
-        <Button on:click={() => (showCreate = true)} event="create_collection">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create collection</span>
-        </Button>
+        <SearchQuery search={data.search} placeholder="Search by name">
+            <Button on:click={() => (showCreate = true)} event="create_collection">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create collection</span>
+            </Button>
+        </SearchQuery>
     </div>
 
     {#if data.collections.total}
@@ -71,6 +82,15 @@
                 offset={data.offset}
                 sum={data.collections.total} />
         </div>
+    {:else if data.search}
+        <EmptySearch>
+            <div class="u-text-center">
+                <b>Sorry, we couldn't find '{data.search}'</b>
+                <p>There are no collections that match your search.</p>
+            </div>
+            <Button href={`/console/project-${project}/databases/database-${databaseId}`} secondary
+                >Clear Search</Button>
+        </EmptySearch>
     {:else}
         <Empty
             single
