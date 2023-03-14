@@ -140,7 +140,7 @@
             </div>
         {/if}
 
-        {#if subNavigation}
+        {#if !subNavigation}
             <button
                 class="side-nav-button button is-small is-secondary is-not-mobile"
                 aria-label="resize menu"
