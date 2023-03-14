@@ -14,8 +14,11 @@ export const load: PageLoad = async ({ params, parent, depends, url }) => {
 
     const customPrefs = get(prefs);
 
-    const limit =
-        customPrefs?.preferredView === 'list' ? customPrefs?.pageLimit ?? PAGE_LIMIT : CARD_LIMIT;
+    const limit = customPrefs?.pageLimit
+        ? customPrefs.pageLimit
+        : customPrefs?.preferredView === 'list'
+        ? PAGE_LIMIT
+        : CARD_LIMIT;
     const offset = pageToOffset(page, limit);
 
     const collections = await sdkForProject.databases.listCollections(params.database, [

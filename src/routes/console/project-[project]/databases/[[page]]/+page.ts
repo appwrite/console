@@ -12,8 +12,11 @@ export const load: PageLoad = async ({ params, parent, depends, url }) => {
 
     const customPrefs = get(prefs);
     const page = Number(params.page);
-    const limit =
-        customPrefs?.preferredView === 'list' ? customPrefs?.pageLimit ?? PAGE_LIMIT : CARD_LIMIT;
+    const limit = customPrefs?.pageLimit
+        ? customPrefs.pageLimit
+        : customPrefs?.preferredView === 'list'
+        ? PAGE_LIMIT
+        : CARD_LIMIT;
 
     const offset = pageToOffset(page, limit);
 
@@ -22,6 +25,7 @@ export const load: PageLoad = async ({ params, parent, depends, url }) => {
         Query.offset(offset),
         Query.orderDesc('$createdAt')
     ]);
+    console.log('test');
 
     await redirectOnOffsetOverflow(
         offset,

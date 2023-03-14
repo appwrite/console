@@ -27,7 +27,7 @@
     });
 
     async function limitChange() {
-        prefs.updatePrefs({ ...$prefs, pageLimit: limit });
+        await prefs.updatePrefs({ ...$prefs, pageLimit: limit });
 
         await Promise.allSettled([
             dependencies.forEach((dependency) => {
