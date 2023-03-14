@@ -24,6 +24,7 @@
     import { onMount } from 'svelte';
     import RelationshipsModal from './relationshipsModal.svelte';
     import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
+    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
 
     export let data: PageData;
     const projectId = $page.params.project;
@@ -86,6 +87,36 @@
             whole: formattedColumn
         };
     }
+
+    type Option = {
+        value: string;
+        label: string;
+        name: string;
+    };
+
+    const selectOptions: Option[] = [
+        {
+            value: '1',
+            label: 'first-ec68ac3515e4bc06',
+            name: 'Option 1'
+        },
+        {
+            value: '2',
+            label: 'second-ec68ac3521e4bc06',
+            name: 'Option 2'
+        }
+    ];
+
+    let selectSearch = '';
+    let selectValue = '';
+
+    $: filteredOptions = (function filter() {
+        console.log('filtering');
+
+        return selectOptions.filter((option) =>
+            option.label.toLowerCase().includes(selectSearch.toLowerCase())
+        );
+    })();
 </script>
 
 <Container>
@@ -102,6 +133,24 @@
             </Button>
         </div>
     </div>
+
+    Outer search: {selectSearch}
+    <br />
+    Outer value: {selectValue}
+    <InputSelectSearch
+        id="related"
+        label="Related Collection"
+        bind:search={selectSearch}
+        bind:value={selectValue}
+        required
+        placeholder="Search by ID"
+        options={filteredOptions}
+        let:option={o}>
+        <div class="u-flex u-gap-16">
+            <span style:color="hsl(var(--color-neutral-70))">{o.label}</span>
+            {o.name}
+        </div>
+    </InputSelectSearch>
 
     {#if $collection?.attributes?.length}
         {#if data.documents.total}

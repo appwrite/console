@@ -3,6 +3,13 @@
     import { onMount } from 'svelte';
     import { Label } from '.';
 
+    type Option = $$Generic<{
+        value: string | boolean | number;
+        label: string;
+    }>;
+    type OptionArray = Option[];
+
+    export let options: OptionArray;
     export let id: string;
     export let label: string;
     export let optionalText: string | undefined = undefined;
@@ -11,18 +18,12 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let debounce = 250;
-    export let options: {
-        value: string | boolean | number;
-        label: string;
-    }[];
     // Input value
-    export let search: string = null;
+    export let search = '';
     // The actual selected value
     export let value: string | number | boolean;
 
     let element: HTMLInputElement;
-    let timer: ReturnType<typeof setTimeout>;
     let hasFocus = false;
     let selected: number = null;
 
@@ -36,16 +37,13 @@
         }
     });
 
-    function handleInput(event: Event) {
+    function handleInput() {
         hasFocus = true;
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            const target = event.target as HTMLInputElement;
-            search = target.value;
-        }, debounce);
     }
 
     function handleKeydown(event: KeyboardEvent) {
+        console.log('handle key down');
+
         event.stopImmediatePropagation();
 
         switch (event.key) {
@@ -71,12 +69,16 @@
                     event.preventDefault();
                     value = options[selected].value;
                     search = options[selected].label;
+                    // element.value = search;
                     hasFocus = false;
                 }
                 break;
         }
     }
 </script>
+
+Inner search: {search}
+<br />
 
 <li class="u-position-relative form-item">
     <DropList
@@ -106,7 +108,6 @@
                     on:click={() => (hasFocus = true)}
                     on:input={handleInput}
                     on:keydown={handleKeydown} />
-
                 <div class="options-list">
                     <button
                         class="options-list-button"
@@ -139,7 +140,9 @@
                             search = option.label;
                             hasFocus = false;
                         }}>
-                        <span class="text">{option.label}</span>
+                        <slot {option}>
+                            <span class="text">{option.label}</span>
+                        </slot>
                     </button>
                 </li>
             {:else}
