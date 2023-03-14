@@ -10,7 +10,7 @@
     const dispatch = createEventDispatcher();
 </script>
 
-<li
+<div
     class="alert-sticky"
     class:is-success={type === 'success'}
     class:is-warning={type === 'warning'}
@@ -47,4 +47,4 @@
             {/each}
         </div>
     {/if}
-</li>
+</div>

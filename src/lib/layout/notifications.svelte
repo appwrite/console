@@ -8,7 +8,7 @@
     <section>
         <ul class="u-flex u-flex-vertical u-gap-16">
             {#each $notifications as notification (notification.id)}
-                <div animate:flip={{ duration: 500 }}>
+                <li animate:flip={{ duration: 500 }}>
                     <Notification
                         type={notification.type}
                         title={notification.title}
@@ -16,7 +16,7 @@
                         buttons={notification?.buttons}>
                         {notification.message}
                     </Notification>
-                </div>
+                </li>
             {/each}
         </ul>
     </section>
