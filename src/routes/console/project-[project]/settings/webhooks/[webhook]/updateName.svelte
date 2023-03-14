@@ -47,7 +47,7 @@
 
 <Form on:submit={updateName}>
     <CardGrid>
-        <Heading tag="h2" size="7">Update Name</Heading>
+        <Heading tag="h2" size="7">Name</Heading>
         <p>Choose any name that will help you distinguish between Webhooks.</p>
         <svelte:fragment slot="aside">
             <FormList>

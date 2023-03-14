@@ -47,7 +47,7 @@
 
 <Form on:submit={updateUrl}>
     <CardGrid>
-        <Heading tag="h2" size="7">Update Url</Heading>
+        <Heading tag="h2" size="7">URL</Heading>
 
         <svelte:fragment slot="aside">
             <FormList>

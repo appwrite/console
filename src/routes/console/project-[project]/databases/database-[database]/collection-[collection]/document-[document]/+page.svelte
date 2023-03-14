@@ -68,7 +68,7 @@
     </CardGrid>
     <Document />
     <CardGrid>
-        <Heading tag="h6" size="7">Update Permissions</Heading>
+        <Heading tag="h6" size="7">Permissions</Heading>
         <p>
             Assign read or write permissions at the <b> Collection Level</b> or
             <b> Document Level</b>. If collection Level permissions are assigned, permissions

@@ -105,7 +105,7 @@
 
     <Form on:submit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
             <p class="text">Choose any name that will help you distinguish between API keys.</p>
             <svelte:fragment slot="aside">
                 <FormList>
@@ -125,7 +125,7 @@
     </Form>
     <Form on:submit={updateScopes}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Scopes</Heading>
+            <Heading tag="h6" size="7">Scopes</Heading>
             <p class="text">
                 You can choose which permission scope to grant your application. It is a best
                 practice to allow only the permissions you need to meet your project goals.

@@ -46,7 +46,7 @@
 
 <Form on:submit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Package Name</Heading>
+        <Heading tag="h6" size="7">Package Name</Heading>
         <p class="text">Your application name.</p>
         <svelte:fragment slot="aside">
             <FormList>

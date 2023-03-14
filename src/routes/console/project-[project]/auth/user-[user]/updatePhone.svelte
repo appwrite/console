@@ -35,7 +35,7 @@
 
 <Form on:submit={updatePhone}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Phone</Heading>
+        <Heading tag="h6" size="7">Phone</Heading>
         <svelte:fragment slot="aside">
             <ul>
                 <InputPhone
