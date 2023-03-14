@@ -30,7 +30,7 @@
 
 <svelte:window on:keydown={handleKeyDown} />
 
-<div class="side-nav" class:hasSubNavigation class:is-open-level-2={hasSubNavigation}>
+<div class="side-nav" class:is-open-level-2={hasSubNavigation}>
     <div class="side-nav-level-1" class:is-narrow={narrow}>
         {#if project}
             <div class="side-nav-main">
@@ -157,7 +157,10 @@
     </div>
 
     {#if subNavigation}
-        <div class="side-nav-level-2 is-open" transition:slide={{ axis: 'x', duration: 250 }}>
+        <div
+            class="side-nav-level-2 is-open"
+            in:slide={{ axis: 'x', duration: 250, delay: 250 }}
+            out:slide={{ axis: 'x', duration: 250 }}>
             <div class="side-nav-main">
                 <svelte:component this={subNavigation} />
             </div>
