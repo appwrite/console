@@ -111,7 +111,7 @@ export const options: Option[] = [
         format: 'relationship',
         create: submitRelationship,
         update: updateRelationship,
-        icon: 'link'
+        icon: 'relationship'
     }
 ];
 

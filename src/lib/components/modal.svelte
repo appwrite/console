@@ -9,6 +9,7 @@
     export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;
     export let closable = true;
+    export let headerDivider = true;
 
     let dialog: HTMLDialogElement;
     let alert: HTMLElement;
@@ -76,40 +77,45 @@
     class="modal"
     class:is-small={size === 'small'}
     class:is-big={size === 'big'}
+    class:is-separate-header={headerDivider}
     bind:this={dialog}
     on:cancel|preventDefault>
     {#if show}
         <!-- svelte-ignore a11y-no-redundant-roles -->
         <form class="modal-form" role="form" on:submit|preventDefault>
             <header class="modal-header">
-                {#if icon}
-                    <div
-                        class="avatar is-medium"
-                        class:is-success={state === 'success'}
-                        class:is-warning={state === 'warning'}
-                        class:is-danger={state === 'error'}
-                        class:is-info={state === 'info'}>
-                        <span class={`icon-${icon}`} aria-hidden="true" />
+                <div class="u-flex u-main-space-between u-cross-center u-gap-16">
+                    <div class="u-flex u-cross-center u-gap-16">
+                        {#if icon}
+                            <div
+                                class="avatar is-medium"
+                                class:is-success={state === 'success'}
+                                class:is-warning={state === 'warning'}
+                                class:is-danger={state === 'error'}
+                                class:is-info={state === 'info'}>
+                                <span class={`icon-${icon}`} aria-hidden="true" />
+                            </div>
+                        {/if}
+                        <h4 class="modal-title heading-level-5">
+                            <slot name="header" />
+                        </h4>
                     </div>
-                {/if}
-                <h4 class="modal-title heading-level-5">
-                    <slot name="header" />
-                </h4>
-                {#if closable}
-                    <button
-                        type="button"
-                        class="button is-text is-only-icon"
-                        style="--button-size:1.5rem;"
-                        aria-label="Close Modal"
-                        title="Close Modal"
-                        on:click={() =>
-                            trackEvent('click_close_modal', {
-                                from: 'button'
-                            })}
-                        on:click={closeModal}>
-                        <span class="icon-x" aria-hidden="true" />
-                    </button>
-                {/if}
+                    {#if closable}
+                        <button
+                            type="button"
+                            class="button is-text is-only-icon"
+                            style="--button-size:1.5rem;"
+                            aria-label="Close Modal"
+                            title="Close Modal"
+                            on:click={() =>
+                                trackEvent('click_close_modal', {
+                                    from: 'button'
+                                })}
+                            on:click={closeModal}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </button>
+                    {/if}
+                </div>
             </header>
             <div class="modal-content">
                 {#if error}
