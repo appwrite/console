@@ -406,16 +406,16 @@
 
         <Form on:submit={updateAllowedExtensions}>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
+                <Heading tag="h6" size="7">File Extensions</Heading>
                 <p class="text">
-                    A maximum of 100 file extensions can be added. Leave blank to allow all file
-                    types.
+                    Allowed file extensions. A maximum of 100 file extensions can be added. Leave
+                    blank to allow all file types.
                 </p>
                 <svelte:fragment slot="aside">
                     <ul class="common-section">
                         <InputTags
                             id="read"
-                            label="Allowed file extensions"
+                            label="Allowed extensions"
                             placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
                             bind:tags={extensions} />
                         <li class="u-flex u-gap-12 u-margin-block-start-8 ">
