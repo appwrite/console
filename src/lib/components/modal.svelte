@@ -76,7 +76,8 @@
     class="modal"
     class:is-small={size === 'small'}
     class:is-big={size === 'big'}
-    bind:this={dialog}>
+    bind:this={dialog}
+    on:cancel|preventDefault>
     {#if show}
         <!-- svelte-ignore a11y-no-redundant-roles -->
         <form class="modal-form" role="form" on:submit|preventDefault>

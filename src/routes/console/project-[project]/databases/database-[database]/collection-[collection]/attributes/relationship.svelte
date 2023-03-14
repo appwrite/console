@@ -45,14 +45,25 @@
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
 
+    // Props
     export let selectedAttribute: Models.AttributeString;
-    export let data: Partial<Models.AttributeString> = {
+
+    type Data = Partial<Models.AttributeString> & {
+        relation: 'one' | 'many';
+        related?: string | number | boolean;
+        keyRelated?: string;
+        del?: string | number | boolean;
+    };
+
+    export let data: Data = {
         required: false,
         size: 0,
         default: null,
-        array: false
+        array: false,
+        relation: 'one'
     };
 
+    // Constants
     const databaseId = $page.params.database;
     const oneWay = [
         { value: 'one', label: 'One to one' },
@@ -70,16 +81,13 @@
         { value: 'null', label: 'Null' },
         { value: 'restrict', label: 'Restrict' }
     ];
+
+    // Variables
     let search: string = null;
     let collectionList: Models.CollectionList;
-
     let way = 'one';
 
-    onMount(async () => {
-        collectionList = await getCollections();
-        data.relation = 'one';
-    });
-
+    // Lifecycle hooks
     async function getCollections(search: string = null) {
         if (search) {
             const collections = await sdkForProject.databases.listCollections(
@@ -87,26 +95,41 @@
                 [Query.orderDesc('$createdAt')],
                 search
             );
-            collectionList = collections;
+            return collections;
         } else {
             const collections = await sdkForProject.databases.listCollections(databaseId);
-            collectionList = collections;
+            return collections;
         }
     }
 
-    $: getCollections(search);
+    onMount(async () => {
+        collectionList = await getCollections();
+    });
+
+    // Reactive statements
+    $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
     $: if (selectedAttribute) {
-        ({
-            required: data.required,
-            array: data.array,
-            size: data.size,
-            default: data.default
-        } = selectedAttribute);
+        data = {
+            ...data,
+            required: selectedAttribute.required,
+            array: selectedAttribute.array,
+            size: selectedAttribute.size,
+            default: selectedAttribute.default
+        };
     }
+
     $: if (data.required || data.array) {
         data.default = null;
+    }
+
+    $: console.log(data.related);
+
+    $: if (data.related && !data.key) {
+        const collection = collectionList.collections.find((n) => n.$id === data.related);
+        // data key = data related in snake case
+        data.key = collection.name.replace(/\s+/g, '_').toLowerCase();
     }
 </script>
 
@@ -137,7 +160,7 @@
     options={collectionList?.collections?.map((n) => ({ value: n.$id, label: n.name })) ?? []} />
 
 {#if data?.related}
-    {@const selectedCol = collections.find((n) => n.$id === data.related)}
+    {@const selectedCol = collections?.find((n) => n.$id === data.related)}
     <div>
         <InputText
             id="key"
@@ -193,12 +216,12 @@
             {:else}
                 <img src={arrowTwo} alt={'Two way relationship'} />
             {/if}
-            <span>{selectedCol.name}</span>
+            <span>{selectedCol?.name}</span>
         </div>
     </div>
     <p class="u-text-center	">
         <b> {$collection.name}</b> has {data.relation === 'one' ? 'one' : 'many'}
-        <b>{selectedCol.name}</b>
+        <b>{selectedCol?.name}</b>
     </p>
 
     <InputSelect
