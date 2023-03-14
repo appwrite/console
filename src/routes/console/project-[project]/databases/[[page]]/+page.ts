@@ -25,7 +25,6 @@ export const load: PageLoad = async ({ params, parent, depends, url }) => {
         Query.offset(offset),
         Query.orderDesc('$createdAt')
     ]);
-    console.log('test');
 
     await redirectOnOffsetOverflow(
         offset,

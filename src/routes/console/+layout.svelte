@@ -19,14 +19,12 @@
     onMount(async () => {
         loading.set(false);
 
-        if (!$prefs) {
-            await prefs.load();
-            if (!$prefs?.preferredView) {
-                prefs.updatePrefs({
-                    preferredView: 'grid',
-                    pageLimit: 6
-                });
-            }
+        await prefs.load();
+        if (!$prefs?.preferredView) {
+            prefs.updatePrefs({
+                preferredView: 'grid',
+                pageLimit: 6
+            });
         }
 
         setInterval(() => {

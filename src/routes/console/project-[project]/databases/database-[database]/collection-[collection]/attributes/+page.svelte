@@ -15,9 +15,9 @@
     import Create from '../createAttribute.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes } from '../store';
+    import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
-    import { options } from './store';
 
     let showCreateDropdown = false;
     let showDropdown = [];
@@ -33,27 +33,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Attributes</Heading>
 
-        <DropList bind:show={showCreateDropdown}>
-            <Button
-                on:click={() => (showCreateDropdown = !showCreateDropdown)}
-                event="create_attribute">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create attribute</span>
-            </Button>
-            <svelte:fragment slot="list">
-                {#each options as attribute}
-                    <DropListItem
-                        icon={attribute.icon}
-                        on:click={() => {
-                            selectedOption = attribute.name;
-                            showCreateDropdown = false;
-                            showCreate = true;
-                        }}>
-                        {attribute.name}
-                    </DropListItem>
-                {/each}
-            </svelte:fragment>
-        </DropList>
+        <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
     </div>
 
     {#if $attributes.length}

@@ -44,23 +44,28 @@
     });
 </script>
 
-{#if $prefs?.preferredView === 'list'}
-    <DropList bind:show={showSelectColumns} scrollable={true}>
-        <Button secondary on:click={() => (showSelectColumns = true)}>
-            <span class="icon-view-boards u-opacity-50	" aria-hidden="true" aria-label="columns" />
-            <span class="text">Columns</span>
-            <span class="inline-tag">{selectedColumnsNumber}</span>
-        </Button>
-        <svelte:fragment slot="list">
-            {#each $columns as column}
-                <InputChoice
-                    id={column.id}
-                    label={column.title}
-                    bind:value={column.show}
-                    disabled={selectedColumnsNumber <= 1 && column.show} />
-            {/each}
-        </svelte:fragment>
-    </DropList>
+{#if $columns?.length}
+    {#if $prefs?.preferredView === 'list'}
+        <DropList bind:show={showSelectColumns} scrollable={true}>
+            <Button secondary on:click={() => (showSelectColumns = true)}>
+                <span
+                    class="icon-view-boards u-opacity-50	"
+                    aria-hidden="true"
+                    aria-label="columns" />
+                <span class="text">Columns</span>
+                <span class="inline-tag">{selectedColumnsNumber}</span>
+            </Button>
+            <svelte:fragment slot="list">
+                {#each $columns as column}
+                    <InputChoice
+                        id={column.id}
+                        label={column.title}
+                        bind:value={column.show}
+                        disabled={selectedColumnsNumber <= 1 && column.show} />
+                {/each}
+            </svelte:fragment>
+        </DropList>
+    {/if}
 {/if}
 
 {#if showToggle}

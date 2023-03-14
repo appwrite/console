@@ -64,11 +64,15 @@
 
 <Modal size="big" bind:show={showCreate} on:submit={submit} icon={$option?.icon}>
     <svelte:fragment slot="header">
-        {selectedOption}
         {#if selectedOption === 'Relationship'}
-            <div class="tag eyebrow-heading-3">
-                <span class="text u-x-small">Beta</span>
-            </div>
+            <span class="u-flex u-gap-16 u-cross-center">
+                {selectedOption}
+                <div class="tag eyebrow-heading-3">
+                    <span class="text u-x-small">Beta</span>
+                </div>
+            </span>
+        {:else}
+            {selectedOption}
         {/if}
     </svelte:fragment>
     <FormList>

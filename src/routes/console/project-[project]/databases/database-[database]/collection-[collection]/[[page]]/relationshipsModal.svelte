@@ -4,6 +4,8 @@
 
     export let showCreate = false;
     export let selectedRelationship: string = null;
+    const limit = 10;
+    let offset = 0;
 
     $: if (!showCreate) {
         selectedRelationship = null;
@@ -14,11 +16,15 @@
     <svelte:fragment slot="header">
         {selectedRelationship}
     </svelte:fragment>
+    {#each selectedRelationship as relationship}
+        {relationship.data} {relationship.id}
+    {/each}
 
     <svelte:fragment slot="footer">
-        <Button secondary disabled={!selectedRelationship} on:click={() => (showCreate = false)}>
-            Prev
-        </Button>
-        <Button secondary disabled={!selectedRelationship}>Next</Button>
+        <Button secondary disabled={!!offset} on:click={() => offset - limit}>Prev</Button>
+        <Button
+            secondary
+            disabled={selectedRelationship?.relationships?.length < offset}
+            on:click={() => offset + limit}>Next</Button>
     </svelte:fragment>
 </Modal>
