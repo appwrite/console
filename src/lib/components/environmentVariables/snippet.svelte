@@ -23,9 +23,8 @@
     let language: Language = Language.NodeJs;
 </script>
 
-<Modal bind:show={showSnippet} size="big">
+<Modal bind:show={showSnippet}>
     <svelte:fragment slot="header">Code Snippet</svelte:fragment>
-    <p>Snippet of a code showing how to read environment variables in Appwrite Functions.</p>
     <Tabs>
         <Tab on:click={() => (language = Language.NodeJs)} selected={language === Language.NodeJs}>
             Node.js
@@ -52,6 +51,7 @@
             Swift
         </Tab>
     </Tabs>
+    <p>Code snippet showing how to read environment variables in Appwrite Functions.</p>
 
     {#if language === Language.NodeJs}
         <Code withLineNumbers withCopy language="js" code={`process.env['${variableKey}']`} />
