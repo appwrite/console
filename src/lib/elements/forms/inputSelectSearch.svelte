@@ -67,18 +67,26 @@
             case 'Enter':
                 if (selected !== null) {
                     event.preventDefault();
-                    value = options[selected].value;
-                    search = options[selected].label;
-                    // element.value = search;
-                    hasFocus = false;
+                    selectOption(options[selected]);
                 }
                 break;
         }
     }
-</script>
 
-Inner search: {search}
-<br />
+    function selectOption(option: Option) {
+        value = option.value;
+        search = option.label;
+        // It's not working without this line.
+        element.value = search;
+        hasFocus = false;
+    }
+
+    function clearOption() {
+        value = null;
+        search = '';
+        element.value = search;
+    }
+</script>
 
 <li class="u-position-relative form-item">
     <DropList
@@ -113,10 +121,7 @@ Inner search: {search}
                         class="options-list-button"
                         aria-label="clear field"
                         type="button"
-                        on:click|preventDefault={() => {
-                            search = '';
-                            value = null;
-                        }}>
+                        on:click|preventDefault={clearOption}>
                         <span class="icon-x" aria-hidden="true" />
                     </button>
                     <button
@@ -136,9 +141,7 @@ Inner search: {search}
                         class:is-selected={selected === i}
                         type="button"
                         on:click|preventDefault={() => {
-                            value = option.value;
-                            search = option.label;
-                            hasFocus = false;
+                            selectOption(option);
                         }}>
                         <slot {option}>
                             <span class="text">{option.label}</span>

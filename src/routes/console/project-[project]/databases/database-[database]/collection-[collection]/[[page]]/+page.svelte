@@ -134,9 +134,6 @@
         </div>
     </div>
 
-    Outer search: {selectSearch}
-    <br />
-    Outer value: {selectValue}
     <InputSelectSearch
         id="related"
         label="Related Collection"
