@@ -1,7 +1,6 @@
 <script lang="ts">
     import { DropList, DropListItem, Empty, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -18,6 +17,7 @@
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
+    import { options } from './store';
 
     let showCreateDropdown = false;
     let showDropdown = [];
@@ -46,10 +46,16 @@
             </TableHeader>
             <TableBody>
                 {#each $attributes as attribute, index}
+                    {@const option = options.find((option) => option.type === attribute.type)}
                     <TableRow>
                         <TableCell title="Key">
                             <div class="u-flex u-main-space-between">
-                                <span class="text u-trim">{attribute.key}</span>
+                                <div class="u-flex u-cross-center u-gap-16">
+                                    <div class="avatar is-medium">
+                                        <span class={`icon-${option.icon}`} aria-hidden="true" />
+                                    </div>
+                                    <span class="text u-trim">{attribute.key}</span>
+                                </div>
                                 {#if attribute.status !== 'available'}
                                     <Pill
                                         warning={attribute.status === 'processing'}

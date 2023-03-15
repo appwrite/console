@@ -39,14 +39,16 @@
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}
-                            <TableCell title={column.title}>
-                                <Copy value={collection.$id}>
-                                    <Pill button trim>
-                                        <span class="icon-duplicate" aria-hidden="true" />
-                                        <span class="text u-trim">{collection.$id}</span>
-                                    </Pill>
-                                </Copy>
-                            </TableCell>
+                            {#key $columns}
+                                <TableCell title={column.title}>
+                                    <Copy value={collection.$id}>
+                                        <Pill button trim>
+                                            <span class="icon-duplicate" aria-hidden="true" />
+                                            <span class="text u-trim">{collection.$id}</span>
+                                        </Pill>
+                                    </Copy>
+                                </TableCell>
+                            {/key}
                         {:else if column.id === 'name'}
                             <TableCellText title={column.title}>
                                 {collection.name}

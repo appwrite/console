@@ -78,7 +78,7 @@
     }
 </script>
 
-<li class="u-position-relative form-item">
+<li class="u-position-relative form-item u-stretch">
     <DropList
         bind:show={hasFocus}
         noStyle

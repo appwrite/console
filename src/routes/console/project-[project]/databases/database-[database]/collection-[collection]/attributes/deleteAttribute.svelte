@@ -14,6 +14,7 @@
     export let showDelete = false;
     export let selectedAttribute: Attributes;
     const databaseId = $page.params.database;
+    let checked = selectedAttribute?.type !== 'relationship';
 
     const handleDelete = async () => {
         try {
@@ -54,14 +55,14 @@
                 and the corresponding relationship will also be deleted.
             </p>
             <p class="text"><b>This action is irreversible.</b></p>
-            <InputChoice id="delete" label="Delete" showLabel={false}>
-                Delete relationship between ??? to ???
+            <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
+                Delete relationship between {selectedAttribute.relation} to {selectedAttribute.related}
             </InputChoice>
         </div>
     {/if}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button disabled={!checked} secondary submit>Delete</Button>
     </svelte:fragment>
 </Modal>
