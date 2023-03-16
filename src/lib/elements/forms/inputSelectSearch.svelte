@@ -22,6 +22,7 @@
     export let search = '';
     // The actual selected value
     export let value: string | number | boolean;
+    $: selectedOption = options.find((option) => option.value === value);
 
     let element: HTMLInputElement;
     let hasFocus = false;
@@ -104,18 +105,25 @@
 
         <div class="custom-select">
             <div class="input-text-wrapper" style="--amount-of-buttons:2">
-                <input
-                    type="text"
-                    class="input-text"
-                    {placeholder}
-                    {disabled}
-                    {required}
-                    bind:value={search}
-                    bind:this={element}
-                    on:focus={() => (hasFocus = true)}
-                    on:click={() => (hasFocus = true)}
-                    on:input={handleInput}
-                    on:keydown={handleKeydown} />
+                {#if $$slots.default && selectedOption}
+                    <output class="input-text is-read-only">
+                        <slot option={selectedOption} />
+                    </output>
+                {:else}
+                    <input
+                        type="text"
+                        class="input-text"
+                        {placeholder}
+                        {disabled}
+                        {required}
+                        bind:value={search}
+                        bind:this={element}
+                        on:focus={() => (hasFocus = true)}
+                        on:click={() => (hasFocus = true)}
+                        on:input={handleInput}
+                        on:keydown={handleKeydown} />
+                {/if}
+
                 <div class="options-list">
                     <button
                         class="options-list-button"
