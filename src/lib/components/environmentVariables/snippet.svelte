@@ -51,6 +51,7 @@
             Swift
         </Tab>
     </Tabs>
+
     <p>Code snippet showing how to read environment variables in Appwrite Functions.</p>
 
     {#if language === Language.NodeJs}

@@ -230,6 +230,7 @@
                                         on:click={() => {
                                             snippetKey = variable.key;
                                             showSnippet = true;
+                                            showVariablesDropdown[i] = false;
                                         }}>
                                         Code snippets
                                     </DropListItem>

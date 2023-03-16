@@ -35,6 +35,7 @@
     let permissions: string[] = [];
     let arePermsDisabled = true;
     let logging: boolean = null;
+    let entrypoint: string = null;
 
     const eventSet: Writable<Set<string>> = writable(new Set());
     let showEvents = false;
@@ -46,6 +47,7 @@
         functionSchedule ??= $func.schedule;
         permissions = $func.execute;
         logging = $func.logging;
+        entrypoint ??= $func.entrypoint;
         $eventSet = new Set($func.events);
     });
 
@@ -59,7 +61,8 @@
                 $func.schedule,
                 $func.timeout,
                 $func.enabled,
-                $func.logging
+                $func.logging,
+                $func.entrypoint
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -85,7 +88,8 @@
                 $func.schedule,
                 $func.timeout,
                 $func.enabled,
-                logging
+                logging,
+                $func.entrypoint
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -111,7 +115,8 @@
                 $func.schedule,
                 $func.timeout,
                 $func.enabled,
-                $func.logging
+                $func.logging,
+                $func.entrypoint
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -137,7 +142,8 @@
                 $func.schedule,
                 $func.timeout,
                 $func.enabled,
-                $func.logging
+                $func.logging,
+                $func.entrypoint
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -163,7 +169,8 @@
                 functionSchedule,
                 $func.timeout,
                 $func.enabled,
-                $func.logging
+                $func.logging,
+                $func.entrypoint
             );
             invalidate(Dependencies.FUNCTION);
 
@@ -190,7 +197,8 @@
                 $func.schedule,
                 timeout,
                 $func.enabled,
-                $func.logging
+                $func.logging,
+                $func.entrypoint
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -199,6 +207,34 @@
                 message: 'Timeout has been updated'
             });
             trackEvent('submit_function_update_timeout');
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
+    async function updateDeploymentSettings() {
+        try {
+            await sdkForProject.functions.update(
+                functionId,
+                $func.name,
+                $func.execute,
+                $func.events,
+                $func.schedule,
+                $func.timeout,
+                $func.enabled,
+                $func.logging,
+                entrypoint
+            );
+
+            invalidate(Dependencies.FUNCTION);
+            addNotification({
+                type: 'success',
+                message: 'Deployment settings has been updated'
+            });
+            trackEvent('submit_function_update_deployment_settings');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -286,6 +322,31 @@
                 <Button disabled={functionName === $func.name || !functionName} submit>
                     Update
                 </Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+
+    <Form on:submit={updateDeploymentSettings}>
+        <CardGrid>
+            <Heading tag="h6" size="7">Update Deployment Settings</Heading>
+            <p>
+                These settings are used default values when creating a deployment. They can be
+                ovewritten when creating deployment.
+            </p>
+            <svelte:fragment slot="aside">
+                <ul>
+                    <InputText
+                        id="entrypoint"
+                        label="Entrypoint"
+                        placeholder="main.js"
+                        autocomplete={false}
+                        bind:value={entrypoint} />
+                </ul>
+            </svelte:fragment>
+            <svelte:fragment slot="actions">
+                <Button
+                    disabled={entrypoint === $func.entrypoint}
+                    on:click={updateDeploymentSettings}>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>

@@ -173,7 +173,7 @@
                 placeholder={`main.${lang}`}
                 id="entrypoint"
                 bind:value={entrypoint}
-                required />
+                required={false} />
             <InputFile label="Gzipped code (tar.gz)" allowedFileExtensions={['gz']} bind:files />
             <InputChoice label="Activate Deployment after build" id="activate" bind:value={active}>
                 This deployment will be activated after the build is completed.</InputChoice>
