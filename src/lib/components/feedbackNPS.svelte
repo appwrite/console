@@ -58,22 +58,12 @@
                 <InputTextarea
                     id="feedback"
                     placeholder="Your message here"
-                    label="Feedback"
+                    label="Message"
                     required
                     bind:value={message}
                     showLabel={false} />
-                <InputText
-                    label="name"
-                    id="name"
-                    bind:value={name}
-                    placeholder="Enter name"
-                    showLabel={false} />
-                <InputEmail
-                    label="email"
-                    id="email"
-                    bind:value={email}
-                    placeholder="Enter email"
-                    showLabel={false} />
+                <InputText label="Name" id="name" bind:value={name} placeholder="Enter name" />
+                <InputEmail label="Email" id="email" bind:value={email} placeholder="Enter email" />
             </FormList>
         {/if}
         <div class="u-flex u-main-end u-gap-16 u-margin-block-start-24">

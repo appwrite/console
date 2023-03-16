@@ -16,8 +16,10 @@
     <svelte:fragment slot="header">
         {selectedRelationship}
     </svelte:fragment>
-    {#each selectedRelationship as relationship}
-        {relationship.data} {relationship.id}
+    {#each selectedRelationship as relationship, i}
+        {#if i >= offset && i < offset + limit}
+            {relationship.data} {relationship.id}
+        {/if}
     {/each}
 
     <svelte:fragment slot="footer">
