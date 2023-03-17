@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { base } from '$app/paths';
-    import { Empty, AvatarInitials } from '$lib/components';
+    import { AvatarInitials, EmptySearch } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -41,7 +41,7 @@
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/teams/team-${membership.teamId}`}>
                         <TableCellText title="Name">
-                            <div class="u-flex u-gap-12">
+                            <div class="u-flex u-cross-center u-gap-12">
                                 <AvatarInitials size={32} name={membership.teamName} />
                                 <span>{membership.teamName ? membership.teamName : 'n/a'}</span>
                             </div>
@@ -67,19 +67,15 @@
             </TableBody>
         </Table>
     {:else}
-        <Empty single>
-            <p>No memberships available</p>
-            <Button
-                external
-                secondary
-                href="https://appwrite.io/docs/server/users?sdk=nodejs-default#usersListMemberships">
-                Documentation
-            </Button>
-        </Empty>
+        <EmptySearch>
+            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
+                <p class="text u-line-height-1-5">No memberships available</p>
+                <Button external secondary href="https://appwrite.io/docs/client/teams">
+                    Documentation
+                </Button>
+            </div>
+        </EmptySearch>
     {/if}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {data.memberships.total}</p>
-    </div>
 </Container>
 
 <DeleteMembership {selectedMembership} bind:showDelete />

@@ -28,6 +28,7 @@
 
     onMount(async () => {
         if (isCloud) {
+            code = slug;
             switch (slug) {
                 case 'mlh':
                     imgDark = (await import('./mlh-dark.svg')).default;
@@ -38,8 +39,11 @@
                     imgDark = (await import('$lib/images/appwrite.svg')).default;
                     imgLight = (await import('$lib/images/appwrite.svg')).default;
                     title = 'Welcome Appwriters!';
-
                     break;
+                case 'cloud_beta':
+                    break;
+                default:
+                    code = '';
             }
         }
     });

@@ -28,6 +28,7 @@
         "@stripe/stripe-js": "^1.47.0",
         "analytics": "^0.8.1",
         "echarts": "^5.4.1",
+        "logrocket": "^3.0.1",
         "pretty-bytes": "^6.1.0",
         "prismjs": "^1.29.0",
         "tippy.js": "^6.3.7",

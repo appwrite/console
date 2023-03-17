@@ -47,7 +47,7 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if $log.data}
-    <section class="cover-frame">
+    <section class="cover-frame" data-private>
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
             <h1 class="body-text-1">Function ID: {$log.func.$id}</h1>
             <button
