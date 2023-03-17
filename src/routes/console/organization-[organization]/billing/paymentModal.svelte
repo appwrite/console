@@ -3,7 +3,12 @@
     import { Modal } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { publicKey } from './store';
-    import { loadStripe, type Stripe, type StripeElements } from '@stripe/stripe-js';
+    import {
+        loadStripe,
+        type Stripe,
+        type StripeElements,
+        type PaymentMethod
+    } from '@stripe/stripe-js';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { sdkForConsole } from '$lib/stores/sdk';
@@ -19,7 +24,7 @@
     let elements: StripeElements;
     let stripe: Stripe;
 
-    let paymentMethod;
+    let paymentMethod: PaymentMethod;
 
     const apperanceLight = {
         variables: {
@@ -84,12 +89,13 @@
                 clientSecret: paymentMethod.clientSecret,
                 appearance: $app.themeInUse === 'dark' ? apperanceDark : apperanceLight
             };
+            console.log(paymentMethod);
             // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
             elements = stripe.elements(options);
+            createForm();
         } catch (e) {
             error = e.message;
         }
-        createForm();
     });
 
     async function createForm() {
@@ -123,10 +129,10 @@
                             paymentMethod.$id,
                             setupIntent.payment_method as string
                         );
-                        // const paymentElement = elements.getElement('payment');
-                        // paymentElement.destroy();
                         await invalidate(Dependencies.PAYMENT_METHODS);
                         show = false;
+                        const paymentElement = elements.getElement('payment');
+                        paymentElement.destroy();
                     } catch (e) {
                         error = e.message;
                     }
