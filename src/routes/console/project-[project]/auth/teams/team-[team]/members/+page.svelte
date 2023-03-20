@@ -19,7 +19,7 @@
     import type { PageData } from './$types';
     import CreateMember from '../createMembership.svelte';
     import DeleteMembership from '../deleteMembership.svelte';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
@@ -82,7 +82,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.memberships.total}</p>
-            <Pagination limit={PAGE_LIMIT} offset={data.offset} sum={data.memberships.total} />
+            <Pagination limit={data.limit} offset={data.offset} sum={data.memberships.total} />
         </div>
     {:else if data.search}
         <EmptySearch>

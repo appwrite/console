@@ -34,7 +34,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let data: PageData;
@@ -185,7 +185,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.files.total}</p>
-            <Pagination limit={PAGE_LIMIT} offset={data.offset} sum={data.files.total} />
+            <Pagination limit={data.limit} offset={data.offset} sum={data.files.total} />
         </div>
     {:else if data.search}
         <EmptySearch>

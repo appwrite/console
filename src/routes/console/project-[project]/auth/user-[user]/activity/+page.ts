@@ -6,12 +6,14 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, url }) => {
     const page = Number(url.searchParams.get('page'));
-    const offset = pageToOffset(page, PAGE_LIMIT);
+    const limit = Number(url.searchParams.get('limit') ?? PAGE_LIMIT);
+    const offset = pageToOffset(page, limit);
 
     return {
         offset,
+        limit,
         logs: await sdk.forProject.users.listLogs(params.user, [
-            Query.limit(PAGE_LIMIT),
+            Query.limit(limit),
             Query.offset(offset)
         ])
     };

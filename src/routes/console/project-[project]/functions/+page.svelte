@@ -12,7 +12,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Create from './createFunction.svelte';
     import type { PageData } from './$types';
-    import { CARD_LIMIT } from '$lib/constants';
 
     export let data: PageData;
 
@@ -83,7 +82,7 @@
         </CardContainer>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.functions.total}</p>
-            <Pagination limit={CARD_LIMIT} offset={data.offset} sum={data.functions.total} />
+            <Pagination limit={data.limit} offset={data.offset} sum={data.functions.total} />
         </div>
     {:else}
         <Empty

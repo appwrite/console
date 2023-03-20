@@ -6,13 +6,15 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, url }) => {
     const page = Number(url.searchParams.get('page'));
-    const offset = pageToOffset(page, CARD_LIMIT);
+    const limit = Number(url.searchParams.get('limit') ?? CARD_LIMIT);
+    const offset = pageToOffset(page, limit);
 
     return {
         offset,
+        limit,
         projects: await sdk.forConsole.projects.list([
             Query.offset(offset),
-            Query.limit(CARD_LIMIT),
+            Query.limit(limit),
             Query.equal('teamId', params.organization),
             Query.orderDesc('$createdAt')
         ])

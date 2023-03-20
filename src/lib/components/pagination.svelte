@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page as pageStore } from '$app/stores';
+    import { Button } from '$lib/elements/forms';
 
     export let sum: number;
     export let limit: number;
@@ -42,27 +43,31 @@
 {#if totalPages > 1}
     {#key $pageStore.url}
         <nav class="pagination">
-            <a
-                class:is-disabled={currentPage <= 1}
-                class="button is-text"
-                aria-label="prev page"
-                href={getLink(currentPage - 1)}>
-                <span class="icon-cheveron-left" aria-hidden="true" />
-                <span class="text">Prev</span>
-            </a>
+            {#if currentPage <= 1}
+                <Button disabled text ariaLabel="prev page">
+                    <span class="icon-cheveron-left" aria-hidden="true" />
+                    <span class="text">Prev</span>
+                </Button>
+            {:else}
+                <Button text ariaLabel="prev page" href={getLink(currentPage - 1)}>
+                    <span class="icon-cheveron-left" aria-hidden="true" />
+                    <span class="text">Prev</span>
+                </Button>
+            {/if}
             {#if !hidePages}
                 <ol class="pagination-list is-only-desktop">
                     {#each pages as page}
                         {#if typeof page === 'number'}
                             <li class="pagination-item">
-                                <a
-                                    href={getLink(page)}
-                                    class="button"
-                                    class:is-disabled={currentPage === page}
-                                    class:is-text={currentPage !== page}
-                                    aria-label="page">
-                                    <span class="text">{page}</span>
-                                </a>
+                                {#if currentPage === page}
+                                    <Button ariaLabel="page" disabled>
+                                        <span class="text">{page}</span>
+                                    </Button>
+                                {:else}
+                                    <Button text ariaLabel="page" href={getLink(page)}>
+                                        <span class="text">{page}</span>
+                                    </Button>
+                                {/if}
                             </li>
                         {:else}
                             <li class="li is-text">
@@ -72,34 +77,37 @@
                     {/each}
                 </ol>
             {/if}
-            <a
-                class:is-disabled={currentPage === totalPages}
-                class="button is-text"
-                href={getLink(currentPage + 1)}
-                aria-label="next page">
-                <span class="text">Next</span>
-                <span class="icon-cheveron-right" aria-hidden="true" />
-            </a>
+            {#if currentPage >= totalPages}
+                <Button disabled text ariaLabel="next page">
+                    <span class="text">Next</span>
+                    <span class="icon-cheveron-right" aria-hidden="true" />
+                </Button>
+            {:else}
+                <Button text ariaLabel="next page" href={getLink(currentPage + 1)}>
+                    <span class="text">Next</span>
+                    <span class="icon-cheveron-right" aria-hidden="true" />
+                </Button>
+            {/if}
         </nav>
     {/key}
 {:else}
     <nav class="pagination">
-        <button type="button" class="button is-text is-disabled" aria-label="prev page">
+        <Button text disabled ariaLabel="prev page">
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
-        </button>
+        </Button>
         {#if !hidePages}
             <ol class="pagination-list is-only-desktop">
                 <li class="pagination-item">
-                    <button type="button" class="button is-disabled" aria-label="page">
+                    <Button disabled ariaLabel="page">
                         <span class="text">1</span>
-                    </button>
+                    </Button>
                 </li>
             </ol>
         {/if}
-        <button type="button" class="button is-text is-disabled" aria-label="next page">
+        <Button text disabled ariaLabel="next page">
             <span class="text">Next</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
-        </button>
+        </Button>
     </nav>
 {/if}

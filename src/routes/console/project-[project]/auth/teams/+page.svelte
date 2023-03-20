@@ -18,7 +18,6 @@
     import { base } from '$app/paths';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
-    import { PAGE_LIMIT } from '$lib/constants';
 
     export let data: PageData;
 
@@ -64,7 +63,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.teams.total}</p>
-            <Pagination limit={PAGE_LIMIT} offset={data.offset} sum={data.teams.total} />
+            <Pagination limit={data.limit} offset={data.offset} sum={data.teams.total} />
         </div>
     {:else if data.search}
         <EmptySearch>

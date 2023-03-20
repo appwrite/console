@@ -23,7 +23,6 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { goto } from '$app/navigation';
-    import { PAGE_LIMIT } from '$lib/constants';
     import Create from './createUser.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
@@ -112,7 +111,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.users.total}</p>
-            <Pagination offset={data.offset} limit={PAGE_LIMIT} sum={data.users.total} />
+            <Pagination offset={data.offset} limit={data.limit} sum={data.users.total} />
         </div>
     {:else if data.search}
         <EmptySearch>

@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { AvatarInitials, Heading, Pagination } from '$lib/components';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -112,7 +112,7 @@
         </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.organizationMembers.total}</p>
-            <Pagination offset={data.offset} limit={PAGE_LIMIT} sum={data.members.total} />
+            <Pagination offset={data.offset} limit={data.limit} sum={data.members.total} />
         </div>
     {/if}
 </Container>

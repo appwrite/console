@@ -17,7 +17,6 @@
     import type { PageData } from './$types';
     import { collection } from './store';
     import { page } from '$app/stores';
-    import { PAGE_LIMIT } from '$lib/constants';
     import CreateAttribute from './createAttribute.svelte';
     import { tooltip } from '$lib/actions/tooltip';
 
@@ -127,7 +126,7 @@
 
             <div class="u-flex common-section u-main-space-between">
                 <p class="text">Total results: {data.documents.total}</p>
-                <Pagination limit={PAGE_LIMIT} offset={data.offset} sum={data.documents.total} />
+                <Pagination limit={data.limit} offset={data.offset} sum={data.documents.total} />
             </div>
         {:else}
             <Empty

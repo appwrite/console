@@ -28,7 +28,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
     import { invalidate } from '$app/navigation';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
@@ -281,7 +281,7 @@
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.deployments.total ? data.deployments.total - 1 : 0}</p>
         <Pagination
-            limit={PAGE_LIMIT}
+            limit={data.limit}
             offset={data.offset}
             sum={data.deployments.total ? data.deployments.total - 1 : 0} />
     </div>

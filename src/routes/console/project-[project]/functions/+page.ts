@@ -7,12 +7,14 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ url, depends }) => {
     depends(Dependencies.FUNCTIONS);
     const page = Number(url.searchParams.get('page'));
-    const offset = pageToOffset(page, CARD_LIMIT);
+    const limit = Number(url.searchParams.get('limit') ?? CARD_LIMIT);
+    const offset = pageToOffset(page, limit);
 
     return {
         offset,
+        limit,
         functions: await sdk.forProject.functions.list([
-            Query.limit(CARD_LIMIT),
+            Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc('$createdAt')
         ])

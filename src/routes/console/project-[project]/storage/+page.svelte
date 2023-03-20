@@ -10,9 +10,9 @@
     import { tooltip } from '$lib/actions/tooltip';
     import type { Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
-    import { CARD_LIMIT } from '$lib/constants';
 
     export let data: PageData;
+
     let showCreate = false;
 
     const project = $page.params.project;
@@ -84,7 +84,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.buckets.total}</p>
-            <Pagination limit={CARD_LIMIT} offset={data.offset} sum={data.buckets.total} />
+            <Pagination limit={data.limit} offset={data.offset} sum={data.buckets.total} />
         </div>
     {:else}
         <Empty

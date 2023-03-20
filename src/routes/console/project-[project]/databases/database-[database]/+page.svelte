@@ -11,7 +11,6 @@
     import type { PageData } from './$types';
     import type { Models } from '@aw-labs/appwrite-console';
     import Create from './create.svelte';
-    import { CARD_LIMIT } from '$lib/constants';
 
     export let data: PageData;
     let showCreate = false;
@@ -65,7 +64,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.collections.total}</p>
-            <Pagination limit={CARD_LIMIT} offset={data.offset} sum={data.collections.total} />
+            <Pagination limit={data.limit} offset={data.offset} sum={data.collections.total} />
         </div>
     {:else}
         <Empty

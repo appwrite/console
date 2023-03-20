@@ -7,7 +7,6 @@
     import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
-    import { CARD_LIMIT } from '$lib/constants';
     import { page } from '$app/stores';
 
     export let data: PageData;
@@ -97,7 +96,7 @@
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
         <p class="text">Total results: {data.projects.total}</p>
-        <Pagination limit={CARD_LIMIT} offset={data.offset} sum={data.projects.total} />
+        <Pagination limit={data.limit} offset={data.offset} sum={data.projects.total} />
     </div>
 </Container>
 

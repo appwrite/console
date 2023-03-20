@@ -6,16 +6,17 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, depends, url }) => {
     depends(Dependencies.DOCUMENTS);
-
     const page = Number(url.searchParams.get('page'));
-    const offset = pageToOffset(page, PAGE_LIMIT);
+    const limit = Number(url.searchParams.get('limit') ?? PAGE_LIMIT);
+    const offset = pageToOffset(page, limit);
 
     return {
         offset,
+        limit,
         documents: await sdk.forProject.databases.listDocuments(
             params.database,
             params.collection,
-            [Query.limit(PAGE_LIMIT), Query.offset(offset), Query.orderDesc('$createdAt')]
+            [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')]
         )
     };
 };

@@ -6,15 +6,17 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ url }) => {
     const page = Number(url.searchParams.get('page'));
-    const offset = pageToOffset(page, PAGE_LIMIT);
+    const limit = Number(url.searchParams.get('limit') ?? PAGE_LIMIT);
+    const offset = pageToOffset(page, limit);
     const search = url.searchParams.get('search') ?? undefined;
 
     return {
         offset,
+        limit,
         search,
         page,
         teams: await sdk.forProject.teams.list(
-            [Query.limit(PAGE_LIMIT), Query.offset(offset), Query.orderDesc('$createdAt')],
+            [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
             search
         )
     };
