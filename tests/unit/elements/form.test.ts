@@ -13,6 +13,8 @@ test('shows form', () => {
     const form = container.querySelector('form');
     expect(form).toBeInTheDocument();
     expect(form).toHaveClass('form');
+    expect(form).toHaveClass('common-section');
+    expect(form).not.toHaveClass('modal-form');
 });
 
 test('shows form - no margin', () => {
@@ -21,7 +23,9 @@ test('shows form - no margin', () => {
         onSubmit: vi.fn()
     });
     const form = container.querySelector('form');
+    expect(form).toHaveClass('form');
     expect(form).not.toHaveClass('common-section');
+    expect(form).not.toHaveClass('modal-form');
 });
 
 test('shows form - no style', () => {
@@ -30,7 +34,9 @@ test('shows form - no style', () => {
         onSubmit: vi.fn()
     });
     const form = container.querySelector('form');
+    expect(form).toHaveClass('common-section');
     expect(form).not.toHaveClass('form');
+    expect(form).not.toHaveClass('modal-form');
 });
 
 test('shows form - is modal', () => {
@@ -39,7 +45,8 @@ test('shows form - is modal', () => {
         onSubmit: vi.fn()
     });
     const form = container.querySelector('form');
-    expect(form).toBeInTheDocument();
+    expect(form).toHaveClass('form');
+    expect(form).toHaveClass('common-section');
     expect(form).toHaveClass('modal-form');
 });
 
