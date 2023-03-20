@@ -1,14 +1,16 @@
 <script lang="ts">
-    import { browser, dev } from '$app/environment';
+    import { browser } from '$app/environment';
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackPageView } from '$lib/actions/analytics';
+    import { isTrackingAllowed, trackPageView } from '$lib/actions/analytics';
     import { reportWebVitals } from '$lib/helpers/vitals';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
+    import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
+    import LogRocket from 'logrocket';
     import { BrowserTracing } from '@sentry/tracing';
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
@@ -23,7 +25,7 @@
         /**
          * Reporting Web Vitals.
          */
-        if (!dev && window.VERCEL_ANALYTICS_ID) {
+        if (ENV.PROD && window.VERCEL_ANALYTICS_ID) {
             onCLS(reportWebVitals);
             onFID(reportWebVitals);
             onLCP(reportWebVitals);
@@ -32,15 +34,26 @@
             onTTFB(reportWebVitals);
         }
 
-        /**
-         * Sentry Error Logging
-         */
-        if (!dev) {
+        if (ENV.PROD) {
+            /**
+             * Sentry Error Logging
+             */
             Sentry.init({
                 dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
                 integrations: [new BrowserTracing()],
                 tracesSampleRate: 1.0
             });
+
+            /**
+             * LogRocket
+             */
+            if (isCloud && isTrackingAllowed()) {
+                LogRocket.init('rgthvf/appwrite', {
+                    dom: {
+                        inputSanitizer: true
+                    }
+                });
+            }
         }
 
         /**

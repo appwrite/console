@@ -8,7 +8,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Delete from '../delete.svelte';
     import { database } from '../store';
@@ -31,7 +31,7 @@
 
     async function updateName() {
         try {
-            await sdkForProject.databases.update($page.params.database, databaseName);
+            await sdk.forProject.databases.update($page.params.database, databaseName);
             invalidate(Dependencies.DATABASE);
             addNotification({
                 message: 'Name has been updated',
@@ -62,7 +62,7 @@
         </Card>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -89,7 +89,7 @@
 
         <CardGrid danger>
             <div>
-                <Heading tag="h6" size="7">Danger Zone</Heading>
+                <Heading tag="h6" size="7">Delete Database</Heading>
             </div>
 
             <p>

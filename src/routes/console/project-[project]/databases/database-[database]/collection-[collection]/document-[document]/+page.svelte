@@ -2,7 +2,7 @@
     import { CardGrid, Box, Heading, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { doc } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -22,7 +22,7 @@
 
     async function updatePermissions() {
         try {
-            await sdkForProject.databases.updateDocument(
+            await sdk.forProject.databases.updateDocument(
                 $doc.$databaseId,
                 $doc.$collectionId,
                 $doc.$id,
@@ -68,7 +68,7 @@
     </CardGrid>
     <Document />
     <CardGrid>
-        <Heading tag="h6" size="7">Update Permissions</Heading>
+        <Heading tag="h6" size="7">Permissions</Heading>
         <p>
             Assign read or write permissions at the <b> Collection Level</b> or
             <b> Document Level</b>. If collection Level permissions are assigned, permissions

@@ -11,7 +11,7 @@
                 <span class="icon-cheveron-left" aria-hidden="true" />
             </a>
         {/if}
-        <span class="text u-trim-1">
+        <span class="text u-trim-1" data-private>
             <slot />
         </span>
     </div>
