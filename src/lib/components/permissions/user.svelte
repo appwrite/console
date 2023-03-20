@@ -163,6 +163,6 @@
     {/if}
 
     <svelte:fragment slot="footer">
-        <Button submit disabled={!hasSelection}>Create</Button>
+        <Button submit disabled={!hasSelection}>Add</Button>
     </svelte:fragment>
 </Modal>
