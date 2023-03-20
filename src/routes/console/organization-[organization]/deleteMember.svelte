@@ -4,7 +4,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
@@ -17,10 +17,10 @@
 
     const deleteMembership = async () => {
         try {
-            await sdkForConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
+            await sdk.forConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
 
             if (isUser) {
-                await sdkForConsole.account.deleteSession('current');
+                await sdk.forConsole.account.deleteSession('current');
                 await goto(`${base}/login`);
             } else {
                 dispatch('deleted');

@@ -3,14 +3,14 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
 
     let newPassword: string = null;
 
     async function updatePassword() {
         try {
-            await sdkForProject.users.updatePassword($user.$id, newPassword);
+            await sdk.forProject.users.updatePassword($user.$id, newPassword);
             newPassword = null;
             addNotification({
                 message: 'Password has been updated',

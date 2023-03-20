@@ -5,7 +5,7 @@
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
@@ -23,7 +23,7 @@
     async function create() {
         try {
             isCreating = true;
-            const project = await sdkForConsole.projects.create(
+            const project = await sdk.forConsole.projects.create(
                 id ?? ID.unique(),
                 name,
                 teamId,

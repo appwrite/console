@@ -44,6 +44,6 @@
     </FormList>
 
     <svelte:fragment slot="footer">
-        <Button submit {disabled}>Create</Button>
+        <Button submit {disabled}>Add</Button>
     </svelte:fragment>
 </Modal>

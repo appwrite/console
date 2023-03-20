@@ -12,7 +12,7 @@
     import TableList from '$lib/elements/table/tableList.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { writable, type Writable } from 'svelte/store';
     import { func } from '../store';
     import { EventModal } from '$lib/components';
@@ -29,7 +29,7 @@
 
     async function updateEvents() {
         try {
-            await sdkForProject.functions.update(
+            await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
                 $func.execute,

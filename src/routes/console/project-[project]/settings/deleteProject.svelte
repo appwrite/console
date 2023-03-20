@@ -5,7 +5,7 @@
     import { Modal } from '$lib/components';
     import { Button, FormList, InputPassword, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../store';
 
     export let showDelete = false;
@@ -15,7 +15,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForConsole.projects.delete($project.$id, password);
+            await sdk.forConsole.projects.delete($project.$id, password);
             showDelete = false;
             addNotification({
                 type: 'success',

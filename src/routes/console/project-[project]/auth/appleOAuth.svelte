@@ -3,7 +3,7 @@
     import { Modal, CopyInput, Alert } from '$lib/components';
     import { Button, InputText, InputTextarea, InputSwitch, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
@@ -29,7 +29,7 @@
     const projectId = $page.params.project;
     const update = async () => {
         try {
-            await sdkForConsole.projects.updateOAuth2(
+            await sdk.forConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
                 appId,
@@ -84,7 +84,7 @@
             <p>URI</p>
             <CopyInput
                 value={`${
-                    sdkForConsole.client.config.endpoint
+                    sdk.forConsole.client.config.endpoint
                 }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>

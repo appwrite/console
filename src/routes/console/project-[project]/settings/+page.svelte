@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -18,7 +18,7 @@
     let name: string = null;
     let showDelete = false;
     let updating = false;
-    const endpoint = sdkForConsole.client.config.endpoint;
+    const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
 
     onMount(async () => {
@@ -28,7 +28,7 @@
     async function updateName() {
         updating = true;
         try {
-            await sdkForConsole.projects.update($project.$id, name);
+            await sdk.forConsole.projects.update($project.$id, name);
             invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -52,7 +52,7 @@
 
     async function serviceUpdate(service: Service) {
         try {
-            await sdkForConsole.projects.updateServiceStatus(
+            await sdk.forConsole.projects.updateServiceStatus(
                 $project.$id,
                 service.method,
                 service.value

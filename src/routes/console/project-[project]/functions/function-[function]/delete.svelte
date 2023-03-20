@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let showDelete = false;
@@ -13,7 +13,7 @@
 
     const handleSubmit = async () => {
         try {
-            await sdkForProject.functions.deleteDeployment(
+            await sdk.forProject.functions.deleteDeployment(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );

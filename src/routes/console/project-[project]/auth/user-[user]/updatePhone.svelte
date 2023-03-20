@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputPhone } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
 
@@ -16,7 +16,7 @@
 
     async function updatePhone() {
         try {
-            await sdkForProject.users.updatePhone($user.$id, userPhone);
+            await sdk.forProject.users.updatePhone($user.$id, userPhone);
             invalidate(Dependencies.USER);
             addNotification({
                 message: 'Phone has been updated',
