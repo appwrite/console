@@ -21,7 +21,7 @@
         ? getContext<FormContext>('form').isSubmitting
         : readable(false);
 
-    $: internalDisabled = $isSubmitting || disabled;
+    $: internalDisabled = (submit && $isSubmitting) || disabled;
 
     //allows to add the disabled attribute to <a> tag without throwing an error
     $: attributes = { internalDisabled } as Record<string, boolean>;
