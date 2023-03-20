@@ -5,7 +5,7 @@
     import { Pill } from '$lib/elements';
     import { file } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { onMount } from 'svelte';
@@ -27,10 +27,10 @@
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
+        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
         '&mode=admin';
     const getView = (fileId: string) =>
-        sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
+        sdk.forProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
 
     $: if (filePermissions) {
         if (symmetricDifference(filePermissions, $file.$permissions).length) {
@@ -40,14 +40,14 @@
 
     function downloadFile() {
         return (
-            sdkForProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
+            sdk.forProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
             '&mode=admin'
         );
     }
 
     async function updatePermissions() {
         try {
-            await sdkForProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
+            await sdk.forProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
             invalidate(Dependencies.FILE);
             arePermsDisabled = true;
             addNotification({

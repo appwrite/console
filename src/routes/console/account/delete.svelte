@@ -5,13 +5,13 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
 
     const deleteAccount = async () => {
         try {
-            await sdkForConsole.account.updateStatus();
+            await sdk.forConsole.account.updateStatus();
             showDelete = false;
             invalidate(Dependencies.ACCOUNT);
             addNotification({

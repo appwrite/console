@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { InputTextarea, FormList, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let selectedFunction: Models.Function = null;
@@ -30,7 +30,7 @@
     const handleSubmit = async () => {
         submitting = true;
         try {
-            await sdkForProject.functions.createExecution(
+            await sdk.forProject.functions.createExecution(
                 selectedFunction.$id,
                 data?.length ? data : undefined,
                 true

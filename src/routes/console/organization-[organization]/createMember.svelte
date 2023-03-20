@@ -3,7 +3,7 @@
     import { Modal } from '$lib/components';
     import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
@@ -19,7 +19,7 @@
 
     const create = async () => {
         try {
-            const team = await sdkForConsole.teams.createMembership(
+            const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
                 email,
                 ['owner'],

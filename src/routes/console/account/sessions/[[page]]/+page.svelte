@@ -12,7 +12,7 @@
         TableScroll
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -23,11 +23,11 @@
     export let data: PageData;
 
     const getBrowser = (clientCode: string) => {
-        return sdkForConsole.avatars.getBrowser(clientCode, 40, 40);
+        return sdk.forConsole.avatars.getBrowser(clientCode, 40, 40);
     };
 
     const logout = async (session: Models.Session) => {
-        await sdkForConsole.account.deleteSession(session.$id);
+        await sdk.forConsole.account.deleteSession(session.$id);
         trackEvent(Submit.AccountDeleteSession);
         if (session.current) {
             await goto(`${base}/login`);
@@ -35,7 +35,7 @@
         invalidate(Dependencies.ACCOUNT_SESSIONS);
     };
     const logoutAll = async () => {
-        await sdkForConsole.account.deleteSessions();
+        await sdk.forConsole.account.deleteSessions();
         trackEvent(Submit.AccountDeleteAllSessions);
         await goto(`${base}/login`);
         invalidate(Dependencies.ACCOUNT_SESSIONS);

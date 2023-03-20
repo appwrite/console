@@ -6,14 +6,14 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
     const functionId = $page.params.function;
 
     const handleSubmit = async () => {
         try {
-            await sdkForProject.functions.delete(functionId);
+            await sdk.forProject.functions.delete(functionId);
             showDelete = false;
             addNotification({
                 type: 'success',
