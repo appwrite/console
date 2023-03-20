@@ -18,11 +18,9 @@
     let name: string;
     let showCustomId = false;
     let error: string;
-    let isCreating = false;
 
     async function create() {
         try {
-            isCreating = true;
             const project = await sdk.forConsole.projects.create(
                 id ?? ID.unique(),
                 name,
@@ -40,7 +38,6 @@
             });
             await goto(`/console/project-${project.$id}`);
         } catch (e) {
-            isCreating = false;
             error = e.message;
             trackError(e, Submit.ProjectCreate);
         }
@@ -50,13 +47,7 @@
 <Modal {error} onSubmit={create} size="big" bind:show>
     <svelte:fragment slot="header">Create Project</svelte:fragment>
     <FormList>
-        <InputText
-            id="name"
-            label="Name"
-            bind:value={name}
-            required
-            autofocus={true}
-            disabled={isCreating} />
+        <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
@@ -71,6 +62,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={isCreating}>Create</Button>
+        <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>
