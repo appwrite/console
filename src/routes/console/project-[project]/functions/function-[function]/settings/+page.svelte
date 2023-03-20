@@ -13,7 +13,7 @@
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { onMount } from 'svelte';
     import Variable from '../../createVariable.svelte';
@@ -54,7 +54,7 @@
 
     async function updateName() {
         try {
-            await sdkForProject.functions.update(
+            await sdk.forProject.functions.update(
                 functionId,
                 functionName,
                 $func.execute,
@@ -80,7 +80,7 @@
 
     async function updatePermissions() {
         try {
-            await sdkForProject.functions.update(
+            await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
                 permissions,
@@ -106,7 +106,7 @@
 
     async function updateSchedule() {
         try {
-            await sdkForProject.functions.update(
+            await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
                 $func.execute,
@@ -133,7 +133,7 @@
 
     async function updateTimeout() {
         try {
-            await sdkForProject.functions.update(
+            await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
                 $func.execute,
@@ -162,7 +162,7 @@
         const variable = event.detail;
 
         try {
-            await sdkForProject.functions.createVariable(functionId, variable.key, variable.value);
+            await sdk.forProject.functions.createVariable(functionId, variable.key, variable.value);
             showVariablesModal = false;
             invalidate(Dependencies.VARIABLES);
             addNotification({
@@ -182,7 +182,7 @@
     async function handleVariableUpdated(event: CustomEvent<Models.Variable>) {
         const variable = event.detail;
         try {
-            await sdkForProject.functions.updateVariable(
+            await sdk.forProject.functions.updateVariable(
                 functionId,
                 variable.$id,
                 variable.key,
@@ -206,7 +206,7 @@
     }
     async function handleVariableDeleted(variable: Models.Variable) {
         try {
-            await sdkForProject.functions.deleteVariable(variable.functionId, variable.$id);
+            await sdk.forProject.functions.deleteVariable(variable.functionId, variable.$id);
             invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
@@ -282,9 +282,9 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -305,7 +305,7 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updatePermissions}>
+    <Form onSubmit={updatePermissions}>
         <CardGrid>
             <Heading tag="h6" size="7">Execute Access</Heading>
             <p>
@@ -330,9 +330,9 @@
 
     <UpdateEvents />
 
-    <Form on:submit={updateSchedule}>
+    <Form onSubmit={updateSchedule}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Schedule</Heading>
+            <Heading tag="h6" size="7">Schedule</Heading>
             <p>
                 Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
                     href="https://en.wikipedia.org/wiki/Cron"
@@ -357,7 +357,7 @@
     </Form>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Update Variables</Heading>
+        <Heading tag="h6" size="7">Variables</Heading>
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
@@ -452,9 +452,9 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateTimeout}>
+    <Form onSubmit={updateTimeout}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Timeout</Heading>
+            <Heading tag="h6" size="7">Timeout</Heading>
             <p>
                 Limit the execution time of your function. Maximum value is 900 seconds (15
                 minutes).

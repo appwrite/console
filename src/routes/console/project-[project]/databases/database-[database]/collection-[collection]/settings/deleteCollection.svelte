@@ -6,7 +6,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { collection } from '../store';
 
     export let showDelete = false;
@@ -15,7 +15,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteCollection(databaseId, $collection.$id);
+            await sdk.forProject.databases.deleteCollection(databaseId, $collection.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -35,7 +35,7 @@
     };
 </script>
 
-<Modal warning={true} bind:show={showDelete} on:submit={handleDelete}>
+<Modal warning={true} bind:show={showDelete} onSubmit={handleDelete}>
     <svelte:fragment slot="header">Delete Collection</svelte:fragment>
 
     <p data-private>

@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import { webhook } from './store';
 
@@ -14,7 +14,7 @@
 
     async function handleDelete() {
         try {
-            await sdkForConsole.projects.deleteWebhook($project.$id, $webhook.$id);
+            await sdk.forConsole.projects.deleteWebhook($project.$id, $webhook.$id);
             await invalidate(Dependencies.WEBHOOKS);
             showDelete = false;
             addNotification({
@@ -33,7 +33,7 @@
     }
 </script>
 
-<Modal bind:show={showDelete} on:submit={handleDelete} warning>
+<Modal bind:show={showDelete} onSubmit={handleDelete} warning>
     <svelte:fragment slot="header">Delete Webhook</svelte:fragment>
     <p data-private>
         Are you sure you want to delete <b>{$webhook.name}</b> from '{$project.name}'?
