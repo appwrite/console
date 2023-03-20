@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page as pageStore } from '$app/stores';
 
     export let sum: number;
     export let limit: number;
@@ -27,50 +27,58 @@
             ...(end < total - 1 ? ['...', total] : end < total ? [total] : [])
         ];
     }
+
+    function getLink(page: number): string {
+        const url = new URL($pageStore.url);
+        url.searchParams.set('page', page.toString());
+
+        return url.toString();
+    }
 </script>
 
 {#if totalPages > 1}
-    {@const search = $page.url.search}
-    <nav class="pagination">
-        <a
-            class:is-disabled={currentPage <= 1}
-            class="button is-text"
-            aria-label="prev page"
-            href={`${path}/${currentPage - 1}${search}`}>
-            <span class="icon-cheveron-left" aria-hidden="true" />
-            <span class="text">Prev</span>
-        </a>
-        {#if !hidePages}
-            <ol class="pagination-list is-only-desktop">
-                {#each pages as page}
-                    {#if typeof page === 'number'}
-                        <li class="pagination-item">
-                            <a
-                                href={`${path}/${page}${search}`}
-                                class="button"
-                                class:is-disabled={currentPage === page}
-                                class:is-text={currentPage !== page}
-                                aria-label="page">
-                                <span class="text">{page}</span>
-                            </a>
-                        </li>
-                    {:else}
-                        <li class="li is-text">
-                            <span class="icon">...</span>
-                        </li>
-                    {/if}
-                {/each}
-            </ol>
-        {/if}
-        <a
-            class:is-disabled={currentPage === totalPages}
-            class="button is-text"
-            href={`${path}/${currentPage + 1}${search}`}
-            aria-label="next page">
-            <span class="text">Next</span>
-            <span class="icon-cheveron-right" aria-hidden="true" />
-        </a>
-    </nav>
+    {#key $pageStore.url}
+        <nav class="pagination">
+            <a
+                class:is-disabled={currentPage <= 1}
+                class="button is-text"
+                aria-label="prev page"
+                href={getLink(currentPage - 1)}>
+                <span class="icon-cheveron-left" aria-hidden="true" />
+                <span class="text">Prev</span>
+            </a>
+            {#if !hidePages}
+                <ol class="pagination-list is-only-desktop">
+                    {#each pages as page}
+                        {#if typeof page === 'number'}
+                            <li class="pagination-item">
+                                <a
+                                    href={getLink(page)}
+                                    class="button"
+                                    class:is-disabled={currentPage === page}
+                                    class:is-text={currentPage !== page}
+                                    aria-label="page">
+                                    <span class="text">{page}</span>
+                                </a>
+                            </li>
+                        {:else}
+                            <li class="li is-text">
+                                <span class="icon">...</span>
+                            </li>
+                        {/if}
+                    {/each}
+                </ol>
+            {/if}
+            <a
+                class:is-disabled={currentPage === totalPages}
+                class="button is-text"
+                href={getLink(currentPage + 1)}
+                aria-label="next page">
+                <span class="text">Next</span>
+                <span class="icon-cheveron-right" aria-hidden="true" />
+            </a>
+        </nav>
+    {/key}
 {:else}
     <nav class="pagination">
         <button type="button" class="button is-text is-disabled" aria-label="prev page">

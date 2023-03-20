@@ -29,23 +29,27 @@
         }
     });
 
-    $: valueChange(search);
+    $: valueChange(search ?? '');
 
     function valueChange(value: string) {
         clearTimeout(timer);
         timer = setTimeout(async () => {
             const url = new URL($page.url);
-            if (url.search === value) {
+            const previous = url.searchParams.get('search');
+
+            if (previous === value) {
                 return;
             }
-            /**
-             * Reset to first page if search changes.
-             */
+
             if ($page.data.page > 1) {
-                url.pathname = url.pathname.replace(new RegExp(`/${$page.data.page}*$`), '/');
+                url.searchParams.delete('page');
+            }
+            if (value === '') {
+                url.searchParams.delete('search');
+            } else {
+                url.searchParams.set('search', value);
             }
 
-            url.search = value;
             trackEvent('search');
             goto(url, { keepFocus: true });
         }, debounce);
