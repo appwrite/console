@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, InputFile } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -20,7 +20,7 @@
             const variables = await parseFile(files[0]);
             for (const variable of variables) {
                 try {
-                    await sdkForProject.functions.createVariable(
+                    await sdk.forProject.functions.createVariable(
                         functionId,
                         variable.key,
                         variable.value
@@ -59,7 +59,7 @@
     }
 </script>
 
-<Modal bind:show on:submit={handleSubmit}>
+<Modal bind:show onSubmit={handleSubmit}>
     <svelte:fragment slot="header">Upload Variables</svelte:fragment>
     <p>
         Upload multiple variables via a .env file that will be passed to your function at runtime.

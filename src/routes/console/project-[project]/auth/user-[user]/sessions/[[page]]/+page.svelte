@@ -12,7 +12,7 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import DeleteAllSessions from '../../deleteAllSessions.svelte';
     import DeleteSessions from '../../deleteSession.svelte';
     import type { PageData } from './$types';
@@ -23,7 +23,8 @@
     let showDeleteAll = false;
     let selectedSessionId: string;
 
-    const getBrowser = (clientCode: string) => sdkForProject.avatars.getBrowser(clientCode, 40, 40);
+    const getBrowser = (clientCode: string) =>
+        sdk.forProject.avatars.getBrowser(clientCode, 40, 40);
 </script>
 
 <Container>

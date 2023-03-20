@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
@@ -20,7 +20,7 @@
 
     async function updateName() {
         try {
-            await sdkForProject.databases.updateCollection(
+            await sdk.forProject.databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 collectionName,
@@ -44,7 +44,7 @@
     }
 </script>
 
-<Form on:submit={updateName}>
+<Form onSubmit={updateName}>
     <CardGrid>
         <Heading tag="h6" size="7">Update Name</Heading>
 

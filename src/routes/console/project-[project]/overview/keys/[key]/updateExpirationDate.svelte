@@ -6,7 +6,7 @@
     import { Button, Form, FormList } from '$lib/elements/forms';
     import { diffDays } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import ExpirationInput from '../expirationInput.svelte';
     import { key } from './store';
@@ -15,7 +15,7 @@
 
     async function updateExpire() {
         try {
-            await sdkForConsole.projects.updateKey(
+            await sdk.forConsole.projects.updateKey(
                 $project.$id,
                 $key.$id,
                 $key.name,
@@ -43,7 +43,7 @@
     $: isExpired = !alertsDismissed && $key.expire !== null && new Date($key.expire) < new Date();
 </script>
 
-<Form on:submit={updateExpire}>
+<Form onSubmit={updateExpire}>
     <CardGrid>
         <Heading tag="h6" size="7">Update Expiration Date</Heading>
         <p class="text">Set a date after which your API Key will expire.</p>
