@@ -56,7 +56,7 @@
     }
 </script>
 
-<Form on:submit={updateSecurity}>
+<Form onSubmit={updateSecurity}>
     <CardGrid>
         <Heading tag="h2" size="7">Security</Heading>
         <p class="text">

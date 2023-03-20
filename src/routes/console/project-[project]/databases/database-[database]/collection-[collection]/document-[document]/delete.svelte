@@ -51,7 +51,7 @@
 <Modal
     icon="exclamation"
     state="warning"
-    on:submit={handleDelete}
+    onSubmit={handleDelete}
     bind:show={showDelete}
     headerDivider={false}>
     <svelte:fragment slot="header">Delete Document</svelte:fragment>

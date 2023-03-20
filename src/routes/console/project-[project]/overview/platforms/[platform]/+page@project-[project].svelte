@@ -76,7 +76,7 @@
 </script>
 
 <Container>
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Name</Heading>
             <p class="text">Choose any name that will help you distinguish between platforms.</p>

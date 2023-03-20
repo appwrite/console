@@ -62,7 +62,7 @@
             </div>
         {:else}
             <p class="text">You have been invited to join a team project on Appwrite</p>
-            <Form on:submit={acceptInvite}>
+            <Form onSubmit={acceptInvite}>
                 <FormList>
                     <InputChoice
                         required

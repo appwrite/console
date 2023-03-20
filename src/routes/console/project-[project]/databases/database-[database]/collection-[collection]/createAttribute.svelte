@@ -62,7 +62,7 @@
     }
 </script>
 
-<Modal size="big" bind:show={showCreate} on:submit={submit} icon={$option?.icon}>
+<Modal size="big" bind:show={showCreate} onSubmit={submit} icon={$option?.icon}>
     <svelte:fragment slot="header">
         {#if selectedOption === 'Relationship'}
             <span class="u-flex u-gap-16 u-cross-center">

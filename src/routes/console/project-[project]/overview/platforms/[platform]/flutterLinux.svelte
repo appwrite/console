@@ -44,7 +44,7 @@
     };
 </script>
 
-<Form on:submit={updateHostname}>
+<Form onSubmit={updateHostname}>
     <CardGrid>
         <Heading tag="h6" size="7">Update Package Name</Heading>
         <p class="text">Your application name.</p>

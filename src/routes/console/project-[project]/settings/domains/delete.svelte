@@ -32,7 +32,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteDomain} icon="exclamation" state="warning">
+<Modal bind:show={showDelete} onSubmit={deleteDomain} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete Domain</svelte:fragment>
     {#if selectedDomain}
         <p data-private>

@@ -31,8 +31,8 @@
         value: attribute.key,
         label: attribute.key
     }));
+
     let attributeList = [{ value: '', order: '' }];
-    let creating = false;
 
     function initialize() {
         attributeList = externalAttribute
@@ -47,16 +47,13 @@
         initialize();
     }
 
-    $: addAttributeDisabled =
-        !attributeList.at(-1)?.value || !attributeList.at(-1)?.order || creating;
+    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
 
     async function create() {
         if (!(key && selectedType && !addAttributeDisabled)) {
             error = 'All fields are required';
             return;
         }
-
-        creating = true;
 
         try {
             await sdk.forProject.databases.createIndex(
@@ -81,15 +78,13 @@
                 type: 'success'
             });
             trackEvent(Submit.IndexCreate);
+            showCreateIndex = false;
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
             trackError(error, Submit.IndexCreate);
-        } finally {
-            showCreateIndex = false;
-            creating = false;
         }
     }
 
@@ -101,7 +96,7 @@
     }
 </script>
 
-<Modal bind:error size="big" on:submit={create} bind:show={showCreateIndex}>
+<Modal bind:error size="big" onSubmit={create} bind:show={showCreateIndex}>
     <svelte:fragment slot="header">Create Index</svelte:fragment>
     <FormList>
         <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
@@ -156,6 +151,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreateIndex = false)}>Cancel</Button>
-        <Button submit disabled={creating}>Create</Button>
+        <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>

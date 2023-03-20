@@ -32,7 +32,7 @@
     };
 </script>
 
-<Modal icon="exclamation" state="warning" bind:show={showDelete} on:submit={handleDelete}>
+<Modal icon="exclamation" state="warning" bind:show={showDelete} onSubmit={handleDelete}>
     <svelte:fragment slot="header">Delete Database</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to delete <b>{$database.name}</b>?

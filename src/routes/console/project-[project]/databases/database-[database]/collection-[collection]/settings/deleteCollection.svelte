@@ -35,7 +35,7 @@
     };
 </script>
 
-<Modal icon="exclamation" state="warning" bind:show={showDelete} on:submit={handleDelete}>
+<Modal icon="exclamation" state="warning" bind:show={showDelete} onSubmit={handleDelete}>
     <svelte:fragment slot="header">Delete Collection</svelte:fragment>
 
     <p data-private>

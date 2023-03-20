@@ -51,7 +51,7 @@
         Your feedback is important to us. Please be honest and tell us what you think.
     </div>
 
-    <Form on:submit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
         <FormList>
             <InputText label="Name" id="name" bind:value={name} placeholder="Enter name" />
             <InputEmail label="Email" id="email" bind:value={email} placeholder="Enter email" />
