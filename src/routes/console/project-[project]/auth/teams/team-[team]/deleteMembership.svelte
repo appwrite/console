@@ -6,7 +6,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
@@ -17,7 +17,7 @@
 
     const deleteMembership = async () => {
         try {
-            await sdkForProject.teams.deleteMembership(
+            await sdk.forProject.teams.deleteMembership(
                 selectedMembership.teamId,
                 selectedMembership.$id
             );

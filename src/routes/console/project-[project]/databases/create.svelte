@@ -4,7 +4,7 @@
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
@@ -18,7 +18,7 @@
 
     const create = async () => {
         try {
-            const database = await sdkForProject.databases.create(id ? id : ID.unique(), name);
+            const database = await sdk.forProject.databases.create(id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', database);
             addNotification({

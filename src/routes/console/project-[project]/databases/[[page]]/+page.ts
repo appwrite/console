@@ -1,13 +1,12 @@
 import { Query } from '@aw-labs/appwrite-console';
-import { sdkForProject } from '$lib/stores/sdk';
 import { pageToOffset, redirectOnOffsetOverflow } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies, PAGE_LIMIT } from '$lib/constants';
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { get } from 'svelte/store';
 import { prefs } from '$lib/stores/user';
 
-export const load: PageLoad = async ({ params, parent, depends, url }) => {
-    await parent();
+export const load: PageLoad = async ({ params, depends, url }) => {
     depends(Dependencies.DATABASES);
 
     const customPrefs = get(prefs);
@@ -20,7 +19,7 @@ export const load: PageLoad = async ({ params, parent, depends, url }) => {
 
     const offset = pageToOffset(page, limit);
 
-    const databases = await sdkForProject.databases.list([
+    const databases = await sdk.forProject.databases.list([
         Query.limit(limit),
         Query.offset(offset),
         Query.orderDesc('$createdAt')

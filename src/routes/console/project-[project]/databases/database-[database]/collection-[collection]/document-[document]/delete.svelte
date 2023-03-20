@@ -7,7 +7,7 @@
     import { Button, InputChoice } from '$lib/elements/forms';
     import { TableCellText, TableList } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { attributes, collection } from '../store';
 
     export let showDelete = false;
@@ -16,7 +16,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteDocument(
+            await sdk.forProject.databases.deleteDocument(
                 databaseId,
                 $page.params.collection,
                 $page.params.document

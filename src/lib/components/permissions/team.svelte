@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
     import type { Writable } from 'svelte/store';
@@ -31,7 +31,7 @@
 
     async function request() {
         if (!show) return;
-        results = await sdkForProject.teams.list([Query.limit(5), Query.offset(offset)], search);
+        results = await sdk.forProject.teams.list([Query.limit(5), Query.offset(offset)], search);
     }
 
     function onSelection(event: Event, role: string) {
@@ -144,6 +144,6 @@
     {/if}
 
     <svelte:fragment slot="footer">
-        <Button submit disabled={!hasSelection}>Create</Button>
+        <Button submit disabled={!hasSelection}>Add</Button>
     </svelte:fragment>
 </Modal>

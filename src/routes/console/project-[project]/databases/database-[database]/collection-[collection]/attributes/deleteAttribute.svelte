@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
     import type { Attributes } from '../store';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
@@ -18,7 +18,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteAttribute(
+            await sdk.forProject.databases.deleteAttribute(
                 databaseId,
                 $collection.$id,
                 selectedAttribute.key
