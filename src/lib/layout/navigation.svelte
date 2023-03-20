@@ -21,7 +21,7 @@
 
     function handleKeyDown(event: KeyboardEvent) {
         // If Alt + S is pressed
-        if (hasSubNavigation && event.altKey && event.key === 's') {
+        if (hasSubNavigation && event.altKey && event.keyCode === 83) {
             event.preventDefault();
             narrow = !narrow;
         }
