@@ -18,10 +18,10 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { members, newMemberModal, organization } from '$lib/stores/organization';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
-    import Delete from '../../deleteMember.svelte';
     import type { PageData } from './$types';
+    import Delete from '../../deleteMember.svelte';
 
     export let data: PageData;
 
@@ -31,7 +31,7 @@
     const deleted = () => invalidate(Dependencies.ACCOUNT);
     const resend = async (member: Models.Membership) => {
         try {
-            await sdkForConsole.teams.createMembership(
+            await sdk.forConsole.teams.createMembership(
                 $organization.$id,
                 member.userEmail,
                 member.roles,

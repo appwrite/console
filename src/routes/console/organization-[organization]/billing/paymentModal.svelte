@@ -2,7 +2,7 @@
     // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
-    import { publicKey } from './store';
+    import { paymentMethods, publicKey } from './store';
     import {
         loadStripe,
         type Stripe,
@@ -11,7 +11,7 @@
     } from '@stripe/stripe-js';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { app } from '$lib/stores/app';
@@ -82,11 +82,13 @@
 
     onMount(async () => {
         stripe = await loadStripe(publicKey);
-
         try {
-            paymentMethod = await sdkForConsole.billing.createPaymentMethod($organization.$id);
+            const clientSecret = $paymentMethods?.paymentMethods[0]?.clientSecret;
+            if (!clientSecret) {
+                paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
+            }
             const options = {
-                clientSecret: paymentMethod.clientSecret,
+                clientSecret: clientSecret ? clientSecret : paymentMethod.clientSecret,
                 appearance: $app.themeInUse === 'dark' ? apperanceDark : apperanceLight
             };
             console.log(paymentMethod);
@@ -124,7 +126,7 @@
                     // trackError(StripeError, Submit.ProjectCreate);
                 } else if (setupIntent && setupIntent.status === 'succeeded') {
                     try {
-                        await sdkForConsole.billing.updatePaymentMethod(
+                        await sdk.forConsole.billing.updatePaymentMethod(
                             $organization.$id,
                             paymentMethod.$id,
                             setupIntent.payment_method as string
