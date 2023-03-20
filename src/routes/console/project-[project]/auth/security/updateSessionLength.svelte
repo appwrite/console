@@ -6,7 +6,7 @@
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { createTimeUnitPair } from '$lib/helpers/unit';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;
@@ -15,7 +15,7 @@
 
     async function updateSessionLength() {
         try {
-            await sdkForConsole.projects.updateAuthDuration(projectId, $baseValue);
+            await sdk.forConsole.projects.updateAuthDuration(projectId, $baseValue);
             invalidate(Dependencies.PROJECT);
 
             addNotification({

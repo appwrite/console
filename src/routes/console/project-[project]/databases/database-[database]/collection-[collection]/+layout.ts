@@ -1,4 +1,4 @@
-import { sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
@@ -7,20 +7,18 @@ import { error } from '@sveltejs/kit';
 import SubNavigation from './subNavigation.svelte';
 import { Query } from '@aw-labs/appwrite-console';
 
-export const load: LayoutLoad = async ({ params, parent, depends }) => {
+export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.COLLECTION);
-    await parent();
-
     try {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            collection: await sdkForProject.databases.getCollection(
+            collection: await sdk.forProject.databases.getCollection(
                 params.database,
                 params.collection
             ),
             subNavigation: SubNavigation,
-            allCollections: await sdkForProject.databases.listCollections(params.database, [
+            allCollections: await sdk.forProject.databases.listCollections(params.database, [
                 Query.orderDesc('$createdAt')
             ])
         };
