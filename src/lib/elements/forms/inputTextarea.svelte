@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { FormItem, Helper, Label } from '.';
+    import TextCounter from './textCounter.svelte';
 
     export let label: string;
     export let showLabel = true;
@@ -56,32 +57,10 @@
             bind:this={element}
             on:invalid={handleInvalid} />
         {#if maxlength}
-            <span class="text-counter" data-active={!!value}>
-                <span class="text-counter-count">{value?.length ?? 0}</span>
-                <span class="text-counter-separator" />
-                <span class="text-counter-max">{maxlength}</span>
-            </span>
+            <TextCounter max={maxlength} count={value?.length ?? 0} />
         {/if}
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}
 </FormItem>
-
-<style class="scss">
-    .text-counter {
-        --p-text-counter-color: var(--color-neutral-50);
-    }
-
-    .text-counter[data-active='true'] {
-        --p-text-counter-color: var(--color-neutral-70);
-    }
-
-    :global(.theme-dark) .text-counter {
-        --p-text-counter-color: var(--color-neutral-70);
-    }
-
-    :global(.theme-dark) .text-counter[data-active='true'] {
-        --p-text-counter-color: var(--color-neutral-50);
-    }
-</style>

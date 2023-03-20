@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { FormItem, Helper, Label } from '.';
+    import TextCounter from './textCounter.svelte';
 
     export let label: string;
     export let optionalText: string | undefined = undefined;
@@ -62,11 +63,7 @@
             bind:this={element}
             on:invalid={handleInvalid} />
         {#if maxlength}
-            <span class="text-counter">
-                <span class="text-counter-count">{value?.length ?? 0}</span>
-                <span class="text-counter-separator" />
-                <span class="text-counter-max">{maxlength}</span>
-            </span>
+            <TextCounter max={maxlength} count={value?.length ?? 0} />
         {/if}
     </div>
     {#if error}
