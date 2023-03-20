@@ -3,7 +3,7 @@ import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { Dependencies } from '$lib/constants';
 import { addNotification } from '$lib/stores/notifications';
 import type { Provider } from '$lib/stores/oauth-providers';
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 
 type Args = {
     projectId: string;
@@ -26,7 +26,7 @@ export async function updateOAuth({
     enabled
 }: Args): Promise<Return> {
     try {
-        await sdkForConsole.projects.updateOAuth2(
+        await sdk.forConsole.projects.updateOAuth2(
             projectId,
             provider.name.toLowerCase(),
             appId,

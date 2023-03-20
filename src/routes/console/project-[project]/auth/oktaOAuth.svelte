@@ -3,7 +3,7 @@
     import { Alert, CopyInput, Modal } from '$lib/components';
     import { Button, FormList, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import type { Provider } from '$lib/stores/oauth-providers';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { updateOAuth } from './updateOAuth';
 
@@ -42,7 +42,7 @@
             : provider.secret;
 </script>
 
-<Modal {error} on:submit={update} size="big" show on:close>
+<Modal {error} onSubmit={update} size="big" show on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
@@ -83,7 +83,7 @@
             <p>URI</p>
             <CopyInput
                 value={`${
-                    sdkForConsole.client.config.endpoint
+                    sdk.forConsole.client.config.endpoint
                 }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>

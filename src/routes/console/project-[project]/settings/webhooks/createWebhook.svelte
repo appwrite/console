@@ -4,7 +4,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
     import { createWebhook } from './wizard/store';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
@@ -17,7 +17,7 @@
     const projectId = $page.params.project;
     const create = async () => {
         try {
-            await sdkForConsole.projects.createWebhook(
+            await sdk.forConsole.projects.createWebhook(
                 projectId,
                 $createWebhook.name,
                 $createWebhook.events,

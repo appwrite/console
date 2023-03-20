@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import type { Models } from '@aw-labs/appwrite-console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitEnum(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeEnum>
     ) {
-        await sdkForProject.databases.createEnumAttribute(
+        await sdk.forProject.databases.createEnumAttribute(
             databaseId,
             collectionId,
             key,

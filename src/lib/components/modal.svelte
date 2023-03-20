@@ -2,12 +2,16 @@
     import { createEventDispatcher, onDestroy, onMount } from 'svelte';
     import { Alert } from '$lib/components';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Form } from '$lib/elements/forms';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
     export let warning = false;
     export let error: string = null;
     export let closable = true;
+    export let onSubmit: () => Promise<void> | void = function () {
+        return;
+    };
 
     let dialog: HTMLDialogElement;
     let alert: HTMLElement;
@@ -77,11 +81,10 @@
     class:is-big={size === 'big'}
     bind:this={dialog}>
     {#if show}
-        <!-- svelte-ignore a11y-no-redundant-roles -->
-        <form class="modal-form" role="form" on:submit|preventDefault>
+        <Form isModal {onSubmit}>
             <header class="modal-header">
                 {#if warning}
-                    <div class="avatar is-color-orange is-medium">
+                    <div class="avatar is-warning is-medium">
                         <span class="icon-exclamation" aria-hidden="true" />
                     </div>
                 {/if}
@@ -127,6 +130,6 @@
                     </div>
                 </div>
             {/if}
-        </form>
+        </Form>
     {/if}
 </dialog>
