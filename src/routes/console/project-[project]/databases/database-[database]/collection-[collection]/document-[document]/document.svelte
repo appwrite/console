@@ -5,33 +5,33 @@
     import { doc } from './store';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
     import type { Models } from '@aw-labs/appwrite-console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import Attribute from './attribute.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import AttributeForm from './attributeForm.svelte';
 
     let disableUpdate = true;
     let currentDoc: string;
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
     const documentId = $page.params.document;
+
     const work = writable(
         Object.keys($doc)
-            .filter(
-                (key) =>
-                    ![
-                        '$id',
-                        '$collection',
-                        '$collectionId',
-                        '$databaseId',
-                        '$createdAt',
-                        '$updatedAt'
-                    ].includes(key)
-            )
+            .filter((key) => {
+                return ![
+                    '$id',
+                    '$collection',
+                    '$collectionId',
+                    '$databaseId',
+                    '$createdAt',
+                    '$updatedAt'
+                ].includes(key);
+            })
             .reduce((obj, key) => {
                 obj[key] = $doc[key];
                 return obj;
@@ -42,7 +42,7 @@
         currentDoc = JSON.stringify($work);
     });
 
-    $: if (currentDoc && $work) {
+    $: {
         if (currentDoc !== JSON.stringify($work)) {
             disableUpdate = false;
         } else {
@@ -52,7 +52,7 @@
 
     async function updateData() {
         try {
-            await sdkForProject.databases.updateDocument(
+            await sdk.forProject.databases.updateDocument(
                 databaseId,
                 collectionId,
                 documentId,
@@ -62,9 +62,7 @@
 
             currentDoc = JSON.stringify($work);
             invalidate(Dependencies.DOCUMENT);
-            trackEvent('submit_document_update', {
-                type: 'android'
-            });
+            trackEvent(Submit.DocumentUpdate);
             disableUpdate = true;
             addNotification({
                 message: 'Document was updated!',
@@ -75,26 +73,8 @@
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.DocumentUpdate);
         }
-    }
-
-    function addArrayItem(key: string) {
-        work.update((n) => {
-            if (!Array.isArray(n[key])) {
-                n[key] = [];
-            }
-            n[key].push(null);
-
-            return n;
-        });
-    }
-
-    function removeArrayItem(key: string, index: number) {
-        work.update((n) => {
-            n[key].splice(index, 1);
-
-            return n;
-        });
     }
 </script>
 
@@ -102,65 +82,7 @@
     <Heading tag="h6" size="7">Update Data</Heading>
     <p>Update document data based on the attributes created earlier.</p>
     <svelte:fragment slot="aside">
-        <form class="form u-grid u-gap-16">
-            {#each $collection.attributes.filter((a) => a.status === 'available') as attribute}
-                {#if attribute.array}
-                    <ul class="form-list">
-                        {#each [...$work[attribute.key].keys()] as index}
-                            <li class="form-item is-multiple">
-                                <div class="form-item-part u-stretch">
-                                    <Attribute
-                                        {attribute}
-                                        id={`${attribute.key}-${index}`}
-                                        label={index === 0 ? attribute.key : ''}
-                                        bind:value={$work[attribute.key][index]} />
-                                </div>
-                                <div class="form-item-part u-cross-child-end">
-                                    <Button
-                                        text
-                                        disabled={$work[attribute.key].length === 1}
-                                        on:click={() => removeArrayItem(attribute.key, index)}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </div>
-                            </li>
-                        {:else}
-                            <li class="form-item is-multiple">
-                                <div class="form-item-part u-stretch">
-                                    <Attribute
-                                        {attribute}
-                                        id={`${attribute.key}-0`}
-                                        label={attribute.key}
-                                        bind:value={$work[attribute.key][0]} />
-                                </div>
-                                <div class="form-item-part u-cross-child-end">
-                                    <Button text disabled>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </div>
-                            </li>
-                        {/each}
-                    </ul>
-
-                    <Button
-                        text
-                        noMargin
-                        disabled={$work[attribute.key][$work[attribute.key].length - 1] === null}
-                        on:click={() => addArrayItem(attribute.key)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Add item</span>
-                    </Button>
-                {:else}
-                    <ul class="form-list">
-                        <Attribute
-                            {attribute}
-                            id={attribute.key}
-                            label={attribute.key}
-                            bind:value={$work[attribute.key]} />
-                    </ul>
-                {/if}
-            {/each}
-        </form>
+        <AttributeForm attributes={$collection.attributes} bind:formValues={$work} gap="16" />
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

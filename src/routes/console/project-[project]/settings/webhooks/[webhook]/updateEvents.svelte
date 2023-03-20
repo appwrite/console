@@ -1,14 +1,14 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Empty, EventModal, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { TableCell, TableCellText, TableList } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { writable, type Writable } from 'svelte/store';
     import { webhook } from './store';
@@ -25,7 +25,7 @@
 
     async function updateEvents() {
         try {
-            await sdkForConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook(
                 projectId,
                 $webhook.$id,
                 $webhook.name,
@@ -41,12 +41,15 @@
                 type: 'success',
                 message: 'Webhook events have been updated'
             });
-            trackEvent('submit_webhook_update_events');
+            trackEvent(Submit.WebhookUpdateEvents, {
+                events: Array.from($eventSet)
+            });
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.WebhookUpdateEvents);
         }
     }
 
@@ -61,7 +64,7 @@
     }
 </script>
 
-<Form on:submit={updateEvents}>
+<Form onSubmit={updateEvents}>
     <CardGrid>
         <Heading tag="h6" size="7">Update Events</Heading>
         <p class="text">
@@ -106,4 +109,13 @@
     </CardGrid>
 </Form>
 
-<EventModal bind:show={showCreateEvent} on:created={handleEvent} />
+<EventModal bind:show={showCreateEvent} on:created={handleEvent}>
+    <p class="text">
+        Select events in your Appwrite project that will trigger your webhook. <a
+            href="https://appwrite.io/docs/events"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">Learn more about Appwrite Events</a
+        >.
+    </p>
+</EventModal>

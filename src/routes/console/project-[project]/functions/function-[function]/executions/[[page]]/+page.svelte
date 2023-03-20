@@ -1,36 +1,37 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
+    import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { Copy, EmptySearch, Heading, Pagination, Status } from '$lib/components';
+    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
     import { Pill } from '$lib/elements';
-    import { Copy, Status, Heading, Pagination, EmptySearch } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import {
-        Table,
-        TableHeader,
         TableBody,
-        TableCellHead,
         TableCell,
+        TableCellHead,
         TableCellText,
-        TableRow
+        TableHeader,
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { Container } from '$lib/layout';
     import { log } from '$lib/stores/logs';
-    import { func } from '../../store';
-    import type { PageData } from './$types';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-    import { page } from '$app/stores';
+    import { sdk } from '$lib/stores/sdk';
     import { onDestroy, onMount } from 'svelte';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import { invalidate } from '$app/navigation';
-    import { Button } from '$lib/elements/forms';
+    import { func } from '../../store';
     import CreateDeployment from '../../create.svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import type { PageData } from './$types';
 
     export let data: PageData;
-    let showCreate = false;
 
+    let showCreate = false;
     let unsubscribe: { (): void };
 
     onMount(() => {
-        unsubscribe = sdkForConsole.client.subscribe('console', (response) => {
+        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('functions.*.executions.*')) {
                 invalidate(Dependencies.EXECUTIONS);
             }
@@ -42,6 +43,12 @@
             unsubscribe();
         }
     });
+
+    function showLogs(execution: Models.Execution) {
+        $log.show = true;
+        $log.func = $func;
+        $log.data = execution;
+    }
 </script>
 
 <Container>
@@ -49,7 +56,7 @@
         <Heading tag="h2" size="5">Logs</Heading>
     </div>
     {#if data.executions.total}
-        <Table>
+        <TableScroll>
             <TableHeader>
                 <TableCellHead width={90}>Execution ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
@@ -83,22 +90,20 @@
                             </Pill>
                         </TableCellText>
                         <TableCellText title="Duration">
-                            {calculateTime(execution.duration)}</TableCellText>
+                            {calculateTime(execution.duration)}
+                        </TableCellText>
                         <TableCell>
                             <Button
                                 secondary
-                                on:click={() => {
-                                    $log.show = true;
-                                    $log.func = $func;
-                                    $log.data = execution;
-                                }}>
+                                event="view_logs"
+                                on:click={() => showLogs(execution)}>
                                 Logs
                             </Button>
                         </TableCell>
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.executions.total}</p>
             <Pagination

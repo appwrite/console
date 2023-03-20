@@ -1,6 +1,7 @@
 <script lang="ts">
+    import { last } from '$lib/helpers/array';
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let id: string;
     export let label: string;
@@ -36,7 +37,7 @@
         }
         if (['Backspace', 'Delete'].includes(e.key)) {
             if (value.length === 0) {
-                removeValue(tags[tags.length - 1]);
+                removeValue(last(tags));
             }
         }
     };
@@ -50,6 +51,7 @@
     };
 
     const removeValue = (value: string) => {
+        if (readonly) return;
         tags = tags.filter((tag) => tag !== value);
     };
 
@@ -75,7 +77,10 @@
         value={tags.join(',')}
         {required}
         on:invalid={handleInvalid} />
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+    <Label {required} hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
     <div class="input-text-wrapper">
         <div class="tags-input">
             <div class="tags">

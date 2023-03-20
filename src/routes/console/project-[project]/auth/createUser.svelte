@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements/';
     import {
@@ -11,7 +11,8 @@
         FormList
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -24,8 +25,8 @@
 
     const create = async () => {
         try {
-            const user = await sdkForProject.users.create(
-                id ?? 'unique()',
+            const user = await sdk.forProject.users.create(
+                id ?? ID.unique(),
                 mail,
                 phone,
                 pass,
@@ -38,10 +39,13 @@
                 type: 'success',
                 message: `${user.name ? user.name : 'User'} has been created`
             });
-            trackEvent('submit_user_create');
+            trackEvent(Submit.UserCreate, {
+                customId: !!id
+            });
             dispatch('created', user);
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.UserCreate);
         }
     };
 
@@ -54,7 +58,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Create User</svelte:fragment>
     <FormList>
         <InputText

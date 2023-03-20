@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
@@ -15,7 +15,8 @@
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@aw-labs/appwrite-console';
 
     const projectId = $page.params.project;
 
@@ -24,8 +25,8 @@
     }
     async function create() {
         try {
-            const response = await sdkForProject.functions.create(
-                $createFunction.id ?? 'unique()',
+            const response = await sdk.forProject.functions.create(
+                $createFunction.id ?? ID.unique(),
                 $createFunction.name,
                 $createFunction.execute,
                 $createFunction.runtime,
@@ -35,7 +36,7 @@
             );
             $createFunction.vars.forEach(
                 async (v) =>
-                    await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
+                    await sdk.forProject.functions.createVariable(response.$id, v.key, v.value)
             );
             await invalidate(Dependencies.FUNCTIONS);
             goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
@@ -43,13 +44,16 @@
                 message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
-            trackEvent('submit_function_create');
+            trackEvent(Submit.FunctionCreate, {
+                customId: !!$createFunction.id
+            });
             wizard.hide();
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FunctionCreate);
         }
     }
 

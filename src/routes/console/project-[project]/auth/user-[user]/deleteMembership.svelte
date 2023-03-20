@@ -2,12 +2,12 @@
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let showDelete = false;
@@ -15,7 +15,7 @@
 
     const deleteMembership = async () => {
         try {
-            await sdkForProject.teams.deleteMembership(
+            await sdk.forProject.teams.deleteMembership(
                 selectedMembership.teamId,
                 selectedMembership.$id
             );
@@ -26,7 +26,7 @@
                 type: 'success',
                 message: `Membership has been deleted`
             });
-            trackEvent('submit_member_delete');
+            trackEvent(Submit.MemberDelete);
             await goto(
                 `${base}/console/project-${$page.params.project}/auth/user-${selectedMembership.userId}/memberships`
             );
@@ -35,14 +35,15 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.MemberDelete);
         }
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteMembership} warning>
+<Modal bind:show={showDelete} onSubmit={deleteMembership} warning>
     <svelte:fragment slot="header">Delete Member</svelte:fragment>
     {#if selectedMembership}
-        <p>
+        <p data-private>
             Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
         </p>
     {/if}

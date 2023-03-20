@@ -15,7 +15,7 @@
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount, SvelteComponent } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
@@ -47,7 +47,7 @@
     async function updateName() {
         updating = true;
         try {
-            await sdkForConsole.projects.updatePlatform(
+            await sdk.forConsole.projects.updatePlatform(
                 $project.$id,
                 $platform.$id,
                 name,
@@ -76,7 +76,7 @@
 </script>
 
 <Container>
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Name</Heading>
             <p class="text">Choose any name that will help you distinguish between platforms.</p>

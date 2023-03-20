@@ -12,13 +12,13 @@
         Pagination
     } from '$lib/components';
     import {
-        Table,
         TableHeader,
         TableBody,
         TableRow,
         TableCellHead,
         TableCell,
-        TableCellText
+        TableCellText,
+        TableScroll
     } from '$lib/elements/table';
     import { execute, func } from '../store';
     import { Container } from '$lib/layout';
@@ -35,10 +35,11 @@
     import Create from '../create.svelte';
     import Activate from '../activate.svelte';
     import { browser } from '$app/environment';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import Output from '$lib/components/output.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { timer } from '$lib/actions/timer';
 
     export let data: PageData;
 
@@ -56,7 +57,7 @@
     $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
 
     if (browser) {
-        sdkForConsole.client.subscribe<Models.Deployment>('console', (message) => {
+        sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
             if (message.events.includes('functions.*.deployments.*.create')) {
                 invalidate(Dependencies.DEPLOYMENTS);
 
@@ -155,8 +156,8 @@
         <div class="common-section">
             <Heading tag="h3" size="7">Inactive</Heading>
         </div>
-        {#if data.deployments.total > 1}
-            <Table>
+        {#if data.deployments.total > 1 || (!activeDeployment && data.deployments.total === 1)}
+            <TableScroll>
                 <TableHeader>
                     <TableCellHead width={90}>Deployment ID</TableCellHead>
                     <TableCellHead width={140}>Created</TableCellHead>
@@ -188,7 +189,9 @@
                                 </TableCell>
 
                                 <TableCellText title="Build Time">
-                                    {#if deployment.status === 'ready'}
+                                    {#if ['processing', 'building'].includes(deployment.status)}
+                                        <span use:timer={{ start: deployment.$createdAt }} />
+                                    {:else}
                                         {calculateTime(deployment.buildTime)}
                                     {/if}
                                 </TableCellText>
@@ -246,7 +249,7 @@
                         {/if}
                     {/each}
                 </TableBody>
-            </Table>
+            </TableScroll>
         {:else}
             <Empty single target="deployment" on:click={() => (showCreate = true)}>
                 <div class="u-text-center">

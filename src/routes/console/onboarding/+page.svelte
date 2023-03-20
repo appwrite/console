@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import CustomId from '$lib/components/customId.svelte';
     import { Dependencies } from '$lib/constants';
@@ -9,19 +9,17 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { ID } from '@aw-labs/appwrite-console';
 
     let name: string;
     let id: string;
     let showCustomId = false;
-    let loading = false;
 
     async function createProject() {
         try {
-            loading = true;
             const org = await createOrganization();
-            const project = await sdkForConsole.projects.create(
+            const project = await sdk.forConsole.projects.create(
                 id ?? ID.unique(),
                 name,
                 org.$id,
@@ -29,31 +27,33 @@
             );
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);
-            trackEvent('submit_project_create');
-        } catch ({ message }) {
-            loading = false;
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id,
+                teamId: org.$id
+            });
+        } catch (error) {
             addNotification({
-                message,
+                message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.ProjectCreate);
         }
     }
 
     async function createOrganization() {
-        return await sdkForConsole.teams.create(ID.unique(), 'Personal Projects');
+        return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
     }
 </script>
 
 <Container overlapCover size="large">
     <Card>
-        <Form on:submit={createProject}>
+        <Form onSubmit={createProject}>
             <FormList>
                 <InputText
                     id="name"
                     label="Project name"
                     placeholder="First Appwrite Project"
                     required
-                    disabled={loading}
                     bind:value={name} />
                 {#if !showCustomId}
                     <div>
@@ -66,7 +66,7 @@
                 {:else}
                     <CustomId bind:show={showCustomId} name="Project" bind:id />
                 {/if}
-                <Button fullWidth submit disabled={loading || name === ''} event="create_project">
+                <Button fullWidth submit disabled={name === ''} event="create_project">
                     Create project
                 </Button>
             </FormList>

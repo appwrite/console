@@ -3,11 +3,12 @@
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@aw-labs/appwrite-console';
 
     export let show = false;
 
@@ -20,7 +21,7 @@
 
     const create = async () => {
         try {
-            const org = await sdkForConsole.teams.create(id ?? 'unique()', name);
+            const org = await sdk.forConsole.teams.create(id ?? ID.unique(), name);
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
             await goto(`/console/organization-${org.$id}`);
@@ -28,17 +29,20 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            trackEvent('submit_organization_create');
+            trackEvent(Submit.OrganizationCreate, {
+                customId: !!id
+            });
             name = null;
             id = null;
             show = false;
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.OrganizationCreate);
         }
     };
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show>
+<Modal {error} onSubmit={create} size="big" bind:show>
     <svelte:fragment slot="header">Create New Organization</svelte:fragment>
     <FormList>
         <InputText

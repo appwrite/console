@@ -1,10 +1,10 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, Alert } from '$lib/components';
     import { Button, InputEmail, InputText, InputTags, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -19,7 +19,7 @@
         const url = `${$page.url.origin}/console/project-${$page.params.project}/auth/teams/team-${$page.params.team}/members`;
 
         try {
-            const user = await sdkForProject.teams.createMembership(
+            const user = await sdk.forProject.teams.createMembership(
                 teamId,
                 email,
                 roles,
@@ -30,18 +30,19 @@
                 type: 'success',
                 message: `${name ? name : email} created successfully`
             });
-            trackEvent('submit_member_create');
+            trackEvent(Submit.MemberCreate);
             email = name = '';
             roles = [];
             showCreate = false;
             dispatch('created', user);
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.MemberCreate);
         }
     };
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show={showCreate}>
+<Modal {error} onSubmit={create} size="big" bind:show={showCreate}>
     <svelte:fragment slot="header">Create Membership</svelte:fragment>
     <FormList>
         <InputEmail

@@ -7,6 +7,8 @@
 
     export let value: string;
     export let event: string = null;
+    export let eventContext = 'click_id_tag';
+    export let appendTo: Parameters<typeof tooltip>['1']['appendTo'] = undefined;
 
     let content = 'Click to copy';
 
@@ -23,7 +25,7 @@
         }
 
         if (event) {
-            trackEvent('click_id_tag', {
+            trackEvent(eventContext, {
                 name: event
             });
         }
@@ -36,7 +38,8 @@
     on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
     use:tooltip={{
         content,
-        hideOnClick: false
+        hideOnClick: false,
+        appendTo
     }}>
     <slot />
 </span>

@@ -45,9 +45,8 @@
             <button
                 class="button is-text u-padding-inline-0"
                 on:click={() => (showDropdown = !showDropdown)}>
-                <h1 class="heading-level-4">
+                <h1 class="heading-level-4 u-flex u-cross-center u-gap-8">
                     <span class="text"> {$organization.name}</span>
-
                     <span
                         class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}
                         aria-hidden="true" />
@@ -73,7 +72,9 @@
         </DropList>
         <div class="u-margin-inline-start-auto">
             <div class="u-flex u-gap-16">
-                <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
+                <a href={`${path}/members`}>
+                    <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
+                </a>
                 <Button secondary on:click={() => newMemberModal.set(true)}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Invite</span>

@@ -4,14 +4,14 @@
     import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, Form } from '$lib/elements/forms';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { team } from './store';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import DeleteTeam from './deleteTeam.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let showDelete = false;
     let teamName: string = null;
@@ -22,18 +22,19 @@
 
     async function updateName() {
         try {
-            await sdkForProject.teams.update($page.params.team, teamName);
+            await sdk.forProject.teams.update($page.params.team, teamName);
             invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_team_update_name');
+            trackEvent(Submit.TeamUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.TeamUpdateName);
         }
     }
 </script>
@@ -54,7 +55,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Name</Heading>
 

@@ -1,3 +1,4 @@
+import { trackEvent } from '$lib/actions/analytics';
 import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
@@ -24,7 +25,7 @@ function createWizardStore() {
                 n.show = true;
                 n.component = component;
                 n.media = media;
-
+                trackEvent('wizard_start');
                 return n;
             }),
         setInterceptor: (callback: WizardStore['interceptor']) => {

@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let id: string;
     export let label: string;
+    export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let value: string | number | boolean;
     export let placeholder = '';
@@ -26,13 +27,24 @@
         error = element.validationMessage;
     };
 
+    $: if (element && required && !value) {
+        element.setCustomValidity('This field is required');
+    }
+
+    $: if (element && required && value) {
+        element.setCustomValidity('');
+    }
+
     $: if (value) {
         error = null;
     }
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+    <Label {required} {optionalText} hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
     <div class="select">
         <select
             {id}
@@ -54,5 +66,7 @@
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
+    {:else}
+        <slot name="helper" />
     {/if}
 </FormItem>

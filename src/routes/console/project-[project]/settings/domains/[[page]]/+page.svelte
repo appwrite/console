@@ -14,7 +14,7 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -22,7 +22,7 @@
     import type { PageData } from './$types';
     import Create from '../create.svelte';
     import Delete from '../delete.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -45,14 +45,15 @@
                 invalidate(Dependencies.DOMAINS);
                 return;
             }
-            await sdkForConsole.projects.updateDomainVerification(projectId, domainId);
+            await sdk.forConsole.projects.updateDomainVerification(projectId, domainId);
             invalidate(Dependencies.DOMAINS);
-            trackEvent('submit_domain_update_verification');
+            trackEvent(Submit.DomainUpdateVerification);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.DomainUpdateVerification);
         } finally {
             isVerifying[domainId] = false;
         }

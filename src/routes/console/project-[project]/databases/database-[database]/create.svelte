@@ -1,12 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -20,9 +21,9 @@
 
     const create = async () => {
         try {
-            const collection = await sdkForProject.databases.createCollection(
+            const collection = await sdk.forProject.databases.createCollection(
                 databaseId,
-                id ? id : 'unique()',
+                id ? id : ID.unique(),
                 name
             );
             showCreate = false;
@@ -32,17 +33,20 @@
                 message: `${name} has been created`
             });
             name = id = null;
-            trackEvent('submit_database_create');
+            trackEvent(Submit.CollectionCreate, {
+                customId: !!id
+            });
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.CollectionCreate);
         }
     };
 </script>
 
-<Modal size="big" bind:show={showCreate} on:submit={create}>
+<Modal size="big" bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Create Collection</svelte:fragment>
     <FormList>
         <InputText

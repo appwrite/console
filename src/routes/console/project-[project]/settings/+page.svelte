@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -13,12 +13,12 @@
     import Delete from './deleteProject.svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let name: string = null;
     let showDelete = false;
     let updating = false;
-    const endpoint = sdkForConsole.client.config.endpoint;
+    const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
 
     onMount(async () => {
@@ -28,18 +28,19 @@
     async function updateName() {
         updating = true;
         try {
-            await sdkForConsole.projects.update($project.$id, name);
+            await sdk.forConsole.projects.update($project.$id, name);
             invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'
             });
-            trackEvent('submit_project_update_name');
+            trackEvent(Submit.ProjectUpdateName);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.ProjectUpdateName);
         }
     }
 
@@ -51,7 +52,7 @@
 
     async function serviceUpdate(service: Service) {
         try {
-            await sdkForConsole.projects.updateServiceStatus(
+            await sdk.forConsole.projects.updateServiceStatus(
                 $project.$id,
                 service.method,
                 service.value
@@ -63,7 +64,7 @@
                     service.value ? 'enabled' : 'disabled'
                 }`
             });
-            trackEvent('submit_project_service', {
+            trackEvent(Submit.ProjectService, {
                 method: service.method,
                 value: service.value
             });
@@ -72,6 +73,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.ProjectService);
         }
     }
 
@@ -80,7 +82,7 @@
 
 <Container>
     {#if $project}
-        <Form on:submit={updateName}>
+        <Form onSubmit={updateName}>
             <CardGrid>
                 <Heading tag="h6" size="7">API Credentials</Heading>
                 <p class="text">Access Appwrite services using your API Endpoint and Project ID.</p>
@@ -93,6 +95,7 @@
                 <svelte:fragment slot="actions">
                     <Button
                         secondary
+                        event="view_keys"
                         href={`${base}/console/project-${projectId}/overview/keys#integrations`}>
                         View API Keys
                     </Button>

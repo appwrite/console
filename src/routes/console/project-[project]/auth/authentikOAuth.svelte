@@ -2,13 +2,13 @@
     import { page } from '$app/stores';
     import { Modal, CopyInput, Alert } from '$lib/components';
     import { Button, InputPassword, InputText, InputSwitch, FormList } from '$lib/elements/forms';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let provider: Provider;
 
@@ -27,7 +27,7 @@
     const projectId = $page.params.project;
     const update = async () => {
         try {
-            await sdkForConsole.projects.updateOAuth2(
+            await sdk.forConsole.projects.updateOAuth2(
                 projectId,
                 provider.name.toLowerCase(),
                 appId,
@@ -40,14 +40,15 @@
                     provider.enabled ? 'enabled' : 'disabled'
                 }`
             });
-            trackEvent('submit_provider_update', {
+            trackEvent(Submit.ProviderUpdate, {
                 provider,
                 enabled
             });
             provider = null;
             invalidate(Dependencies.PROJECT);
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.ProviderUpdate);
         }
     };
 
@@ -57,7 +58,7 @@
             : provider.secret;
 </script>
 
-<Modal {error} size="big" show on:submit={update} on:close>
+<Modal {error} size="big" show onSubmit={update} on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
@@ -92,7 +93,7 @@
             <p>URI</p>
             <CopyInput
                 value={`${
-                    sdkForConsole.client.config.endpoint
+                    sdk.forConsole.client.config.endpoint
                 }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>

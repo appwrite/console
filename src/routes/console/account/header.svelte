@@ -2,12 +2,12 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { Tab, Tabs } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
 
     const path = `/console/account`;
@@ -38,8 +38,8 @@
     ];
 
     async function logout() {
-        await sdkForConsole.account.deleteSession('current');
-        trackEvent('submit_account_logout');
+        await sdk.forConsole.account.deleteSession('current');
+        trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }
 </script>

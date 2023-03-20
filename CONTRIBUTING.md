@@ -1,10 +1,10 @@
 # Contributing
 
-We would ❤️ for you to contribute to Appwrite and help make it better! We want contributing to Appwrite to be fun, enjoyable, and educational for anyone and everyone. All contributions are welcome, including issues, new docs as well as updates and tweaks, blog posts, workshops, and more.
+We would ❤️ for you to contribute to Appwrite and help make it better! We want your experience while contributing to Appwrite to be fun, enjoyable, and educational for anyone and everyone. All contributions are welcome, including issues, and new docs, as well as updates and tweaks, blog posts, workshops, and more.
 
 ## How to Start?
 
-If you are worried or don’t know where to start, check out our next section explaining what kind of help is needed and where you can get involved. You can reach out with questions on our [Discord](https://appwrite.io/discord) server. You can also submit an issue and a maintainer can guide you!
+If you are worried about or don’t know where to start, check out the next section that explains what kind of help is needed and how you can get involved. You can reach out with any questions on our [Discord](https://appwrite.io/discord) server. You can also submit an issue and a maintainer can guide you!
 
 ## Repo Structure
 
@@ -33,7 +33,21 @@ If you are worried or don’t know where to start, check out our next section ex
 
 ## Development
 
-Once you've created a project and installed dependencies with `npm install`, create a `.env` file using `.env.example` as a template.
+### 1. Clone the repository with git
+
+```bash
+git clone https://github.com/appwrite/console.git appwrite-console
+```
+
+### 2. Install dependencies with npm
+
+```bash
+npm install
+```
+
+### 3. Setup environment variables
+
+Add a `.env` file by copying the `.env.example` file as a template in the project's root directory.
 
 Finally, start a development server:
 
@@ -62,7 +76,7 @@ This will run tests in the `tests/` directory.
 
 ### Format
 
-Code should like everywhere the same, for this reason a code-formatter is mandatory.
+Code should be consistently formatted everywhere. Before committing code, run the code-formatter.
 
 ```bash
 npm run format
@@ -76,7 +90,7 @@ npm run lint
 
 ### Diagnostics
 
-Diagnostic tool that checks for following:
+Diagnostic tool that checks for the following:
 
 -   Unused CSS
 -   Svelte A11y hints
@@ -88,7 +102,7 @@ npm run check
 
 ## Submit a Pull Request 🚀
 
-Branch naming convention is as follows
+The branch naming convention is as follows
 
 `TYPE-ISSUE_ID-DESCRIPTION`
 
@@ -106,11 +120,11 @@ When `TYPE` can be:
 -   **fix** - a bug fix
 -   **refactor** - code change that neither fixes a bug nor adds a feature
 
-**All PRs must include a commit message with the description of the changes made!**
+**All PRs must include a commit message with a description of the changes made!**
 
 Start by forking the project and use the `git clone` command to download the repository to your computer. A standard procedure for working on an issue would be to:
 
-1. Before creating a new branch, pull the changes from upstream to make sure your default branch is be up to date.
+1. Before creating a new branch, pull the changes from upstream to make sure your default branch is up to date.
 
 ```
 $ git pull
@@ -143,7 +157,7 @@ $ git push origin [name_of_your_new_branch]
 
 ### Consistency
 
-Before commiting always make sure to run all available tools to improve the codebase:
+Before committing always make sure to run all available tools to improve the codebase:
 
 -   Formatter
     -   `npm run format`
@@ -158,21 +172,21 @@ Page load times are a key consideration for users of all browsers and device typ
 
 There are some general things we can do in front-end development:
 
--   Minimise HTTP requests
--   Minimise blocking – content should be readable before client side processing
--   Lazy load 'supplementary' content (especially images)
+-   Minimize HTTP requests
+-   Minimize blocking – content should be readable before client-side processing
+-   Lazy load "supplementary" content, especially images
 
 ### Don't Repeat Yourself (DRY)
 
 If you repeat anything that has already been defined in code, refactor it so that it only ever has one representation in the codebase.
 
-If you stick to this principle, you will ensure that you will only ever need to change one implementation of a feature without worrying about needing to change any other part of the code.
+If you stick to this principle, you will ensure that you will only ever need to change one implementation of a feature without worrying about the need to change any other part of the code.
 
 ### Separation of concerns
 
-Separate _structure_ from _presentation_ from _behaviour_ to aid maintainability and understanding.
+Separate _structure_ from _presentation_ from _behavior_ to aid maintainability and understanding.
 
--   Keep CSS (presentation), JS (behaviour) and HTML (structure) in the same respective Svelte component
+-   Keep CSS (presentation), JS (behavior) and HTML (structure) in the same respective Svelte component
 -   Avoid writing inline CSS or Javascript in HTML
 -   Avoid writing CSS or HTML in Javascript
 -   Don't choose HTML elements to imply style
@@ -181,29 +195,29 @@ Separate _structure_ from _presentation_ from _behaviour_ to aid maintainability
 
 ### Write code to be read
 
-Follow the principles of ['Keep It Simple, Stupid'](http://en.wikipedia.org/wiki/KISS_principle) (KISS); hard to read or obfuscated code is difficult to maintain and debug. Don't be too clever; write code to be read.
+Follow the principles of ['Keep It Simple, Stupid'](http://en.wikipedia.org/wiki/KISS_principle) (KISS); hard-to-read or obfuscated code is difficult to maintain and debug. Don't be too clever; write code to be read.
 
 ### Identify technical debt
 
 Use code comment annotations (`@todo`) to mark parts of your code that require further work. This will allow the measurement and management of technical debt.
 
-Don't use `@fixme` (which defines things that are broken) - you shouldn't be committing broken code to the repo.
+Don't use `@fixme`, which defines things that are broken. Don't commit broken code in to the repo.
 
 ### Dependencies
 
-Please avoid introducing new dependencies to Appwrite without consulting the team. New dependencies can be very helpful but also introduce new security and privacy issues, complexity, and impact total docker image size.
+Please avoid introducing new dependencies to Appwrite without consulting the team. New dependencies can be very helpful, but they also introduce new security and privacy issues, complexity, and impact total docker image size.
 
-Adding a new dependency should have vital value on the product with minimum possible risk.
+Adding a new dependency should contribute vital value to the product with minimum possible risk.
 
 ## Introducing New Features
 
-We would 💖 you to contribute to Appwrite, but we would also like to make sure Appwrite is as great as possible and loyal to its vision and mission statement 🙏.
+We would 💖 you to contribute to Appwrite, but we also want to ensure Appwrite is loyal to its vision and mission statement 🙏.
 
 For us to find the right balance, please open an issue explaining your ideas before introducing a new pull request.
 
-This will allow the Appwrite community to have sufficient discussion about the new feature value and how it fits in the product roadmap and vision.
+This will allow the Appwrite community to sufficiently discuss the new feature value and how it fits within the product roadmap and vision.
 
-This is also important for Appwrite maintainers to discuss the feature's design and architecture to help the contribution fit in organically in the Appwrite codebase. Some bigger features might need to go through our [RFC process](https://github.com/appwrite/rfc).
+This is also important for the Appwrite lead developers to be able to provide technical input and potentially a different emphasis regarding the feature design and architecture. Some bigger features might need to go through our [RFC process](https://github.com/appwrite/rfc).
 
 ## Other Ways to Help
 
@@ -211,27 +225,27 @@ Pull requests are great, but there are many other areas where you can help Appwr
 
 ### Blogging & Speaking
 
-Blogging, speaking about, or creating tutorials about one of Appwrite’s many features. Mention [@appwrite](https://twitter.com/appwrite) on Twitter and/or email [team@appwrite.io](mailto:team@appwrite.io) so we can give pointers and tips and help you spread the word by promoting your content on the different Appwrite communication channels. Please add your blog posts and videos of talks to our [Awesome Appwrite](https://github.com/appwrite/awesome-appwrite) repo on GitHub.
+When blogging, speaking about, or creating tutorials about one of Appwrite's many features, mention [@appwrite](https://twitter.com/appwrite) on Twitter and/or email [team@appwrite.io](mailto:team@appwrite.io) so we can give pointers and tips and help you spread the word by promoting your content on the different Appwrite communication channels. Please add your blog posts and videos of talks to our [Awesome Appwrite](https://github.com/appwrite/awesome-appwrite) repo on GitHub.
 
 ### Presenting at Meetups
 
-Presenting at meetups and conferences about your Appwrite projects. Your unique challenges and successes in building things with Appwrite can provide great speaking material. We’d love to review your talk abstract/CFP, so get in touch with us if you’d like some help!
+Presenting at meetups and conferences about your Appwrite projects is another excellent way to get the word out about Appwrite. Your unique challenges and successes in building things with Appwrite can provide great speaking material. We’d love to review your talk abstract/CFP, so get in touch with us if you’d like some help!
 
-### Sending Feedbacks & Reporting Bugs
+### Sending Feedback & Reporting Bugs
 
-Sending feedback is a great way for us to understand your different use cases of Appwrite better. If you had any issues, bugs, or want to share about your experience, feel free to do so on our GitHub issues page or at our [Discord channel](https://discord.gg/GSeTUeA).
+Sending feedback is an excellent way for us to understand different use cases for Appwrite. If you have any issues or want to share your experience, feel free to do so on our GitHub issues page or our [Discord channel](https://discord.gg/GSeTUeA).
 
 ### Submitting New Ideas
 
-If you think Appwrite could use a new feature, please open an issue on our GitHub repository, stating as much information as you can think about your new idea and it's implications. We would also use this issue to gather more information, get more feedback from the community, and have a proper discussion about the new feature.
+If you think Appwrite could use a new feature, please open an issue on our GitHub repository, stating as much information as you can think about your new idea and its implications. We would also use this issue to gather more information, get more feedback from the community, and have a proper discussion about the new feature.
 
 ### Improving Documentation
 
-Submitting documentation updates, enhancements, designs, or bug fixes. Spelling or grammar fixes will be very much appreciated.
+Submitting documentation updates, enhancements, designs, or bug fixes help us to improve our documentation. Spelling or grammar fixes are also very much appreciated.
 
 ### Helping Someone
 
-Searching for Appwrite on Discord, GitHub, or StackOverflow and helping someone else who needs help. You can also help by teaching others how to contribute to Appwrite's repo!
+You can also help by teaching others how to contribute to Appwrite's repo! Please consider searching for Appwrite on Discord, GitHub, or StackOverflow and helping someone else who needs help.
 
 ## Code of Conduct
 

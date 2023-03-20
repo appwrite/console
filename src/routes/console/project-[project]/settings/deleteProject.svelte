@@ -1,11 +1,11 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button, FormList, InputPassword, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../store';
 
     export let showDelete = false;
@@ -15,24 +15,25 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForConsole.projects.delete($project.$id, password);
+            await sdk.forConsole.projects.delete($project.$id, password);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$project.name} has been deleted`
             });
-            trackEvent('submit_project_delete');
+            trackEvent(Submit.ProjectDelete);
             await goto(`${base}/console`);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.ProjectDelete);
         }
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={handleDelete} warning>
+<Modal bind:show={showDelete} onSubmit={handleDelete} warning>
     <svelte:fragment slot="header">Delete Project</svelte:fragment>
     <p>
         <b>This project will be deleted</b>, along with all of its metadata, stats, and other

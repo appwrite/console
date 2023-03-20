@@ -1,16 +1,15 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Alert } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
@@ -23,7 +22,13 @@
         Web = 'flutter-web'
     }
 
-    let platform: Platform = Platform.Android;
+    function isPlatform(value: string): value is Platform {
+        return Object.values(Platform).includes(value as Platform);
+    }
+
+    let platform: Platform = isPlatform($createPlatform.type)
+        ? $createPlatform.type
+        : Platform.Android;
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -82,19 +87,10 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
-                projectId,
-                $createPlatform.$id,
-                $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
-            );
-
-            return;
+            await sdk.forConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
 
-        const response = await sdkForConsole.projects.createPlatform(
+        const response = await sdk.forConsole.projects.createPlatform(
             projectId,
             platform,
             $createPlatform.name,
@@ -103,18 +99,19 @@
             platform === Platform.Web ? $createPlatform.hostname : undefined
         );
 
-        trackEvent('submit_platform_create', {
+        trackEvent(Submit.PlatformCreate, {
             type: platform
         });
 
         $createPlatform.$id = response.$id;
+        $createPlatform.type = platform;
     }
 </script>
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Register your Flutter app</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        <div class="u-flex u-gap-16 u-margin-block-start-8">
+        <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
             <Pill
                 button
                 on:click={() => (platform = Platform.Android)}
@@ -137,7 +134,7 @@
                 button
                 on:click={() => (platform = Platform.Macos)}
                 selected={platform === Platform.Macos}>
-                Mac OS
+                macOS
             </Pill>
             <Pill
                 button
@@ -153,10 +150,6 @@
             </Pill>
         </div>
     </svelte:fragment>
-    <Alert type="warning">
-        Note: If you are building your Flutter application for multiple devices, you will have to
-        follow this process for each different device.
-    </Alert>
 
     <FormList isCommonSection>
         <InputText
