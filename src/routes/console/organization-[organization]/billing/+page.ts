@@ -1,5 +1,5 @@
 import { Dependencies } from '$lib/constants';
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent, depends }) => {
@@ -7,6 +7,6 @@ export const load: PageLoad = async ({ params, parent, depends }) => {
     depends(Dependencies.PAYMENT_METHODS);
 
     return {
-        paymentMethods: await sdkForConsole.billing.listPaymentMethods(params.organization)
+        paymentMethods: await sdk.forConsole.billing.listPaymentMethods(params.organization)
     };
 };
