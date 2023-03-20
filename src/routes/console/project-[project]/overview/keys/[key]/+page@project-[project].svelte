@@ -8,7 +8,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import Scopes from '../scopes.svelte';
@@ -29,7 +29,7 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.projects.updateKey(
+            await sdk.forConsole.projects.updateKey(
                 $project.$id,
                 $key.$id,
                 name,
@@ -53,7 +53,7 @@
 
     async function updateScopes() {
         try {
-            await sdkForConsole.projects.updateKey(
+            await sdk.forConsole.projects.updateKey(
                 $project.$id,
                 $key.$id,
                 $key.name,
@@ -103,7 +103,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Name</Heading>
             <p class="text">Choose any name that will help you distinguish between API keys.</p>
@@ -123,7 +123,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form on:submit={updateScopes}>
+    <Form onSubmit={updateScopes}>
         <CardGrid>
             <Heading tag="h6" size="7">Scopes</Heading>
             <p class="text">

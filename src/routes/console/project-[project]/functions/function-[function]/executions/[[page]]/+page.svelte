@@ -18,7 +18,7 @@
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container } from '$lib/layout';
     import { log } from '$lib/stores/logs';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onDestroy, onMount } from 'svelte';
     import { func } from '../../store';
     import CreateDeployment from '../../create.svelte';
@@ -31,7 +31,7 @@
     let unsubscribe: { (): void };
 
     onMount(() => {
-        unsubscribe = sdkForConsole.client.subscribe('console', (response) => {
+        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('functions.*.executions.*')) {
                 invalidate(Dependencies.EXECUTIONS);
             }

@@ -13,7 +13,7 @@
         InputText
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
@@ -30,7 +30,7 @@
 
     async function updateSecurity() {
         try {
-            await sdkForConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook(
                 projectId,
                 $webhook.$id,
                 $webhook.name,
@@ -56,7 +56,7 @@
     }
 </script>
 
-<Form on:submit={updateSecurity}>
+<Form onSubmit={updateSecurity}>
     <CardGrid>
         <Heading tag="h2" size="7">Security</Heading>
         <p class="text">

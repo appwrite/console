@@ -12,7 +12,7 @@
     import TableList from '$lib/elements/table/tableList.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { writable, type Writable } from 'svelte/store';
     import { func } from '../store';
     import { EventModal } from '$lib/components';
@@ -29,7 +29,7 @@
 
     async function updateEvents() {
         try {
-            await sdkForProject.functions.update(
+            await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
                 $func.execute,
@@ -76,7 +76,7 @@
     }
 </script>
 
-<Form on:submit={updateEvents}>
+<Form onSubmit={updateEvents}>
     <CardGrid>
         <Heading tag="h6" size="7">Events</Heading>
         <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>

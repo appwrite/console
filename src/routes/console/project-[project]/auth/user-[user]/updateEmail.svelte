@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputEmail } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
 
@@ -16,7 +16,7 @@
 
     async function updateEmail() {
         try {
-            await sdkForProject.users.updateEmail($user.$id, userEmail);
+            await sdk.forProject.users.updateEmail($user.$id, userEmail);
             invalidate(Dependencies.USER);
             addNotification({
                 message: 'Email has been updated',
@@ -33,7 +33,7 @@
     }
 </script>
 
-<Form on:submit={updateEmail}>
+<Form onSubmit={updateEmail}>
     <CardGrid>
         <Heading tag="h6" size="7">Email</Heading>
         <svelte:fragment slot="aside">

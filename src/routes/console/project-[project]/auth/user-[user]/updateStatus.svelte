@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
 
     let showVerifcationDropdown = false;
@@ -15,7 +15,7 @@
     async function updateVerificationEmail() {
         showVerifcationDropdown = false;
         try {
-            await sdkForProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
+            await sdk.forProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
             invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
@@ -35,7 +35,7 @@
     async function updateVerificationPhone() {
         showVerifcationDropdown = false;
         try {
-            await sdkForProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
+            await sdk.forProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
@@ -54,7 +54,7 @@
     }
     async function updateStatus() {
         try {
-            await sdkForProject.users.updateStatus($user.$id, !$user.status);
+            await sdk.forProject.users.updateStatus($user.$id, !$user.status);
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${

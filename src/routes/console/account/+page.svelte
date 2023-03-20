@@ -4,7 +4,7 @@
     import { Container } from '$lib/layout';
     import { onMount } from 'svelte';
     import { user } from '$lib/stores/user';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import Delete from './delete.svelte';
@@ -26,7 +26,7 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.account.updateName(name);
+            await sdk.forConsole.account.updateName(name);
             invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',
@@ -43,7 +43,7 @@
     }
     async function updateEmail() {
         try {
-            await sdkForConsole.account.updateEmail(email, emailPassword);
+            await sdk.forConsole.account.updateEmail(email, emailPassword);
             invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Email has been updated',
@@ -61,7 +61,7 @@
 
     async function updatePassword() {
         try {
-            await sdkForConsole.account.updatePassword(newPassword, oldPassword);
+            await sdk.forConsole.account.updatePassword(newPassword, oldPassword);
             newPassword = oldPassword = null;
             addNotification({
                 message: 'Password has been updated',
@@ -79,7 +79,7 @@
 </script>
 
 <Container>
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Name</Heading>
 
@@ -94,7 +94,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form on:submit={updateEmail}>
+    <Form onSubmit={updateEmail}>
         <CardGrid>
             <Heading tag="h6" size="7">Email</Heading>
 
@@ -122,7 +122,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form on:submit={updatePassword}>
+    <Form onSubmit={updatePassword}>
         <CardGrid>
             <Heading tag="h6" size="7">Password</Heading>
             <p class="text">

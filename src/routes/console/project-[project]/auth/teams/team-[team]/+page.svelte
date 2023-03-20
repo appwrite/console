@@ -4,7 +4,7 @@
     import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button, InputText, Form } from '$lib/elements/forms';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { team } from './store';
@@ -22,7 +22,7 @@
 
     async function updateName() {
         try {
-            await sdkForProject.teams.update($page.params.team, teamName);
+            await sdk.forProject.teams.update($page.params.team, teamName);
             invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Name has been updated',
@@ -55,7 +55,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Name</Heading>
 

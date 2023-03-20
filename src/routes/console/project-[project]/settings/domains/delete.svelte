@@ -2,7 +2,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { project } from '../../store';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -14,7 +14,7 @@
 
     const deleteDomain = async () => {
         try {
-            await sdkForConsole.projects.deleteDomain($project.$id, selectedDomain.$id);
+            await sdk.forConsole.projects.deleteDomain($project.$id, selectedDomain.$id);
             invalidate(Dependencies.DOMAINS);
             showDelete = false;
             addNotification({
@@ -32,7 +32,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteDomain} warning>
+<Modal bind:show={showDelete} onSubmit={deleteDomain} warning>
     <svelte:fragment slot="header">Delete Domain</svelte:fragment>
     {#if selectedDomain}
         <p data-private>
