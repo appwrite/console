@@ -1,6 +1,7 @@
 import '@appwrite.io/pink';
 import '@appwrite.io/pink-icons';
 import 'tippy.js/dist/tippy.css';
+import LogRocket from 'logrocket';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
@@ -12,6 +13,11 @@ export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
     try {
         const account = await sdk.forConsole.account.get();
+
+        LogRocket.identify(account.$id, {
+            name: account.name,
+            email: account.email
+        });
 
         return {
             account,
