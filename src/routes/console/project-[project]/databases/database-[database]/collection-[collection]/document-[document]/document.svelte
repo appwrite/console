@@ -79,7 +79,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Update Data</Heading>
+    <Heading tag="h6" size="7">Data</Heading>
     <p>Update document data based on the attributes created earlier.</p>
     <svelte:fragment slot="aside">
         <AttributeForm attributes={$collection.attributes} bind:formValues={$work} gap="16" />

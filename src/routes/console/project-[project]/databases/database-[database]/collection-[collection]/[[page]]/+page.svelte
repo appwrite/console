@@ -107,7 +107,7 @@
         {#if data.documents.total}
             <TableScroll isSticky>
                 <TableHeader>
-                    <TableCellHead eyebrow={false}>Document ID</TableCellHead>
+                    <TableCellHead width={200} eyebrow={false}>Document ID</TableCellHead>
                     {#each $columns as column}
                         {#if column.show}
                             <TableCellHead eyebrow={false}>{column.title}</TableCellHead>

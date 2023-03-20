@@ -46,7 +46,7 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Name</Heading>
+        <Heading tag="h6" size="7">Name</Heading>
 
         <svelte:fragment slot="aside">
             <ul>
