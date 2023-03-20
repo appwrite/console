@@ -18,7 +18,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                 params.collection
             ),
             subNavigation: SubNavigation,
-            allCollections: await sdkForProject.databases.listCollections(params.database, [
+            allCollections: await sdk.forProject.databases.listCollections(params.database, [
                 Query.orderDesc('$createdAt')
             ])
         };
