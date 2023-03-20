@@ -3,6 +3,8 @@
     import { Button } from '$lib/elements/forms';
     import { paymentMethods } from './store';
     export let showPayment = false;
+
+    console.log($paymentMethods);
 </script>
 
 <CardGrid>

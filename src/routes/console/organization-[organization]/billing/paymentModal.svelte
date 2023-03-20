@@ -20,10 +20,10 @@
 
     let name: string;
     let error: string;
-    let isCreating = false;
     let elements: StripeElements;
     let stripe: Stripe;
 
+    let clientSecret: string;
     let paymentMethod: PaymentMethod;
 
     const apperanceLight = {
@@ -59,7 +59,6 @@
             colorPrimary: '#606a7b',
             colorText: '#C5C7D8',
             colorBackground: '#161622',
-            color: '#606a7b',
             colorDanger: '#FF453A',
             fontFamily: 'Inter, arial, sans-serif',
             borderRadius: '4px'
@@ -83,7 +82,7 @@
     onMount(async () => {
         stripe = await loadStripe(publicKey);
         try {
-            const clientSecret = $paymentMethods?.paymentMethods[0]?.clientSecret;
+            clientSecret = $paymentMethods?.paymentMethods[0]?.clientSecret;
             if (!clientSecret) {
                 paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
             }
@@ -91,7 +90,7 @@
                 clientSecret: clientSecret ? clientSecret : paymentMethod.clientSecret,
                 appearance: $app.themeInUse === 'dark' ? apperanceDark : apperanceLight
             };
-            console.log(paymentMethod);
+            console.log(clientSecret);
             // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
             elements = stripe.elements(options);
             createForm();
@@ -106,45 +105,37 @@
     }
 
     async function handleSubmit() {
-        const { error: StripeError } = await stripe.confirmSetup({
-            elements,
-            confirmParams: {
-                return_url: 'http://localhost:3000'
-            },
-            redirect: 'if_required'
-        });
-        if (StripeError) {
-            error = StripeError.message;
-            // trackError(StripeError, Submit.ProjectCreate);
-        } else {
-            if (paymentMethod) {
-                const { error: PaymentError, setupIntent } = await stripe.retrieveSetupIntent(
-                    paymentMethod.clientSecret
+        try {
+            await stripe.confirmSetup({
+                elements,
+                confirmParams: {
+                    return_url: 'http://localhost:3000'
+                },
+                redirect: 'if_required'
+            });
+            paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
+            const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
+            if (setupIntent && setupIntent.status === 'succeeded') {
+                await sdk.forConsole.billing.updatePaymentMethod(
+                    $organization.$id,
+                    paymentMethod.$id,
+                    setupIntent.payment_method as string
                 );
-                if (PaymentError) {
-                    error = PaymentError.message;
-                    // trackError(StripeError, Submit.ProjectCreate);
-                } else if (setupIntent && setupIntent.status === 'succeeded') {
-                    try {
-                        await sdk.forConsole.billing.updatePaymentMethod(
-                            $organization.$id,
-                            paymentMethod.$id,
-                            setupIntent.payment_method as string
-                        );
-                        await invalidate(Dependencies.PAYMENT_METHODS);
-                        show = false;
-                        const paymentElement = elements.getElement('payment');
-                        paymentElement.destroy();
-                    } catch (e) {
-                        error = e.message;
-                    }
-                }
-            }
+                await invalidate(Dependencies.PAYMENT_METHODS);
+                show = false;
+                console.log('test');
+                // const paymentElement = elements.getElement('payment');
+                // paymentElement.destroy();
+            } else console.log('test2');
+        } catch (e) {
+            error = e.message;
+            console.log(e);
+            // trackError(StripeError, Submit.ProjectCreate);
         }
     }
 </script>
 
-<Modal {error} on:submit={handleSubmit} size="big" bind:show>
+<Modal {error} onSubmit={handleSubmit} size="big" bind:show>
     <svelte:fragment slot="header">Add Payment Method</svelte:fragment>
     This payment method will be added to the {$organization.name} billing details.
     <FormList>
@@ -154,8 +145,7 @@
             placeholder="Cardholder name"
             bind:value={name}
             required
-            autofocus={true}
-            disabled={isCreating} />
+            autofocus={true} />
 
         <div id="payment-element">
             <!-- Elements will create form elements here -->
@@ -163,6 +153,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={isCreating}>Create</Button>
+        <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>
