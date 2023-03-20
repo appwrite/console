@@ -282,7 +282,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Name</Heading>
 
@@ -305,7 +305,7 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updatePermissions}>
+    <Form onSubmit={updatePermissions}>
         <CardGrid>
             <Heading tag="h6" size="7">Execute Access</Heading>
             <p>
@@ -330,7 +330,7 @@
 
     <UpdateEvents />
 
-    <Form on:submit={updateSchedule}>
+    <Form onSubmit={updateSchedule}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Schedule</Heading>
             <p>
@@ -452,7 +452,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateTimeout}>
+    <Form onSubmit={updateTimeout}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Timeout</Heading>
             <p>

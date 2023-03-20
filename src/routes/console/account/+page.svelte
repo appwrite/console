@@ -79,7 +79,7 @@
 </script>
 
 <Container>
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Name</Heading>
 
@@ -94,7 +94,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form on:submit={updateEmail}>
+    <Form onSubmit={updateEmail}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Email</Heading>
 
@@ -122,7 +122,7 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form on:submit={updatePassword}>
+    <Form onSubmit={updatePassword}>
         <CardGrid>
             <Heading tag="h6" size="7">Update Password</Heading>
             <p class="text">

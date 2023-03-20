@@ -29,7 +29,7 @@
     }
 </script>
 
-<Form on:submit={updateSessionsLimit}>
+<Form onSubmit={updateSessionsLimit}>
     <CardGrid>
         <Heading tag="h2" size="6">Sessions Limit</Heading>
         <p>Maximum number of active sessions allowed per user.</p>

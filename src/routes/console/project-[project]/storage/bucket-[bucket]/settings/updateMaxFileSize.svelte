@@ -22,7 +22,7 @@
     }
 </script>
 
-<Form on:submit={updateMaxSize}>
+<Form onSubmit={updateMaxSize}>
     <CardGrid>
         <Heading tag="h2" size="7">Update Maximum File Size</Heading>
         <p class="text">Set the maximum file size allowed in the bucket.</p>

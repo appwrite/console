@@ -39,7 +39,7 @@
     };
 </script>
 
-<Modal warning={true} on:submit={handleDelete} bind:show={showDelete}>
+<Modal warning={true} onSubmit={handleDelete} bind:show={showDelete}>
     <svelte:fragment slot="header">Delete Document</svelte:fragment>
 
     <p data-private>
