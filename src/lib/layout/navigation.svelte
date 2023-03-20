@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
+    import { isMac } from '$lib/helpers/platform';
     import { slide } from '$lib/helpers/transition';
 
     $: project = $page.params.project;
@@ -132,7 +133,12 @@
                         href={`${projectPath}/settings`}
                         on:click={() => trackEvent('click_menu_settings')}
                         class:is-selected={$page.url.pathname.startsWith(`${projectPath}/settings`)}
-                        title="Settings">
+                        title="Settings"
+                        use:tooltip={{
+                            content: 'Settings',
+                            placement: 'right',
+                            disabled: !narrow
+                        }}>
                         <span class="icon-cog" aria-hidden="true" />
                         <span class="text">Settings</span>
                     </a>
@@ -146,7 +152,7 @@
                 aria-label="resize menu"
                 on:click={() => (narrow = !narrow)}
                 use:tooltip={{
-                    content: 'Alt + S'
+                    content: isMac() ? '⌥ + S' : 'Alt + S'
                 }}>
                 <span
                     class:icon-cheveron-right={narrow}
