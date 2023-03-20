@@ -23,7 +23,7 @@
         collectionId: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdkForProject.databases.createStringAttribute(
+        await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             data.key,

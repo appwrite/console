@@ -25,7 +25,7 @@
         collectionId: string,
         data: Partial<Models.AttributeInteger>
     ) {
-        await sdkForProject.databases.createIntegerAttribute(
+        await sdk.forProject.databases.createIntegerAttribute(
             databaseId,
             collectionId,
             data.key,

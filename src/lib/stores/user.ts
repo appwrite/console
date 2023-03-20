@@ -1,9 +1,8 @@
 import { page } from '$app/stores';
-import { derived, get } from 'svelte/store';
+import { derived } from 'svelte/store';
 import type { Models } from '@aw-labs/appwrite-console';
-import { sdkForConsole } from './sdk';
+import { sdk } from './sdk';
 import { cachedStore } from '$lib/helpers/cache';
-import { browser } from '$app/environment';
 
 export const user = derived(
     page,
@@ -18,11 +17,11 @@ export const prefs = cachedStore<
     }
 >('prefs', (store) => ({
     load: async () => {
-        const prefs = await sdkForConsole.account.getPrefs();
+        const prefs = await sdk.forConsole.account.getPrefs();
         store.set(prefs);
     },
     updatePrefs: async (prefs: Models.Preferences) => {
-        await sdkForConsole.account.updatePrefs(prefs);
+        await sdk.forConsole.account.updatePrefs(prefs);
         store.set(prefs);
     }
 }));

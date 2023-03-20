@@ -23,7 +23,7 @@
 
         data: Partial<Models.AttributeBoolean>
     ) {
-        await sdkForProject.databases.createBooleanAttribute(
+        await sdk.forProject.databases.createBooleanAttribute(
             databaseId,
             collectionId,
             data.key,

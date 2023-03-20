@@ -22,7 +22,7 @@
         collectionId: string,
         data: Partial<Models.AttributeIp>
     ) {
-        await sdkForProject.databases.createIpAttribute(
+        await sdk.forProject.databases.createIpAttribute(
             databaseId,
             collectionId,
             data.key,

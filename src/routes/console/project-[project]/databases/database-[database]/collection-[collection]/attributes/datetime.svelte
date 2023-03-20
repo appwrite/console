@@ -23,7 +23,7 @@
         collectionId: string,
         data: Partial<Models.AttributeDatetime>
     ) {
-        await sdkForProject.databases.createDatetimeAttribute(
+        await sdk.forProject.databases.createDatetimeAttribute(
             databaseId,
             collectionId,
             data.key,

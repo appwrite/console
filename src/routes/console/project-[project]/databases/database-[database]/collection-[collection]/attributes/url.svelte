@@ -23,7 +23,7 @@
         collectionId: string,
         data: Partial<Models.AttributeUrl>
     ) {
-        await sdkForProject.databases.createUrlAttribute(
+        await sdk.forProject.databases.createUrlAttribute(
             databaseId,
             collectionId,
             data.key,

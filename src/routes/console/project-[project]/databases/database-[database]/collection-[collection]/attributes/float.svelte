@@ -25,7 +25,7 @@
         collectionId: string,
         data: Partial<Models.AttributeFloat>
     ) {
-        await sdkForProject.databases.createFloatAttribute(
+        await sdk.forProject.databases.createFloatAttribute(
             databaseId,
             collectionId,
             data.key,

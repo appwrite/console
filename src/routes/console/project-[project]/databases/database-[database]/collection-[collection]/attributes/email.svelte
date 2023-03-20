@@ -24,7 +24,7 @@
         collectionId: string,
         data: Partial<Models.AttributeEmail>
     ) {
-        await sdkForProject.databases.createEmailAttribute(
+        await sdk.forProject.databases.createEmailAttribute(
             databaseId,
             collectionId,
             data.key,

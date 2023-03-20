@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { Query, type Models } from '@aw-labs/appwrite-console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitRelationship(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdkForProject.databases.createStringAttribute(
+        await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             key,
@@ -24,7 +24,7 @@
         collectionId: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdkForProject.databases.createStringAttribute(
+        await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             data.key,
@@ -90,14 +90,14 @@
     // Lifecycle hooks
     async function getCollections(search: string = null) {
         if (search) {
-            const collections = await sdkForProject.databases.listCollections(
+            const collections = await sdk.forProject.databases.listCollections(
                 databaseId,
                 [Query.orderDesc('$createdAt')],
                 search
             );
             return collections;
         } else {
-            const collections = await sdkForProject.databases.listCollections(databaseId);
+            const collections = await sdk.forProject.databases.listCollections(databaseId);
             return collections;
         }
     }

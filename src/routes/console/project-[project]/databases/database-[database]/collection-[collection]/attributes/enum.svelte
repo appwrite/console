@@ -24,7 +24,7 @@
         collectionId: string,
         data: Partial<Models.AttributeEnum>
     ) {
-        await sdkForProject.databases.createEnumAttribute(
+        await sdk.forProject.databases.createEnumAttribute(
             databaseId,
             collectionId,
             data.key,

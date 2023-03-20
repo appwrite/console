@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, InputSelectSearch } from '$lib/elements/forms';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import { onMount } from 'svelte';
 
@@ -20,14 +20,14 @@
 
     async function getCollections(search: string = null) {
         if (search) {
-            const collections = await sdkForProject.databases.listCollections(
+            const collections = await sdk.forProject.databases.listCollections(
                 attribute.related,
                 [Query.orderDesc('$createdAt')],
                 search
             );
             return collections;
         } else {
-            const collections = await sdkForProject.databases.listCollections(attribute.related);
+            const collections = await sdk.forProject.databases.listCollections(attribute.related);
             return collections;
         }
     }
