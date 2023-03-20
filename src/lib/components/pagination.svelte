@@ -4,7 +4,6 @@
     export let sum: number;
     export let limit: number;
     export let offset: number;
-    export let path: string;
     export let hidePages = false;
 
     $: totalPages = Math.ceil(sum / limit);
@@ -30,7 +29,11 @@
 
     function getLink(page: number): string {
         const url = new URL($pageStore.url);
-        url.searchParams.set('page', page.toString());
+        if (page === 1) {
+            url.searchParams.delete('page');
+        } else {
+            url.searchParams.set('page', page.toString());
+        }
 
         return url.toString();
     }

@@ -26,7 +26,7 @@
     import { PAGE_LIMIT } from '$lib/constants';
     import Create from './createUser.svelte';
     import type { Models } from '@aw-labs/appwrite-console';
-    import type { PageData } from './[[page]]/$types';
+    import type { PageData } from './$types';
 
     export let data: PageData;
 
@@ -112,11 +112,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.users.total}</p>
-            <Pagination
-                offset={data.offset}
-                limit={PAGE_LIMIT}
-                sum={data.users.total}
-                path={`/console/project-${projectId}/auth`} />
+            <Pagination offset={data.offset} limit={PAGE_LIMIT} sum={data.users.total} />
         </div>
     {:else if data.search}
         <EmptySearch>

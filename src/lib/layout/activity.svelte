@@ -15,7 +15,6 @@
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let logs: Models.LogList;
-    export let path: string;
     export let offset = 0;
 </script>
 
@@ -67,7 +66,7 @@
         </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {logs.total}</p>
-            <Pagination limit={PAGE_LIMIT} {path} {offset} sum={logs.total} />
+            <Pagination limit={PAGE_LIMIT} {offset} sum={logs.total} />
         </div>
     {:else}
         <EmptySearch>

@@ -35,7 +35,7 @@
         clearTimeout(timer);
         timer = setTimeout(async () => {
             const url = new URL($page.url);
-            const previous = url.searchParams.get('search');
+            const previous = url.searchParams.get('search') ?? '';
 
             if (previous === value) {
                 return;
@@ -44,6 +44,7 @@
             if ($page.data.page > 1) {
                 url.searchParams.delete('page');
             }
+
             if (value === '') {
                 url.searchParams.delete('search');
             } else {

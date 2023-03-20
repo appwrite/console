@@ -1,0 +1,21 @@
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+import { pageToOffset } from '$lib/helpers/load';
+import { sdk } from '$lib/stores/sdk';
+import { Query } from '@aw-labs/appwrite-console';
+import type { PageLoad } from './$types';
+
+export const load: PageLoad = async ({ params, depends, url }) => {
+    depends(Dependencies.DOCUMENTS);
+
+    const page = Number(url.searchParams.get('page'));
+    const offset = pageToOffset(page, PAGE_LIMIT);
+
+    return {
+        offset,
+        documents: await sdk.forProject.databases.listDocuments(
+            params.database,
+            params.collection,
+            [Query.limit(PAGE_LIMIT), Query.offset(offset), Query.orderDesc('$createdAt')]
+        )
+    };
+};
