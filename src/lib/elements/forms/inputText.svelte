@@ -58,6 +58,7 @@
             type="text"
             class="input-text"
             bind:value
+            class:u-padding-inline-end-56={typeof maxlength === 'number'}
             bind:this={element}
             on:invalid={handleInvalid} />
         {#if maxlength}
