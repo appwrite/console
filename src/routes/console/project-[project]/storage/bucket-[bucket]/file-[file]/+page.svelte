@@ -112,7 +112,7 @@
         </CardGrid>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Update Permissions</Heading>
+            <Heading tag="h6" size="7">Permissions</Heading>
             <p>
                 Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
                 permissions are enabled, file permissions will be ignored.

@@ -78,7 +78,7 @@
 
 <Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Events</Heading>
+        <Heading tag="h6" size="7">Events</Heading>
         <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
