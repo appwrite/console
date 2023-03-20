@@ -57,7 +57,7 @@
         clientSecret && tenantID ? JSON.stringify({ clientSecret, tenantID }) : provider.secret;
 </script>
 
-<Modal {error} on:submit={update} size="big" show on:close>
+<Modal {error} onSubmit={update} size="big" show on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>

@@ -58,7 +58,7 @@
     }
 </script>
 
-<Modal bind:show on:submit={create} on:close={reset} size="big">
+<Modal bind:show onSubmit={create} on:close={reset} size="big">
     <svelte:fragment slot="header">Select teams</svelte:fragment>
     <p class="text">
         Grant access to any member of a specific team. To grant access to team members with specific

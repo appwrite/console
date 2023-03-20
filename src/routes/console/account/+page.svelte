@@ -79,9 +79,9 @@
 </script>
 
 <Container>
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -94,9 +94,9 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form on:submit={updateEmail}>
+    <Form onSubmit={updateEmail}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Email</Heading>
+            <Heading tag="h6" size="7">Email</Heading>
 
             <svelte:fragment slot="aside">
                 <FormList>
@@ -122,9 +122,9 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form on:submit={updatePassword}>
+    <Form onSubmit={updatePassword}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Password</Heading>
+            <Heading tag="h6" size="7">Password</Heading>
             <p class="text">
                 Forgot your password? <a class="link" href={`${base}/recover`}
                     >Recover your password</a>

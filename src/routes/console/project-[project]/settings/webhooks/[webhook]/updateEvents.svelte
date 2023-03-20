@@ -64,9 +64,9 @@
     }
 </script>
 
-<Form on:submit={updateEvents}>
+<Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Events</Heading>
+        <Heading tag="h6" size="7">Events</Heading>
         <p class="text">
             Set the events that will trigger your webhook. Maximum 100 events allowed.
         </p>

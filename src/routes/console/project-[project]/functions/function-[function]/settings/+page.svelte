@@ -282,9 +282,9 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -305,7 +305,7 @@
         </CardGrid>
     </Form>
 
-    <Form on:submit={updatePermissions}>
+    <Form onSubmit={updatePermissions}>
         <CardGrid>
             <Heading tag="h6" size="7">Execute Access</Heading>
             <p>
@@ -330,9 +330,9 @@
 
     <UpdateEvents />
 
-    <Form on:submit={updateSchedule}>
+    <Form onSubmit={updateSchedule}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Schedule</Heading>
+            <Heading tag="h6" size="7">Schedule</Heading>
             <p>
                 Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
                     href="https://en.wikipedia.org/wiki/Cron"
@@ -357,7 +357,7 @@
     </Form>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Update Variables</Heading>
+        <Heading tag="h6" size="7">Variables</Heading>
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
@@ -452,9 +452,9 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form on:submit={updateTimeout}>
+    <Form onSubmit={updateTimeout}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Timeout</Heading>
+            <Heading tag="h6" size="7">Timeout</Heading>
             <p>
                 Limit the execution time of your function. Maximum value is 900 seconds (15
                 minutes).

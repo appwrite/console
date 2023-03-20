@@ -42,7 +42,7 @@
     };
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show>
+<Modal {error} onSubmit={create} size="big" bind:show>
     <svelte:fragment slot="header">Create New Organization</svelte:fragment>
     <FormList>
         <InputText

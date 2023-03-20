@@ -9,7 +9,7 @@
 
 <CardGrid danger>
     <div>
-        <Heading tag="h6" size="7">Danger Zone</Heading>
+        <Heading tag="h6" size="7">Delete User</Heading>
     </div>
     <p>
         The user will be permanently deleted, including all data associated with this user. This

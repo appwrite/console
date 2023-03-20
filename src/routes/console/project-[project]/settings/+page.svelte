@@ -82,7 +82,7 @@
 
 <Container>
     {#if $project}
-        <Form on:submit={updateName}>
+        <Form onSubmit={updateName}>
             <CardGrid>
                 <Heading tag="h6" size="7">API Credentials</Heading>
                 <p class="text">Access Appwrite services using your API Endpoint and Project ID.</p>
@@ -102,7 +102,7 @@
                 </svelte:fragment>
             </CardGrid>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Name</Heading>
+                <Heading tag="h6" size="7">Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <FormList>

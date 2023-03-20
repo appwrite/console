@@ -39,9 +39,9 @@
     };
 </script>
 
-<Form on:submit={updateHostname}>
+<Form onSubmit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Hostname</Heading>
+        <Heading tag="h6" size="7">Hostname</Heading>
         <p class="text">You can use * to allow wildcard hostnames or subdomains.</p>
         <svelte:fragment slot="aside">
             <FormList>

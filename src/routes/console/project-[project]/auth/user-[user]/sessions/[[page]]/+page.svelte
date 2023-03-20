@@ -91,7 +91,7 @@
                 <Button
                     external
                     secondary
-                    href="https://appwrite.io/docs/server/users?sdk=nodejs-default#usersListSessions">
+                    href="https://appwrite.io/docs/client/account#accountCreateEmailSession">
                     Documentation
                 </Button>
             </div>

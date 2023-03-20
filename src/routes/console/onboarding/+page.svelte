@@ -15,11 +15,9 @@
     let name: string;
     let id: string;
     let showCustomId = false;
-    let loading = false;
 
     async function createProject() {
         try {
-            loading = true;
             const org = await createOrganization();
             const project = await sdk.forConsole.projects.create(
                 id ?? ID.unique(),
@@ -34,7 +32,6 @@
                 teamId: org.$id
             });
         } catch (error) {
-            loading = false;
             addNotification({
                 message: error.message,
                 type: 'error'
@@ -50,14 +47,13 @@
 
 <Container overlapCover size="large">
     <Card>
-        <Form on:submit={createProject}>
+        <Form onSubmit={createProject}>
             <FormList>
                 <InputText
                     id="name"
                     label="Project name"
                     placeholder="First Appwrite Project"
                     required
-                    disabled={loading}
                     bind:value={name} />
                 {#if !showCustomId}
                     <div>
@@ -70,7 +66,7 @@
                 {:else}
                     <CustomId bind:show={showCustomId} name="Project" bind:id />
                 {/if}
-                <Button fullWidth submit disabled={loading || name === ''} event="create_project">
+                <Button fullWidth submit disabled={name === ''} event="create_project">
                     Create project
                 </Button>
             </FormList>

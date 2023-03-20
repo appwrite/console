@@ -27,10 +27,10 @@
     }
 </script>
 
-<Form on:submit={updatePassword}>
+<Form onSubmit={updatePassword}>
     <CardGrid>
         <div>
-            <Heading tag="h6" size="7">Update Password</Heading>
+            <Heading tag="h6" size="7">Password</Heading>
         </div>
 
         <p>

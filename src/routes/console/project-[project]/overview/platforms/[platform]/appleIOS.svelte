@@ -44,9 +44,9 @@
     };
 </script>
 
-<Form on:submit={updateHostname}>
+<Form onSubmit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Bundle ID</Heading>
+        <Heading tag="h6" size="7">Bundle ID</Heading>
         <p class="text">
             You can find your Bundle Identifier in the General tab for your app's primary target in
             Xcode.
