@@ -150,9 +150,13 @@
         <div id="payment-element">
             <!-- Elements will create form elements here -->
         </div>
+        <p class="text u-small">
+            You won’t be charged immediately. You will be charged for your plan on the first day of
+            each month using the payment method you've specified above.
+        </p>
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button submit>Save</Button>
     </svelte:fragment>
 </Modal>
