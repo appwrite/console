@@ -1,11 +1,12 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -17,41 +18,36 @@
     let name: string;
     let showCustomId = false;
     let error: string;
-    let isCreating = false;
 
     async function create() {
         try {
-            isCreating = true;
-            const project = await sdkForConsole.projects.create(
-                id ?? 'unique()',
+            const project = await sdk.forConsole.projects.create(
+                id ?? ID.unique(),
                 name,
                 teamId,
                 'default'
             );
             dispatch('created', project);
-            trackEvent('submit_project_create');
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id,
+                teamId
+            });
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
             });
             await goto(`/console/project-${project.$id}`);
-        } catch ({ message }) {
-            isCreating = false;
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.ProjectCreate);
         }
     }
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show>
+<Modal {error} onSubmit={create} size="big" bind:show>
     <svelte:fragment slot="header">Create Project</svelte:fragment>
     <FormList>
-        <InputText
-            id="name"
-            label="Name"
-            bind:value={name}
-            required
-            autofocus={true}
-            disabled={isCreating} />
+        <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
@@ -66,6 +62,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={isCreating}>Create</Button>
+        <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>

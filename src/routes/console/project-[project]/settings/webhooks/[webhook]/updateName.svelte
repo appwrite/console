@@ -1,12 +1,12 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
@@ -19,7 +19,7 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook(
                 projectId,
                 $webhook.$id,
                 name,
@@ -34,19 +34,20 @@
                 type: 'success',
                 message: 'Webhook name has been updated'
             });
-            trackEvent('submit_webhook_update_name');
+            trackEvent(Submit.WebhookUpdateName);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.WebhookUpdateName);
         }
     }
 </script>
 
-<Form on:submit={updateName}>
+<Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h2" size="7">Update Name</Heading>
+        <Heading tag="h2" size="7">Name</Heading>
         <p>Choose any name that will help you distinguish between Webhooks.</p>
         <svelte:fragment slot="aside">
             <FormList>

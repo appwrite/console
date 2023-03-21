@@ -2,13 +2,13 @@
     import { page } from '$app/stores';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
@@ -16,7 +16,7 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
+            await sdk.forConsole.projects.updatePlatform(
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
@@ -28,7 +28,7 @@
             return;
         }
 
-        const platform = await sdkForConsole.projects.createPlatform(
+        const platform = await sdk.forConsole.projects.createPlatform(
             projectId,
             'android',
             $createPlatform.name,
@@ -37,7 +37,7 @@
             undefined
         );
 
-        trackEvent('submit_platform_create', {
+        trackEvent(Submit.PlatformCreate, {
             type: 'android'
         });
 

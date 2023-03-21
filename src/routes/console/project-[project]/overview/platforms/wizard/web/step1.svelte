@@ -4,13 +4,13 @@
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from '../store';
     import { app } from '$lib/stores/app';
     import Light from './light.svg';
     import Dark from './dark.svg';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -18,7 +18,7 @@
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
+            await sdk.forConsole.projects.updatePlatform(
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
@@ -30,7 +30,7 @@
             return;
         }
 
-        const platform = await sdkForConsole.projects.createPlatform(
+        const platform = await sdk.forConsole.projects.createPlatform(
             projectId,
             'web',
             $createPlatform.name,
@@ -39,7 +39,7 @@
             $createPlatform.hostname
         );
 
-        trackEvent('submit_platform_create', {
+        trackEvent(Submit.PlatformCreate, {
             type: 'web'
         });
 

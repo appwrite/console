@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Card, DropListLink, DropTabs, Heading } from '$lib/components';
-    import { last } from '$lib/layout/usage.svelte';
+    import { Card, SecondaryTabsItem, SecondaryTabs, Heading } from '$lib/components';
+    import { total } from '$lib/layout/usage.svelte';
     import { BarChart } from '$lib/charts';
     import { page } from '$app/stores';
     import type { PageData } from './$types';
@@ -15,27 +15,27 @@
 <Container>
     <div class="u-flex u-main-space-between common-section">
         <Heading tag="h2" size="5">Functions</Heading>
-        <DropTabs>
-            <DropListLink
+        <SecondaryTabs>
+            <SecondaryTabsItem
                 href={`/console/project-${data.project.$id}/functions/function-${data.function.$id}/usage/24h`}
                 disabled={($page.params.period ?? '24h') === '24h'}>
                 24h
-            </DropListLink>
-            <DropListLink
+            </SecondaryTabsItem>
+            <SecondaryTabsItem
                 href={`/console/project-${data.project.$id}/functions/function-${data.function.$id}/usage/30d`}
                 disabled={$page.params.period === '30d'}>
                 30d
-            </DropListLink>
-            <DropListLink
+            </SecondaryTabsItem>
+            <SecondaryTabsItem
                 href={`/console/project-${data.project.$id}/functions/function-${data.function.$id}/usage/90d`}
                 disabled={$page.params.period === '90d'}>
                 90d
-            </DropListLink>
-        </DropTabs>
+            </SecondaryTabsItem>
+        </SecondaryTabs>
     </div>
     {#if count}
         <Card>
-            <Heading tag="h6" size="6">{last(count).value}</Heading>
+            <Heading tag="h6" size="6">{total(count)}</Heading>
             <p>Executions</p>
             <div class="u-margin-block-start-16" />
             <BarChart
@@ -49,7 +49,7 @@
     {/if}
     {#if errors}
         <Card>
-            <Heading tag="h6" size="6">{last(errors).value}</Heading>
+            <Heading tag="h6" size="6">{total(errors)}</Heading>
             <p>Errors</p>
             <div class="u-margin-block-start-16" />
             <BarChart

@@ -1,7 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import type { PageLoad } from './$types';
+import { user } from '$lib/stores/user';
 
 export const load: PageLoad = async () => {
-    throw redirect(302, `${base}/login`);
+    if (user) {
+        return;
+    } else {
+        throw redirect(302, `${base}/login`);
+    }
 };

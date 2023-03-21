@@ -55,5 +55,14 @@
 </WizardStep>
 
 {#if showCreate}
-    <EventModal bind:show={showCreate} on:created={handleCreated} />
+    <EventModal bind:show={showCreate} on:created={handleCreated}>
+        <p class="text">
+            Select events in your Appwrite project that will trigger your function. <a
+                href="https://appwrite.io/docs/events"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Learn more about Appwrite Events</a
+            >.
+        </p>
+    </EventModal>
 {/if}

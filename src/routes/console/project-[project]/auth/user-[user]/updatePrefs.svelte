@@ -1,11 +1,11 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
 
@@ -35,7 +35,7 @@
         try {
             let updatedPrefs = Object.fromEntries(prefs);
 
-            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
+            await sdk.forProject.users.updatePrefs($user.$id, updatedPrefs);
             invalidate(Dependencies.USER);
             arePrefsDisabled = true;
 
@@ -43,17 +43,18 @@
                 message: 'Preferences have been updated',
                 type: 'success'
             });
-            trackEvent('submit_user_update_preferences');
+            trackEvent(Submit.UserUpdatePreferences);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdatePreferences);
         }
     }
 </script>
 
-<Form on:submit={updatePrefs}>
+<Form onSubmit={updatePrefs}>
     <CardGrid>
         <Heading tag="h6" size="7">User Preferences</Heading>
         <p>
@@ -110,6 +111,11 @@
                 <Button
                     noMargin
                     text
+                    disabled={prefs?.length &&
+                    prefs[prefs.length - 1][0] &&
+                    prefs[prefs.length - 1][1]
+                        ? false
+                        : true}
                     on:click={() => {
                         if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
                             prefs.push(['', '']);

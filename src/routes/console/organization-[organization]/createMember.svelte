@@ -3,12 +3,12 @@
     import { Modal } from '$lib/components';
     import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showCreate = false;
 
@@ -19,7 +19,7 @@
 
     const create = async () => {
         try {
-            const team = await sdkForConsole.teams.createMembership(
+            const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
                 email,
                 ['owner'],
@@ -32,10 +32,11 @@
                 type: 'success',
                 message: `Invite has been sent to ${email}`
             });
-            trackEvent('submit_member_create');
+            trackEvent(Submit.MemberCreate);
             dispatch('created', team);
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.MemberCreate);
         }
     };
 
@@ -46,7 +47,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Invite Member</svelte:fragment>
     <FormList>
         <InputEmail

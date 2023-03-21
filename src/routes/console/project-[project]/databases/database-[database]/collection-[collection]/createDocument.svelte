@@ -2,7 +2,7 @@
     import { Wizard } from '$lib/layout';
     import { beforeNavigate, invalidate } from '$app/navigation';
     import { attributes } from './store';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { onDestroy, onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,7 +12,8 @@
     import { createDocument } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@aw-labs/appwrite-console';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -23,7 +24,7 @@
         $createDocument.attributes = $attributes.filter((a) => a.status === 'available');
         $attributes.forEach((attr) => {
             if (attr.array) {
-                $createDocument.document[attr.key] = [null];
+                $createDocument.document[attr.key] = [];
             } else {
                 $createDocument.document[attr.key] = null;
             }
@@ -32,25 +33,31 @@
 
     async function create() {
         try {
-            await sdkForProject.databases.createDocument(
+            await sdk.forProject.databases.createDocument(
                 databaseId,
                 collectionId,
-                $createDocument.id ?? 'unique()',
+                $createDocument.id ?? ID.unique(),
                 $createDocument.document,
                 $createDocument.permissions
             );
+
             addNotification({
                 message: 'Document has been created',
                 type: 'success'
             });
-            trackEvent('submit_document_create');
+            trackEvent(Submit.DocumentCreate, {
+                customId: !!$createDocument.id
+            });
             invalidate(Dependencies.DOCUMENTS);
+
+            createDocument.reset();
             wizard.hide();
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.DocumentCreate);
         }
     }
 

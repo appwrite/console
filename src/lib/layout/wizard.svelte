@@ -10,6 +10,8 @@
 </script>
 
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
+
     import { Steps } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -31,6 +33,9 @@
         const openDialog = document.querySelectorAll('dialog[open]');
         if (event.key === 'Escape' && !showExitModal && !openDialog?.length) {
             event.preventDefault();
+            trackEvent('wizard_exit', {
+                from: 'escape'
+            });
             dispatch('exit');
             wizard.hide();
         }
@@ -40,6 +45,9 @@
         if (confirmExit) {
             showExitModal = true;
         } else {
+            trackEvent('wizard_exit', {
+                from: 'button'
+            });
             dispatch('exit');
             wizard.hide();
         }
@@ -67,8 +75,10 @@
 
         wizard.setInterceptor(null);
         if (isLastStep) {
+            trackEvent('wizard_finish');
             dispatch('finish');
         } else {
+            trackEvent('wizard_next');
             currentStep++;
         }
     }
@@ -112,7 +122,7 @@
         {/if}
     </div>
     <div class="wizard-main">
-        <Form noStyle on:submit={submit}>
+        <Form noStyle onSubmit={submit}>
             {#each sortedSteps as [step, { component }]}
                 {#if currentStep === step}
                     <svelte:component this={component} />
@@ -129,10 +139,16 @@
                         <Button secondary on:click={handleExit}>Cancel</Button>
                         <Button submit>Next</Button>
                     {:else if isLastStep}
-                        <Button secondary on:click={() => currentStep--}>Back</Button>
+                        <Button
+                            secondary
+                            on:click={() => currentStep--}
+                            on:click={() => trackEvent('wizard_back')}>Back</Button>
                         <Button submit>{finalAction}</Button>
                     {:else}
-                        <Button secondary on:click={() => currentStep--}>Back</Button>
+                        <Button
+                            secondary
+                            on:click={() => currentStep--}
+                            on:click={() => trackEvent('wizard_back')}>Back</Button>
                         <Button submit>Next</Button>
                     {/if}
                 </div>
@@ -142,7 +158,14 @@
 </section>
 
 {#if showExitModal}
-    <WizardExitModal bind:show={showExitModal} on:exit={() => wizard.hide()}>
+    <WizardExitModal
+        bind:show={showExitModal}
+        on:exit={() => {
+            trackEvent('wizard_exit', {
+                from: 'prompt'
+            });
+            wizard.hide();
+        }}>
         <slot name="exit">this process</slot>
     </WizardExitModal>
 {/if}

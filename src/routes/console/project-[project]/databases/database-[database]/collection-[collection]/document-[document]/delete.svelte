@@ -2,11 +2,11 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { collection } from '../store';
 
     export let showDelete = false;
@@ -15,7 +15,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteDocument(
+            await sdk.forProject.databases.deleteDocument(
                 databaseId,
                 $page.params.collection,
                 $page.params.document
@@ -25,7 +25,7 @@
                 type: 'success',
                 message: `Document has been deleted`
             });
-            trackEvent('submit_document_delete');
+            trackEvent(Submit.DocumentDelete);
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`
             );
@@ -34,14 +34,15 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.DocumentDelete);
         }
     };
 </script>
 
-<Modal warning={true} on:submit={handleDelete} bind:show={showDelete}>
+<Modal warning={true} onSubmit={handleDelete} bind:show={showDelete}>
     <svelte:fragment slot="header">Delete Document</svelte:fragment>
 
-    <p>
+    <p data-private>
         Are you sure you want to delete <b>the document from {$collection.name}</b>?
     </p>
     <svelte:fragment slot="footer">

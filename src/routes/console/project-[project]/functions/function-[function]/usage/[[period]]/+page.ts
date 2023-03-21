@@ -1,5 +1,5 @@
 import type { Models } from '@aw-labs/appwrite-console';
-import { sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 

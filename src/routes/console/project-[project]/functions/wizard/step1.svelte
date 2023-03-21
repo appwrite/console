@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { InputText, InputSelect, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createFunction } from './store';
 
@@ -12,7 +12,7 @@
     let options = [];
 
     onMount(async () => {
-        let runtimes = await sdkForProject.functions.listRuntimes();
+        let runtimes = await sdk.forProject.functions.listRuntimes();
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
@@ -32,8 +32,8 @@
             required />
 
         <InputSelect
-            label="Runtimes"
-            id="runtimes"
+            label="Runtime"
+            id="runtime"
             placeholder="Select runtime"
             bind:value={$createFunction.runtime}
             {options}

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
@@ -14,26 +14,27 @@
 
     const deleteFile = async () => {
         try {
-            await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
+            await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
             showDelete = false;
             dispatch('deleted', file);
             addNotification({
                 type: 'success',
                 message: `${file.name} has been deleted`
             });
-            trackEvent('submit_file_delete');
+            trackEvent(Submit.FileDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.FileDelete);
         }
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteFile} warning>
+<Modal bind:show={showDelete} onSubmit={deleteFile} warning>
     <svelte:fragment slot="header">Delete File</svelte:fragment>
-    <p>Are you sure you want to delete <b>{file.name}</b>?</p>
+    <p data-private>Are you sure you want to delete <b>{file.name}</b>?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

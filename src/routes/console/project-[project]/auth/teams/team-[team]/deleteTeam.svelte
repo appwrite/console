@@ -2,11 +2,11 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
 
     export let showDelete = false;
@@ -14,23 +14,23 @@
 
     const deleteTeam = async () => {
         try {
-            await sdkForProject.teams.delete(team.$id);
+            await sdk.forProject.teams.delete(team.$id);
             showDelete = false;
-            trackEvent('submit_team_delete');
+            trackEvent(Submit.TeamDelete);
             await goto(`${base}/console/project-${$page.params.project}/auth/teams`);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.TeamDelete);
         }
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteTeam} warning>
+<Modal bind:show={showDelete} onSubmit={deleteTeam} warning>
     <svelte:fragment slot="header">Delete Team</svelte:fragment>
-
-    <p>
+    <p data-private>
         Are you sure you want to delete <b>{team.name}</b>?
     </p>
     <svelte:fragment slot="footer">

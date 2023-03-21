@@ -4,13 +4,13 @@
     import { Container } from '$lib/layout';
     import { onMount } from 'svelte';
     import { user } from '$lib/stores/user';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import Delete from './delete.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let name: string = null,
         email: string = null,
@@ -26,69 +26,66 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.account.updateName(name);
+            await sdk.forConsole.account.updateName(name);
             invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_account_update_name');
+            trackEvent(Submit.AccountUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.AccountUpdateName);
         }
     }
     async function updateEmail() {
         try {
-            await sdkForConsole.account.updateEmail(email, emailPassword);
+            await sdk.forConsole.account.updateEmail(email, emailPassword);
             invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'
             });
-            trackEvent('submit_account_update_email');
+            trackEvent(Submit.AccountUpdateEmail);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.AccountUpdateEmail);
         }
     }
 
     async function updatePassword() {
         try {
-            await sdkForConsole.account.updatePassword(newPassword, oldPassword);
+            await sdk.forConsole.account.updatePassword(newPassword, oldPassword);
             newPassword = oldPassword = null;
             addNotification({
                 message: 'Password has been updated',
                 type: 'success'
             });
-            trackEvent('submit_account_update_password');
+            trackEvent(Submit.AccountUpdatePassword);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.AccountUpdatePassword);
         }
     }
 </script>
 
 <Container>
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        placeholder="Enter name"
-                        autocomplete={false}
-                        autofocus={true}
-                        bind:value={name} />
+                    <InputText id="name" label="Name" placeholder="Enter name" bind:value={name} />
                 </ul>
             </svelte:fragment>
 
@@ -97,9 +94,9 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form on:submit={updateEmail}>
+    <Form onSubmit={updateEmail}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Email</Heading>
+            <Heading tag="h6" size="7">Email</Heading>
 
             <svelte:fragment slot="aside">
                 <FormList>
@@ -107,14 +104,12 @@
                         id="email"
                         label="Email"
                         placeholder="Enter email"
-                        autocomplete={false}
                         bind:value={email} />
                     {#if email !== $user.email && email}
                         <InputPassword
                             id="emailPassword"
                             label="Password"
                             placeholder="Enter password"
-                            autocomplete={false}
                             showPasswordButton={true}
                             bind:value={emailPassword} />
                     {/if}
@@ -127,9 +122,9 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form on:submit={updatePassword}>
+    <Form onSubmit={updatePassword}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Password</Heading>
+            <Heading tag="h6" size="7">Password</Heading>
             <p class="text">
                 Forgot your password? <a class="link" href={`${base}/recover`}
                     >Recover your password</a>
@@ -141,14 +136,12 @@
                         id="oldPassword"
                         label="Old password"
                         placeholder="Enter password"
-                        autocomplete={false}
                         showPasswordButton={true}
                         bind:value={oldPassword} />
                     <InputPassword
                         id="newPassword"
                         label="New password"
                         placeholder="Enter password"
-                        autocomplete={false}
                         showPasswordButton={true}
                         bind:value={newPassword} />
                 </FormList>

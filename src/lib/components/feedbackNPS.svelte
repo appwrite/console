@@ -20,7 +20,6 @@
     async function handleSubmit() {
         try {
             await feedback.submitFeedback('feedback-nps', message, name, email, value);
-            console.log(value, message);
             feedback.switchType('general');
         } catch (error) {
             feedback.switchType('general');
@@ -50,7 +49,7 @@
         think.
     </div>
 
-    <Form on:submit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
         <Evaluation bind:value>
             How likely are you to recommend Appwrite to a friend or colleague?
         </Evaluation>

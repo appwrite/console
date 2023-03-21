@@ -1,12 +1,12 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
@@ -20,7 +20,7 @@
 
     async function updateSecurity() {
         try {
-            await sdkForProject.databases.updateCollection(
+            await sdk.forProject.databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 $collection.name,
@@ -33,18 +33,19 @@
                 message: 'Security has been updated',
                 type: 'success'
             });
-            trackEvent('submit_collection_update_security');
+            trackEvent(Submit.CollectionUpdateSecurity);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.CollectionUpdateSecurity);
         }
     }
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Update Document Security</Heading>
+    <Heading tag="h6" size="7">Document Security</Heading>
     <svelte:fragment slot="aside">
         <FormList>
             <InputSwitch

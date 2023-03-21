@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -16,7 +17,7 @@
 
     const create = async () => {
         try {
-            const team = await sdkForProject.teams.create(id ?? 'unique()', name);
+            const team = await sdk.forProject.teams.create(id ?? ID.unique(), name);
             name = '';
             showCreate = false;
             showCustomId = false;
@@ -24,10 +25,13 @@
                 type: 'success',
                 message: `${team.name} has been created`
             });
-            trackEvent('submit_team_create');
+            trackEvent(Submit.TeamCreate, {
+                customId: !!id
+            });
             dispatch('created', team);
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.TeamCreate);
         }
     };
 
@@ -37,7 +41,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Create Team</svelte:fragment>
     <FormList>
         <InputText

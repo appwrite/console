@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import {
@@ -13,7 +13,7 @@
         InputText
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
@@ -30,7 +30,7 @@
 
     async function updateSecurity() {
         try {
-            await sdkForConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook(
                 projectId,
                 $webhook.$id,
                 $webhook.name,
@@ -45,17 +45,18 @@
                 type: 'success',
                 message: 'Webhook security has been updated'
             });
-            trackEvent('submit_webhook_update_security');
+            trackEvent(Submit.WebhookUpdateSecurity);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.WebhookUpdateSecurity);
         }
     }
 </script>
 
-<Form on:submit={updateSecurity}>
+<Form onSubmit={updateSecurity}>
     <CardGrid>
         <Heading tag="h2" size="7">Security</Heading>
         <p class="text">

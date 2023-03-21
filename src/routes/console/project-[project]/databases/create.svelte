@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -16,12 +18,15 @@
 
     const create = async () => {
         try {
-            const database = await sdkForProject.databases.create(id ? id : 'unique()', name);
+            const database = await sdk.forProject.databases.create(id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', database);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
+            });
+            trackEvent(Submit.DatabaseCreate, {
+                customId: !!id
             });
             name = id = null;
         } catch (error) {
@@ -29,11 +34,12 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.DatabaseCreate);
         }
     };
 </script>
 
-<Modal size="big" on:submit={create} bind:show={showCreate}>
+<Modal size="big" onSubmit={create} bind:show={showCreate}>
     <svelte:fragment slot="header">Create Database</svelte:fragment>
     <FormList>
         <InputText

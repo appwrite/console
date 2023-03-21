@@ -1,20 +1,20 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { FormList, InputDomain } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import { domain } from './store';
 
     const projectId = $project.$id;
     const createDomain = async () => {
         if ($domain.$id) {
-            await sdkForConsole.projects.deleteDomain(projectId, $domain.$id);
+            await sdk.forConsole.projects.deleteDomain(projectId, $domain.$id);
         }
 
-        const { $id } = await sdkForConsole.projects.createDomain(projectId, $domain.domain);
+        const { $id } = await sdk.forConsole.projects.createDomain(projectId, $domain.domain);
         $domain.$id = $id;
-        trackEvent('submit_domain_create');
+        trackEvent(Submit.DomainCreate);
     };
 </script>
 

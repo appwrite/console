@@ -2,13 +2,13 @@
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { indexes, type Attributes } from '../store';
     import { collection } from '../store';
     import Select from './select.svelte';
@@ -31,14 +31,15 @@
         value: attribute.key,
         label: attribute.key
     }));
+
     let attributeList = [{ value: '', order: '' }];
-    let creating = false;
 
     function initialize() {
         attributeList = externalAttribute
             ? [{ value: externalAttribute.key, order: 'ASC' }]
             : [{ value: '', order: 'ASC' }];
         selectedType = 'key';
+        key = `index_${$indexes.length + 1}`;
     }
 
     $: if (showCreateIndex) {
@@ -46,8 +47,7 @@
         initialize();
     }
 
-    $: addAttributeDisabled =
-        !attributeList.at(-1)?.value || !attributeList.at(-1)?.order || creating;
+    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
 
     async function create() {
         if (!(key && selectedType && !addAttributeDisabled)) {
@@ -55,10 +55,8 @@
             return;
         }
 
-        creating = true;
-
         try {
-            await sdkForProject.databases.createIndex(
+            await sdk.forProject.databases.createIndex(
                 databaseId,
                 $collection.$id,
                 key,
@@ -79,15 +77,14 @@
                 message: 'Index has been created',
                 type: 'success'
             });
-            trackEvent('submit_index_create');
+            trackEvent(Submit.IndexCreate);
+            showCreateIndex = false;
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-        } finally {
-            showCreateIndex = false;
-            creating = false;
+            trackError(error, Submit.IndexCreate);
         }
     }
 
@@ -99,7 +96,7 @@
     }
 </script>
 
-<Modal bind:error size="big" on:submit={create} bind:show={showCreateIndex}>
+<Modal bind:error size="big" onSubmit={create} bind:show={showCreateIndex}>
     <svelte:fragment slot="header">Create Index</svelte:fragment>
     <FormList>
         <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
@@ -154,6 +151,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreateIndex = false)}>Cancel</Button>
-        <Button submit disabled={creating}>Create</Button>
+        <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>

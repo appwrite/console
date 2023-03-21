@@ -19,6 +19,7 @@
     import { page } from '$app/stores';
     import { PAGE_LIMIT } from '$lib/constants';
     import CreateAttribute from '../createAttribute.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let data: PageData;
     let showCreateAttribute = false;
@@ -33,6 +34,44 @@
             title: attribute.key
         }))
     ];
+
+    function formatArray(array: unknown[]) {
+        if (array.length === 0) return '[ ]';
+
+        let formattedFields: string[] = [];
+        for (const item of array) {
+            if (typeof item === 'string') {
+                formattedFields.push(`"${item}"`);
+            } else {
+                formattedFields.push(`${item}`);
+            }
+        }
+
+        return `[${formattedFields.join(', ')}]`;
+    }
+
+    function formatColumn(column: unknown) {
+        let formattedColumn: string;
+
+        if (typeof column === 'string') {
+            formattedColumn = column;
+        } else if (Array.isArray(column)) {
+            formattedColumn = formatArray(column);
+        } else if (column === null) {
+            formattedColumn = 'n/a';
+        } else {
+            formattedColumn = `${column}`;
+        }
+
+        return {
+            value:
+                formattedColumn.length > 20
+                    ? `${formattedColumn.slice(0, 20)}...`
+                    : formattedColumn,
+            truncated: formattedColumn.length > 20,
+            whole: formattedColumn
+        };
+    }
 </script>
 
 <Container>
@@ -52,7 +91,7 @@
         {#if data.documents.total}
             <TableScroll isSticky>
                 <TableHeader>
-                    <TableCellHead eyebrow={false}>Document ID</TableCellHead>
+                    <TableCellHead width={200} eyebrow={false}>Document ID</TableCellHead>
                     {#each columns as column}
                         <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
                     {/each}
@@ -70,8 +109,15 @@
                                 </Copy>
                             </TableCell>
                             {#each columns as column}
+                                {@const formatted = formatColumn(document[column.key])}
                                 <TableCell>
-                                    {document[column.key] ?? 'n/a'}
+                                    <div
+                                        use:tooltip={{
+                                            content: formatted.whole,
+                                            disabled: !formatted.truncated
+                                        }}>
+                                        {formatted.value}
+                                    </div>
                                 </TableCell>
                             {/each}
                         </TableRowLink>

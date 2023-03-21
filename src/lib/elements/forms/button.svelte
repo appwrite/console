@@ -1,5 +1,8 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
+    import { getContext, hasContext } from 'svelte';
+    import { readable } from 'svelte/store';
+    import type { FormContext } from './form.svelte';
 
     export let submit = false;
     export let secondary = false;
@@ -13,6 +16,15 @@
     export let ariaLabel: string = null;
     export let noMargin = false;
     export let event: string = null;
+
+    const isSubmitting = hasContext('form')
+        ? getContext<FormContext>('form').isSubmitting
+        : readable(false);
+
+    $: internalDisabled = (submit && $isSubmitting) || disabled;
+
+    //allows to add the disabled attribute to <a> tag without throwing an error
+    $: attributes = { internalDisabled } as Record<string, boolean>;
 
     function track() {
         if (!event) {
@@ -28,7 +40,7 @@
 {#if href}
     <a
         on:click={track}
-        {disabled}
+        {...attributes}
         {href}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
@@ -46,7 +58,7 @@
     <button
         on:click
         on:click={track}
-        {disabled}
+        disabled={internalDisabled}
         class="button"
         class:is-only-icon={round}
         class:is-secondary={secondary}
