@@ -54,10 +54,15 @@
         key = null;
         selectedOption = null;
         $option = null;
+        data = {
+            required: false,
+            array: false,
+            default: null
+        };
     }
 </script>
 
-<Modal size="big" bind:show={showCreate} on:submit={submit}>
+<Modal size="big" bind:show={showCreate} onSubmit={submit}>
     <svelte:fragment slot="header">Create Attribute</svelte:fragment>
     <FormList>
         <div>

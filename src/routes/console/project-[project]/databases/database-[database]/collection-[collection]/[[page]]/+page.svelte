@@ -57,7 +57,7 @@
             formattedColumn = column;
         } else if (Array.isArray(column)) {
             formattedColumn = formatArray(column);
-        } else if (!column) {
+        } else if (column === null) {
             formattedColumn = 'n/a';
         } else {
             formattedColumn = `${column}`;
@@ -91,7 +91,7 @@
         {#if data.documents.total}
             <TableScroll isSticky>
                 <TableHeader>
-                    <TableCellHead eyebrow={false}>Document ID</TableCellHead>
+                    <TableCellHead width={200} eyebrow={false}>Document ID</TableCellHead>
                     {#each columns as column}
                         <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
                     {/each}

@@ -6,7 +6,7 @@
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { ID } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
@@ -21,7 +21,7 @@
 
     const create = async () => {
         try {
-            const collection = await sdkForProject.databases.createCollection(
+            const collection = await sdk.forProject.databases.createCollection(
                 databaseId,
                 id ? id : ID.unique(),
                 name
@@ -46,7 +46,7 @@
     };
 </script>
 
-<Modal size="big" bind:show={showCreate} on:submit={create}>
+<Modal size="big" bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Create Collection</svelte:fragment>
     <FormList>
         <InputText
