@@ -28,8 +28,16 @@
                 throw new Error('No variables found');
             }
 
+            const entries = Object.entries(uploaded);
+
+            for (const [key, value] of entries) {
+                if (value.length > 8192) {
+                    throw new Error(`Variable ${key} is longer than 8192 allowed characters`);
+                }
+            }
+
             await Promise.all(
-                Object.entries(uploaded)
+                entries
                     .filter(([, value]) => !!value)
                     .map(([key, value]) => {
                         const found = $variables.find((variable) => variable.key === key);
