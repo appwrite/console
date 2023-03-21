@@ -18,7 +18,7 @@
     import { onMount } from 'svelte';
     import Variable from '../../createVariable.svelte';
     import { execute, func } from '../store';
-    // import Upload from './uploadVariables.svelte';
+    import UploadVariables from './uploadVariables.svelte';
     import {
         Table,
         TableBody,
@@ -36,7 +36,7 @@
     const functionId = $page.params.function;
     let showDelete = false;
     let selectedVar: Models.Variable = null;
-    // let showVariablesUpload = false;
+    let showVariablesUpload = false;
     let showVariablesModal = false;
     let showVariablesDropdown = [];
     let timeout: number = null;
@@ -369,10 +369,10 @@
                     <span class="icon-download" />
                     <span class="text">Download .env file</span>
                 </Button>
-                <!-- <Button secondary on:click={() => (showVariablesUpload = true)}>
+                <Button secondary on:click={() => (showVariablesUpload = true)}>
                     <span class="icon-upload" />
                     <span class="text">Import .env file</span>
-                </Button> -->
+                </Button>
             </div>
             {#if data.variables.total}
                 <div class="u-flex u-flex-vertical u-gap-16">
@@ -446,8 +446,9 @@
                     </Button>
                 </div>
             {:else}
-                <Empty on:click={() => (showVariablesModal = !showVariablesModal)}
-                    >Create a variable to get started</Empty>
+                <Empty on:click={() => (showVariablesModal = !showVariablesModal)}>
+                    Create a variable to get started
+                </Empty>
             {/if}
         </svelte:fragment>
     </CardGrid>
@@ -504,4 +505,7 @@
         bind:showCreate={showVariablesModal}
         on:created={handleVariableCreated}
         on:updated={handleVariableUpdated} />
+{/if}
+{#if showVariablesUpload}
+    <UploadVariables bind:show={showVariablesUpload} />
 {/if}
