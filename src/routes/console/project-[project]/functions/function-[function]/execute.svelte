@@ -18,9 +18,9 @@
     let submitting = false;
 
     const example = `{
-    firstName: "hello", 
-    lastName:"world", 
-    age:"old"
+    "firstName": "hello",
+    "lastName": "world",
+    "age": "old"
 }`;
 
     $: if (selectedFunction && !show) {
