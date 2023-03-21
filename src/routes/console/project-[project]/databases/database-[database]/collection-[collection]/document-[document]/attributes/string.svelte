@@ -13,6 +13,7 @@
     {id}
     {label}
     {optionalText}
+    placeholder="Enter string"
     showLabel={!!label?.length}
     required={attribute.required}
     maxlength={attribute.size}

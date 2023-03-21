@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import { app } from '$lib/stores/app';
@@ -22,7 +22,13 @@
         Web = 'flutter-web'
     }
 
-    let platform: Platform = Platform.Android;
+    function isPlatform(value: string): value is Platform {
+        return Object.values(Platform).includes(value as Platform);
+    }
+
+    let platform: Platform = isPlatform($createPlatform.type)
+        ? $createPlatform.type
+        : Platform.Android;
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -81,19 +87,10 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
-                projectId,
-                $createPlatform.$id,
-                $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
-            );
-
-            return;
+            await sdk.forConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
 
-        const response = await sdkForConsole.projects.createPlatform(
+        const response = await sdk.forConsole.projects.createPlatform(
             projectId,
             platform,
             $createPlatform.name,
@@ -107,6 +104,7 @@
         });
 
         $createPlatform.$id = response.$id;
+        $createPlatform.type = platform;
     }
 </script>
 
@@ -136,7 +134,7 @@
                 button
                 on:click={() => (platform = Platform.Macos)}
                 selected={platform === Platform.Macos}>
-                Mac OS
+                macOS
             </Pill>
             <Pill
                 button

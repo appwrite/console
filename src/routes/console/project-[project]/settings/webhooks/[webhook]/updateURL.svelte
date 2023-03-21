@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
@@ -19,7 +19,7 @@
 
     async function updateUrl() {
         try {
-            await sdkForConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook(
                 projectId,
                 $webhook.$id,
                 $webhook.name,
@@ -45,9 +45,9 @@
     }
 </script>
 
-<Form on:submit={updateUrl}>
+<Form onSubmit={updateUrl}>
     <CardGrid>
-        <Heading tag="h2" size="7">Update Url</Heading>
+        <Heading tag="h2" size="7">URL</Heading>
 
         <svelte:fragment slot="aside">
             <FormList>

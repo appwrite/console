@@ -10,7 +10,7 @@
     export let attributes: Attributes[] = [];
     export let formValues: object = {};
     export let customId: string | null | undefined = undefined;
-    export let gap: '16' | '32' = '32';
+    export let gap: '16' | '24' | '32' = '32';
 
     let showCustomId = false;
 
@@ -37,7 +37,7 @@
 {#if attributes.length}
     <ul class={`form-list u-gap-${gap}`}>
         {#each attributes as attribute}
-            {@const label = attribute.required ? `${attribute.key}*` : attribute.key}
+            {@const label = attribute.key}
             {#if attribute.array}
                 {#if formValues[attribute.key].length === 0}
                     <div class="u-flex u-cross-center u-main-space-between">
@@ -71,6 +71,7 @@
                                 </div>
                                 <div class="form-item-part u-cross-child-end">
                                     <Button
+                                        noMargin
                                         text
                                         on:click={() => removeArrayItem(attribute.key, index)}>
                                         <span class="icon-x" aria-hidden="true" />
@@ -78,11 +79,11 @@
                                 </div>
                             </li>
                         {/each}
+                        <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text"> Add item</span>
+                        </Button>
                     </ul>
-                    <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text"> Add item</span>
-                    </Button>
                 {/if}
             {:else}
                 <FormList>

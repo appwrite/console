@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -47,7 +47,7 @@
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+        sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
     function fileCreated() {
         showCreate = false;
@@ -62,7 +62,7 @@
 
     async function deleteFile(file: Models.File) {
         try {
-            await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
+            await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
             uploader.removeFile(file);
             invalidate(Dependencies.FILES);
             trackEvent(Submit.FileDelete);
@@ -97,7 +97,7 @@
                     {#if file.chunksTotal / file.chunksUploaded !== 1}
                         <TableRow>
                             <TableCell title="Name">
-                                <div class="u-flex u-gap-12 u-main-space-between">
+                                <div class="u-flex u-gap-12 u-main-space-between u-cross-center">
                                     <span class="avatar is-size-small is-color-empty" />
 
                                     <span class="text u-trim">{file.name}</span>
@@ -136,7 +136,7 @@
                         <TableRowLink
                             href={`${base}/console/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
                             <TableCell title="Name">
-                                <div class="u-flex u-gap-12">
+                                <div class="u-flex u-gap-12 u-cross-center">
                                     <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
                                     <span class="text u-trim">{file.name}</span>
                                 </div>

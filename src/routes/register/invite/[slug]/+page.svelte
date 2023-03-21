@@ -11,16 +11,16 @@
         InputText
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { endpoint, sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { isCloud } from '$lib/stores/app';
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
+    import { isCloud } from '$lib/system';
 
     let slug = $page.params.slug;
     let imgLight = LoginLight;
@@ -28,6 +28,7 @@
 
     onMount(async () => {
         if (isCloud) {
+            code = slug;
             switch (slug) {
                 case 'mlh':
                     imgDark = (await import('./mlh-dark.svg')).default;
@@ -38,8 +39,11 @@
                     imgDark = (await import('$lib/images/appwrite.svg')).default;
                     imgLight = (await import('$lib/images/appwrite.svg')).default;
                     title = 'Welcome Appwriters!';
-
                     break;
+                case 'cloud_beta':
+                    break;
+                default:
+                    code = '';
             }
         }
     });
@@ -51,7 +55,7 @@
     async function invite() {
         try {
             disabled = true;
-            const res = await fetch(`${endpoint}/account/invite`, {
+            const res = await fetch(`${sdk.forConsole.client.config.endpoint}/account/invite`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -67,8 +71,8 @@
             if (!res.ok) {
                 throw new Error((await res.json()).message);
             } else {
-                await sdkForConsole.account.createEmailSession(mail, pass);
-                await sdkForConsole.account.updatePrefs({ code });
+                await sdk.forConsole.account.createEmailSession(mail, pass);
+                await sdk.forConsole.account.updatePrefs({ code });
                 await invalidate(Dependencies.ACCOUNT);
                 await goto(`${base}/console`);
                 trackEvent('submit_account_create', { code: code });
@@ -90,7 +94,7 @@
 <Unauthenticated {imgLight} {imgDark}>
     <svelte:fragment slot="title">{title}</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={invite}>
+        <Form onSubmit={invite}>
             <FormList>
                 <InputText
                     id="name"
