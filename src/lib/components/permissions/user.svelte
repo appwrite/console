@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
-    import { AvatarInitials, EmptySearch, Modal, PaginationInline, Paginator } from '..';
+    import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@aw-labs/appwrite-console';
     import type { Writable } from 'svelte/store';
@@ -67,67 +67,67 @@
         placeholder="Search by name, email, phone or ID"
         bind:value={search} />
     {#if results?.users?.length}
-        <Paginator items={results.users} let:paginatedItems>
-            <div class="table-wrapper">
-                <table class="table is-table-layout-auto is-remove-outer-styles">
-                    <tbody class="table-tbody">
-                        {#each paginatedItems as user (user.$id)}
-                            {@const role = `user:${user.$id}`}
-                            {@const exists = $groups.has(role)}
-                            <tr class="table-row">
-                                <td class="table-col" data-title="Enabled" style="--p-col-width:40">
-                                    <input
-                                        id={user.$id}
-                                        type="checkbox"
-                                        class="icon-check"
-                                        aria-label="Create"
-                                        checked={exists || selected.has(role)}
-                                        disabled={exists}
-                                        on:change={(event) => onSelection(event, role)} />
-                                </td>
-                                <td class="table-col" data-title="User">
-                                    <label class="u-flex u-cross-center u-gap-8" for={user.$id}>
-                                        {#if user.email || user.phone}
-                                            {#if user.name}
-                                                <AvatarInitials size={32} name={user.name} />
-                                                <div class="u-line-height-1-5">
-                                                    <div class="body-text-2">
-                                                        {user.name}
-                                                    </div>
-                                                    <div class="u-x-small">{user.$id}</div>
+        <div class="table-wrapper">
+            <table class="table is-table-layout-auto is-remove-outer-styles">
+                <tbody class="table-tbody">
+                    {#each results.users as user (user.$id)}
+                        {@const role = `user:${user.$id}`}
+                        {@const exists = $groups.has(role)}
+                        <tr class="table-row">
+                            <td class="table-col" data-title="Enabled" style="--p-col-width:40">
+                                <input
+                                    id={user.$id}
+                                    type="checkbox"
+                                    class="icon-check"
+                                    aria-label="Create"
+                                    checked={exists || selected.has(role)}
+                                    disabled={exists}
+                                    on:change={(event) => onSelection(event, role)} />
+                            </td>
+                            <td class="table-col" data-title="User">
+                                <label class="u-flex u-cross-center u-gap-8" for={user.$id}>
+                                    {#if user.email || user.phone}
+                                        {#if user.name}
+                                            <AvatarInitials size={32} name={user.name} />
+                                            <div class="u-line-height-1-5">
+                                                <div class="body-text-2">
+                                                    {user.name}
                                                 </div>
-                                            {:else}
-                                                <div class="avatar is-size-small ">
-                                                    <span
-                                                        class="icon-minus-sm"
-                                                        aria-hidden="true" />
-                                                </div>
-                                                <div class="u-line-height-1-5">
-                                                    <div class="body-text-2">
-                                                        {user.email ? user.email : user.phone}
-                                                    </div>
-                                                    <div class="u-x-small">{user.$id}</div>
-                                                </div>
-                                            {/if}
+                                                <div class="u-x-small">{user.$id}</div>
+                                            </div>
                                         {:else}
                                             <div class="avatar is-size-small ">
-                                                <span class="icon-anonymous" aria-hidden="true" />
+                                                <span class="icon-minus-sm" aria-hidden="true" />
                                             </div>
                                             <div class="u-line-height-1-5">
                                                 <div class="body-text-2">
-                                                    {user.name ? user.name : '-'}
+                                                    {user.email ? user.email : user.phone}
                                                 </div>
                                                 <div class="u-x-small">{user.$id}</div>
                                             </div>
                                         {/if}
-                                    </label>
-                                </td>
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
-            </div>
-        </Paginator>
+                                    {:else}
+                                        <div class="avatar is-size-small ">
+                                            <span class="icon-anonymous" aria-hidden="true" />
+                                        </div>
+                                        <div class="u-line-height-1-5">
+                                            <div class="body-text-2">
+                                                {user.name ? user.name : '-'}
+                                            </div>
+                                            <div class="u-x-small">{user.$id}</div>
+                                        </div>
+                                    {/if}
+                                </label>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {results?.total}</p>
+            <PaginationInline limit={5} bind:offset sum={results?.total} hidePages />
+        </div>
     {:else if search}
         <EmptySearch hidePages>
             <div class="common-section">

@@ -3,7 +3,7 @@
 
     export let items = [];
     export let limit = 5;
-
+    let total = items?.length;
     let offset = 0;
 
     $: paginatedItems = items.slice(offset, offset + limit);
@@ -12,6 +12,6 @@
 <slot {paginatedItems} />
 
 <div class="u-flex u-margin-block-start-32 u-main-space-between">
-    <p class="text">Total results: {items?.length}</p>
-    <PaginationInline {limit} bind:offset sum={items?.length} hidePages />
+    <p class="text">Total results: {total}</p>
+    <PaginationInline {limit} bind:offset sum={total} hidePages />
 </div>
