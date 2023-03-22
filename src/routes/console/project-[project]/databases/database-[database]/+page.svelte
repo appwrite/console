@@ -7,7 +7,7 @@
     import { Container } from '$lib/layout';
     import { cardLimit } from '$lib/stores/layout';
     import { createPersistentPagination } from '$lib/stores/pagination';
-    import { showCreate } from '../store';
+    import { showCreate } from './store';
     import type { PageData } from './$types';
 
     export let data: PageData;
