@@ -23,9 +23,6 @@
 
     $: internalDisabled = (submit && $isSubmitting) || disabled;
 
-    //allows to add the disabled attribute to <a> tag without throwing an error
-    $: attributes = { internalDisabled } as Record<string, boolean>;
-
     function track() {
         if (!event) {
             return;
@@ -40,11 +37,11 @@
 {#if href}
     <a
         on:click={track}
-        {...attributes}
         {href}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class="button"
+        class:is-disabled={disabled}
         class:is-only-icon={round}
         class:is-secondary={secondary}
         class:is-text={text}
