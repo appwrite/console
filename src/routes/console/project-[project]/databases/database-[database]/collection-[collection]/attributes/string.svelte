@@ -22,6 +22,7 @@
 
 <script lang="ts">
     import { InputNumber, InputText, InputChoice } from '$lib/elements/forms';
+    import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
 
     export let selectedAttribute: Models.AttributeString;
     export let data: Partial<Models.AttributeString> = {
@@ -50,13 +51,23 @@
     bind:value={data.size}
     required
     readonly={!!selectedAttribute} />
-<InputText
-    id="default"
-    label="Default value"
-    bind:value={data.default}
-    maxlength={data.size}
-    disabled={data.required || data.array}
-    readonly={!!selectedAttribute} />
+{#if data.size > 64}
+    <InputTextarea
+        id="default"
+        label="Default value"
+        bind:value={data.default}
+        maxlength={data.size}
+        disabled={data.required || data.array}
+        readonly={!!selectedAttribute} />
+{:else}
+    <InputText
+        id="default"
+        label="Default value"
+        bind:value={data.default}
+        maxlength={data.size}
+        disabled={data.required || data.array}
+        readonly={!!selectedAttribute} />
+{/if}
 <InputChoice
     id="required"
     label="Required"
