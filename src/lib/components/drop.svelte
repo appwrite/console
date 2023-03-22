@@ -10,6 +10,7 @@
     export let noArrow = false;
     export let placement: Placement = 'bottom-start';
     export let childStart = false;
+    export let fixed = false;
 
     let element: HTMLDivElement;
     let tooltip: HTMLDivElement;
@@ -19,6 +20,7 @@
     onMount(() => {
         instance = createPopper(element, tooltip, {
             placement,
+            strategy: fixed ? 'fixed' : 'absolute',
             modifiers: [
                 {
                     name: 'arrow',
@@ -36,6 +38,20 @@
                     name: 'flip',
                     options: {
                         fallbackPlacements: ['bottom-start', 'bottom-end', 'top-start', 'top-end']
+                    }
+                },
+                {
+                    name: 'sameWidth',
+                    enabled: fixed,
+                    phase: 'beforeWrite',
+                    requires: ['computeStyles'],
+                    fn: ({ state }) => {
+                        state.styles.popper.width = `${state.rects.reference.width}px`;
+                    },
+                    effect: ({ state }) => {
+                        state.elements.popper.style.width = `${
+                            (state.elements.reference as HTMLElement)?.offsetWidth
+                        }px`;
                     }
                 }
             ]

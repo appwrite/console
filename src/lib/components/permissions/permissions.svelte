@@ -12,7 +12,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import {
-        Table,
         TableBody,
         TableCell,
         TableCellHead,

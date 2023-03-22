@@ -8,9 +8,10 @@
     export let childStart = false;
     export let noArrow = false;
     export let width: string = null;
+    export let fixed = false;
 </script>
 
-<Drop bind:show {placement} {childStart} {noArrow}>
+<Drop bind:show {placement} {childStart} {noArrow} {fixed}>
     <slot />
     <svelte:fragment slot="list">
         <div
