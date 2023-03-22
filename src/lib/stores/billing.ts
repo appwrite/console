@@ -49,4 +49,14 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('patch', uri, { 'content-type': 'application/json' }, params);
     }
+
+    async updateProjectBudget(projectId: string, budget: number, alertLimit: number) {
+        const path = `/project/${projectId}/budget`;
+        const params: Payload = {
+            budget,
+            alertLimit
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('patch', uri, { 'content-type': 'application/json' }, params);
+    }
 }
