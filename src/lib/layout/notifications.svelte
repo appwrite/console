@@ -25,8 +25,15 @@
 <style lang="scss">
     section {
         position: fixed;
-        top: calc(var(--main-header-height) + 24px);
-        right: 24px;
+        top: calc(var(--main-header-height) + 12px);
+        right: 12px;
         z-index: 1000;
+    }
+
+    @media (min-width: 768px) {
+        section {
+            top: calc(var(--main-header-height) + 24px);
+            right: 24px;
+        }
     }
 </style>
