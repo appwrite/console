@@ -144,14 +144,14 @@
     <div class="table-wrapper">
         <table class="table is-selected-columns-mobile is-remove-outer-styles" data-private>
             <TableHeader>
-                <TableCellHead width={70}>Role</TableCellHead>
+                <TableCellHead width={140}>Role</TableCellHead>
                 {#if withCreate}
-                    <TableCellHead width={70}>Create</TableCellHead>
+                    <TableCellHead width={60}>Create</TableCellHead>
                 {/if}
-                <TableCellHead width={70}>Read</TableCellHead>
-                <TableCellHead width={70}>Update</TableCellHead>
-                <TableCellHead width={70}>Delete</TableCellHead>
-                <TableCellHead width={40} />
+                <TableCellHead width={50}>Read</TableCellHead>
+                <TableCellHead width={60}>Update</TableCellHead>
+                <TableCellHead width={60}>Delete</TableCellHead>
+                <TableCellHead width={32} />
             </TableHeader>
             <TableBody>
                 {#each [...$groups].sort(sortRoles) as [role, permission] (role)}
