@@ -3,9 +3,10 @@
 
     export let items = [];
     export let limit = 5;
-    let total = items?.length;
+
     let offset = 0;
 
+    $: total = items?.length;
     $: paginatedItems = items.slice(offset, offset + limit);
 </script>
 
