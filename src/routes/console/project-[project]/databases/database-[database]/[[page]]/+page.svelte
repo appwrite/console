@@ -7,7 +7,7 @@
     import { base } from '$app/paths';
     import type { PageData } from './$types';
     import type { Models } from '@aw-labs/appwrite-console';
-    import Create from '../create.svelte';
+    import Create from '../createCollection.svelte';
     import GridView from './gridView.svelte';
     import TableView from './tableView.svelte';
     import { prefs } from '$lib/stores/user';
