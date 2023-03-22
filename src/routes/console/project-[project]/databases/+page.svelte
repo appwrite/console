@@ -2,7 +2,15 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Copy, GridItem1, CardContainer, Heading, Pagination } from '$lib/components';
+    import {
+        Empty,
+        Copy,
+        GridItem1,
+        CardContainer,
+        Heading,
+        Pagination,
+        Limit
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -51,7 +59,7 @@
         </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.databases.total}</p>
+            <Limit limit={data.limit} sum={data.databases.total} name="Databases" />
             <Pagination limit={data.limit} offset={data.offset} sum={data.databases.total} />
         </div>
     {:else}

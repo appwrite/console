@@ -1,6 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Empty, EmptySearch, AvatarInitials, Pagination, SearchQuery } from '$lib/components';
+    import {
+        Empty,
+        EmptySearch,
+        AvatarInitials,
+        Pagination,
+        SearchQuery,
+        Limit
+    } from '$lib/components';
     import {
         Table,
         TableHeader,
@@ -81,7 +88,7 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.memberships.total}</p>
+            <Limit limit={data.limit} sum={data.memberships.total} name="Memberships" />
             <Pagination limit={data.limit} offset={data.offset} sum={data.memberships.total} />
         </div>
     {:else if data.search}

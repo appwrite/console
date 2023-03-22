@@ -1,7 +1,15 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { CardContainer, Copy, Empty, GridItem1, Heading, Pagination } from '$lib/components';
+    import {
+        CardContainer,
+        Copy,
+        Empty,
+        GridItem1,
+        Heading,
+        Limit,
+        Pagination
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -54,6 +62,7 @@
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.collections.total}</p>
+            <Limit limit={data.limit} sum={data.collections.total} name="Collections" />
             <Pagination limit={data.limit} offset={data.offset} sum={data.collections.total} />
         </div>
     {:else}

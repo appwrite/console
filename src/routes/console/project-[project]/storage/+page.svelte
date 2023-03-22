@@ -2,7 +2,15 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Pagination, Copy, GridItem1, CardContainer, Heading } from '$lib/components';
+    import {
+        Empty,
+        Pagination,
+        Copy,
+        GridItem1,
+        CardContainer,
+        Heading,
+        Limit
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import Create from './create.svelte';
     import { Container } from '$lib/layout';
@@ -83,7 +91,7 @@
         </CardContainer>
 
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.buckets.total}</p>
+            <Limit limit={data.limit} sum={data.buckets.total} name="Buckets" />
             <Pagination limit={data.limit} offset={data.offset} sum={data.buckets.total} />
         </div>
     {:else}

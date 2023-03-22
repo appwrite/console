@@ -1,13 +1,13 @@
 import { Query } from '@aw-labs/appwrite-console';
 import { sdk } from '$lib/stores/sdk';
-import { pageToOffset } from '$lib/helpers/load';
+import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, depends, url }) => {
+export const load: PageLoad = async ({ params, depends, url, route }) => {
     depends(Dependencies.EXECUTIONS);
-    const page = Number(url.searchParams.get('page'));
-    const limit = Number(url.searchParams.get('limit') ?? PAGE_LIMIT);
+    const page = getPage(url);
+    const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
 
     return {

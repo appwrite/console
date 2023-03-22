@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { AvatarInitials, Heading, Pagination } from '$lib/components';
+    import { AvatarInitials, Heading, Limit, Pagination } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -111,7 +111,7 @@
             </TableBody>
         </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.organizationMembers.total}</p>
+            <Limit limit={data.limit} sum={data.members.total} name="Members" />
             <Pagination offset={data.offset} limit={data.limit} sum={data.members.total} />
         </div>
     {/if}

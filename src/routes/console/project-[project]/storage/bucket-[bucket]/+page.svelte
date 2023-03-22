@@ -11,7 +11,8 @@
         DropList,
         DropListItem,
         DropListLink,
-        SearchQuery
+        SearchQuery,
+        Limit
     } from '$lib/components';
     import Create from './create.svelte';
     import Delete from './deleteFile.svelte';
@@ -184,7 +185,7 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.files.total}</p>
+            <Limit limit={data.limit} sum={data.files.total} name="Files" />
             <Pagination limit={data.limit} offset={data.offset} sum={data.files.total} />
         </div>
     {:else if data.search}

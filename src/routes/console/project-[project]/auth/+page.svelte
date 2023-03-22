@@ -6,7 +6,8 @@
         Pagination,
         Copy,
         SearchQuery,
-        AvatarInitials
+        AvatarInitials,
+        Limit
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
@@ -31,9 +32,9 @@
 
     let showCreate = false;
     const projectId = $page.params.project;
-    const userCreated = async (event: CustomEvent<Models.User<Record<string, unknown>>>) => {
+    async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
-    };
+    }
 </script>
 
 <Container>
@@ -110,7 +111,7 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.users.total}</p>
+            <Limit limit={data.limit} sum={data.users.total} name="Users" />
             <Pagination offset={data.offset} limit={data.limit} sum={data.users.total} />
         </div>
     {:else if data.search}

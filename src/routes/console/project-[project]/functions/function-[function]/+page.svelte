@@ -9,7 +9,8 @@
         Empty,
         Status,
         Heading,
-        Pagination
+        Pagination,
+        Limit
     } from '$lib/components';
     import {
         TableHeader,
@@ -278,12 +279,10 @@
             href="https://appwrite.io/docs/functions#createFunction"
             on:click={() => (showCreate = true)} />
     {/if}
+    {@const sum = data.deployments.total ? data.deployments.total - 1 : 0}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {data.deployments.total ? data.deployments.total - 1 : 0}</p>
-        <Pagination
-            limit={data.limit}
-            offset={data.offset}
-            sum={data.deployments.total ? data.deployments.total - 1 : 0} />
+        <Limit limit={data.limit} {sum} name="Deployments" />
+        <Pagination limit={data.limit} offset={data.offset} {sum} />
     </div>
 </Container>
 

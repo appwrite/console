@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { showCreate } from '../store';
-    import type { PageData } from './[[page]]/$types';
+    import type { PageData } from './$types';
 
     $: data = $page.data as PageData;
     $: project = $page.params.project;

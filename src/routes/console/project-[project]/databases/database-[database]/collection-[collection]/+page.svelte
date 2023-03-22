@@ -7,7 +7,7 @@
         TableCellHead,
         TableCell
     } from '$lib/elements/table';
-    import { Empty, Copy, Heading, Pagination } from '$lib/components';
+    import { Empty, Copy, Heading, Pagination, Limit } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
@@ -125,7 +125,7 @@
             </TableScroll>
 
             <div class="u-flex common-section u-main-space-between">
-                <p class="text">Total results: {data.documents.total}</p>
+                <Limit limit={data.limit} sum={data.documents.total} name="Documents" />
                 <Pagination limit={data.limit} offset={data.offset} sum={data.documents.total} />
             </div>
         {:else}

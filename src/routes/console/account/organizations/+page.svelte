@@ -6,7 +6,8 @@
         Pagination,
         AvatarGroup,
         CardContainer,
-        Heading
+        Heading,
+        Limit
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -66,7 +67,7 @@
         </Empty>
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {data.organizations.total}</p>
+        <Limit limit={data.limit} sum={data.organizations.total} name="Organizations" />
         <Pagination limit={data.limit} offset={data.offset} sum={data.organizations.total} />
     </div>
 </Container>

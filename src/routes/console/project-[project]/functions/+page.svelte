@@ -1,7 +1,15 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
-    import { Empty, CardContainer, Copy, GridItem1, Heading, Pagination } from '$lib/components';
+    import {
+        Empty,
+        CardContainer,
+        Copy,
+        GridItem1,
+        Heading,
+        Pagination,
+        Limit
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -81,7 +89,7 @@
             </svelte:fragment>
         </CardContainer>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.functions.total}</p>
+            <Limit limit={data.limit} sum={data.functions.total} name="Functions" />
             <Pagination limit={data.limit} offset={data.offset} sum={data.functions.total} />
         </div>
     {:else}
