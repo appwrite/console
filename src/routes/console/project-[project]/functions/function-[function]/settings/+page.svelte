@@ -18,7 +18,6 @@
     import { onMount } from 'svelte';
     import Variable from '../../createVariable.svelte';
     import { execute, func } from '../store';
-    // import Upload from './uploadVariables.svelte';
     import {
         Table,
         TableBody,
