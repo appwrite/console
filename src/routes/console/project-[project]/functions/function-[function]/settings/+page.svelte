@@ -3,7 +3,16 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Box, CardGrid, DropList, DropListItem, Empty, Output, Secret } from '$lib/components';
+    import {
+        Box,
+        CardGrid,
+        DropList,
+        DropListItem,
+        Empty,
+        Output,
+        PaginationInline,
+        Secret
+    } from '$lib/components';
     import Heading from '$lib/components/heading.svelte';
     import { Roles } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
@@ -44,6 +53,7 @@
     let functionSchedule: string = null;
     let permissions: string[] = [];
     let arePermsDisabled = true;
+    let offset = 0;
 
     onMount(async () => {
         timeout ??= $func.timeout;
@@ -374,19 +384,21 @@
                     <span class="text">Import .env file</span>
                 </Button>
             </div>
-            {#if data.variables.total}
+            {@const limit = 10}
+            {@const sum = data.variables.total}
+            {#if sum}
                 <div class="u-flex u-flex-vertical u-gap-16">
                     <Table noMargin noStyles>
                         <TableHeader>
                             <TableCellHead>Key</TableCellHead>
-                            <TableCellHead>Value</TableCellHead>
+                            <TableCellHead width={180}>Value</TableCellHead>
                             <TableCellHead width={30} />
                         </TableHeader>
                         <TableBody>
-                            {#each data.variables.variables as variable, i}
+                            {#each data.variables.variables.slice(offset, offset + limit) as variable, i}
                                 <TableRow>
                                     <TableCell title="key">
-                                        <Output value={variable.key}>
+                                        <Output value={variable.key} hideCopyIcon>
                                             {variable.key}
                                         </Output>
                                     </TableCell>
@@ -435,15 +447,14 @@
                             {/each}
                         </TableBody>
                     </Table>
-                    <Button
-                        text
-                        noMargin
-                        on:click={() => {
-                            showVariablesModal = true;
-                        }}>
+                    <Button text noMargin on:click={() => (showVariablesModal = true)}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="text">Create variable</span>
                     </Button>
+                    <div class="u-flex u-main-space-between">
+                        <p class="text">Total variables: {sum}</p>
+                        <PaginationInline {sum} {limit} bind:offset hidePages />
+                    </div>
                 </div>
             {:else}
                 <Empty on:click={() => (showVariablesModal = !showVariablesModal)}>

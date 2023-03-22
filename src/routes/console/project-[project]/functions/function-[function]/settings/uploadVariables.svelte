@@ -70,7 +70,7 @@
         Upload multiple variables via a .env file that will be passed to your function at runtime.
     </p>
 
-    <InputFile bind:files label="Attach a file" />
+    <InputFile bind:files />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
