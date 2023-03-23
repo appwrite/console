@@ -7,7 +7,7 @@
     import { Button, Form, InputSelectSearch, InputText } from '$lib/elements/forms';
     import { difference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { attributes, collection } from '../store';
 
@@ -57,7 +57,7 @@
         (displayNames?.length && !displayNames[displayNames?.length - 1]);
 </script>
 
-<Form on:submit={updateDisplayName}>
+<Form onSubmit={updateDisplayName}>
     <CardGrid>
         <Heading tag="h6" size="7">Display Name</Heading>
         <p class="text">

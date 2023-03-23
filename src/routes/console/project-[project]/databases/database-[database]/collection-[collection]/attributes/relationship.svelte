@@ -157,7 +157,7 @@
     bind:value={data.related}
     required
     placeholder="Select a collection"
-    options={collectionList?.collections?.map((n) => ({ value: n.$id, label: n.name })) ?? []} />
+    options={collections?.map((n) => ({ value: n.$id, label: n.name })) ?? []} />
 
 {#if data?.related}
     {@const selectedCol = collections?.find((n) => n.$id === data.related)}

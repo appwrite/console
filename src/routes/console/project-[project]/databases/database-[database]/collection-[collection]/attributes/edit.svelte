@@ -61,7 +61,7 @@
     } else updateButtonDisabled = true;
 </script>
 
-<Modal size="big" bind:show={showEdit} on:submit={submit} icon={option?.icon}>
+<Modal size="big" bind:show={showEdit} onSubmit={submit} icon={option?.icon}>
     <svelte:fragment slot="header">
         {attr?.type}
         {#if attr?.type === 'Relationship'}
