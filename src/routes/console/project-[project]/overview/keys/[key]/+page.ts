@@ -1,13 +1,13 @@
 import Header from './header.svelte';
 import Breadcrumbs from './breadcrumbs.svelte';
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.KEY);
 
-    const key = await sdkForConsole.projects.getKey(params.project, params.key);
+    const key = await sdk.forConsole.projects.getKey(params.project, params.key);
     if (key.expire) {
         key.expire = new Date(key.expire).toISOString().slice(0, 23);
     }
