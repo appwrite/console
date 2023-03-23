@@ -33,7 +33,7 @@
 
     function valueChange(value: string) {
         clearTimeout(timer);
-        timer = setTimeout(async () => {
+        timer = setTimeout(() => {
             const url = new URL($page.url);
             const previous = url.searchParams.get('search') ?? '';
 
