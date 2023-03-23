@@ -1,7 +1,7 @@
 import prettyBytes from 'pretty-bytes';
 
 const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] as const;
-export type Size = (typeof sizes)[number];
+export type Size = typeof sizes[number];
 
 export function calculateSize(bytes: number, decimals = 1) {
     if (bytes === 0) return '0 Bytes';
