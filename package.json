@@ -1,6 +1,5 @@
 {
     "name": "@appwrite/console",
-    "version": "0.0.1",
     "engines": {
         "node": ">=16"
     },
