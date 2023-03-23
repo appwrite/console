@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { showCreate } from '../store';
-    import type { PageData } from './[[page]]/$types';
+    import type { PageData } from './$types';
 
     $: data = $page.data as PageData;
     $: project = $page.params.project;
@@ -31,7 +31,7 @@
     {#if data?.allCollections?.total}
         <ul class="drop-list">
             {#each sortedCollections as collection}
-                {@const href = `${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}/documents`}
+                {@const href = `${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                 {@const isSelected = collectionId === collection.$id}
                 <li class="drop-list-item">
                     <a class="drop-button" class:is-selected={isSelected} {href}>
