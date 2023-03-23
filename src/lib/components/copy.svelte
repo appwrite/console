@@ -9,6 +9,7 @@
     export let event: string = null;
     export let eventContext = 'click_id_tag';
     export let appendTo: Parameters<typeof tooltip>['1']['appendTo'] = undefined;
+    export let fitToContent = false;
 
     let content = 'Click to copy';
 
@@ -33,7 +34,6 @@
 </script>
 
 <span
-    style:display="inline-block"
     style:cursor="pointer"
     on:click|preventDefault={handleClick}
     on:keyup={clickOnEnter}
