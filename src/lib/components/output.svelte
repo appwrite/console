@@ -6,7 +6,10 @@
 </script>
 
 <Copy {value}>
-    <div class="interactive-text-output is-textarea" style:min-inline-size="0">
+    <div
+        class="interactive-text-output is-textarea"
+        style:min-inline-size="0"
+        style:display="inline-block">
         <span class="text u-line-height-1-5 u-break-all"><slot /></span>
         {#if !hideCopyIcon}
             <div class="u-flex u-cross-child-start u-gap-8">

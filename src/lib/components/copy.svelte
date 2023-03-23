@@ -33,7 +33,6 @@
 </script>
 
 <span
-    style:display="inline-block"
     style:cursor="pointer"
     on:click|preventDefault={handleClick}
     on:keyup={clickOnEnter}
