@@ -33,11 +33,7 @@ export const addNotification = (notification: Omit<Notification, 'id'>) => {
 
     const n = { ...defaults, ...notification };
     notifications.update((all) => {
-        if (all.length < 3) {
-            return [n, ...all];
-        } else {
-            return [n, ...all.slice(0, 2)];
-        }
+        return [n, ...all.slice(0, 4)];
     });
 
     if (n.timeout) setTimeout(() => dismissNotification(n.id), n.timeout);
