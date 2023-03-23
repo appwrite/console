@@ -120,9 +120,9 @@
                             href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
                             <TableCell width={230}>
                                 <Copy value={document.$id}>
-                                    <Pill button>
+                                    <Pill button trim>
                                         <span class="icon-duplicate" aria-hidden="true" />
-                                        <span class="text u-trim-start">{document.$id}</span>
+                                        <span class="text">{document.$id}</span>
                                     </Pill>
                                 </Copy>
                             </TableCell>
