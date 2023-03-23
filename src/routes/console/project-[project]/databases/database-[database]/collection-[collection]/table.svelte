@@ -61,7 +61,7 @@
 
 <TableScroll isSticky>
     <TableHeader>
-        <TableCellHead width={200} eyebrow={false}>Document ID</TableCellHead>
+        <TableCellHead width={100} eyebrow={false}>Document ID</TableCellHead>
         {#each $columns.filter((n) => n.show) as column}
             {#if column.show}
                 <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
@@ -72,7 +72,7 @@
         {#each data.documents.documents as document}
             <TableRowLink
                 href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
-                <TableCell width={230}>
+                <TableCell>
                     <Copy value={document.$id}>
                         <Pill button trim>
                             <span class="icon-duplicate" aria-hidden="true" />
