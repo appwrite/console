@@ -133,6 +133,7 @@
 
                 <div class="form-item-part u-cross-child-end">
                     <Button
+                        noMargin
                         text
                         disabled={attributeList.length <= 1}
                         on:click={() => {
