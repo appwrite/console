@@ -31,7 +31,7 @@
     {#if data?.allCollections?.total}
         <ul class="drop-list">
             {#each sortedCollections as collection}
-                {@const href = `${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}/documents`}
+                {@const href = `${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                 {@const isSelected = collectionId === collection.$id}
                 <li class="drop-list-item">
                     <a class="drop-button" class:is-selected={isSelected} {href}>

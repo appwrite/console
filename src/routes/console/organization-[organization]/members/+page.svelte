@@ -112,7 +112,7 @@
         </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <Limit limit={data.limit} sum={data.members.total} name="Members" />
-            <Pagination offset={data.offset} limit={data.limit} sum={data.members.total} />
+            <Pagination limit={data.limit} offset={data.offset} sum={data.members.total} />
         </div>
     {/if}
 </Container>

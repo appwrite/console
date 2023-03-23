@@ -13,8 +13,19 @@ export function getLimit(url: URL, route: Page['route'], fallback: number): numb
     return Number(url.searchParams.get('limit') ?? preferences.get(route).limit ?? fallback);
 }
 
-export function getView(url: URL, route: Page['route'], fallback: 'table' | 'grid'): string {
-    return url.searchParams.get('view') ?? preferences.get(route).view ?? fallback;
+export enum View {
+    Table = 'table',
+    Grid = 'grid'
+}
+
+export function getView(url: URL, route: Page['route'], fallback: View): View {
+    return (url.searchParams.get('view') ?? preferences.get(route).view) === View.Grid
+        ? View.Grid
+        : View.Table ?? fallback;
+}
+
+export function getColumns(route: Page['route'], fallback: string[]): string[] {
+    return preferences.get(route).columns ?? fallback;
 }
 
 export function getSearch(url: URL): string | undefined {

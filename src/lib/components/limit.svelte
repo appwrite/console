@@ -3,6 +3,7 @@
     import { page as pageStore } from '$app/stores';
     import { InputSelect } from '$lib/elements/forms';
     import { preferences } from '$lib/stores/preferences';
+
     export let sum: number;
     export let limit: number;
     export let name: string;
@@ -17,8 +18,16 @@
 
     async function limitChange() {
         const url = new URL($pageStore.url);
+        const previousLimit = Number(url.searchParams.get('limit'));
         url.searchParams.set('limit', limit.toString());
         preferences.setLimit(limit);
+
+        if (url.searchParams.has('page')) {
+            const page = Number(url.searchParams.get('page'));
+            const newPage = Math.floor(((page - 1) * previousLimit) / limit);
+            url.searchParams.set('page', newPage.toString());
+        }
+
         await goto(url.toString());
     }
 </script>

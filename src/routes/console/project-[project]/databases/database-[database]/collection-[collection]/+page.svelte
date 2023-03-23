@@ -1,128 +1,53 @@
 <script lang="ts">
-    import {
-        TableScroll,
-        TableRowLink,
-        TableBody,
-        TableHeader,
-        TableCellHead,
-        TableCell
-    } from '$lib/elements/table';
-    import { Empty, Copy, Heading, Pagination, Limit } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Empty, Heading, Pagination, Limit, ViewSelector } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { base } from '$app/paths';
     import { wizard } from '$lib/stores/wizard';
     import Create from './createDocument.svelte';
     import type { PageData } from './$types';
-    import { collection } from './store';
-    import { page } from '$app/stores';
+    import { collection, columns } from './store';
     import CreateAttribute from './createAttribute.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
+    import Table from './table.svelte';
+    import { preferences } from '$lib/stores/preferences';
+    import { page } from '$app/stores';
 
     export let data: PageData;
+
     let showCreateAttribute = false;
+
+    $: selected = preferences.getCustomCollectionColumns($page.params.collection);
+    $: columns.set(
+        $collection.attributes.map((attribute) => ({
+            id: attribute.key,
+            title: attribute.key,
+            type: attribute.type,
+            show: selected?.includes(attribute.key) ?? true
+        }))
+    );
 
     function openWizard() {
         wizard.start(Create);
-    }
-
-    $: columns = [
-        ...$collection.attributes.map((attribute) => ({
-            key: attribute.key,
-            title: attribute.key
-        }))
-    ];
-
-    function formatArray(array: unknown[]) {
-        if (array.length === 0) return '[ ]';
-
-        let formattedFields: string[] = [];
-        for (const item of array) {
-            if (typeof item === 'string') {
-                formattedFields.push(`"${item}"`);
-            } else {
-                formattedFields.push(`${item}`);
-            }
-        }
-
-        return `[${formattedFields.join(', ')}]`;
-    }
-
-    function formatColumn(column: unknown) {
-        let formattedColumn: string;
-
-        if (typeof column === 'string') {
-            formattedColumn = column;
-        } else if (Array.isArray(column)) {
-            formattedColumn = formatArray(column);
-        } else if (column === null) {
-            formattedColumn = 'n/a';
-        } else {
-            formattedColumn = `${column}`;
-        }
-
-        return {
-            value:
-                formattedColumn.length > 20
-                    ? `${formattedColumn.slice(0, 20)}...`
-                    : formattedColumn,
-            truncated: formattedColumn.length > 20,
-            whole: formattedColumn
-        };
     }
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Documents</Heading>
-
-        <Button
-            disabled={!$collection?.attributes?.length}
-            on:click={openWizard}
-            event="create_document">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create document</span>
-        </Button>
+        <div class="u-flex u-gap-16">
+            <ViewSelector view={data.view} {columns} hideView isCustomCollection />
+            <Button
+                disabled={!$collection?.attributes?.length}
+                on:click={openWizard}
+                event="create_document">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create document</span>
+            </Button>
+        </div>
     </div>
 
     {#if $collection?.attributes?.length}
         {#if data.documents.total}
-            <TableScroll isSticky>
-                <TableHeader>
-                    <TableCellHead width={200} eyebrow={false}>Document ID</TableCellHead>
-                    {#each columns as column}
-                        <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
-                    {/each}
-                </TableHeader>
-                <TableBody>
-                    {#each data.documents.documents as document}
-                        <TableRowLink
-                            href={`${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$collection.$id}/document-${document.$id}`}>
-                            <TableCell width={230}>
-                                <Copy value={document.$id}>
-                                    <Pill button>
-                                        <span class="icon-duplicate" aria-hidden="true" />
-                                        <span class="text u-trim-start">{document.$id}</span>
-                                    </Pill>
-                                </Copy>
-                            </TableCell>
-                            {#each columns as column}
-                                {@const formatted = formatColumn(document[column.key])}
-                                <TableCell>
-                                    <div
-                                        use:tooltip={{
-                                            content: formatted.whole,
-                                            disabled: !formatted.truncated
-                                        }}>
-                                        {formatted.value}
-                                    </div>
-                                </TableCell>
-                            {/each}
-                        </TableRowLink>
-                    {/each}
-                </TableBody>
-            </TableScroll>
+            <Table {data} />
 
             <div class="u-flex common-section u-main-space-between">
                 <Limit limit={data.limit} sum={data.documents.total} name="Documents" />

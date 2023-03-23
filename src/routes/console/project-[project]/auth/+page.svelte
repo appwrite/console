@@ -112,7 +112,7 @@
         </Table>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <Limit limit={data.limit} sum={data.users.total} name="Users" />
-            <Pagination offset={data.offset} limit={data.limit} sum={data.users.total} />
+            <Pagination limit={data.limit} offset={data.offset} sum={data.users.total} />
         </div>
     {:else if data.search}
         <EmptySearch>

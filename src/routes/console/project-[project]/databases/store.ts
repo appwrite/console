@@ -1,10 +1,5 @@
-import { page } from '$app/stores';
 import type { Column } from '$lib/components/viewSelector.svelte';
-import type { Models } from '@aw-labs/appwrite-console';
-import { derived, writable } from 'svelte/store';
-
-export const database = derived(page, ($page) => $page.data.database as Models.Database);
-export const showCreate = writable(false);
+import { writable } from 'svelte/store';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Database ID', show: true, width: 50 },
