@@ -44,6 +44,7 @@
     import { collection } from '../store';
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
+    import { camelize } from '$lib/helpers/string';
 
     // Props
     export let selectedAttribute: Models.AttributeString;
@@ -129,7 +130,7 @@
     $: if (data.related && !data.key) {
         const collection = collectionList.collections.find((n) => n.$id === data.related);
         // data key = data related in snake case
-        data.key = collection.name.replace(/\s+/g, '_').toLowerCase();
+        data.key = camelize(collection.name);
     }
 </script>
 
@@ -210,18 +211,18 @@
 
     <div class="box">
         <div class="u-flex u-align u-cross-center u-main-center	u-gap-32 ">
-            <span>{$collection.name}</span>
+            <span>{camelize($collection.name)}</span>
             {#if way === 'one'}
                 <img src={arrowOne} alt={'One way realationship'} />
             {:else}
                 <img src={arrowTwo} alt={'Two way relationship'} />
             {/if}
-            <span>{selectedCol?.name}</span>
+            <span>{data.key}</span>
         </div>
     </div>
     <p class="u-text-center	">
-        <b> {$collection.name}</b> has {data.relation === 'one' ? 'one' : 'many'}
-        <b>{selectedCol?.name}</b>
+        <b> {camelize($collection.name)}</b> has {data.relation === 'one' ? 'one' : 'many'}
+        <b>{data.key}</b>
     </p>
 
     <InputSelect
