@@ -7,7 +7,5 @@
 <Container>
     <Heading size="1" tag="h3">{$page.status}</Heading>
     <!-- <Heading size="3" tag="h4">{$page.error.message}</Heading> -->
-    <div class="u-text-center">
-        <p class="body-text-2 u-margin-block-start-4">{$page.error.message}</p>
-    </div>
+    <p class="body-text-2 u-margin-block-start-4">{$page.error.message}</p>
 </Container>

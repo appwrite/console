@@ -15,8 +15,6 @@ export const load: PageLoad = async ({ params }) => {
             deleted: response.usersDelete as unknown as Models.Metric[]
         };
     } catch (err) {
-        throw error(err.code, {
-            message: err.message
-        })
+        throw error(err.code, err.message);
     }
 };

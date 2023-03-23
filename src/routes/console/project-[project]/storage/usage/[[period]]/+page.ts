@@ -3,8 +3,7 @@ import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
-export const load: PageLoad = async ({ params, parent }) => {
-    await parent();
+export const load: PageLoad = async ({ params }) => {
     try {
         const response = await sdkForProject.storage.getUsage(params.period ?? '30d');
 
@@ -16,8 +15,6 @@ export const load: PageLoad = async ({ params, parent }) => {
             deleted: response.bucketsDelete as unknown as Models.Metric[]
         };
     } catch (err) {
-        throw error(err.code, {
-            message: err.message
-          })
+        throw error(err.code, err.message);
     }
 };
