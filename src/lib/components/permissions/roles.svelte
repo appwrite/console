@@ -104,7 +104,7 @@
                         <Row {role} />
                     </TableCell>
                     <TableCellText title="Remove">
-                        <div class="u-flex">
+                        <div class="u-flex u-main-end">
                             <button
                                 class="button is-text is-only-icon"
                                 type="button"
