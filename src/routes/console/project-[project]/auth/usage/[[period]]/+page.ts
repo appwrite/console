@@ -6,7 +6,7 @@ import { error } from '@sveltejs/kit';
 export const load: PageLoad = async ({ params }) => {
     const { period } = params;
     try {
-        const response = await sdkForProject.users.getUsage(period ?? '30d');
+        const response = await sdk.forProject.users.getUsage(period ?? '30d');
         return {
             count: response.usersCount as unknown as Models.Metric[],
             created: response.usersCreate as unknown as Models.Metric[],

@@ -5,7 +5,7 @@ import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params }) => {
     try {
-        const response = await sdkForProject.functions.getFunctionUsage(
+        const response = await sdk.forProject.functions.getFunctionUsage(
             params.function,
             params.period ?? '30d'
         );

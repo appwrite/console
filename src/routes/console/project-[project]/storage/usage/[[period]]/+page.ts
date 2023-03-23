@@ -5,7 +5,7 @@ import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params }) => {
     try {
-        const response = await sdkForProject.storage.getUsage(params.period ?? '30d');
+        const response = await sdk.forProject.storage.getUsage(params.period ?? '30d');
 
         return {
             count: response.bucketsCount as unknown as Models.Metric[],
