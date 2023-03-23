@@ -25,9 +25,7 @@
             await sdk.forConsole.projects.updateAuthStatus(projectId, box.method, box.value);
             addNotification({
                 type: 'success',
-                message: `${box.label} authentication has been ${
-                    box.value ? 'enabled' : 'disabled'
-                }`
+                message: `${box.label} authentication has been updated`
             });
             trackEvent(Submit.AuthStatusUpdate, {
                 method: box.method,
