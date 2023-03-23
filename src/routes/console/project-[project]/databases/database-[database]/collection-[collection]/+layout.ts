@@ -4,6 +4,8 @@ import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import { error } from '@sveltejs/kit';
+import SubNavigation from './subNavigation.svelte';
+import { Query } from '@aw-labs/appwrite-console';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.COLLECTION);
@@ -14,7 +16,11 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             collection: await sdk.forProject.databases.getCollection(
                 params.database,
                 params.collection
-            )
+            ),
+            subNavigation: SubNavigation,
+            allCollections: await sdk.forProject.databases.listCollections(params.database, [
+                Query.orderDesc('$createdAt')
+            ])
         };
     } catch (e) {
         throw error(e.code, e.message);

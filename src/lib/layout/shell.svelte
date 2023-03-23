@@ -87,6 +87,11 @@
             top: 4.5rem;
         }
     }
+    @media (min-width: 1199px) {
+        .grid-with-side {
+            grid-template-columns: auto 1fr !important;
+        }
+    }
 
     .main-content {
         overflow: hidden;
