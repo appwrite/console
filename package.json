@@ -1,6 +1,5 @@
 {
     "name": "@appwrite/console",
-    "version": "0.0.1",
     "engines": {
         "node": ">=16"
     },
@@ -20,7 +19,7 @@
     },
     "dependencies": {
         "@analytics/google-analytics": "^1.0.5",
-        "@appwrite.io/pink": "0.0.6-rc.2",
+        "@appwrite.io/pink": "^0.0.6-rc.4",
         "@aw-labs/appwrite-console": "^13.1.0",
         "@popperjs/core": "^2.11.6",
         "@sentry/svelte": "^7.44.2",
