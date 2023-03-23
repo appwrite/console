@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ params }) => {
             updated: response.databasesUpdate as unknown as Models.Metric[],
             deleted: response.databasesDelete as unknown as Models.Metric[]
         };
-    } catch (err) {
-        throw error(err.code, err.message);
+    } catch (e) {
+        throw error(e.code, e.message);
     }
 };
