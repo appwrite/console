@@ -6,14 +6,14 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
     const functionId = $page.params.function;
 
     const handleSubmit = async () => {
         try {
-            await sdkForProject.functions.delete(functionId);
+            await sdk.forProject.functions.delete(functionId);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -31,9 +31,9 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={handleSubmit} warning>
+<Modal bind:show={showDelete} onSubmit={handleSubmit} warning>
     <svelte:fragment slot="header">Delete Function</svelte:fragment>
-    <p>
+    <p data-private>
         Are you sure you want to delete this function and all associated deployments from your
         project?
     </p>

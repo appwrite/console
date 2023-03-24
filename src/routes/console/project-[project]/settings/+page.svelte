@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -18,7 +18,7 @@
     let name: string = null;
     let showDelete = false;
     let updating = false;
-    const endpoint = sdkForConsole.client.config.endpoint;
+    const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
 
     onMount(async () => {
@@ -28,7 +28,7 @@
     async function updateName() {
         updating = true;
         try {
-            await sdkForConsole.projects.update($project.$id, name);
+            await sdk.forConsole.projects.update($project.$id, name);
             invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -52,7 +52,7 @@
 
     async function serviceUpdate(service: Service) {
         try {
-            await sdkForConsole.projects.updateServiceStatus(
+            await sdk.forConsole.projects.updateServiceStatus(
                 $project.$id,
                 service.method,
                 service.value
@@ -82,7 +82,7 @@
 
 <Container>
     {#if $project}
-        <Form on:submit={updateName}>
+        <Form onSubmit={updateName}>
             <CardGrid>
                 <Heading tag="h6" size="7">API Credentials</Heading>
                 <p class="text">Access Appwrite services using your API Endpoint and Project ID.</p>
@@ -102,7 +102,7 @@
                 </svelte:fragment>
             </CardGrid>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Name</Heading>
+                <Heading tag="h6" size="7">Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <FormList>

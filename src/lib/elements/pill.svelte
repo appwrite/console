@@ -11,9 +11,6 @@
     export let href: string = null;
     export let trim = false;
 
-    //allows to add the disabled attribute to <a> tag without throwing an error
-    let attributes = { disabled } as Record<string, boolean>;
-
     let element: HTMLButtonElement;
 
     const isOverflowing = (elem: HTMLButtonElement, iterator = 1) => {
@@ -44,7 +41,6 @@
 
 {#if href}
     <a
-        {...attributes}
         {href}
         target={external ? '_blank' : '_self'}
         rel={external ? 'noopener noreferrer' : ''}

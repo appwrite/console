@@ -6,7 +6,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { collection } from '../store';
 
     export let showDelete = false;
@@ -15,7 +15,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteDocument(
+            await sdk.forProject.databases.deleteDocument(
                 databaseId,
                 $page.params.collection,
                 $page.params.document
@@ -39,10 +39,10 @@
     };
 </script>
 
-<Modal warning={true} on:submit={handleDelete} bind:show={showDelete}>
+<Modal warning={true} onSubmit={handleDelete} bind:show={showDelete}>
     <svelte:fragment slot="header">Delete Document</svelte:fragment>
 
-    <p>
+    <p data-private>
         Are you sure you want to delete <b>the document from {$collection.name}</b>?
     </p>
     <svelte:fragment slot="footer">

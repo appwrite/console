@@ -88,7 +88,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
     });
 }
 
-function isTrackingAllowed() {
+export function isTrackingAllowed() {
     if (ENV.TEST) {
         return;
     }
