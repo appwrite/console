@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button, InputText, FormList } from '$lib/elements/forms';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let showOverview = false;
     export let selectedIndex: Models.Index = null;

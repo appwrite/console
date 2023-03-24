@@ -18,7 +18,7 @@
 
     async function updateName() {
         try {
-            await sdk.forProject.teams.update($page.params.team, teamName);
+            await sdk.forProject.teams.updateName($page.params.team, teamName);
             invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Name has been updated',
@@ -35,7 +35,7 @@
     }
 </script>
 
-<Form on:submit={updateName}>
+<Form onSubmit={updateName}>
     <CardGrid>
         <Heading tag="h6" size="7">Name</Heading>
 

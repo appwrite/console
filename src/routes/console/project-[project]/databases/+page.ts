@@ -1,7 +1,7 @@
 import { CARD_LIMIT } from '$lib/constants';
 import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
-import { Query } from '@aw-labs/appwrite-console';
+import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ url, route }) => {

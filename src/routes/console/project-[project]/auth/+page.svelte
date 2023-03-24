@@ -25,7 +25,7 @@
     import { base } from '$app/paths';
     import { goto } from '$app/navigation';
     import Create from './createUser.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
 
     export let data: PageData;

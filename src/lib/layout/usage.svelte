@@ -16,7 +16,7 @@
     import { BarChart, LineChart } from '$lib/charts';
     import { Card, SecondaryTabs, SecondaryTabsItem, Heading, Tiles } from '$lib/components';
     import { Colors } from '$lib/charts/config';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
 
     type MetricMetadata = {

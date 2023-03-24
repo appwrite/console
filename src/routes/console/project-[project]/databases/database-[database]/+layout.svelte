@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import CreateCollection from './createCollection.svelte';
     import { showCreate } from './store';
     import { base } from '$app/paths';

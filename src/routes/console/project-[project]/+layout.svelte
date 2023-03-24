@@ -1,25 +1,17 @@
 <script lang="ts">
     import { UploadBox } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
-    import { onDestroy, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { stats } from './store';
 
-    let unsubscribe: { (): void };
-
-    onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
+    onMount(async () => {
+        return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
             if (response.events.includes('stats.connections')) {
                 for (const [projectId, value] of Object.entries(response.payload)) {
                     stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
                 }
             }
         });
-    });
-
-    onDestroy(() => {
-        if (unsubscribe) {
-            unsubscribe();
-        }
     });
 </script>
 

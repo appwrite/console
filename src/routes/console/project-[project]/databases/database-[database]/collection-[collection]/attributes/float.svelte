@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
 
     export async function submitFloat(

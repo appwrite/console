@@ -30,7 +30,7 @@
     import { log } from '$lib/stores/logs';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
     import Create from './create.svelte';

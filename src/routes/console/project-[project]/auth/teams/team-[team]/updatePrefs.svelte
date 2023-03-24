@@ -5,12 +5,12 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { team } from './store';
 
     $: if (prefs) {
-        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries({}))) {
+        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($team.prefs))) {
             if (!!prefs[prefs.length - 1][0] && !!prefs[prefs.length - 1][1]) {
                 arePrefsDisabled = false;
             } else {
@@ -25,7 +25,7 @@
     let arePrefsDisabled = true;
 
     onMount(async () => {
-        prefs = Object.entries({});
+        prefs = Object.entries($team.prefs);
         if (!prefs?.length) {
             prefs.push(['', '']);
         }
@@ -33,9 +33,9 @@
 
     async function updatePrefs() {
         try {
-            // let updatedPrefs = Object.fromEntries(prefs);
+            let updatedPrefs = Object.fromEntries(prefs);
 
-            // await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
+            await sdk.forProject.teams.updatePrefs($team.$id, updatedPrefs);
             invalidate(Dependencies.TEAM);
             arePrefsDisabled = true;
 
@@ -54,7 +54,7 @@
     }
 </script>
 
-<Form on:submit={updatePrefs}>
+<Form onSubmit={updatePrefs}>
     <CardGrid>
         <Heading tag="h6" size="7">Team Preferences</Heading>
         <p>
