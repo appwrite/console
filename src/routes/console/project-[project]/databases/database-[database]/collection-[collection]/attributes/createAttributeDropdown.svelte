@@ -9,7 +9,7 @@
     export let showCreate = false;
 </script>
 
-<DropList bind:show={showCreateDropdown}>
+<DropList bind:show={showCreateDropdown} scrollable>
     <slot>
         <Button
             on:click={() => (showCreateDropdown = !showCreateDropdown)}

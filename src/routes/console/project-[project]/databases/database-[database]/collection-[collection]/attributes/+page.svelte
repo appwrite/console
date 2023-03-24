@@ -49,7 +49,7 @@
                     {@const option = options.find((option) => option.type === attribute.type)}
                     <TableRow>
                         <TableCell title="Key">
-                            <div class="u-flex u-main-space-between">
+                            <div class="u-flex u-main-space-between  u-cross-center">
                                 <div class="u-flex u-cross-center u-gap-16">
                                     <div class="avatar is-medium">
                                         <span class={`icon-${option.icon}`} aria-hidden="true" />

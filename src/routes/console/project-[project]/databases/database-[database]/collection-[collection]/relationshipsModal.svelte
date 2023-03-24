@@ -2,17 +2,17 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
 
-    export let showCreate = false;
+    export let show = false;
     export let selectedRelationship: string = null;
     const limit = 10;
     let offset = 0;
 
-    $: if (!showCreate) {
+    $: if (!show) {
         selectedRelationship = null;
     }
 </script>
 
-<Modal size="big" bind:show={showCreate} icon="relationship">
+<Modal size="big" bind:show icon="relationship">
     <svelte:fragment slot="header">
         {selectedRelationship}
     </svelte:fragment>
