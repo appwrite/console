@@ -23,12 +23,12 @@
 
 <Container>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Shared Environment Variables</Heading>
+        <Heading tag="h6" size="7">Update Global Environment Variables</Heading>
         <p>Set the environment variables (or secret keys) that will be passed to all resources.</p>
 
         <svelte:fragment slot="aside">
             <Variables
-                isShared={true}
+                isGlobal={true}
                 variables={data.variables}
                 {deleteVariable}
                 {createVariable}

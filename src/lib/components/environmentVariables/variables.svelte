@@ -3,7 +3,6 @@
     import type { Models } from '@aw-labs/appwrite-console';
     import Copy from '../copy.svelte';
     import Modal from '../modal.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
     import DropList from '../dropList.svelte';
     import DropListItem from '../dropListItem.svelte';
     import { invalidate } from '$app/navigation';
@@ -18,14 +17,14 @@
     import Empty from '../empty.svelte';
 
     export let variables: { total: number; variables: Partial<Models.Variable>[] };
-    export let isShared = false;
+    export let isGlobal = false;
     export let isWizard = false;
 
     export let deleteVariable: (variableId: string) => Promise<void>;
     export let createVariable: (key: string, value: string) => Promise<void>;
     export let updateVariable: (variableId: string, key: string, value: string) => Promise<void>;
 
-    const sharedVariablesUrl = `/console/project-${$page.params.project}/settings/variables`;
+    const globalVariablesUrl = `/console/project-${$page.params.project}/settings/variables`;
 
     let showPromote = false;
     let promoteVariable: Partial<Models.Variable>;
@@ -251,7 +250,7 @@
                                         }}>
                                         Delete
                                     </DropListItem>
-                                    {#if !isShared && !isWizard}
+                                    {#if !isGlobal && !isWizard}
                                         <DropListItem
                                             icon="globe"
                                             on:click={() => {
@@ -283,9 +282,9 @@
         >Create an environment variable to get started</Empty>
 {/if}
 
-{#if !isShared && !isWizard}
+{#if !isGlobal && !isWizard}
     <Alert type="info">
-        Global variables from <a href={sharedVariablesUrl} class="link">project settings</a> are also
+        Global variables from <a href={globalVariablesUrl} class="link">project settings</a> are also
         available. When there is name conflict, function variable is used.
     </Alert>
 {/if}
@@ -299,7 +298,7 @@
         on:updated={handleVariableUpdated} />
 {/if}
 
-{#if !isShared}
+{#if !isGlobal}
     <Modal bind:show={showPromote} on:submit={() => handlePromote(promoteVariable)} warning>
         <svelte:fragment slot="header">Promote To Global Variable</svelte:fragment>
         <p>

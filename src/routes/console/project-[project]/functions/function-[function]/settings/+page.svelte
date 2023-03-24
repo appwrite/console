@@ -494,7 +494,7 @@
 
         <svelte:fragment slot="aside">
             <Variables
-                isShared={false}
+                isGlobal={false}
                 variables={data.variables}
                 {deleteVariable}
                 {createVariable}
