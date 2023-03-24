@@ -97,4 +97,4 @@
     {/if}
 </Container>
 
-<CreateAttribute bind:showCreate={showCreateAttribute} />
+<CreateAttribute bind:showCreate={showCreateAttribute} selectedOption={selectedAttribute} />
