@@ -14,9 +14,8 @@
         Empty,
         EmptySearch,
         AvatarInitials,
-        Pagination,
         SearchQuery,
-        Limit
+        PaginationWithLimit
     } from '$lib/components';
     import Create from '../createTeam.svelte';
     import { goto } from '$app/navigation';
@@ -68,10 +67,12 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.teams.total} name="Teams" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.teams.total} />
-        </div>
+
+        <PaginationWithLimit
+            name="Teams"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.teams.total} />
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">

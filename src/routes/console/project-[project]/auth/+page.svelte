@@ -3,11 +3,10 @@
     import {
         Empty,
         EmptySearch,
-        Pagination,
         Copy,
         SearchQuery,
         AvatarInitials,
-        Limit
+        PaginationWithLimit
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
@@ -110,10 +109,12 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.users.total} name="Users" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.users.total} />
-        </div>
+
+        <PaginationWithLimit
+            name="Users"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.users.total} />
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">

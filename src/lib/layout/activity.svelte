@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AvatarInitials, EmptySearch, Limit, Pagination, Trim } from '$lib/components';
+    import { AvatarInitials, EmptySearch, PaginationWithLimit, Trim } from '$lib/components';
     import {
         TableBody,
         TableHeader,
@@ -64,10 +64,8 @@
                 {/each}
             </TableBody>
         </TableScroll>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit {limit} sum={logs.total} name="Logs" />
-            <Pagination {limit} {offset} sum={logs.total} />
-        </div>
+
+        <PaginationWithLimit name="Logs" {limit} {offset} total={logs.total} />
     {:else}
         <EmptySearch>
             <div class="u-flex u-flex-vertical u-cross-center">

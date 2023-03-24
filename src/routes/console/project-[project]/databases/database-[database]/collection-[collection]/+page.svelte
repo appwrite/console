@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, Heading, Pagination, Limit, ViewSelector } from '$lib/components';
+    import { Empty, Heading, ViewSelector, PaginationWithLimit } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
@@ -40,7 +40,7 @@
                 on:click={openWizard}
                 event="create_document">
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create document</span>
+                <span class="text  is-only-desktop">Create document</span>
             </Button>
         </div>
     </div>
@@ -49,10 +49,11 @@
         {#if data.documents.total}
             <Table {data} />
 
-            <div class="u-flex common-section u-main-space-between">
-                <Limit limit={data.limit} sum={data.documents.total} name="Documents" />
-                <Pagination limit={data.limit} offset={data.offset} sum={data.documents.total} />
-            </div>
+            <PaginationWithLimit
+                name="Documents"
+                limit={data.limit}
+                offset={data.offset}
+                total={data.documents.total} />
         {:else}
             <Empty
                 single

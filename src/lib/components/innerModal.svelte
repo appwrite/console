@@ -2,6 +2,7 @@
     import { FormItem } from '$lib/elements/forms';
 
     export let show = false;
+    export let closable = true;
 </script>
 
 {#if show}
@@ -13,21 +14,23 @@
                         <h4 class="modal-title body-text-1">
                             <slot name="title" />
                         </h4>
-
-                        <button
-                            type="button"
-                            class="button is-text is-only-icon"
-                            style="--button-size:1.5rem;"
-                            aria-label="Close"
-                            title="Close"
-                            on:click={() => (show = false)}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
+                        {#if closable}
+                            <button
+                                type="button"
+                                class="button is-text is-only-icon"
+                                style="--button-size:1.5rem;"
+                                aria-label="Close"
+                                title="Close"
+                                on:click={() => (show = false)}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </button>
+                        {/if}
                     </div>
+                    <p class="u-flex-basis-100-percent text u-small">
+                        <slot name="subtitle" />
+                    </p>
                 </header>
-                <p class="u-flex-basis-100-percent">
-                    <slot name="subtitle" />
-                </p>
+
                 <div class="modal-content">
                     <slot name="content" />
                 </div>

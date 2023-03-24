@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Heading, Pagination, Limit, ViewSelector } from '$lib/components';
+    import { Empty, Heading, ViewSelector, PaginationWithLimit } from '$lib/components';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import Create from './create.svelte';
@@ -32,7 +32,7 @@
 
             <Button on:click={() => (showCreate = true)} event="create_database">
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create database</span>
+                <span class="text is-only-desktop">Create database</span>
             </Button>
         </div>
     </div>
@@ -44,10 +44,11 @@
             <Table {data} />
         {/if}
 
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.databases.total} name="Databases" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.databases.total} />
-        </div>
+        <PaginationWithLimit
+            name="Databases"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.databases.total} />
     {:else}
         <Empty
             single

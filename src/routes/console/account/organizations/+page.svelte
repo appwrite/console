@@ -3,11 +3,10 @@
     import {
         GridItem1,
         Empty,
-        Pagination,
         AvatarGroup,
         CardContainer,
         Heading,
-        Limit
+        PaginationWithLimit
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -66,10 +65,12 @@
             <p>Create a new organization</p>
         </Empty>
     {/if}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <Limit limit={data.limit} sum={data.organizations.total} name="Organizations" />
-        <Pagination limit={data.limit} offset={data.offset} sum={data.organizations.total} />
-    </div>
+
+    <PaginationWithLimit
+        name="Organizations"
+        limit={data.limit}
+        offset={data.offset}
+        total={data.organizations.total} />
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />

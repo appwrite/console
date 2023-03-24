@@ -4,9 +4,8 @@
         Empty,
         EmptySearch,
         AvatarInitials,
-        Pagination,
         SearchQuery,
-        Limit
+        PaginationWithLimit
     } from '$lib/components';
     import {
         Table,
@@ -87,10 +86,12 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.memberships.total} name="Memberships" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.memberships.total} />
-        </div>
+
+        <PaginationWithLimit
+            name="Memberships"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.memberships.total} />
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">

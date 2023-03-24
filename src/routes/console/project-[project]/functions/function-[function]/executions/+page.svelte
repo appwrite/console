@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Copy, EmptySearch, Heading, Limit, Pagination, Status } from '$lib/components';
+    import { Copy, EmptySearch, Heading, PaginationWithLimit, Status } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -103,10 +103,12 @@
                 {/each}
             </TableBody>
         </TableScroll>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.executions.total} name="Executions" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.executions.total} />
-        </div>
+
+        <PaginationWithLimit
+            name="Executions"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.executions.total} />
     {:else}
         <EmptySearch>
             <div class="u-text-center">
