@@ -2,7 +2,7 @@
     import { Wizard } from '$lib/layout';
     import { beforeNavigate, invalidate } from '$app/navigation';
     import { attributes } from './store';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { onDestroy, onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -33,7 +33,7 @@
 
     async function create() {
         try {
-            await sdkForProject.databases.createDocument(
+            await sdk.forProject.databases.createDocument(
                 databaseId,
                 collectionId,
                 $createDocument.id ?? ID.unique(),
