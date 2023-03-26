@@ -122,9 +122,10 @@
         </Form>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Services</Heading>
-            <p class="text">Choose services you wish to enable or disable.</p>
+            <Heading tag="h6" size="7">Configurations</Heading>
             <svelte:fragment slot="aside">
+                <Heading tag="h6" size="7">Services</Heading>
+                <p class="text">Choose services you wish to enable or disable.</p>
                 <FormList>
                     <form class="form">
                         <ul class="form-list is-multiple">
