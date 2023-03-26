@@ -14,14 +14,14 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import PauseProject from './pauseProject.svelte';
+    import PauseProject from './toggleProject.svelte';
 
     let name: string = null;
     let showDelete = false;
     let updating = false;
     const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
-    let showPause = false;
+    let showToggle = false;
 
     onMount(async () => {
         name ??= $project.name;
@@ -47,8 +47,8 @@
     }
 
     async function toggleProject() {
-        if (!$project.paused && !showPause) {
-            showPause = true;
+        if (!showToggle) {
+            showToggle = true;
             return;
         }
         updating = true;
@@ -78,7 +78,7 @@
             });
             trackError(error, Submit.ProjectUpdateName);
         } finally {
-            showPause = false;
+            showToggle = false;
         }
     }
 
@@ -215,4 +215,4 @@
 </Container>
 
 <Delete bind:showDelete />
-<PauseProject handlePause={toggleProject} bind:show={showPause} />
+<PauseProject paused={$project.paused} handleToggle={toggleProject} bind:show={showToggle} />
