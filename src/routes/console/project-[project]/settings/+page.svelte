@@ -44,6 +44,36 @@
         }
     }
 
+    async function toggleProject() {
+        updating = true;
+        try {
+            const path = '/projects/' + $project.$id;
+            await sdk.forConsole.client.call(
+                'PATCH',
+                new URL(sdk.forConsole.client.config.endpoint + path),
+                {
+                    'content-type': 'application/json'
+                },
+                {
+                    paused: !($project.paused ?? false),
+                    name: $project.name
+                }
+            );
+            invalidate(Dependencies.PROJECT);
+            addNotification({
+                type: 'success',
+                message: 'Project has been ' + ($project.paused ? 'resumed' : 'paused') + '.'
+            });
+            trackEvent(Submit.ProjectUpdateName);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.ProjectUpdateName);
+        }
+    }
+
     $: {
         // When project name is updated, finalize the updating flow
         $project.name;
@@ -124,7 +154,7 @@
         <CardGrid>
             <Heading tag="h6" size="7">Configurations</Heading>
             <svelte:fragment slot="aside">
-                <Heading tag="h6" size="7">Services</Heading>
+                <p class="u-bold">Services</p>
                 <p class="text">Choose services you wish to enable or disable.</p>
                 <FormList>
                     <form class="form">
@@ -141,6 +171,14 @@
                         </ul>
                     </form>
                 </FormList>
+                <div class="card-separator u-flex">
+                    <div class="u-margin-inline-end-16	">
+                        <p class="u-bold">Pause Project</p>
+                        <p class="text">While paused, you will not be able to make API requests.</p>
+                    </div>
+                    <Button secondary={true} on:click={toggleProject}
+                        >{$project.paused ? 'Resume Project' : 'Pause Project'}</Button>
+                </div>
             </svelte:fragment>
         </CardGrid>
 
