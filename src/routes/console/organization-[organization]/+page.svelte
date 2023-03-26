@@ -66,6 +66,9 @@
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
+                        {#if project.paused}
+                            <span class="tag is-warning">Paused</span>
+                        {/if}
                     </svelte:fragment>
                     {@const platforms = filterPlatforms(
                         project.platforms.map((platform) => getPlatformInfo(platform.type))
