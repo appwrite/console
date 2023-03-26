@@ -8,7 +8,7 @@
 </script>
 
 <Modal warning={true} bind:show onSubmit={handlePause}>
-    <svelte:fragment slot="header">Delete Database</svelte:fragment>
+    <svelte:fragment slot="header">Pause Project</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to pause <b>{$project.name}</b>? While paused, you will not be able to
         make API requests.

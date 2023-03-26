@@ -67,7 +67,8 @@
                     <svelte:fragment slot="title">
                         {project.name}
                         {#if project.paused}
-                            <span class="tag is-warning">Paused</span>
+                            <span class="tag is-warning">
+                                <span class="icon-pause" aria-hidden="true" /> Paused</span>
                         {/if}
                     </svelte:fragment>
                     {@const platforms = filterPlatforms(
