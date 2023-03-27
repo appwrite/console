@@ -33,6 +33,8 @@ export async function updateOAuth({
             secret || undefined,
             enabled
         );
+        await invalidate(Dependencies.PROJECT);
+
         addNotification({
             type: 'success',
             message: `${provider.name} authentication has been updated`
@@ -41,7 +43,6 @@ export async function updateOAuth({
             provider,
             enabled
         });
-        await invalidate(Dependencies.PROJECT);
 
         return { status: 'success' };
     } catch (e) {

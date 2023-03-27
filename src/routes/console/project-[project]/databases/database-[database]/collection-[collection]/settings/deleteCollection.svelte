@@ -14,16 +14,16 @@
 
     const databaseId = $page.params.database;
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         try {
             await sdk.forProject.databases.deleteCollection(databaseId, $collection.$id);
+            await invalidate(Dependencies.DATABASE);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$collection.name} has been deleted`
             });
             trackEvent(Submit.CollectionDelete);
-            await invalidate(Dependencies.DATABASE);
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}`
             );
@@ -34,7 +34,7 @@
             });
             trackError(error, Submit.CollectionDelete);
         }
-    };
+    }
 </script>
 
 <Modal warning={true} bind:show={showDelete} onSubmit={handleDelete}>

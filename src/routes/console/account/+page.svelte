@@ -41,6 +41,7 @@
             trackError(error, Submit.AccountUpdateName);
         }
     }
+
     async function updateEmail() {
         try {
             await sdk.forConsole.account.updateEmail(email, emailPassword);

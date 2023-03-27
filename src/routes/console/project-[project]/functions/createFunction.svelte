@@ -23,6 +23,7 @@
     async function onFinish() {
         await invalidate(Dependencies.FUNCTIONS);
     }
+
     async function create() {
         try {
             const response = await sdk.forProject.functions.create(

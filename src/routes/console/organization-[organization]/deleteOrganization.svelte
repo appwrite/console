@@ -11,7 +11,7 @@
 
     export let showDelete = false;
 
-    const deleteOrg = async () => {
+    async function deleteOrg() {
         try {
             await sdk.forConsole.teams.delete($organization.$id);
             addNotification({
@@ -34,7 +34,7 @@
             });
             trackError(error, Submit.OrganizationDelete);
         }
-    };
+    }
 </script>
 
 <Modal onSubmit={deleteOrg} bind:show={showDelete} warning>

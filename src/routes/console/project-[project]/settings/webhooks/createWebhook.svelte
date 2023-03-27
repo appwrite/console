@@ -15,7 +15,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
-    const create = async () => {
+    async function create() {
         try {
             await sdk.forConsole.projects.createWebhook(
                 projectId,
@@ -42,7 +42,7 @@
             });
             trackError(error, Submit.WebhookCreate);
         }
-    };
+    }
 
     onDestroy(() => {
         $createWebhook = {

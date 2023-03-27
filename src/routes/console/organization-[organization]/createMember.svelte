@@ -17,7 +17,7 @@
     let email: string, name: string, error: string;
     const url = `${$page.url.origin}/invite`;
 
-    const create = async () => {
+    async function create() {
         try {
             const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
@@ -40,7 +40,7 @@
             error = e.message;
             trackError(e, Submit.MemberCreate);
         }
-    };
+    }
 
     $: if (!showCreate) {
         error = null;

@@ -22,24 +22,25 @@
 
     export let data: PageData;
 
-    const getBrowser = (clientCode: string) => {
+    function getBrowser(clientCode: string) {
         return sdk.forConsole.avatars.getBrowser(clientCode, 40, 40);
-    };
+    }
 
-    const logout = async (session: Models.Session) => {
+    async function logout(session: Models.Session) {
         await sdk.forConsole.account.deleteSession(session.$id);
         trackEvent(Submit.AccountDeleteSession);
         if (session.current) {
             await goto(`${base}/login`);
         }
         invalidate(Dependencies.ACCOUNT_SESSIONS);
-    };
-    const logoutAll = async () => {
+    }
+
+    async function logoutAll() {
         await sdk.forConsole.account.deleteSessions();
         trackEvent(Submit.AccountDeleteAllSessions);
         await goto(`${base}/login`);
         invalidate(Dependencies.ACCOUNT_SESSIONS);
-    };
+    }
 </script>
 
 <Container>

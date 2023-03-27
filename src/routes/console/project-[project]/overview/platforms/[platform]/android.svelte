@@ -16,7 +16,7 @@
         key ??= $platform.key;
     });
 
-    const updateHostname = async () => {
+    async function updateHostname() {
         try {
             await sdk.forConsole.projects.updatePlatform(
                 $project.$id,
@@ -41,7 +41,7 @@
             });
             trackError(error, Submit.PlatformUpdate);
         }
-    };
+    }
 </script>
 
 <Form onSubmit={updateHostname}>

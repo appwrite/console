@@ -36,7 +36,7 @@
         wizard.start(Create);
     };
 
-    const refreshDomain = async (domain: Models.Domain) => {
+    async function refreshDomain(domain: Models.Domain) {
         const domainId = domain.$id;
         try {
             isVerifying[domainId] = true;
@@ -57,7 +57,7 @@
         } finally {
             isVerifying[domainId] = false;
         }
-    };
+    }
 </script>
 
 <Container>

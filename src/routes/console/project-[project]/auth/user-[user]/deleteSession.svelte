@@ -11,7 +11,7 @@
     export let showDelete = false;
     export let selectedSessionId: string;
 
-    const deleteSession = async () => {
+    async function deleteSession() {
         try {
             await sdk.forProject.users.deleteSession($page.params.user, selectedSessionId);
             await invalidate(Dependencies.SESSIONS);
@@ -27,7 +27,7 @@
             });
             trackError(error, Submit.SessionDelete);
         }
-    };
+    }
 </script>
 
 <Modal bind:show={showDelete} onSubmit={deleteSession} warning>

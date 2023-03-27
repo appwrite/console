@@ -64,8 +64,8 @@
     async function deleteFile(file: Models.File) {
         try {
             await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
-            uploader.removeFile(file);
             await invalidate(Dependencies.FILES);
+            uploader.removeFile(file);
             trackEvent(Submit.FileDelete);
         } catch (error) {
             addNotification({

@@ -15,7 +15,7 @@
     export let selectedAttribute: Attributes;
     const databaseId = $page.params.database;
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         try {
             await sdk.forProject.databases.deleteAttribute(
                 databaseId,
@@ -39,7 +39,7 @@
             });
             trackError(error, Submit.AttributeDelete);
         }
-    };
+    }
 </script>
 
 <Modal warning={true} bind:show={showDelete} onSubmit={handleDelete}>

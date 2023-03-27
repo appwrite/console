@@ -126,7 +126,6 @@
                 $func.enabled
             );
             await invalidate(Dependencies.FUNCTION);
-
             addNotification({
                 type: 'success',
                 message: 'Cron Schedule has been updated'
@@ -152,7 +151,6 @@
                 timeout,
                 $func.enabled
             );
-
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
@@ -173,8 +171,8 @@
 
         try {
             await sdk.forProject.functions.createVariable(functionId, variable.key, variable.value);
-            showVariablesModal = false;
             await invalidate(Dependencies.VARIABLES);
+            showVariablesModal = false;
             addNotification({
                 type: 'success',
                 message: `${$func.name} variables have been updated`
@@ -198,9 +196,9 @@
                 variable.key,
                 variable.value
             );
+            await invalidate(Dependencies.VARIABLES);
             selectedVar = null;
             showVariablesModal = false;
-            await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `${$func.name} variables have been updated`

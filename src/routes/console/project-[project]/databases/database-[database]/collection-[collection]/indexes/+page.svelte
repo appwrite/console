@@ -28,9 +28,9 @@
     let showDelete = false;
     let showCreateAttribute = false;
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         invalidate(Dependencies.COLLECTION);
-    };
+    }
 </script>
 
 <Container>

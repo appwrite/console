@@ -12,7 +12,7 @@
     export let showDelete = false;
     export let selectedDomain: Models.Domain;
 
-    const deleteDomain = async () => {
+    async function deleteDomain() {
         try {
             await sdk.forConsole.projects.deleteDomain($project.$id, selectedDomain.$id);
             await invalidate(Dependencies.DOMAINS);
@@ -29,7 +29,7 @@
             });
             trackError(error, Submit.DomainDelete);
         }
-    };
+    }
 </script>
 
 <Modal bind:show={showDelete} onSubmit={deleteDomain} warning>

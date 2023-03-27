@@ -11,7 +11,7 @@
 
     export let showDeleteAll = false;
 
-    const deleteAllSessions = async () => {
+    async function deleteAllSessions() {
         try {
             await sdk.forProject.users.deleteSessions($page.params.user);
             await invalidate(Dependencies.SESSIONS);
@@ -28,7 +28,7 @@
             });
             trackError(error, Submit.SessionDeleteAll);
         }
-    };
+    }
 </script>
 
 <Modal bind:show={showDeleteAll} onSubmit={deleteAllSessions} warning>

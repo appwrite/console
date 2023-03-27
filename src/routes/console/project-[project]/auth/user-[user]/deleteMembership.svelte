@@ -13,7 +13,7 @@
     export let showDelete = false;
     export let selectedMembership: Models.Membership;
 
-    const deleteMembership = async () => {
+    async function deleteMembership() {
         try {
             await sdk.forProject.teams.deleteMembership(
                 selectedMembership.teamId,
@@ -21,7 +21,6 @@
             );
             await invalidate(Dependencies.MEMBERSHIPS);
             showDelete = false;
-
             addNotification({
                 type: 'success',
                 message: `Membership has been deleted`
@@ -37,7 +36,7 @@
             });
             trackError(error, Submit.MemberDelete);
         }
-    };
+    }
 </script>
 
 <Modal bind:show={showDelete} onSubmit={deleteMembership} warning>
