@@ -54,7 +54,7 @@
     label="Default value"
     placeholder="Select a value"
     options={[
-        { label: 'Select a value', value: null },
+        { label: 'NULL', value: null },
         { label: 'True', value: true },
         { label: 'False', value: false }
     ]}

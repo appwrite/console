@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    import { Query, type Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
 
     export async function submitRelationship(
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdk.forProject.databases.createStringAttribute(
+        await sdk.forProject.databases.createRelationshipAttribute(
             databaseId,
             collectionId,
             key,
@@ -24,7 +24,7 @@
         collectionId: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdk.forProject.databases.createStringAttribute(
+        await sdk.forProject.databases.updateRelationshipAttribute(
             databaseId,
             collectionId,
             data.key,
@@ -129,8 +129,10 @@
 
     $: if (data.related && !data.key) {
         const collection = collectionList.collections.find((n) => n.$id === data.related);
-        // data key = data related in snake case
         data.key = camelize(collection.name);
+    }
+    $: if (way === 'two' && !data.keyRelated) {
+        data.keyRelated = camelize($collection.name);
     }
 </script>
 
@@ -139,13 +141,13 @@
         class="grid-box"
         style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 0.5rem;">
         <li>
-            <LabelCard name="relationship" bind:group={way} value="one">
+            <LabelCard name="relationship" bind:group={way} value="one" icon="arrow-sm-right">
                 <svelte:fragment slot="title">One-way relationship</svelte:fragment>
                 One Relation attribute within this collection
             </LabelCard>
         </li>
         <li>
-            <LabelCard name="relationship" bind:group={way} value="two">
+            <LabelCard name="relationship" bind:group={way} value="two" icon="switch-horizontal">
                 <svelte:fragment slot="title">Two-way relationship</svelte:fragment>
                 One Relation attribute within this collection and another within the related collection
             </LabelCard>
@@ -164,7 +166,6 @@
     options={collections?.map((n) => ({ value: n.$id, label: n.name })) ?? []} />
 
 {#if data?.related}
-    {@const selectedCol = collections?.find((n) => n.$id === data.related)}
     <div>
         <InputText
             id="key"
@@ -190,7 +191,6 @@
                 label="Attribute Key "
                 placeholder="Enter Key"
                 bind:value={data.keyRelated}
-                autofocus
                 required />
 
             <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
@@ -206,7 +206,7 @@
 
     <InputSelect
         id="relationship"
-        label="Reraltion"
+        label="Relation"
         bind:value={data.relation}
         required
         placeholder="Select a relation"

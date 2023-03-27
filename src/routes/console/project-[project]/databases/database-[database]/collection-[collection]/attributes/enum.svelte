@@ -62,6 +62,7 @@
 <InputSelect
     id="default"
     label="Default value"
+    placeholder="Select value"
     bind:options
     bind:value={data.default}
     disabled={data.required} />

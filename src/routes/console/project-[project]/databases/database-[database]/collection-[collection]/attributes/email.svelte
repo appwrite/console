@@ -46,7 +46,12 @@
     }
 </script>
 
-<InputEmail id="default" label="Default value" bind:value={data.default} disabled={data.required} />
+<InputEmail
+    id="default"
+    label="Default value"
+    placeholder="Enter value"
+    bind:value={data.default}
+    disabled={data.required} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>

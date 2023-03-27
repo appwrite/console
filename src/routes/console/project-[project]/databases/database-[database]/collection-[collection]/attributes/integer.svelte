@@ -55,12 +55,13 @@
     }
 </script>
 
-<InputNumber id="min" label="Min" bind:value={data.min} />
-<InputNumber id="max" label="Max" bind:value={data.max} />
+<InputNumber id="min" label="Min" placeholder="Enter size" bind:value={data.min} />
+<InputNumber id="max" label="Max" placeholder="Enter size" bind:value={data.max} />
 
 <InputNumber
     id="default"
     label="Default value"
+    placeholder="Enter value"
     min={data.min}
     max={data.max}
     bind:value={data.default}

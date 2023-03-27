@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, InputSelectSearch } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
     export let id: string;

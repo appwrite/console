@@ -48,6 +48,7 @@
 <InputText
     id="default"
     label="Default value"
+    placeholder="Enter value"
     bind:value={data.default}
     disabled={data.required || data.array} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>

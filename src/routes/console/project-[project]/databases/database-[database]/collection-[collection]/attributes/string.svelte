@@ -52,11 +52,18 @@
     }
 </script>
 
-<InputNumber id="size" label="Size" bind:value={data.size} required readonly={editing} />
+<InputNumber
+    id="size"
+    label="Size"
+    placeholder="Enter size"
+    bind:value={data.size}
+    required
+    readonly={editing} />
 {#if data.size > 50}
     <InputTextarea
         id="default"
         label="Default value"
+        placeholder="Enter value"
         bind:value={data.default}
         maxlength={data.size}
         disabled={data.required || data.array} />
@@ -64,6 +71,7 @@
     <InputText
         id="default"
         label="Default value"
+        placeholder="Enter value"
         bind:value={data.default}
         maxlength={data.size}
         disabled={data.required || data.array} />

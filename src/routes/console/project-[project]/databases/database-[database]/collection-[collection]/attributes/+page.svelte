@@ -1,6 +1,7 @@
 <script lang="ts">
     import { DropList, DropListItem, Empty, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -20,6 +21,7 @@
     import { options } from './store';
 
     let showCreateDropdown = false;
+    let showEmptyCreateDropdown = false;
     let showDropdown = [];
     let selectedOption: string = null;
     let selectedAttribute: Attributes = null;
@@ -51,7 +53,7 @@
                         <TableCell title="Key">
                             <div class="u-flex u-main-space-between u-cross-center">
                                 <div class="u-flex u-cross-center u-gap-16">
-                                    <div class="avatar is-medium">
+                                    <div class="avatar is-size-small u-color-text-gray">
                                         <span class={`icon-${option.icon}`} aria-hidden="true" />
                                     </div>
                                     <span class="text u-trim">{attribute.key}</span>
@@ -127,11 +129,35 @@
             <p class="text">Total results: {$attributes.length}</p>
         </div>
     {:else}
-        <Empty
-            single
-            href="https://appwrite.io/docs/databases#attributes"
-            target="attribute"
-            on:click={() => (showCreate = true)} />
+        <Empty single target="attribute" on:click={() => (showEmptyCreateDropdown = true)}>
+            <div class="u-text-center">
+                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <p class="body-text-2 u-margin-block-start-4">
+                    Need a hand? Check out our documentation.
+                </p>
+            </div>
+            <div class="u-flex u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/databases#attributes"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create {target}`}>Documentation</Button>
+                <CreateAttributeDropdown
+                    bind:showCreateDropdown={showEmptyCreateDropdown}
+                    bind:selectedOption
+                    bind:showCreate>
+                    <Button
+                        secondary
+                        event="create_attribute"
+                        on:click={() => {
+                            showEmptyCreateDropdown = !showEmptyCreateDropdown;
+                        }}>
+                        Create attribute
+                    </Button>
+                </CreateAttributeDropdown>
+            </div>
+        </Empty>
     {/if}
 </Container>
 
