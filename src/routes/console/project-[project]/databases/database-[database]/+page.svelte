@@ -18,7 +18,7 @@
 
             <Button on:click={() => ($showCreate = true)} event="create_collection">
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text  is-only-desktop">Create collection</span>
+                <span class="text is-only-desktop">Create collection</span>
             </Button>
         </div>
     </div>

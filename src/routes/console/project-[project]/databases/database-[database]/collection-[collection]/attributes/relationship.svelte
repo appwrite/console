@@ -213,7 +213,7 @@
         options={way === 'one' ? oneWay : twoWay} />
 
     <div class="box">
-        <div class="u-flex u-align u-cross-center u-main-center	u-gap-32 ">
+        <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
             <span>{camelize($collection.name)}</span>
             {#if way === 'one'}
                 <img src={arrowOne} alt={'One way realationship'} />
@@ -223,7 +223,7 @@
             <span>{data.key}</span>
         </div>
     </div>
-    <p class="u-text-center	">
+    <p class="u-text-center">
         <b> {camelize($collection.name)}</b> has {data.relation === 'one' ? 'one' : 'many'}
         <b>{data.key}</b>
     </p>

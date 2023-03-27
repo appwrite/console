@@ -8,7 +8,7 @@
     export let name: string;
 </script>
 
-<div class="u-flex u-margin-block-start-32  u-flex-wrap">
+<div class="u-flex u-margin-block-start-32 u-flex-wrap">
     <Limit {limit} sum={total} {name} />
     <div class="u-margin-inline-start-auto">
         <Pagination {limit} {offset} sum={total} />

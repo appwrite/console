@@ -120,7 +120,7 @@
                         <span class="icon-x" aria-hidden="true" />
                     </button>
                     <button
-                        class="options-list-button "
+                        class="options-list-button"
                         type="button"
                         on:click={() => (hasFocus = !hasFocus)}>
                         <span class="icon-cheveron-down" aria-hidden="true" />
