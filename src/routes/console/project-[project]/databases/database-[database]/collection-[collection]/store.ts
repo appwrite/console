@@ -1,5 +1,6 @@
 import { page } from '$app/stores';
-import type { Models } from '@aw-labs/appwrite-console';
+import type { Column } from '$lib/components/viewSelector.svelte';
+import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
 export type Attributes =

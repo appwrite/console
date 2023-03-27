@@ -7,10 +7,10 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
-    export let team: Models.Team;
+    export let team: Models.Team<Record<string, unknown>>;
 
     const deleteTeam = async () => {
         try {

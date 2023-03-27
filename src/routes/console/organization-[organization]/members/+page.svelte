@@ -19,7 +19,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { members, newMemberModal, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from '../deleteMember.svelte';
 
@@ -33,9 +33,11 @@
         try {
             await sdk.forConsole.teams.createMembership(
                 $organization.$id,
-                member.userEmail,
                 member.roles,
                 url,
+                member.userEmail,
+                undefined,
+                undefined,
                 member.userName
             );
             addNotification({

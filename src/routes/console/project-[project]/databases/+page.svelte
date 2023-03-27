@@ -8,7 +8,7 @@
     import Create from './create.svelte';
     import Grid from './grid.svelte';
     import Table from './table.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { columns } from './store';
 

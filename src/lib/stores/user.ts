@@ -1,8 +1,8 @@
 import { page } from '$app/stores';
 import { derived } from 'svelte/store';
-import type { Models } from '@aw-labs/appwrite-console';
 import { sdk } from './sdk';
 import { cachedStore } from '$lib/helpers/cache';
+import type { Models } from '@appwrite.io/console';
 
 export const user = derived(
     page,

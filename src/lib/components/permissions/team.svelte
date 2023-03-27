@@ -2,7 +2,7 @@
     import { Button, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@appwrite.io/console';
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
@@ -14,7 +14,7 @@
 
     let search = '';
     let offset = 0;
-    let results: Models.TeamList;
+    let results: Models.TeamList<Record<string, unknown>>;
     let selected: Set<string> = new Set();
     let hasSelection = false;
 

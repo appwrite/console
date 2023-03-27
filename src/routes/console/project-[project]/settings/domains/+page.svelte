@@ -18,7 +18,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Create from './create.svelte';
     import Delete from './delete.svelte';

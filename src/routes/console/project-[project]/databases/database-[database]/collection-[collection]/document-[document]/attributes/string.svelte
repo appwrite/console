@@ -1,6 +1,6 @@
 <script lang="ts">
     import { InputText, InputTextarea } from '$lib/elements/forms';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let id: string;
     export let label: string;
