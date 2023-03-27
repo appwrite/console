@@ -82,7 +82,7 @@
                     class="icon-view-boards u-opacity-50"
                     aria-hidden="true"
                     aria-label="columns" />
-                <span class="text">Columns</span>
+                <span class="text is-only-desktop">Columns</span>
                 <span class="inline-tag">{selectedColumnsNumber}</span>
             </Button>
             <svelte:fragment slot="list">
