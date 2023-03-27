@@ -12,7 +12,7 @@
 
     async function handleCreate(event: CustomEvent<Models.Collection>) {
         $showCreate = false;
-        await invalidate(Dependencies.DATABASE);
+        await await invalidate(Dependencies.DATABASE);
         await goto(
             `${base}/console/project-${project}/databases/database-${databaseId}/collection-${event.detail.$id}`
         );

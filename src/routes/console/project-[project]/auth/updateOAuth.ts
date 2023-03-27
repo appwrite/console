@@ -41,7 +41,7 @@ export async function updateOAuth({
             provider,
             enabled
         });
-        invalidate(Dependencies.PROJECT);
+        await invalidate(Dependencies.PROJECT);
 
         return { status: 'success' };
     } catch (e) {

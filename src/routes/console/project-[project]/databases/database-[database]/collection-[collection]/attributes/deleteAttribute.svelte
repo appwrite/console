@@ -22,7 +22,7 @@
                 $collection.$id,
                 selectedAttribute.key
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             showDelete = false;
             addNotification({
                 type: 'success',

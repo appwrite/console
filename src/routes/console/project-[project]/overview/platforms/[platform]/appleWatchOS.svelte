@@ -26,7 +26,7 @@
                 $platform.store || undefined,
                 $platform.hostname || undefined
             );
-            invalidate(Dependencies.PLATFORM);
+            await invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
                 type: 'apple-watchos'
             });

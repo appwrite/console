@@ -26,7 +26,7 @@
                 $platform.store,
                 $platform.hostname
             );
-            invalidate(Dependencies.PLATFORM);
+            await invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
                 type: 'apple-tvos'
             });

@@ -23,7 +23,7 @@
                 $key.expire || undefined
             );
             if ($onboarding) {
-                invalidate(Dependencies.PROJECT);
+                await invalidate(Dependencies.PROJECT);
             }
             trackEvent(Submit.KeyCreate, {
                 scopes: $key.scopes

@@ -40,7 +40,7 @@
                 httpUser || undefined,
                 httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOK);
+            await invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',
                 message: 'Webhook security has been updated'

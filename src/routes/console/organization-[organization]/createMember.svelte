@@ -28,7 +28,7 @@
                 undefined,
                 name || undefined
             );
-            invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ACCOUNT);
             showCreate = false;
             addNotification({
                 type: 'success',

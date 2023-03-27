@@ -25,7 +25,7 @@
                 $platform.store || undefined,
                 hostname
             );
-            invalidate(Dependencies.PLATFORM);
+            await invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
                 message: 'Platform Hostname has been updated'

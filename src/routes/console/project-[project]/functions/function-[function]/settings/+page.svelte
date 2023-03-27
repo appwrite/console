@@ -73,7 +73,7 @@
                 $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -99,7 +99,7 @@
                 $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'
@@ -125,7 +125,7 @@
                 $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
 
             addNotification({
                 type: 'success',
@@ -153,7 +153,7 @@
                 $func.enabled
             );
 
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
                 message: 'Timeout has been updated'
@@ -174,7 +174,7 @@
         try {
             await sdk.forProject.functions.createVariable(functionId, variable.key, variable.value);
             showVariablesModal = false;
-            invalidate(Dependencies.VARIABLES);
+            await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `${$func.name} variables have been updated`
@@ -200,7 +200,7 @@
             );
             selectedVar = null;
             showVariablesModal = false;
-            invalidate(Dependencies.VARIABLES);
+            await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `${$func.name} variables have been updated`
@@ -217,7 +217,7 @@
     async function handleVariableDeleted(variable: Models.Variable) {
         try {
             await sdk.forProject.functions.deleteVariable(variable.functionId, variable.$id);
-            invalidate(Dependencies.VARIABLES);
+            await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `Variable has been deleted`

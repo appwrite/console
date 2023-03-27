@@ -16,7 +16,7 @@
         showVerifcationDropdown = false;
         try {
             await sdk.forProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
-            invalidate(Dependencies.USER);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.emailVerification ? 'unverified' : 'verified'
@@ -36,7 +36,7 @@
         showVerifcationDropdown = false;
         try {
             await sdk.forProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
-            invalidate(Dependencies.USER);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.phoneVerification ? 'unverified' : 'verified'

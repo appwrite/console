@@ -48,7 +48,7 @@
             trackEvent(Submit.DocumentCreate, {
                 customId: !!$createDocument.id
             });
-            invalidate(Dependencies.DOCUMENTS);
+            await invalidate(Dependencies.DOCUMENTS);
 
             createDocument.reset();
             wizard.hide();

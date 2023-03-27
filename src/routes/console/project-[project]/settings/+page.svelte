@@ -29,7 +29,7 @@
         updating = true;
         try {
             await sdk.forConsole.projects.update($project.$id, name);
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'
@@ -57,7 +57,7 @@
                 service.method,
                 service.value
             );
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: `${service.label} service has been ${

@@ -14,7 +14,7 @@
     const deleteAllSessions = async () => {
         try {
             await sdk.forProject.users.deleteSessions($page.params.user);
-            invalidate(Dependencies.SESSIONS);
+            await invalidate(Dependencies.SESSIONS);
             showDeleteAll = false;
             addNotification({
                 type: 'success',

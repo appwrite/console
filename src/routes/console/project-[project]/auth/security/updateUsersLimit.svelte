@@ -32,7 +32,7 @@
         submitting = true;
         try {
             await sdk.forConsole.projects.updateAuthLimit(projectId, isLimited ? newLimit : 0);
-            invalidate(Dependencies.PROJECT).then(() => (submitting = false));
+            await invalidate(Dependencies.PROJECT).then(() => (submitting = false));
             addNotification({
                 type: 'success',
                 message: 'Updated project users limit successfully'

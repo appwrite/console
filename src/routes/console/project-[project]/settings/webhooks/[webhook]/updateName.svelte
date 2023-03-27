@@ -29,7 +29,7 @@
                 $webhook.httpUser || undefined,
                 $webhook.httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOK);
+            await invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',
                 message: 'Webhook name has been updated'

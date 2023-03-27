@@ -22,7 +22,7 @@
                 $key.scopes,
                 expiration
             );
-            invalidate(Dependencies.KEY);
+            await invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateExpire);
             addNotification({
                 type: 'success',

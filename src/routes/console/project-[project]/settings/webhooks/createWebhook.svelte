@@ -26,7 +26,7 @@
                 $createWebhook.httpUser || undefined,
                 $createWebhook.httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOKS);
+            await invalidate(Dependencies.WEBHOOKS);
             addNotification({
                 message: 'Webhook has been created',
                 type: 'success'

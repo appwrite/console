@@ -13,9 +13,9 @@
 
     async function onFinish() {
         if ($onboarding) {
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
         }
-        invalidate(Dependencies.PLATFORMS);
+        await invalidate(Dependencies.PLATFORMS);
         createPlatform.reset();
         wizard.hide();
     }

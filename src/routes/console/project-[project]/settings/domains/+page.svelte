@@ -42,11 +42,11 @@
             isVerifying[domainId] = true;
 
             if (domain.verification) {
-                invalidate(Dependencies.DOMAINS);
+                await invalidate(Dependencies.DOMAINS);
                 return;
             }
             await sdk.forConsole.projects.updateDomainVerification(projectId, domainId);
-            invalidate(Dependencies.DOMAINS);
+            await invalidate(Dependencies.DOMAINS);
             trackEvent(Submit.DomainUpdateVerification);
         } catch (error) {
             addNotification({

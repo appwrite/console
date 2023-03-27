@@ -35,7 +35,7 @@
                 $webhook.httpUser || undefined,
                 $webhook.httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOK);
+            await invalidate(Dependencies.WEBHOOK);
             areEventsDisabled = true;
             addNotification({
                 type: 'success',

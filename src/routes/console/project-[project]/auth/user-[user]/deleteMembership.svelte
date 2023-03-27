@@ -19,7 +19,7 @@
                 selectedMembership.teamId,
                 selectedMembership.$id
             );
-            invalidate(Dependencies.MEMBERSHIPS);
+            await invalidate(Dependencies.MEMBERSHIPS);
             showDelete = false;
 
             addNotification({

@@ -23,10 +23,10 @@
                 message: `${$collection.name} has been deleted`
             });
             trackEvent(Submit.CollectionDelete);
+            await invalidate(Dependencies.DATABASE);
             await goto(
                 `${base}/console/project-${$page.params.project}/databases/database-${$page.params.database}`
             );
-            invalidate(Dependencies.DATABASE);
         } catch (error) {
             addNotification({
                 type: 'error',

@@ -61,7 +61,7 @@
             );
 
             currentDoc = JSON.stringify($work);
-            invalidate(Dependencies.DOCUMENT);
+            await invalidate(Dependencies.DOCUMENT);
             trackEvent(Submit.DocumentUpdate);
             disableUpdate = true;
             addNotification({

@@ -27,7 +27,7 @@
     async function updateName() {
         try {
             await sdk.forConsole.account.updateName(name);
-            invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -44,7 +44,7 @@
     async function updateEmail() {
         try {
             await sdk.forConsole.account.updateEmail(email, emailPassword);
-            invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'

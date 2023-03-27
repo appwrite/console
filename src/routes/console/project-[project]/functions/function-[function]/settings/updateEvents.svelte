@@ -38,7 +38,7 @@
                 $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'

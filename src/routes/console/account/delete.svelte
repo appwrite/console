@@ -13,7 +13,7 @@
         try {
             await sdk.forConsole.account.updateStatus();
             showDelete = false;
-            invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: `Account was deleted `
