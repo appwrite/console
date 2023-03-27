@@ -32,8 +32,8 @@
                 Array.from($eventSet),
                 $webhook.url,
                 $webhook.security,
-                $webhook.httpUser,
-                $webhook.httpPass
+                $webhook.httpUser || undefined,
+                $webhook.httpPass || undefined
             );
             invalidate(Dependencies.WEBHOOK);
             areEventsDisabled = true;

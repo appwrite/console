@@ -67,10 +67,10 @@
             await sdk.forProject.functions.update(
                 functionId,
                 functionName,
-                $func.execute,
-                $func.events,
-                $func.schedule,
-                $func.timeout,
+                $func.execute || undefined,
+                $func.events || undefined,
+                $func.schedule || undefined,
+                $func.timeout || undefined,
                 $func.enabled
             );
             invalidate(Dependencies.FUNCTION);
@@ -94,9 +94,9 @@
                 functionId,
                 $func.name,
                 permissions,
-                $func.events,
-                $func.schedule,
-                $func.timeout,
+                $func.events || undefined,
+                $func.schedule || undefined,
+                $func.timeout || undefined,
                 $func.enabled
             );
             invalidate(Dependencies.FUNCTION);
@@ -119,10 +119,10 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute,
-                $func.events,
+                $func.execute || undefined,
+                $func.events || undefined,
                 functionSchedule,
-                $func.timeout,
+                $func.timeout || undefined,
                 $func.enabled
             );
             invalidate(Dependencies.FUNCTION);
@@ -146,9 +146,9 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute,
-                $func.events,
-                $func.schedule,
+                $func.execute || undefined,
+                $func.events || undefined,
+                $func.schedule || undefined,
                 timeout,
                 $func.enabled
             );

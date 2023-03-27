@@ -26,7 +26,7 @@
                 email,
                 undefined,
                 undefined,
-                name
+                name || undefined
             );
             invalidate(Dependencies.ACCOUNT);
             showCreate = false;
@@ -53,6 +53,7 @@
     <svelte:fragment slot="header">Invite Member</svelte:fragment>
     <FormList>
         <InputEmail
+            required
             id="email"
             label="Email"
             placeholder="Enter email"

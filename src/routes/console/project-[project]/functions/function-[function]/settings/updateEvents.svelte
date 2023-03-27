@@ -32,10 +32,10 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute,
+                $func.execute || undefined,
                 Array.from($eventSet),
-                $func.schedule,
-                $func.timeout,
+                $func.schedule || undefined,
+                $func.timeout || undefined,
                 $func.enabled
             );
             invalidate(Dependencies.FUNCTION);

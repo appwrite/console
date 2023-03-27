@@ -23,10 +23,10 @@
                 teamId,
                 roles,
                 url,
-                email,
+                email || undefined,
                 undefined,
                 undefined,
-                name
+                name || undefined
             );
             addNotification({
                 type: 'success',

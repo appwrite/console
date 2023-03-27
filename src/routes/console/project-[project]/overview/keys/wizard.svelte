@@ -20,7 +20,7 @@
                 $page.params.project,
                 $key.name,
                 $key.scopes,
-                $key.expire ?? undefined
+                $key.expire || undefined
             );
             if ($onboarding) {
                 invalidate(Dependencies.PROJECT);

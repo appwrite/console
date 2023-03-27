@@ -29,14 +29,15 @@
                 $createFunction.id ?? ID.unique(),
                 $createFunction.name,
                 $createFunction.runtime,
-                $createFunction.execute,
-                $createFunction.events,
-                $createFunction.schedule,
-                $createFunction.timeout
+                $createFunction.execute || undefined,
+                $createFunction.events || undefined,
+                $createFunction.schedule || undefined,
+                $createFunction.timeout || undefined
             );
-            $createFunction.vars.forEach(
-                async (v) =>
-                    await sdk.forProject.functions.createVariable(response.$id, v.key, v.value)
+            await Promise.all(
+                $createFunction.vars.map((v) =>
+                    sdk.forProject.functions.createVariable(response.$id, v.key, v.value)
+                )
             );
             await invalidate(Dependencies.FUNCTIONS);
             goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);

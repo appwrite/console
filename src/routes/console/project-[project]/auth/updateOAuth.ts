@@ -29,8 +29,8 @@ export async function updateOAuth({
         await sdk.forConsole.projects.updateOAuth2(
             projectId,
             provider.name.toLowerCase(),
-            appId,
-            secret,
+            appId || undefined,
+            secret || undefined,
             enabled
         );
         addNotification({

@@ -26,8 +26,8 @@
                 $webhook.events,
                 url,
                 $webhook.security,
-                $webhook.httpUser,
-                $webhook.httpPass
+                $webhook.httpUser || undefined,
+                $webhook.httpPass || undefined
             );
             invalidate(Dependencies.WEBHOOK);
             addNotification({

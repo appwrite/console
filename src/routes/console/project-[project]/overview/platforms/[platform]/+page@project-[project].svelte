@@ -51,9 +51,9 @@
                 $project.$id,
                 $platform.$id,
                 name,
-                $platform.key,
-                $platform.store,
-                $platform.hostname
+                $platform.key || undefined,
+                $platform.store || undefined,
+                $platform.hostname || undefined
             );
             invalidate(Dependencies.PLATFORM);
             addNotification({
