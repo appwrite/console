@@ -6,7 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showDelete = false;

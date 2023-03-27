@@ -1,5 +1,5 @@
 import { sdk } from '$lib/stores/sdk';
-import type { Models } from '@aw-labs/appwrite-console';
+import type { Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {

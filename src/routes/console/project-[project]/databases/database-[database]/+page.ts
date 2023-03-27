@@ -1,4 +1,4 @@
-import { Query } from '@aw-labs/appwrite-console';
+import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
 import { CARD_LIMIT } from '$lib/constants';

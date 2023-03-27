@@ -1,7 +1,7 @@
 <script lang="ts">
     import InputText from '$lib/elements/forms/inputText.svelte';
     import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let id: string;
     export let label: string;

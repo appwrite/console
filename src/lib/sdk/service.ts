@@ -1,4 +1,4 @@
-import type { Client, Payload } from '@aw-labs/appwrite-console';
+import type { Client, Payload } from '@appwrite.io/console';
 
 export class Service {
     static CHUNK_SIZE = 5 * 1024 * 1024; // 5MB

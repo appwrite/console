@@ -16,7 +16,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
     const projectId = $page.params.project;
 
@@ -28,8 +28,8 @@
             const response = await sdk.forProject.functions.create(
                 $createFunction.id ?? ID.unique(),
                 $createFunction.name,
-                $createFunction.execute,
                 $createFunction.runtime,
+                $createFunction.execute,
                 $createFunction.events,
                 $createFunction.schedule,
                 $createFunction.timeout

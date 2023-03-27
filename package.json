@@ -19,8 +19,8 @@
     },
     "dependencies": {
         "@analytics/google-analytics": "^1.0.5",
+        "@appwrite.io/console": "0.1.0-preview-0.0",
         "@appwrite.io/pink": "0.0.6-rc.2",
-        "@aw-labs/appwrite-console": "^13.1.0",
         "@popperjs/core": "^2.11.6",
         "@sentry/svelte": "^7.44.2",
         "@sentry/tracing": "^7.44.2",

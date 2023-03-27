@@ -8,7 +8,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
     export let show = false;
 
