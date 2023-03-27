@@ -15,6 +15,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
     import { View } from '$lib/helpers/load';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let columns: Writable<Column[]>;
     export let view: View;
@@ -108,7 +109,10 @@
                         class="toggle-button-element"
                         aria-label="List View"
                         type="button"
-                        class:is-selected={view === View.Table}>
+                        class:is-selected={view === View.Table}
+                        use:tooltip={{
+                            content: 'Column View'
+                        }}>
                         <span class="icon-view-list" aria-hidden="true" />
                     </a>
                 </li>
@@ -119,7 +123,10 @@
                         class="toggle-button-element"
                         aria-label="Grid View"
                         type="button"
-                        class:is-selected={view === View.Grid}>
+                        class:is-selected={view === View.Grid}
+                        use:tooltip={{
+                            content: 'Grid View'
+                        }}>
                         <span class="icon-view-grid" aria-hidden="true" />
                     </a>
                 </li>

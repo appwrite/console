@@ -135,7 +135,9 @@
 </script>
 
 <li>
-    <ul class="grid-box" style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem;">
+    <ul
+        class="grid-box"
+        style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 0.5rem;">
         <li>
             <LabelCard name="relationship" bind:group={way} value="one">
                 <svelte:fragment slot="title">One-way relationship</svelte:fragment>
@@ -154,6 +156,7 @@
 <InputSelectSearch
     id="related"
     label="Related Collection"
+    name="collections"
     bind:search
     bind:value={data.related}
     required

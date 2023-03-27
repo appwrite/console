@@ -41,6 +41,7 @@
         {label}
         {optionalText}
         required={attribute.required}
+        name="collections"
         bind:value
         options={collectionList?.collections?.map((n) => ({ value: n.$id, label: n.name })) ??
             []} />

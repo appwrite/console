@@ -4,7 +4,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputSelectSearch, InputText } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputSelectSearch, InputText } from '$lib/elements/forms';
     import { difference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -66,36 +66,40 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <ul class="form-list">
-                <InputText
-                    id="id"
-                    label="Document ID"
-                    showLabel={false}
-                    placeholder="Document ID"
-                    readonly />
-                {#if displayNames?.length}
-                    {#each displayNames as name, i}
-                        <div class="u-flex u-gap-16">
-                            <InputSelectSearch
-                                id={name}
-                                label={name}
-                                showLabel={false}
-                                placeholder="Select attribute"
-                                bind:value={displayNames[i]}
-                                {options} />
-                            <div class="form-item-part u-cross-child-end">
-                                <Button
-                                    text
-                                    on:click={() => {
-                                        displayNames.splice(i, 1);
-                                        displayNames = displayNames;
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </Button>
+            <div class="u-flex u-flex-vertical u-gap-8">
+                <FormList>
+                    <InputText
+                        id="id"
+                        label="Document ID"
+                        showLabel={false}
+                        placeholder="Document ID"
+                        readonly />
+                    {#if displayNames?.length}
+                        {#each displayNames as name, i}
+                            <div class="u-flex u-gap-8">
+                                <InputSelectSearch
+                                    id={name}
+                                    label={name}
+                                    showLabel={false}
+                                    placeholder="Select attribute"
+                                    bind:value={displayNames[i]}
+                                    name="attributes"
+                                    {options} />
+                                <div class="form-item-part u-cross-child-end">
+                                    <Button
+                                        text
+                                        noMargin
+                                        on:click={() => {
+                                            displayNames.splice(i, 1);
+                                            displayNames = displayNames;
+                                        }}>
+                                        <span class="icon-x" aria-hidden="true" />
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
-                    {/each}
-                {/if}
+                        {/each}
+                    {/if}
+                </FormList>
                 <Button
                     noMargin
                     text
@@ -107,7 +111,7 @@
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Add attribute</span>
                 </Button>
-            </ul>
+            </div>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
