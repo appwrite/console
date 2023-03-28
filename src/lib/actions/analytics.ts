@@ -1,6 +1,5 @@
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
-import { AppwriteException } from '@appwrite.io/console';
 import { ENV, MODE, VARS } from '$lib/system';
 import googleAnalytics from '@analytics/google-analytics';
 import { AppwriteException } from '@appwrite.io/console';
