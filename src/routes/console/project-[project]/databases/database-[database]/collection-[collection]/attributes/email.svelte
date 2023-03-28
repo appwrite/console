@@ -24,13 +24,12 @@
         collectionId: string,
         data: Partial<Models.AttributeEmail>
     ) {
-        await sdk.forProject.databases.createEmailAttribute(
+        await sdk.forProject.databases.updateEmailAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>

@@ -43,7 +43,12 @@
     };
 </script>
 
-<Modal icon="exclamation" state="warning" bind:show={showDelete} onSubmit={handleDelete}>
+<Modal
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}
+    bind:show={showDelete}
+    onSubmit={handleDelete}>
     <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to delete <b>'{selectedAttribute?.key}' from {$collection?.name}</b>?

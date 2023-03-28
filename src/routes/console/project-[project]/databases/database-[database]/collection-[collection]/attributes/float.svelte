@@ -25,15 +25,14 @@
         collectionId: string,
         data: Partial<Models.AttributeFloat>
     ) {
-        await sdk.forProject.databases.createFloatAttribute(
+        await sdk.forProject.databases.updateFloatAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
             data.min,
             data.max,
-            typeof data.default === 'number' ? data.default : undefined,
-            data.array
+            typeof data.default === 'number' ? data.default : undefined
         );
     }
 </script>

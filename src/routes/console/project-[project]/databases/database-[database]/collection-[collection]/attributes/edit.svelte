@@ -12,29 +12,19 @@
 
     export let showEdit = false;
     export let selectedAttribute: Attributes;
+
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
+
     let updateButtonDisabled = true;
+    let error: string;
+    let currentAttr: string;
 
-    $: attr = selectedAttribute as {
-        type?: string;
-        size?: string;
-        format?: string;
-        array?: boolean;
-        required?: boolean;
-        status?: string;
-        key?: string;
-        min?: string;
-        max?: string;
-        default: string;
-        elements?: string[];
-    };
-
-    $: option = options.find((option) => option?.type === attr?.type) as Option;
+    $: option = options.find((option) => option?.type === selectedAttribute?.type) as Option;
 
     async function submit() {
         try {
-            await option.update(databaseId, collectionId, attr);
+            await option.update(databaseId, collectionId, selectedAttribute);
             await Promise.allSettled([invalidate(Dependencies.COLLECTION)]);
             if (!$page.url.pathname.includes('attributes')) {
                 await goto(
@@ -43,42 +33,44 @@
             }
             addNotification({
                 type: 'success',
-                message: `Attribute ${attr.key} has been created`
+                message: `Attribute ${selectedAttribute.key} has been created`
             });
             showEdit = false;
             trackEvent(Submit.AttributeUpdate);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.AttributeUpdate);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.AttributeUpdate);
         }
     }
 
-    $: if (JSON.stringify(attr) !== JSON.stringify(selectedAttribute)) {
-        updateButtonDisabled = false;
-    } else updateButtonDisabled = true;
+    $: updateButtonDisabled = JSON.stringify(selectedAttribute) === currentAttr;
+
+    $: if (showEdit) {
+        currentAttr ??= JSON.stringify(selectedAttribute);
+        error = null;
+    }
 </script>
 
-<Modal size="big" bind:show={showEdit} onSubmit={submit} icon={option?.icon}>
-    <svelte:fragment slot="header">
-        {attr?.type}
-        {#if attr?.type === 'Relationship'}
-            <div class="tag eyebrow-heading-3">
-                <span class="text u-x-small">Beta</span>
+{#if selectedAttribute}
+    <Modal {error} size="big" bind:show={showEdit} onSubmit={submit} icon={option?.icon}>
+        <svelte:fragment slot="header">
+            <div class="u-flex u-cross-center u-gap-8">
+                {option?.name}
+                {#if option.type === 'relationship'}
+                    <div class="tag eyebrow-heading-3">
+                        <span class="text u-x-small">Beta</span>
+                    </div>
+                {/if}
             </div>
-        {/if}
-    </svelte:fragment>
-    <FormList>
-        {#if selectedAttribute}
-            {#if option.name !== 'Relationship'}
+        </svelte:fragment>
+        <FormList>
+            {#if selectedAttribute?.type !== 'relationship'}
                 <div>
                     <InputText
                         id="key"
                         label="Attribute Key"
                         placeholder="Enter Key"
-                        bind:value={attr.key}
+                        bind:value={selectedAttribute.key}
                         autofocus
                         required />
 
@@ -94,13 +86,13 @@
             {/if}
             <svelte:component
                 this={option.component}
-                bind:data={attr}
+                bind:data={selectedAttribute}
                 editing
                 on:close={() => (option = null)} />
-        {/if}
-    </FormList>
-    <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
-        <Button submit disabled={attr === selectedAttribute}>Update</Button>
-    </svelte:fragment>
-</Modal>
+        </FormList>
+        <svelte:fragment slot="footer">
+            <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
+            <Button submit disabled={updateButtonDisabled}>Update</Button>
+        </svelte:fragment>
+    </Modal>
+{/if}

@@ -1,5 +1,4 @@
 import { page } from '$app/stores';
-import type { Column } from '$lib/components/viewSelector.svelte';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
@@ -11,7 +10,8 @@ export type Attributes =
     | Models.AttributeInteger
     | Models.AttributeIp
     | Models.AttributeString
-    | Models.AttributeUrl;
+    | Models.AttributeUrl
+    | Models.AttributeRelationship;
 
 type Collection = Omit<Models.Collection, 'attributes'> & {
     attributes: Array<Attributes>;
@@ -21,7 +21,7 @@ export type Column = {
     title: string;
     show: boolean;
     type?: string;
-    direction?: string;
+    twoWay?: string;
     width?: number;
 };
 

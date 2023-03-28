@@ -24,14 +24,13 @@
         collectionId: string,
         data: Partial<Models.AttributeEnum>
     ) {
-        await sdk.forProject.databases.createEnumAttribute(
+        await sdk.forProject.databases.updateEnumAttribute(
             databaseId,
             collectionId,
             data.key,
             data.elements,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>

@@ -77,7 +77,7 @@
 
 <TableScroll isSticky>
     <TableHeader>
-        <TableCellHead width={100} eyebrow={false}>Document ID</TableCellHead>
+        <TableCellHead width={150} eyebrow={false}>Document ID</TableCellHead>
         {#each $columns.filter((n) => n.show) as column}
             {#if column.show}
                 <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
@@ -100,7 +100,7 @@
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.type === 'relationship'}
-                            {#if column.direction === 'one'}
+                            {#if !column.twoWay}
                                 <TableCell title={column.title}>
                                     {document[column.id]}
                                 </TableCell>

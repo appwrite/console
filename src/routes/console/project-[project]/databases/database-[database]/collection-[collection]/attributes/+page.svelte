@@ -54,7 +54,19 @@
                             <div class="u-flex u-main-space-between u-cross-center">
                                 <div class="u-flex u-cross-center u-gap-16">
                                     <div class="avatar is-size-small u-color-text-gray">
-                                        <span class={`icon-${option.icon}`} aria-hidden="true" />
+                                        {#if option.icon === 'relationship'}
+                                            <span
+                                                class={`icon-${
+                                                    attribute?.twoWay
+                                                        ? 'switch-horizontal'
+                                                        : 'arrow-sm-right'
+                                                }`}
+                                                aria-hidden="true" />
+                                        {:else}
+                                            <span
+                                                class={`icon-${option.icon}`}
+                                                aria-hidden="true" />
+                                        {/if}
                                     </div>
                                     <span class="text u-trim">{attribute.key}</span>
                                 </div>
@@ -75,7 +87,9 @@
                             {`${attribute.type}${attribute.array ? '[]' : ''}`}
                         </TableCellText>
                         <TableCellText onlyDesktop title="Default Value">
-                            {attribute.default !== null ? attribute.default : '-'}
+                            {attribute?.default !== null && attribute?.default !== undefined
+                                ? attribute?.default
+                                : '-'}
                         </TableCellText>
                         <TableCell showOverflow>
                             <DropList

@@ -12,6 +12,8 @@
 
     export let showCreate = false;
     export let selectedOption: string = null;
+    const databaseId = $page.params.database;
+    const collectionId = $page.params.collection;
 
     let key: string = null;
     let data: Partial<Attributes> = {
@@ -19,8 +21,7 @@
         array: false,
         default: null
     };
-    const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
+    let error: string;
 
     async function submit() {
         try {
@@ -33,16 +34,13 @@
             }
             addNotification({
                 type: 'success',
-                message: `Attribute ${key} has been created`
+                message: `Attribute ${key ?? data?.key} has been created`
             });
             showCreate = false;
             trackEvent(Submit.AttributeCreate);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.AttributeCreate);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.AttributeCreate);
         }
     }
 
@@ -51,6 +49,7 @@
     }
 
     $: if (!showCreate) {
+        error = null;
         key = null;
         selectedOption = null;
         $option = null;
@@ -62,7 +61,7 @@
     }
 </script>
 
-<Modal size="big" bind:show={showCreate} onSubmit={submit} icon={$option?.icon}>
+<Modal {error} size="big" bind:show={showCreate} onSubmit={submit} icon={$option?.icon}>
     <svelte:fragment slot="header">
         {#if selectedOption === 'Relationship'}
             <span class="u-flex u-gap-16 u-cross-center">

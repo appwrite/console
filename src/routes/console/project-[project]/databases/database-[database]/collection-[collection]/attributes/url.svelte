@@ -23,13 +23,12 @@
         collectionId: string,
         data: Partial<Models.AttributeUrl>
     ) {
-        await sdk.forProject.databases.createUrlAttribute(
+        await sdk.forProject.databases.updateUrlAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>

@@ -23,13 +23,12 @@
 
         data: Partial<Models.AttributeBoolean>
     ) {
-        await sdk.forProject.databases.createBooleanAttribute(
+        await sdk.forProject.databases.updateBooleanAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>

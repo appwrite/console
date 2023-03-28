@@ -22,13 +22,12 @@
         collectionId: string,
         data: Partial<Models.AttributeIp>
     ) {
-        await sdk.forProject.databases.createIpAttribute(
+        await sdk.forProject.databases.updateIpAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>

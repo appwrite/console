@@ -23,13 +23,12 @@
         collectionId: string,
         data: Partial<Models.AttributeDatetime>
     ) {
-        await sdk.forProject.databases.createDatetimeAttribute(
+        await sdk.forProject.databases.updateDatetimeAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>
