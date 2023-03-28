@@ -64,8 +64,8 @@
         {/if}
 
         <slot />
+        <slot name="footer" />
     </section>
-    <slot name="footer" />
 </main>
 
 <style lang="scss">
