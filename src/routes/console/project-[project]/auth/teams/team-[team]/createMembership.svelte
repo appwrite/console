@@ -15,7 +15,7 @@
     let name: string, email: string, roles: string[];
     let error: string;
 
-    const create = async () => {
+    async function create() {
         const url = `${$page.url.origin}/console/project-${$page.params.project}/auth/teams/team-${$page.params.team}/members`;
 
         try {
@@ -41,7 +41,7 @@
             error = e.message;
             trackError(e, Submit.MemberCreate);
         }
-    };
+    }
 </script>
 
 <Modal {error} onSubmit={create} size="big" bind:show={showCreate}>

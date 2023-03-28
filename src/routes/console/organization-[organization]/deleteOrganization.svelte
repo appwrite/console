@@ -14,16 +14,15 @@
     async function deleteOrg() {
         try {
             await sdk.forConsole.teams.delete($organization.$id);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: `${$organization.name} has been deleted`
             });
             trackEvent(Submit.OrganizationDelete);
             if ($organizationList?.total > 1) {
-                await invalidate(Dependencies.ACCOUNT);
                 goto(`${base}/console/`);
             } else {
-                await invalidate(Dependencies.ACCOUNT);
                 goto(`${base}/console/onboarding`);
             }
             showDelete = false;

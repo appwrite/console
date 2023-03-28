@@ -12,8 +12,8 @@
     async function deleteAccount() {
         try {
             await sdk.forConsole.account.updateStatus();
-            showDelete = false;
             await invalidate(Dependencies.ACCOUNT);
+            showDelete = false;
             addNotification({
                 type: 'success',
                 message: `Account was deleted `
