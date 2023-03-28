@@ -12,10 +12,10 @@
     import Step4 from './wizard/step4.svelte';
 
     async function onFinish() {
-        if ($onboarding) {
-            await invalidate(Dependencies.PROJECT);
-        }
-        await invalidate(Dependencies.PLATFORMS);
+        await Promise.all([
+            $onboarding && invalidate(Dependencies.PROJECT),
+            invalidate(Dependencies.PLATFORMS)
+        ]);
         createPlatform.reset();
         wizard.hide();
     }

@@ -17,8 +17,6 @@
     import Overview from './overviewIndex.svelte';
     import CreateAttribute from '../createAttribute.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
 
     let showDropdown = [];
@@ -27,10 +25,6 @@
     let showOverview = false;
     let showDelete = false;
     let showCreateAttribute = false;
-
-    async function handleDelete() {
-        invalidate(Dependencies.COLLECTION);
-    }
 </script>
 
 <Container>
@@ -135,7 +129,7 @@
 <Create bind:showCreateIndex />
 
 {#if selectedIndex}
-    <Delete bind:showDelete {selectedIndex} on:deleted={handleDelete} />
+    <Delete bind:showDelete {selectedIndex} />
     <Overview bind:showOverview {selectedIndex} />
 {/if}
 
