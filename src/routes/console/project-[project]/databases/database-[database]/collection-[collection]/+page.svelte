@@ -31,6 +31,11 @@
     function openWizard() {
         wizard.start(Create);
     }
+
+    $: hasAttributes = !!$collection.attributes.length;
+
+    //Check if $collection.attributes has any attribute without status deleting, stuck or failed
+    $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
 </script>
 
 <Container>
@@ -39,7 +44,7 @@
         <div class="u-flex u-gap-16">
             <ViewSelector view={data.view} {columns} hideView isCustomCollection />
             <Button
-                disabled={!$collection?.attributes?.length}
+                disabled={!(hasAttributes && hasValidAttributes)}
                 on:click={openWizard}
                 event="create_document">
                 <span class="icon-plus" aria-hidden="true" />
@@ -48,7 +53,7 @@
         </div>
     </div>
 
-    {#if $collection?.attributes?.length}
+    {#if hasAttributes && hasValidAttributes}
         {#if data.documents.total}
             <Table {data} />
 
