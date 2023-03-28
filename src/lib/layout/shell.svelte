@@ -1,17 +1,17 @@
 <script lang="ts">
-    import { navigating, page } from '$app/stores';
     import { browser } from '$app/environment';
-    import { wizard } from '$lib/stores/wizard';
-    import { log } from '$lib/stores/logs';
     import { beforeNavigate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { log } from '$lib/stores/logs';
+    import { wizard } from '$lib/stores/wizard';
 
     export let isOpen = false;
     export let showSideNavigation = false;
 
     let y: number;
 
-    navigating.subscribe(() => {
-        if (isOpen) isOpen = false;
+    page.subscribe(() => {
+        isOpen = $page.url.searchParams.get('openNavbar') === 'true';
     });
 
     const toggleMenu = () => {
