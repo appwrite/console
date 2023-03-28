@@ -112,7 +112,7 @@
     $: if (way === 'two') {
         data.twoWay = true;
     } else {
-        // data.twoWay = false;
+        data.twoWay = false;
     }
 </script>
 
@@ -192,7 +192,7 @@
         bind:value={data.relationType}
         required
         placeholder="Select a relation"
-        options={data?.twoWay ? oneWay : twoWay}
+        options={data?.twoWay ? twoWay : oneWay}
         disabled={editing} />
 
     <div class="box">

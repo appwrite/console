@@ -23,12 +23,13 @@
         collectionId: string,
         data: Partial<Models.AttributeString>
     ) {
+        console.log(data);
         await sdk.forProject.databases.updateStringAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            data.default ? (data.default as string) : undefined
+            (data.default as string) || undefined
         );
     }
 </script>

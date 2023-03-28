@@ -28,15 +28,15 @@
         integer: Integer,
         double: Integer,
         boolean: Boolean,
-        datetime: Datetime
+        datetime: Datetime,
+        relationship: Relationship
     };
 
     const attributesFormatMap = {
         ip: String,
         url: Url,
         email: String,
-        enum: Enum,
-        relationship: Relationship
+        enum: Enum
     };
 </script>
 

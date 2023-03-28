@@ -49,6 +49,8 @@
         currentAttr ??= JSON.stringify(selectedAttribute);
         error = null;
     }
+
+    $: console.log(selectedAttribute, currentAttr);
 </script>
 
 {#if selectedAttribute}
@@ -72,7 +74,8 @@
                         placeholder="Enter Key"
                         bind:value={selectedAttribute.key}
                         autofocus
-                        required />
+                        required
+                        disabled />
 
                     <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
                         <span

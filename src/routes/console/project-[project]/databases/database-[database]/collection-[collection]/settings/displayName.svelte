@@ -1,28 +1,32 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelectSearch, InputText } from '$lib/elements/forms';
-    import { difference } from '$lib/helpers/array';
+    import { difference, last, symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { organization } from '$lib/stores/organization';
+    import { teamPrefs } from '$lib/stores/team';
     import { onMount } from 'svelte';
-    import { attributes, collection } from '../store';
+    import { attributes } from '../store';
 
-    const databaseId = $page.params.database;
-    let teamPreferences = { displayNames: [] };
+    let displayNames = [];
+    let search: string;
 
-    $: displayNames = null;
+    onMount(async () => {
+        await teamPrefs.load($organization.$id);
 
-    onMount(() => {
-        displayNames ??= [];
+        $teamPrefs.displayNames ??= [];
+        displayNames = [...$teamPrefs.displayNames];
     });
 
     async function updateDisplayName() {
         try {
-            invalidate(Dependencies.COLLECTION);
+            teamPrefs.updatePrefs($organization.$id, {
+                displayNames
+            });
+            invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -55,6 +59,12 @@
     $: addAttributeDisabled =
         displayNames?.length >= 5 ||
         (displayNames?.length && !displayNames[displayNames?.length - 1]);
+
+    $: updateBtnDisabled = !symmetricDifference(displayNames, $teamPrefs?.displayNames)?.length;
+
+    $: console.log(displayNames, $teamPrefs?.displayNames);
+
+    $: console.log(symmetricDifference(displayNames, $teamPrefs?.displayNames).length);
 </script>
 
 <Form onSubmit={updateDisplayName}>
@@ -77,14 +87,28 @@
                     {#if displayNames?.length}
                         {#each displayNames as name, i}
                             <div class="u-flex u-gap-8">
-                                <InputSelectSearch
-                                    id={name}
-                                    label={name}
-                                    showLabel={false}
-                                    placeholder="Select attribute"
-                                    bind:value={displayNames[i]}
-                                    name="attributes"
-                                    {options} />
+                                {#if displayNames[i]}
+                                    <InputSelectSearch
+                                        id={name}
+                                        label={name}
+                                        showLabel={false}
+                                        placeholder="Select attribute"
+                                        bind:value={displayNames[i]}
+                                        bind:search={displayNames[i]}
+                                        name="attributes"
+                                        disabled
+                                        {options} />
+                                {:else}
+                                    <InputSelectSearch
+                                        id={name}
+                                        label={name}
+                                        showLabel={false}
+                                        placeholder="Select attribute"
+                                        bind:value={displayNames[i]}
+                                        bind:search
+                                        name="attributes"
+                                        {options} />
+                                {/if}
                                 <div class="form-item-part u-cross-child-end">
                                     <Button
                                         text
@@ -106,6 +130,7 @@
                     disabled={addAttributeDisabled}
                     on:click={() => {
                         displayNames[displayNames.length] = null;
+                        search = null;
                         displayNames = displayNames;
                     }}>
                     <span class="icon-plus" aria-hidden="true" />
@@ -115,11 +140,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button
-                disabled={!displayNames?.length ||
-                    !teamPreferences?.displayNames ||
-                    !!difference(displayNames, teamPreferences.displayNames)?.length}
-                submit>Update</Button>
+            <Button disabled={updateBtnDisabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
