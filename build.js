@@ -10,7 +10,7 @@ function log(text = '', prefix = '') {
     console.log(`${bold().green(`# ${prefix}`)}${text}`);
 }
 
-function logEnv(key, value, fallback) {
+function logEnv(key, value, fallback = 'not set') {
     log(value || yellow(fallback), `${key}: `);
 }
 
@@ -23,11 +23,11 @@ async function main() {
     log();
     log(bold().magenta('APPWRITE CONSOLE'));
     log();
-    logEnv('CONSOLE MODE', env?.VITE_CONSOLE_MODE, 'not set');
+    logEnv('CONSOLE MODE', env?.VITE_CONSOLE_MODE);
     logEnv('APPWRITE ENDPOINT', env?.VITE_APPWRITE_ENDPOINT, 'relative');
-    logEnv('GROWTH ENDPOINT', env?.VITE_APPWRITE_GROWTH_ENDPOINT, 'not set');
-    logEnv('GOOGLE ANALYTICS', env?.VITE_GA_PROJECT, 'not set');
-    logEnv('SENTRY DSN', env?.VITE_GA_PROJECT, 'not set');
+    logEnv('GROWTH ENDPOINT', env?.VITE_APPWRITE_GROWTH_ENDPOINT);
+    logEnv('GOOGLE ANALYTICS', env?.VITE_GA_PROJECT);
+    logEnv('SENTRY DSN', env?.VITE_GA_PROJECT);
     log();
     logDelimiter();
     await build();
