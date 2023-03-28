@@ -31,7 +31,7 @@
     }
 </script>
 
-<Modal bind:show={showCreate} on:submit={handleVariable} size="big">
+<Modal bind:show={showCreate} onSubmit={handleVariable} size="big">
     <svelte:fragment slot="header">
         {selectedVar ? 'Update' : 'Create'} Variable
     </svelte:fragment>

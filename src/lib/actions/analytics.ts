@@ -3,6 +3,7 @@ import { user } from '$lib/stores/user';
 import { AppwriteException } from '@appwrite.io/console';
 import { ENV, MODE, VARS } from '$lib/system';
 import googleAnalytics from '@analytics/google-analytics';
+import { AppwriteException } from '@appwrite.io/console';
 import Analytics from 'analytics';
 import { get } from 'svelte/store';
 
@@ -10,7 +11,7 @@ const analytics = Analytics({
     app: 'appwrite',
     plugins: [
         googleAnalytics({
-            measurementIds: [VARS.GOOGLE_ANALYTICS ?? 'G-R4YJ9JN8L4']
+            measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
         })
     ]
 });
@@ -88,7 +89,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
     });
 }
 
-function isTrackingAllowed() {
+export function isTrackingAllowed() {
     if (ENV.TEST) {
         return;
     }

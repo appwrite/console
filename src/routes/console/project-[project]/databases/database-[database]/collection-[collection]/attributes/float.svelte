@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import type { Models } from '@appwrite.io/console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitFloat(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeFloat>
     ) {
-        await sdkForProject.databases.createFloatAttribute(
+        await sdk.forProject.databases.createFloatAttribute(
             databaseId,
             collectionId,
             key,

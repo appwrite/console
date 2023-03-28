@@ -49,7 +49,7 @@
         think.
     </div>
 
-    <Form on:submit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
         <Evaluation bind:value>
             How likely are you to recommend Appwrite to a friend or colleague?
         </Evaluation>

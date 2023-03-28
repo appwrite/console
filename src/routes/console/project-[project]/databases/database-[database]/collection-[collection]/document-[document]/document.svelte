@@ -5,7 +5,7 @@
     import { doc } from './store';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
     import type { Models } from '@appwrite.io/console';
@@ -52,7 +52,7 @@
 
     async function updateData() {
         try {
-            await sdkForProject.databases.updateDocument(
+            await sdk.forProject.databases.updateDocument(
                 databaseId,
                 collectionId,
                 documentId,
@@ -79,7 +79,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Update Data</Heading>
+    <Heading tag="h6" size="7">Data</Heading>
     <p>Update document data based on the attributes created earlier.</p>
     <svelte:fragment slot="aside">
         <AttributeForm attributes={$collection.attributes} bind:formValues={$work} gap="16" />

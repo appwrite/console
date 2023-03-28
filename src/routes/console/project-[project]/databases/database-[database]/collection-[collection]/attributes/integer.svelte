@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
     export async function submitInteger(
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeInteger>
     ) {
-        await sdkForProject.databases.createIntegerAttribute(
+        await sdk.forProject.databases.createIntegerAttribute(
             databaseId,
             collectionId,
             key,

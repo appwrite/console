@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
 import type { Models } from '@appwrite.io/console';
 
@@ -56,7 +56,7 @@ export const versions = cachedStore<
 >('versions', function ({ set }) {
     return {
         load: async () => {
-            const { endpoint } = sdkForConsole.client.config;
+            const { endpoint } = sdk.forConsole.client.config;
             const response = await fetch(`${endpoint}/../versions`);
             set(await response.json());
         }

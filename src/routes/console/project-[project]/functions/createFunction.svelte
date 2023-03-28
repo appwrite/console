@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
@@ -25,18 +25,18 @@
     }
     async function create() {
         try {
-            const response = await sdkForProject.functions.create(
+            const response = await sdk.forProject.functions.create(
                 $createFunction.id ?? ID.unique(),
                 $createFunction.name,
-                $createFunction.execute,
                 $createFunction.runtime,
+                $createFunction.execute,
                 $createFunction.events,
                 $createFunction.schedule,
                 $createFunction.timeout
             );
             $createFunction.vars.forEach(
                 async (v) =>
-                    await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
+                    await sdk.forProject.functions.createVariable(response.$id, v.key, v.value)
             );
             await invalidate(Dependencies.FUNCTIONS);
             goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);

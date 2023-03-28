@@ -3,7 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
@@ -17,7 +17,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForProject.databases.deleteIndex(
+            await sdk.forProject.databases.deleteIndex(
                 databaseId,
                 $collection.$id,
                 selectedIndex.key
@@ -39,10 +39,10 @@
     };
 </script>
 
-<Modal warning={true} on:submit={handleDelete} bind:show={showDelete}>
+<Modal warning={true} onSubmit={handleDelete} bind:show={showDelete}>
     <svelte:fragment slot="header">Delete Index</svelte:fragment>
 
-    <p>
+    <p data-private>
         Are you sure you want to delete <b>'{selectedIndex.key}' from {$collection.name}</b>?
     </p>
     <svelte:fragment slot="footer">

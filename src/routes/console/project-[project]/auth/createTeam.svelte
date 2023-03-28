@@ -4,7 +4,7 @@
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
@@ -17,7 +17,7 @@
 
     const create = async () => {
         try {
-            const team = await sdkForProject.teams.create(id ?? ID.unique(), name);
+            const team = await sdk.forProject.teams.create(id ?? ID.unique(), name);
             name = '';
             showCreate = false;
             showCustomId = false;
@@ -41,7 +41,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Create Team</svelte:fragment>
     <FormList>
         <InputText

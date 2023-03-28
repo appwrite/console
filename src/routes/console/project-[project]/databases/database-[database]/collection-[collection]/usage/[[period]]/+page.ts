@@ -1,10 +1,9 @@
 import type { Models } from '@appwrite.io/console';
-import { sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, parent }) => {
-    await parent();
-    const response = await sdkForProject.databases.getCollectionUsage(
+export const load: PageLoad = async ({ params }) => {
+    const response = await sdk.forProject.databases.getCollectionUsage(
         params.database,
         params.collection,
         params.period ?? '30d'

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { FormItem } from '.';
+    import TextCounter from './textCounter.svelte';
 
     export let value = '';
 
@@ -42,11 +43,7 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
-        <span class="text-counter">
-            <span class="text-counter-count">{value?.length ?? 0}</span>
-            <span class="text-counter-separator" />
-            <span class="text-counter-max">36</span>
-        </span>
+        <TextCounter count={value?.length ?? 0} max={36} />
     </div>
 </FormItem>
 <div

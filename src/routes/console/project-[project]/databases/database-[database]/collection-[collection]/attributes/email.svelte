@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
     import type { Models } from '@appwrite.io/console';
 
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitEmail(
         databaseId: string,
@@ -9,7 +9,7 @@
         key: string,
         data: Partial<Models.AttributeEmail>
     ) {
-        await sdkForProject.databases.createEmailAttribute(
+        await sdk.forProject.databases.createEmailAttribute(
             databaseId,
             collectionId,
             key,
