@@ -34,7 +34,6 @@
 
     $: hasAttributes = !!$collection.attributes.length;
 
-    //Check if $collection.attributes has any attribute without status deleting, stuck or failed
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
 </script>
 

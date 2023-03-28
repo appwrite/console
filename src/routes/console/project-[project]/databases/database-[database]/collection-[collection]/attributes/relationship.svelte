@@ -52,17 +52,17 @@
     // Constants
     const databaseId = $page.params.database;
     const oneWay = [
-        { value: 'onetoone', label: 'One to one' },
-        { value: 'onetomany', label: 'One to many' }
+        { value: 'oneToOne', label: 'One to one' },
+        { value: 'oneToMany', label: 'One to many' }
     ];
     const twoWay = [
         ...oneWay,
-        { value: 'manytoone', label: 'Many to one' },
-        { value: 'manytomany', label: 'Many to many' }
+        { value: 'manyToOne', label: 'Many to one' },
+        { value: 'manyToMany', label: 'Many to many' }
     ];
 
     const deleteOptions = [
-        { value: 'setnull', label: 'Null' },
+        { value: 'setNull', label: 'Null' },
         { value: 'cascade', label: 'Cascade' },
         { value: 'restrict', label: 'Restrict' }
     ];
