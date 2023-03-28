@@ -40,6 +40,7 @@
                 $createDocument.document,
                 $createDocument.permissions
             );
+            await invalidate(Dependencies.DOCUMENTS);
 
             addNotification({
                 message: 'Document has been created',
@@ -48,7 +49,6 @@
             trackEvent(Submit.DocumentCreate, {
                 customId: !!$createDocument.id
             });
-            invalidate(Dependencies.DOCUMENTS);
 
             createDocument.reset();
             wizard.hide();

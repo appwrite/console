@@ -38,7 +38,7 @@
                 member.userEmail,
                 undefined,
                 undefined,
-                member.userName
+                member.userName || undefined
             );
             addNotification({
                 type: 'success',

@@ -9,11 +9,11 @@
 
     export let showDelete = false;
 
-    const deleteAccount = async () => {
+    async function deleteAccount() {
         try {
             await sdk.forConsole.account.updateStatus();
+            await invalidate(Dependencies.ACCOUNT);
             showDelete = false;
-            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: `Account was deleted `
@@ -26,7 +26,7 @@
             });
             trackError(error, Submit.AccountDelete);
         }
-    };
+    }
 </script>
 
 <Modal bind:show={showDelete} onSubmit={deleteAccount} warning>

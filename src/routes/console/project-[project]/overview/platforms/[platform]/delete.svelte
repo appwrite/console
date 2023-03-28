@@ -12,16 +12,16 @@
 
     export let showDelete = false;
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         try {
             await sdk.forConsole.projects.deletePlatform($project.$id, $platform.$id);
+            await invalidate(Dependencies.PLATFORMS);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$platform.name} has been deleted`
             });
             trackEvent(Submit.PlatformDelete);
-            await invalidate(Dependencies.PLATFORMS);
             await goto(`${base}/console/project-${$project.$id}/overview/platforms`);
         } catch (error) {
             addNotification({
@@ -30,7 +30,7 @@
             });
             trackError(error, Submit.PlatformDelete);
         }
-    };
+    }
 </script>
 
 <Modal bind:show={showDelete} onSubmit={handleDelete} warning>

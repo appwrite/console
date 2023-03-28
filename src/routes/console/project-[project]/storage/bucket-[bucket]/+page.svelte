@@ -50,22 +50,22 @@
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
-    function fileCreated() {
+    async function fileCreated() {
         showCreate = false;
-        invalidate(Dependencies.FILES);
+        await invalidate(Dependencies.FILES);
     }
 
-    function fileDeleted(event: CustomEvent<Models.File>) {
+    async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
         uploader.removeFile(event.detail);
-        invalidate(Dependencies.FILES);
+        await invalidate(Dependencies.FILES);
     }
 
     async function deleteFile(file: Models.File) {
         try {
             await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
+            await invalidate(Dependencies.FILES);
             uploader.removeFile(file);
-            invalidate(Dependencies.FILES);
             trackEvent(Submit.FileDelete);
         } catch (error) {
             addNotification({

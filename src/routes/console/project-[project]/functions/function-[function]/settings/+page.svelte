@@ -67,13 +67,13 @@
             await sdk.forProject.functions.update(
                 functionId,
                 functionName,
-                $func.execute,
-                $func.events,
-                $func.schedule,
-                $func.timeout,
+                $func.execute || undefined,
+                $func.events || undefined,
+                $func.schedule || undefined,
+                $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -94,12 +94,12 @@
                 functionId,
                 $func.name,
                 permissions,
-                $func.events,
-                $func.schedule,
-                $func.timeout,
+                $func.events || undefined,
+                $func.schedule || undefined,
+                $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'
@@ -119,14 +119,13 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute,
-                $func.events,
+                $func.execute || undefined,
+                $func.events || undefined,
                 functionSchedule,
-                $func.timeout,
+                $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
-
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
                 message: 'Cron Schedule has been updated'
@@ -146,14 +145,13 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute,
-                $func.events,
-                $func.schedule,
+                $func.execute || undefined,
+                $func.events || undefined,
+                $func.schedule || undefined,
                 timeout,
                 $func.enabled
             );
-
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
                 message: 'Timeout has been updated'
@@ -173,8 +171,8 @@
 
         try {
             await sdk.forProject.functions.createVariable(functionId, variable.key, variable.value);
+            await invalidate(Dependencies.VARIABLES);
             showVariablesModal = false;
-            invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `${$func.name} variables have been updated`
@@ -198,9 +196,9 @@
                 variable.key,
                 variable.value
             );
+            await invalidate(Dependencies.VARIABLES);
             selectedVar = null;
             showVariablesModal = false;
-            invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `${$func.name} variables have been updated`
@@ -217,7 +215,7 @@
     async function handleVariableDeleted(variable: Models.Variable) {
         try {
             await sdk.forProject.functions.deleteVariable(variable.functionId, variable.$id);
-            invalidate(Dependencies.VARIABLES);
+            await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `Variable has been deleted`

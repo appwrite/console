@@ -1,6 +1,8 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -13,6 +15,7 @@
     async function updateSessionsLimit() {
         try {
             await sdk.forConsole.projects.updateAuthSessionsLimit(projectId, maxSessions);
+            await invalidate(Dependencies.PROJECT);
 
             addNotification({
                 type: 'success',

@@ -15,14 +15,14 @@
     export let selectedAttribute: Attributes;
     const databaseId = $page.params.database;
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         try {
             await sdk.forProject.databases.deleteAttribute(
                 databaseId,
                 $collection.$id,
                 selectedAttribute.key
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -39,7 +39,7 @@
             });
             trackError(error, Submit.AttributeDelete);
         }
-    };
+    }
 </script>
 
 <Modal warning={true} bind:show={showDelete} onSubmit={handleDelete}>

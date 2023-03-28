@@ -19,7 +19,7 @@
 
     const dispatch = createEventDispatcher();
 
-    const create = async () => {
+    async function create() {
         try {
             const org = await sdk.forConsole.teams.create(id ?? ID.unique(), name);
             await invalidate(Dependencies.ACCOUNT);
@@ -39,7 +39,7 @@
             error = e.message;
             trackError(e, Submit.OrganizationCreate);
         }
-    };
+    }
 </script>
 
 <Modal {error} onSubmit={create} size="big" bind:show>

@@ -36,17 +36,17 @@
         wizard.start(Create);
     };
 
-    const refreshDomain = async (domain: Models.Domain) => {
+    async function refreshDomain(domain: Models.Domain) {
         const domainId = domain.$id;
         try {
             isVerifying[domainId] = true;
 
             if (domain.verification) {
-                invalidate(Dependencies.DOMAINS);
+                await invalidate(Dependencies.DOMAINS);
                 return;
             }
             await sdk.forConsole.projects.updateDomainVerification(projectId, domainId);
-            invalidate(Dependencies.DOMAINS);
+            await invalidate(Dependencies.DOMAINS);
             trackEvent(Submit.DomainUpdateVerification);
         } catch (error) {
             addNotification({
@@ -57,7 +57,7 @@
         } finally {
             isVerifying[domainId] = false;
         }
-    };
+    }
 </script>
 
 <Container>
