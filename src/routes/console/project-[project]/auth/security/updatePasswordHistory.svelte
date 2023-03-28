@@ -6,7 +6,7 @@
     import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;
@@ -16,7 +16,7 @@
 
     async function updatePasswordHistoryLimit() {
         try {
-            await sdkForConsole.projects.updateAuthPasswordHistory(
+            await sdk.forConsole.projects.updateAuthPasswordHistory(
                 projectId,
                 passwordHistoryEnabled ? passwordHistory : 0
             );
@@ -37,7 +37,7 @@
     }
 </script>
 
-<Form on:submit={updatePasswordHistoryLimit}>
+<Form onSubmit={updatePasswordHistoryLimit}>
     <CardGrid>
         <Heading tag="h2" size="6">Password History</Heading>
         <svelte:fragment slot="aside">

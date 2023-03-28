@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;
@@ -13,7 +13,7 @@
 
     async function updatePasswordDictionary() {
         try {
-            await sdkForConsole.projects.updateAuthPasswordDictionary(
+            await sdk.forConsole.projects.updateAuthPasswordDictionary(
                 projectId,
                 passwordDictionary
             );
@@ -33,7 +33,7 @@
     }
 </script>
 
-<Form on:submit={updatePasswordDictionary}>
+<Form onSubmit={updatePasswordDictionary}>
     <CardGrid>
         <Heading tag="h2" size="6">Password Dictionary</Heading>
         <svelte:fragment slot="aside">
