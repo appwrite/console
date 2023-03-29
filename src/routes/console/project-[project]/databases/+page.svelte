@@ -32,7 +32,7 @@
 
             <Button on:click={() => (showCreate = true)} event="create_database">
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text is-only-desktop">Create database</span>
+                <span class="text">Create database</span>
             </Button>
         </div>
     </div>

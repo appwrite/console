@@ -47,7 +47,7 @@
                 on:click={openWizard}
                 event="create_document">
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text is-only-desktop">Create document</span>
+                <span class="text">Create document</span>
             </Button>
         </div>
     </div>

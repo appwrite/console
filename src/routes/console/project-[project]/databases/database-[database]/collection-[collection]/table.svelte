@@ -16,6 +16,7 @@
     } from '$lib/elements/table';
     import { organization } from '$lib/stores/organization';
     import { teamPrefs } from '$lib/stores/team';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
     import RelationshipsModal from './relationshipsModal.svelte';
@@ -26,7 +27,8 @@
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
     let showRelationships = false;
-    let selectedRelationship: string = null;
+    let selectedRelationship: Models.AttributeRelationship = null;
+    let relationshipData: Models.Document;
 
     onMount(() => {
         teamPrefs.load($organization.$id);
@@ -109,7 +111,7 @@
                                 '$id'
                             ]}
 
-                            {#if !column.twoWay}
+                            {#if !attr.twoWay}
                                 <TableCell title={column.title}>
                                     <button
                                         class="button is-text link"
@@ -119,21 +121,26 @@
                                                 `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}`
                                             )}>
                                         {#each args as arg, i}
-                                            {i ? '|' : ''}
-                                            <span class="text">{document[column.id]?.[arg]}</span>
+                                            {#if arg !== undefined}
+                                                {i ? '|' : ''}
+                                                <span class="text"
+                                                    >{document[column.id]?.[arg]}</span>
+                                            {/if}
                                         {/each}
                                     </button>
                                 </TableCell>
                             {:else}
                                 <TableCell>
-                                    {@const itemsNum = column?.data?.lenght}
+                                    {@const itemsNum = document[column.id]?.total}
                                     <Button
+                                        text
                                         on:click={() => {
+                                            relationshipData = document[column.id];
                                             showRelationships = true;
-                                            selectedRelationship = document;
+                                            selectedRelationship = attr;
                                         }}
                                         disabled={!itemsNum}>
-                                        Items <span class="inline-tag">{itemsNum}</span>
+                                        Items <span class="inline-tag">{itemsNum ?? 0}</span>
                                     </Button>
                                 </TableCell>
                             {/if}
@@ -156,4 +163,4 @@
     </TableBody>
 </TableScroll>
 
-<RelationshipsModal bind:show={showRelationships} {selectedRelationship} />
+<RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
