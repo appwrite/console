@@ -36,7 +36,7 @@
             let updatedPrefs = Object.fromEntries(prefs);
 
             await sdk.forProject.teams.updatePrefs($team.$id, updatedPrefs);
-            invalidate(Dependencies.TEAM);
+            await invalidate(Dependencies.TEAM);
             arePrefsDisabled = true;
 
             addNotification({

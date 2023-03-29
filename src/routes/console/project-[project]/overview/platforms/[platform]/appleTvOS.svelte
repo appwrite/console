@@ -16,7 +16,7 @@
         key ??= $platform.key;
     });
 
-    const updateHostname = async () => {
+    async function updateHostname() {
         try {
             await sdk.forConsole.projects.updatePlatform(
                 $project.$id,
@@ -26,7 +26,7 @@
                 $platform.store,
                 $platform.hostname
             );
-            invalidate(Dependencies.PLATFORM);
+            await invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
                 type: 'apple-tvos'
             });
@@ -41,7 +41,7 @@
             });
             trackError(error, Submit.PlatformUpdate);
         }
-    };
+    }
 </script>
 
 <Form onSubmit={updateHostname}>

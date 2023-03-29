@@ -28,7 +28,7 @@
                 collectionDocumentSecurity,
                 $collection.enabled
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Security has been updated',
                 type: 'success'

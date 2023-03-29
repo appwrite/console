@@ -17,7 +17,7 @@
     let email: string, name: string, error: string;
     const url = `${$page.url.origin}/invite`;
 
-    const create = async () => {
+    async function create() {
         try {
             const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
@@ -26,9 +26,9 @@
                 email,
                 undefined,
                 undefined,
-                name
+                name || undefined
             );
-            invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ACCOUNT);
             showCreate = false;
             addNotification({
                 type: 'success',
@@ -40,7 +40,7 @@
             error = e.message;
             trackError(e, Submit.MemberCreate);
         }
-    };
+    }
 
     $: if (!showCreate) {
         error = null;
@@ -53,6 +53,7 @@
     <svelte:fragment slot="header">Invite Member</svelte:fragment>
     <FormList>
         <InputEmail
+            required
             id="email"
             label="Email"
             placeholder="Enter email"

@@ -28,7 +28,7 @@
                 values.antivirus
             );
 
-            invalidate(Dependencies.BUCKET);
+            await invalidate(Dependencies.BUCKET);
 
             if (misc.arePermsDisabled !== undefined) {
                 arePermsDisabled.set(misc.arePermsDisabled);

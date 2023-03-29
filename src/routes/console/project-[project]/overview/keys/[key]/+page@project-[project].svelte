@@ -36,7 +36,7 @@
                 $key.scopes,
                 $key.expire
             );
-            invalidate(Dependencies.KEY);
+            await invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateName);
             addNotification({
                 type: 'success',
@@ -60,7 +60,7 @@
                 scopes,
                 $key.expire
             );
-            invalidate(Dependencies.KEY);
+            await invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateScopes, {
                 scopes
             });

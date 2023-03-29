@@ -23,10 +23,10 @@
                 $platform.$id,
                 $platform.name,
                 key,
-                $platform.store,
-                $platform.hostname
+                $platform.store || undefined,
+                $platform.hostname || undefined
             );
-            invalidate(Dependencies.PLATFORM);
+            await invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
                 type: 'flutter-android'
             });

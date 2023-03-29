@@ -29,10 +29,12 @@ export async function updateOAuth({
         await sdk.forConsole.projects.updateOAuth2(
             projectId,
             provider.name.toLowerCase(),
-            appId,
-            secret,
+            appId || undefined,
+            secret || undefined,
             enabled
         );
+        await invalidate(Dependencies.PROJECT);
+
         addNotification({
             type: 'success',
             message: `${provider.name} authentication has been updated`
@@ -41,7 +43,6 @@ export async function updateOAuth({
             provider,
             enabled
         });
-        invalidate(Dependencies.PROJECT);
 
         return { status: 'success' };
     } catch (e) {

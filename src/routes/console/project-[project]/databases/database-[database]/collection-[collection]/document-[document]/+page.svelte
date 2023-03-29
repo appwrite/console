@@ -29,7 +29,7 @@
                 $doc.data,
                 permissions
             );
-            invalidate(Dependencies.DOCUMENT);
+            await invalidate(Dependencies.DOCUMENT);
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',

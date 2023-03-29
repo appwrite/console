@@ -32,7 +32,7 @@
     async function updateName() {
         try {
             await sdk.forProject.databases.update($page.params.database, databaseName);
-            invalidate(Dependencies.DATABASE);
+            await invalidate(Dependencies.DATABASE);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
