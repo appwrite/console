@@ -84,6 +84,7 @@
         value = null;
         search = '';
         element.value = search;
+        hasFocus = false;
     }
 </script>
 
