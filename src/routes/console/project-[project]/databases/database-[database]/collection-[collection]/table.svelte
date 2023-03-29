@@ -25,7 +25,6 @@
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
     let showRelationships = false;
     let selectedRelationship: string = null;
 
@@ -105,7 +104,6 @@
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.type === 'relationship'}
-                            <!-- {JSON.stringify(document[column.id])} -->
                             {@const attr = $attributes.find((n) => n.key === column.id)}
                             {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
                                 '$id'
