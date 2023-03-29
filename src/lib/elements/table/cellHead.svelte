@@ -28,6 +28,7 @@
                 } else {
                     target.searchParams.set(QueryParams.OrderDirection, Order.ASC);
                 }
+                break;
             case Order.ASC:
                 target.searchParams.set(QueryParams.OrderDirection, Order.DESC);
                 break;
