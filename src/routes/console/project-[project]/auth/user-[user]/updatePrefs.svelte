@@ -13,6 +13,8 @@
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
             if (!!prefs[prefs.length - 1][0] && !!prefs[prefs.length - 1][1]) {
                 arePrefsDisabled = false;
+            } else if (prefs[prefs.length - 1][0] === '' || prefs[prefs.length - 1][1] === '') {
+                arePrefsDisabled = false;
             } else {
                 arePrefsDisabled = true;
             }
@@ -94,7 +96,7 @@
                                         text
                                         disabled={(!key || !value) && index === 0}
                                         on:click={() => {
-                                            if (index === 0) {
+                                            if (prefs.length === 1) {
                                                 prefs = [['', '']];
                                             } else {
                                                 prefs.splice(index, 1);
