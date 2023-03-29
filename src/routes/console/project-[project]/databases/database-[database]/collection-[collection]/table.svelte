@@ -120,8 +120,9 @@
                                             goto(
                                                 `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}`
                                             )}>
-                                        {#each args as arg}
-                                            {document[column.id]?.[arg]}
+                                        {#each args as arg, i}
+                                            {i ? '|' : ''}
+                                            <span class="text">{document[column.id]?.[arg]}</span>
                                         {/each}
                                     </button>
                                 </TableCell>
