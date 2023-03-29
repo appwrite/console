@@ -43,8 +43,6 @@
     }
 
     function handleKeydown(event: KeyboardEvent) {
-        console.log('handle key down');
-
         event.stopImmediatePropagation();
 
         switch (event.key) {

@@ -111,8 +111,6 @@
     let selectValue = '';
 
     $: filteredOptions = (function filter() {
-        console.log('filtering');
-
         return selectOptions.filter((option) =>
             option.label.toLowerCase().includes(selectSearch.toLowerCase())
         );
