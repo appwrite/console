@@ -4,12 +4,12 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelectSearch, InputText } from '$lib/elements/forms';
-    import { difference, last, symmetricDifference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { teamPrefs } from '$lib/stores/team';
     import { onMount } from 'svelte';
-    import { attributes } from '../store';
+    import { attributes, collection } from '../store';
 
     let displayNames = [];
     let search: string;
@@ -17,15 +17,21 @@
     onMount(async () => {
         await teamPrefs.load($organization.$id);
 
-        $teamPrefs.displayNames ??= [];
-        displayNames = [...$teamPrefs.displayNames];
+        $teamPrefs.displayNames ??= {};
+        $teamPrefs.displayNames[$collection.$id] ??= [];
+        displayNames = [...$teamPrefs.displayNames[$collection.$id]];
     });
 
     async function updateDisplayName() {
         try {
-            teamPrefs.updatePrefs($organization.$id, {
-                displayNames
-            });
+            const pref = {
+                ...$teamPrefs,
+                displayNames: {
+                    ...$teamPrefs.displayNames,
+                    [$collection.$id]: displayNames
+                }
+            };
+            teamPrefs.updatePrefs($organization.$id, pref);
             invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Name has been updated',
@@ -60,11 +66,12 @@
         displayNames?.length >= 5 ||
         (displayNames?.length && !displayNames[displayNames?.length - 1]);
 
-    $: updateBtnDisabled = !symmetricDifference(displayNames, $teamPrefs?.displayNames)?.length;
+    $: updateBtnDisabled = !symmetricDifference(
+        displayNames,
+        $teamPrefs?.displayNames?.[$collection.$id] ?? []
+    )?.length;
 
-    $: console.log(displayNames, $teamPrefs?.displayNames);
-
-    $: console.log(symmetricDifference(displayNames, $teamPrefs?.displayNames).length);
+    $: console.log(displayNames, $teamPrefs?.displayNames[$collection.$id]);
 </script>
 
 <Form onSubmit={updateDisplayName}>

@@ -13,19 +13,23 @@
         TableRowLink,
         TableScroll
     } from '$lib/elements/table';
+    import { organization } from '$lib/stores/organization';
+    import { teamPrefs } from '$lib/stores/team';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
     import RelationshipsModal from './relationshipsModal.svelte';
-    import { collection, columns } from './store';
+    import { attributes, collection, columns } from './store';
 
     export let data: PageData;
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
+    const collectionId = $page.params.collection;
     let showRelationships = false;
     let selectedRelationship: string = null;
 
     onMount(() => {
+        teamPrefs.load($organization.$id);
         columns.set([
             ...$collection.attributes.map((attribute) => ({
                 id: attribute.key,
@@ -100,9 +104,17 @@
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.type === 'relationship'}
+                            <!-- {JSON.stringify(document[column.id])} -->
+                            {@const attr = $attributes.find((n) => n.key === column.id)}
+                            {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
+                                '$id'
+                            ]}
+
                             {#if !column.twoWay}
                                 <TableCell title={column.title}>
-                                    {document[column.id]}
+                                    {#each args as arg}
+                                        {document[column.id]?.[arg]}
+                                    {/each}
                                 </TableCell>
                             {:else}
                                 <TableCell>

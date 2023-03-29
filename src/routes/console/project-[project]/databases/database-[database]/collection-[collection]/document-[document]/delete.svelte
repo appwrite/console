@@ -62,7 +62,7 @@
 
     {#if hasRelationship}
         <TableList>
-            {#each $attributes?.find((attribute) => attribute.type === 'relationship') as attr}
+            {#each Array.from($attributes?.find((attribute) => attribute.type === 'relationship')) as attr}
                 <li class="table-row">
                     <TableCellText title="relation">
                         {attr?.key}
