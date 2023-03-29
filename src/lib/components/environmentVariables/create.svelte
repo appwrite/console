@@ -39,7 +39,7 @@
         <InputText
             id="key"
             label="Key"
-            placeholder="Enter key"
+            placeholder="ENTER_KEY"
             bind:value={pair.key}
             required
             autofocus />

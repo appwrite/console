@@ -15,7 +15,7 @@
                     <div class="input-text-wrapper">
                         <input
                             id={`key-${key}`}
-                            placeholder="Enter key"
+                            placeholder="enter-key"
                             type="text"
                             class="input-text"
                             bind:value={key} />

@@ -36,6 +36,8 @@
     let arePermsDisabled = true;
     let logging: boolean = null;
     let entrypoint: string = null;
+    let buildCommand: string = null;
+    let installCommand: string = null;
 
     const eventSet: Writable<Set<string>> = writable(new Set());
     let showEvents = false;
@@ -48,6 +50,8 @@
         permissions = $func.execute;
         logging = $func.logging;
         entrypoint ??= $func.entrypoint;
+        buildCommand ??= $func.buildCommand;
+        installCommand ??= $func.installCommand;
         $eventSet = new Set($func.events);
     });
 
@@ -62,7 +66,9 @@
                 $func.timeout,
                 $func.enabled,
                 $func.logging,
-                $func.entrypoint
+                $func.entrypoint,
+                $func.buildCommand,
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -89,7 +95,9 @@
                 $func.timeout,
                 $func.enabled,
                 logging,
-                $func.entrypoint
+                $func.entrypoint,
+                $func.buildCommand,
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -116,7 +124,9 @@
                 $func.timeout,
                 $func.enabled,
                 $func.logging,
-                $func.entrypoint
+                $func.entrypoint,
+                $func.buildCommand,
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -143,7 +153,9 @@
                 $func.timeout,
                 $func.enabled,
                 $func.logging,
-                $func.entrypoint
+                $func.entrypoint,
+                $func.buildCommand,
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -170,7 +182,9 @@
                 $func.timeout,
                 $func.enabled,
                 $func.logging,
-                $func.entrypoint
+                $func.entrypoint,
+                $func.buildCommand,
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
 
@@ -198,7 +212,9 @@
                 timeout,
                 $func.enabled,
                 $func.logging,
-                $func.entrypoint
+                $func.entrypoint,
+                $func.buildCommand,
+                $func.installCommand
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -226,7 +242,9 @@
                 $func.timeout,
                 $func.enabled,
                 $func.logging,
-                entrypoint
+                entrypoint,
+                buildCommand,
+                installCommand
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -342,10 +360,28 @@
                         autocomplete={false}
                         bind:value={entrypoint} />
                 </ul>
+                <ul>
+                    <InputText
+                        id="install-command"
+                        label="Install Command"
+                        placeholder="npm install"
+                        autocomplete={false}
+                        bind:value={installCommand} />
+                </ul>
+                <ul>
+                    <InputText
+                        id="build-command"
+                        label="Build Command"
+                        placeholder="npm run build"
+                        autocomplete={false}
+                        bind:value={buildCommand} />
+                </ul>
             </svelte:fragment>
             <svelte:fragment slot="actions">
                 <Button
-                    disabled={entrypoint === $func.entrypoint}
+                    disabled={entrypoint === $func.entrypoint &&
+                        buildCommand === $func.buildCommand &&
+                        installCommand === $func.installCommand}
                     on:click={updateDeploymentSettings}>Update</Button>
             </svelte:fragment>
         </CardGrid>

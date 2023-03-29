@@ -19,7 +19,9 @@
         Manual
     }
     let mode: Mode = Mode.CLI;
-    let entrypoint: string;
+    let entrypoint: string = 'fromFunction()';
+    let buildCommand: string = 'fromFunction()';
+    let installCommand: string = 'fromFunction()';
     let active = false;
     let files: FileList;
     let lang = 'js';
@@ -91,10 +93,12 @@
                 functionId,
                 entrypoint,
                 files[0],
-                active
+                active,
+                buildCommand,
+                installCommand
             );
             await invalidate(Dependencies.FUNCTION);
-            files = entrypoint = active = null;
+            files = null;
             showCreate = false;
             dispatch('created');
             trackEvent('submit_deployment_create');
@@ -168,13 +172,25 @@
         </div>
     {:else if mode === Mode.Manual}
         <FormList>
+            <InputFile label="Gzipped code (tar.gz)" allowedFileExtensions={['gz']} bind:files />
             <InputText
                 label="Entrypoint"
-                placeholder={`main.${lang}`}
+                placeholder={`main.js`}
                 id="entrypoint"
                 bind:value={entrypoint}
-                required={false} />
-            <InputFile label="Gzipped code (tar.gz)" allowedFileExtensions={['gz']} bind:files />
+                required={true} />
+            <InputText
+                label="Install Command"
+                placeholder={`npm install`}
+                id="install-command"
+                bind:value={installCommand}
+                required={true} />
+            <InputText
+                label="Build Command"
+                placeholder={`npm run build`}
+                id="build-command"
+                bind:value={buildCommand}
+                required={true} />
             <InputChoice label="Activate Deployment after build" id="activate" bind:value={active}>
                 This deployment will be activated after the build is completed.</InputChoice>
         </FormList>
