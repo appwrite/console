@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, Heading, Pagination, Limit, ViewSelector } from '$lib/components';
+    import { Empty, Heading, ViewSelector, PaginationWithLimit } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
@@ -10,10 +10,13 @@
     import Table from './table.svelte';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/stores';
+    import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
 
     export let data: PageData;
 
     let showCreateAttribute = false;
+    let showCreateDropdown = false;
+    let selectedAttribute: string = null;
 
     $: selected = preferences.getCustomCollectionColumns($page.params.collection);
     $: columns.set(
@@ -28,6 +31,10 @@
     function openWizard() {
         wizard.start(Create);
     }
+
+    $: hasAttributes = !!$collection.attributes.length;
+
+    $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
 </script>
 
 <Container>
@@ -36,23 +43,24 @@
         <div class="u-flex u-gap-16">
             <ViewSelector view={data.view} {columns} hideView isCustomCollection />
             <Button
-                disabled={!$collection?.attributes?.length}
+                disabled={!(hasAttributes && hasValidAttributes)}
                 on:click={openWizard}
                 event="create_document">
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create document</span>
+                <span class="text is-only-desktop">Create document</span>
             </Button>
         </div>
     </div>
 
-    {#if $collection?.attributes?.length}
+    {#if hasAttributes && hasValidAttributes}
         {#if data.documents.total}
             <Table {data} />
 
-            <div class="u-flex common-section u-main-space-between">
-                <Limit limit={data.limit} sum={data.documents.total} name="Documents" />
-                <Pagination limit={data.limit} offset={data.offset} sum={data.documents.total} />
-            </div>
+            <PaginationWithLimit
+                name="Documents"
+                limit={data.limit}
+                offset={data.offset}
+                total={data.documents.total} />
         {:else}
             <Empty
                 single
@@ -61,12 +69,36 @@
                 on:click={openWizard} />
         {/if}
     {:else}
-        <Empty
-            single
-            href="https://appwrite.io/docs/databases#attributes"
-            target="attribute"
-            on:click={() => (showCreateAttribute = true)} />
+        <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
+            <div class="u-text-center">
+                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <p class="body-text-2 u-margin-block-start-4">
+                    Need a hand? Check out our documentation.
+                </p>
+            </div>
+            <div class="u-flex u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/databases#attributes"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create {target}`}>Documentation</Button>
+                <CreateAttributeDropdown
+                    bind:showCreateDropdown
+                    bind:showCreate={showCreateAttribute}
+                    bind:selectedOption={selectedAttribute}>
+                    <Button
+                        secondary
+                        event="create_attribute"
+                        on:click={() => {
+                            showCreateDropdown = !showCreateDropdown;
+                        }}>
+                        Create attribute
+                    </Button>
+                </CreateAttributeDropdown>
+            </div>
+        </Empty>
     {/if}
 </Container>
 
-<CreateAttribute bind:showCreate={showCreateAttribute} />
+<CreateAttribute bind:showCreate={showCreateAttribute} selectedOption={selectedAttribute} />

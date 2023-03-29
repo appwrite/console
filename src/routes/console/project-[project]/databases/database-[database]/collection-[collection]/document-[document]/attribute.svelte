@@ -4,6 +4,7 @@
     import Datetime from './attributes/datetime.svelte';
     import Enum from './attributes/enum.svelte';
     import Integer from './attributes/integer.svelte';
+    import Relationship from './attributes/relationship.svelte';
     import String from './attributes/string.svelte';
     import Url from './attributes/url.svelte';
 
@@ -27,7 +28,8 @@
         integer: Integer,
         double: Integer,
         boolean: Boolean,
-        datetime: Datetime
+        datetime: Datetime,
+        relationship: Relationship
     };
 
     const attributesFormatMap = {

@@ -36,7 +36,7 @@
     }
 </script>
 
-<Modal onSubmit={deleteOrg} bind:show={showDelete} warning>
+<Modal onSubmit={deleteOrg} bind:show={showDelete} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete Organization</svelte:fragment>
     <p>
         Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})

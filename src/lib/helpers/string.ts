@@ -20,3 +20,23 @@ export function capitalize(str: string): string {
 export function singular(str: string): string {
     return str.replace(/s$/, '');
 }
+
+/**
+ * Convert a dash/underscore/space separated string to camelCase.
+ *
+ * @export
+ * @param {string} str - The string to convert.
+ * @returns {string} The camelized string.
+ */
+export function camelize(str: string): string {
+    if (!str) {
+        return '';
+    }
+    return str
+        .replace(/[-_\s]+(.)?/g, (_, char: string) => {
+            return char ? char.toUpperCase() : '';
+        })
+        .replace(/^(.)/, (firstChar) => {
+            return firstChar.toLowerCase();
+        });
+}

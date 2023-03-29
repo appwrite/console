@@ -4,12 +4,11 @@
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
-        Pagination,
         Copy,
         GridItem1,
         CardContainer,
         Heading,
-        Limit
+        PaginationWithLimit
     } from '$lib/components';
     import { Pill } from '$lib/elements';
     import Create from './create.svelte';
@@ -90,10 +89,11 @@
             </svelte:fragment>
         </CardContainer>
 
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.buckets.total} name="Buckets" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.buckets.total} />
-        </div>
+        <PaginationWithLimit
+            name="Buckets"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.buckets.total} />
     {:else}
         <Empty
             single

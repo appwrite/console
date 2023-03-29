@@ -64,8 +64,8 @@
         {/if}
 
         <slot />
+        <slot name="footer" />
     </section>
-    <slot name="footer" />
 </main>
 
 <style lang="scss">
@@ -91,9 +91,5 @@
         .grid-with-side {
             grid-template-columns: auto 1fr !important;
         }
-    }
-
-    .main-content {
-        overflow: hidden;
     }
 </style>

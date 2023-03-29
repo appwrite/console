@@ -39,7 +39,7 @@
     }
 </script>
 
-<Modal bind:show={showDelete} onSubmit={deleteMembership} warning>
+<Modal bind:show={showDelete} onSubmit={deleteMembership} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete Member</svelte:fragment>
     {#if selectedMembership}
         <p data-private>

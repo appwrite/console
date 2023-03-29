@@ -9,8 +9,7 @@
         Empty,
         Status,
         Heading,
-        Pagination,
-        Limit
+        PaginationWithLimit
     } from '$lib/components';
     import {
         TableHeader,
@@ -280,10 +279,8 @@
             on:click={() => (showCreate = true)} />
     {/if}
     {@const sum = data.deployments.total ? data.deployments.total - 1 : 0}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <Limit limit={data.limit} {sum} name="Deployments" />
-        <Pagination limit={data.limit} offset={data.offset} {sum} />
-    </div>
+
+    <PaginationWithLimit name="Deployments" limit={data.limit} offset={data.offset} total={sum} />
 </Container>
 
 <Create bind:showCreate />

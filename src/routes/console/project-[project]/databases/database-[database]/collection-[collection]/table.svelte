@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
     import { Copy } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
@@ -12,13 +14,32 @@
         TableRowLink,
         TableScroll
     } from '$lib/elements/table';
+    import { organization } from '$lib/stores/organization';
+    import { teamPrefs } from '$lib/stores/team';
+    import { onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { collection, columns } from './store';
+    import RelationshipsModal from './relationshipsModal.svelte';
+    import { attributes, collection, columns } from './store';
 
     export let data: PageData;
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
+    const collectionId = $page.params.collection;
+    let showRelationships = false;
+    let selectedRelationship: string = null;
+
+    onMount(() => {
+        teamPrefs.load($organization.$id);
+        columns.set([
+            ...$collection.attributes.map((attribute) => ({
+                id: attribute.key,
+                title: attribute.key,
+                type: attribute.type,
+                show: true
+            }))
+        ]);
+    });
 
     function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
@@ -61,7 +82,7 @@
 
 <TableScroll isSticky>
     <TableHeader>
-        <TableCellHead width={100} eyebrow={false}>Document ID</TableCellHead>
+        <TableCellHead width={150} eyebrow={false}>Document ID</TableCellHead>
         {#each $columns.filter((n) => n.show) as column}
             {#if column.show}
                 <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
@@ -80,19 +101,61 @@
                         </Pill>
                     </Copy>
                 </TableCell>
-                {#each $columns.filter((n) => n.show) as column}
-                    {@const formatted = formatColumn(document[column.id])}
-                    <TableCell>
-                        <div
-                            use:tooltip={{
-                                content: formatted.whole,
-                                disabled: !formatted.truncated
-                            }}>
-                            {formatted.value}
-                        </div>
-                    </TableCell>
+
+                {#each $columns as column}
+                    {#if column.show}
+                        {#if column.type === 'relationship'}
+                            <!-- {JSON.stringify(document[column.id])} -->
+                            {@const attr = $attributes.find((n) => n.key === column.id)}
+                            {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
+                                '$id'
+                            ]}
+
+                            {#if !column.twoWay}
+                                <TableCell title={column.title}>
+                                    <button
+                                        class="button is-text link"
+                                        type="button"
+                                        on:click|preventDefault|stopPropagation={() =>
+                                            goto(
+                                                `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}`
+                                            )}>
+                                        {#each args as arg, i}
+                                            {i ? '|' : ''}
+                                            <span class="text">{document[column.id]?.[arg]}</span>
+                                        {/each}
+                                    </button>
+                                </TableCell>
+                            {:else}
+                                <TableCell>
+                                    {@const itemsNum = column?.data?.lenght}
+                                    <Button
+                                        on:click={() => {
+                                            showRelationships = true;
+                                            selectedRelationship = document;
+                                        }}
+                                        disabled={!itemsNum}>
+                                        Items <span class="inline-tag">{itemsNum}</span>
+                                    </Button>
+                                </TableCell>
+                            {/if}
+                        {:else}
+                            {@const formatted = formatColumn(document[column.id])}
+                            <TableCell>
+                                <div
+                                    use:tooltip={{
+                                        content: formatted.whole,
+                                        disabled: !formatted.truncated
+                                    }}>
+                                    {formatted.value}
+                                </div>
+                            </TableCell>
+                        {/if}
+                    {/if}
                 {/each}
             </TableRowLink>
         {/each}
     </TableBody>
 </TableScroll>
+
+<RelationshipsModal bind:show={showRelationships} {selectedRelationship} />

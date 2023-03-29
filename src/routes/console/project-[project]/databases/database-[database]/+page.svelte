@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, Heading, Limit, Pagination, ViewSelector } from '$lib/components';
+    import { Empty, Heading, PaginationWithLimit, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { columns, showCreate } from './store';
@@ -18,7 +18,7 @@
 
             <Button on:click={() => ($showCreate = true)} event="create_collection">
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create collection</span>
+                <span class="text is-only-desktop">Create collection</span>
             </Button>
         </div>
     </div>
@@ -30,10 +30,11 @@
             <Table {data} />
         {/if}
 
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.collections.total} name="Collections" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.collections.total} />
-        </div>
+        <PaginationWithLimit
+            name="Collections"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.collections.total} />
     {:else}
         <Empty
             single

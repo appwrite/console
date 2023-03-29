@@ -4,11 +4,11 @@
     import TextCounter from './textCounter.svelte';
 
     export let value = '';
+    export let autofocus = true;
 
     let element: HTMLInputElement;
     let icon = 'info';
     const pattern = String.raw`^[a-zA-Z0-9][a-zA-Z0-9._-]*$`;
-    const autofocus = true;
 
     onMount(() => {
         if (element && autofocus) {
@@ -52,7 +52,7 @@
     <span
         class:icon-info={icon === 'info'}
         class:icon-exclamation={icon === 'exclamation'}
-        class="u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+        class="u-cross-center u-line-height-1 u-icon-small u-color-text-gray"
         aria-hidden="true" />
     <span class="text u-line-height-1-5">
         Allowed characters: alphanumeric, non-leading hyphen, underscore, period

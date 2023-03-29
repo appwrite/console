@@ -1,6 +1,5 @@
 <script lang="ts">
-    import InputText from '$lib/elements/forms/inputText.svelte';
-    import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
+    import { InputText, InputTextarea } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
 
     export let id: string;
@@ -10,11 +9,10 @@
     export let optionalText: string | undefined = undefined;
 </script>
 
-{#if attribute.size > 64}
+{#if attribute.size >= 50}
     <InputTextarea
         {id}
         {label}
-        {optionalText}
         placeholder="Enter string"
         showLabel={!!label?.length}
         required={attribute.required}

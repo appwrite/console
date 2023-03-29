@@ -53,23 +53,12 @@
 
     <Form onSubmit={handleSubmit}>
         <FormList>
-            <InputText
-                label="name"
-                id="name"
-                bind:value={name}
-                placeholder="Enter name"
-                showLabel={false} />
-            <InputEmail
-                label="email"
-                id="email"
-                bind:value={email}
-                placeholder="Enter email"
-                showLabel={false} />
+            <InputText label="Name" id="name" bind:value={name} placeholder="Enter name" />
+            <InputEmail label="Email" id="email" bind:value={email} placeholder="Enter email" />
             <InputTextarea
                 id="feedback"
                 placeholder="Your message here"
-                showLabel={false}
-                label="Feedback"
+                label="Message"
                 required
                 bind:value={message} />
         </FormList>

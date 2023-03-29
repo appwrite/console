@@ -10,6 +10,9 @@
     export let noArrow = false;
     export let placement: Placement = 'bottom-start';
     export let childStart = false;
+    export let noStyle = false;
+    export let fullWidth = false;
+    export let fixed = false;
 
     let element: HTMLDivElement;
     let tooltip: HTMLDivElement;
@@ -19,6 +22,7 @@
     onMount(() => {
         instance = createPopper(element, tooltip, {
             placement,
+            strategy: fixed ? 'fixed' : 'absolute',
             modifiers: [
                 {
                     name: 'arrow',
@@ -36,6 +40,20 @@
                     name: 'flip',
                     options: {
                         fallbackPlacements: ['bottom-start', 'bottom-end', 'top-start', 'top-end']
+                    }
+                },
+                {
+                    name: 'sameWidth',
+                    enabled: fixed,
+                    phase: 'beforeWrite',
+                    requires: ['computeStyles'],
+                    fn: ({ state }) => {
+                        state.styles.popper.width = `${state.rects.reference.width}px`;
+                    },
+                    effect: ({ state }) => {
+                        state.elements.popper.style.width = `${
+                            (state.elements.reference as HTMLElement)?.offsetWidth
+                        }px`;
                     }
                 }
             ]
@@ -67,11 +85,15 @@
 
 <svelte:window on:click={onBlur} />
 
-<div class="drop-wrapper" class:u-cross-child-start={childStart} bind:this={element}>
+<div class:drop-wrapper={!noStyle} class:u-cross-child-start={childStart} bind:this={element}>
     <slot />
 </div>
 
-<div class="drop-tooltip" bind:this={tooltip} style="z-index: 10">
+<div
+    class="drop-tooltip"
+    class:u-width-full-line={fullWidth}
+    bind:this={tooltip}
+    style:z-index="10">
     <div class="drop-arrow" class:u-hide={!show || (show && noArrow)} bind:this={arrow} />
     {#if show}
         <slot name="list" />

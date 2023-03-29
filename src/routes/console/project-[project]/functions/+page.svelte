@@ -7,8 +7,7 @@
         Copy,
         GridItem1,
         Heading,
-        Pagination,
-        Limit
+        PaginationWithLimit
     } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
@@ -88,10 +87,12 @@
                 <p>Create a new function</p>
             </svelte:fragment>
         </CardContainer>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.functions.total} name="Functions" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.functions.total} />
-        </div>
+
+        <PaginationWithLimit
+            name="Functions"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.functions.total} />
     {:else}
         <Empty
             single

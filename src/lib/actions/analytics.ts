@@ -149,6 +149,7 @@ export enum Submit {
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
     AttributeCreate = 'submit_attribute_create',
+    AttributeUpdate = 'submit_attribute_update',
     AttributeDelete = 'submit_attribute_delete',
     DocumentCreate = 'submit_document_create',
     DocumentDelete = 'submit_document_delete',
