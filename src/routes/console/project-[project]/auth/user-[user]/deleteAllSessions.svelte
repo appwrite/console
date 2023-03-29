@@ -11,10 +11,10 @@
 
     export let showDeleteAll = false;
 
-    const deleteAllSessions = async () => {
+    async function deleteAllSessions() {
         try {
             await sdk.forProject.users.deleteSessions($page.params.user);
-            invalidate(Dependencies.SESSIONS);
+            await invalidate(Dependencies.SESSIONS);
             showDeleteAll = false;
             addNotification({
                 type: 'success',
@@ -28,7 +28,7 @@
             });
             trackError(error, Submit.SessionDeleteAll);
         }
-    };
+    }
 </script>
 
 <Modal bind:show={showDeleteAll} onSubmit={deleteAllSessions} icon="exclamation" state="warning">

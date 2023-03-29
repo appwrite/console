@@ -27,10 +27,10 @@
         try {
             const user = await sdk.forProject.users.create(
                 id ?? ID.unique(),
-                mail,
-                phone,
-                pass,
-                name
+                mail || undefined,
+                phone || undefined,
+                pass || undefined,
+                name || undefined
             );
             mail = pass = name = '';
             showCreate = false;

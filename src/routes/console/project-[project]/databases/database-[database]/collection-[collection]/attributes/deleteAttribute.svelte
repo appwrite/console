@@ -16,14 +16,14 @@
     const databaseId = $page.params.database;
     let checked = selectedAttribute?.type !== 'relationship';
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         try {
             await sdk.forProject.databases.deleteAttribute(
                 databaseId,
                 $collection.$id,
                 selectedAttribute.key
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -40,7 +40,7 @@
             });
             trackError(error, Submit.AttributeDelete);
         }
-    };
+    }
 </script>
 
 <Modal

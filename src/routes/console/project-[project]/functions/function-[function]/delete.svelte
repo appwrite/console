@@ -11,7 +11,7 @@
     export let showDelete = false;
     export let selectedDeployment: Models.Deployment = null;
 
-    const handleSubmit = async () => {
+    async function handleSubmit() {
         try {
             await sdk.forProject.functions.deleteDeployment(
                 selectedDeployment.resourceId,
@@ -31,7 +31,7 @@
             });
             trackError(error, Submit.DeploymentDelete);
         }
-    };
+    }
 </script>
 
 <Modal bind:show={showDelete} onSubmit={handleSubmit} icon="exclamation" state="warning">

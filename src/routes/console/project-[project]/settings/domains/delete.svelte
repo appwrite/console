@@ -12,10 +12,10 @@
     export let showDelete = false;
     export let selectedDomain: Models.Domain;
 
-    const deleteDomain = async () => {
+    async function deleteDomain() {
         try {
             await sdk.forConsole.projects.deleteDomain($project.$id, selectedDomain.$id);
-            invalidate(Dependencies.DOMAINS);
+            await invalidate(Dependencies.DOMAINS);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -29,7 +29,7 @@
             });
             trackError(error, Submit.DomainDelete);
         }
-    };
+    }
 </script>
 
 <Modal bind:show={showDelete} onSubmit={deleteDomain} icon="exclamation" state="warning">

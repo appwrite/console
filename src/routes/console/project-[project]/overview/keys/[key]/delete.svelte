@@ -15,13 +15,13 @@
     async function handleDelete() {
         try {
             await sdk.forConsole.projects.deleteKey($project.$id, $key.$id);
+            await invalidate(Dependencies.KEYS);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$key.name} has been deleted`
             });
             trackEvent(Submit.KeyDelete);
-            await invalidate(Dependencies.KEYS);
             await goto(`${base}/console/project-${$project.$id}/overview/keys`);
         } catch (error) {
             addNotification({

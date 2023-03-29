@@ -52,7 +52,7 @@
                     })
             );
 
-            invalidate(Dependencies.VARIABLES);
+            await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: 'Variables uploaded'

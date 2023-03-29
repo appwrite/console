@@ -15,7 +15,7 @@
     async function regenerate() {
         try {
             await sdk.forConsole.projects.updateWebhookSignature(projectId, $webhook.$id);
-            invalidate(Dependencies.WEBHOOK);
+            await invalidate(Dependencies.WEBHOOK);
             show = false;
             addNotification({
                 type: 'success',

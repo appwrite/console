@@ -31,7 +31,10 @@
 
     async function request() {
         if (!show) return;
-        results = await sdk.forProject.teams.list([Query.limit(5), Query.offset(offset)], search);
+        results = await sdk.forProject.teams.list(
+            [Query.limit(5), Query.offset(offset)],
+            search || undefined
+        );
     }
 
     function onSelection(event: Event, role: string) {

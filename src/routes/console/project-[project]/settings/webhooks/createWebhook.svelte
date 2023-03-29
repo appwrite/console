@@ -15,7 +15,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
-    const create = async () => {
+    async function create() {
         try {
             await sdk.forConsole.projects.createWebhook(
                 projectId,
@@ -23,10 +23,10 @@
                 $createWebhook.events,
                 $createWebhook.url,
                 $createWebhook.security,
-                $createWebhook.httpUser,
-                $createWebhook.httpPass
+                $createWebhook.httpUser || undefined,
+                $createWebhook.httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOKS);
+            await invalidate(Dependencies.WEBHOOKS);
             addNotification({
                 message: 'Webhook has been created',
                 type: 'success'
@@ -42,7 +42,7 @@
             });
             trackError(error, Submit.WebhookCreate);
         }
-    };
+    }
 
     onDestroy(() => {
         $createWebhook = {
