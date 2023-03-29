@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Button, InputSelectSearch } from '$lib/elements/forms';
+    import { Button, InputSelectSearch, Label } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { teamPrefs } from '$lib/stores/team';
@@ -9,7 +9,7 @@
 
     export let id: string;
     export let label: string;
-    export let value: string;
+    export let value: string | string[];
     export let attribute: Models.AttributeRelationship;
     export let optionalText: string | undefined = undefined;
 
@@ -18,7 +18,8 @@
     let documentList: Models.DocumentList<Models.Document>;
     let search: string = null;
     let displayNames = ['$id'];
-    let addRelationship = false;
+    let relatedList = [];
+    let showInput = false;
 
     onMount(async () => {
         teamPrefs.load($organization.$id);
@@ -54,80 +55,90 @@
             return attribute.relationType === 'oneToMany';
         }
     }
+
     // Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
+
+    $: if (isArray()) value = relatedList;
 </script>
 
 {#if isArray()}
     <div class="u-width-full-line u-max-width-600">
-        <div class="u-flex u-cross-baseline u-gap-16">
-            <div class="u-flex u-cross-baseline u-gap-8">
-                <label class="label" for="relationship">{label}</label>
-                <span class="optional u-x-small">Relation</span>
+        <div class="u-flex u-cross-center u-main-space-between">
+            <div>
+                <Label required={attribute.required} {optionalText} for={id}>
+                    {label}
+                </Label>
             </div>
-            <button
-                on:click|preventDefault={() => {
-                    addRelationship = true;
-                }}
-                class="button is-text u-padding-inline-0 u-margin-inline-start-auto"
-                type="button">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add item</span>
-            </button>
-
-            <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
-                {#if addRelationship === false}
+            {#if relatedList.length === 0}
+                <Button
+                    text
+                    noMargin
+                    on:click={() => {
+                        showInput = true;
+                    }}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Add item</span>
+                </Button>
+            {/if}
+        </div>
+        <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
+            {#each relatedList as doc, i}
+                <li class="u-flex u-gap-16">
+                    <output class="input-text is-read-only">
+                        <div class="u-flex u-cross-baseline u-gap-12">
+                            <span
+                                class="u-flex-basis-140 u-flex-shrink-0 u-text-start u-trim-start u-x-small u-color-text-gray">
+                                {doc}
+                                <!-- {doc.label} -->
+                            </span>
+                            <span class="u-flex-1 u-trim-1">
+                                <!-- {#each doc.data as info}
+                                        {info}
+                                    {/each} -->
+                            </span>
+                        </div>
+                    </output>
+                    <Button text noMargin ariaLabel={`Delete item ${i}`}>
+                        <span class="icon-x" aria-hidden="true" />
+                    </Button>
+                </li>
+            {/each}
+            {#if showInput}
+                <li class="u-flex u-gap-16">
                     <InputSelectSearch
                         {id}
-                        {label}
-                        {optionalText}
+                        label="Rel"
+                        showLabel={false}
                         required
-                        bind:value
+                        bind:search
+                        bind:value={relatedList[relatedList.length]}
                         options={documentList?.documents?.map((n) => ({
                             value: n.$id,
-                            label: n.name
+                            label: n.$id
                         })) ?? []} />
-                {/if}
-                {#each attribute?.relationships as relationship}
-                    <li class="u-flex u-gap-16">
-                        <output class="input-text is-read-only">
-                            <div class="u-flex u-cross-baseline u-gap-12">
-                                <span
-                                    class="u-flex-basis-140 u-flex-shrink-0 u-text-start u-trim-start u-x-small u-color-text-gray">
-                                    {realationship.label}
-                                </span>
-                                <span class="u-flex-1 u-trim-1">
-                                    {#each relationship.data as info}
-                                        {info}
-                                    {/each}
-                                </span>
-                            </div>
-                        </output>
-                        <button
-                            class="button is-text u-padding-inline-0"
-                            aria-label="delete item 1">
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
-                    </li>
-                {/each}
-            </ul>
-
-            <div class="u-flex u-cross-baseline u-gap-16 u-margin-block-start-8">
-                <p class="u-small">Total results: {attribute?.relationships?.length}</p>
-
-                <nav class="pagination u-margin-inline-start-auto" style="--button-size: 2.5rem;">
-                    <Button text disabled noMargin ariaLabel="prev page">
-                        <span class="icon-cheveron-left" aria-hidden="true" />
-                        <span class="text">Prev</span>
+                    <Button
+                        text
+                        noMargin
+                        ariaLabel={`Hide input`}
+                        on:click={() => (showInput = false)}>
+                        <span class="icon-x" aria-hidden="true" />
                     </Button>
+                </li>
+            {/if}
+        </ul>
 
-                    <Button text disabled noMargin ariaLabel="next page">
-                        <span class="text">Next</span>
-                        <span class="icon-cheveron-right" aria-hidden="true" />
-                    </Button>
-                </nav>
-            </div>
-        </div>
+        {#if relatedList.length > 0 && !showInput}
+            <Button
+                text
+                noMargin
+                on:click={() => {
+                    showInput = true;
+                }}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Add item</span>
+            </Button>
+        {/if}
     </div>
 {:else}
     <InputSelectSearch

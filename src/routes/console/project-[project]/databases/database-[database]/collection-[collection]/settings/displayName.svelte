@@ -71,7 +71,7 @@
         $teamPrefs?.displayNames?.[$collection.$id] ?? []
     )?.length;
 
-    $: console.log(displayNames, $teamPrefs?.displayNames[$collection.$id]);
+    $: console.log(displayNames, $teamPrefs?.displayNames?.[$collection.$id]);
 </script>
 
 <Form onSubmit={updateDisplayName}>
