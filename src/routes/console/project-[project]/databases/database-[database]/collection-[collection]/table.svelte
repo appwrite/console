@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
@@ -112,9 +113,17 @@
 
                             {#if !column.twoWay}
                                 <TableCell title={column.title}>
-                                    {#each args as arg}
-                                        {document[column.id]?.[arg]}
-                                    {/each}
+                                    <button
+                                        class="button is-text link"
+                                        type="button"
+                                        on:click|preventDefault|stopPropagation={() =>
+                                            goto(
+                                                `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}`
+                                            )}>
+                                        {#each args as arg}
+                                            {document[column.id]?.[arg]}
+                                        {/each}
+                                    </button>
                                 </TableCell>
                             {:else}
                                 <TableCell>
