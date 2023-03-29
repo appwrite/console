@@ -13,7 +13,7 @@
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
             if (!!prefs[prefs.length - 1][0] && !!prefs[prefs.length - 1][1]) {
                 arePrefsDisabled = false;
-            } else if (prefs[prefs.length - 1][0] === '' || prefs[prefs.length - 1][1] === '') {
+            } else if (prefs[prefs.length - 1][0] === '' && prefs[prefs.length - 1][1] === '') {
                 arePrefsDisabled = false;
             } else {
                 arePrefsDisabled = true;
