@@ -10,8 +10,8 @@
 
     let y: number;
 
-    page.subscribe(() => {
-        isOpen = $page.url.searchParams.get('openNavbar') === 'true';
+    page.subscribe(({ url }) => {
+        isOpen = url.searchParams.get('openNavbar') === 'true';
     });
 
     const toggleMenu = () => {
