@@ -34,7 +34,7 @@
             teamPrefs.updatePrefs($organization.$id, pref);
             invalidate(Dependencies.TEAM);
             addNotification({
-                message: 'Name has been updated',
+                message: 'Display names has been updated',
                 type: 'success'
             });
             trackEvent(Submit.CollectionUpdateName);
@@ -70,8 +70,6 @@
         displayNames,
         $teamPrefs?.displayNames?.[$collection.$id] ?? []
     )?.length;
-
-    $: console.log(displayNames, $teamPrefs?.displayNames?.[$collection.$id]);
 </script>
 
 <Form onSubmit={updateDisplayName}>
