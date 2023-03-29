@@ -23,7 +23,7 @@
         teamPrefs.load($organization.$id);
         documentList = await getDocuments();
 
-        displayNames = $teamPrefs?.displayNames ?? ['$id'];
+        displayNames = $teamPrefs?.displayNames?.[attribute?.relatedCollection] ?? ['$id'];
         if (!displayNames?.includes('$id')) {
             displayNames.unshift('$id');
         }

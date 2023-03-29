@@ -41,6 +41,9 @@
             trackError(error, Submit.AttributeDelete);
         }
     }
+
+    $: isDeleteBtnDisabled =
+        selectedAttribute?.type === 'relationship' && selectedAttribute?.twoWay && !checked;
 </script>
 
 <Modal
@@ -53,7 +56,7 @@
     <p class="text" data-private>
         Are you sure you want to delete <b>'{selectedAttribute?.key}' from {$collection?.name}</b>?
     </p>
-    {#if selectedAttribute?.type === 'relationship'}
+    {#if selectedAttribute?.type === 'relationship' && selectedAttribute?.twoWay}
         <div class="u-flex u-flex-vertical u-gap-24">
             <p class="text">
                 Are you sure you want to delete reviews from Movie? This is a two way relationship
@@ -61,13 +64,13 @@
             </p>
             <p class="text"><b>This action is irreversible.</b></p>
             <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                Delete relationship between {selectedAttribute.relation} to {selectedAttribute.related}
+                Delete relationship between {selectedAttribute.key} to {selectedAttribute.twoWayKey}
             </InputChoice>
         </div>
     {/if}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button disabled={!checked} secondary submit>Delete</Button>
+        <Button disabled={isDeleteBtnDisabled} secondary submit>Delete</Button>
     </svelte:fragment>
 </Modal>
