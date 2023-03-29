@@ -17,7 +17,7 @@
                 projectId,
                 passwordDictionary
             );
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Updated password dictionary check.'

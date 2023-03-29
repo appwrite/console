@@ -20,7 +20,7 @@
                 projectId,
                 passwordHistoryEnabled ? passwordHistory : 0
             );
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
             initialPasswordHistoryEnabled = passwordHistoryEnabled;
             addNotification({
                 type: 'success',
