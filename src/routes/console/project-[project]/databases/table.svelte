@@ -13,18 +13,20 @@
         TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import type { PageData } from './$types';
     import { columns } from './store';
+    import type { PageData } from './$types';
 
     export let data: PageData;
     const projectId = $page.params.project;
 </script>
 
 <Table>
-    <TableHeader>
+    <TableHeader order={data.order}>
         {#each $columns as column}
             {#if column.show}
-                <TableCellHead width={column.width}>{column.title}</TableCellHead>
+                <TableCellHead {column} width={column.width}>
+                    {column.title}
+                </TableCellHead>
             {/if}
         {/each}
     </TableHeader>
@@ -36,7 +38,7 @@
                     {#if column.show}
                         {#if column.id === '$id'}
                             {#key $columns}
-                                <TableCell title={column.title}>
+                                <TableCell width={column.width} title={column.title}>
                                     <Copy value={database.$id}>
                                         <Pill button trim>
                                             <span class="icon-duplicate" aria-hidden="true" />
@@ -46,11 +48,11 @@
                                 </TableCell>
                             {/key}
                         {:else if column.id === 'name'}
-                            <TableCellText title={column.title}>
+                            <TableCellText width={column.width} title={column.title}>
                                 {database.name}
                             </TableCellText>
                         {:else}
-                            <TableCellText title={column.title}>
+                            <TableCellText width={column.width} title={column.title}>
                                 {toLocaleDateTime(database[column.id])}
                             </TableCellText>
                         {/if}

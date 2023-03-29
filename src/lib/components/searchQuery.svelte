@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { QueryParams } from '$lib/helpers/load';
     import { onMount } from 'svelte';
     import { onDestroy } from 'svelte';
 
@@ -35,20 +36,20 @@
         clearTimeout(timer);
         timer = setTimeout(() => {
             const url = new URL($page.url);
-            const previous = url.searchParams.get('search') ?? '';
+            const previous = url.searchParams.get(QueryParams.Search) ?? '';
 
             if (previous === value) {
                 return;
             }
 
             if ($page.data.page > 1) {
-                url.searchParams.delete('page');
+                url.searchParams.delete(QueryParams.Page);
             }
 
             if (value === '') {
-                url.searchParams.delete('search');
+                url.searchParams.delete(QueryParams.Search);
             } else {
-                url.searchParams.set('search', value);
+                url.searchParams.set(QueryParams.Search, value);
             }
 
             trackEvent('search');

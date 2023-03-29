@@ -22,10 +22,10 @@
 </script>
 
 <Table>
-    <TableHeader>
+    <TableHeader order={data.order}>
         {#each $columns as column}
             {#if column.show}
-                <TableCellHead width={column.width}>{column.title}</TableCellHead>
+                <TableCellHead width={column.width} {column}>{column.title}</TableCellHead>
             {/if}
         {/each}
     </TableHeader>
@@ -37,7 +37,7 @@
                     {#if column.show}
                         {#if column.id === '$id'}
                             {#key $columns}
-                                <TableCell title={column.title}>
+                                <TableCell width={column.width} title={column.title}>
                                     <Copy value={collection.$id}>
                                         <Pill button trim>
                                             <span class="icon-duplicate" aria-hidden="true" />
@@ -47,11 +47,11 @@
                                 </TableCell>
                             {/key}
                         {:else if column.id === 'name'}
-                            <TableCellText title={column.title}>
+                            <TableCellText width={column.width} title={column.title}>
                                 {collection.name}
                             </TableCellText>
                         {:else}
-                            <TableCellText title={column.title}>
+                            <TableCellText width={column.width} title={column.title}>
                                 {toLocaleDateTime(collection[column.id])}
                             </TableCellText>
                         {/if}

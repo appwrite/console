@@ -1,10 +1,11 @@
 import { afterNavigate, goto } from '$app/navigation';
 import { page } from '$app/stores';
+import { QueryParams } from '$lib/helpers/load';
 import { get, writable } from 'svelte/store';
 
 export function createPersistentPagination(limit: number) {
     const url = get(page).url;
-    const current = +(url.searchParams.get('page') ?? 1);
+    const current = +(url.searchParams.get(QueryParams.Page) ?? 1);
     const offset = current * limit - limit;
     const { subscribe, set } = writable<number>(offset < 0 ? 0 : offset);
 
@@ -14,9 +15,9 @@ export function createPersistentPagination(limit: number) {
         const newPage = n / limit + 1;
 
         if (newPage > 1) {
-            searchParams.set('page', newPage.toString());
+            searchParams.set(QueryParams.Page, newPage.toString());
         } else {
-            searchParams.delete('page');
+            searchParams.delete(QueryParams.Page);
         }
 
         let target = pathname;
@@ -42,7 +43,7 @@ export function createPersistentPagination(limit: number) {
     };
 
     afterNavigate(({ type, to }) => {
-        const target = +(to.url.searchParams.get('page') ?? 1);
+        const target = +(to.url.searchParams.get(QueryParams.Page) ?? 1);
 
         /**
          * Listens to back/forward of the browser.

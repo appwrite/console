@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { page as pageStore } from '$app/stores';
     import { InputSelect } from '$lib/elements/forms';
+    import { QueryParams } from '$lib/helpers/load';
     import { preferences } from '$lib/stores/preferences';
 
     export let sum: number;
@@ -18,14 +19,14 @@
 
     async function limitChange() {
         const url = new URL($pageStore.url);
-        const previousLimit = Number(url.searchParams.get('limit'));
-        url.searchParams.set('limit', limit.toString());
+        const previousLimit = Number(url.searchParams.get(QueryParams.Limit));
+        url.searchParams.set(QueryParams.Limit, limit.toString());
         preferences.setLimit(limit);
 
-        if (url.searchParams.has('page')) {
-            const page = Number(url.searchParams.get('page'));
+        if (url.searchParams.has(QueryParams.Page)) {
+            const page = Number(url.searchParams.get(QueryParams.Page));
             const newPage = Math.floor(((page - 1) * previousLimit) / limit);
-            url.searchParams.set('page', newPage.toString());
+            url.searchParams.set(QueryParams.Page, newPage.toString());
         }
 
         await goto(url.toString());

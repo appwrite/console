@@ -60,11 +60,13 @@
 </script>
 
 <TableScroll isSticky>
-    <TableHeader>
-        <TableCellHead width={100} eyebrow={false}>Document ID</TableCellHead>
-        {#each $columns.filter((n) => n.show) as column}
+    <TableHeader order={data.order}>
+        <TableCellHead width={200} eyebrow={false}>Document ID</TableCellHead>
+        {#each $columns as column}
             {#if column.show}
-                <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
+                <TableCellHead eyebrow={false} {column}>
+                    {column.title}
+                </TableCellHead>
             {/if}
         {/each}
     </TableHeader>
@@ -72,7 +74,7 @@
         {#each data.documents.documents as document}
             <TableRowLink
                 href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
-                <TableCell>
+                <TableCell width={200}>
                     <Copy value={document.$id}>
                         <Pill button trim>
                             <span class="icon-duplicate" aria-hidden="true" />

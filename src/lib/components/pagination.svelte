@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page as pageStore } from '$app/stores';
     import { Button } from '$lib/elements/forms';
+    import { QueryParams } from '$lib/helpers/load';
 
     export let sum: number;
     export let limit: number;
@@ -31,9 +32,9 @@
     function getLink(page: number): string {
         const url = new URL($pageStore.url);
         if (page === 1) {
-            url.searchParams.delete('page');
+            url.searchParams.delete(QueryParams.Page);
         } else {
-            url.searchParams.set('page', page.toString());
+            url.searchParams.set(QueryParams.Page, page.toString());
         }
 
         return url.toString();
