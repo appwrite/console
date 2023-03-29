@@ -92,8 +92,4 @@
             grid-template-columns: auto 1fr !important;
         }
     }
-
-    .main-content {
-        overflow: hidden;
-    }
 </style>
