@@ -58,14 +58,15 @@
     bind:value={data.size}
     required
     readonly={editing} />
-{#if data.size > 50}
+{#if data.size >= 52}
     <InputTextarea
         id="default"
         label="Default value"
         placeholder="Enter value"
         bind:value={data.default}
         maxlength={data.size}
-        disabled={data.required || data.array} />
+        disabled={data.required || data.array}
+        required={data.required} />
 {:else}
     <InputText
         id="default"
@@ -73,7 +74,8 @@
         placeholder="Enter value"
         bind:value={data.default}
         maxlength={data.size}
-        disabled={data.required || data.array} />
+        disabled={data.required || data.array}
+        required={data.required} />
 {/if}
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute

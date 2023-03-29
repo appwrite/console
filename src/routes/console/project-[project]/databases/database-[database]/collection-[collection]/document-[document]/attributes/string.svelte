@@ -9,7 +9,7 @@
     export let optionalText: string | undefined = undefined;
 </script>
 
-{#if attribute.size >= 50}
+{#if attribute.size >= 52}
     <InputTextarea
         {id}
         {label}

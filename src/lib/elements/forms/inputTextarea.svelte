@@ -61,7 +61,7 @@
     <div class="input-text-wrapper">
         <textarea
             {id}
-            {placeholder}
+            placeholder={value === null ? 'NULL' : placeholder}
             {disabled}
             {readonly}
             {required}
