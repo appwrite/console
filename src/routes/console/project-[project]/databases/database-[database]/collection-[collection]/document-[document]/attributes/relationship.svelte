@@ -83,7 +83,7 @@
                         {optionalText}
                         required
                         bind:value
-                        options={documentList?.collections?.map((n) => ({
+                        options={documentList?.documents?.map((n) => ({
                             value: n.$id,
                             label: n.name
                         })) ?? []} />
