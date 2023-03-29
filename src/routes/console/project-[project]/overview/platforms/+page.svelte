@@ -112,7 +112,7 @@
                                     alt="technology" />
                             </div>
                             <div>
-                                <Heading size="6" tag="h3">{platform.name}</Heading>
+                                <h3 class="u-bold">{platform.name}</h3>
                                 <p class="text">{PlatformTypes[platform.type]}</p>
                             </div>
                         </div>

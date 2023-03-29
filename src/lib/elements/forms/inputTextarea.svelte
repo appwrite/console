@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { FormItem, Helper, Label } from '.';
+    import NullCheckbox from './nullCheckbox.svelte';
     import TextCounter from './textCounter.svelte';
 
     export let label: string;
@@ -37,6 +38,19 @@
     $: if (value) {
         error = null;
     }
+
+    let prevValue = null;
+    function handleNullChange(e: CustomEvent<boolean>) {
+        const isNull = e.detail;
+        console.log(isNull, value, prevValue);
+        if (isNull) {
+            prevValue = value;
+            console.log(prevValue, value);
+            value = null;
+        } else {
+            value = prevValue;
+        }
+    }
 </script>
 
 <FormItem>
@@ -56,9 +70,20 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
-        {#if maxlength}
-            <TextCounter max={maxlength} count={value?.length ?? 0} />
-        {/if}
+        <ul
+            class="buttons-list u-gap-8 u-cross-center u-position-absolute d u-inset-block-end-1 u-inset-inline-end-1 u-padding-block-8 u-padding-inline-12"
+            style="border-end-end-radius:0.0625rem;">
+            {#if maxlength}
+                <li class="buttons-list-item">
+                    <TextCounter max={maxlength} count={value?.length ?? 0} />
+                </li>
+            {/if}
+            {#if !required}
+                <li class="buttons-list-item">
+                    <NullCheckbox checked={value === null} on:change={handleNullChange} />
+                </li>
+            {/if}
+        </ul>
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
