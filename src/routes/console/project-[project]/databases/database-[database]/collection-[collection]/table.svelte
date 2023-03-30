@@ -80,11 +80,8 @@
         };
     }
 
-    function isRelationship(
-        column: (typeof $columns)[0],
-        attr: Partial<Attribute>
-    ): attr is Models.AttributeRelationship {
-        return column.type === 'relationship';
+    function isRelationship(attr: Partial<Attribute>): attr is Models.AttributeRelationship {
+        return attr?.type === 'relationship';
     }
 </script>
 
@@ -113,7 +110,7 @@
                 {#each $columns as column}
                     {#if column.show}
                         {@const attr = $attributes.find((n) => n.key === column.id)}
-                        {#if isRelationship(column, attr)}
+                        {#if isRelationship(attr)}
                             {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
                                 '$id'
                             ]}
@@ -130,7 +127,7 @@
                                             {#if arg !== undefined}
                                                 {i ? '|' : ''}
                                                 <span class="text">
-                                                    {document[column.id]?.[arg] ?? 'n/a'}
+                                                    {document[column.id]?.[arg]}
                                                 </span>
                                             {/if}
                                         {/each}

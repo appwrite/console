@@ -2,8 +2,6 @@
     import { tooltip } from '$lib/actions/tooltip';
 
     export let data: string[] = [];
-
-    console.log(data);
 </script>
 
 <div class="u-flex u-cross-baseline u-gap-12">
@@ -15,13 +13,13 @@
         <span
             class="u-flex u-trim-1 u-gap-4"
             use:tooltip={{
-                content: data.map((e) => e ?? 'n/a').join(' | ')
+                content: data.map((e) => e ?? e?.toString()).join(' | ')
             }}>
             {#each data as item, i}
                 {#if i}
                     <span class="u-text-color-gray">|</span>
                 {/if}
-                <span class="text">{item ?? 'n/a'}</span>
+                <span class="text">{item}</span>
             {/each}
         </span>
     {/if}

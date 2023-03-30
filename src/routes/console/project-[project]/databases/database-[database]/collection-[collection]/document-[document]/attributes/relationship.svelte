@@ -34,10 +34,11 @@
 
     async function getDocuments(search: string = null) {
         if (search) {
+            const query = displayNames.map((name) => Query.search(name, search));
             const documents = await sdk.forProject.databases.listDocuments(
                 databaseId,
                 attribute.relatedCollection,
-                [Query.search(displayNames[0], search), Query.orderDesc('$createdAt')]
+                [...query, Query.orderDesc('$createdAt')]
             );
             return documents;
         } else {
@@ -56,7 +57,7 @@
     // Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
 
-    $: if (isArray) value = relatedList;
+    $: if (isArray) value = relatedList.map((doc) => doc.label);
 </script>
 
 {#if isArray}
@@ -84,16 +85,9 @@
                 <li class="u-flex u-gap-16">
                     <output class="input-text is-read-only">
                         <div class="u-flex u-cross-baseline u-gap-12">
-                            <span
-                                class="u-flex-basis-140 u-flex-shrink-0 u-text-start u-trim-start u-x-small u-color-text-gray">
-                                {doc}
-                                <!-- {doc.label} -->
-                            </span>
-                            <span class="u-flex-1 u-trim-1">
-                                <!-- {#each doc.data as info}
-                                        {info}
-                                    {/each} -->
-                            </span>
+                            <SelectSearchItem data={doc.data}>
+                                {doc.label}
+                            </SelectSearchItem>
                         </div>
                     </output>
                     <Button
@@ -108,6 +102,7 @@
                     </Button>
                 </li>
             {/each}
+
             {#if showInput}
                 <li class="u-flex u-gap-16">
                     <InputSelectSearch
@@ -117,10 +112,21 @@
                         required
                         bind:search
                         bind:value={relatedList[relatedList.length]}
-                        options={documentList?.documents?.map((n) => ({
-                            value: n.$id,
-                            label: n.$id
-                        })) ?? []} />
+                        options={documentList?.documents?.map((n) => {
+                            const data = displayNames
+                                .filter((name) => name !== '$id')
+                                .map((name) => n?.[name]);
+                            return {
+                                value: { label: n.$id, data },
+                                label: n.$id,
+                                data
+                            };
+                        }) ?? []}
+                        let:option={o}>
+                        <SelectSearchItem data={o.data}>
+                            {o.label}
+                        </SelectSearchItem>
+                    </InputSelectSearch>
                     <Button
                         text
                         noMargin

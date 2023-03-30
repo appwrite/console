@@ -4,7 +4,7 @@
     import { Label } from '.';
 
     type Option = $$Generic<{
-        value: string | boolean | number;
+        value: string | boolean | number | Record<string, unknown>;
         label: string;
         data?: string[];
     }>;

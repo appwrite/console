@@ -35,7 +35,7 @@
                         {#if i}
                             <span class="clickable-list-title-sep">|</span>
                         {/if}
-                        <span>{doc[arg] ?? 'n/a'}</span>
+                        <span>{doc[arg]}</span>
                     {/each}
                     <svelte:fragment slot="desc">
                         {doc.$id}
