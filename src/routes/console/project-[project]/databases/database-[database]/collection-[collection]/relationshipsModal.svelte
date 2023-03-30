@@ -1,12 +1,17 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { Modal, PaginationInline } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { TableCell, TableList, TableRowLink } from '$lib/elements/table';
     import { teamPrefs } from '$lib/stores/team';
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let data: Models.Document;
+    export let data: Models.Document[];
     export let selectedRelationship: Models.AttributeRelationship = null;
+    const projectId = $page.params.project;
+    const databaseId = $page.params.database;
     const limit = 10;
     let offset = 0;
 
@@ -18,21 +23,34 @@
     }
 </script>
 
-<Modal size="big" bind:show icon="relationship">
+<Modal size="big" bind:show icon="relationship" headerDivider={false}>
     <svelte:fragment slot="header">
         {selectedRelationship.key}
     </svelte:fragment>
-    {#each data?.[selectedRelationship.key] as doc, i}
-        {#if i >= offset && i < offset + limit}
-            {doc}
-        {/if}
-    {/each}
+    <TableList>
+        {#each data as doc, i}
+            {#if i >= offset && i < offset + limit}
+                <TableRowLink
+                    href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}`}>
+                    <TableCell title={doc.$id}>
+                        <div class="u-flex u-gap-8">
+                            {#each args as arg, i}
+                                {#if i}
+                                    <span class="u-color-text-gray">|</span>
+                                {/if}
+                                <span>{doc[arg]}</span>
+                            {/each}
+                        </div>
+                        <span class="u-color-text-gray u-small">{doc.$id}</span>
+                    </TableCell>
+                </TableRowLink>
+            {/if}
+        {/each}
+    </TableList>
+    <div class="u-flex u-margin-block-start-32 u-main-space-between">
+        <p class="text">Total results: {data?.length ?? 0}</p>
+        <PaginationInline {limit} bind:offset sum={data?.length ?? 0} hidePages />
+    </div>
 
-    <svelte:fragment slot="footer">
-        <Button secondary disabled={!!offset} on:click={() => offset - limit}>Prev</Button>
-        <Button
-            secondary
-            disabled={data?.[selectedRelationship.key]?.length < offset}
-            on:click={() => offset + limit}>Next</Button>
-    </svelte:fragment>
+    <svelte:fragment slot="footer" />
 </Modal>

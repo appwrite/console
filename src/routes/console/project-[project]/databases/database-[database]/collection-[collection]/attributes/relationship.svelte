@@ -167,7 +167,7 @@
         <div>
             <InputText
                 id="keyRelated"
-                label="Attribute Key "
+                label="Attribute Key (related collection)"
                 placeholder="Enter Key"
                 bind:value={data.twoWayKey}
                 required

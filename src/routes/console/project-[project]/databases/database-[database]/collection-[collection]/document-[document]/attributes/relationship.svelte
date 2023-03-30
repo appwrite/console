@@ -48,21 +48,17 @@
         }
     }
 
-    function isArray() {
-        if (attribute.twoWay) {
-            return attribute.relationType !== 'oneToOne';
-        } else {
-            return attribute.relationType === 'oneToMany';
-        }
-    }
+    $: isArray = !(
+        attribute?.relationType === 'oneToOne' || attribute?.relationType === 'manyToOne'
+    );
 
     // Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
 
-    $: if (isArray()) value = relatedList;
+    $: if (isArray) value = relatedList;
 </script>
 
-{#if isArray()}
+{#if isArray}
     <div class="u-width-full-line u-max-width-600">
         <div class="u-flex u-cross-center u-main-space-between">
             <div>
@@ -99,7 +95,14 @@
                             </span>
                         </div>
                     </output>
-                    <Button text noMargin ariaLabel={`Delete item ${i}`}>
+                    <Button
+                        text
+                        noMargin
+                        ariaLabel={`Delete item ${i}`}
+                        on:click={() => {
+                            relatedList.splice(i, 1);
+                            relatedList = relatedList;
+                        }}>
                         <span class="icon-x" aria-hidden="true" />
                     </Button>
                 </li>

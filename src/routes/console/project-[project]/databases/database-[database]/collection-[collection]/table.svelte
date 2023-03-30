@@ -111,7 +111,7 @@
                                 '$id'
                             ]}
 
-                            {#if !attr.twoWay}
+                            {#if attr?.relationType === 'oneToOne' || attr?.relationType === 'manyToOne'}
                                 <TableCell title={column.title}>
                                     <button
                                         class="button is-text link"
@@ -131,17 +131,17 @@
                                 </TableCell>
                             {:else}
                                 <TableCell>
-                                    {@const itemsNum = document[column.id]?.total}
-                                    <Button
-                                        text
-                                        on:click={() => {
+                                    {@const itemsNum = document[column.id]?.length}
+                                    <button
+                                        class="button is-text"
+                                        on:click|preventDefault|stopPropagation={() => {
                                             relationshipData = document[column.id];
                                             showRelationships = true;
                                             selectedRelationship = attr;
                                         }}
                                         disabled={!itemsNum}>
                                         Items <span class="inline-tag">{itemsNum ?? 0}</span>
-                                    </Button>
+                                    </button>
                                 </TableCell>
                             {/if}
                         {:else}
