@@ -5,7 +5,6 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { Copy } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,

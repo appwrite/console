@@ -2,7 +2,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Modal, PaginationInline } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
     import { TableCell, TableList, TableRowLink } from '$lib/elements/table';
     import { teamPrefs } from '$lib/stores/team';
     import type { Models } from '@appwrite.io/console';
@@ -31,7 +30,8 @@
         {#each data as doc, i}
             {#if i >= offset && i < offset + limit}
                 <TableRowLink
-                    href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}`}>
+                    href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}`}
+                    on:click={() => (show = false)}>
                     <TableCell title={doc.$id}>
                         <div class="u-flex u-gap-8">
                             {#each args as arg, i}
