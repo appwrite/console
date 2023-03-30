@@ -7,6 +7,7 @@
     export let attribute: Attributes;
     export let formValues: object = {};
     export let label: string;
+    export let editing = false;
 
     function removeArrayItem(key: string, index: number) {
         formValues = {
@@ -75,6 +76,7 @@
 {:else}
     <FormList>
         <Attribute
+            {editing}
             {attribute}
             {label}
             optionalText={getAttributeType(attribute)}

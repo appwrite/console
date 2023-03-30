@@ -12,6 +12,7 @@
     export let label: string;
     export let optionalText: string | undefined = undefined;
     export let value: string | number | boolean | null;
+    export let editing = false;
     export let attribute:
         | Models.AttributeBoolean
         | Models.AttributeEmail
@@ -53,6 +54,7 @@
         <svelte:component
             this={attributesTypeMap[attribute.type]}
             {id}
+            {editing}
             {label}
             {attribute}
             {optionalText}
