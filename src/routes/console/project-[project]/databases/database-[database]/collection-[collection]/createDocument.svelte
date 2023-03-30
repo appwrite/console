@@ -14,6 +14,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
+    import { log } from 'logrocket';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -32,6 +33,8 @@
     }
 
     async function create() {
+        console.log($createDocument.document);
+
         try {
             await sdk.forProject.databases.createDocument(
                 databaseId,

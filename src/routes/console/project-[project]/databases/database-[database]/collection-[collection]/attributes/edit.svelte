@@ -49,8 +49,6 @@
         currentAttr ??= JSON.stringify(selectedAttribute);
         error = null;
     }
-
-    $: console.log(selectedAttribute, currentAttr);
 </script>
 
 {#if selectedAttribute}

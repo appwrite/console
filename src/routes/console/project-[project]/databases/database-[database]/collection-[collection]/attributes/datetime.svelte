@@ -13,7 +13,7 @@
             collectionId,
             key,
             data.required,
-            data.default ? data.default : undefined,
+            data.default,
             data.array
         );
     }
@@ -28,7 +28,7 @@
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined
+            data.default
         );
     }
 </script>

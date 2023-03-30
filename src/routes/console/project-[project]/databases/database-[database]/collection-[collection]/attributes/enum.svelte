@@ -14,7 +14,7 @@
             key,
             data.elements,
             data.required,
-            data.default ? data.default : undefined,
+            data.default,
             data.array
         );
     }
@@ -30,7 +30,7 @@
             data.key,
             data.elements,
             data.required,
-            data.default ? data.default : undefined
+            data.default
         );
     }
 </script>

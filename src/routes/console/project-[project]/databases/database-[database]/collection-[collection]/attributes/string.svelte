@@ -8,13 +8,14 @@
         key: string,
         data: Partial<Models.AttributeString>
     ) {
+        console.log(data.default, typeof data.default);
         await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             key,
             data.size,
             data.required,
-            data.default ? (data.default as string) : undefined,
+            data.default,
             data.array
         );
     }
@@ -23,13 +24,12 @@
         collectionId: string,
         data: Partial<Models.AttributeString>
     ) {
-        console.log(data);
         await sdk.forProject.databases.updateStringAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            (data.default as string) || undefined
+            data.default
         );
     }
 </script>

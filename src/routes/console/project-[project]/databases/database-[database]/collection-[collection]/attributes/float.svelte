@@ -15,7 +15,7 @@
             data.required,
             data.min,
             data.max,
-            typeof data.default === 'number' ? data.default : undefined,
+            data.default,
             data.array
         );
     }
@@ -32,7 +32,7 @@
             data.required,
             data.min,
             data.max,
-            typeof data.default === 'number' ? data.default : undefined
+            data.default
         );
     }
 </script>
