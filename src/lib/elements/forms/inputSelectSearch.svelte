@@ -5,7 +5,7 @@
 
     export let id: string;
     export let label: string;
-    export let name: string = 'elements';
+    export let name = 'elements';
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let placeholder = '';
@@ -77,6 +77,8 @@
                 break;
         }
     }
+
+    $: showClearBtn = (hasFocus && search) || value;
 </script>
 
 <li class="u-position-relative form-item u-stretch">
@@ -94,7 +96,7 @@
         </Label>
 
         <div class="custom-select">
-            <div class="input-text-wrapper" style="--amount-of-buttons:2">
+            <div class="input-text-wrapper" style:--amount-of-buttons={showClearBtn ? 2 : 1}>
                 <input
                     type="text"
                     class="input-text"
@@ -109,16 +111,18 @@
                     on:keydown={handleKeydown} />
 
                 <div class="options-list">
-                    <button
-                        class="options-list-button"
-                        aria-label="clear field"
-                        type="button"
-                        on:click|preventDefault={() => {
-                            search = '';
-                            value = null;
-                        }}>
-                        <span class="icon-x" aria-hidden="true" />
-                    </button>
+                    {#if showClearBtn}
+                        <button
+                            class="options-list-button"
+                            aria-label="clear field"
+                            type="button"
+                            on:click|preventDefault={() => {
+                                search = '';
+                                value = null;
+                            }}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </button>
+                    {/if}
                     <button
                         class="options-list-button"
                         type="button"
