@@ -45,10 +45,8 @@
     let prevValue = '';
     function handleNullChange(e: CustomEvent<boolean>) {
         const isNull = e.detail;
-        console.log(isNull, value, prevValue);
         if (isNull) {
             prevValue = value;
-            console.log(prevValue, value);
             value = null;
         } else {
             value = prevValue;
