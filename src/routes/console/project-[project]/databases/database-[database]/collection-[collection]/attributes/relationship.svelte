@@ -44,6 +44,7 @@
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
+    import { SelectSearchItem } from '$lib/elements';
 
     // Props
     export let data: Partial<Models.AttributeRelationship>;
@@ -141,7 +142,12 @@
     required
     placeholder="Select a collection"
     disabled={editing}
-    options={collections?.map((n) => ({ value: n.$id, label: n.name })) ?? []} />
+    options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
+    let:option={o}>
+    <SelectSearchItem data={o.data}>
+        {o.label}
+    </SelectSearchItem>
+</InputSelectSearch>
 
 {#if data?.relatedCollection}
     <div>

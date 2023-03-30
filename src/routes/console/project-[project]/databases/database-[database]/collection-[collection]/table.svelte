@@ -18,6 +18,7 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
+    import type Attribute from './document-[document]/attribute.svelte';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
 
@@ -27,7 +28,7 @@
     const databaseId = $page.params.database;
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
-    let relationshipData: Models.Document;
+    let relationshipData: [];
 
     onMount(() => {
         teamPrefs.load($organization.$id);
@@ -78,6 +79,10 @@
             whole: formattedColumn
         };
     }
+
+    function isRelationship(attr: Partial<Attribute>): attr is Models.AttributeRelationship {
+        return attr?.type === 'relationship';
+    }
 </script>
 
 <TableScroll isSticky>
@@ -104,12 +109,11 @@
 
                 {#each $columns as column}
                     {#if column.show}
-                        {#if column.type === 'relationship'}
-                            {@const attr = $attributes.find((n) => n.key === column.id)}
+                        {@const attr = $attributes.find((n) => n.key === column.id)}
+                        {#if isRelationship(attr)}
                             {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
                                 '$id'
                             ]}
-
                             {#if attr?.relationType === 'oneToOne' || attr?.relationType === 'manyToOne'}
                                 <TableCell title={column.title}>
                                     <button
@@ -122,8 +126,9 @@
                                         {#each args as arg, i}
                                             {#if arg !== undefined}
                                                 {i ? '|' : ''}
-                                                <span class="text"
-                                                    >{document[column.id]?.[arg]}</span>
+                                                <span class="text">
+                                                    {document[column.id]?.[arg]}
+                                                </span>
                                             {/if}
                                         {/each}
                                     </button>

@@ -1,18 +1,16 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Modal, PaginationInline } from '$lib/components';
-    import { TableCell, TableList, TableRowLink } from '$lib/elements/table';
+    import { ClickableList, ClickableListItem, Modal, Paginator } from '$lib/components';
     import { teamPrefs } from '$lib/stores/team';
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let data: Models.Document[];
+    export let data: [];
     export let selectedRelationship: Models.AttributeRelationship = null;
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
     const limit = 10;
-    let offset = 0;
 
     $: args = $teamPrefs?.displayNames?.[selectedRelationship?.relatedCollection];
 
@@ -26,31 +24,25 @@
     <svelte:fragment slot="header">
         {selectedRelationship.key}
     </svelte:fragment>
-    <TableList>
-        {#each data as doc, i}
-            {#if i >= offset && i < offset + limit}
-                <TableRowLink
+
+    <Paginator items={data} {limit} let:paginatedItems>
+        <ClickableList>
+            {#each paginatedItems as doc}
+                <ClickableListItem
                     href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}`}
                     on:click={() => (show = false)}>
-                    <TableCell title={doc.$id}>
-                        <div class="u-flex u-gap-8">
-                            {#each args as arg, i}
-                                {#if i}
-                                    <span class="u-color-text-gray">|</span>
-                                {/if}
-                                <span>{doc[arg]}</span>
-                            {/each}
-                        </div>
-                        <span class="u-color-text-gray u-small">{doc.$id}</span>
-                    </TableCell>
-                </TableRowLink>
-            {/if}
-        {/each}
-    </TableList>
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {data?.length ?? 0}</p>
-        <PaginationInline {limit} bind:offset sum={data?.length ?? 0} hidePages />
-    </div>
-
+                    {#each args as arg, i}
+                        {#if i}
+                            <span class="clickable-list-title-sep">|</span>
+                        {/if}
+                        <span>{doc[arg]}</span>
+                    {/each}
+                    <svelte:fragment slot="desc">
+                        {doc.$id}
+                    </svelte:fragment>
+                </ClickableListItem>
+            {/each}
+        </ClickableList>
+    </Paginator>
     <svelte:fragment slot="footer" />
 </Modal>

@@ -3,6 +3,14 @@
     import { onMount } from 'svelte';
     import { Label } from '.';
 
+    type Option = $$Generic<{
+        value: string | boolean | number | Record<string, unknown>;
+        label: string;
+        data?: string[];
+    }>;
+    type OptionArray = Option[];
+
+    export let options: OptionArray;
     export let id: string;
     export let label: string;
     export let name = 'elements';
@@ -12,18 +20,13 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let debounce = 250;
-    export let options: {
-        value: string | boolean | number;
-        label: string;
-    }[];
     // Input value
-    export let search: string = null;
+    export let search = '';
     // The actual selected value
-    export let value: string | number | boolean;
+    export let value: Option['value'];
+    $: selectedOption = options.find((option) => option.value === value);
 
     let element: HTMLInputElement;
-    let timer: ReturnType<typeof setTimeout>;
     let hasFocus = false;
     let selected: number = null;
 
@@ -37,13 +40,8 @@
         }
     });
 
-    function handleInput(event: Event) {
+    function handleInput() {
         hasFocus = true;
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            const target = event.target as HTMLInputElement;
-            search = target.value;
-        }, debounce);
     }
 
     function handleKeydown(event: KeyboardEvent) {
@@ -70,12 +68,25 @@
             case 'Enter':
                 if (selected !== null) {
                     event.preventDefault();
-                    value = options[selected].value;
-                    search = options[selected].label;
-                    hasFocus = false;
+                    selectOption(options[selected]);
                 }
                 break;
         }
+    }
+
+    function selectOption(option: Option) {
+        value = option.value;
+        search = option.label;
+        // It's not working without this line.
+        element.value = search;
+        hasFocus = false;
+    }
+
+    function clearOption() {
+        value = null;
+        search = '';
+        element.value = search;
+        hasFocus = false;
     }
 
     $: showClearBtn = (hasFocus && search) || value;
@@ -96,19 +107,25 @@
         </Label>
 
         <div class="custom-select">
-            <div class="input-text-wrapper" style:--amount-of-buttons={showClearBtn ? 2 : 1}>
-                <input
-                    type="text"
-                    class="input-text"
-                    {placeholder}
-                    {disabled}
-                    {required}
-                    bind:value={search}
-                    bind:this={element}
-                    on:focus={() => (hasFocus = true)}
-                    on:click={() => (hasFocus = true)}
-                    on:input={handleInput}
-                    on:keydown={handleKeydown} />
+            <div class="input-text-wrapper" style="--amount-of-buttons:2">
+                {#if $$slots.default && selectedOption}
+                    <output class="input-text is-read-only">
+                        <slot option={selectedOption} />
+                    </output>
+                {:else}
+                    <input
+                        type="text"
+                        class="input-text"
+                        {placeholder}
+                        {disabled}
+                        {required}
+                        bind:value={search}
+                        bind:this={element}
+                        on:focus={() => (hasFocus = true)}
+                        on:click={() => (hasFocus = true)}
+                        on:input={handleInput}
+                        on:keydown={handleKeydown} />
+                {/if}
 
                 <div class="options-list">
                     {#if showClearBtn}
@@ -116,10 +133,7 @@
                             class="options-list-button"
                             aria-label="clear field"
                             type="button"
-                            on:click|preventDefault={() => {
-                                search = '';
-                                value = null;
-                            }}>
+                            on:click|preventDefault={clearOption}>
                             <span class="icon-x" aria-hidden="true" />
                         </button>
                     {/if}
@@ -140,11 +154,11 @@
                         class:is-selected={selected === i}
                         type="button"
                         on:click|preventDefault={() => {
-                            value = option.value;
-                            search = option.label;
-                            hasFocus = false;
+                            selectOption(option);
                         }}>
-                        <span class="text">{option.label}</span>
+                        <slot {option}>
+                            <span class="text">{option.label}</span>
+                        </slot>
                     </button>
                 </li>
             {:else}

@@ -51,3 +51,5 @@ export { default as ViewSelector } from './viewSelector.svelte';
 export { default as LabelCard } from './labelCard.svelte';
 export { default as Limit } from './limit.svelte';
 export { default as PaginationWithLimit } from './paginationWithLimit.svelte';
+export { default as ClickableList } from './clickableList.svelte';
+export { default as ClickableListItem } from './clickableListItem.svelte';
