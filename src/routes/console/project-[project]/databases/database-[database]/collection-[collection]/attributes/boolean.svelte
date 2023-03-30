@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitBoolean(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeBoolean>
     ) {
-        await sdkForProject.databases.createBooleanAttribute(
+        await sdk.forProject.databases.createBooleanAttribute(
             databaseId,
             collectionId,
             key,
@@ -23,13 +23,12 @@
 
         data: Partial<Models.AttributeBoolean>
     ) {
-        await sdkForProject.databases.createBooleanAttribute(
+        await sdk.forProject.databases.updateBooleanAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>
@@ -54,7 +53,7 @@
     label="Default value"
     placeholder="Select a value"
     options={[
-        { label: 'Select a value', value: null },
+        { label: 'NULL', value: null },
         { label: 'True', value: true },
         { label: 'False', value: false }
     ]}

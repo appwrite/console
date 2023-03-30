@@ -1,34 +1,69 @@
-<script lang="ts">
-    import { Button, InputChoice } from '$lib/elements/forms';
-    import { DropList } from '.';
-    import { prefs } from '$lib/stores/user';
-    import { page } from '$app/stores';
-    import { onMount } from 'svelte';
-    import type { Writable } from 'svelte/store';
-
-    type Column = {
+<script context="module" lang="ts">
+    export type Column = {
         id: string;
         title: string;
         show: boolean;
         width?: number;
     };
+</script>
+
+<script lang="ts">
+    import { Button, InputChoice } from '$lib/elements/forms';
+    import { DropList } from '.';
+    import { page } from '$app/stores';
+    import type { Writable } from 'svelte/store';
+    import { preferences } from '$lib/stores/preferences';
+    import { onMount } from 'svelte';
+    import { View } from '$lib/helpers/load';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let columns: Writable<Column[]>;
-    export let showToggle = true;
-    const pathname = $page.url.pathname;
+    export let view: View;
+    export let isCustomCollection = false;
+    export let hideView = false;
+    export let hideColumns = false;
+
     let showSelectColumns = false;
 
-    onMount(() => {
-        updateColumns();
+    onMount(async () => {
+        if (isCustomCollection) {
+            const prefs = preferences.getCustomCollectionColumns($page.params.collection);
+            columns.set(
+                $columns.map((column) => {
+                    column.show = prefs?.includes(column.id) ?? true;
+                    return column;
+                })
+            );
+        } else {
+            const prefs = preferences.get($page.route);
+
+            columns.set(
+                $columns.map((column) => {
+                    column.show = prefs.columns?.includes(column.id) ?? true;
+                    return column;
+                })
+            );
+        }
+
+        return columns.subscribe((ctx) => {
+            const columns = ctx.filter((n) => n.show).map((n) => n.id);
+
+            if (isCustomCollection) {
+                preferences.setCustomCollectionColumns(columns);
+            } else {
+                preferences.setColumns(columns);
+            }
+        });
     });
 
-    function updateColumns() {
-        if ($prefs?.[pathname]) {
-            $columns.forEach((column, i) => {
-                column.show = $prefs[pathname][i];
-            });
-            $columns = $columns;
-        }
+    function getViewLink(view: View): string {
+        const url = new URL($page.url);
+        url.searchParams.set('view', view);
+        return url.toString();
+    }
+
+    function updateViewPreferences(view: View) {
+        preferences.setView(view);
     }
 
     $: selectedColumnsNumber = $columns.reduce((acc, column) => {
@@ -37,22 +72,17 @@
         }
         return acc;
     }, 0);
-
-    columns.subscribe((columns) => {
-        const columnsArray = columns.map((column) => column.show);
-        prefs.updatePrefs({ ...$prefs, [pathname]: columnsArray });
-    });
 </script>
 
-{#if $columns?.length}
-    {#if $prefs?.preferredView === 'list'}
+{#if !hideColumns && view === View.Table}
+    {#if $columns?.length}
         <DropList bind:show={showSelectColumns} scrollable={true}>
-            <Button secondary on:click={() => (showSelectColumns = true)}>
+            <Button secondary on:click={() => (showSelectColumns = !showSelectColumns)}>
                 <span
-                    class="icon-view-boards u-opacity-50	"
+                    class="icon-view-boards u-opacity-50"
                     aria-hidden="true"
                     aria-label="columns" />
-                <span class="text">Columns</span>
+                <span class="text is-only-desktop">Columns</span>
                 <span class="inline-tag">{selectedColumnsNumber}</span>
             </Button>
             <svelte:fragment slot="list">
@@ -68,29 +98,39 @@
     {/if}
 {/if}
 
-{#if showToggle}
+{#if !hideView}
     <div class="toggle-button">
         <ul class="toggle-button-list">
-            <li class="toggle-button-item">
-                <button
-                    class="toggle-button-element"
-                    aria-label="List View"
-                    type="button"
-                    class:is-selected={$prefs.preferredView === 'list'}
-                    on:click={() => prefs.updatePrefs({ ...$prefs, preferredView: 'list' })}>
-                    <span class="icon-view-list" aria-hidden="true" />
-                </button>
-            </li>
-            <li class="toggle-button-item">
-                <button
-                    class="toggle-button-element"
-                    aria-label="Grid View"
-                    type="button"
-                    class:is-selected={$prefs.preferredView === 'grid'}
-                    on:click={() => prefs.updatePrefs({ ...$prefs, preferredView: 'grid' })}>
-                    <span class="icon-view-grid" aria-hidden="true" />
-                </button>
-            </li>
+            {#key $page.url}
+                <li class="toggle-button-item">
+                    <a
+                        href={getViewLink(View.Table)}
+                        on:click={() => updateViewPreferences(View.Table)}
+                        class="toggle-button-element"
+                        aria-label="List View"
+                        type="button"
+                        class:is-selected={view === View.Table}
+                        use:tooltip={{
+                            content: 'Column View'
+                        }}>
+                        <span class="icon-view-list" aria-hidden="true" />
+                    </a>
+                </li>
+                <li class="toggle-button-item">
+                    <a
+                        href={getViewLink(View.Grid)}
+                        on:click={() => updateViewPreferences(View.Grid)}
+                        class="toggle-button-element"
+                        aria-label="Grid View"
+                        type="button"
+                        class:is-selected={view === View.Grid}
+                        use:tooltip={{
+                            content: 'Grid View'
+                        }}>
+                        <span class="icon-view-grid" aria-hidden="true" />
+                    </a>
+                </li>
+            {/key}
         </ul>
     </div>
 {/if}

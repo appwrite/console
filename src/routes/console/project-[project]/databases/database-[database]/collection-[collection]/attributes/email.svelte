@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitEmail(
         databaseId: string,
@@ -9,7 +9,7 @@
         key: string,
         data: Partial<Models.AttributeEmail>
     ) {
-        await sdkForProject.databases.createEmailAttribute(
+        await sdk.forProject.databases.createEmailAttribute(
             databaseId,
             collectionId,
             key,
@@ -24,13 +24,12 @@
         collectionId: string,
         data: Partial<Models.AttributeEmail>
     ) {
-        await sdkForProject.databases.createEmailAttribute(
+        await sdk.forProject.databases.updateEmailAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>
@@ -46,7 +45,12 @@
     }
 </script>
 
-<InputEmail id="default" label="Default value" bind:value={data.default} disabled={data.required} />
+<InputEmail
+    id="default"
+    label="Default value"
+    placeholder="Enter value"
+    bind:value={data.default}
+    disabled={data.required} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>

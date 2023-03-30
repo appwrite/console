@@ -1,24 +1,35 @@
-import { goto } from '$app/navigation';
+import { preferences } from '$lib/stores/preferences';
+import type { Page } from '@sveltejs/kit';
 
 export function pageToOffset(page: number, limit: number): number {
     return page ? page * limit - limit : 0;
 }
 
-export async function redirectOnOffsetOverflow(
-    offset: number,
-    page: number,
-    total: number,
-    project: string,
-    path: string,
-    search: string
-) {
-    if (offset > total) {
-        if (page <= 2) {
-            await goto(`/console/project-${project}/${path}?${search}`);
-        } else {
-            await goto(`/console/project-${project}/${path}/${page - 1}?${search}`);
-        }
-    }
+export function getPage(url: URL): number {
+    return Number(url.searchParams.get('page'));
+}
+
+export function getLimit(url: URL, route: Page['route'], fallback: number): number {
+    return Number(url.searchParams.get('limit') ?? preferences.get(route).limit ?? fallback);
+}
+
+export enum View {
+    Table = 'table',
+    Grid = 'grid'
+}
+
+export function getView(url: URL, route: Page['route'], fallback: View): View {
+    return (url.searchParams.get('view') ?? preferences.get(route).view) === View.Grid
+        ? View.Grid
+        : View.Table ?? fallback;
+}
+
+export function getColumns(route: Page['route'], fallback: string[]): string[] {
+    return preferences.get(route).columns ?? fallback;
+}
+
+export function getSearch(url: URL): string | undefined {
+    return url.searchParams.get('search') ?? undefined;
 }
 
 type TabElement = { href: string; title: string; hasChildren?: boolean };

@@ -5,7 +5,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
     import { project } from '../../store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -14,7 +14,7 @@
 
     const deleteUser = async () => {
         try {
-            await sdkForProject.users.delete($user.$id);
+            await sdk.forProject.users.delete($user.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -32,7 +32,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteUser} icon="exclamation" state="warning">
+<Modal bind:show={showDelete} onSubmit={deleteUser} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete User</svelte:fragment>
     <p data-private>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
     <svelte:fragment slot="footer">

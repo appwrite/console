@@ -5,7 +5,7 @@
     import { Modal } from '$lib/components';
     import { Button, FormList, InputPassword, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../store';
 
     export let showDelete = false;
@@ -15,7 +15,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdkForConsole.projects.delete($project.$id, password);
+            await sdk.forConsole.projects.delete($project.$id, password);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -33,7 +33,7 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={handleDelete} icon="exclamation" state="warning">
+<Modal bind:show={showDelete} onSubmit={handleDelete} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete Project</svelte:fragment>
     <p>
         <b>This project will be deleted</b>, along with all of its metadata, stats, and other

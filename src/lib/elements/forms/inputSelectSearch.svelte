@@ -12,6 +12,7 @@
     export let options: OptionArray;
     export let id: string;
     export let label: string;
+    export let name: string = 'elements';
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let placeholder = '';
@@ -88,7 +89,7 @@
     }
 </script>
 
-<li class="u-position-relative form-item">
+<li class="u-position-relative form-item u-stretch">
     <DropList
         bind:show={hasFocus}
         noStyle
@@ -132,7 +133,7 @@
                         <span class="icon-x" aria-hidden="true" />
                     </button>
                     <button
-                        class="options-list-button "
+                        class="options-list-button"
                         type="button"
                         on:click={() => (hasFocus = !hasFocus)}>
                         <span class="icon-cheveron-down" aria-hidden="true" />
@@ -157,7 +158,7 @@
                 </li>
             {:else}
                 <li class="drop-list-item">
-                    <span class="text">There are no documents that match your search</span>
+                    <span class="text">There are no {name} that match your search</span>
                 </li>
             {/each}
         </svelte:fragment>

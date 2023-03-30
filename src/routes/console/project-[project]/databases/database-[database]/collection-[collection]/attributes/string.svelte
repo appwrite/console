@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitString(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdkForProject.databases.createStringAttribute(
+        await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             key,
@@ -23,20 +23,20 @@
         collectionId: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdkForProject.databases.createStringAttribute(
+        console.log(data);
+        await sdk.forProject.databases.updateStringAttribute(
             databaseId,
             collectionId,
             data.key,
-            data.size,
             data.required,
-            data.default ? (data.default as string) : undefined,
-            data.array
+            (data.default as string) || undefined
         );
     }
 </script>
 
 <script lang="ts">
     import { InputNumber, InputText, InputChoice } from '$lib/elements/forms';
+    import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
@@ -51,13 +51,30 @@
     }
 </script>
 
-<InputNumber id="size" label="Size" bind:value={data.size} required readonly={editing} />
-<InputText
-    id="default"
-    label="Default value"
-    bind:value={data.default}
-    maxlength={data.size}
-    disabled={data.required || data.array} />
+<InputNumber
+    id="size"
+    label="Size"
+    placeholder="Enter size"
+    bind:value={data.size}
+    required
+    readonly={editing} />
+{#if data.size > 50}
+    <InputTextarea
+        id="default"
+        label="Default value"
+        placeholder="Enter value"
+        bind:value={data.default}
+        maxlength={data.size}
+        disabled={data.required || data.array} />
+{:else}
+    <InputText
+        id="default"
+        label="Default value"
+        placeholder="Enter value"
+        bind:value={data.default}
+        maxlength={data.size}
+        disabled={data.required || data.array} />
+{/if}
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>

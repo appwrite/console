@@ -4,8 +4,8 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -17,10 +17,10 @@
 
     const deleteMembership = async () => {
         try {
-            await sdkForConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
+            await sdk.forConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
 
             if (isUser) {
-                await sdkForConsole.account.deleteSession('current');
+                await sdk.forConsole.account.deleteSession('current');
                 await goto(`${base}/login`);
             } else {
                 dispatch('deleted');
@@ -43,7 +43,7 @@
     $: isUser = selectedMember?.userId === $user?.$id;
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteMembership} icon="exclamation" state="warning">
+<Modal bind:show={showDelete} onSubmit={deleteMembership} icon="exclamation" state="warning">
     <svelte:fragment slot="header">
         {isUser ? 'Leave Organization' : 'Delete Member'}
     </svelte:fragment>

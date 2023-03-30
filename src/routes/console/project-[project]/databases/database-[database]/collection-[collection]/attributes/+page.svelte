@@ -18,8 +18,10 @@
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
+    import { options } from './store';
 
     let showCreateDropdown = false;
+    let showEmptyCreateDropdown = false;
     let showDropdown = [];
     let selectedOption: string = null;
     let selectedAttribute: Attributes = null;
@@ -46,10 +48,28 @@
             </TableHeader>
             <TableBody>
                 {#each $attributes as attribute, index}
+                    {@const option = options.find((option) => option.type === attribute.type)}
                     <TableRow>
                         <TableCell title="Key">
-                            <div class="u-flex u-main-space-between">
-                                <span class="text u-trim">{attribute.key}</span>
+                            <div class="u-flex u-main-space-between u-cross-center">
+                                <div class="u-flex u-cross-center u-gap-16">
+                                    <div class="avatar is-size-small u-color-text-gray">
+                                        {#if option.icon === 'relationship'}
+                                            <span
+                                                class={`icon-${
+                                                    attribute?.twoWay
+                                                        ? 'switch-horizontal'
+                                                        : 'arrow-sm-right'
+                                                }`}
+                                                aria-hidden="true" />
+                                        {:else}
+                                            <span
+                                                class={`icon-${option.icon}`}
+                                                aria-hidden="true" />
+                                        {/if}
+                                    </div>
+                                    <span class="text u-trim">{attribute.key}</span>
+                                </div>
                                 {#if attribute.status !== 'available'}
                                     <Pill
                                         warning={attribute.status === 'processing'}
@@ -67,7 +87,9 @@
                             {`${attribute.type}${attribute.array ? '[]' : ''}`}
                         </TableCellText>
                         <TableCellText onlyDesktop title="Default Value">
-                            {attribute.default !== null ? attribute.default : '-'}
+                            {attribute?.default !== null && attribute?.default !== undefined
+                                ? attribute?.default
+                                : '-'}
                         </TableCellText>
                         <TableCell showOverflow>
                             <DropList
@@ -121,11 +143,35 @@
             <p class="text">Total results: {$attributes.length}</p>
         </div>
     {:else}
-        <Empty
-            single
-            href="https://appwrite.io/docs/databases#attributes"
-            target="attribute"
-            on:click={() => (showCreate = true)} />
+        <Empty single target="attribute" on:click={() => (showEmptyCreateDropdown = true)}>
+            <div class="u-text-center">
+                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <p class="body-text-2 u-margin-block-start-4">
+                    Need a hand? Check out our documentation.
+                </p>
+            </div>
+            <div class="u-flex u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/databases#attributes"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create {target}`}>Documentation</Button>
+                <CreateAttributeDropdown
+                    bind:showCreateDropdown={showEmptyCreateDropdown}
+                    bind:selectedOption
+                    bind:showCreate>
+                    <Button
+                        secondary
+                        event="create_attribute"
+                        on:click={() => {
+                            showEmptyCreateDropdown = !showEmptyCreateDropdown;
+                        }}>
+                        Create attribute
+                    </Button>
+                </CreateAttributeDropdown>
+            </div>
+        </Empty>
     {/if}
 </Container>
 

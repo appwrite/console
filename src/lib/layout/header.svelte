@@ -20,7 +20,7 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
 
     let showDropdown = false;
@@ -35,7 +35,7 @@
     }
 
     async function logout() {
-        await sdkForConsole.account.deleteSession('current');
+        await sdk.forConsole.account.deleteSession('current');
         trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }
@@ -73,7 +73,7 @@
                 <div class="pulse-notification" />
             </div>
         {/if}
-        <DropList fullWidth="28" bind:show={showFeedback} scrollable={true}>
+        <DropList bind:show={showFeedback} scrollable={true}>
             <button class="button is-small is-text" on:click={toggleFeedback}>
                 <span class="text">Feedback</span>
             </button>

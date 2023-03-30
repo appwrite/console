@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import Boolean from './attributes/boolean.svelte';
     import Datetime from './attributes/datetime.svelte';
     import Enum from './attributes/enum.svelte';
@@ -28,15 +28,15 @@
         integer: Integer,
         double: Integer,
         boolean: Boolean,
-        datetime: Datetime
+        datetime: Datetime,
+        relationship: Relationship
     };
 
     const attributesFormatMap = {
         ip: String,
         url: Url,
         email: String,
-        enum: Enum,
-        relationship: Relationship
+        enum: Enum
     };
 </script>
 

@@ -7,22 +7,23 @@
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
     import type { Attributes } from '../store';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
     const databaseId = $page.params.database;
+    let checked = selectedAttribute?.type !== 'relationship';
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         try {
-            await sdkForProject.databases.deleteAttribute(
+            await sdk.forProject.databases.deleteAttribute(
                 databaseId,
                 $collection.$id,
                 selectedAttribute.key
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -39,29 +40,37 @@
             });
             trackError(error, Submit.AttributeDelete);
         }
-    };
+    }
+
+    $: isDeleteBtnDisabled =
+        selectedAttribute?.type === 'relationship' && selectedAttribute?.twoWay && !checked;
 </script>
 
-<Modal icon="exclamation" state="warning" bind:show={showDelete} on:submit={handleDelete}>
+<Modal
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}
+    bind:show={showDelete}
+    onSubmit={handleDelete}>
     <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to delete <b>'{selectedAttribute?.key}' from {$collection?.name}</b>?
     </p>
-    {#if selectedAttribute?.type === 'relationship'}
+    {#if selectedAttribute?.type === 'relationship' && selectedAttribute?.twoWay}
         <div class="u-flex u-flex-vertical u-gap-24">
             <p class="text">
                 Are you sure you want to delete reviews from Movie? This is a two way relationship
                 and the corresponding relationship will also be deleted.
             </p>
             <p class="text"><b>This action is irreversible.</b></p>
-            <InputChoice id="delete" label="Delete" showLabel={false}>
-                Delete relationship between ??? to ???
+            <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
+                Delete relationship between {selectedAttribute.key} to {selectedAttribute.twoWayKey}
             </InputChoice>
         </div>
     {/if}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button disabled={isDeleteBtnDisabled} secondary submit>Delete</Button>
     </svelte:fragment>
 </Modal>

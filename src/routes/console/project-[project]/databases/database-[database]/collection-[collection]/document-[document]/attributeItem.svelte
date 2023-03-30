@@ -29,11 +29,11 @@
 </script>
 
 {#if attribute.array}
-    {#if formValues[attribute.key].length === 0}
+    {#if formValues[attribute.key]?.length === 0}
         <div class="u-flex u-cross-center u-main-space-between">
             <span class="label u-margin-0">
                 {label}
-                <span class="optional">
+                <span class="optional u-margin-inline-start-8">
                     {getAttributeType(attribute)}
                 </span>
             </span>

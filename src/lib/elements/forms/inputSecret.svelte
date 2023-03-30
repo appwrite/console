@@ -22,7 +22,7 @@
                 role="textbox"
                 {id}
                 aria-placeholder={placeholder}
-                class="input-text  is-resizable"
+                class="input-text is-resizable"
                 bind:textContent={value} />
         {:else}
             <input

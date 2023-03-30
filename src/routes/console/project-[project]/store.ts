@@ -1,6 +1,6 @@
 import { derived, writable } from 'svelte/store';
 import { page } from '$app/stores';
-import type { Models } from '@aw-labs/appwrite-console';
+import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);

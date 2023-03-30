@@ -3,7 +3,7 @@
     export let group: string;
     export let value: string | number | boolean;
     export let disabled = false;
-    export let padding: number = 1;
+    export let padding: number = 0.5;
     export let icon: string = null;
     export let fullHeight = true;
 </script>
@@ -16,7 +16,7 @@
         <input type="radio" {name} {disabled} {value} bind:group on:click />
         <div class="u-flex u-flex-vertical u-gap-4">
             <h4 class="body-text-2"><slot name="title" /></h4>
-            <p class="u-color-text-gray">
+            <p class="u-color-text-gray u-small">
                 <slot />
             </p>
         </div>

@@ -6,10 +6,10 @@
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     let selectedTab: string;
     let rawData: string;
@@ -17,7 +17,7 @@
     function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
         if ('buildId' in data) {
             selectedTab = 'logs';
-            rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
+            rawData = `${sdk.forConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
             return true;
         }
     }
@@ -25,7 +25,7 @@
     function isExecution(data: Models.Deployment | Models.Execution): data is Models.Execution {
         if ('trigger' in data) {
             selectedTab = 'response';
-            rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
+            rawData = `${sdk.forConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
             return true;
         }
     }

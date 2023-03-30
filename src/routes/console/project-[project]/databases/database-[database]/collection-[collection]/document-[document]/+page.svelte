@@ -2,7 +2,7 @@
     import { CardGrid, Box, Heading, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { doc } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -21,14 +21,14 @@
 
     async function updatePermissions() {
         try {
-            await sdkForProject.databases.updateDocument(
+            await sdk.forProject.databases.updateDocument(
                 $doc.$databaseId,
                 $doc.$collectionId,
                 $doc.$id,
                 $doc.data,
                 permissions
             );
-            invalidate(Dependencies.DOCUMENT);
+            await invalidate(Dependencies.DOCUMENT);
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',

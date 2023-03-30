@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitEnum(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeEnum>
     ) {
-        await sdkForProject.databases.createEnumAttribute(
+        await sdk.forProject.databases.createEnumAttribute(
             databaseId,
             collectionId,
             key,
@@ -24,14 +24,13 @@
         collectionId: string,
         data: Partial<Models.AttributeEnum>
     ) {
-        await sdkForProject.databases.createEnumAttribute(
+        await sdk.forProject.databases.updateEnumAttribute(
             databaseId,
             collectionId,
             data.key,
             data.elements,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>
@@ -62,6 +61,7 @@
 <InputSelect
     id="default"
     label="Default value"
+    placeholder="Select value"
     bind:options
     bind:value={data.default}
     disabled={data.required} />

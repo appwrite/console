@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { FormItem } from '.';
+    import TextCounter from './textCounter.svelte';
 
     export let value = '';
     export let autofocus = true;
@@ -42,11 +43,7 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
-        <span class="text-counter">
-            <span class="text-counter-count">{value?.length ?? 0}</span>
-            <span class="text-counter-separator" />
-            <span class="text-counter-max">36</span>
-        </span>
+        <TextCounter count={value?.length ?? 0} max={36} />
     </div>
 </FormItem>
 <div
@@ -55,7 +52,7 @@
     <span
         class:icon-info={icon === 'info'}
         class:icon-exclamation={icon === 'exclamation'}
-        class="u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+        class="u-cross-center u-line-height-1 u-icon-small u-color-text-gray"
         aria-hidden="true" />
     <span class="text u-line-height-1-5">
         Allowed characters: alphanumeric, non-leading hyphen, underscore, period

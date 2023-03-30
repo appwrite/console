@@ -11,7 +11,7 @@
         InputText
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
@@ -48,14 +48,13 @@
         }
     });
 
-    let name: string, mail: string, pass: string, code: string, disabled: boolean;
+    let name: string, mail: string, pass: string, code: string;
     let title = 'Sign up';
     let terms = false;
 
     async function invite() {
         try {
-            disabled = true;
-            const res = await fetch(`${sdkForConsole.client.config.endpoint}/account/invite`, {
+            const res = await fetch(`${sdk.forConsole.client.config.endpoint}/account/invite`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -71,14 +70,13 @@
             if (!res.ok) {
                 throw new Error((await res.json()).message);
             } else {
-                await sdkForConsole.account.createEmailSession(mail, pass);
-                await sdkForConsole.account.updatePrefs({ code });
+                await sdk.forConsole.account.createEmailSession(mail, pass);
+                await sdk.forConsole.account.updatePrefs({ code });
                 await invalidate(Dependencies.ACCOUNT);
                 await goto(`${base}/console`);
                 trackEvent('submit_account_create', { code: code });
             }
         } catch (error) {
-            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
@@ -94,7 +92,7 @@
 <Unauthenticated {imgLight} {imgDark}>
     <svelte:fragment slot="title">{title}</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={invite}>
+        <Form onSubmit={invite}>
             <FormList>
                 <InputText
                     id="name"
@@ -136,7 +134,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit {disabled}>Sign up</Button>
+                    <Button fullWidth submit>Sign up</Button>
                 </FormItem>
             </FormList>
         </Form>

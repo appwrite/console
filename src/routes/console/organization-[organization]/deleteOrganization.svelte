@@ -2,7 +2,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { organization, organizationList } from '$lib/stores/organization';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
@@ -11,19 +11,18 @@
 
     export let showDelete = false;
 
-    const deleteOrg = async () => {
+    async function deleteOrg() {
         try {
-            await sdkForConsole.teams.delete($organization.$id);
+            await sdk.forConsole.teams.delete($organization.$id);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: `${$organization.name} has been deleted`
             });
             trackEvent(Submit.OrganizationDelete);
             if ($organizationList?.total > 1) {
-                await invalidate(Dependencies.ACCOUNT);
                 goto(`${base}/console/`);
             } else {
-                await invalidate(Dependencies.ACCOUNT);
                 goto(`${base}/console/onboarding`);
             }
             showDelete = false;
@@ -34,10 +33,10 @@
             });
             trackError(error, Submit.OrganizationDelete);
         }
-    };
+    }
 </script>
 
-<Modal on:submit={deleteOrg} bind:show={showDelete} icon="exclamation" state="warning">
+<Modal onSubmit={deleteOrg} bind:show={showDelete} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete Organization</svelte:fragment>
     <p>
         Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})

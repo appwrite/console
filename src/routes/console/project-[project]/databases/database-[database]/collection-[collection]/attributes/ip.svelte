@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitIp(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeIp>
     ) {
-        await sdkForProject.databases.createIpAttribute(
+        await sdk.forProject.databases.createIpAttribute(
             databaseId,
             collectionId,
             key,
@@ -22,13 +22,12 @@
         collectionId: string,
         data: Partial<Models.AttributeIp>
     ) {
-        await sdkForProject.databases.createIpAttribute(
+        await sdk.forProject.databases.updateIpAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined,
-            data.array
+            data.default ? data.default : undefined
         );
     }
 </script>
@@ -47,6 +46,7 @@
 <InputText
     id="default"
     label="Default value"
+    placeholder="Enter value"
     bind:value={data.default}
     disabled={data.required || data.array} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>

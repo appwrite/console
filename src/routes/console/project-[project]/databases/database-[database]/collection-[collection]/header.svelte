@@ -6,11 +6,11 @@
     import { Cover, CoverTitle } from '$lib/layout';
     import { collection } from './store';
 
-    const projectId = $page.params.project;
-    const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
-    const path = `/console/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
-    const tabs = [
+    $: projectId = $page.params.project;
+    $: databaseId = $page.params.database;
+    $: collectionId = $page.params.collection;
+    $: path = `/console/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
+    $: tabs = [
         {
             href: path,
             title: 'Documents',

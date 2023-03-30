@@ -27,7 +27,7 @@
                 <section
                     class:u-overflow-y-auto={scrollable}
                     class:u-max-height-200={scrollable}
-                    class="drop-section ">
+                    class="drop-section">
                     <ul class="drop-list">
                         <slot name="list" />
                     </ul>

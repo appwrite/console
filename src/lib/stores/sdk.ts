@@ -1,3 +1,4 @@
+import { getProjectId } from '$lib/helpers/project';
 import { Project } from '$lib/sdk/project';
 import { VARS } from '$lib/system';
 import {
@@ -12,7 +13,7 @@ import {
     Storage,
     Teams,
     Users
-} from '@aw-labs/appwrite-console';
+} from '@appwrite.io/console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
@@ -21,21 +22,6 @@ clientConsole.setEndpoint(endpoint).setProject('console');
 
 const clientProject = new Client();
 clientProject.setEndpoint(endpoint).setMode('admin');
-
-const setProject = (projectId: string): Client => clientProject.setProject(projectId);
-
-const sdkForConsole = {
-    client: clientConsole,
-    account: new Account(clientConsole),
-    avatars: new Avatars(clientConsole),
-    functions: new Functions(clientConsole),
-    health: new Health(clientConsole),
-    locale: new Locale(clientConsole),
-    projects: new Projects(clientConsole),
-    teams: new Teams(clientConsole),
-    users: new Users(clientConsole)
-};
-
 const sdkForProject = {
     client: clientProject,
     account: new Account(clientProject),
@@ -50,4 +36,24 @@ const sdkForProject = {
     users: new Users(clientProject)
 };
 
-export { sdkForConsole, sdkForProject, setProject };
+export const sdk = {
+    forConsole: {
+        client: clientConsole,
+        account: new Account(clientConsole),
+        avatars: new Avatars(clientConsole),
+        functions: new Functions(clientConsole),
+        health: new Health(clientConsole),
+        locale: new Locale(clientConsole),
+        projects: new Projects(clientConsole),
+        teams: new Teams(clientConsole),
+        users: new Users(clientConsole)
+    },
+    get forProject() {
+        const projectId = getProjectId();
+        if (projectId && projectId !== clientProject.config.project) {
+            clientProject.setProject(projectId);
+        }
+
+        return sdkForProject;
+    }
+};

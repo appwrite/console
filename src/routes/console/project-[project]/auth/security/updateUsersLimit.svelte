@@ -7,18 +7,16 @@
     import { Button } from '$lib/elements/forms';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;
 
     let isLimited = $project.authLimit !== 0;
     let newLimit = isLimited ? $project.authLimit : 100;
-    let submitting = false;
 
     $: btnDisabled = (function isBtnDisabled() {
         if (
-            submitting ||
             (!isLimited && $project.authLimit === 0) ||
             (isLimited && $project.authLimit === newLimit)
         ) {
@@ -29,10 +27,9 @@
     })();
 
     async function updateLimit() {
-        submitting = true;
         try {
-            await sdkForConsole.projects.updateAuthLimit(projectId, isLimited ? newLimit : 0);
-            invalidate(Dependencies.PROJECT).then(() => (submitting = false));
+            await sdk.forConsole.projects.updateAuthLimit(projectId, isLimited ? newLimit : 0);
+            await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Updated project users limit successfully'
@@ -43,7 +40,6 @@
                 type: 'error',
                 message: error.message
             });
-            submitting = false;
             trackError(error, Submit.AuthLimitUpdate);
         }
     }
@@ -69,7 +65,7 @@
                         type="radio"
                         bind:group={isLimited}
                         value={false} />
-                    <div class="choice-item-content  u-cross-child-center">
+                    <div class="choice-item-content u-cross-child-center">
                         <div class="choice-item-title">Unlimited</div>
                     </div>
                     <Pill>recommended</Pill>

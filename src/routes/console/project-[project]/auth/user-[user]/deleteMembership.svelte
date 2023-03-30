@@ -7,21 +7,20 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
     export let selectedMembership: Models.Membership;
 
-    const deleteMembership = async () => {
+    async function deleteMembership() {
         try {
-            await sdkForProject.teams.deleteMembership(
+            await sdk.forProject.teams.deleteMembership(
                 selectedMembership.teamId,
                 selectedMembership.$id
             );
-            invalidate(Dependencies.MEMBERSHIPS);
+            await invalidate(Dependencies.MEMBERSHIPS);
             showDelete = false;
-
             addNotification({
                 type: 'success',
                 message: `Membership has been deleted`
@@ -37,10 +36,10 @@
             });
             trackError(error, Submit.MemberDelete);
         }
-    };
+    }
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteMembership} icon="exclamation" state="warning">
+<Modal bind:show={showDelete} onSubmit={deleteMembership} icon="exclamation" state="warning">
     <svelte:fragment slot="header">Delete Member</svelte:fragment>
     {#if selectedMembership}
         <p data-private>

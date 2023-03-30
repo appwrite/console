@@ -1,14 +1,11 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Modal, CopyInput, Alert } from '$lib/components';
-    import { Button, InputPassword, InputText, InputSwitch, FormList } from '$lib/elements/forms';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { Alert, CopyInput, Modal } from '$lib/components';
+    import { Button, FormList, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import type { Provider } from '$lib/stores/oauth-providers';
-    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { updateOAuth } from './updateOAuth';
 
     export let provider: Provider;
 
@@ -27,29 +24,12 @@
     const projectId = $page.params.project;
 
     const update = async () => {
-        try {
-            await sdkForConsole.projects.updateOAuth2(
-                projectId,
-                provider.name.toLowerCase(),
-                appId,
-                secret,
-                enabled
-            );
-            addNotification({
-                type: 'success',
-                message: `${provider.name} authentication has been ${
-                    provider.enabled ? 'enabled' : 'disabled'
-                }`
-            });
-            trackEvent(Submit.ProviderUpdate, {
-                provider,
-                enabled
-            });
+        const result = await updateOAuth({ projectId, provider, secret, appId, enabled });
+
+        if (result.status === 'error') {
+            error = result.message;
+        } else {
             provider = null;
-            invalidate(Dependencies.PROJECT);
-        } catch (e) {
-            error = e.message;
-            trackError(e, Submit.ProviderUpdate);
         }
     };
 
@@ -57,7 +37,7 @@
         clientSecret && tenantID ? JSON.stringify({ clientSecret, tenantID }) : provider.secret;
 </script>
 
-<Modal {error} on:submit={update} size="big" show on:close>
+<Modal {error} onSubmit={update} size="big" show on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
@@ -93,7 +73,7 @@
             <p>URI</p>
             <CopyInput
                 value={`${
-                    sdkForConsole.client.config.endpoint
+                    sdk.forConsole.client.config.endpoint
                 }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>

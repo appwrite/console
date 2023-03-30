@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import { sdkForProject } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitInteger(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeInteger>
     ) {
-        await sdkForProject.databases.createIntegerAttribute(
+        await sdk.forProject.databases.createIntegerAttribute(
             databaseId,
             collectionId,
             key,
@@ -25,15 +25,14 @@
         collectionId: string,
         data: Partial<Models.AttributeInteger>
     ) {
-        await sdkForProject.databases.createIntegerAttribute(
+        await sdk.forProject.databases.updateIntegerAttribute(
             databaseId,
             collectionId,
             data.key,
             data.required,
             data.min,
             data.max,
-            typeof data.default === 'number' ? data.default : undefined,
-            data.array
+            typeof data.default === 'number' ? data.default : undefined
         );
     }
 </script>
@@ -55,12 +54,13 @@
     }
 </script>
 
-<InputNumber id="min" label="Min" bind:value={data.min} />
-<InputNumber id="max" label="Max" bind:value={data.max} />
+<InputNumber id="min" label="Min" placeholder="Enter size" bind:value={data.min} />
+<InputNumber id="max" label="Max" placeholder="Enter size" bind:value={data.max} />
 
 <InputNumber
     id="default"
     label="Default value"
+    placeholder="Enter value"
     min={data.min}
     max={data.max}
     bind:value={data.default}

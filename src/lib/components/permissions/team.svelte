@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Button, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { Query, type Models } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import { Query, type Models } from '@appwrite.io/console';
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
@@ -14,7 +14,7 @@
 
     let search = '';
     let offset = 0;
-    let results: Models.TeamList;
+    let results: Models.TeamList<Record<string, unknown>>;
     let selected: Set<string> = new Set();
     let hasSelection = false;
 
@@ -31,7 +31,10 @@
 
     async function request() {
         if (!show) return;
-        results = await sdkForProject.teams.list([Query.limit(5), Query.offset(offset)], search);
+        results = await sdk.forProject.teams.list(
+            [Query.limit(5), Query.offset(offset)],
+            search || undefined
+        );
     }
 
     function onSelection(event: Event, role: string) {
@@ -58,7 +61,7 @@
     }
 </script>
 
-<Modal bind:show on:submit={create} on:close={reset} size="big">
+<Modal bind:show onSubmit={create} on:close={reset} size="big">
     <svelte:fragment slot="header">Select teams</svelte:fragment>
     <p class="text">
         Grant access to any member of a specific team. To grant access to team members with specific
@@ -144,6 +147,6 @@
     {/if}
 
     <svelte:fragment slot="footer">
-        <Button submit disabled={!hasSelection}>Create</Button>
+        <Button submit disabled={!hasSelection}>Add</Button>
     </svelte:fragment>
 </Modal>
