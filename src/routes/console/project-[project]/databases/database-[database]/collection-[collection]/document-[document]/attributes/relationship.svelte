@@ -83,13 +83,29 @@
         <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
             {#each relatedList as doc, i}
                 <li class="u-flex u-gap-16">
-                    <output class="input-text is-read-only">
-                        <div class="u-flex u-cross-baseline u-gap-12">
-                            <SelectSearchItem data={doc.data}>
-                                {doc.label}
-                            </SelectSearchItem>
-                        </div>
-                    </output>
+                    <InputSelectSearch
+                        {id}
+                        label="Rel"
+                        showLabel={false}
+                        required
+                        customOutput
+                        bind:search
+                        bind:value={doc}
+                        options={documentList?.documents?.map((n) => {
+                            const data = displayNames
+                                .filter((name) => name !== '$id')
+                                .map((name) => n?.[name]);
+                            return {
+                                value: n.$id,
+                                label: n.$id,
+                                data
+                            };
+                        }) ?? []}
+                        let:option={o}>
+                        <SelectSearchItem data={o.data}>
+                            {o.label}
+                        </SelectSearchItem>
+                    </InputSelectSearch>
                     <Button
                         text
                         noMargin
@@ -110,6 +126,8 @@
                         label="Rel"
                         showLabel={false}
                         required
+                        customOutput
+                        placeholder={`Select ${attribute.key}`}
                         bind:search
                         bind:value={relatedList[relatedList.length]}
                         options={documentList?.documents?.map((n) => {
@@ -117,11 +135,14 @@
                                 .filter((name) => name !== '$id')
                                 .map((name) => n?.[name]);
                             return {
-                                value: { label: n.$id, data },
+                                value: n.$id,
                                 label: n.$id,
                                 data
                             };
                         }) ?? []}
+                        on:select={() => {
+                            showInput = false;
+                        }}
                         let:option={o}>
                         <SelectSearchItem data={o.data}>
                             {o.label}
@@ -138,10 +159,11 @@
             {/if}
         </ul>
 
-        {#if relatedList.length > 0 && !showInput}
+        {#if relatedList.length > 0}
             <Button
                 text
                 noMargin
+                disabled={showInput}
                 on:click={() => {
                     showInput = true;
                 }}>

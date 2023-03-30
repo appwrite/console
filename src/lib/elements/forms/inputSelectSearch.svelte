@@ -1,10 +1,10 @@
 <script lang="ts">
     import { DropList } from '$lib/components';
-    import { onMount } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { Label } from '.';
 
     type Option = $$Generic<{
-        value: string | boolean | number | Record<string, unknown>;
+        value: string | boolean | number;
         label: string;
         data?: string[];
     }>;
@@ -20,6 +20,7 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
+    export let customOutput = false;
     // Input value
     export let search = '';
     // The actual selected value
@@ -33,6 +34,8 @@
     $: if (!hasFocus) {
         selected = null;
     }
+
+    const dispatch = createEventDispatcher();
 
     onMount(() => {
         if (element && autofocus) {
@@ -76,14 +79,16 @@
 
     function selectOption(option: Option) {
         value = option.value;
-        search = option.label;
+        !customOutput && (search = option.label);
         // It's not working without this line.
         element.value = search;
         hasFocus = false;
+        dispatch('select', option);
     }
 
     function clearOption() {
         search = '';
+        value = null;
         element.value = search;
         hasFocus = false;
     }
@@ -107,7 +112,7 @@
 
         <div class="custom-select">
             <div class="input-text-wrapper" style="--amount-of-buttons:2">
-                {#if $$slots.default && selectedOption}
+                {#if $$slots.default && customOutput && selectedOption}
                     <output class="input-text is-read-only">
                         <slot option={selectedOption} />
                     </output>
@@ -132,6 +137,7 @@
                             class="options-list-button"
                             aria-label="clear field"
                             type="button"
+                            disabled={!!selectedOption && customOutput}
                             on:click|preventDefault={clearOption}>
                             <span class="icon-x" aria-hidden="true" />
                         </button>
@@ -139,6 +145,7 @@
                     <button
                         class="options-list-button"
                         type="button"
+                        disabled={!!selectedOption && customOutput}
                         on:click={() => (hasFocus = !hasFocus)}>
                         <span class="icon-cheveron-down" aria-hidden="true" />
                     </button>
