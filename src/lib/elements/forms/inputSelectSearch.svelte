@@ -13,7 +13,7 @@
     export let options: OptionArray;
     export let id: string;
     export let label: string;
-    export let name: string = 'elements';
+    export let name = 'elements';
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let placeholder = '';
@@ -23,7 +23,7 @@
     // Input value
     export let search = '';
     // The actual selected value
-    export let value: string | number | boolean | Record<string, unknown>;
+    export let value: Option['value'];
     $: selectedOption = options.find((option) => option.value === value);
 
     let element: HTMLInputElement;
@@ -87,6 +87,8 @@
         element.value = search;
         hasFocus = false;
     }
+
+    $: showClearBtn = (hasFocus && search) || value;
 </script>
 
 <li class="u-position-relative form-item u-stretch">
@@ -125,13 +127,15 @@
                 {/if}
 
                 <div class="options-list">
-                    <button
-                        class="options-list-button"
-                        aria-label="clear field"
-                        type="button"
-                        on:click|preventDefault={clearOption}>
-                        <span class="icon-x" aria-hidden="true" />
-                    </button>
+                    {#if showClearBtn}
+                        <button
+                            class="options-list-button"
+                            aria-label="clear field"
+                            type="button"
+                            on:click|preventDefault={clearOption}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </button>
+                    {/if}
                     <button
                         class="options-list-button"
                         type="button"
