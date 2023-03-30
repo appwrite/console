@@ -31,8 +31,8 @@
                     [$collection.$id]: displayNames
                 }
             };
-            teamPrefs.updatePrefs($organization.$id, pref);
-            invalidate(Dependencies.TEAM);
+            await teamPrefs.updatePrefs($organization.$id, pref);
+            await invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Display names has been updated',
                 type: 'success'

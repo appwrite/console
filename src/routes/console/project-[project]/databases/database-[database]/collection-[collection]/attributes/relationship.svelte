@@ -51,12 +51,9 @@
 
     // Constants
     const databaseId = $page.params.database;
-    const oneWay = [
+    const relationshipType = [
         { value: 'oneToOne', label: 'One to one' },
-        { value: 'oneToMany', label: 'One to many' }
-    ];
-    const twoWay = [
-        ...oneWay,
+        { value: 'oneToMany', label: 'One to many' },
         { value: 'manyToOne', label: 'Many to one' },
         { value: 'manyToMany', label: 'Many to many' }
     ];
@@ -154,6 +151,7 @@
             placeholder="Enter Key"
             bind:value={data.key}
             autofocus
+            disabled={editing}
             required />
 
         <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
@@ -192,7 +190,7 @@
         bind:value={data.relationType}
         required
         placeholder="Select a relation"
-        options={data?.twoWay ? twoWay : oneWay}
+        options={relationshipType}
         disabled={editing} />
 
     <div class="box">

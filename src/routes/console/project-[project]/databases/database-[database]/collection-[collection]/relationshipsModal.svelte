@@ -10,7 +10,7 @@
     const limit = 10;
     let offset = 0;
 
-    $: args = $teamPrefs?.displayNames?.[selectedRelationship.relatedCollection];
+    $: args = $teamPrefs?.displayNames?.[selectedRelationship?.relatedCollection];
 
     $: if (!show) {
         data = null;
@@ -32,7 +32,7 @@
         <Button secondary disabled={!!offset} on:click={() => offset - limit}>Prev</Button>
         <Button
             secondary
-            disabled={selectedRelationship?.relationships?.length < offset}
+            disabled={data?.[selectedRelationship.key]?.length < offset}
             on:click={() => offset + limit}>Next</Button>
     </svelte:fragment>
 </Modal>
