@@ -61,7 +61,7 @@
 </script>
 
 {#if isArray}
-    <div class="u-width-full-line u-max-width-600">
+    <div class="u-width-full-line">
         <div class="u-flex u-cross-center u-main-space-between">
             <div>
                 <Label required={attribute.required} {optionalText} for={id}>

@@ -23,7 +23,7 @@
     // Input value
     export let search = '';
     // The actual selected value
-    export let value: string | number | boolean;
+    export let value: string | number | boolean | Record<string, unknown>;
     $: selectedOption = options.find((option) => option.value === value);
 
     let element: HTMLInputElement;
@@ -83,7 +83,6 @@
     }
 
     function clearOption() {
-        value = null;
         search = '';
         element.value = search;
         hasFocus = false;
