@@ -6,6 +6,7 @@
     type Option = $$Generic<{
         value: string | boolean | number;
         label: string;
+        data?: string[];
     }>;
     type OptionArray = Option[];
 

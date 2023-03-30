@@ -6,7 +6,7 @@
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let data: Models.Document[];
+    export let data: [];
     export let selectedRelationship: Models.AttributeRelationship = null;
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -35,7 +35,7 @@
                         {#if i}
                             <span class="clickable-list-title-sep">|</span>
                         {/if}
-                        <span>{doc[arg]}</span>
+                        <span>{doc[arg] ?? 'n/a'}</span>
                     {/each}
                     <svelte:fragment slot="desc">
                         {doc.$id}

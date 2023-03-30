@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { SelectSearchItem } from '$lib/elements';
     import { Button, InputSelectSearch, Label } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -153,8 +154,17 @@
         placeholder={`Select ${attribute.key}`}
         bind:search
         bind:value
-        options={documentList?.documents?.map((n) => ({
-            value: n.$id,
-            label: n?.[displayNames[0]]
-        })) ?? []} />
+        options={documentList?.documents?.map((n) => {
+            const data = displayNames.filter((name) => name !== '$id').map((name) => n?.[name]);
+            return {
+                value: n.$id,
+                label: n.$id,
+                data
+            };
+        }) ?? []}
+        let:option={o}>
+        <SelectSearchItem data={o.data}>
+            {o.label}
+        </SelectSearchItem>
+    </InputSelectSearch>
 {/if}

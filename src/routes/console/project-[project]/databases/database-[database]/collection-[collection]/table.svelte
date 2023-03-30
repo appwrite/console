@@ -28,7 +28,7 @@
     const databaseId = $page.params.database;
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
-    let relationshipData: Models.Document;
+    let relationshipData: [];
 
     onMount(() => {
         teamPrefs.load($organization.$id);
@@ -129,8 +129,9 @@
                                         {#each args as arg, i}
                                             {#if arg !== undefined}
                                                 {i ? '|' : ''}
-                                                <span class="text"
-                                                    >{document[column.id]?.[arg]}</span>
+                                                <span class="text">
+                                                    {document[column.id]?.[arg] ?? 'n/a'}
+                                                </span>
                                             {/if}
                                         {/each}
                                     </button>
