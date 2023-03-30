@@ -17,7 +17,7 @@
 <section class="drop-section u-flex-vertical u-gap-8">
     <a
         class="u-flex u-cross-center u-sep-block-end u-padding-block-12 is-not-desktop"
-        href={`${base}/console/project-${project}/databases/database-${databaseId}`}>
+        href={`${base}/console/project-${project}/databases/database-${databaseId}?openNavbar=true`}>
         <span class="icon-cheveron-left" aria-hidden="true" />
         <h5 class="eyebrow-heading-3 u-margin-inline-auto">Collections</h5>
     </a>
