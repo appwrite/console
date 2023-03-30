@@ -42,7 +42,7 @@
         return target.toString();
     }
 
-    $: link = createLink($page.url);
+    $: link = column && createLink($page.url);
 </script>
 
 <div
