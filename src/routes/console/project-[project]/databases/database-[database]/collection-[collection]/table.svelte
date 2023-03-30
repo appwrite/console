@@ -18,6 +18,7 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
+    import type Attribute from './document-[document]/attribute.svelte';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
 
@@ -78,6 +79,13 @@
             whole: formattedColumn
         };
     }
+
+    function isRelationship(
+        column: (typeof $columns)[0],
+        attr: Partial<Attribute>
+    ): attr is Models.AttributeRelationship {
+        return column.type === 'relationship';
+    }
 </script>
 
 <TableScroll isSticky>
@@ -104,12 +112,11 @@
 
                 {#each $columns as column}
                     {#if column.show}
-                        {#if column.type === 'relationship'}
-                            {@const attr = $attributes.find((n) => n.key === column.id)}
+                        {@const attr = $attributes.find((n) => n.key === column.id)}
+                        {#if isRelationship(column, attr)}
                             {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
                                 '$id'
                             ]}
-
                             {#if attr?.relationType === 'oneToOne' || attr?.relationType === 'manyToOne'}
                                 <TableCell title={column.title}>
                                     <button
