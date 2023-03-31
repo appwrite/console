@@ -60,9 +60,9 @@
     ];
 
     const deleteOptions = [
-        { value: 'setNull', label: 'Null' },
-        { value: 'cascade', label: 'Cascade' },
-        { value: 'restrict', label: 'Restrict' }
+        { value: 'setNull', label: 'Set NULL - set document ID as NULL in all related documents' },
+        { value: 'cascade', label: 'Cascade - delete all related documents' },
+        { value: 'restrict', label: 'Restrict - document can not be deleted' }
     ];
 
     // Variables
@@ -85,6 +85,11 @@
         }
     }
 
+    function updateKeyName() {
+        const collection = collectionList.collections.find((n) => n.$id === data.relatedCollection);
+        data.key = camelize(collection.name);
+    }
+
     onMount(async () => {
         collectionList = await getCollections();
 
@@ -99,10 +104,6 @@
     $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
-    $: if (data?.relatedCollection && !data.key) {
-        const collection = collectionList.collections.find((n) => n.$id === data.relatedCollection);
-        data.key = camelize(collection.name);
-    }
     $: if (way === 'two' && !data.twoWayKey) {
         data.twoWayKey = camelize($collection.name);
     }
@@ -143,6 +144,7 @@
     placeholder="Select a collection"
     disabled={editing}
     options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
+    on:select={updateKeyName}
     let:option={o}>
     <SelectSearchItem data={o.data}>
         {o.label}
@@ -160,7 +162,7 @@
             disabled={editing}
             required />
 
-        <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+        <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
             <span
                 class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                 aria-hidden="true" />
@@ -179,7 +181,7 @@
                 required
                 disabled={editing} />
 
-            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
                 <span
                     class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                     aria-hidden="true" />
@@ -199,22 +201,23 @@
         options={relationshipType}
         disabled={editing} />
 
-    <div class="box">
-        <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
-            <span>{camelize($collection.name)}</span>
-            {#if way === 'one'}
-                <img src={arrowOne} alt={'One way realationship'} />
-            {:else}
-                <img src={arrowTwo} alt={'Two way relationship'} />
-            {/if}
-            <span>{data.key}</span>
+    <div class="u-flex u-flex-vertical u-gap-16">
+        <div class="box">
+            <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
+                <span>{camelize($collection.name)}</span>
+                {#if way === 'one'}
+                    <img src={arrowOne} alt={'One way realationship'} />
+                {:else}
+                    <img src={arrowTwo} alt={'Two way relationship'} />
+                {/if}
+                <span>{data.key}</span>
+            </div>
         </div>
+        <p class="u-text-center">
+            <b> {camelize($collection.name)}</b> has {way === 'one' ? 'one' : 'many'}
+            <b>{data.key}</b>
+        </p>
     </div>
-    <p class="u-text-center">
-        <b> {camelize($collection.name)}</b> has {way === 'one' ? 'one' : 'many'}
-        <b>{data.key}</b>
-    </p>
-
     <InputSelect
         id="deleting"
         label="On deleting a document"

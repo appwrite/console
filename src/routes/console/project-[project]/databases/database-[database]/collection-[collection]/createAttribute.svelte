@@ -86,7 +86,7 @@
                     autofocus
                     required />
 
-                <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+                <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
                     <span
                         class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                         aria-hidden="true" />
