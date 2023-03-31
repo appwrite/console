@@ -9,12 +9,14 @@
     import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { doc } from '../store';
-    import { isRelationshipToMany } from './realtionship';
+    import { isRelationshipToMany } from './store';
 
     export let id: string;
     export let label: string;
+
     export let value: string | string[];
-    export let attribute: Models.AttributeRelationship;
+    //TODO: remove `side` after SDK update
+    export let attribute: Models.AttributeRelationship & { side: string };
     export let optionalText: string | undefined = undefined;
     export let editing = false;
 
@@ -24,6 +26,7 @@
     let search: string = null;
     let displayNames = ['$id'];
     let relatedList: string[] = [];
+    let singleRel: string;
     let showInput = false;
     let limit = 10;
     let offset = 0;
@@ -65,7 +68,11 @@
     // Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
 
-    $: if (isRelationshipToMany(attribute)) value = relatedList;
+    $: if (isRelationshipToMany(attribute)) {
+        value = relatedList;
+    } else {
+        value = singleRel;
+    }
 
     $: paginatedItems = relatedList.slice(offset, offset + limit);
     $: total = relatedList?.length;
@@ -268,7 +275,7 @@
         name="documents"
         placeholder={`Select ${attribute.key}`}
         bind:search
-        bind:value
+        bind:value={singleRel}
         {options}
         let:option={o}>
         <SelectSearchItem data={o.data}>

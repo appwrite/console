@@ -13,7 +13,7 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import Create from '../createAttribute.svelte';
-    import { isRelationship } from '../document-[document]/attributes/realtionship';
+    import { isRelationship } from '../document-[document]/attributes/store';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes } from '../store';
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';

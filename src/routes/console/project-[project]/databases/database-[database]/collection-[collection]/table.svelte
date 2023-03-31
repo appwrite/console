@@ -19,7 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship } from './document-[document]/attributes/realtionship';
+    import { isRelationship } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
 

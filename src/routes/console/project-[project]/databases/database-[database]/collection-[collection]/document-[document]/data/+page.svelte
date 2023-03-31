@@ -14,7 +14,7 @@
     import { Container } from '$lib/layout';
     import AttributeItem from '../attributeItem.svelte';
     import { difference } from '$lib/helpers/array';
-    import { isRelationshipToMany } from '../attributes/realtionship';
+    import { isRelationshipToMany } from '../attributes/store';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -81,7 +81,11 @@
         }
 
         if (attribute.type === 'relationship') {
-            if (isRelationshipToMany(attribute as Models.AttributeRelationship)) {
+            if (
+                //TODO: remove `side` after SDK update
+
+                isRelationshipToMany(attribute as Models.AttributeRelationship & { side: string })
+            ) {
                 const relatedIds = docAttribute.map((doc) => doc.$id);
                 return !difference(workAttribute, relatedIds).length;
             }

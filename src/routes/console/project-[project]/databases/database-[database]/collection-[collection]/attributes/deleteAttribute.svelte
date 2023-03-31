@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { isRelationship } from '../document-[document]/attributes/realtionship';
+    import { isRelationship } from '../document-[document]/attributes/store';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;

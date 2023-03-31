@@ -17,7 +17,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { attributes, collection } from '../store';
-    import { isRelationship } from './attributes/realtionship';
+    import { isRelationship } from './attributes/store';
     import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;

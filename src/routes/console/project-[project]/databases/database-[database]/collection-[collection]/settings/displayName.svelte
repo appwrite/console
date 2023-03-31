@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { teamPrefs } from '$lib/stores/team';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { attributes, collection } from '../store';
 
@@ -47,7 +48,7 @@
         }
     }
 
-    $: options = $attributes
+    $: options = ($attributes as Models.AttributeString[])
         .filter(
             (attr) =>
                 attr.type === 'string' &&
