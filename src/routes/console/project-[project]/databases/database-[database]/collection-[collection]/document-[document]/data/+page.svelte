@@ -14,6 +14,7 @@
     import { Container } from '$lib/layout';
     import AttributeItem from '../attributeItem.svelte';
     import { difference } from '$lib/helpers/array';
+    import { isRelationshipToMany } from '../attributes/realtionship';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -63,15 +64,32 @@
         }
     }
 
-    function isButtonDisabled(attribute: Attributes) {
-        if (attribute?.array)
-            return !difference(
-                Array.from($work?.[attribute.key]),
-                Array.from($doc?.[attribute.key])
-            ).length;
-        if (attribute?.type === 'relatioship') {
-            return $work?.[attribute.key] === $doc?.[attribute.key];
-        } else return $work?.[attribute.key] === $doc?.[attribute.key];
+    function compareAttributes(
+        attribute: Attributes,
+        $work: Models.Document,
+        $doc: Models.Document
+    ) {
+        if (!attribute) {
+            return false;
+        }
+
+        const workAttribute = $work?.[attribute.key];
+        const docAttribute = $doc?.[attribute.key];
+
+        if (attribute.array) {
+            return !difference(Array.from(workAttribute), Array.from(docAttribute)).length;
+        }
+
+        if (attribute.type === 'relationship') {
+            if (isRelationshipToMany(attribute as Models.AttributeRelationship)) {
+                const relatedIds = docAttribute.map((doc) => doc.$id);
+                return !difference(workAttribute, relatedIds).length;
+            }
+            console.log(workAttribute, docAttribute);
+            return !difference(Array.from(workAttribute), Array.from(docAttribute)).length;
+        }
+
+        return workAttribute === docAttribute;
     }
 </script>
 
@@ -90,8 +108,9 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={isButtonDisabled(attribute)} on:click={() => updateData()}
-                        >Update</Button>
+                    <Button
+                        disabled={compareAttributes(attribute, $work, $doc)}
+                        on:click={() => updateData()}>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         {/each}

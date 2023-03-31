@@ -9,6 +9,7 @@
     import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { doc } from '../store';
+    import { isRelationshipToMany } from './realtionship';
 
     export let id: string;
     export let label: string;
@@ -61,27 +62,25 @@
         }
     }
 
-    function isArrayFunc() {
-        const { side, relationType } = attribute || {};
-        if (side === 'parent') {
-            return !['oneToOne', 'manyToOne'].includes(relationType);
-        } else {
-            return !['oneToOne', 'oneToMany'].includes(relationType);
-        }
-    }
-
-    $: isArray = isArrayFunc();
-
     // Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
 
-    $: if (isArray) value = relatedList;
+    $: if (isRelationshipToMany(attribute)) value = relatedList;
 
     $: paginatedItems = relatedList.slice(offset, offset + limit);
     $: total = relatedList?.length;
+    $: options =
+        documentList?.documents?.map((n) => {
+            const data = displayNames.filter((name) => name !== '$id').map((name) => n?.[name]);
+            return {
+                value: n.$id,
+                label: n.$id,
+                data
+            };
+        }) ?? [];
 </script>
 
-{#if editing && isArray && total > 0}
+{#if editing && isRelationshipToMany(attribute) && total > 0}
     <div>
         <div class="u-flex u-cross-center u-main-space-between">
             <div>
@@ -93,9 +92,7 @@
                 text
                 noMargin
                 on:click={() => {
-                    console.log('test');
                     showInput = true;
-                    console.log(showInput);
                 }}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Add item</span>
@@ -113,18 +110,7 @@
                         placeholder={`Select ${attribute.key}`}
                         bind:search
                         bind:value={relatedList[total]}
-                        options={documentList?.documents
-                            ?.filter((n) => !relatedList.includes(n.$id))
-                            .map((n) => {
-                                const data = displayNames
-                                    .filter((name) => name !== '$id')
-                                    .map((name) => n?.[name]);
-                                return {
-                                    value: n.$id,
-                                    label: n.$id,
-                                    data
-                                };
-                            }) ?? []}
+                        options={options?.filter((n) => !relatedList.includes(n.value))}
                         on:select={() => {
                             showInput = false;
                         }}
@@ -153,16 +139,7 @@
                             customOutput
                             bind:search
                             bind:value={item}
-                            options={documentList?.documents?.map((n) => {
-                                const data = displayNames
-                                    .filter((name) => name !== '$id')
-                                    .map((name) => n?.[name]);
-                                return {
-                                    value: n.$id,
-                                    label: n.$id,
-                                    data
-                                };
-                            }) ?? []}
+                            {options}
                             let:option={o}>
                             <SelectSearchItem data={o.data}>
                                 {o.label}
@@ -187,7 +164,7 @@
             <PaginationInline {limit} bind:offset sum={total} hidePages />
         </div>
     </div>
-{:else if isArray}
+{:else if isRelationshipToMany(attribute)}
     <div class="u-width-full-line">
         <div class="u-flex u-cross-center u-main-space-between">
             <div>
@@ -219,16 +196,7 @@
                         customOutput
                         bind:search
                         bind:value={doc}
-                        options={documentList?.documents?.map((n) => {
-                            const data = displayNames
-                                .filter((name) => name !== '$id')
-                                .map((name) => n?.[name]);
-                            return {
-                                value: n.$id,
-                                label: n.$id,
-                                data
-                            };
-                        }) ?? []}
+                        {options}
                         let:option={o}>
                         <SelectSearchItem data={o.data}>
                             {o.label}
@@ -258,16 +226,7 @@
                         placeholder={`Select ${attribute.key}`}
                         bind:search
                         bind:value={relatedList[total]}
-                        options={documentList?.documents?.map((n) => {
-                            const data = displayNames
-                                .filter((name) => name !== '$id')
-                                .map((name) => n?.[name]);
-                            return {
-                                value: n.$id,
-                                label: n.$id,
-                                data
-                            };
-                        }) ?? []}
+                        options={options?.filter((n) => !relatedList.includes(n.value))}
                         on:select={() => {
                             showInput = false;
                         }}
@@ -310,14 +269,7 @@
         placeholder={`Select ${attribute.key}`}
         bind:search
         bind:value
-        options={documentList?.documents?.map((n) => {
-            const data = displayNames.filter((name) => name !== '$id').map((name) => n?.[name]);
-            return {
-                value: n.$id,
-                label: n.$id,
-                data
-            };
-        }) ?? []}
+        {options}
         let:option={o}>
         <SelectSearchItem data={o.data}>
             {o.label}
