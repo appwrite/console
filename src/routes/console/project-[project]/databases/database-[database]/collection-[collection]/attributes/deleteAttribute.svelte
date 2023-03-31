@@ -43,7 +43,7 @@
     }
 
     function isRelationship(attr: Attributes): attr is Models.AttributeRelationship {
-        return attr.type === 'relationship';
+        return attr?.type === 'relationship';
     }
 
     $: isDeleteBtnDisabled =
