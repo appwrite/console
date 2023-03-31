@@ -43,7 +43,7 @@
     }
 
     $: if (showEdit) {
-        currentAttr = JSON.parse(JSON.stringify(selectedAttribute));
+        currentAttr ??= { ...selectedAttribute };
         error = null;
     }
 
