@@ -17,6 +17,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { attributes, collection } from '../store';
+    import { isRelationship } from './attributes/realtionship';
+    import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
     const databaseId = $page.params.database;
@@ -53,7 +55,9 @@
         'restrict' = 'Document can not be deleted'
     }
 
-    $: relAttributes = [$attributes?.find((attribute) => attribute.type === 'relationship')];
+    $: relAttributes = [
+        $attributes?.find((attribute) => isRelationship(attribute))
+    ] as Models.AttributeRelationship[];
 </script>
 
 <Modal

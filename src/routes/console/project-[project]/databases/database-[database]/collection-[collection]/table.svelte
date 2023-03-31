@@ -19,7 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
-    import type Attribute from './document-[document]/attribute.svelte';
+    import { isRelationship } from './document-[document]/attributes/realtionship';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
 
@@ -71,10 +71,6 @@
             truncated: formattedColumn.length > 20,
             whole: formattedColumn
         };
-    }
-
-    function isRelationship(attr: Partial<Attribute>): attr is Models.AttributeRelationship {
-        return attr?.type === 'relationship';
     }
 
     $: selected = preferences.getCustomCollectionColumns($page.params.collection);

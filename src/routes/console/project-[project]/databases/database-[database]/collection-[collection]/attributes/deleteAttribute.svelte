@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import type { Models } from '@appwrite.io/console';
+    import { isRelationship } from '../document-[document]/attributes/realtionship';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
@@ -40,10 +40,6 @@
             });
             trackError(error, Submit.AttributeDelete);
         }
-    }
-
-    function isRelationship(attr: Attributes): attr is Models.AttributeRelationship {
-        return attr?.type === 'relationship';
     }
 
     $: isDeleteBtnDisabled =

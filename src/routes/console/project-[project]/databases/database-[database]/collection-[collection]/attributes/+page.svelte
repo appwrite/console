@@ -13,6 +13,7 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import Create from '../createAttribute.svelte';
+    import { isRelationship } from '../document-[document]/attributes/realtionship';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes } from '../store';
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
@@ -54,7 +55,7 @@
                             <div class="u-flex u-main-space-between u-cross-center">
                                 <div class="u-flex u-cross-center u-gap-16">
                                     <div class="avatar is-size-small u-color-text-gray">
-                                        {#if option.icon === 'relationship'}
+                                        {#if isRelationship(attribute)}
                                             <span
                                                 class={`icon-${
                                                     attribute?.twoWay
