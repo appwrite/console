@@ -2,6 +2,8 @@
     import { WizardStep } from '$lib/layout';
     import AttributeForm from '../document-[document]/attributeForm.svelte';
     import { createDocument } from './store';
+
+    $: console.log($createDocument);
 </script>
 
 <WizardStep>

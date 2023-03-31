@@ -66,7 +66,7 @@
     // Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
 
-    $: if (isArray) value = relatedList.map((doc) => doc.label);
+    $: if (isArray) value = relatedList;
 </script>
 
 {#if editing && isArray && relatedList.length > 0}
