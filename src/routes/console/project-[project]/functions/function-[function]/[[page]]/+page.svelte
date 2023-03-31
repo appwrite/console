@@ -102,12 +102,12 @@
                     </div>
                     <div>
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <p><b>Function ID: </b></p>
+                            <p class="u-bold" style:flex-shrink="0">Function ID:</p>
                             <Output value={$func.$id}><b>{$func.$id}</b></Output>
                         </div>
 
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <p>Deployment ID:</p>
+                            <p style:flex-shrink="0">Deployment ID:</p>
                             <Output value={$func.deployment}>
                                 {$func.deployment}
                             </Output>
