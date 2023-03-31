@@ -43,14 +43,20 @@
         }
     }
 
-    $: updateButtonDisabled = JSON.stringify(selectedAttribute) === currentAttr;
-
     $: if (showEdit) {
         currentAttr ??= JSON.stringify(selectedAttribute);
         error = null;
     }
 
-    $: console.log(selectedAttribute, currentAttr);
+    $: updateButtonDisabled = (() => {
+        console.log(
+            JSON.stringify(selectedAttribute),
+            currentAttr,
+            JSON.stringify(selectedAttribute) === currentAttr
+        );
+        return JSON.stringify(selectedAttribute) === currentAttr;
+    })();
+    // $: console.log(updateButtonDisabled, JSON.stringify(selectedAttribute), currentAttr);
 </script>
 
 {#if selectedAttribute}

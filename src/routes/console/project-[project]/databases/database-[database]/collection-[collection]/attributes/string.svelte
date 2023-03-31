@@ -29,7 +29,7 @@
             collectionId,
             data.key,
             data.required,
-            (data.default as string) || undefined
+            data.default ? (data.default as string) : undefined
         );
     }
 </script>
