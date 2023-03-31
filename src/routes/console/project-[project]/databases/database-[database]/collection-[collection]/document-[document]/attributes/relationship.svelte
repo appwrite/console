@@ -59,9 +59,16 @@
         }
     }
 
-    $: isArray = !(
-        attribute?.relationType === 'oneToOne' || attribute?.relationType === 'manyToOne'
-    );
+    function isArrayFunc() {
+        const { side, relationType } = attribute || {};
+        if (side === 'parent') {
+            return !['oneToOne', 'manyToOne'].includes(relationType);
+        } else {
+            return !['oneToOne', 'oneToMany'].includes(relationType);
+        }
+    }
+
+    $: isArray = isArrayFunc();
 
     // Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
