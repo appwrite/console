@@ -17,7 +17,7 @@
     const collectionId = $page.params.collection;
 
     let error: string;
-    let currentAttr: string;
+    let currentAttr: Attributes;
 
     $: option = options.find((option) => option?.type === selectedAttribute?.type) as Option;
 
@@ -45,6 +45,10 @@
     $: if (showEdit) {
         currentAttr = JSON.parse(JSON.stringify(selectedAttribute));
         error = null;
+    }
+
+    function shouldBeDisabled(oldAttr: Attributes, newAttr: Attributes) {
+        return JSON.stringify(oldAttr) === JSON.stringify(newAttr);
     }
 </script>
 
@@ -90,7 +94,9 @@
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
-            <Button submit>Update</Button>
+            <Button submit disabled={shouldBeDisabled(currentAttr, selectedAttribute)}>
+                Update
+            </Button>
         </svelte:fragment>
     </Modal>
 {/if}
