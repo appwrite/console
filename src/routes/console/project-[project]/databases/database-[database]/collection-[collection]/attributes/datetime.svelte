@@ -28,7 +28,7 @@
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : undefined
+            data.default ? data.default : null
         );
     }
 </script>

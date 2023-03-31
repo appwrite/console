@@ -10,6 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
@@ -41,8 +42,12 @@
         }
     }
 
+    function isRelationship(attr: Attributes): attr is Models.AttributeRelationship {
+        return attr.type === 'relationship';
+    }
+
     $: isDeleteBtnDisabled =
-        selectedAttribute?.type === 'relationship' && selectedAttribute?.twoWay && !checked;
+        isRelationship(selectedAttribute) && selectedAttribute?.twoWay && !checked;
 </script>
 
 <Modal
@@ -56,7 +61,7 @@
         Are you sure you want to delete <b>"{selectedAttribute?.key}" from "{$collection?.name}"</b
         >?
     </p>
-    {#if selectedAttribute?.type === 'relationship' && selectedAttribute?.twoWay}
+    {#if isRelationship(selectedAttribute) && selectedAttribute?.twoWay}
         <div class="u-flex u-flex-vertical u-gap-24">
             <p class="text">
                 Are you sure you want to delete <b

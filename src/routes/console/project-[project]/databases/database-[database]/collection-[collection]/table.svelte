@@ -14,6 +14,7 @@
         TableScroll
     } from '$lib/elements/table';
     import { organization } from '$lib/stores/organization';
+    import { preferences } from '$lib/stores/preferences';
     import { teamPrefs } from '$lib/stores/team';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
@@ -32,14 +33,6 @@
 
     onMount(() => {
         teamPrefs.load($organization.$id);
-        columns.set([
-            ...$collection.attributes.map((attribute) => ({
-                id: attribute.key,
-                title: attribute.key,
-                type: attribute.type,
-                show: true
-            }))
-        ]);
     });
 
     function formatArray(array: unknown[]) {
@@ -83,6 +76,17 @@
     function isRelationship(attr: Partial<Attribute>): attr is Models.AttributeRelationship {
         return attr?.type === 'relationship';
     }
+
+    $: selected = preferences.getCustomCollectionColumns($page.params.collection);
+
+    $: columns.set(
+        $collection.attributes.map((attribute) => ({
+            id: attribute.key,
+            title: attribute.key,
+            type: attribute.type,
+            show: selected?.includes(attribute.key) ?? true
+        }))
+    );
 </script>
 
 <TableScroll isSticky>

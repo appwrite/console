@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Paginator } from '$lib/components';
+    import { PaginationInline } from '$lib/components';
     import { SelectSearchItem } from '$lib/elements';
     import { Button, InputSelectSearch, Label } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
@@ -22,8 +22,10 @@
     let documentList: Models.DocumentList<Models.Document>;
     let search: string = null;
     let displayNames = ['$id'];
-    let relatedList: string[] | { label: string; data: Record<string, unknown> }[] = [];
+    let relatedList: string[] = [];
     let showInput = false;
+    let limit = 10;
+    let offset = 0;
 
     onMount(async () => {
         teamPrefs.load($organization.$id);
@@ -74,10 +76,13 @@
     $: getDocuments(search).then((res) => (documentList = res));
 
     $: if (isArray) value = relatedList;
+
+    $: paginatedItems = relatedList.slice(offset, offset + limit);
+    $: total = relatedList?.length;
 </script>
 
-{#if editing && isArray && relatedList.length > 0}
-    <Paginator items={relatedList} limit={5} let:paginatedItems>
+{#if editing && isArray && total > 0}
+    <div>
         <div class="u-flex u-cross-center u-main-space-between">
             <div>
                 <Label required={attribute.required} {optionalText} for={id}>
@@ -107,17 +112,19 @@
                         customOutput
                         placeholder={`Select ${attribute.key}`}
                         bind:search
-                        bind:value={relatedList[relatedList.length]}
-                        options={documentList?.documents?.map((n) => {
-                            const data = displayNames
-                                .filter((name) => name !== '$id')
-                                .map((name) => n?.[name]);
-                            return {
-                                value: n.$id,
-                                label: n.$id,
-                                data
-                            };
-                        }) ?? []}
+                        bind:value={relatedList[total]}
+                        options={documentList?.documents
+                            ?.filter((n) => !relatedList.includes(n.$id))
+                            .map((n) => {
+                                const data = displayNames
+                                    .filter((name) => name !== '$id')
+                                    .map((name) => n?.[name]);
+                                return {
+                                    value: n.$id,
+                                    label: n.$id,
+                                    data
+                                };
+                            }) ?? []}
                         on:select={() => {
                             showInput = false;
                         }}
@@ -135,8 +142,8 @@
                     </Button>
                 </li>
             {/if}
-            {#if paginatedItems?.length}
-                {#each paginatedItems as doc, i}
+            {#if paginatedItems}
+                {#each relatedList as item, i}
                     <li class="u-flex u-gap-16">
                         <InputSelectSearch
                             {id}
@@ -145,7 +152,7 @@
                             required
                             customOutput
                             bind:search
-                            bind:value={doc}
+                            bind:value={item}
                             options={documentList?.documents?.map((n) => {
                                 const data = displayNames
                                     .filter((name) => name !== '$id')
@@ -175,7 +182,11 @@
                 {/each}
             {/if}
         </ul>
-    </Paginator>
+        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+            <p class="text">Total results: {total}</p>
+            <PaginationInline {limit} bind:offset sum={total} hidePages />
+        </div>
+    </div>
 {:else if isArray}
     <div class="u-width-full-line">
         <div class="u-flex u-cross-center u-main-space-between">
@@ -184,7 +195,7 @@
                     {label}
                 </Label>
             </div>
-            {#if relatedList.length === 0}
+            {#if total === 0}
                 <Button
                     text
                     noMargin
@@ -246,7 +257,7 @@
                         customOutput
                         placeholder={`Select ${attribute.key}`}
                         bind:search
-                        bind:value={relatedList[relatedList.length]}
+                        bind:value={relatedList[total]}
                         options={documentList?.documents?.map((n) => {
                             const data = displayNames
                                 .filter((name) => name !== '$id')
@@ -276,7 +287,7 @@
             {/if}
         </ul>
 
-        {#if relatedList.length > 0}
+        {#if total > 0}
             <Button
                 text
                 noMargin

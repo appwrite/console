@@ -9,7 +9,7 @@
         class="/*u-flex-basis-140*/ u-flex-shrink-0 u-text-start u-trim-start u-x-small u-color-text-gray">
         <slot />
     </span>
-    {#if data.length}
+    {#if data?.length}
         <span
             class="u-flex u-trim-1 u-gap-4"
             use:tooltip={{

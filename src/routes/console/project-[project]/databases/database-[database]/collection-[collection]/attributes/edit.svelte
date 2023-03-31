@@ -16,7 +16,6 @@
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
 
-    let updateButtonDisabled = true;
     let error: string;
     let currentAttr: string;
 
@@ -33,7 +32,7 @@
             }
             addNotification({
                 type: 'success',
-                message: `Attribute ${selectedAttribute.key} has been created`
+                message: `Attribute ${selectedAttribute.key} has been updated`
             });
             showEdit = false;
             trackEvent(Submit.AttributeUpdate);
@@ -44,19 +43,9 @@
     }
 
     $: if (showEdit) {
-        currentAttr ??= JSON.stringify(selectedAttribute);
+        currentAttr = JSON.parse(JSON.stringify(selectedAttribute));
         error = null;
     }
-
-    $: updateButtonDisabled = (() => {
-        console.log(
-            JSON.stringify(selectedAttribute),
-            currentAttr,
-            JSON.stringify(selectedAttribute) === currentAttr
-        );
-        return JSON.stringify(selectedAttribute) === currentAttr;
-    })();
-    // $: console.log(updateButtonDisabled, JSON.stringify(selectedAttribute), currentAttr);
 </script>
 
 {#if selectedAttribute}
@@ -101,7 +90,7 @@
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
-            <Button submit disabled={updateButtonDisabled}>Update</Button>
+            <Button submit>Update</Button>
         </svelte:fragment>
     </Modal>
 {/if}

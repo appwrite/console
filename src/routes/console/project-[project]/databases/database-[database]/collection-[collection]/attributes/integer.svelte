@@ -32,7 +32,7 @@
             data.required,
             data.min,
             data.max,
-            typeof data.default === 'number' ? data.default : undefined
+            typeof data.default === 'number' ? data.default : null
         );
     }
 </script>

@@ -13,7 +13,7 @@
     export let showCreate = false;
     export let selectedOption: string = null;
     const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
+    $: collectionId = $page.params.collection;
 
     let key: string = null;
     let data: Partial<Attributes> = {
@@ -26,8 +26,8 @@
     async function submit() {
         try {
             await $option.create(databaseId, collectionId, key, data);
-            // await invalidate(Dependencies.COLLECTION);
-            await Promise.allSettled([invalidate(Dependencies.COLLECTION)]);
+            await invalidate(Dependencies.COLLECTION);
+            // await Promise.allSettled([invalidate(Dependencies.COLLECTION)]);
             if (!$page.url.pathname.includes('attributes')) {
                 await goto(
                     `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
