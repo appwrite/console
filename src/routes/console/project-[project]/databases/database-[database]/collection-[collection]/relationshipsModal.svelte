@@ -25,24 +25,28 @@
         {selectedRelationship.key}
     </svelte:fragment>
 
-    <Paginator items={data} {limit} let:paginatedItems>
-        <ClickableList>
-            {#each paginatedItems as doc}
-                <ClickableListItem
-                    href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}`}
-                    on:click={() => (show = false)}>
-                    {#each args as arg, i}
-                        {#if i}
-                            <span class="clickable-list-title-sep">|</span>
+    {#if data?.length}
+        <Paginator items={data} {limit} let:paginatedItems>
+            <ClickableList>
+                {#each paginatedItems as doc}
+                    <ClickableListItem
+                        href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}`}
+                        on:click={() => (show = false)}>
+                        {#if args?.length}
+                            {#each args as arg, i}
+                                {#if i}
+                                    <span class="clickable-list-title-sep">|</span>
+                                {/if}
+                                <span>{doc[arg]}</span>
+                            {/each}
                         {/if}
-                        <span>{doc[arg]}</span>
-                    {/each}
-                    <svelte:fragment slot="desc">
-                        {doc.$id}
-                    </svelte:fragment>
-                </ClickableListItem>
-            {/each}
-        </ClickableList>
-    </Paginator>
+                        <svelte:fragment slot="desc">
+                            {doc.$id}
+                        </svelte:fragment>
+                    </ClickableListItem>
+                {/each}
+            </ClickableList>
+        </Paginator>
+    {/if}
     <svelte:fragment slot="footer" />
 </Modal>
