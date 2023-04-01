@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Empty, Heading, PaginationWithLimit, ViewSelector } from '$lib/components';
+    import { Empty, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, GridHeader } from '$lib/layout';
     import { columns, showCreate } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
@@ -11,17 +11,12 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Collections</Heading>
-        <div class="u-flex u-gap-16">
-            <ViewSelector view={data.view} {columns} />
-
-            <Button on:click={() => ($showCreate = true)} event="create_collection">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create collection</span>
-            </Button>
-        </div>
-    </div>
+    <GridHeader title="Collections" {columns} view={data.view}>
+        <Button on:click={() => ($showCreate = true)} event="create_collection">
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create collection</span>
+        </Button>
+    </GridHeader>
 
     {#if data.collections.total}
         {#if data.view === 'grid'}
