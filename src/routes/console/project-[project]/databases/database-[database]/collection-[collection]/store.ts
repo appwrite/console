@@ -12,7 +12,7 @@ export type Attributes =
     | Models.AttributeIp
     | Models.AttributeString
     | Models.AttributeUrl
-    | (Models.AttributeRelationship & { side: string });
+    | (Models.AttributeRelationship & { side: string; default?: never });
 
 type Collection = Omit<Models.Collection, 'attributes'> & {
     attributes: Array<Attributes>;

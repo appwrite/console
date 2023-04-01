@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Heading, ViewSelector } from '$lib/components';
-    import { View } from '$lib/helpers/load';
+    import type { View } from '$lib/helpers/load';
     import type { Column } from '$lib/components/viewSelector.svelte';
     import type { Writable } from 'svelte/store';
 
