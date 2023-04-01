@@ -29,7 +29,12 @@
     }
 </script>
 
-<Modal bind:show={showDelete} onSubmit={deleteAccount} icon="exclamation" state="warning">
+<Modal
+    bind:show={showDelete}
+    onSubmit={deleteAccount}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete Account</svelte:fragment>
     <p>Are you sure you want to delete your account?</p>
     <svelte:fragment slot="footer">
