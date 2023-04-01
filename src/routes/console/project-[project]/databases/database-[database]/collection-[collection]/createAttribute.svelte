@@ -9,6 +9,7 @@
     import { base } from '$app/paths';
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { preferences } from '$lib/stores/preferences';
 
     export let showCreate = false;
     export let selectedOption: string = null;
@@ -26,6 +27,9 @@
     async function submit() {
         try {
             await $option.create(databaseId, collectionId, key, data);
+            let selected = preferences.getCustomCollectionColumns(collectionId);
+            selected.push(key ?? data?.key);
+            preferences.setCustomCollectionColumns(selected);
             await invalidate(Dependencies.COLLECTION);
             // await Promise.allSettled([invalidate(Dependencies.COLLECTION)]);
             if (!$page.url.pathname.includes('attributes')) {
