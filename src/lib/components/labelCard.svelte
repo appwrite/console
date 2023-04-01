@@ -3,7 +3,7 @@
     export let group: string;
     export let value: string | number | boolean;
     export let disabled = false;
-    export let padding: number = 0.5;
+    export let padding = 0.5;
     export let icon: string = null;
     export let fullHeight = true;
 </script>
