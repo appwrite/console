@@ -30,6 +30,13 @@
     let showDelete = false;
     let showEdit = false;
     let showCreateIndex = false;
+
+    enum attributeStringIcon {
+        ip = 'location-marker',
+        url = 'link',
+        email = 'mail',
+        enum = 'list'
+    }
 </script>
 
 <Container>
@@ -63,6 +70,9 @@
                                                         : 'arrow-sm-right'
                                                 }`}
                                                 aria-hidden="true" />
+                                        {:else if 'format' in attribute}
+                                            {@const icon = attributeStringIcon[attribute?.format]}
+                                            <span class={`icon-${icon}`} aria-hidden="true" />
                                         {:else}
                                             <span
                                                 class={`icon-${option.icon}`}
@@ -85,7 +95,15 @@
                             </div>
                         </TableCell>
                         <TableCellText onlyDesktop title="Type">
-                            {`${attribute.type}${attribute.array ? '[]' : ''}`}
+                            <span class="u-capitalize">{attribute.type}</span>
+                            {#if isRelationship(attribute)}
+                                <span>
+                                    with <b>{attribute?.key}</b>
+                                </span>
+                            {/if}
+                            <span>
+                                {attribute.array ? '[]' : ''}
+                            </span>
                         </TableCellText>
                         <TableCellText onlyDesktop title="Default Value">
                             {attribute?.default !== null && attribute?.default !== undefined

@@ -113,7 +113,7 @@
                         type="button"
                         class:is-selected={view === View.Table}
                         use:tooltip={{
-                            content: 'Column View'
+                            content: 'List View'
                         }}>
                         <span class="icon-view-list" aria-hidden="true" />
                     </a>

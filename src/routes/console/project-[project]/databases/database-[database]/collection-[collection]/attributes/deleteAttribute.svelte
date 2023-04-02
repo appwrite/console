@@ -67,7 +67,8 @@
             </p>
             <p class="text"><b>This action is irreversible.</b></p>
             <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                Delete relationship between {selectedAttribute.key} to {selectedAttribute.twoWayKey}
+                Delete relationship between <b>{selectedAttribute.key}</b> to
+                <b>{selectedAttribute.twoWayKey}</b>
             </InputChoice>
         </div>
     {/if}
