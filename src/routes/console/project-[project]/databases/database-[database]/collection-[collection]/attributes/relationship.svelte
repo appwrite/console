@@ -141,6 +141,7 @@
     bind:search
     bind:value={data.relatedCollection}
     required
+    interactiveOutput
     placeholder="Select a collection"
     disabled={editing}
     options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
@@ -149,6 +150,13 @@
     <SelectSearchItem data={o.data}>
         {o.label}
     </SelectSearchItem>
+    <svelte:fragment slot="output">
+        <output class="input-text">
+            <SelectSearchItem data={o.data}>
+                {o.label}
+            </SelectSearchItem>
+        </output>
+    </svelte:fragment>
 </InputSelectSearch>
 
 {#if data?.relatedCollection}

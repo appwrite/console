@@ -74,7 +74,12 @@
         value = singleRel;
     }
 
-    $: paginatedItems = relatedList.slice(offset, offset + limit);
+    $: paginatedItems = editing
+        ? relatedList
+              .slice()
+              .reverse()
+              .slice(offset, offset + limit)
+        : [];
     $: total = relatedList?.length;
     $: options =
         documentList?.documents?.map((n) => {
@@ -87,25 +92,65 @@
         }) ?? [];
 </script>
 
-{#if editing && isRelationshipToMany(attribute) && total > 0}
-    <div>
+{#if isRelationshipToMany(attribute)}
+    <div class="u-width-full-line">
         <div class="u-flex u-cross-center u-main-space-between">
             <div>
                 <Label required={attribute.required} {optionalText} for={id}>
                     {label}
                 </Label>
             </div>
-            <Button
-                text
-                noMargin
-                on:click={() => {
-                    showInput = true;
-                }}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add item</span>
-            </Button>
+            {#if editing || total === 0}
+                <Button
+                    text
+                    noMargin
+                    on:click={() => {
+                        showInput = true;
+                    }}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Add item</span>
+                </Button>
+            {/if}
         </div>
+
         <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
+            {#if !editing}
+                {#each relatedList as item, i}
+                    <li class="u-flex u-gap-16">
+                        <InputSelectSearch
+                            {id}
+                            label="Rel"
+                            showLabel={false}
+                            required
+                            bind:search
+                            bind:value={item}
+                            {options}
+                            let:option={o}>
+                            <SelectSearchItem data={o.data}>
+                                {o.label}
+                            </SelectSearchItem>
+                            <svelte:fragment slot="output">
+                                <output class="input-text is-read-only">
+                                    <SelectSearchItem data={o.data}>
+                                        {o.label}
+                                    </SelectSearchItem>
+                                </output>
+                            </svelte:fragment>
+                        </InputSelectSearch>
+                        <Button
+                            text
+                            noMargin
+                            ariaLabel={`Delete item ${i}`}
+                            on:click={() => {
+                                relatedList.splice(i, 1);
+                                relatedList = relatedList;
+                            }}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </Button>
+                    </li>
+                {/each}
+            {/if}
+
             {#if showInput}
                 <li class="u-flex u-gap-16">
                     <InputSelectSearch
@@ -113,7 +158,6 @@
                         label="Rel"
                         showLabel={false}
                         required
-                        customOutput
                         placeholder={`Select ${attribute.key}`}
                         bind:search
                         bind:value={relatedList[total]}
@@ -125,6 +169,13 @@
                         <SelectSearchItem data={o.data}>
                             {o.label}
                         </SelectSearchItem>
+                        <svelte:fragment slot="output">
+                            <output class="input-text is-read-only">
+                                <SelectSearchItem data={o.data}>
+                                    {o.label}
+                                </SelectSearchItem>
+                            </output>
+                        </svelte:fragment>
                     </InputSelectSearch>
                     <Button
                         text
@@ -135,15 +186,14 @@
                     </Button>
                 </li>
             {/if}
-            {#if paginatedItems}
-                {#each relatedList as item, i}
+            {#if paginatedItems && editing}
+                {#each paginatedItems as item, i}
                     <li class="u-flex u-gap-16">
                         <InputSelectSearch
                             {id}
                             label="Rel"
                             showLabel={false}
                             required
-                            customOutput
                             bind:search
                             bind:value={item}
                             {options}
@@ -151,6 +201,13 @@
                             <SelectSearchItem data={o.data}>
                                 {o.label}
                             </SelectSearchItem>
+                            <svelte:fragment slot="output">
+                                <output class="input-text is-read-only">
+                                    <SelectSearchItem data={o.data}>
+                                        {o.label}
+                                    </SelectSearchItem>
+                                </output>
+                            </svelte:fragment>
                         </InputSelectSearch>
                         <Button
                             text
@@ -166,94 +223,13 @@
                 {/each}
             {/if}
         </ul>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {total}</p>
-            <PaginationInline {limit} bind:offset sum={total} hidePages />
-        </div>
-    </div>
-{:else if isRelationshipToMany(attribute)}
-    <div class="u-width-full-line">
-        <div class="u-flex u-cross-center u-main-space-between">
-            <div>
-                <Label required={attribute.required} {optionalText} for={id}>
-                    {label}
-                </Label>
+        {#if editing}
+            <div class="u-flex u-margin-block-start-32 u-main-space-between">
+                <p class="text">Total results: {total}</p>
+                <PaginationInline {limit} bind:offset sum={total} hidePages />
             </div>
-            {#if total === 0}
-                <Button
-                    text
-                    noMargin
-                    on:click={() => {
-                        showInput = true;
-                    }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add item</span>
-                </Button>
-            {/if}
-        </div>
-
-        <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
-            {#each relatedList as doc, i}
-                <li class="u-flex u-gap-16">
-                    <InputSelectSearch
-                        {id}
-                        label="Rel"
-                        showLabel={false}
-                        required
-                        customOutput
-                        bind:search
-                        bind:value={doc}
-                        {options}
-                        let:option={o}>
-                        <SelectSearchItem data={o.data}>
-                            {o.label}
-                        </SelectSearchItem>
-                    </InputSelectSearch>
-                    <Button
-                        text
-                        noMargin
-                        ariaLabel={`Delete item ${i}`}
-                        on:click={() => {
-                            relatedList.splice(i, 1);
-                            relatedList = relatedList;
-                        }}>
-                        <span class="icon-x" aria-hidden="true" />
-                    </Button>
-                </li>
-            {/each}
-
-            {#if showInput}
-                <li class="u-flex u-gap-16">
-                    <InputSelectSearch
-                        {id}
-                        label="Rel"
-                        showLabel={false}
-                        required
-                        customOutput
-                        placeholder={`Select ${attribute.key}`}
-                        bind:search
-                        bind:value={relatedList[total]}
-                        options={options?.filter((n) => !relatedList.includes(n.value))}
-                        on:select={() => {
-                            showInput = false;
-                        }}
-                        let:option={o}>
-                        <SelectSearchItem data={o.data}>
-                            {o.label}
-                        </SelectSearchItem>
-                    </InputSelectSearch>
-                    <Button
-                        text
-                        noMargin
-                        ariaLabel={`Hide input`}
-                        on:click={() => (showInput = false)}>
-                        <span class="icon-x" aria-hidden="true" />
-                    </Button>
-                </li>
-            {/if}
-        </ul>
-
-        {#if total > 0}
+        {/if}
+        {#if total > 0 && !editing}
             <Button
                 text
                 noMargin
@@ -274,6 +250,7 @@
         required={attribute.required}
         name="documents"
         placeholder={`Select ${attribute.key}`}
+        interactiveOutput
         bind:search
         bind:value={singleRel}
         {options}
@@ -281,5 +258,12 @@
         <SelectSearchItem data={o.data}>
             {o.label}
         </SelectSearchItem>
+        <svelte:fragment slot="output">
+            <output class="input-text">
+                <SelectSearchItem data={o.data}>
+                    {o.label}
+                </SelectSearchItem>
+            </output>
+        </svelte:fragment>
     </InputSelectSearch>
 {/if}

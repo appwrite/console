@@ -20,7 +20,7 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let customOutput = false;
+    export let interactiveOutput = false;
     // Input value
     export let search = '';
     // The actual selected value
@@ -79,7 +79,7 @@
 
     function selectOption(option: Option) {
         value = option.value;
-        !customOutput && (search = option.label);
+        search = option.label;
         // It's not working without this line.
         element.value = search;
         hasFocus = false;
@@ -112,24 +112,23 @@
 
         <div class="custom-select">
             <div class="input-text-wrapper" style="--amount-of-buttons:2">
-                {#if $$slots.default && customOutput && selectedOption}
-                    <output class="input-text is-read-only">
-                        <slot option={selectedOption} />
-                    </output>
-                {:else}
-                    <input
-                        type="text"
-                        class="input-text"
-                        {placeholder}
-                        {disabled}
-                        {required}
-                        bind:value={search}
-                        bind:this={element}
-                        on:focus={() => (hasFocus = true)}
-                        on:click={() => (hasFocus = true)}
-                        on:input={handleInput}
-                        on:keydown={handleKeydown} />
+                {#if $$slots.output && selectedOption}
+                    <slot name="output" option={selectedOption} />
                 {/if}
+
+                <input
+                    type="text"
+                    class="input-text"
+                    class:u-hide={$$slots.output && selectedOption}
+                    {placeholder}
+                    {disabled}
+                    {required}
+                    bind:value={search}
+                    bind:this={element}
+                    on:focus={() => (hasFocus = true)}
+                    on:click={() => (hasFocus = true)}
+                    on:input={handleInput}
+                    on:keydown={handleKeydown} />
 
                 <div class="options-list">
                     {#if showClearBtn}
@@ -137,7 +136,7 @@
                             class="options-list-button"
                             aria-label="clear field"
                             type="button"
-                            disabled={!!selectedOption && customOutput}
+                            disabled={!interactiveOutput}
                             on:click|preventDefault={clearOption}>
                             <span class="icon-x" aria-hidden="true" />
                         </button>
@@ -145,7 +144,7 @@
                     <button
                         class="options-list-button"
                         type="button"
-                        disabled={!!selectedOption && customOutput}
+                        disabled={!interactiveOutput}
                         on:click={() => (hasFocus = !hasFocus)}>
                         <span class="icon-cheveron-down" aria-hidden="true" />
                     </button>

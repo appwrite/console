@@ -14,7 +14,7 @@
     import { Container } from '$lib/layout';
     import AttributeItem from '../attributeItem.svelte';
     import { difference } from '$lib/helpers/array';
-    import { isRelationshipToMany } from '../attributes/store';
+    import { isRelationship, isRelationshipToMany } from '../attributes/store';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -80,17 +80,18 @@
             return !difference(Array.from(workAttribute), Array.from(docAttribute)).length;
         }
 
-        if (attribute.type === 'relationship') {
+        if (isRelationship(attribute)) {
+            //TODO: remove `side` after SDK update
             if (
-                //TODO: remove `side` after SDK update
-
                 isRelationshipToMany(attribute as Models.AttributeRelationship & { side: string })
             ) {
                 const relatedIds = docAttribute.map((doc) => doc.$id);
                 return !difference(workAttribute, relatedIds).length;
+            } else {
+                return workAttribute && docAttribute
+                    ? !difference(Array.from(workAttribute), Array.from(docAttribute)).length
+                    : true;
             }
-            console.log(workAttribute, docAttribute);
-            return !difference(Array.from(workAttribute), Array.from(docAttribute)).length;
         }
 
         return workAttribute === docAttribute;
