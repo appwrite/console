@@ -108,7 +108,6 @@ export const options: Option[] = [
         name: 'Relationship',
         component: Relationship,
         type: 'relationship',
-        format: 'relationship',
         create: submitRelationship,
         update: updateRelationship,
         icon: 'relationship'
