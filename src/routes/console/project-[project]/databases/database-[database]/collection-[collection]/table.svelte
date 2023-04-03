@@ -117,7 +117,7 @@
                             {#if attr?.relationType === 'oneToOne' || attr?.relationType === 'manyToOne'}
                                 <TableCell title={column.title}>
                                     <button
-                                        class="button is-text link"
+                                        class="link u-flex u-gap-4 u-padding-block-8"
                                         type="button"
                                         on:click|preventDefault|stopPropagation={() =>
                                             goto(

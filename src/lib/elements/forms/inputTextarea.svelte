@@ -15,6 +15,7 @@
     export let maxlength: number = null;
     export let optionalText: string | undefined = undefined;
     export let tooltip: string = null;
+    export let isNullable = false;
 
     let element: HTMLTextAreaElement;
     let error: string;
@@ -53,11 +54,19 @@
             {required}
             {maxlength}
             class="input-text"
+            class:u-padding-block-end-32={maxlength}
+            style={maxlength ? '--amount-of-buttons: 0.25' : ''}
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
-        {#if maxlength}
-            <TextCounter max={maxlength} count={value?.length ?? 0} />
+        {#if maxlength || isNullable}
+            <ul
+                class="buttons-list u-cross-center u-position-absolute d u-inset-block-end-1 u-inset-inline-end-1 u-padding-block-8 u-padding-inline-12"
+                style="border-end-end-radius:0.0625rem;">
+                {#if maxlength}
+                    <TextCounter max={maxlength} count={value?.length ?? 0} />
+                {/if}
+            </ul>
         {/if}
     </div>
 

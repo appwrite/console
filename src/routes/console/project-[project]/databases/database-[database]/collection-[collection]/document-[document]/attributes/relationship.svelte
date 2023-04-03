@@ -158,6 +158,7 @@
                         options={options?.filter((n) => !relatedList.includes(n.value))}
                         on:select={() => {
                             value = relatedList;
+                            // search = '';
                             showInput = false;
                         }}
                         let:option={o}>
