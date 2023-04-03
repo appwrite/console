@@ -32,7 +32,7 @@
     let offset = 0;
 
     onMount(async () => {
-        teamPrefs.load($organization.$id);
+        await teamPrefs.load($organization.$id);
         documentList = await getDocuments();
 
         if (editing && $doc?.[attribute.key] && $doc[attribute.key]?.length) {
@@ -65,11 +65,11 @@
         }
     }
 
-    // Reactive statements
+    //Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
 
-    $: if (isRelationshipToMany(attribute)) {
-        value = relatedList;
+    $: if (!!attribute?.type && isRelationshipToMany(attribute)) {
+        // value = relatedList;
     } else {
         value = singleRel;
     }
@@ -80,7 +80,7 @@
               .reverse()
               .slice(offset, offset + limit)
         : [];
-    $: total = relatedList?.length;
+    $: total = relatedList?.length ?? 0;
     $: options =
         documentList?.documents?.map((n) => {
             const data = displayNames.filter((name) => name !== '$id').map((name) => n?.[name]);
@@ -114,7 +114,7 @@
         </div>
 
         <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
-            {#if !editing}
+            {#if !editing && relatedList?.length}
                 {#each relatedList as item, i}
                     <li class="u-flex u-gap-16">
                         <InputSelectSearch
