@@ -11,7 +11,7 @@
     export let id: string;
     export let label: string;
     export let optionalText: string | undefined = undefined;
-    export let value: string | number | boolean | null;
+    export let value: string | number | boolean | null | string[];
     export let editing = false;
     export let attribute:
         | Models.AttributeBoolean

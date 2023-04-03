@@ -68,12 +68,6 @@
     //Reactive statements
     $: getDocuments(search).then((res) => (documentList = res));
 
-    $: if (!!attribute?.type && isRelationshipToMany(attribute)) {
-        // value = relatedList;
-    } else {
-        value = singleRel;
-    }
-
     $: paginatedItems = editing
         ? relatedList
               .slice()
@@ -163,6 +157,7 @@
                         bind:value={relatedList[total]}
                         options={options?.filter((n) => !relatedList.includes(n.value))}
                         on:select={() => {
+                            value = relatedList;
                             showInput = false;
                         }}
                         let:option={o}>
@@ -254,7 +249,8 @@
         bind:search
         bind:value={singleRel}
         {options}
-        let:option={o}>
+        let:option={o}
+        on:select={() => (value = singleRel)}>
         <SelectSearchItem data={o.data}>
             {o.label}
         </SelectSearchItem>
