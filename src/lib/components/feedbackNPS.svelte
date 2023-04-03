@@ -33,7 +33,7 @@
 
 <section class="drop-section">
     <header class="u-flex u-main-space-between u-gap-16">
-        <h4 class="body-text-1">How are we doing?</h4>
+        <h4 class="body-text-1 u-bold">How are we doing?</h4>
         <button
             type="button"
             class="button is-text is-only-icon u-margin-inline-start-auto"

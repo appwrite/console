@@ -254,7 +254,7 @@
                 <div class="u-text-center">
                     <Heading size="7" tag="h2"
                         >You have no inactive deployments. Create one to see it here.</Heading>
-                    <p class="body-text-2 u-margin-block-start-4">
+                    <p class="body-text-2 u-bold u-margin-block-start-4">
                         Learn more about deployments in our Documentation.
                     </p>
                 </div>
