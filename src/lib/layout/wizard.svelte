@@ -95,7 +95,7 @@
     <div class="wizard-end-bg" />
 
     <header class="wizard-header">
-        <div class="body-text-1">{title}</div>
+        <div class="body-text-1 u-bold">{title}</div>
 
         <slot name="header" />
         <button

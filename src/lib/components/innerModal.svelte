@@ -11,7 +11,7 @@
             <div class="modal-form">
                 <header class="modal-header">
                     <div class="u-flex u-main-space-between u-cross-center u-gap-16">
-                        <h4 class="modal-title body-text-1">
+                        <h4 class="modal-title body-text-1 u-bold">
                             <slot name="title" />
                         </h4>
                         {#if closable}

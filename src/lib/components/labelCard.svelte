@@ -31,7 +31,7 @@
             bind:group
             on:click />
         <div class="u-flex u-flex-vertical u-gap-4">
-            <h4 class="body-text-2"><slot name="title" /></h4>
+            <h4 class="body-text-2 u-bold"><slot name="title" /></h4>
             <p class="u-color-text-gray u-small">
                 <slot />
             </p>
