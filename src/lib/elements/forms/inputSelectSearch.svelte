@@ -1,5 +1,6 @@
 <script lang="ts">
     import { DropList } from '$lib/components';
+    import { clickOnEnter } from '$lib/helpers/a11y';
     import { createEventDispatcher, onMount } from 'svelte';
     import { Label } from '.';
 
@@ -81,15 +82,16 @@
         value = option.value;
         search = option.label;
         // It's not working without this line.
-        element.value = search;
+        !$$slots.output && (element.value = search);
         hasFocus = false;
+        search = '';
         dispatch('select', option);
     }
 
     function clearOption() {
         search = '';
         value = null;
-        element.value = search;
+        !$$slots.output && (element.value = search);
         hasFocus = false;
     }
 
@@ -113,22 +115,27 @@
         <div class="custom-select">
             <div class="input-text-wrapper" style="--amount-of-buttons:2">
                 {#if $$slots.output && selectedOption}
-                    <slot name="output" option={selectedOption} />
+                    <div
+                        on:keyup={clickOnEnter}
+                        on:click={() => {
+                            if (interactiveOutput) hasFocus = !hasFocus;
+                        }}>
+                        <slot name="output" option={selectedOption} />
+                    </div>
+                {:else}
+                    <input
+                        type="text"
+                        class="input-text"
+                        {placeholder}
+                        {disabled}
+                        {required}
+                        bind:value={search}
+                        bind:this={element}
+                        on:focus={() => (hasFocus = true)}
+                        on:click={() => (hasFocus = true)}
+                        on:input={handleInput}
+                        on:keydown={handleKeydown} />
                 {/if}
-
-                <input
-                    type="text"
-                    class="input-text"
-                    class:u-hide={$$slots.output && selectedOption}
-                    {placeholder}
-                    {disabled}
-                    {required}
-                    bind:value={search}
-                    bind:this={element}
-                    on:focus={() => (hasFocus = true)}
-                    on:click={() => (hasFocus = true)}
-                    on:input={handleInput}
-                    on:keydown={handleKeydown} />
 
                 <div class="options-list">
                     {#if showClearBtn}

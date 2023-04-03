@@ -6,7 +6,6 @@
     export let padding = 1;
     export let icon: string = null;
     export let fullHeight = true;
-    export let label: string = null;
     export let borderRadius: 'xsmall' | 'small' | 'medium' | 'large' = 'small';
 
     enum Radius {
