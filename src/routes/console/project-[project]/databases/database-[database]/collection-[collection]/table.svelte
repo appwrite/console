@@ -19,7 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship } from './document-[document]/attributes/store';
+    import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
 
@@ -114,14 +114,16 @@
                             {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
                                 '$id'
                             ]}
-                            {#if attr?.relationType === 'oneToOne' || attr?.relationType === 'manyToOne'}
+                            {#if !isRelationshipToMany(attr)}
                                 <TableCell title={column.title}>
                                     <button
                                         class="link u-flex u-gap-4 u-padding-block-8"
                                         type="button"
                                         on:click|preventDefault|stopPropagation={() =>
                                             goto(
-                                                `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}`
+                                                `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${
+                                                    attr.relatedCollection
+                                                }/document-${document[column.id].$id}`
                                             )}>
                                         {#each args as arg, i}
                                             {#if arg !== undefined}

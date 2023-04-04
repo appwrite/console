@@ -30,7 +30,7 @@
             <ClickableList>
                 {#each paginatedItems as doc}
                     <ClickableListItem
-                        href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}`}
+                        href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}/document-${doc.$id}`}
                         on:click={() => (show = false)}>
                         {#if args?.length}
                             {#each args as arg, i}
