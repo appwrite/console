@@ -19,7 +19,7 @@
             type="checkbox"
             name="isVerified"
             required
-            bind:checked={$createSource.type.length} />
+            bind:checked={$createSource.type} />
         <ul class="grid-box common-section">
             {#each options.filter((p) => p !== 'Local') as source}
                 <li class="grid-box-item">

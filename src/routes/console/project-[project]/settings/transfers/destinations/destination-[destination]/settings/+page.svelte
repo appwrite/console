@@ -15,7 +15,7 @@
 <Container>
     <CardGrid>
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-            <div class="avatar is-medium">
+            <div class="image-item">
                 <img
                     src={`${base}/icons/${$app.themeInUse}/color/${$destination.type}.svg`}
                     alt={`${$destination.type} Logo`} />

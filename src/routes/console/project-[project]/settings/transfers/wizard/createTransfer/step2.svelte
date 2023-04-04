@@ -28,7 +28,7 @@
     <section class="common-section">
         <input
             class="u-hide"
-            bind:checked={$createTransfer.destination.length}
+            bind:checked={$createTransfer.destination}
             type="checkbox"
             name="hasSelected"
             required />

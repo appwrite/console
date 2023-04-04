@@ -1,6 +1,7 @@
 <script lang="ts">
     import { InputText } from '$lib/elements/forms';
     import FormList from '$lib/elements/forms/formList.svelte';
+    import InputSecret from '$lib/elements/forms/inputSecret.svelte';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { createSource } from '../store';
@@ -8,6 +9,9 @@
 
     // Scan the API AST for all the available credentials
 
+    /**
+     * @type {Record<string, Record<string, { type: string; label: string; placeholder: string; required: boolean; value?: string; }>>}
+     */
     let credentialSchemas = {
         nhost: {
             host: {
@@ -28,8 +32,7 @@
                 type: 'string',
                 label: 'Database',
                 placeholder: 'postgres',
-                required: true,
-                value: 'postgres'
+                required: true
             },
             username: {
                 type: 'string',
@@ -39,7 +42,7 @@
                 value: 'postgres'
             },
             password: {
-                type: 'string',
+                type: 'password',
                 label: 'Password',
                 placeholder: 'password',
                 required: true,
@@ -75,7 +78,7 @@
                 value: 'postgres'
             },
             password: {
-                type: 'string',
+                type: 'password',
                 label: 'Password',
                 placeholder: 'password',
                 required: true
@@ -136,6 +139,7 @@
         >Please provide your authentication details for your provider.</svelte:fragment>
     {#if $createSource.type === 'firebase' && !firebaseFallback}
         <FirebaseAuthflow />
+        <br />
         <div class="flex flex-row justify-center">
             <button
                 class="tag tooltip"
@@ -148,7 +152,7 @@
 
                 <span class="tooltip-popup" role="tooltip">
                     <p class="text u-margin-block-start-8">
-                        Manually enter your account credentials.
+                        Manually enter service account credentials.
                     </p>
                 </span>
             </button>
@@ -156,12 +160,21 @@
     {:else}
         <FormList>
             {#each Object.keys(credentialSchemas[$createSource.type]) as key}
-                <InputText
-                    id={key}
-                    label={credentialSchemas[$createSource.type][key].label}
-                    placeholder={credentialSchemas[$createSource.type][key].placeholder}
-                    bind:value={$createSource.data[key]}
-                    required={credentialSchemas[$createSource.type][key].required} />
+                {#if credentialSchemas[$createSource.type][key].type === 'password'}
+                    <InputSecret
+                        id={key}
+                        label={credentialSchemas[$createSource.type][key].label}
+                        placeholder={credentialSchemas[$createSource.type][key].placeholder}
+                        bind:value={$createSource.data[key]}
+                        required={credentialSchemas[$createSource.type][key].required} />
+                {:else}
+                    <InputText
+                        id={key}
+                        label={credentialSchemas[$createSource.type][key].label}
+                        placeholder={credentialSchemas[$createSource.type][key].placeholder}
+                        bind:value={$createSource.data[key]}
+                        required={credentialSchemas[$createSource.type][key].required} />
+                {/if}
             {/each}
         </FormList>
     {/if}

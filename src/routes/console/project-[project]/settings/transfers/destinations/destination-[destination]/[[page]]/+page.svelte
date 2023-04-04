@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
     import Card from '$lib/components/card.svelte';
     import Heading from '$lib/components/heading.svelte';
     import Output from '$lib/components/output.svelte';
@@ -19,16 +18,14 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-
+    import type { PageData } from './$types';
     const permissions = ['Users', 'Databases', 'Documents', 'Files', 'Functions'];
-    let errors = permissions.map((permission) => {
-        return {
-            [permission]: false
-        };
-    });
+
+    export let data: PageData;
 
     let isChecking = false;
     let errorMessage = null;
+    let errors = {};
     const destinationId = $page.params.destination;
 
     const runChecks = async () => {
@@ -38,35 +35,31 @@
         try {
             await sdkForProject.transfers.validateDestination(destinationId);
 
-            isChecking = false;
-            trackEvent(Submit.DestinationValidate, {
-                customId: !!destinationId
+            addNotification({
+                message: `Destination is valid`,
+                type: 'success'
             });
-        } catch (error) {
-            if (error.response.errors) {
-                errors = error.response.errors;
-            } else {
-                errors = permissions.map((permission) => {
-                    return {
-                        [permission]: true
-                    };
-                });
-            }
 
+            isChecking = false;
+        } catch (error) {
             addNotification({
                 type: 'error',
                 title: 'Error',
                 message: error.message
             });
+
+            errors = error.response.errors ?? {};
             errorMessage = error.message;
-            console.error(error);
         }
 
         isChecking = false;
     };
 
     onMount(() => {
-        runChecks();
+        let lastCheck: any = data.destination.lastCheck;
+
+        errors = lastCheck.errors ?? {};
+        errorMessage = lastCheck.errorMessage ?? null;
     });
 </script>
 
@@ -91,7 +84,7 @@
                     <TableCellText title="Permission">
                         {permission}
 
-                        {#if errors[permission]}
+                        {#if errors[permission] && errors[permission].length > 0}
                             <Helper type="warning">
                                 {#each errors[permission] as error}
                                     {error} <br />
@@ -99,7 +92,7 @@
                             </Helper>
                         {/if}
                     </TableCellText>
-                    <TableCellText title="Permission Level">
+                    <TableCellText title="Status">
                         <Pill
                             danger={errors[permission]}
                             success={!errors[permission]}

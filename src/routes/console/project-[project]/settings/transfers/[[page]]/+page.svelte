@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
-    import { Empty, CardContainer, Copy, GridItem1, Heading, Pagination } from '$lib/components';
+    import { Empty, Heading, Pagination } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -11,10 +11,16 @@
     import Create from '../createTransfer.svelte';
     import type { PageData } from './$types';
     import { CARD_LIMIT } from '$lib/constants';
+    import {
+        Table,
+        TableBody,
+        TableRowLink,
+        TableCellHead,
+        TableCell,
+        TableHeader
+    } from '$lib/elements/table';
 
     export let data: PageData;
-
-    let offset = 0;
 
     const project = $page.params.project;
 
@@ -36,34 +42,44 @@
     </div>
 
     {#if data.transfers.total}
-        <CardContainer
-            {offset}
-            event="transfers"
-            total={data.transfers.total}
-            on:click={openWizard}>
-            {#each data.transfers.transfers as transfer}
-                <GridItem1
-                    href={`${base}/console/project-${project}/settings/transfers/transfer-${transfer.$id}`}>
-                    <svelte:fragment slot="title">
-                        <div class="u-flex u-gap-16 u-cross-center">
-                            <div class="avatar is-medium">
-                                <img
-                                    src={`${base}/icons/${$app.themeInUse}/color/appwrite.svg`}
-                                    alt="technology" />
+        <Table>
+            <TableHeader>
+                <TableCellHead>Name</TableCellHead>
+                <TableCellHead>Providers</TableCellHead>
+                <TableCellHead>Status</TableCellHead>
+            </TableHeader>
+            <TableBody>
+                {#each data.transfers.transfers as transfer}
+                    <TableRowLink
+                        href={`${base}/console/project-${project}/settings/transfers/transfer-${transfer.$id}`}>
+                        <TableCell title="Name">
+                            <div class="u-flex u-main-space-between">
+                                {transfer.$id}
                             </div>
-                            <span class="text">{transfer.$id}</span>
-                        </div>
-                    </svelte:fragment>
+                        </TableCell>
+                        <TableCell title="Providers">
+                            <div class="grid-box u-flex">
+                                <div class="image-item">
+                                    <img
+                                        src={`${base}/icons/${$app.themeInUse}/color/supabase.svg`}
+                                        alt="technology" />
+                                </div>
+                                <span class="icon-arrow-right" style="align-self: center;" />
+                                <div class="image-item">
+                                    <img
+                                        src={`${base}/icons/${$app.themeInUse}/color/appwrite.svg`}
+                                        alt="technology" />
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell title="Status">
+                            <Pill><span class="u-capitalize">{transfer.status}</span></Pill>
+                        </TableCell>
+                    </TableRowLink>
+                {/each}
+            </TableBody>
+        </Table>
 
-                    <Copy value={transfer.$id} event="transfer">
-                        <Pill button><i class="icon-duplicate" />Transfer ID</Pill>
-                    </Copy>
-                </GridItem1>
-            {/each}
-            <svelte:fragment slot="empty">
-                <p>Create a new transfer</p>
-            </svelte:fragment>
-        </CardContainer>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {data.transfers.total}</p>
             <Pagination

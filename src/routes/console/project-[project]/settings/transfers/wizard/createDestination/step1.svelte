@@ -19,7 +19,7 @@
             type="checkbox"
             name="isVerified"
             required
-            bind:checked={$createDestination.type.length} />
+            bind:checked={$createDestination.type} />
         <ul class="grid-box common-section">
             {#each options.filter((p) => p !== 'Local') as destination}
                 <li class="grid-box-item">

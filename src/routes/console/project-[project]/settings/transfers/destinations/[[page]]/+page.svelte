@@ -47,7 +47,7 @@
                     href={`${base}/console/project-${project}/settings/transfers/destinations/destination-${destination.$id}`}>
                     <svelte:fragment slot="title">
                         <div class="u-flex u-gap-16 u-cross-center">
-                            <div class="avatar is-medium">
+                            <div class="image-item">
                                 <img
                                     src={`${base}/icons/${$app.themeInUse}/color/${destination.type}.svg`}
                                     alt="technology" />

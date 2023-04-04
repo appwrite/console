@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Submit, trackError } from '$lib/actions/analytics';
     import { WizardStep } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
@@ -18,69 +17,59 @@
     import Heading from '$lib/components/heading.svelte';
     import Output from '$lib/components/output.svelte';
     import Helper from '$lib/elements/forms/helper.svelte';
+    import Button from '$lib/elements/forms/button.svelte';
 
     const permissions = ['Users', 'Databases', 'Documents', 'Files', 'Functions'];
     let isChecking = false;
     let errorMessage = null;
-    let sourceErrors = permissions.map((permission) => {
-        return {
-            [permission]: false
-        };
-    });
-    let destinationErrors = sourceErrors;
+    let sourceErrors = {};
+    let destinationErrors = {};
     let canProgress = false;
 
     async function validate() {
         isChecking = true;
         errorMessage = null;
         canProgress = false;
-        let sourceResponse = null;
 
         try {
             await sdkForProject.transfers.validateSource(
                 $createTransfer.source,
                 $createTransfer.resources
             );
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                title: 'Error',
+                message: error.message
+            });
+
+            sourceErrors = error.response.errors ?? {};
+            errorMessage = error.message;
+            canProgress = false;
+        }
+
+        try {
             await sdkForProject.transfers.validateDestination(
                 $createTransfer.destination,
                 $createTransfer.resources
             );
-
-            isChecking = false;
-            canProgress = true;
         } catch (error) {
-            if (!sourceResponse) {
-                if (error.response.errors) {
-                    sourceErrors = error.response.errors;
-                } else {
-                    sourceErrors = permissions.map((permission) => {
-                        return {
-                            [permission]: true
-                        };
-                    });
-                }
-            } else {
-                if (error.response.errors) {
-                    destinationErrors = error.response.errors;
-                } else {
-                    destinationErrors = permissions.map((permission) => {
-                        return {
-                            [permission]: true
-                        };
-                    });
-                }
-            }
-
             addNotification({
-                message: error.message,
-                type: 'error'
+                type: 'error',
+                title: 'Error',
+                message: error.message
             });
-            trackError(error, Submit.SourceValidate);
+
+            destinationErrors = error.response.errors ?? {};
             errorMessage = error.message;
-            console.error(error);
-            isChecking = false;
             canProgress = false;
         }
+
+        if (!errorMessage) {
+            canProgress = true;
+        }
+
+        isChecking = false;
     }
 
     onMount(async () => {
@@ -106,9 +95,12 @@
                         <TableCellText title="Permission">
                             {permission}
 
-                            {#if sourceErrors[permission]}
+                            {#if (sourceErrors[permission] && sourceErrors[permission].length > 0) || (destinationErrors[permission] && destinationErrors[permission].length > 0)}
                                 <Helper type="warning">
                                     {#each sourceErrors[permission] as error}
+                                        {error} <br />
+                                    {/each}
+                                    {#each destinationErrors[permission] as error}
                                         {error} <br />
                                     {/each}
                                 </Helper>
@@ -163,6 +155,13 @@
                 <div class="u-flex u-gap-16 u-cross-center card">
                     <Output value={errorMessage}>{errorMessage}</Output>
                 </div>
+
+                <br />
+
+                <Button disabled={isChecking} on:click={validate}>
+                    <span class="icon-check-circle" aria-hidden="true" />
+                    <span class="text">Re-run Checks</span>
+                </Button>
             </Card>
         {/if}
     </div>

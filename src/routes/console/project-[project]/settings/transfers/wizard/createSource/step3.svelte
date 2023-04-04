@@ -17,9 +17,11 @@
     import Card from '$lib/components/card.svelte';
     import Heading from '$lib/components/heading.svelte';
     import Output from '$lib/components/output.svelte';
+    import Helper from '$lib/elements/forms/helper.svelte';
+    import Button from '$lib/elements/forms/button.svelte';
 
     const permissions = ['Users', 'Databases', 'Documents', 'Files', 'Functions'];
-    let returnedPermissions = permissions;
+    let errors = {};
     let isChecking = false;
     let errorMessage = null;
     let canProgress = false;
@@ -28,6 +30,7 @@
         isChecking = true;
         errorMessage = null;
         canProgress = false;
+        errors = {};
 
         try {
             switch ($createSource.type) {
@@ -63,9 +66,6 @@
                     break;
             }
 
-            //TODO: Update this to use the response from the API
-
-            returnedPermissions = permissions;
             isChecking = false;
             canProgress = true;
             addNotification({
@@ -81,11 +81,12 @@
                 type: 'error'
             });
             trackError(error, Submit.SourceValidate);
+            errors = error.response.errors ?? {};
             errorMessage = error.message;
-            console.error(error);
-            returnedPermissions = [];
-            isChecking = false;
+
             canProgress = false;
+        } finally {
+            isChecking = false;
         }
     }
 
@@ -110,13 +111,21 @@
                     <TableRow>
                         <TableCellText title="Permission">
                             {permission}
+
+                            {#if errors[permission] && errors[permission].length > 0}
+                                <Helper type="warning">
+                                    {#each errors[permission] as error}
+                                        {error} <br />
+                                    {/each}
+                                </Helper>
+                            {/if}
                         </TableCellText>
                         <TableCellText title="Permission Level">
                             <Pill
-                                danger={!returnedPermissions.includes(permission)}
-                                success={returnedPermissions.includes(permission)}
+                                danger={errors[permission]}
+                                success={!errors[permission]}
                                 warning={isChecking}>
-                                {#if returnedPermissions.includes(permission) && !isChecking}
+                                {#if !errors[permission] && !isChecking}
                                     <span class="icon-check-circle" aria-hidden="true" />
                                 {:else if isChecking}
                                     <span class="icon-question-mark-circle" aria-hidden="true" />
@@ -146,6 +155,13 @@
                 <div class="u-flex u-gap-16 u-cross-center card">
                     <Output value={errorMessage}>{errorMessage}</Output>
                 </div>
+
+                <br />
+
+                <Button disabled={isChecking} on:click={validate}>
+                    <span class="icon-check-circle" aria-hidden="true" />
+                    <span class="text">Re-run Checks</span>
+                </Button>
             </Card>
         {/if}
     </div>

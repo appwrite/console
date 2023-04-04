@@ -20,7 +20,7 @@
 <Container>
     <CardGrid>
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-            <div class="avatar is-medium">
+            <div class="image-item">
                 <span class="icon-text"> 🛫 </span>
             </div>
             <div>
@@ -44,7 +44,7 @@
                 <a
                     class="u-stretch u-flex u-cross-center u-gap-16 card"
                     href={`/console/project-${$project.$id}/settings/transfers/sources/source-${data.source.$id}`}>
-                    <div class="avatar is-medium">
+                    <div class="image-item">
                         <img
                             src={`${base}/icons/${$app.themeInUse}/color/${data.source.type}.svg`}
                             alt="technology" />
@@ -59,7 +59,7 @@
                 </a>
             {:else}
                 <div class="u-stretch u-flex u-cross-center u-gap-16 card">
-                    <div class="avatar is-medium">
+                    <div class="image-item">
                         <span class="icon-question-mark-circle" />
                     </div>
                     <div>
@@ -74,10 +74,10 @@
                 <a
                     class="u-stretch u-flex u-cross-center u-gap-16 card"
                     href={`/console/project-${$project.$id}/settings/transfers/destinations/destination-${data.destination.$id}`}>
-                    <div class="avatar is-medium">
+                    <div class="image-item">
                         <img
                             src={`${base}/icons/${$app.themeInUse}/color/${data.destination.type}.svg`}
-                            alt="technology" />
+                            alt="destination provider" />
                     </div>
                     <div>
                         <Heading tag="h6" size="7">{data.destination.name}</Heading>
@@ -89,7 +89,7 @@
                 </a>
             {:else}
                 <div class="u-stretch u-flex u-cross-center u-gap-16 card">
-                    <div class="avatar is-medium">
+                    <div class="image-item">
                         <span class="icon-question-mark-circle" />
                     </div>
                     <div>

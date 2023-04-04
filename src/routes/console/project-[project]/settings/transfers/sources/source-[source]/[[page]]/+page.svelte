@@ -18,16 +18,14 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-
+    import type { PageData } from './$types';
     const permissions = ['Users', 'Databases', 'Documents', 'Files', 'Functions'];
+
+    export let data: PageData;
 
     let isChecking = false;
     let errorMessage = null;
-    let errors = permissions.map((permission) => {
-        return {
-            [permission]: false
-        };
-    });
+    let errors = {};
     const sourceId = $page.params.source;
 
     const runChecks = async () => {
@@ -35,7 +33,14 @@
         errorMessage = null;
 
         try {
-            await sdkForProject.transfers.validateSource(sourceId);
+            let result = await sdkForProject.transfers.validateSource(sourceId);
+
+            addNotification({
+                message: `Destination is valid`,
+                type: 'success'
+            });
+
+            errors = result.errors ?? {};
 
             isChecking = false;
         } catch (error) {
@@ -44,17 +49,19 @@
                 title: 'Error',
                 message: error.message
             });
-            errors = error.response.errors;
 
+            errors = error.response.errors ?? {};
             errorMessage = error.message;
-            console.error(error);
         }
 
         isChecking = false;
     };
 
     onMount(() => {
-        runChecks();
+        let lastCheck: any = data.source.lastCheck;
+
+        errors = lastCheck.errors ?? {};
+        errorMessage = lastCheck.errorMessage ?? null;
     });
 </script>
 
@@ -79,7 +86,7 @@
                     <TableCellText title="Permission">
                         {permission}
 
-                        {#if errors[permission]}
+                        {#if errors[permission] && errors[permission].length > 0}
                             <Helper type="warning">
                                 {#each errors[permission] as error}
                                     {error} <br />

@@ -12,6 +12,7 @@
         Database = 'Database',
         Functions = 'Functions',
         Storage = 'Storage',
+        Transfers = 'Transfers',
         Other = 'Other'
     }
 
@@ -87,7 +88,7 @@
 </ul>
 
 <Collapsible>
-    {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Other] as category}
+    {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Transfers, Category.Other] as category}
         {@const checked = categoryState(category, scopes)}
         <CollapsibleItem withIndentation>
             <svelte:fragment slot="beforetitle">

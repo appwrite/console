@@ -29,7 +29,7 @@
         <h2 class="heading-level-6 common-section">Sources</h2>
         <input
             class="u-hide"
-            bind:checked={$createTransfer.source.length}
+            bind:checked={$createTransfer.source}
             type="checkbox"
             name="hasSelected"
             required />

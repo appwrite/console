@@ -1,11 +1,14 @@
 <script lang="ts">
     import { InputText } from '$lib/elements/forms';
     import FormList from '$lib/elements/forms/formList.svelte';
+    import InputSecret from '$lib/elements/forms/inputSecret.svelte';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { createDestination } from '../store';
-    import FirebaseAuthflow from './FirebaseAuthflow.svelte';
 
+    /**
+     * @type {Record<string, Record<string, { type: string; label: string; placeholder: string; required: boolean; value?: string; }>>}
+     */
     let credentialSchemas = {
         nhost: {
             host: {
@@ -37,7 +40,7 @@
                 value: 'postgres'
             },
             password: {
-                type: 'string',
+                type: 'password',
                 label: 'Password',
                 placeholder: 'password',
                 required: true,
@@ -71,7 +74,7 @@
                 required: true
             },
             password: {
-                type: 'string',
+                type: 'password',
                 label: 'Password',
                 placeholder: 'password',
                 required: true
@@ -91,7 +94,7 @@
                 required: true
             },
             key: {
-                type: 'string',
+                type: 'password',
                 label: 'Key',
                 placeholder: 'API Key',
                 required: true
@@ -123,43 +126,29 @@
             });
         }
     });
-
-    let firebaseFallback = false;
 </script>
 
 <WizardStep>
     <svelte:fragment slot="title">Provide Credentials</svelte:fragment>
     <svelte:fragment slot="subtitle"
         >Please provide your authentication details for your provider.</svelte:fragment>
-    {#if $createDestination.type === 'firebase' && !firebaseFallback}
-        <FirebaseAuthflow />
-        <div class="flex flex-row justify-center">
-            <button
-                class="tag tooltip"
-                on:click|preventDefault={() => {
-                    firebaseFallback = true;
-                }}>
-                <span class="icon-lock-closed" aria-hidden="true" />
-
-                <span class="text">Manual Authentication</span>
-
-                <span class="tooltip-popup" role="tooltip">
-                    <p class="text u-margin-block-start-8">
-                        Manually enter your account credentials.
-                    </p>
-                </span>
-            </button>
-        </div>
-    {:else}
-        <FormList>
-            {#each Object.keys(credentialSchemas[$createDestination.type]) as key}
+    <FormList>
+        {#each Object.keys(credentialSchemas[$createDestination.type]) as key}
+            {#if credentialSchemas[$createDestination.type][key].type === 'password'}
+                <InputSecret
+                    id={key}
+                    label={credentialSchemas[$createDestination.type][key].label}
+                    placeholder={credentialSchemas[$createDestination.type][key].placeholder}
+                    bind:value={$createDestination.data[key]}
+                    required={credentialSchemas[$createDestination.type][key].required} />
+            {:else}
                 <InputText
                     id={key}
                     label={credentialSchemas[$createDestination.type][key].label}
                     placeholder={credentialSchemas[$createDestination.type][key].placeholder}
                     bind:value={$createDestination.data[key]}
                     required={credentialSchemas[$createDestination.type][key].required} />
-            {/each}
-        </FormList>
-    {/if}
+            {/if}
+        {/each}
+    </FormList>
 </WizardStep>

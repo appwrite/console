@@ -18,11 +18,12 @@
     import Heading from '$lib/components/heading.svelte';
     import Output from '$lib/components/output.svelte';
     import Helper from '$lib/elements/forms/helper.svelte';
+    import Button from '$lib/elements/forms/button.svelte';
 
     const permissions = ['Users', 'Databases', 'Documents', 'Files', 'Functions'];
     let errors = permissions.map((permission) => {
         return {
-            [permission]: false
+            [permission]: []
         };
     });
     let isChecking = false;
@@ -54,24 +55,14 @@
                 customId: !!$createDestination.id
             });
         } catch (error) {
-            if (error.response.errors) {
-                errors = error.response.errors;
-            } else {
-                errors = permissions.map((permission) => {
-                    return {
-                        [permission]: true
-                    };
-                });
-            }
-
             addNotification({
                 message: error.message,
                 type: 'error'
             });
             trackError(error, Submit.DestinationValidate);
+            errors = error.response.errors ?? {};
             errorMessage = error.message;
-            console.error(error);
-            isChecking = false;
+
             canProgress = false;
         }
     }
@@ -104,6 +95,11 @@
                 <div class="u-flex u-gap-16 u-cross-center card">
                     <Output value={errorMessage}>{errorMessage}</Output>
                 </div>
+
+                <Button disabled={isChecking} on:click={validate}>
+                    <span class="icon-check-circle" aria-hidden="true" />
+                    <span class="text">Re-run Checks</span>
+                </Button>
             </Card>
         {/if}
         <TableScroll>
@@ -117,7 +113,7 @@
                         <TableCellText title="Permission">
                             {permission}
 
-                            {#if errors[permission]}
+                            {#if errors[permission] && errors[permission].length > 0}
                                 <Helper type="warning">
                                     {#each errors[permission] as error}
                                         {error} <br />
