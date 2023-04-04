@@ -48,7 +48,9 @@
     <header class="card-header common-section grid-1-2">
         <div class="grid-1-2-col-1">
             <h2 class="heading-level-5">Getting Started Guide</h2>
-            <p class="u-line-height-1-5">Let's get your project up and running</p>
+            <p class="u-line-height-1-5 u-margin-block-start-12">
+                Let's get your project up and running
+            </p>
         </div>
         <div class="grid-1-2-col-2 u-flex u-main-end u-cross-end is-not-mobile">
             <img src={onBoardIntro} alt="" class="card-header-image" />
@@ -58,7 +60,7 @@
     <section class="common-section card-separator grid-1-2">
         <div class="grid-1-2-col-1">
             <h3 class="heading-level-7">Add a Platform</h3>
-            <p class="u-line-height-1-5">
+            <p class="u-line-height-1-5 u-margin-block-start-16">
                 Our SDK's make it possible to easily add any platform that you want to use.
             </p>
         </div>
@@ -96,7 +98,7 @@
     <section class="common-section grid-1-2">
         <div class="grid-1-2-col-1">
             <h3 class="heading-level-7">Integrate With Your Server</h3>
-            <p class="u-line-height-1-5">
+            <p class="u-line-height-1-5  u-margin-block-start-16">
                 Our SDK's make it possible to easily add any platform that you want to use.
             </p>
         </div>
@@ -152,7 +154,7 @@
         <div class="common-section">
             <h7 class="heading-level-7">Add a Platform to View Data About Your Project</h7>
         </div>
-        <div class="common-section">
+        <div class="u-margin-block-start-16 u-text-center" style:max-width="550px">
             Get insights on bandwidth usage, requests, realtime connections and more after making
             your first API call
         </div>
