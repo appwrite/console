@@ -94,13 +94,14 @@
                 );
                 return !symmetricDifference(workIds, relatedIds).length;
             } else {
-                return workAttribute && docAttribute
-                    ? !symmetricDifference(Array.from(workAttribute), Array.from(docAttribute))
-                          .length
-                    : true;
+                const workId =
+                    typeof workAttribute === 'string' ? workAttribute : workAttribute?.$id;
+                const relatedId =
+                    typeof docAttribute === 'string' ? docAttribute : docAttribute?.$id;
+
+                return workId === relatedId;
             }
         }
-
         return workAttribute === docAttribute;
     }
 </script>

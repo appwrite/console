@@ -35,11 +35,15 @@
         await teamPrefs.load($organization.$id);
         documentList = await getDocuments();
 
-        if (editing && $doc?.[attribute.key] && $doc[attribute.key]?.length) {
-            relatedList =
-                $doc[attribute.key]?.map((d: Record<string, unknown>) => {
-                    return d?.$id;
-                }) ?? [];
+        if (editing && $doc?.[attribute.key]) {
+            if ($doc[attribute.key]?.length) {
+                relatedList =
+                    $doc[attribute.key]?.map((d: Record<string, unknown>) => {
+                        return d?.$id;
+                    }) ?? [];
+            } else {
+                singleRel = $doc[attribute.key]?.$id;
+            }
         }
 
         displayNames = $teamPrefs?.displayNames?.[attribute?.relatedCollection] ?? ['$id'];
@@ -253,6 +257,7 @@
         bind:value={singleRel}
         {options}
         let:option={o}
+        on:reset={() => (value = null)}
         on:select={() => (value = singleRel)}>
         <SelectSearchItem data={o.data}>
             {o.label}

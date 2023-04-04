@@ -93,6 +93,7 @@
         value = null;
         !$$slots.output && (element.value = search);
         hasFocus = false;
+        dispatch('reset');
     }
 
     $: showClearBtn = (hasFocus && search) || value;
