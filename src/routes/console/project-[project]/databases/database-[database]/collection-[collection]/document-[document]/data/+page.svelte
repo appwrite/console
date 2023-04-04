@@ -13,7 +13,7 @@
     import { collection, type Attributes } from '../../store';
     import { Container } from '$lib/layout';
     import AttributeItem from '../attributeItem.svelte';
-    import { difference } from '$lib/helpers/array';
+    import { difference, symmetricDifference } from '$lib/helpers/array';
     import { isRelationship, isRelationshipToMany } from '../attributes/store';
 
     const databaseId = $page.params.database;
@@ -85,11 +85,18 @@
             if (
                 isRelationshipToMany(attribute as Models.AttributeRelationship & { side: string })
             ) {
-                const relatedIds = docAttribute.map((doc) => doc.$id);
-                return !difference(workAttribute, relatedIds).length;
+                const workIds = workAttribute.map((doc: string | Record<string, unknown>) =>
+                    typeof doc === 'string' ? doc : doc.$id
+                );
+
+                const relatedIds = docAttribute.map((doc: string | Record<string, unknown>) =>
+                    typeof doc === 'string' ? doc : doc.$id
+                );
+                return !symmetricDifference(workIds, relatedIds).length;
             } else {
                 return workAttribute && docAttribute
-                    ? !difference(Array.from(workAttribute), Array.from(docAttribute)).length
+                    ? !symmetricDifference(Array.from(workAttribute), Array.from(docAttribute))
+                          .length
                     : true;
             }
         }

@@ -138,6 +138,7 @@
                             on:click={() => {
                                 relatedList.splice(i, 1);
                                 relatedList = relatedList;
+                                value = relatedList;
                             }}>
                             <span class="icon-x" aria-hidden="true" />
                         </Button>
@@ -212,6 +213,7 @@
                             on:click={() => {
                                 relatedList.splice(i, 1);
                                 relatedList = relatedList;
+                                value = relatedList;
                             }}>
                             <span class="icon-x" aria-hidden="true" />
                         </Button>
