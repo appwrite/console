@@ -19,7 +19,15 @@
     let error: string;
     let currentAttr: Attributes;
 
-    $: option = options.find((option) => option?.type === selectedAttribute?.type) as Option;
+    $: option = options.find((option) => {
+        if (selectedAttribute) {
+            if ('format' in selectedAttribute) {
+                return option?.format === selectedAttribute?.format;
+            } else {
+                return option?.type === selectedAttribute?.type;
+            }
+        }
+    }) as Option;
 
     async function submit() {
         try {
@@ -57,7 +65,7 @@
         <svelte:fragment slot="header">
             <div class="u-flex u-cross-center u-gap-8">
                 {option?.name}
-                {#if option.type === 'relationship'}
+                {#if option?.type === 'relationship'}
                     <div class="tag eyebrow-heading-3">
                         <span class="text u-x-small">Beta</span>
                     </div>
@@ -74,7 +82,7 @@
                         bind:value={selectedAttribute.key}
                         autofocus
                         required
-                        disabled />
+                        readonly />
 
                     <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
                         <span
@@ -86,11 +94,13 @@
                     </div>
                 </div>
             {/if}
-            <svelte:component
-                this={option.component}
-                bind:data={selectedAttribute}
-                editing
-                on:close={() => (option = null)} />
+            {#if option}
+                <svelte:component
+                    this={option.component}
+                    bind:data={selectedAttribute}
+                    editing
+                    on:close={() => (option = null)} />
+            {/if}
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>

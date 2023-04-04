@@ -95,12 +95,17 @@
                             </div>
                         </TableCell>
                         <TableCellText onlyDesktop title="Type">
-                            <span class="u-capitalize">{attribute.type}</span>
-                            {#if isRelationship(attribute)}
-                                <span>
-                                    with <b>{attribute?.key}</b>
-                                </span>
+                            {#if 'format' in attribute}
+                                <span class="u-capitalize">{attribute.format}</span>
+                            {:else}
+                                <span class="u-capitalize">{attribute.type}</span>
+                                {#if isRelationship(attribute)}
+                                    <span>
+                                        with <b>{attribute?.key}</b>
+                                    </span>
+                                {/if}
                             {/if}
+
                             <span>
                                 {attribute.array ? '[]' : ''}
                             </span>
