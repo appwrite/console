@@ -174,13 +174,17 @@
             <Heading tag="h6" size="7">Services</Heading>
             <p class="text">Choose services you wish to enable or disable.</p>
             <svelte:fragment slot="aside">
-                <FormList>
-                    <div class="u-flex u-main-end u-cross-center">
+                <ul class="buttons-list u-main-end">
+                    <li class="buttons-list-item">
                         <Button text={true} on:click={() => toggleAllServices(true)}
-                            >Enable all</Button> |
+                            >Enable all</Button>
+                    </li>
+                    <li class="buttons-list-item">
                         <Button text={true} on:click={() => toggleAllServices(false)}
                             >Disable all</Button>
-                    </div>
+                    </li>
+                </ul>
+                <FormList>
                     <form class="form card-separator">
                         <ul class="form-list is-multiple">
                             {#each $services.list as service}
