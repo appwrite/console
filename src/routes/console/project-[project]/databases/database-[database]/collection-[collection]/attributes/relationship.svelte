@@ -45,9 +45,10 @@
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
     import { SelectSearchItem } from '$lib/elements';
+    import { isRelationshipToMany } from '../document-[document]/attributes/store';
 
     // Props
-    export let data: Partial<Models.AttributeRelationship>;
+    export let data: Models.AttributeRelationship & { side: string };
     export let editing = false;
 
     // Constants
@@ -225,16 +226,16 @@
         <div class="box">
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
                 <span>{camelize($collection.name)}</span>
-                {#if way === 'one'}
-                    <img src={arrowOne} alt={'One way realationship'} />
-                {:else}
+                {#if data.twoWay}
                     <img src={arrowTwo} alt={'Two way relationship'} />
+                {:else}
+                    <img src={arrowOne} alt={'One way realationship'} />
                 {/if}
                 <span>{data.key}</span>
             </div>
         </div>
         <p class="u-text-center">
-            <b> {camelize($collection.name)}</b> has {way === 'one' ? 'one' : 'many'}
+            <b> {camelize($collection.name)}</b> has {isRelationshipToMany(data) ? 'many' : 'one'}
             <b>{data.key}</b>
         </p>
     </div>

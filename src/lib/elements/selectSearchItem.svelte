@@ -6,7 +6,7 @@
 
 <div class="u-flex u-cross-baseline u-gap-12">
     <span
-        class="u-flex-basis-140 u-flex-shrink-0 u-text-start u-trim-start u-x-small u-color-text-gray">
+        class="u-flex-basis-140 u-flex-shrink-0 u-text-start u-trim-start u-x-small u-color-text-gray u-font-code">
         <slot />
     </span>
     {#if data?.length}
