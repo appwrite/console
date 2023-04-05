@@ -9,7 +9,7 @@
     import type { PageData } from './$types';
     import { page } from '$app/stores';
     import { services } from '$lib/stores/project-services';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let data: PageData;
 
@@ -40,7 +40,7 @@
         return { name, icon };
     };
 
-    function allServiceDisabled(project: Models.Project): boolean {
+    function allServiceDisabled(project: Models.Projectj): boolean {
         let disabled = true;
         services.load(project);
         $services.list.forEach((service) => {
