@@ -4,36 +4,54 @@
     export let value: string;
     export let event: string = null;
 
-    let element: HTMLSpanElement;
+    function truncateText(node: HTMLElement) {
+        const MAX_TRIES = 100;
+        let originalText = node.textContent;
+        function checkOverflow() {
+            node.textContent = originalText;
 
-    const isOverflowing = (elem: HTMLSpanElement, iterator = 1) => {
-        let parent = elem?.parentElement;
-        if (
-            elem &&
-            elem.scrollWidth + 10 >
-                (parent.clientWidth ? parent.clientWidth : parent.parentElement.clientWidth)
-        )
-            trimText(iterator);
-        else return;
-    };
-
-    function trimText(iterator: number) {
-        if (iterator > 3) {
-            element.childNodes[element.childElementCount].textContent = '…';
-        } else {
-            let text = element.childNodes[element.childElementCount].textContent;
-            element.childNodes[element.childElementCount].textContent =
-                '…' + text.slice(-14 + iterator * 2);
-            isOverflowing(element, iterator + 1);
+            if (node.scrollWidth > node.clientWidth) {
+                let truncatedText = originalText;
+                let tries = 0;
+                while (
+                    node.scrollWidth > node.clientWidth &&
+                    truncatedText.length > 0 &&
+                    tries < MAX_TRIES
+                ) {
+                    tries++;
+                    if (truncatedText.includes('…')) {
+                        const [left, right] = truncatedText.split('…');
+                        truncatedText = `${left.slice(0, -1)}…${right.slice(1)}`;
+                    } else {
+                        const left = truncatedText.slice(0, truncatedText.length / 2);
+                        const right = truncatedText.slice(truncatedText.length / 2);
+                        truncatedText = `${left.slice(0, -1)}…${right.slice(1)}`;
+                    }
+                    node.textContent = truncatedText;
+                }
+            }
         }
+        checkOverflow();
+        window.addEventListener('resize', checkOverflow);
+        return {
+            update() {
+                originalText = node.textContent;
+                checkOverflow();
+            },
+            destroy() {
+                window.removeEventListener('resize', checkOverflow);
+            }
+        };
     }
-
-    $: isOverflowing(element);
 </script>
 
 <Copy {value} {event}>
     <div class="interactive-text-output" style:min-inline-size="0" style:display="inline-flex">
-        <span style:white-space="nowrap" class="text u-line-height-1-5" bind:this={element}>
+        <span
+            style:white-space="nowrap"
+            class="text u-line-height-1-5"
+            style:overflow="hidden"
+            use:truncateText>
             <slot />
         </span>
         <div class="u-flex u-cross-child-start u-gap-8">
