@@ -55,9 +55,9 @@
         'restrict' = 'Document can not be deleted'
     }
 
-    $: relAttributes = [
-        $attributes?.find((attribute) => isRelationship(attribute))
-    ] as Models.AttributeRelationship[];
+    $: relAttributes = $attributes?.filter((attribute) =>
+        isRelationship(attribute)
+    ) as Models.AttributeRelationship[];
 </script>
 
 <Modal
@@ -69,7 +69,9 @@
     <svelte:fragment slot="header">Delete Document</svelte:fragment>
 
     <p data-private>
-        Are you sure you want to delete <b>the document from {$collection.name}</b>?
+        Are you sure you want to delete <b
+            >the document from <span data-private>{$collection.name}</span></b
+        >?
     </p>
 
     {#if relAttributes?.length}
@@ -89,7 +91,7 @@
                                 {:else}
                                     <span class="icon-arrow-sm-right" />
                                 {/if}
-                                {attr?.key}
+                                <span data-private>{attr?.key}</span>
                             </span>
                         </TableCell>
                         <TableCellText title="Settings">
@@ -106,7 +108,7 @@
             <Alert>To change the selection edit the relationship settings.</Alert>
 
             <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                Delete document from {$collection.name}
+                Delete document from <span data-private>{$collection.name}</span>
             </InputChoice>
         </div>
     {/if}
