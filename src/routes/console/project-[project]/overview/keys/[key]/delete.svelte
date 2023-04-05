@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import { key } from './store';
 
@@ -14,14 +14,14 @@
 
     async function handleDelete() {
         try {
-            await sdkForConsole.projects.deleteKey($project.$id, $key.$id);
+            await sdk.forConsole.projects.deleteKey($project.$id, $key.$id);
+            await invalidate(Dependencies.KEYS);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$key.name} has been deleted`
             });
             trackEvent(Submit.KeyDelete);
-            await invalidate(Dependencies.KEYS);
             await goto(`${base}/console/project-${$project.$id}/overview/keys`);
         } catch (error) {
             addNotification({
@@ -33,7 +33,7 @@
     }
 </script>
 
-<Modal bind:show={showDelete} on:submit={handleDelete} warning>
+<Modal bind:show={showDelete} onSubmit={handleDelete} warning>
     <svelte:fragment slot="header">Delete API Key</svelte:fragment>
     <p>The API Key will be permanently deleted. This action is irreversible.</p>
 

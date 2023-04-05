@@ -25,7 +25,7 @@
     async function submit() {
         try {
             await $option.func(databaseId, collectionId, key, data);
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             if (!$page.url.pathname.includes('attributes')) {
                 goto(
                     `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
@@ -54,10 +54,15 @@
         key = null;
         selectedOption = null;
         $option = null;
+        data = {
+            required: false,
+            array: false,
+            default: null
+        };
     }
 </script>
 
-<Modal size="big" bind:show={showCreate} on:submit={submit}>
+<Modal size="big" bind:show={showCreate} onSubmit={submit}>
     <svelte:fragment slot="header">Create Attribute</svelte:fragment>
     <FormList>
         <div>

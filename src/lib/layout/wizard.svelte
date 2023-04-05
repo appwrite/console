@@ -123,7 +123,7 @@
         {/if}
     </div>
     <div class="wizard-main">
-        <Form noStyle on:submit={submit}>
+        <Form noStyle onSubmit={submit}>
             {#each sortedSteps as [step, { component }]}
                 {#if currentStep === step}
                     <svelte:component this={component} />

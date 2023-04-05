@@ -5,7 +5,7 @@
     import { Pill } from '$lib/elements';
     import { file } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { onMount } from 'svelte';
@@ -27,10 +27,10 @@
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
+        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
         '&mode=admin';
     const getView = (fileId: string) =>
-        sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
+        sdk.forProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
 
     $: if (filePermissions) {
         if (symmetricDifference(filePermissions, $file.$permissions).length) {
@@ -40,15 +40,15 @@
 
     function downloadFile() {
         return (
-            sdkForProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
+            sdk.forProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
             '&mode=admin'
         );
     }
 
     async function updatePermissions() {
         try {
-            await sdkForProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
-            invalidate(Dependencies.FILE);
+            await sdk.forProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
+            await invalidate(Dependencies.FILE);
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -68,7 +68,7 @@
 <Container>
     {#if $file}
         <CardGrid>
-            <div class="u-flex u-gap-16">
+            <div class="u-flex u-gap-16" data-private>
                 <a
                     href={getView($file.$id)}
                     class="file-preview is-with-image"
@@ -112,7 +112,7 @@
         </CardGrid>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Update Permissions</Heading>
+            <Heading tag="h6" size="7">Permissions</Heading>
             <p>
                 Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
                 permissions are enabled, file permissions will be ignored.
@@ -157,7 +157,7 @@
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold u-trim-1">{$file.name}</h6>
+                        <h6 class="u-bold u-trim-1" data-private>{$file.name}</h6>
                     </svelte:fragment>
                     <p>
                         Last Updated: {toLocaleDateTime($file.$updatedAt)}

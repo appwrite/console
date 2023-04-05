@@ -3,7 +3,7 @@
     import { createFunction } from './store';
     import Create from '../createVariable.svelte';
     import { DropList, DropListItem, Secret, Empty, Output } from '$lib/components';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import {
         Table,
         TableBody,

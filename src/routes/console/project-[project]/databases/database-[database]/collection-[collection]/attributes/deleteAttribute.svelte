@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
     import type { Attributes } from '../store';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
@@ -15,14 +15,14 @@
     export let selectedAttribute: Attributes;
     const databaseId = $page.params.database;
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         try {
-            await sdkForProject.databases.deleteAttribute(
+            await sdk.forProject.databases.deleteAttribute(
                 databaseId,
                 $collection.$id,
                 selectedAttribute.key
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -39,12 +39,12 @@
             });
             trackError(error, Submit.AttributeDelete);
         }
-    };
+    }
 </script>
 
-<Modal warning={true} bind:show={showDelete} on:submit={handleDelete}>
+<Modal warning={true} bind:show={showDelete} onSubmit={handleDelete}>
     <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
-    <p>
+    <p data-private>
         Are you sure you want to delete <b>'{selectedAttribute?.key}' from {$collection?.name}</b>?
     </p>
     <svelte:fragment slot="footer">

@@ -72,7 +72,9 @@
         </DropList>
         <div class="u-margin-inline-start-auto">
             <div class="u-flex u-gap-16">
-                <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
+                <a href={`${path}/members`}>
+                    <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
+                </a>
                 <Button secondary on:click={() => newMemberModal.set(true)}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Invite</span>

@@ -2,7 +2,7 @@
     import { Wizard } from '$lib/layout';
     import { beforeNavigate, invalidate } from '$app/navigation';
     import { attributes } from './store';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { onDestroy, onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -13,7 +13,7 @@
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -33,13 +33,14 @@
 
     async function create() {
         try {
-            await sdkForProject.databases.createDocument(
+            await sdk.forProject.databases.createDocument(
                 databaseId,
                 collectionId,
                 $createDocument.id ?? ID.unique(),
                 $createDocument.document,
                 $createDocument.permissions
             );
+            await invalidate(Dependencies.DOCUMENTS);
 
             addNotification({
                 message: 'Document has been created',
@@ -48,7 +49,6 @@
             trackEvent(Submit.DocumentCreate, {
                 customId: !!$createDocument.id
             });
-            invalidate(Dependencies.DOCUMENTS);
 
             createDocument.reset();
             wizard.hide();

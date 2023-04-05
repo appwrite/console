@@ -1,7 +1,7 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { tick } from 'svelte';
     import { AvatarInitials } from '../';
     import Output from '../output.svelte';
@@ -14,15 +14,17 @@
 
     async function getData(
         permission: string
-    ): Promise<Partial<Models.User<Record<string, unknown>> & Models.Team>> {
+    ): Promise<
+        Partial<Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>>
+    > {
         const role = permission.split(':')[0];
         const id = permission.split(':')[1].split('/')[0];
         if (role === 'user') {
-            const user = await sdkForProject.users.get(id);
+            const user = await sdk.forProject.users.get(id);
             return user;
         }
         if (role === 'team') {
-            const team = await sdkForProject.teams.get(id);
+            const team = await sdk.forProject.teams.get(id);
             return team;
         }
     }

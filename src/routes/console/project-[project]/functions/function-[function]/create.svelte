@@ -1,7 +1,7 @@
 <script lang="ts">
     import { InputChoice, Button, InputText, InputFile, FormList } from '$lib/elements/forms';
     import { Modal, Collapsible, CollapsibleItem, Tabs, Tab, Code } from '$lib/components';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher, onMount } from 'svelte';
     import { page } from '$app/stores';
     import GithubLight from '$lib/images/github-illustration-light.svg';
@@ -91,7 +91,7 @@
 
     async function create() {
         try {
-            await sdkForProject.functions.createDeployment(
+            await sdk.forProject.functions.createDeployment(
                 functionId,
                 entrypoint,
                 files[0],
@@ -133,7 +133,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Create Deployment</svelte:fragment>
     <Tabs>
         <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI} event="deploy_cli">

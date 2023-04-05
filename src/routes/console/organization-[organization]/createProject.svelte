@@ -5,8 +5,8 @@
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -18,12 +18,10 @@
     let name: string;
     let showCustomId = false;
     let error: string;
-    let isCreating = false;
 
     async function create() {
         try {
-            isCreating = true;
-            const project = await sdkForConsole.projects.create(
+            const project = await sdk.forConsole.projects.create(
                 id ?? ID.unique(),
                 name,
                 teamId,
@@ -40,23 +38,16 @@
             });
             await goto(`/console/project-${project.$id}`);
         } catch (e) {
-            isCreating = false;
             error = e.message;
             trackError(e, Submit.ProjectCreate);
         }
     }
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show>
+<Modal {error} onSubmit={create} size="big" bind:show>
     <svelte:fragment slot="header">Create Project</svelte:fragment>
     <FormList>
-        <InputText
-            id="name"
-            label="Name"
-            bind:value={name}
-            required
-            autofocus={true}
-            disabled={isCreating} />
+        <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
@@ -71,6 +62,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={isCreating}>Create</Button>
+        <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>
