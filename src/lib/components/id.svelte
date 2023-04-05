@@ -33,6 +33,7 @@
         }
         checkOverflow();
         window.addEventListener('resize', checkOverflow);
+
         return {
             update() {
                 originalText = node.textContent;
