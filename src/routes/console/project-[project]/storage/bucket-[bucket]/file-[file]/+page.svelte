@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { CardGrid, Box, Copy, Heading, Alert } from '$lib/components';
+    import { CardGrid, Box, Heading, Alert, ID } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { Pill } from '$lib/elements';
     import { file } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
@@ -90,9 +89,7 @@
                 </a>
                 <div class="u-flex u-flex-vertical u-gap-16">
                     <Heading tag="h2" size="7">{$file.name}</Heading>
-                    <Copy value={getView($file.$id)}>
-                        <Pill button><i class="icon-duplicate" />File URL</Pill>
-                    </Copy>
+                    <ID value={getView($file.$id)}>File URL</ID>
                 </div>
             </div>
             <svelte:fragment slot="aside">

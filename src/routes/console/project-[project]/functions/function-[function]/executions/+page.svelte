@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Copy, EmptySearch, Heading, PaginationWithLimit, Status } from '$lib/components';
+    import { EmptySearch, Heading, ID, PaginationWithLimit, Status } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -57,7 +57,7 @@
     {#if data.executions.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={90}>Execution ID</TableCellHead>
+                <TableCellHead width={150}>Execution ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
@@ -67,31 +67,26 @@
             <TableBody>
                 {#each data.executions.executions as execution}
                     <TableRow>
-                        <TableCell title="Execution ID">
-                            <Copy value={execution.$id}>
-                                <Pill button trim>
-                                    <span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text u-trim">{execution.$id}</span>
-                                </Pill>
-                            </Copy>
+                        <TableCell width={150} title="Execution ID">
+                            <ID value={execution.$id}>{execution.$id}</ID>
                         </TableCell>
-                        <TableCellText title="Created">
+                        <TableCellText width={140} title="Created">
                             {toLocaleDateTime(execution.$createdAt)}
                         </TableCellText>
-                        <TableCellText title="Status">
+                        <TableCellText width={110} title="Status">
                             <Status status={execution.status}>
                                 {execution.status}
                             </Status>
                         </TableCellText>
-                        <TableCellText title="Trigger">
+                        <TableCellText width={90} title="Trigger">
                             <Pill>
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
                         </TableCellText>
-                        <TableCellText title="Duration">
+                        <TableCellText width={80} title="Duration">
                             {calculateTime(execution.duration)}
                         </TableCellText>
-                        <TableCell>
+                        <TableCell width={50}>
                             <Button
                                 secondary
                                 event="view_logs"

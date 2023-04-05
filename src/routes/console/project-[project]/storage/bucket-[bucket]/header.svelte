@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Copy, Tab, Tabs } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { ID, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { bucket } from './store';
@@ -35,12 +34,7 @@
         <CoverTitle href={`/console/project-${projectId}/storage`}>
             {$bucket?.name}
         </CoverTitle>
-        <Copy value={$bucket?.$id} event="bucket">
-            <Pill button>
-                <span class="icon-duplicate" aria-hidden="true" />
-                Bucket ID
-            </Pill>
-        </Copy>
+        <ID value={$bucket?.$id} event="bucket">Bucket ID</ID>
     </svelte:fragment>
 
     <Tabs>

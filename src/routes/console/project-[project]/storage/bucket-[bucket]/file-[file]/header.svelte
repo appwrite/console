@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Copy } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { ID } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
     import { file } from './store';
 
@@ -14,11 +13,6 @@
         <CoverTitle href={`/console/project-${projectId}/storage/bucket-${bucketId}`}>
             {$file?.name}
         </CoverTitle>
-        <Copy value={$file?.$id} event="file">
-            <Pill button>
-                <span class="icon-duplicate" aria-hidden="true" />
-                File ID
-            </Pill>
-        </Copy>
+        <ID value={$file?.$id} event="file">{$file?.$id}</ID>
     </svelte:fragment>
 </Cover>
