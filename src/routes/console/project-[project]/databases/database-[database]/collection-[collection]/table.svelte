@@ -114,29 +114,30 @@
                             {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
                                 '$id'
                             ]}
-                            {#if !isRelationshipToMany(attr)}
-                                <TableCell title={column.title}>
-                                    <button
-                                        class="link u-flex u-gap-4 u-padding-block-8"
-                                        type="button"
-                                        on:click|preventDefault|stopPropagation={() =>
-                                            goto(
-                                                `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${
-                                                    attr.relatedCollection
-                                                }/document-${document[column.id].$id}`
-                                            )}>
-                                        {#each args as arg, i}
-                                            {#if arg !== undefined}
-                                                {i ? '|' : ''}
-                                                <span class="text">
-                                                    {document[column.id]?.[arg]}
-                                                </span>
-                                            {/if}
-                                        {/each}
-                                    </button>
-                                </TableCell>
-                            {:else}
-                                <TableCell>
+                            <TableCell title={column.title}>
+                                {#if !isRelationshipToMany(attr)}
+                                    {#if document[column.id]}
+                                        {@const related = document[column.id]}
+                                        <button
+                                            class="link u-flex u-gap-4 u-padding-block-8"
+                                            type="button"
+                                            on:click|preventDefault|stopPropagation={() =>
+                                                goto(
+                                                    `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                                )}>
+                                            {#each args as arg, i}
+                                                {#if arg !== undefined}
+                                                    {i ? '|' : ''}
+                                                    <span class="text">
+                                                        {related?.[arg]}
+                                                    </span>
+                                                {/if}
+                                            {/each}
+                                        </button>
+                                    {:else}
+                                        <span class="text">n/a</span>
+                                    {/if}
+                                {:else}
                                     {@const itemsNum = document[column.id]?.length}
                                     <button
                                         class="button is-text"
@@ -148,8 +149,8 @@
                                         disabled={!itemsNum}>
                                         Items <span class="inline-tag">{itemsNum ?? 0}</span>
                                     </button>
-                                </TableCell>
-                            {/if}
+                                {/if}
+                            </TableCell>
                         {:else}
                             {@const formatted = formatColumn(document[column.id])}
                             <TableCell>
