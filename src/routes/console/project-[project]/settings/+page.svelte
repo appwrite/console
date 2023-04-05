@@ -75,9 +75,9 @@
             addNotification({
                 type: 'success',
                 message:
-                    'All services for' + $project.name + 'has been' + status
+                    'All services for ' + $project.name + ' has been ' + (status
                         ? 'enabled.'
-                        : 'disabled.'
+                        : 'disabled.')
             });
             trackEvent(Submit.ProjectService);
         } catch (error) {
