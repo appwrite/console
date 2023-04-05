@@ -14,14 +14,16 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import PauseProject from './toggleProject.svelte';
+    import EnableAllServices from './enableAllServices.svelte';
+    import DisableAllServices from './disableAllServices.svelte';
 
     let name: string = null;
     let showDelete = false;
     let updating = false;
     const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
-    let showToggle = false;
+    let showDisableAll = false;
+    let showEnableAll = false;
 
     onMount(async () => {
         name ??= $project.name;
@@ -46,14 +48,19 @@
         }
     }
 
-    async function toggleProject() {
-        if (!showToggle) {
-            showToggle = true;
+    async function toggleAllServices(status: boolean) {
+        if (status && !showEnableAll) {
+            showEnableAll = true;
             return;
         }
+        if (!status && !showDisableAll) {
+            showDisableAll = true;
+            return;
+        }
+
         updating = true;
         try {
-            const path = '/projects/' + $project.$id;
+            const path = '/projects/' + $project.$id + '/service/all';
             await sdk.forConsole.client.call(
                 'PATCH',
                 new URL(sdk.forConsole.client.config.endpoint + path),
@@ -61,24 +68,27 @@
                     'content-type': 'application/json'
                 },
                 {
-                    paused: !($project.paused ?? false),
-                    name: $project.name
+                    status: status
                 }
             );
             invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'Project has been ' + ($project.paused ? 'resumed' : 'paused') + '.'
+                message:
+                    'All services for' + $project.name + 'has been' + status
+                        ? 'enabled.'
+                        : 'disabled.'
             });
-            trackEvent(Submit.ProjectUpdateName);
+            trackEvent(Submit.ProjectService);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.ProjectUpdateName);
+            trackError(error, Submit.ProjectService);
         } finally {
-            showToggle = false;
+            showDisableAll = false;
+            showEnableAll = false;
         }
     }
 
@@ -160,12 +170,17 @@
         </Form>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Configurations</Heading>
+            <Heading tag="h6" size="7">Services</Heading>
+            <p class="text">Choose services you wish to enable or disable.</p>
             <svelte:fragment slot="aside">
-                <p class="u-bold">Services</p>
-                <p class="text">Choose services you wish to enable or disable.</p>
                 <FormList>
-                    <form class="form">
+                    <div class="u-flex u-main-end u-cross-center">
+                        <Button text={true} on:click={() => toggleAllServices(true)}
+                            >Enable all</Button> |
+                        <Button text={true} on:click={() => toggleAllServices(false)}
+                            >Disable all</Button>
+                    </div>
+                    <form class="form card-separator">
                         <ul class="form-list is-multiple">
                             {#each $services.list as service}
                                 <InputSwitch
@@ -179,14 +194,6 @@
                         </ul>
                     </form>
                 </FormList>
-                <div class="card-separator u-flex">
-                    <div class="u-margin-inline-end-16	">
-                        <p class="u-bold">Pause Project</p>
-                        <p class="text">While paused, you will not be able to make API requests.</p>
-                    </div>
-                    <Button secondary={true} on:click={toggleProject}
-                        >{$project.paused ? 'Resume Project' : 'Pause Project'}</Button>
-                </div>
             </svelte:fragment>
         </CardGrid>
 
@@ -215,4 +222,5 @@
 </Container>
 
 <Delete bind:showDelete />
-<PauseProject paused={$project.paused} handleToggle={toggleProject} bind:show={showToggle} />
+<DisableAllServices handleDisableAll={() => toggleAllServices(false)} bind:show={showDisableAll} />
+<EnableAllServices handleEnableAll={() => toggleAllServices(true)} bind:show={showEnableAll} />
