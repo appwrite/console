@@ -31,7 +31,6 @@
             selected.push(key ?? data?.key);
             preferences.setCustomCollectionColumns(selected);
             await invalidate(Dependencies.COLLECTION);
-            // await Promise.allSettled([invalidate(Dependencies.COLLECTION)]);
             if (!$page.url.pathname.includes('attributes')) {
                 await goto(
                     `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`

@@ -54,8 +54,8 @@
     onSubmit={handleDelete}>
     <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
     <p class="text" data-private>
-        Are you sure you want to delete <b>{selectedAttribute?.key}</b> from
-        <b>{$collection?.name}</b>?
+        Are you sure you want to delete <b data-private>{selectedAttribute?.key}</b> from
+        <b data-private>{$collection?.name}</b>?
     </p>
     {#if isRelationship(selectedAttribute) && selectedAttribute?.twoWay}
         <div class="u-flex u-flex-vertical u-gap-24">
@@ -65,8 +65,8 @@
             </p>
             <p class="text"><b>This action is irreversible.</b></p>
             <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                Delete relationship between <b>{selectedAttribute.key}</b> to
-                <b>{selectedAttribute.twoWayKey}</b>
+                Delete relationship between <b data-private>{selectedAttribute.key}</b> to
+                <b data-private>{selectedAttribute.twoWayKey}</b>
             </InputChoice>
         </div>
     {/if}

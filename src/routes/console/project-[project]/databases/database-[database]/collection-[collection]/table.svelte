@@ -128,7 +128,7 @@
                                             {#each args as arg, i}
                                                 {#if arg !== undefined}
                                                     {i ? '|' : ''}
-                                                    <span class="text">
+                                                    <span class="text" data-private>
                                                         {related?.[arg]}
                                                     </span>
                                                 {/if}
@@ -158,7 +158,8 @@
                                     use:tooltip={{
                                         content: formatted.whole,
                                         disabled: !formatted.truncated
-                                    }}>
+                                    }}
+                                    data-private>
                                     {formatted.value}
                                 </div>
                             </TableCell>

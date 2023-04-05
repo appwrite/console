@@ -22,7 +22,9 @@
 
 <Modal size="big" bind:show icon="relationship" headerDivider={false}>
     <svelte:fragment slot="header">
-        {selectedRelationship.key}
+        <span data-private>
+            {selectedRelationship.key}
+        </span>
     </svelte:fragment>
 
     {#if data?.length}
@@ -37,7 +39,7 @@
                                 {#if i}
                                     <span class="clickable-list-title-sep">|</span>
                                 {/if}
-                                <span>{doc[arg]}</span>
+                                <span data-private>{doc[arg]}</span>
                             {/each}
                         {/if}
                         <svelte:fragment slot="desc">

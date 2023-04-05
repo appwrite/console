@@ -170,7 +170,7 @@
                             selectOption(option);
                         }}>
                         <slot {option}>
-                            <span class="text">{option.label}</span>
+                            <span class="text" data-private>{option.label}</span>
                         </slot>
                     </button>
                 </li>

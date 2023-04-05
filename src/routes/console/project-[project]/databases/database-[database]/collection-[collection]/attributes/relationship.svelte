@@ -225,7 +225,7 @@
     <div class="u-flex u-flex-vertical u-gap-16">
         <div class="box">
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
-                <span>{camelize($collection.name)}</span>
+                <span data-private>{camelize($collection.name)}</span>
                 {#if data.twoWay}
                     <img src={arrowTwo} alt={'Two way relationship'} />
                 {:else}
@@ -235,8 +235,10 @@
             </div>
         </div>
         <p class="u-text-center">
-            <b> {camelize($collection.name)}</b> has {isRelationshipToMany(data) ? 'many' : 'one'}
-            <b>{data.key}</b>
+            <b data-private>{camelize($collection.name)}</b> has {isRelationshipToMany(data)
+                ? 'many'
+                : 'one'}
+            <b data-private>{data.key}</b>
         </p>
     </div>
     <InputSelect

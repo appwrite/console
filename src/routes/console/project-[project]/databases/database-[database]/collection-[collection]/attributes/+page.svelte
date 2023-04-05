@@ -79,7 +79,7 @@
                                                 aria-hidden="true" />
                                         {/if}
                                     </div>
-                                    <span class="text u-trim">{attribute.key}</span>
+                                    <span class="text u-trim" data-private>{attribute.key}</span>
                                 </div>
                                 {#if attribute.status !== 'available'}
                                     <Pill
@@ -101,7 +101,7 @@
                                 <span class="u-capitalize">{attribute.type}</span>
                                 {#if isRelationship(attribute)}
                                     <span>
-                                        with <b>{attribute?.key}</b>
+                                        with <b data-private>{attribute?.key}</b>
                                     </span>
                                 {/if}
                             {/if}
