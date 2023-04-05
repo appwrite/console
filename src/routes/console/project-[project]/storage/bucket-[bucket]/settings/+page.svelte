@@ -28,7 +28,7 @@
                 values.antivirus
             );
 
-            invalidate(Dependencies.BUCKET);
+            await invalidate(Dependencies.BUCKET);
 
             if (misc.arePermsDisabled !== undefined) {
                 arePermsDisabled.set(misc.arePermsDisabled);
@@ -72,7 +72,7 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { get, writable } from 'svelte/store';
     import Delete from '../deleteBucket.svelte';

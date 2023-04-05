@@ -13,7 +13,7 @@
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -40,6 +40,7 @@
                 $createDocument.document,
                 $createDocument.permissions
             );
+            await invalidate(Dependencies.DOCUMENTS);
 
             addNotification({
                 message: 'Document has been created',
@@ -48,7 +49,6 @@
             trackEvent(Submit.DocumentCreate, {
                 customId: !!$createDocument.id
             });
-            invalidate(Dependencies.DOCUMENTS);
 
             createDocument.reset();
             wizard.hide();

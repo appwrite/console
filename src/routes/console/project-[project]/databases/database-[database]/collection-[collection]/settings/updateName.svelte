@@ -28,7 +28,7 @@
                 $collection.documentSecurity,
                 $collection.enabled
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'

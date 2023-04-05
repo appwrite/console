@@ -3,7 +3,7 @@
     import { Modal } from '$lib/components';
     import { InputText, FormList } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let showCreate = false;
     export let selectedVar: Partial<Models.Variable> = null;

@@ -48,13 +48,12 @@
         }
     });
 
-    let name: string, mail: string, pass: string, code: string, disabled: boolean;
+    let name: string, mail: string, pass: string, code: string;
     let title = 'Sign up';
     let terms = false;
 
     async function invite() {
         try {
-            disabled = true;
             const res = await fetch(`${sdk.forConsole.client.config.endpoint}/account/invite`, {
                 method: 'POST',
                 headers: {
@@ -78,7 +77,6 @@
                 trackEvent('submit_account_create', { code: code });
             }
         } catch (error) {
-            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
@@ -136,7 +134,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit {disabled}>Sign up</Button>
+                    <Button fullWidth submit>Sign up</Button>
                 </FormItem>
             </FormList>
         </Form>

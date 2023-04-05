@@ -3,7 +3,7 @@
     import { createEventDispatcher } from 'svelte';
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
     import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@appwrite.io/console';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
 
@@ -31,7 +31,10 @@
 
     async function request() {
         if (!show) return;
-        results = await sdk.forProject.users.list([Query.limit(5), Query.offset(offset)], search);
+        results = await sdk.forProject.users.list(
+            [Query.limit(5), Query.offset(offset)],
+            search || undefined
+        );
     }
 
     function onSelection(event: Event, role: string) {

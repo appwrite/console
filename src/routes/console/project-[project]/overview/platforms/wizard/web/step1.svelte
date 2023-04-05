@@ -22,9 +22,9 @@
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
+                $createPlatform.key || undefined,
+                $createPlatform.store || undefined,
+                $createPlatform.hostname || undefined
             );
 
             return;
@@ -36,7 +36,7 @@
             $createPlatform.name,
             undefined,
             undefined,
-            $createPlatform.hostname
+            $createPlatform.hostname || undefined
         );
 
         trackEvent(Submit.PlatformCreate, {

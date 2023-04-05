@@ -15,31 +15,32 @@
     import { sdk } from '$lib/stores/sdk';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
 
     export let data: PageData;
 
-    const getBrowser = (clientCode: string) => {
+    function getBrowser(clientCode: string) {
         return sdk.forConsole.avatars.getBrowser(clientCode, 40, 40);
-    };
+    }
 
-    const logout = async (session: Models.Session) => {
+    async function logout(session: Models.Session) {
         await sdk.forConsole.account.deleteSession(session.$id);
+        await invalidate(Dependencies.ACCOUNT_SESSIONS);
         trackEvent(Submit.AccountDeleteSession);
         if (session.current) {
             await goto(`${base}/login`);
         }
-        invalidate(Dependencies.ACCOUNT_SESSIONS);
-    };
-    const logoutAll = async () => {
+    }
+
+    async function logoutAll() {
         await sdk.forConsole.account.deleteSessions();
+        await invalidate(Dependencies.ACCOUNT_SESSIONS);
         trackEvent(Submit.AccountDeleteAllSessions);
         await goto(`${base}/login`);
-        invalidate(Dependencies.ACCOUNT_SESSIONS);
-    };
+    }
 </script>
 
 <Container>

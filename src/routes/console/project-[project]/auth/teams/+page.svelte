@@ -23,7 +23,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
 
     export let data: PageData;
@@ -31,7 +31,7 @@
     let showCreate = false;
 
     const project = $page.params.project;
-    const teamCreated = async (event: CustomEvent<Models.Team>) => {
+    const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
         await goto(`${base}/console/project-${project}/auth/teams/team-${event.detail.$id}`);
     };
 </script>

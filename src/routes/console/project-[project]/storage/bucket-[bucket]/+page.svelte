@@ -30,7 +30,7 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
@@ -50,22 +50,22 @@
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
-    function fileCreated() {
+    async function fileCreated() {
         showCreate = false;
-        invalidate(Dependencies.FILES);
+        await invalidate(Dependencies.FILES);
     }
 
-    function fileDeleted(event: CustomEvent<Models.File>) {
+    async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
         uploader.removeFile(event.detail);
-        invalidate(Dependencies.FILES);
+        await invalidate(Dependencies.FILES);
     }
 
     async function deleteFile(file: Models.File) {
         try {
             await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
+            await invalidate(Dependencies.FILES);
             uploader.removeFile(file);
-            invalidate(Dependencies.FILES);
             trackEvent(Submit.FileDelete);
         } catch (error) {
             addNotification({

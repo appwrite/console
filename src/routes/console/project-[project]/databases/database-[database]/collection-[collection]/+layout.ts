@@ -5,7 +5,7 @@ import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import { error } from '@sveltejs/kit';
 import SubNavigation from './subNavigation.svelte';
-import { Query } from '@aw-labs/appwrite-console';
+import { Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.COLLECTION);

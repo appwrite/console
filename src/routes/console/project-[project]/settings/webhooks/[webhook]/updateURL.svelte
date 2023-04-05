@@ -26,10 +26,10 @@
                 $webhook.events,
                 url,
                 $webhook.security,
-                $webhook.httpUser,
-                $webhook.httpPass
+                $webhook.httpUser || undefined,
+                $webhook.httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOK);
+            await invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',
                 message: 'Webhook url has been updated'

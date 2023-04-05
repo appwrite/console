@@ -30,7 +30,7 @@
     import { log } from '$lib/stores/logs';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
     import Create from './create.svelte';
@@ -50,9 +50,9 @@
 
     let selectedDeployment: Models.Deployment = null;
 
-    const handleActivate = () => {
+    function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
-    };
+    }
 
     $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
 
