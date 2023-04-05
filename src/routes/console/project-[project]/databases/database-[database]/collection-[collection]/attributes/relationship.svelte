@@ -86,17 +86,16 @@
     }
 
     function updateKeyName() {
-        const collection = collectionList.collections.find((n) => n.$id === data.relatedCollection);
-        data.key = camelize(collection.name);
+        if (!editing) {
+            const collection = collectionList.collections.find(
+                (n) => n.$id === data.relatedCollection
+            );
+            data.key = camelize(collection.name);
+        }
     }
 
     onMount(async () => {
         collectionList = await getCollections();
-
-        if (editing) {
-            way = data.twoWay ? 'two' : 'one';
-            search = data.relatedCollection;
-        }
     });
 
     // Reactive statements
@@ -104,14 +103,17 @@
     $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
-    $: if (way === 'two' && !data.twoWayKey) {
-        data.twoWayKey = camelize($collection.name);
-    }
-
-    $: if (way === 'two') {
-        data.twoWay = true;
+    $: if (editing) {
+        way = data.twoWay ? 'two' : 'one';
     } else {
-        data.twoWay = false;
+        if (way === 'two') {
+            data.twoWay = true;
+            if (!data.twoWayKey) {
+                data.twoWayKey = camelize($collection.name);
+            }
+        } else {
+            data.twoWay = false;
+        }
     }
 </script>
 
@@ -120,13 +122,23 @@
         class="grid-box"
         style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 0.5rem;">
         <li>
-            <LabelCard name="relationship" bind:group={way} value="one" icon="arrow-sm-right">
+            <LabelCard
+                name="relationship"
+                bind:group={way}
+                value="one"
+                icon="arrow-sm-right"
+                disabled={editing}>
                 <svelte:fragment slot="title">One-way relationship</svelte:fragment>
                 One Relation attribute within this collection
             </LabelCard>
         </li>
         <li>
-            <LabelCard name="relationship" bind:group={way} value="two" icon="switch-horizontal">
+            <LabelCard
+                name="relationship"
+                bind:group={way}
+                value="two"
+                icon="switch-horizontal"
+                disabled={editing}>
                 <svelte:fragment slot="title">Two-way relationship</svelte:fragment>
                 One Relation attribute within this collection and another within the related collection
             </LabelCard>

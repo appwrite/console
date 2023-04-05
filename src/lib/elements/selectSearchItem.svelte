@@ -19,7 +19,7 @@
                 {#if i}
                     <span class="u-text-color-gray">|</span>
                 {/if}
-                <span class="text u-trim-1">{item}</span>
+                <span class="text" style="white-space: nowrap">{item}</span>
             {/each}
         </span>
     {/if}
