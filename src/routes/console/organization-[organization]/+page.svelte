@@ -8,6 +8,8 @@
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
     import { page } from '$app/stores';
+    import { services } from '$lib/stores/project-services';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export let data: PageData;
 
@@ -38,6 +40,17 @@
         return { name, icon };
     };
 
+    function allServiceDisabled(project: Models.Project): boolean {
+        let disabled = true;
+        services.load(project);
+        $services.list.forEach((service) => {
+            if (service.value) {
+                disabled = false;
+            }
+        });
+        return disabled;
+    }
+
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
             (value, index, self) => index === self.findIndex((t) => t.name === value.name)
@@ -66,11 +79,12 @@
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
-                        {#if project.paused}
-                            <span class="tag is-warning">
-                                <span class="icon-pause" aria-hidden="true" /> Paused</span>
-                        {/if}
                     </svelte:fragment>
+                    {#if allServiceDisabled(project)}
+                        <p>
+                            <span class="icon-pause" aria-hidden="true" /> All services are disabled.
+                        </p>
+                    {/if}
                     {@const platforms = filterPlatforms(
                         project.platforms.map((platform) => getPlatformInfo(platform.type))
                     )}
