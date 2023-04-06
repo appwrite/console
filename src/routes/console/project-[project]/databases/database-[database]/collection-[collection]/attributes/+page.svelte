@@ -144,16 +144,17 @@
                                         }}>
                                         Edit
                                     </DropListItem>
-
-                                    <DropListItem
-                                        icon="plus"
-                                        on:click={() => {
-                                            selectedAttribute = attribute;
-                                            showCreateIndex = true;
-                                            showDropdown[index] = false;
-                                        }}>
-                                        Create Index
-                                    </DropListItem>
+                                    {#if !isRelationship(attribute)}
+                                        <DropListItem
+                                            icon="plus"
+                                            on:click={() => {
+                                                selectedAttribute = attribute;
+                                                showCreateIndex = true;
+                                                showDropdown[index] = false;
+                                            }}>
+                                            Create Index
+                                        </DropListItem>
+                                    {/if}
                                     <DropListItem
                                         icon="trash"
                                         on:click={() => {
