@@ -154,7 +154,7 @@
     bind:search
     bind:value={data.relatedCollection}
     required
-    interactiveOutput
+    interactiveOutput={!editing}
     placeholder="Select a collection"
     disabled={editing}
     options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
@@ -164,7 +164,7 @@
         {o.label}
     </SelectSearchItem>
     <svelte:fragment slot="output">
-        <output class="input-text">
+        <output class="input-text" class:is-read-only={editing}>
             <SelectSearchItem data={o.data}>
                 {o.label}
             </SelectSearchItem>
@@ -180,7 +180,7 @@
             placeholder="Enter Key"
             bind:value={data.key}
             autofocus
-            disabled={editing}
+            readonly={editing}
             required />
 
         <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
@@ -200,7 +200,7 @@
                 placeholder="Enter Key"
                 bind:value={data.twoWayKey}
                 required
-                disabled={editing} />
+                readonly={editing} />
 
             <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
                 <span

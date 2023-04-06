@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
     import { DropList, DropListItem, Empty, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -20,6 +22,9 @@
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
     import { options } from './store';
+
+    const projectId = $page.params.project;
+    const databaseId = $page.params.database;
 
     let showCreateDropdown = false;
     let showEmptyCreateDropdown = false;
@@ -101,11 +106,12 @@
                                 <span class="u-capitalize">{attribute.type}</span>
                                 {#if isRelationship(attribute)}
                                     <span>
-                                        with <b data-private>{attribute?.key}</b>
+                                        with <a
+                                            href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
+                                            ><b data-private>{attribute?.key}</b></a>
                                     </span>
                                 {/if}
                             {/if}
-
                             <span>
                                 {attribute.array ? '[]' : ''}
                             </span>
