@@ -22,6 +22,7 @@
     export let isCustomCollection = false;
     export let hideView = false;
     export let hideColumns = false;
+    export let allowNoColumns = false;
 
     let showSelectColumns = false;
 
@@ -92,7 +93,9 @@
                             id={column.id}
                             label={column.title}
                             bind:value={column.show}
-                            disabled={selectedColumnsNumber <= 1 && column.show} />
+                            disabled={allowNoColumns
+                                ? false
+                                : selectedColumnsNumber <= 1 && column.show} />
                     {/each}
                 </svelte:fragment>
             </DropList>

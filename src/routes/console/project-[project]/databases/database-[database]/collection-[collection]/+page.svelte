@@ -38,7 +38,13 @@
 </script>
 
 <Container>
-    <GridHeader title="Documents" {columns} view={data.view} hideView isCustomCollection>
+    <GridHeader
+        title="Documents"
+        {columns}
+        view={data.view}
+        hideView
+        isCustomCollection
+        allowNoColumns>
         <Button
             disabled={!(hasAttributes && hasValidAttributes)}
             on:click={openWizard}
