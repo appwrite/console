@@ -1,8 +1,7 @@
 import '@appwrite.io/pink';
 import '@appwrite.io/pink-icons';
 import 'tippy.js/dist/tippy.css';
-import LogRocket from 'logrocket';
-import { sdk } from '$lib/stores/sdk';
+import { sdkForConsole } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
@@ -12,16 +11,11 @@ export const ssr = false;
 export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
     try {
-        const account = await sdk.forConsole.account.get();
-
-        LogRocket.identify(account.$id, {
-            name: account.name,
-            email: account.email
-        });
+        const account = await sdkForConsole.account.get();
 
         return {
             account,
-            organizations: sdk.forConsole.teams.list()
+            organizations: sdkForConsole.teams.list()
         };
     } catch (error) {
         const acceptedRoutes = [
@@ -34,7 +28,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
             '/auth/oauth2/failure'
         ];
 
-        if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
+        if (!acceptedRoutes.includes(url.pathname)) {
             throw redirect(303, '/login');
         }
     }

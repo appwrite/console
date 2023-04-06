@@ -3,14 +3,14 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
 
     let newPassword: string = null;
 
     async function updatePassword() {
         try {
-            await sdk.forProject.users.updatePassword($user.$id, newPassword);
+            await sdkForProject.users.updatePassword($user.$id, newPassword);
             newPassword = null;
             addNotification({
                 message: 'Password has been updated',
@@ -27,10 +27,10 @@
     }
 </script>
 
-<Form onSubmit={updatePassword}>
+<Form on:submit={updatePassword}>
     <CardGrid>
         <div>
-            <Heading tag="h6" size="7">Password</Heading>
+            <Heading tag="h6" size="7">Update Password</Heading>
         </div>
 
         <p>

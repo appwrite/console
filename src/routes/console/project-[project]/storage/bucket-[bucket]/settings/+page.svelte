@@ -15,7 +15,7 @@
         const values = { ...bucketData, ...updates };
 
         try {
-            await sdk.forProject.storage.updateBucket(
+            await sdkForProject.storage.updateBucket(
                 values.$id,
                 values.name,
                 values.$permissions,
@@ -28,7 +28,7 @@
                 values.antivirus
             );
 
-            await invalidate(Dependencies.BUCKET);
+            invalidate(Dependencies.BUCKET);
 
             if (misc.arePermsDisabled !== undefined) {
                 arePermsDisabled.set(misc.arePermsDisabled);
@@ -71,8 +71,8 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
     import { onMount } from 'svelte';
     import { get, writable } from 'svelte/store';
     import Delete from '../deleteBucket.svelte';
@@ -211,7 +211,7 @@
 
 <Container>
     {#if $bucket}
-        <Form onSubmit={toggleBucket}>
+        <Form on:submit={toggleBucket}>
             <CardGrid>
                 <Heading tag="h2" size="7">{$bucket.name}</Heading>
 
@@ -234,9 +234,9 @@
             </CardGrid>
         </Form>
 
-        <Form onSubmit={updateName}>
+        <Form on:submit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
+                <Heading tag="h6" size="7">Update Name</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputText
@@ -256,9 +256,9 @@
             </CardGrid>
         </Form>
 
-        <Form onSubmit={updatePermissions}>
+        <Form on:submit={updatePermissions}>
             <CardGrid>
-                <Heading tag="h6" size="7">Permissions</Heading>
+                <Heading tag="h6" size="7">Update Permissions</Heading>
                 <p class="text">
                     Choose who can access your buckets and files. For more information, check out
                     the <a
@@ -280,9 +280,9 @@
             </CardGrid>
         </Form>
 
-        <Form onSubmit={updateFileSecurity}>
+        <Form on:submit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7">File Security</Heading>
+                <Heading tag="h6" size="7">Update File Security</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
@@ -308,9 +308,9 @@
             </CardGrid>
         </Form>
 
-        <Form onSubmit={updateSecurity}>
+        <Form on:submit={updateSecurity}>
             <CardGrid>
-                <Heading tag="h2" size="7">Security Settings</Heading>
+                <Heading tag="h2" size="7">Update Security Settings</Heading>
                 <p class="text">
                     Enable or disable security services for the bucket including <b>Ecryption</b>
                     and <b>Antivirus scanning.</b>
@@ -379,9 +379,9 @@
             </CardGrid>
         </Form>
 
-        <Form onSubmit={updateCompression}>
+        <Form on:submit={updateCompression}>
             <CardGrid>
-                <Heading tag="h2" size="6">Compression</Heading>
+                <Heading tag="h2" size="6">Update Compression Algorithm</Heading>
                 <p class="text">
                     Choose an algorithm for compression. For files larger than 20MB, compression
                     will be skipped even if it's enabled.
@@ -390,7 +390,7 @@
                     <FormList>
                         <InputSelect
                             id="compression"
-                            label="Algorithm"
+                            label="Compression algorithm"
                             options={compressionOptions}
                             bind:value={compression} />
                     </FormList>
@@ -404,18 +404,18 @@
 
         <UpdateMaxFileSize />
 
-        <Form onSubmit={updateAllowedExtensions}>
+        <Form on:submit={updateAllowedExtensions}>
             <CardGrid>
-                <Heading tag="h6" size="7">File Extensions</Heading>
+                <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
                 <p class="text">
-                    Allowed file extensions. A maximum of 100 file extensions can be added. Leave
-                    blank to allow all file types.
+                    A maximum of 100 file extensions can be added. Leave blank to allow all file
+                    types.
                 </p>
                 <svelte:fragment slot="aside">
                     <ul class="common-section">
                         <InputTags
                             id="read"
-                            label="Allowed extensions"
+                            label="Allowed file extensions"
                             placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
                             bind:tags={extensions} />
                         <li class="u-flex u-gap-12 u-margin-block-start-8 ">

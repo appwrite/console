@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@appwrite.io/console';
-    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { sdkForProject } from '$lib/stores/sdk';
 
     export async function submitString(
         databaseId: string,
@@ -8,7 +8,7 @@
         key: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdk.forProject.databases.createStringAttribute(
+        await sdkForProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             key,
@@ -22,7 +22,6 @@
 
 <script lang="ts">
     import { InputNumber, InputText, InputChoice } from '$lib/elements/forms';
-    import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
 
     export let selectedAttribute: Models.AttributeString;
     export let data: Partial<Models.AttributeString> = {
@@ -51,23 +50,13 @@
     bind:value={data.size}
     required
     readonly={!!selectedAttribute} />
-{#if data.size > 64}
-    <InputTextarea
-        id="default"
-        label="Default value"
-        bind:value={data.default}
-        maxlength={data.size}
-        disabled={data.required || data.array}
-        readonly={!!selectedAttribute} />
-{:else}
-    <InputText
-        id="default"
-        label="Default value"
-        bind:value={data.default}
-        maxlength={data.size}
-        disabled={data.required || data.array}
-        readonly={!!selectedAttribute} />
-{/if}
+<InputText
+    id="default"
+    label="Default value"
+    bind:value={data.default}
+    maxlength={data.size}
+    disabled={data.required || data.array}
+    readonly={!!selectedAttribute} />
 <InputChoice
     id="required"
     label="Required"

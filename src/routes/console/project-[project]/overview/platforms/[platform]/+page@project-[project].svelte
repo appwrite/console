@@ -15,7 +15,7 @@
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount, SvelteComponent } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
@@ -38,22 +38,24 @@
 
     let showDelete = false;
     let name: string = null;
+    let updating = false;
 
     onMount(() => {
         name ??= $platform.name;
     });
 
     async function updateName() {
+        updating = true;
         try {
-            await sdk.forConsole.projects.updatePlatform(
+            await sdkForConsole.projects.updatePlatform(
                 $project.$id,
                 $platform.$id,
                 name,
-                $platform.key || undefined,
-                $platform.store || undefined,
-                $platform.hostname || undefined
+                $platform.key,
+                $platform.store,
+                $platform.hostname
             );
-            await invalidate(Dependencies.PLATFORM);
+            invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
                 message: 'Platform name has been updated'
@@ -65,12 +67,18 @@
             });
         }
     }
+
+    $: {
+        // When platform name is updated, finalize the updating flow
+        $platform.name;
+        updating = false;
+    }
 </script>
 
 <Container>
-    <Form onSubmit={updateName}>
+    <Form on:submit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
+            <Heading tag="h6" size="7">Update Name</Heading>
             <p class="text">Choose any name that will help you distinguish between platforms.</p>
             <svelte:fragment slot="aside">
                 <FormList>
@@ -84,7 +92,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={name === $platform.name} submit>Update</Button>
+                <Button disabled={name === $platform.name || updating} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>

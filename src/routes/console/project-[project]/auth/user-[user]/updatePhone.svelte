@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputPhone } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
 
@@ -16,8 +16,8 @@
 
     async function updatePhone() {
         try {
-            await sdk.forProject.users.updatePhone($user.$id, userPhone);
-            await invalidate(Dependencies.USER);
+            await sdkForProject.users.updatePhone($user.$id, userPhone);
+            invalidate(Dependencies.USER);
             addNotification({
                 message: 'Phone has been updated',
                 type: 'success'
@@ -33,9 +33,9 @@
     }
 </script>
 
-<Form onSubmit={updatePhone}>
+<Form on:submit={updatePhone}>
     <CardGrid>
-        <Heading tag="h6" size="7">Phone</Heading>
+        <Heading tag="h6" size="7">Update Phone</Heading>
         <svelte:fragment slot="aside">
             <ul>
                 <InputPhone

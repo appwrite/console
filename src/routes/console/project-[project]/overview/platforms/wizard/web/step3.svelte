@@ -1,9 +1,9 @@
 <script lang="ts">
     import { Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
 
-    const { endpoint, project } = sdk.forProject.client.config;
+    const { endpoint, project } = sdkForProject.client.config;
     const code = `const client = new Client();
 
 client

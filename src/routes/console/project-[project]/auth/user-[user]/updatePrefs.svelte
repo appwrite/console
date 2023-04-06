@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
 
@@ -35,8 +35,8 @@
         try {
             let updatedPrefs = Object.fromEntries(prefs);
 
-            await sdk.forProject.users.updatePrefs($user.$id, updatedPrefs);
-            await invalidate(Dependencies.USER);
+            await sdkForProject.users.updatePrefs($user.$id, updatedPrefs);
+            invalidate(Dependencies.USER);
             arePrefsDisabled = true;
 
             addNotification({
@@ -54,7 +54,7 @@
     }
 </script>
 
-<Form onSubmit={updatePrefs}>
+<Form on:submit={updatePrefs}>
     <CardGrid>
         <Heading tag="h6" size="7">User Preferences</Heading>
         <p>

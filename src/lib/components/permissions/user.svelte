@@ -2,8 +2,8 @@
     import { Button, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
-    import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@appwrite.io/console';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
 
@@ -31,10 +31,7 @@
 
     async function request() {
         if (!show) return;
-        results = await sdk.forProject.users.list(
-            [Query.limit(5), Query.offset(offset)],
-            search || undefined
-        );
+        results = await sdkForProject.users.list([Query.limit(5), Query.offset(offset)], search);
     }
 
     function onSelection(event: Event, role: string) {
@@ -61,7 +58,7 @@
     }
 </script>
 
-<Modal bind:show onSubmit={create} on:close={reset} size="big">
+<Modal bind:show on:submit={create} on:close={reset} size="big">
     <svelte:fragment slot="header">Select users</svelte:fragment>
     <p class="text">Grant access to any authenticated or anonymous user.</p>
     <InputSearch
@@ -166,6 +163,6 @@
     {/if}
 
     <svelte:fragment slot="footer">
-        <Button submit disabled={!hasSelection}>Add</Button>
+        <Button submit disabled={!hasSelection}>Create</Button>
     </svelte:fragment>
 </Modal>

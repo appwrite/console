@@ -1,7 +1,6 @@
 export { default as Modal } from './modal.svelte';
 export { default as Pagination } from './pagination.svelte';
 export { default as PaginationInline } from './paginationInline.svelte';
-export { default as Paginator } from './paginator.svelte';
 export { default as Card } from './card.svelte';
 export { default as CardGrid } from './cardGrid.svelte';
 export { default as CardContainer } from './cardContainer.svelte';
@@ -47,5 +46,3 @@ export { default as EventModal } from './eventModal.svelte';
 export { default as Status } from './status.svelte';
 export { default as Heading } from './heading.svelte';
 export { default as Output } from './output.svelte';
-export { default as Limit } from './limit.svelte';
-export { default as ViewSelector } from './viewSelector.svelte';

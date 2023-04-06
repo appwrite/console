@@ -1,5 +1,3 @@
-import { getProjectId } from '$lib/helpers/project';
-import { Project } from '$lib/sdk/project';
 import { VARS } from '$lib/system';
 import {
     Account,
@@ -12,11 +10,11 @@ import {
     Projects,
     Storage,
     Teams,
-    Users
-} from '@appwrite.io/console';
+    Users,
+    Transfers
+} from '@aw-labs/appwrite-console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
-
 const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');
 
@@ -24,6 +22,19 @@ const clientProject = new Client();
 clientProject.setEndpoint(endpoint).setMode('admin');
 
 const setProject = (projectId: string): Client => clientProject.setProject(projectId);
+
+const sdkForConsole = {
+    client: clientConsole,
+    account: new Account(clientConsole),
+    avatars: new Avatars(clientConsole),
+    functions: new Functions(clientConsole),
+    health: new Health(clientConsole),
+    locale: new Locale(clientConsole),
+    projects: new Projects(clientConsole),
+    teams: new Teams(clientConsole),
+    users: new Users(clientConsole),
+    transfers: new Transfers(clientConsole)
+};
 
 const sdkForProject = {
     client: clientProject,
@@ -33,32 +44,11 @@ const sdkForProject = {
     functions: new Functions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
-    project: new Project(clientProject),
+    projects: new Projects(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
     transfers: new Transfers(clientProject)
 };
 
-export const sdk = {
-    forConsole: {
-        client: clientConsole,
-        account: new Account(clientConsole),
-        avatars: new Avatars(clientConsole),
-        functions: new Functions(clientConsole),
-        health: new Health(clientConsole),
-        locale: new Locale(clientConsole),
-        projects: new Projects(clientConsole),
-        teams: new Teams(clientConsole),
-        users: new Users(clientConsole),
-        transers: new Transfers(clientConsole)
-    },
-    get forProject() {
-        const projectId = getProjectId();
-        if (projectId && projectId !== clientProject.config.project) {
-            clientProject.setProject(projectId);
-        }
-
-        return sdkForProject;
-    }
-};
+export { sdkForConsole, sdkForProject, setProject };

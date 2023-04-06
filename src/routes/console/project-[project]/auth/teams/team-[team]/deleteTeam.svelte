@@ -6,15 +6,15 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export let showDelete = false;
-    export let team: Models.Team<Record<string, unknown>>;
+    export let team: Models.Team;
 
     const deleteTeam = async () => {
         try {
-            await sdk.forProject.teams.delete(team.$id);
+            await sdkForProject.teams.delete(team.$id);
             showDelete = false;
             trackEvent(Submit.TeamDelete);
             await goto(`${base}/console/project-${$page.params.project}/auth/teams`);
@@ -28,9 +28,10 @@
     };
 </script>
 
-<Modal bind:show={showDelete} onSubmit={deleteTeam} warning>
+<Modal bind:show={showDelete} on:submit={deleteTeam} warning>
     <svelte:fragment slot="header">Delete Team</svelte:fragment>
-    <p data-private>
+
+    <p>
         Are you sure you want to delete <b>{team.name}</b>?
     </p>
     <svelte:fragment slot="footer">

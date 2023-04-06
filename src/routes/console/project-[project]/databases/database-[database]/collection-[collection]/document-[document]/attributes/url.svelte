@@ -1,6 +1,6 @@
 <script lang="ts">
     import InputURL from '$lib/elements/forms/inputURL.svelte';
-    import type { Models } from '@appwrite.io/console';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export let id: string;
     export let label: string;

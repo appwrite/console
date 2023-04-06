@@ -2,17 +2,17 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { FormList, InputDomain } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import { domain } from './store';
 
     const projectId = $project.$id;
     const createDomain = async () => {
         if ($domain.$id) {
-            await sdk.forConsole.projects.deleteDomain(projectId, $domain.$id);
+            await sdkForConsole.projects.deleteDomain(projectId, $domain.$id);
         }
 
-        const { $id } = await sdk.forConsole.projects.createDomain(projectId, $domain.domain);
+        const { $id } = await sdkForConsole.projects.createDomain(projectId, $domain.domain);
         $domain.$id = $id;
         trackEvent(Submit.DomainCreate);
     };

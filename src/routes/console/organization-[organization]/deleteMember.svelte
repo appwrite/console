@@ -4,8 +4,8 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -17,10 +17,10 @@
 
     const deleteMembership = async () => {
         try {
-            await sdk.forConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
+            await sdkForConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
 
             if (isUser) {
-                await sdk.forConsole.account.deleteSession('current');
+                await sdkForConsole.account.deleteSession('current');
                 await goto(`${base}/login`);
             } else {
                 dispatch('deleted');
@@ -43,11 +43,11 @@
     $: isUser = selectedMember?.userId === $user?.$id;
 </script>
 
-<Modal bind:show={showDelete} onSubmit={deleteMembership} warning>
+<Modal bind:show={showDelete} on:submit={deleteMembership} warning>
     <svelte:fragment slot="header">
         {isUser ? 'Leave Organization' : 'Delete Member'}
     </svelte:fragment>
-    <p data-private>
+    <p>
         {isUser
             ? `Are you sure you want to leave '${selectedMember?.teamName}'?`
             : `Are you sure you want to delete ${selectedMember?.userName} from '${selectedMember?.teamName}'?`}

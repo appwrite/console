@@ -6,7 +6,7 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { database } from './store';
     const databaseId = $page.params.database;
 
@@ -14,7 +14,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdk.forProject.databases.delete(databaseId);
+            await sdkForProject.databases.delete(databaseId);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -32,9 +32,9 @@
     };
 </script>
 
-<Modal warning={true} bind:show={showDelete} onSubmit={handleDelete}>
+<Modal warning={true} bind:show={showDelete} on:submit={handleDelete}>
     <svelte:fragment slot="header">Delete Database</svelte:fragment>
-    <p class="text" data-private>
+    <p class="text">
         Are you sure you want to delete <b>{$database.name}</b>?
     </p>
     <svelte:fragment slot="footer">

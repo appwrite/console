@@ -1,13 +1,13 @@
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
 
     let unsubscribe: { (): void };
 
     onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        unsubscribe = sdkForConsole.client.subscribe('console', (response) => {
             if (response.events.includes('functions.*.deployments.*')) {
                 invalidate(Dependencies.DEPLOYMENTS);
             }

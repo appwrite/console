@@ -5,15 +5,15 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
 
     export let showDelete = false;
 
-    async function deleteAccount() {
+    const deleteAccount = async () => {
         try {
-            await sdk.forConsole.account.updateStatus();
-            await invalidate(Dependencies.ACCOUNT);
+            await sdkForConsole.account.updateStatus();
             showDelete = false;
+            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: `Account was deleted `
@@ -26,10 +26,10 @@
             });
             trackError(error, Submit.AccountDelete);
         }
-    }
+    };
 </script>
 
-<Modal bind:show={showDelete} onSubmit={deleteAccount} warning>
+<Modal bind:show={showDelete} on:submit={deleteAccount} warning>
     <svelte:fragment slot="header">Delete Account</svelte:fragment>
     <p>Are you sure you want to delete your account?</p>
     <svelte:fragment slot="footer">

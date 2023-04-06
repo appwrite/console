@@ -6,9 +6,6 @@
     import { base } from '$app/paths';
     import { user } from '$lib/stores/user';
 
-    export let imgLight = LoginLight;
-    export let imgDark = LoginDark;
-
     const technologies = [
         'js',
         'flutter',
@@ -41,9 +38,9 @@
             class="container u-margin-block-start-20 is-not-mobile"
             style="--p-container-max-size: var(--container-size-large);">
             {#if $app.themeInUse === 'dark'}
-                <img src={imgDark} alt="" class="u-only-dark" />
+                <img src={LoginDark} alt="" class="u-only-dark" />
             {:else}
-                <img src={imgLight} alt="" class="u-only-light" />
+                <img src={LoginLight} alt="" class="u-only-light" />
             {/if}
         </div>
 

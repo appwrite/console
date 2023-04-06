@@ -1,5 +1,5 @@
 import { Dependencies } from '$lib/constants';
-import { sdk } from '$lib/stores/sdk';
+import { sdkForConsole } from '$lib/stores/sdk';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import type { LayoutLoad } from './$types';
@@ -12,7 +12,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            webhook: await sdk.forConsole.projects.getWebhook(params.project, params.webhook)
+            webhook: await sdkForConsole.projects.getWebhook(params.project, params.webhook)
         };
     } catch (e) {
         throw error(e.code, e.message);

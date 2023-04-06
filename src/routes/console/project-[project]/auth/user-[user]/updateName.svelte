@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
 
@@ -16,8 +16,8 @@
 
     async function updateName() {
         try {
-            await sdk.forProject.users.updateName($user.$id, userName);
-            await invalidate(Dependencies.USER);
+            await sdkForProject.users.updateName($user.$id, userName);
+            invalidate(Dependencies.USER);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -33,12 +33,12 @@
     }
 </script>
 
-<Form onSubmit={updateName}>
+<Form on:submit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
+        <Heading tag="h6" size="7">Update Name</Heading>
 
         <svelte:fragment slot="aside">
-            <ul data-private>
+            <ul>
                 <InputText
                     id="name"
                     label="Name"

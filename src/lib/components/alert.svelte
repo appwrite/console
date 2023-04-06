@@ -32,7 +32,7 @@
             class:icon-exclamation={type === 'warning'}
             class:icon-exclamation-circle={type === 'error'}
             aria-hidden="true" />
-        <div class="alert-content" data-private>
+        <div class="alert-content">
             {#if $$slots.title}
                 <h6 class="alert-title">
                     <slot name="title" />

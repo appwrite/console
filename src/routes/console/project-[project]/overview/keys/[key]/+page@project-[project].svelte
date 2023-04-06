@@ -8,7 +8,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import Scopes from '../scopes.svelte';
@@ -29,14 +29,14 @@
 
     async function updateName() {
         try {
-            await sdk.forConsole.projects.updateKey(
+            await sdkForConsole.projects.updateKey(
                 $project.$id,
                 $key.$id,
                 name,
                 $key.scopes,
                 $key.expire
             );
-            await invalidate(Dependencies.KEY);
+            invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateName);
             addNotification({
                 type: 'success',
@@ -53,14 +53,14 @@
 
     async function updateScopes() {
         try {
-            await sdk.forConsole.projects.updateKey(
+            await sdkForConsole.projects.updateKey(
                 $project.$id,
                 $key.$id,
                 $key.name,
                 scopes,
                 $key.expire
             );
-            await invalidate(Dependencies.KEY);
+            invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateScopes, {
                 scopes
             });
@@ -103,9 +103,9 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Form onSubmit={updateName}>
+    <Form on:submit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
+            <Heading tag="h6" size="7">Update Name</Heading>
             <p class="text">Choose any name that will help you distinguish between API keys.</p>
             <svelte:fragment slot="aside">
                 <FormList>
@@ -123,9 +123,9 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
-    <Form onSubmit={updateScopes}>
+    <Form on:submit={updateScopes}>
         <CardGrid>
-            <Heading tag="h6" size="7">Scopes</Heading>
+            <Heading tag="h6" size="7">Update Scopes</Heading>
             <p class="text">
                 You can choose which permission scope to grant your application. It is a best
                 practice to allow only the permissions you need to meet your project goals.

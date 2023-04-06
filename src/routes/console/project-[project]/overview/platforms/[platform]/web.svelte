@@ -4,7 +4,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
@@ -15,17 +15,17 @@
         hostname ??= $platform.hostname;
     });
 
-    async function updateHostname() {
+    const updateHostname = async () => {
         try {
-            await sdk.forConsole.projects.updatePlatform(
+            await sdkForConsole.projects.updatePlatform(
                 $project.$id,
                 $platform.$id,
                 $platform.name,
-                $platform.key || undefined,
-                $platform.store || undefined,
+                $platform.key,
+                $platform.store,
                 hostname
             );
-            await invalidate(Dependencies.PLATFORM);
+            invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
                 message: 'Platform Hostname has been updated'
@@ -36,12 +36,12 @@
                 message: error.message
             });
         }
-    }
+    };
 </script>
 
-<Form onSubmit={updateHostname}>
+<Form on:submit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Hostname</Heading>
+        <Heading tag="h6" size="7">Update Hostname</Heading>
         <p class="text">You can use * to allow wildcard hostnames or subdomains.</p>
         <svelte:fragment slot="aside">
             <FormList>

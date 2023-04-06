@@ -6,15 +6,15 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { user } from './store';
 
     export let showDeleteAll = false;
 
-    async function deleteAllSessions() {
+    const deleteAllSessions = async () => {
         try {
-            await sdk.forProject.users.deleteSessions($page.params.user);
-            await invalidate(Dependencies.SESSIONS);
+            await sdkForProject.users.deleteSessions($page.params.user);
+            invalidate(Dependencies.SESSIONS);
             showDeleteAll = false;
             addNotification({
                 type: 'success',
@@ -28,12 +28,12 @@
             });
             trackError(error, Submit.SessionDeleteAll);
         }
-    }
+    };
 </script>
 
-<Modal bind:show={showDeleteAll} onSubmit={deleteAllSessions} warning>
+<Modal bind:show={showDeleteAll} on:submit={deleteAllSessions} warning>
     <svelte:fragment slot="header">Delete All Sessions</svelte:fragment>
-    <p data-private>
+    <p>
         Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
     </p>
     <svelte:fragment slot="footer">

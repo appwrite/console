@@ -8,7 +8,7 @@
     import { Button } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
@@ -24,7 +24,7 @@
 
     async function updatePermissions() {
         try {
-            await sdk.forProject.databases.updateCollection(
+            await sdkForProject.databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 $collection.name,
@@ -32,7 +32,8 @@
                 $collection.documentSecurity,
                 $collection.enabled
             );
-            await invalidate(Dependencies.COLLECTION);
+            invalidate(Dependencies.COLLECTION);
+            arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'
@@ -56,7 +57,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Permissions</Heading>
+    <Heading tag="h6" size="7">Update Permissions</Heading>
     <p class="text">
         Choose who can access your collection and documents. For more information, check out the <a
             href="https://appwrite.io/docs/permissions"

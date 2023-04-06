@@ -6,10 +6,10 @@
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import type { Models } from '@appwrite.io/console';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     let selectedTab: string;
     let rawData: string;
@@ -17,7 +17,7 @@
     function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
         if ('buildId' in data) {
             selectedTab = 'logs';
-            rawData = `${sdk.forConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
+            rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
             return true;
         }
     }
@@ -25,7 +25,7 @@
     function isExecution(data: Models.Deployment | Models.Execution): data is Models.Execution {
         if ('trigger' in data) {
             selectedTab = 'response';
-            rawData = `${sdk.forConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
+            rawData = `${sdkForConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
             return true;
         }
     }
@@ -47,7 +47,7 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if $log.data}
-    <section class="cover-frame" data-private>
+    <section class="cover-frame">
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
             <h1 class="body-text-1">Function ID: {$log.func.$id}</h1>
             <button

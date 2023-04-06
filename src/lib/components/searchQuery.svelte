@@ -29,28 +29,23 @@
         }
     });
 
-    $: valueChange(search ?? '');
+    $: valueChange(search);
 
     function valueChange(value: string) {
         clearTimeout(timer);
-        timer = setTimeout(() => {
+        timer = setTimeout(async () => {
             const url = new URL($page.url);
-            const previous = url.searchParams.get('search') ?? '';
-
-            if (previous === value) {
+            if (url.search === value) {
                 return;
             }
-
+            /**
+             * Reset to first page if search changes.
+             */
             if ($page.data.page > 1) {
-                url.searchParams.delete('page');
+                url.pathname = url.pathname.replace(new RegExp(`/${$page.data.page}*$`), '/');
             }
 
-            if (value === '') {
-                url.searchParams.delete('search');
-            } else {
-                url.searchParams.set('search', value);
-            }
-
+            url.search = value;
             trackEvent('search');
             goto(url, { keepFocus: true });
         }, debounce);

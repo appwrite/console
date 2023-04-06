@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
@@ -20,7 +20,7 @@
 
     async function updateName() {
         try {
-            await sdk.forProject.databases.updateCollection(
+            await sdkForProject.databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 collectionName,
@@ -28,7 +28,7 @@
                 $collection.documentSecurity,
                 $collection.enabled
             );
-            await invalidate(Dependencies.COLLECTION);
+            invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -44,9 +44,9 @@
     }
 </script>
 
-<Form onSubmit={updateName}>
+<Form on:submit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
+        <Heading tag="h6" size="7">Update Name</Heading>
 
         <svelte:fragment slot="aside">
             <ul>

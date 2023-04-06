@@ -19,8 +19,8 @@
         wizard.hide();
     });
 
-    async function onFinish() {
-        await invalidate(Dependencies.DOMAINS);
+    function onFinish() {
+        invalidate(Dependencies.DOMAINS);
         wizard.hide();
     }
 

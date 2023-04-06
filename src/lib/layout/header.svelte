@@ -20,7 +20,7 @@
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
 
     let showDropdown = false;
@@ -35,7 +35,7 @@
     }
 
     async function logout() {
-        await sdk.forConsole.account.deleteSession('current');
+        await sdkForConsole.account.deleteSession('current');
         trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }

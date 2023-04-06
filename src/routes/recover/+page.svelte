@@ -9,7 +9,7 @@
         InputPassword
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
@@ -30,7 +30,7 @@
 
     async function recover() {
         try {
-            await sdk.forConsole.account.createRecovery(email, window.location.toString());
+            await sdkForConsole.account.createRecovery(email, window.location.toString());
             addNotification({
                 type: 'success',
                 message: 'We have sent you an email with a password reset link'
@@ -47,7 +47,7 @@
 
     async function setPassword() {
         try {
-            await sdk.forConsole.account.updateRecovery(userId, secret, password, confirmPassword);
+            await sdkForConsole.account.updateRecovery(userId, secret, password, confirmPassword);
             await goto(`${base}/login`);
             addNotification({
                 type: 'success',
@@ -70,7 +70,7 @@
     <svelte:fragment slot="title">Password Recovery</svelte:fragment>
     <svelte:fragment>
         {#if userId && secret}
-            <Form onSubmit={setPassword}>
+            <Form on:submit={setPassword}>
                 <FormList>
                     <InputPassword
                         label="New password"
@@ -94,7 +94,7 @@
                 </FormList>
             </Form>
         {:else}
-            <Form onSubmit={recover}>
+            <Form on:submit={recover}>
                 <FormList>
                     <InputEmail
                         id="email"

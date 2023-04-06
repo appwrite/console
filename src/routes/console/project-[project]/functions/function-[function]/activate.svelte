@@ -3,8 +3,8 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
     import { createEventDispatcher } from 'svelte';
 
     export let showActivate = false;
@@ -14,7 +14,7 @@
 
     const handleSubmit = async () => {
         try {
-            await sdk.forProject.functions.updateDeployment(
+            await sdkForProject.functions.updateDeployment(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );
@@ -35,7 +35,7 @@
     };
 </script>
 
-<Modal bind:show={showActivate} onSubmit={handleSubmit}>
+<Modal bind:show={showActivate} on:submit={handleSubmit}>
     <svelte:fragment slot="header">Activate Deployment</svelte:fragment>
     <p>Are you sure you want to activate this deployment?</p>
     <svelte:fragment slot="footer">

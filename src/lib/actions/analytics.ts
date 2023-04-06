@@ -1,16 +1,16 @@
+import Analytics from 'analytics';
+import googleAnalytics from '@analytics/google-analytics';
+import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
+import { AppwriteException } from '@aw-labs/appwrite-console';
 import { ENV, MODE, VARS } from '$lib/system';
-import googleAnalytics from '@analytics/google-analytics';
-import { AppwriteException } from '@appwrite.io/console';
-import Analytics from 'analytics';
-import { get } from 'svelte/store';
 
 const analytics = Analytics({
     app: 'appwrite',
     plugins: [
         googleAnalytics({
-            measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
+            measurementIds: [VARS.GOOGLE_ANALYTICS ?? 'G-R4YJ9JN8L4']
         })
     ]
 });
@@ -88,7 +88,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
     });
 }
 
-export function isTrackingAllowed() {
+function isTrackingAllowed() {
     if (ENV.TEST) {
         return;
     }
@@ -141,8 +141,6 @@ export enum Submit {
     TeamUpdateName = 'submit_team_update_name',
     AuthLimitUpdate = 'submit_auth_limit_update',
     AuthStatusUpdate = 'submit_auth_status_update',
-    AuthPasswordHistoryUpdate = 'submit_auth_password_history_limit_update',
-    AuthPasswordDictionaryUpdate = 'submit_auth_password_dictionary_update',
     SessionsLengthUpdate = 'submit_sessions_length_update',
     SessionsLimitUpdate = 'submit_sessions_limit_update',
     SessionDelete = 'submit_session_delete',

@@ -12,7 +12,7 @@
     import TableList from '$lib/elements/table/tableList.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { writable, type Writable } from 'svelte/store';
     import { func } from '../store';
     import { EventModal } from '$lib/components';
@@ -29,16 +29,16 @@
 
     async function updateEvents() {
         try {
-            await sdk.forProject.functions.update(
+            await sdkForProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute || undefined,
+                $func.execute,
                 Array.from($eventSet),
-                $func.schedule || undefined,
-                $func.timeout || undefined,
+                $func.schedule,
+                $func.timeout,
                 $func.enabled
             );
-            await invalidate(Dependencies.FUNCTION);
+            invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'
@@ -76,9 +76,9 @@
     }
 </script>
 
-<Form onSubmit={updateEvents}>
+<Form on:submit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Events</Heading>
+        <Heading tag="h6" size="7">Update Events</Heading>
         <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
         <svelte:fragment slot="aside">
             {#if $eventSet.size}

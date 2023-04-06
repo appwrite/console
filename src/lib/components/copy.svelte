@@ -33,7 +33,6 @@
 </script>
 
 <span
-    style:cursor="pointer"
     on:click|preventDefault={handleClick}
     on:keyup={clickOnEnter}
     on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}

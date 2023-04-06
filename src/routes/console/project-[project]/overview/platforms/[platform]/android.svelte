@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
@@ -16,17 +16,17 @@
         key ??= $platform.key;
     });
 
-    async function updateHostname() {
+    const updateHostname = async () => {
         try {
-            await sdk.forConsole.projects.updatePlatform(
+            await sdkForConsole.projects.updatePlatform(
                 $project.$id,
                 $platform.$id,
                 $platform.name,
                 key,
-                $platform.store || undefined,
-                $platform.hostname || undefined
+                $platform.store,
+                $platform.hostname
             );
-            await invalidate(Dependencies.PLATFORM);
+            invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
                 type: 'android'
             });
@@ -41,12 +41,12 @@
             });
             trackError(error, Submit.PlatformUpdate);
         }
-    }
+    };
 </script>
 
-<Form onSubmit={updateHostname}>
+<Form on:submit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Package Name</Heading>
+        <Heading tag="h6" size="7">Update Package Name</Heading>
         <p class="text">
             Your package name is generally the applicationId in your app-level build.gradle file.
         </p>

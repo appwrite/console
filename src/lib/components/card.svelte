@@ -1,31 +1,16 @@
 <script lang="ts">
     import { clickOnEnter } from '$lib/helpers/a11y';
 
-    type BaseProps = {
-        isTile?: boolean;
-        isDashed?: boolean;
-        danger?: boolean;
-    };
-
-    type ButtonProps = {
-        isButton: true;
-        href?: never;
-    };
-
-    type AnchorProps = {
-        href: string;
-        isButton?: never;
-    };
-
-    type $$Props = BaseProps & (ButtonProps | AnchorProps | BaseProps);
-
     export let isTile = false;
     export let isDashed = false;
     export let isButton = false;
     export let danger = false;
     export let href: string = null;
 
-    function getElement() {
+    //allows to add the href attribute without throwing an error
+    let attributes = { href } as Record<string, string>;
+
+    function getElement(): string {
         switch (true) {
             case !!href:
                 return 'a';
@@ -45,6 +30,6 @@
     class:is-danger={danger}
     on:click
     on:keyup={clickOnEnter}
-    {href}>
+    {...attributes}>
     <slot />
 </svelte:element>

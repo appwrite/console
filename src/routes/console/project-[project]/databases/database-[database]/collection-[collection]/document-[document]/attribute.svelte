@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Models } from '@appwrite.io/console';
+    import type { Models } from '@aw-labs/appwrite-console';
     import Boolean from './attributes/boolean.svelte';
     import Datetime from './attributes/datetime.svelte';
     import Enum from './attributes/enum.svelte';

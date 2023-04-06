@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
@@ -19,17 +19,17 @@
 
     async function updateName() {
         try {
-            await sdk.forConsole.projects.updateWebhook(
+            await sdkForConsole.projects.updateWebhook(
                 projectId,
                 $webhook.$id,
                 name,
                 $webhook.events,
                 $webhook.url,
                 $webhook.security,
-                $webhook.httpUser || undefined,
-                $webhook.httpPass || undefined
+                $webhook.httpUser,
+                $webhook.httpPass
             );
-            await invalidate(Dependencies.WEBHOOK);
+            invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',
                 message: 'Webhook name has been updated'
@@ -45,9 +45,9 @@
     }
 </script>
 
-<Form onSubmit={updateName}>
+<Form on:submit={updateName}>
     <CardGrid>
-        <Heading tag="h2" size="7">Name</Heading>
+        <Heading tag="h2" size="7">Update Name</Heading>
         <p>Choose any name that will help you distinguish between Webhooks.</p>
         <svelte:fragment slot="aside">
             <FormList>

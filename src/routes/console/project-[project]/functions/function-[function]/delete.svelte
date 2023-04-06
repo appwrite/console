@@ -5,15 +5,15 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export let showDelete = false;
     export let selectedDeployment: Models.Deployment = null;
 
-    async function handleSubmit() {
+    const handleSubmit = async () => {
         try {
-            await sdk.forProject.functions.deleteDeployment(
+            await sdkForProject.functions.deleteDeployment(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );
@@ -31,12 +31,12 @@
             });
             trackError(error, Submit.DeploymentDelete);
         }
-    }
+    };
 </script>
 
-<Modal bind:show={showDelete} onSubmit={handleSubmit} warning>
+<Modal bind:show={showDelete} on:submit={handleSubmit} warning>
     <svelte:fragment slot="header">Delete Deployment</svelte:fragment>
-    <p data-private>Are you sure you want to delete this deployment?</p>
+    <p>Are you sure you want to delete this deployment?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

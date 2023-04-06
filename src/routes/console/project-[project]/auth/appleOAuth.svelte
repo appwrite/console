@@ -1,13 +1,14 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Alert, CopyInput, Modal } from '$lib/components';
-    import { Button, FormList, InputSwitch, InputText, InputTextarea } from '$lib/elements/forms';
+    import { Modal, CopyInput, Alert } from '$lib/components';
+    import { Button, InputText, InputTextarea, InputSwitch, FormList } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import type { Provider } from '$lib/stores/oauth-providers';
-    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { updateOAuth } from './updateOAuth';
-
-    const projectId = $page.params.project;
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let provider: Provider;
 
@@ -16,7 +17,6 @@
     let keyID: string = null;
     let teamID: string = null;
     let p8: string = null;
-    let error: string;
 
     onMount(() => {
         appId ??= provider.appId;
@@ -24,20 +24,40 @@
         if (provider.secret) ({ keyID, teamID, p8 } = JSON.parse(provider.secret));
     });
 
-    const update = async () => {
-        const result = await updateOAuth({ projectId, provider, secret, appId, enabled });
+    let error: string;
 
-        if (result.status === 'error') {
-            error = result.message;
-        } else {
+    const projectId = $page.params.project;
+    const update = async () => {
+        try {
+            await sdkForConsole.projects.updateOAuth2(
+                projectId,
+                provider.name.toLowerCase(),
+                appId,
+                secret,
+                enabled
+            );
+            addNotification({
+                type: 'success',
+                message: `${provider.name} authentication has been ${
+                    provider.enabled ? 'enabled' : 'disabled'
+                }`
+            });
+            trackEvent(Submit.ProviderUpdate, {
+                provider,
+                enabled
+            });
             provider = null;
+            invalidate(Dependencies.PROJECT);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.ProviderUpdate);
         }
     };
 
     $: secret = keyID && teamID && p8 ? JSON.stringify({ keyID, teamID, p8 }) : provider.secret;
 </script>
 
-<Modal {error} onSubmit={update} size="big" show on:close>
+<Modal {error} on:submit={update} size="big" show on:close>
     <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
@@ -64,7 +84,7 @@
             <p>URI</p>
             <CopyInput
                 value={`${
-                    sdk.forConsole.client.config.endpoint
+                    sdkForConsole.client.config.endpoint
                 }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
         </div>
     </FormList>

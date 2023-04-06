@@ -1,3 +1,3 @@
-<ul class="grid-box common-section" style="--grid-item-size:25rem;" data-private>
+<ul class="grid-box common-section" style="--grid-item-size:25rem;">
     <slot />
 </ul>

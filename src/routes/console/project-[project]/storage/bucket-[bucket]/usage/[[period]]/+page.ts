@@ -1,9 +1,10 @@
-import { sdk } from '$lib/stores/sdk';
-import type { Models } from '@appwrite.io/console';
+import { sdkForProject } from '$lib/stores/sdk';
+import type { Models } from '@aw-labs/appwrite-console';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params }) => {
-    const response = await sdk.forProject.storage.getBucketUsage(
+export const load: PageLoad = async ({ params, parent }) => {
+    await parent();
+    const response = await sdkForProject.storage.getBucketUsage(
         params.bucket,
         params.period ?? '30d'
     );

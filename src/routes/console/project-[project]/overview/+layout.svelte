@@ -21,7 +21,7 @@
 </script>
 
 <script lang="ts">
-    import type { Models } from '@appwrite.io/console';
+    import type { Models } from '@aw-labs/appwrite-console';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
     import { onboarding, project } from '../store';
@@ -67,7 +67,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(total($usage.storage) ?? 0)}
+                {@const storage = humanFileSize(last($usage.storage)?.value ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -91,14 +91,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.documents) ?? 0)}
+                                        {format(last($usage.documents)?.value ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(total($usage.databases) ?? 0)}
+                                        Databases: {format(last($usage.databases)?.value ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +126,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(total($usage.buckets) ?? 0)}
+                                        Buckets: {format(last($usage.buckets)?.value ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +146,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.users) ?? 0)}
+                                        {format(last($usage.users)?.value ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -167,7 +167,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.executions) ?? 0)}
+                                        {format(last($usage.executions)?.value ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>

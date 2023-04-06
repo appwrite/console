@@ -25,7 +25,7 @@
     $: disabled = !value || $groups.has(value);
 </script>
 
-<Modal bind:show on:close={reset} onSubmit={create}>
+<Modal bind:show on:close={reset} on:submit={create}>
     <svelte:fragment slot="header">Custom permission</svelte:fragment>
     <p class="text">
         Custom permissions allow you to grant access to specific users or teams using their ID and
@@ -44,6 +44,6 @@
     </FormList>
 
     <svelte:fragment slot="footer">
-        <Button submit {disabled}>Add</Button>
+        <Button submit {disabled}>Create</Button>
     </svelte:fragment>
 </Modal>

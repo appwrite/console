@@ -9,17 +9,19 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { ID } from '@aw-labs/appwrite-console';
 
     let name: string;
     let id: string;
     let showCustomId = false;
+    let loading = false;
 
     async function createProject() {
         try {
+            loading = true;
             const org = await createOrganization();
-            const project = await sdk.forConsole.projects.create(
+            const project = await sdkForConsole.projects.create(
                 id ?? ID.unique(),
                 name,
                 org.$id,
@@ -32,6 +34,7 @@
                 teamId: org.$id
             });
         } catch (error) {
+            loading = false;
             addNotification({
                 message: error.message,
                 type: 'error'
@@ -41,19 +44,20 @@
     }
 
     async function createOrganization() {
-        return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
+        return await sdkForConsole.teams.create(ID.unique(), 'Personal Projects');
     }
 </script>
 
 <Container overlapCover size="large">
     <Card>
-        <Form onSubmit={createProject}>
+        <Form on:submit={createProject}>
             <FormList>
                 <InputText
                     id="name"
                     label="Project name"
                     placeholder="First Appwrite Project"
                     required
+                    disabled={loading}
                     bind:value={name} />
                 {#if !showCustomId}
                     <div>
@@ -66,7 +70,7 @@
                 {:else}
                     <CustomId bind:show={showCustomId} name="Project" bind:id />
                 {/if}
-                <Button fullWidth submit disabled={name === ''} event="create_project">
+                <Button fullWidth submit disabled={loading || name === ''} event="create_project">
                     Create project
                 </Button>
             </FormList>

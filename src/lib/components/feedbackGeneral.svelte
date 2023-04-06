@@ -51,7 +51,7 @@
         Your feedback is important to us. Please be honest and tell us what you think.
     </div>
 
-    <Form onSubmit={handleSubmit}>
+    <Form on:submit={handleSubmit}>
         <FormList>
             <InputText
                 label="name"

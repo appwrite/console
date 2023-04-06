@@ -74,7 +74,7 @@ function createFeedbackStore() {
                     customFields: value ? [{ id: '40655', value }] : undefined
                 })
             });
-            if (response.status >= 400) {
+            if (response.status !== 200) {
                 throw new Error('Failed to submit feedback');
             }
         }

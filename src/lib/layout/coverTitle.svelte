@@ -5,14 +5,12 @@
 </script>
 
 <Heading size="4" tag="h1" trimmed={false}>
-    <div class="u-flex u-cross-center">
-        {#if href}
-            <a class="button is-text is-only-icon" {href} aria-label="page back">
-                <span class="icon-cheveron-left" aria-hidden="true" />
-            </a>
-        {/if}
-        <span class="text u-trim-1" data-private>
-            <slot />
-        </span>
-    </div>
+    {#if href}
+        <a class="button is-text is-only-icon" {href} aria-label="page back">
+            <span class="icon-cheveron-left" aria-hidden="true" />
+        </a>
+    {/if}
+    <span class="text u-trim-1">
+        <slot />
+    </span>
 </Heading>

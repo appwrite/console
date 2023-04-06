@@ -1,6 +1,6 @@
-import type { Models } from '@appwrite.io/console';
+import type { Models } from '@aw-labs/appwrite-console';
 import { writable } from 'svelte/store';
-import { sdk } from './sdk';
+import { sdkForProject } from './sdk';
 
 type UploaderFile = {
     $id: string;
@@ -71,7 +71,7 @@ const createUploader = () => {
                 n.files.unshift(newFile);
                 return n;
             });
-            const uploadedFile = await sdk.forProject.storage.createFile(
+            const uploadedFile = await sdkForProject.storage.createFile(
                 bucketId,
                 id ?? 'unique()',
                 file,

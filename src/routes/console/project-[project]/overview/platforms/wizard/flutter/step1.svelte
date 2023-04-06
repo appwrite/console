@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import { app } from '$lib/stores/app';
@@ -87,10 +87,10 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdk.forConsole.projects.deletePlatform(projectId, $createPlatform.$id);
+            await sdkForConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
 
-        const response = await sdk.forConsole.projects.createPlatform(
+        const response = await sdkForConsole.projects.createPlatform(
             projectId,
             platform,
             $createPlatform.name,
@@ -134,7 +134,7 @@
                 button
                 on:click={() => (platform = Platform.Macos)}
                 selected={platform === Platform.Macos}>
-                macOS
+                Mac OS
             </Pill>
             <Pill
                 button

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { fly } from 'svelte/transition';
     import type { Notification } from '../stores/notifications';
 
     export let type: Notification['type'] = 'info';
@@ -10,13 +9,12 @@
     const dispatch = createEventDispatcher();
 </script>
 
-<div
+<li
     class="alert-sticky"
     class:is-success={type === 'success'}
     class:is-warning={type === 'warning'}
     class:is-danger={type === 'error'}
-    class:is-info={type === 'info'}
-    transition:fly={{ x: 50 }}>
+    class:is-info={type === 'info'}>
     <button
         class="button is-text is-only-icon"
         style="--button-size:1.5rem;"
@@ -47,4 +45,4 @@
             {/each}
         </div>
     {/if}
-</div>
+</li>

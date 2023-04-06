@@ -5,75 +5,70 @@
     import { Dependencies } from '$lib/constants';
     import { Button, InputFile } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import { parse } from 'dotenv';
-    import { variables } from './store';
+    import { sdkForProject } from '$lib/stores/sdk';
+    import { createEventDispatcher } from 'svelte';
 
     export let show = false;
 
+    const dispatch = createEventDispatcher();
+
     const functionId = $page.params.function;
-
     let files: FileList;
-    let error: string;
 
-    async function handleSubmit() {
-        try {
-            if (!files?.length) {
-                throw new Error('No file selected');
-            }
-
-            const uploaded = parse(await files[0].text());
-
-            if (!Object.keys(uploaded).length) {
-                throw new Error('No variables found');
-            }
-
-            const entries = Object.entries(uploaded);
-
-            for (const [key, value] of entries) {
-                if (value.length > 8192) {
-                    throw new Error(`Variable ${key} is longer than 8192 allowed characters`);
+    const handleSubmit = async () => {
+        if (files?.length) {
+            const variables = await parseFile(files[0]);
+            for (const variable of variables) {
+                try {
+                    await sdkForProject.functions.createVariable(
+                        functionId,
+                        variable.key,
+                        variable.value
+                    );
+                    invalidate(Dependencies.VARIABLES);
+                    addNotification({
+                        type: 'success',
+                        message: 'Variable uploaded'
+                    });
+                } catch (error) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
                 }
             }
-
-            await Promise.all(
-                entries
-                    .filter(([, value]) => !!value)
-                    .map(([key, value]) => {
-                        const found = $variables.find((variable) => variable.key === key);
-                        return found
-                            ? sdk.forProject.functions.updateVariable(
-                                  functionId,
-                                  found.$id,
-                                  key,
-                                  value
-                              )
-                            : sdk.forProject.functions.createVariable(functionId, key, value);
-                    })
-            );
-
-            await invalidate(Dependencies.VARIABLES);
+            dispatch('uploaded', variables);
+        } else {
             addNotification({
-                type: 'success',
-                message: 'Variables uploaded'
+                type: 'error',
+                message: 'No file uploaded'
             });
-            show = false;
-        } catch (e) {
-            error = e.message;
+        }
+    };
+
+    async function parseFile(file: File) {
+        if (file) {
+            let variables = [];
+            let text = await file.text();
+            text.split('\n').forEach((line) => {
+                const [key, value] = line.split('=');
+                variables.push({ key, value });
+            });
+            return variables;
         }
     }
 </script>
 
-<Modal bind:show onSubmit={handleSubmit} bind:error>
+<Modal bind:show on:submit={handleSubmit}>
     <svelte:fragment slot="header">Upload Variables</svelte:fragment>
     <p>
         Upload multiple variables via a .env file that will be passed to your function at runtime.
     </p>
 
-    <InputFile bind:files />
+    <InputFile bind:files label="Attach a file" />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Upload</Button>
+        <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>

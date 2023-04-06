@@ -97,8 +97,7 @@
 {#if data.platforms.platforms.length}
     <div
         class="grid-box u-margin-block-start-32"
-        style="--grid-gap:1.5rem; --grid-item-size:20rem;"
-        data-private>
+        style="--grid-gap:1.5rem; --grid-item-size:20rem;">
         {#each data.platforms.platforms as platform}
             <a class="card" href={`${path}/${platform.$id}`}>
                 <div class="grid-item-1" style="min-block-size: calc(182 / 16 * 1rem)">

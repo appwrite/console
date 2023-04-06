@@ -6,22 +6,22 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { project } from '../../../store';
     import { platform } from './store';
 
     export let showDelete = false;
 
-    async function handleDelete() {
+    const handleDelete = async () => {
         try {
-            await sdk.forConsole.projects.deletePlatform($project.$id, $platform.$id);
-            await invalidate(Dependencies.PLATFORMS);
+            await sdkForConsole.projects.deletePlatform($project.$id, $platform.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$platform.name} has been deleted`
             });
             trackEvent(Submit.PlatformDelete);
+            await invalidate(Dependencies.PLATFORMS);
             await goto(`${base}/console/project-${$project.$id}/overview/platforms`);
         } catch (error) {
             addNotification({
@@ -30,10 +30,10 @@
             });
             trackError(error, Submit.PlatformDelete);
         }
-    }
+    };
 </script>
 
-<Modal bind:show={showDelete} onSubmit={handleDelete} warning>
+<Modal bind:show={showDelete} on:submit={handleDelete} warning>
     <svelte:fragment slot="header">Delete Platform</svelte:fragment>
     <p>The Platform will be permanently deleted. This action is irreversible.</p>
 

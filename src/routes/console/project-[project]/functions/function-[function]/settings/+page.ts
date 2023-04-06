@@ -1,11 +1,12 @@
-import { sdk } from '$lib/stores/sdk';
+import { sdkForProject } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, depends }) => {
+export const load: PageLoad = async ({ params, parent, depends }) => {
+    await parent();
     depends(Dependencies.VARIABLES);
 
     return {
-        variables: await sdk.forProject.functions.listVariables(params.function)
+        variables: await sdkForProject.functions.listVariables(params.function)
     };
 };

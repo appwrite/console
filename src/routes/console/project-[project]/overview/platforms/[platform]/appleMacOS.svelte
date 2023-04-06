@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
@@ -16,17 +16,17 @@
         key ??= $platform.key;
     });
 
-    async function updateHostname() {
+    const updateHostname = async () => {
         try {
-            await sdk.forConsole.projects.updatePlatform(
+            await sdkForConsole.projects.updatePlatform(
                 $project.$id,
                 $platform.$id,
                 $platform.name,
                 key,
-                $platform.store || undefined,
-                $platform.hostname || undefined
+                $platform.store,
+                $platform.hostname
             );
-            await invalidate(Dependencies.PLATFORM);
+            invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
                 type: 'apple-macos'
             });
@@ -41,12 +41,12 @@
             });
             trackError(error, Submit.PlatformUpdate);
         }
-    }
+    };
 </script>
 
-<Form onSubmit={updateHostname}>
+<Form on:submit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Bundle ID</Heading>
+        <Heading tag="h6" size="7">Update Bundle ID</Heading>
         <p class="text">
             You can find your Bundle Identifier in the General tab for your app's primary target in
             Xcode.

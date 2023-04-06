@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AvatarInitials, EmptySearch, Limit, Pagination, Trim } from '$lib/components';
+    import { AvatarInitials, EmptySearch, Pagination, Trim } from '$lib/components';
     import {
         TableBody,
         TableHeader,
@@ -11,11 +11,12 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import type { Models } from '@appwrite.io/console';
+    import { PAGE_LIMIT } from '$lib/constants';
+    import type { Models } from '@aw-labs/appwrite-console';
 
     export let logs: Models.LogList;
+    export let path: string;
     export let offset = 0;
-    export let limit = 0;
 </script>
 
 <Container>
@@ -65,8 +66,8 @@
             </TableBody>
         </TableScroll>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit {limit} sum={logs.total} name="Logs" />
-            <Pagination {limit} {offset} sum={logs.total} />
+            <p class="text">Total results: {logs.total}</p>
+            <Pagination limit={PAGE_LIMIT} {path} {offset} sum={logs.total} />
         </div>
     {:else}
         <EmptySearch>

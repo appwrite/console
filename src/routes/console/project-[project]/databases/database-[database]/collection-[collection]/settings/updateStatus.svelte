@@ -7,7 +7,7 @@
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
@@ -21,7 +21,7 @@
 
     async function toggleCollection() {
         try {
-            await sdk.forProject.databases.updateCollection(
+            await sdkForProject.databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 $collection.name,
@@ -29,7 +29,7 @@
                 $collection.documentSecurity,
                 enabled
             );
-            await invalidate(Dependencies.COLLECTION);
+            invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: `${$collection.name} has been updated`,
                 type: 'success'

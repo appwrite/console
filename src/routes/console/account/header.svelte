@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
 
     const path = `/console/account`;
@@ -38,7 +38,7 @@
     ];
 
     async function logout() {
-        await sdk.forConsole.account.deleteSession('current');
+        await sdkForConsole.account.deleteSession('current');
         trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }

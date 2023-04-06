@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/svelte';
-import { sleep } from '$lib/helpers/promises';
 import { wizard } from '../../../src/lib/stores/wizard';
 import { tick } from 'svelte';
 import userEvent from '@testing-library/user-event';
@@ -46,12 +45,12 @@ test('shows wizard and hides it', async () => {
 });
 
 test('shows next step with submit', async () => {
-    const { container, queryByText } = render(WizardContainer);
+    const { container, getByRole, queryByText } = render(WizardContainer);
 
     wizard.start(WizardComponent);
     await tick();
 
-    const form = container.querySelector('form') as HTMLFormElement;
+    const form = getByRole('form') as HTMLFormElement;
     const step1 = queryByText('step-1');
     const step1Required = container.querySelector('#step-1-required');
     const step1Optional = container.querySelector('#step-1-optional');
@@ -61,7 +60,7 @@ test('shows next step with submit', async () => {
     expect(step1Optional).toBeInTheDocument();
 
     form.dispatchEvent(new Event('submit'));
-    await sleep(100);
+    await tick();
 
     expect(step1).not.toBeInTheDocument();
 
@@ -82,12 +81,12 @@ test('shows next step with submit', async () => {
 });
 
 test('intercepts submit', async () => {
-    const { container, queryByText } = render(WizardContainer);
+    const { container, getByRole, queryByText } = render(WizardContainer);
 
     wizard.start(WizardComponent);
     await tick();
 
-    const form = container.querySelector('form') as HTMLFormElement;
+    const form = getByRole('form') as HTMLFormElement;
     const step1 = queryByText('step-1');
     const step1Required = container.querySelector('#step-1-required');
     const step1Optional = container.querySelector('#step-1-optional');
@@ -99,7 +98,7 @@ test('intercepts submit', async () => {
     await userEvent.type(step1Required, 'fail');
 
     form.dispatchEvent(new Event('submit'));
-    await sleep(100);
+    await tick();
 
     expect(step1).toBeInTheDocument();
     expect(step1Required).toBeInTheDocument();
@@ -107,7 +106,7 @@ test('intercepts submit', async () => {
 
     await userEvent.type(step1Required, 'works');
     form.dispatchEvent(new Event('submit'));
-    await sleep(100);
+    await tick();
 
     expect(step1).not.toBeInTheDocument();
 

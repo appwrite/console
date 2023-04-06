@@ -8,7 +8,7 @@
     import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForProject } from '$lib/stores/sdk';
     import { indexes, type Attributes } from '../store';
     import { collection } from '../store';
     import Select from './select.svelte';
@@ -31,8 +31,8 @@
         value: attribute.key,
         label: attribute.key
     }));
-
     let attributeList = [{ value: '', order: '' }];
+    let creating = false;
 
     function initialize() {
         attributeList = externalAttribute
@@ -47,7 +47,8 @@
         initialize();
     }
 
-    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
+    $: addAttributeDisabled =
+        !attributeList.at(-1)?.value || !attributeList.at(-1)?.order || creating;
 
     async function create() {
         if (!(key && selectedType && !addAttributeDisabled)) {
@@ -55,8 +56,10 @@
             return;
         }
 
+        creating = true;
+
         try {
-            await sdk.forProject.databases.createIndex(
+            await sdkForProject.databases.createIndex(
                 databaseId,
                 $collection.$id,
                 key,
@@ -78,13 +81,15 @@
                 type: 'success'
             });
             trackEvent(Submit.IndexCreate);
-            showCreateIndex = false;
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
             trackError(error, Submit.IndexCreate);
+        } finally {
+            showCreateIndex = false;
+            creating = false;
         }
     }
 
@@ -96,7 +101,7 @@
     }
 </script>
 
-<Modal bind:error size="big" onSubmit={create} bind:show={showCreateIndex}>
+<Modal bind:error size="big" on:submit={create} bind:show={showCreateIndex}>
     <svelte:fragment slot="header">Create Index</svelte:fragment>
     <FormList>
         <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
@@ -133,7 +138,6 @@
 
                 <div class="form-item-part u-cross-child-end">
                     <Button
-                        noMargin
                         text
                         disabled={attributeList.length <= 1}
                         on:click={() => {
@@ -152,6 +156,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreateIndex = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button submit disabled={creating}>Create</Button>
     </svelte:fragment>
 </Modal>

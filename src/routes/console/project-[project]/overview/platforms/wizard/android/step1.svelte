@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdkForConsole } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import { app } from '$lib/stores/app';
@@ -16,23 +16,23 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdk.forConsole.projects.updatePlatform(
+            await sdkForConsole.projects.updatePlatform(
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
-                $createPlatform.key || undefined,
-                $createPlatform.store || undefined,
-                $createPlatform.hostname || undefined
+                $createPlatform.key,
+                $createPlatform.store,
+                $createPlatform.hostname
             );
 
             return;
         }
 
-        const platform = await sdk.forConsole.projects.createPlatform(
+        const platform = await sdkForConsole.projects.createPlatform(
             projectId,
             'android',
             $createPlatform.name,
-            $createPlatform.key || undefined,
+            $createPlatform.key,
             undefined,
             undefined
         );
