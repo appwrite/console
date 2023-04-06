@@ -31,7 +31,12 @@
     };
 </script>
 
-<Modal bind:show={showDelete} onSubmit={handleSubmit} icon="exclamation" state="warning">
+<Modal
+    bind:show={showDelete}
+    onSubmit={handleSubmit}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete Function</svelte:fragment>
     <p data-private>
         Are you sure you want to delete this function and all associated deployments from your

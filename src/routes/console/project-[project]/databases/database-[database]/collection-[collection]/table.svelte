@@ -5,7 +5,6 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { Copy } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
@@ -15,9 +14,12 @@
         TableScroll
     } from '$lib/elements/table';
     import { organization } from '$lib/stores/organization';
+    import { preferences } from '$lib/stores/preferences';
     import { teamPrefs } from '$lib/stores/team';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
+    import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
 
@@ -25,20 +27,12 @@
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
     let showRelationships = false;
-    let selectedRelationship: string = null;
+    let selectedRelationship: Models.AttributeRelationship = null;
+    let relationshipData: [];
 
     onMount(() => {
         teamPrefs.load($organization.$id);
-        columns.set([
-            ...$collection.attributes.map((attribute) => ({
-                id: attribute.key,
-                title: attribute.key,
-                type: attribute.type,
-                show: true
-            }))
-        ]);
     });
 
     function formatArray(array: unknown[]) {
@@ -78,6 +72,17 @@
             whole: formattedColumn
         };
     }
+
+    $: selected = preferences.getCustomCollectionColumns($page.params.collection);
+
+    $: columns.set(
+        $collection.attributes.map((attribute) => ({
+            id: attribute.key,
+            title: attribute.key,
+            type: attribute.type,
+            show: selected?.includes(attribute.key) ?? true
+        }))
+    );
 </script>
 
 <TableScroll isSticky>
@@ -104,41 +109,48 @@
 
                 {#each $columns as column}
                     {#if column.show}
-                        {#if column.type === 'relationship'}
-                            <!-- {JSON.stringify(document[column.id])} -->
-                            {@const attr = $attributes.find((n) => n.key === column.id)}
+                        {@const attr = $attributes.find((n) => n.key === column.id)}
+                        {#if isRelationship(attr)}
                             {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
                                 '$id'
                             ]}
-
-                            {#if !column.twoWay}
-                                <TableCell title={column.title}>
+                            <TableCell title={column.title}>
+                                {#if !isRelationshipToMany(attr)}
+                                    {#if document[column.id]}
+                                        {@const related = document[column.id]}
+                                        <button
+                                            class="link u-flex u-gap-4 u-padding-block-8"
+                                            type="button"
+                                            on:click|preventDefault|stopPropagation={() =>
+                                                goto(
+                                                    `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                                )}>
+                                            {#each args as arg, i}
+                                                {#if arg !== undefined}
+                                                    {i ? '|' : ''}
+                                                    <span class="text" data-private>
+                                                        {related?.[arg]}
+                                                    </span>
+                                                {/if}
+                                            {/each}
+                                        </button>
+                                    {:else}
+                                        <span class="text">n/a</span>
+                                    {/if}
+                                {:else}
+                                    {@const itemsNum = document[column.id]?.length}
                                     <button
-                                        class="button is-text link"
-                                        type="button"
-                                        on:click|preventDefault|stopPropagation={() =>
-                                            goto(
-                                                `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}`
-                                            )}>
-                                        {#each args as arg, i}
-                                            {i ? '|' : ''}
-                                            <span class="text">{document[column.id]?.[arg]}</span>
-                                        {/each}
-                                    </button>
-                                </TableCell>
-                            {:else}
-                                <TableCell>
-                                    {@const itemsNum = column?.data?.lenght}
-                                    <Button
-                                        on:click={() => {
+                                        class="button is-text"
+                                        on:click|preventDefault|stopPropagation={() => {
+                                            relationshipData = document[column.id];
                                             showRelationships = true;
-                                            selectedRelationship = document;
+                                            selectedRelationship = attr;
                                         }}
                                         disabled={!itemsNum}>
-                                        Items <span class="inline-tag">{itemsNum}</span>
-                                    </Button>
-                                </TableCell>
-                            {/if}
+                                        Items <span class="inline-tag">{itemsNum ?? 0}</span>
+                                    </button>
+                                {/if}
+                            </TableCell>
                         {:else}
                             {@const formatted = formatColumn(document[column.id])}
                             <TableCell>
@@ -146,7 +158,8 @@
                                     use:tooltip={{
                                         content: formatted.whole,
                                         disabled: !formatted.truncated
-                                    }}>
+                                    }}
+                                    data-private>
                                     {formatted.value}
                                 </div>
                             </TableCell>
@@ -158,4 +171,4 @@
     </TableBody>
 </TableScroll>
 
-<RelationshipsModal bind:show={showRelationships} {selectedRelationship} />
+<RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />

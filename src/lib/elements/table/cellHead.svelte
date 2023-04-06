@@ -9,7 +9,7 @@
     class:is-only-desktop={onlyDesktop}
     class="table-thead-col"
     role="columnheader">
-    <span class={eyebrow ? 'eyebrow-heading-3' : 'body-text-2'}>
+    <span class={eyebrow ? 'eyebrow-heading-3' : 'body-text-2 u-bold'}>
         <slot />
     </span>
 </div>

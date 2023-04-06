@@ -23,7 +23,7 @@ export type Option = {
         data: Partial<Attributes>
     ) => Promise<void>;
     update: (databaseId: string, collectionId: string, data: Partial<Attributes>) => Promise<void>;
-    format?: 'email' | 'ip' | 'url' | 'enum' | 'relationship';
+    format?: 'email' | 'ip' | 'url' | 'enum';
     icon: string;
 };
 
@@ -108,7 +108,6 @@ export const options: Option[] = [
         name: 'Relationship',
         component: Relationship,
         type: 'relationship',
-        format: 'relationship',
         create: submitRelationship,
         update: updateRelationship,
         icon: 'relationship'

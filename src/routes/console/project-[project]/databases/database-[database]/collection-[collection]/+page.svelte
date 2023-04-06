@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Empty, Heading, ViewSelector, PaginationWithLimit } from '$lib/components';
-    import { Container } from '$lib/layout';
+    import { Empty, Heading, PaginationWithLimit } from '$lib/components';
+    import { Container, GridHeader } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import Create from './createDocument.svelte';
@@ -38,19 +38,21 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Documents</Heading>
-        <div class="u-flex u-gap-16">
-            <ViewSelector view={data.view} {columns} hideView isCustomCollection />
-            <Button
-                disabled={!(hasAttributes && hasValidAttributes)}
-                on:click={openWizard}
-                event="create_document">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text is-only-desktop">Create document</span>
-            </Button>
-        </div>
-    </div>
+    <GridHeader
+        title="Documents"
+        {columns}
+        view={data.view}
+        hideView
+        isCustomCollection
+        allowNoColumns>
+        <Button
+            disabled={!(hasAttributes && hasValidAttributes)}
+            on:click={openWizard}
+            event="create_document">
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create document</span>
+        </Button>
+    </GridHeader>
 
     {#if hasAttributes && hasValidAttributes}
         {#if data.documents.total}
@@ -72,7 +74,7 @@
         <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
-                <p class="body-text-2 u-margin-block-start-4">
+                <p class="body-text-2 u-bold u-margin-block-start-4">
                     Need a hand? Check out our documentation.
                 </p>
             </div>

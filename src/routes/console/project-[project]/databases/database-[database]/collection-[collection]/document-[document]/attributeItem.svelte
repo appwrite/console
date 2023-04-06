@@ -7,6 +7,7 @@
     export let attribute: Attributes;
     export let formValues: object = {};
     export let label: string;
+    export let editing = false;
 
     function removeArrayItem(key: string, index: number) {
         formValues = {
@@ -26,14 +27,9 @@
         if ('format' in attribute && attribute.format === 'enum') return 'Enum';
         return `${capitalize(attribute.type)}${attribute.array ? '[]' : ''}`;
     }
-
-    $: manyRelation =
-        attribute?.relationType === 'manyToMany' ||
-        attribute?.relationType === 'manyToOne' ||
-        attribute?.relationType === 'oneToMany';
 </script>
 
-{#if attribute.array || manyRelation}
+{#if attribute.array}
     {#if formValues[attribute.key]?.length === 0}
         <div class="u-flex u-cross-center u-main-space-between">
             <span class="label u-margin-0">
@@ -80,6 +76,7 @@
 {:else}
     <FormList>
         <Attribute
+            {editing}
             {attribute}
             {label}
             optionalText={getAttributeType(attribute)}

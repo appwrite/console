@@ -3,11 +3,12 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputSelectSearch, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputSelectSearch, InputText } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { teamPrefs } from '$lib/stores/team';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { attributes, collection } from '../store';
 
@@ -31,10 +32,10 @@
                     [$collection.$id]: displayNames
                 }
             };
-            teamPrefs.updatePrefs($organization.$id, pref);
-            invalidate(Dependencies.TEAM);
+            await teamPrefs.updatePrefs($organization.$id, pref);
+            await invalidate(Dependencies.TEAM);
             addNotification({
-                message: 'Name has been updated',
+                message: 'Display names has been updated',
                 type: 'success'
             });
             trackEvent(Submit.CollectionUpdateName);
@@ -47,7 +48,7 @@
         }
     }
 
-    $: options = $attributes
+    $: options = ($attributes as Models.AttributeString[])
         .filter(
             (attr) =>
                 attr.type === 'string' &&
@@ -70,8 +71,6 @@
         displayNames,
         $teamPrefs?.displayNames?.[$collection.$id] ?? []
     )?.length;
-
-    $: console.log(displayNames, $teamPrefs?.displayNames[$collection.$id]);
 </script>
 
 <Form onSubmit={updateDisplayName}>
@@ -83,8 +82,8 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <div class="u-flex u-flex-vertical u-gap-8">
-                <FormList>
+            <div class="u-flex u-flex-vertical u-gap-4">
+                <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
                     <InputText
                         id="id"
                         label="Document ID"
@@ -99,6 +98,7 @@
                                         id={name}
                                         label={name}
                                         showLabel={false}
+                                        interactiveOutput
                                         placeholder="Select attribute"
                                         bind:value={displayNames[i]}
                                         bind:search={displayNames[i]}
@@ -130,7 +130,7 @@
                             </div>
                         {/each}
                     {/if}
-                </FormList>
+                </ul>
                 <Button
                     noMargin
                     text

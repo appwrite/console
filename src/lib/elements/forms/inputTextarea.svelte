@@ -65,6 +65,8 @@
             {required}
             {maxlength}
             class="input-text"
+            class:u-padding-block-end-32={maxlength}
+            style={maxlength ? '--amount-of-buttons: 0.25' : ''}
             bind:value
             bind:this={element}
             on:invalid={handleInvalid}

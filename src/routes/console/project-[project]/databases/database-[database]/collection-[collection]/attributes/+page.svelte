@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
     import { DropList, DropListItem, Empty, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -13,12 +15,16 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import Create from '../createAttribute.svelte';
+    import { isRelationship } from '../document-[document]/attributes/store';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes } from '../store';
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
     import { options } from './store';
+
+    const projectId = $page.params.project;
+    const databaseId = $page.params.database;
 
     let showCreateDropdown = false;
     let showEmptyCreateDropdown = false;
@@ -29,6 +35,13 @@
     let showDelete = false;
     let showEdit = false;
     let showCreateIndex = false;
+
+    enum attributeStringIcon {
+        ip = 'location-marker',
+        url = 'link',
+        email = 'mail',
+        enum = 'list'
+    }
 </script>
 
 <Container>
@@ -54,7 +67,7 @@
                             <div class="u-flex u-main-space-between u-cross-center">
                                 <div class="u-flex u-cross-center u-gap-16">
                                     <div class="avatar is-size-small u-color-text-gray">
-                                        {#if option.icon === 'relationship'}
+                                        {#if isRelationship(attribute)}
                                             <span
                                                 class={`icon-${
                                                     attribute?.twoWay
@@ -62,13 +75,16 @@
                                                         : 'arrow-sm-right'
                                                 }`}
                                                 aria-hidden="true" />
+                                        {:else if 'format' in attribute}
+                                            {@const icon = attributeStringIcon[attribute?.format]}
+                                            <span class={`icon-${icon}`} aria-hidden="true" />
                                         {:else}
                                             <span
                                                 class={`icon-${option.icon}`}
                                                 aria-hidden="true" />
                                         {/if}
                                     </div>
-                                    <span class="text u-trim">{attribute.key}</span>
+                                    <span class="text u-trim" data-private>{attribute.key}</span>
                                 </div>
                                 {#if attribute.status !== 'available'}
                                     <Pill
@@ -84,7 +100,21 @@
                             </div>
                         </TableCell>
                         <TableCellText onlyDesktop title="Type">
-                            {`${attribute.type}${attribute.array ? '[]' : ''}`}
+                            {#if 'format' in attribute}
+                                <span class="u-capitalize">{attribute.format}</span>
+                            {:else}
+                                <span class="u-capitalize">{attribute.type}</span>
+                                {#if isRelationship(attribute)}
+                                    <span>
+                                        with <a
+                                            href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
+                                            ><b data-private>{attribute?.key}</b></a>
+                                    </span>
+                                {/if}
+                            {/if}
+                            <span>
+                                {attribute.array ? '[]' : ''}
+                            </span>
                         </TableCellText>
                         <TableCellText onlyDesktop title="Default Value">
                             {attribute?.default !== null && attribute?.default !== undefined
@@ -114,16 +144,17 @@
                                         }}>
                                         Edit
                                     </DropListItem>
-
-                                    <DropListItem
-                                        icon="plus"
-                                        on:click={() => {
-                                            selectedAttribute = attribute;
-                                            showCreateIndex = true;
-                                            showDropdown[index] = false;
-                                        }}>
-                                        Create Index
-                                    </DropListItem>
+                                    {#if !isRelationship(attribute)}
+                                        <DropListItem
+                                            icon="plus"
+                                            on:click={() => {
+                                                selectedAttribute = attribute;
+                                                showCreateIndex = true;
+                                                showDropdown[index] = false;
+                                            }}>
+                                            Create Index
+                                        </DropListItem>
+                                    {/if}
                                     <DropListItem
                                         icon="trash"
                                         on:click={() => {
@@ -146,7 +177,7 @@
         <Empty single target="attribute" on:click={() => (showEmptyCreateDropdown = true)}>
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
-                <p class="body-text-2 u-margin-block-start-4">
+                <p class="body-text-2 u-bold u-margin-block-start-4">
                     Need a hand? Check out our documentation.
                 </p>
             </div>

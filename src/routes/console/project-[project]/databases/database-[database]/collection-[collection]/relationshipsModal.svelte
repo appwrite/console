@@ -1,32 +1,54 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { ClickableList, ClickableListItem, Modal, Paginator } from '$lib/components';
+    import { teamPrefs } from '$lib/stores/team';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedRelationship: string = null;
+    export let data: [];
+    export let selectedRelationship: Models.AttributeRelationship = null;
+    const projectId = $page.params.project;
+    const databaseId = $page.params.database;
     const limit = 10;
-    let offset = 0;
+
+    $: args = $teamPrefs?.displayNames?.[selectedRelationship?.relatedCollection];
 
     $: if (!show) {
+        data = null;
         selectedRelationship = null;
     }
 </script>
 
-<Modal size="big" bind:show icon="relationship">
+<Modal size="big" bind:show icon="relationship" headerDivider={false}>
     <svelte:fragment slot="header">
-        {selectedRelationship}
+        <span data-private>
+            {selectedRelationship.key}
+        </span>
     </svelte:fragment>
-    {#each selectedRelationship as relationship, i}
-        {#if i >= offset && i < offset + limit}
-            {relationship.data} {relationship.id}
-        {/if}
-    {/each}
 
-    <svelte:fragment slot="footer">
-        <Button secondary disabled={!!offset} on:click={() => offset - limit}>Prev</Button>
-        <Button
-            secondary
-            disabled={selectedRelationship?.relationships?.length < offset}
-            on:click={() => offset + limit}>Next</Button>
-    </svelte:fragment>
+    {#if data?.length}
+        <Paginator items={data} {limit} let:paginatedItems>
+            <ClickableList>
+                {#each paginatedItems as doc}
+                    <ClickableListItem
+                        href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}/document-${doc.$id}`}
+                        on:click={() => (show = false)}>
+                        {#if args?.length}
+                            {#each args as arg, i}
+                                {#if i}
+                                    <span class="clickable-list-title-sep">|</span>
+                                {/if}
+                                <span data-private>{doc[arg]}</span>
+                            {/each}
+                        {/if}
+                        <svelte:fragment slot="desc">
+                            {doc.$id}
+                        </svelte:fragment>
+                    </ClickableListItem>
+                {/each}
+            </ClickableList>
+        </Paginator>
+    {/if}
+    <svelte:fragment slot="footer" />
 </Modal>

@@ -16,11 +16,18 @@
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
 
-    let updateButtonDisabled = true;
     let error: string;
-    let currentAttr: string;
+    let currentAttr: Attributes;
 
-    $: option = options.find((option) => option?.type === selectedAttribute?.type) as Option;
+    $: option = options.find((option) => {
+        if (selectedAttribute) {
+            if ('format' in selectedAttribute) {
+                return option?.format === selectedAttribute?.format;
+            } else {
+                return option?.type === selectedAttribute?.type;
+            }
+        }
+    }) as Option;
 
     async function submit() {
         try {
@@ -33,7 +40,7 @@
             }
             addNotification({
                 type: 'success',
-                message: `Attribute ${selectedAttribute.key} has been created`
+                message: `Attribute ${selectedAttribute.key} has been updated`
             });
             showEdit = false;
             trackEvent(Submit.AttributeUpdate);
@@ -43,11 +50,13 @@
         }
     }
 
-    $: updateButtonDisabled = JSON.stringify(selectedAttribute) === currentAttr;
-
     $: if (showEdit) {
-        currentAttr ??= JSON.stringify(selectedAttribute);
+        currentAttr ??= { ...selectedAttribute };
         error = null;
+    }
+
+    function shouldBeDisabled(oldAttr: Attributes, newAttr: Attributes) {
+        return JSON.stringify(oldAttr) === JSON.stringify(newAttr);
     }
 </script>
 
@@ -56,7 +65,7 @@
         <svelte:fragment slot="header">
             <div class="u-flex u-cross-center u-gap-8">
                 {option?.name}
-                {#if option.type === 'relationship'}
+                {#if option?.type === 'relationship'}
                     <div class="tag eyebrow-heading-3">
                         <span class="text u-x-small">Beta</span>
                     </div>
@@ -73,7 +82,7 @@
                         bind:value={selectedAttribute.key}
                         autofocus
                         required
-                        disabled />
+                        readonly />
 
                     <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
                         <span
@@ -85,15 +94,19 @@
                     </div>
                 </div>
             {/if}
-            <svelte:component
-                this={option.component}
-                bind:data={selectedAttribute}
-                editing
-                on:close={() => (option = null)} />
+            {#if option}
+                <svelte:component
+                    this={option.component}
+                    bind:data={selectedAttribute}
+                    editing
+                    on:close={() => (option = null)} />
+            {/if}
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
-            <Button submit disabled={updateButtonDisabled}>Update</Button>
+            <Button submit disabled={shouldBeDisabled(currentAttr, selectedAttribute)}>
+                Update
+            </Button>
         </svelte:fragment>
     </Modal>
 {/if}
