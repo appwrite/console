@@ -4,10 +4,11 @@ import type { Attributes } from '../../store';
 //TODO: remove `side` after SDK update
 export function isRelationshipToMany(attribute: Models.AttributeRelationship & { side: string }) {
     if (!attribute) return false;
-    if (attribute?.side === 'parent') {
-        return !['oneToOne', 'manyToOne'].includes(attribute?.relationType);
-    } else {
+    if (!attribute?.relationType) return false;
+    if (attribute?.side === 'child') {
         return !['oneToOne', 'oneToMany'].includes(attribute?.relationType);
+    } else {
+        return !['oneToOne', 'manyToOne'].includes(attribute?.relationType);
     }
 }
 

@@ -103,6 +103,7 @@
 
     $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
+    $: isToMany = isRelationshipToMany(data);
 
     $: if (editing) {
         way = data.twoWay ? 'two' : 'one';
@@ -235,9 +236,7 @@
             </div>
         </div>
         <p class="u-text-center">
-            <b data-private>{camelize($collection.name)}</b> has {isRelationshipToMany(data)
-                ? 'many'
-                : 'one'}
+            <b data-private>{camelize($collection.name)}</b> has {isToMany ? 'many' : 'one'}
             <b data-private>{data.key}</b>
         </p>
     </div>
