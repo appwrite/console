@@ -47,7 +47,10 @@
 </script>
 
 <Copy {value} {event}>
-    <div class="interactive-text-output" style:min-inline-size="0" style:display="inline-flex">
+    <div
+        class="interactive-text-output is-buttons-on-top"
+        style:min-inline-size="0"
+        style:display="inline-flex">
         <span
             style:white-space="nowrap"
             class="text u-line-height-1-5"
@@ -55,8 +58,8 @@
             use:truncateText>
             <slot />
         </span>
-        <div class="u-flex u-cross-child-start u-gap-8">
-            <button class="interactive-text-output-button" aria-label="copy text">
+        <div class="interactive-text-output-buttons">
+            <button class="interactive-text-output-button is-hidden" aria-label="copy text">
                 <span class="icon-duplicate" aria-hidden="true" />
             </button>
         </div>
