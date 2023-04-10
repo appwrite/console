@@ -8,7 +8,6 @@
         key: string,
         data: Partial<Models.AttributeString>
     ) {
-        console.log(data.default, typeof data.default);
         await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,

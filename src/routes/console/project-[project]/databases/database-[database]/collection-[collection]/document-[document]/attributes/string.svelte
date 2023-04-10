@@ -10,7 +10,7 @@
     export let disabled = false;
 </script>
 
-{#if attribute.size >= 52}
+{#if attribute.size >= 50}
     <InputTextarea
         {id}
         {label}

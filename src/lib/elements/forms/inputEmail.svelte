@@ -70,14 +70,14 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
-        <ul
-            class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
-            {#if !required}
+        {#if !required}
+            <ul
+                class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
                 <li class="buttons-list-item">
                     <NullCheckbox checked={value === null} on:change={handleNullChange} />
                 </li>
-            {/if}
-        </ul>
+            </ul>
+        {/if}
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

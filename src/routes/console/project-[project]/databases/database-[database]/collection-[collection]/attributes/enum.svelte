@@ -59,9 +59,9 @@
     label="Default value"
     attribute={{
         key: data.key,
-        type: 'enum',
+        type: 'string',
         status: 'enabled',
-        format: 'string',
+        format: 'enum',
         elements: data.elements ?? [],
         required: data.required,
         default: data.default
