@@ -146,7 +146,7 @@
 
 <article
     class="card u-grid u-width-full-line common-section onboard-cover"
-    style={`background-image: url(${onBoardImage1});`}>
+    style={`background-image: url(${onBoardImage1}); box-shadow: none !important`}>
     <div class="u-flex u-flex-vertical u-cross-center">
         <div class="avatar">
             <i class="icon-lock-closed" />
