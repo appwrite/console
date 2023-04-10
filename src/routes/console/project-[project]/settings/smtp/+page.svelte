@@ -11,6 +11,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
+    import { base } from '$app/paths';
 
     let enabled = false;
     let sender: string;
@@ -68,7 +69,9 @@
             <Heading tag="h6" size="7">SMTP Server</Heading>
             <p class="text">
                 You can customize the email service by providing your own SMTP server. View your
-                email templates here
+                email templates <a
+                    href="{base}/console/project-{$project.$id}/auth/templates"
+                    class="link">here</a>
             </p>
             <svelte:fragment slot="aside">
                 <FormList>

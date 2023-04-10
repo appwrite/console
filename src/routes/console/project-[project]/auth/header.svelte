@@ -20,6 +20,12 @@
             event: 'teams'
         },
         {
+            href: `${path}/templates`,
+            title: 'Templates',
+            hasChildren: false,
+            event: 'templates'
+        },
+        {
             href: `${path}/usage`,
             title: 'Usage',
             hasChildren: true,
