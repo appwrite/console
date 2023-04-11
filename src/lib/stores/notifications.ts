@@ -25,7 +25,7 @@ export const dismissNotification = (id: number) => {
 };
 
 export const dismissAllNotifications = () => {
-    notifications.update(() => []);
+    notifications.set([]);
 };
 
 export const addNotification = (notification: Omit<Notification, 'id'>) => {

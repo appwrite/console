@@ -47,9 +47,7 @@
 
                 if (counter) {
                     const parsedCounter = parseInt(counter);
-                    if (parsedCounter > 2) {
-                        return;
-                    } else if (parsedCounter === 2) {
+                    if (parsedCounter === 2) {
                         addNotification({
                             type: 'info',
                             icon: 'question-mark-circle',
@@ -65,7 +63,8 @@
                                 }
                             ]
                         });
-                    } else {
+                    }
+                    if (parsedCounter < 2) {
                         localStorage.setItem(
                             'createRelationshipCounter',
                             (parseInt(counter) + 1).toString()

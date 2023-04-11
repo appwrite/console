@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
     import { Drop } from '.';
     import type { Placement } from './drop.svelte';
 
@@ -13,19 +12,9 @@
     export let width: string = null;
     export let fullWidth = false;
     export let position: 'relative' | 'static' = 'relative';
-
-    const dispatch = createEventDispatcher();
 </script>
 
-<Drop
-    bind:show
-    {placement}
-    {childStart}
-    {noArrow}
-    {noStyle}
-    {fullWidth}
-    {fixed}
-    on:blur={() => dispatch('blur')}>
+<Drop bind:show {placement} {childStart} {noArrow} {noStyle} {fullWidth} {fixed} on:blur>
     <slot />
     <svelte:fragment slot="list">
         <div
