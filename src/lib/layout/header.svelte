@@ -16,7 +16,6 @@
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { FeedbackNPS } from '$lib/components';
 
-    let showFeedback = false;
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
@@ -27,7 +26,7 @@
     let droplistElement: HTMLDivElement;
 
     function toggleFeedback() {
-        showFeedback = !showFeedback;
+        feedback.toggleFeedback();
         if ($feedback.notification) {
             feedback.toggleNotification();
             feedback.addVisualization();
@@ -73,15 +72,15 @@
                 <div class="pulse-notification" />
             </div>
         {/if}
-        <DropList bind:show={showFeedback} scrollable>
+        <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
             <button class="button is-small is-text" on:click={toggleFeedback}>
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
                 {#if $feedback.type === 'nps'}
-                    <FeedbackNPS bind:show={showFeedback} />
+                    <FeedbackNPS />
                 {:else}
-                    <FeedbackGeneral bind:show={showFeedback} />
+                    <FeedbackGeneral />
                 {/if}
             </svelte:fragment>
         </DropList>
