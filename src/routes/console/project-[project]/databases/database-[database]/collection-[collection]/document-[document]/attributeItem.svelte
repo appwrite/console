@@ -43,9 +43,7 @@
                 <span class="text">Add item</span>
             </Button>
         </div>
-    {/if}
-
-    {#if formValues[attribute.key].length !== 0}
+    {:else}
         <ul class="u-grid u-gap-8">
             {#each [...formValues[attribute.key].keys()] as index}
                 <li class="form-item is-multiple">
