@@ -14,6 +14,7 @@
     <InputTextarea
         {id}
         {label}
+        nullable
         placeholder="Enter string"
         showLabel={!!label?.length}
         required={attribute.required}
@@ -25,6 +26,7 @@
         {id}
         {label}
         {optionalText}
+        nullable
         placeholder="Enter string"
         showLabel={!!label?.length}
         required={attribute.required}

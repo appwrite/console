@@ -10,6 +10,7 @@
     export let value: number = null;
     export let placeholder = '';
     export let required = false;
+    export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
@@ -86,7 +87,7 @@
             style:--amount-of-buttons={required ? 0 : 1.75} />
         <ul
             class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
-            {#if !required}
+            {#if nullable && !required}
                 <li class="buttons-list-item">
                     <NullCheckbox checked={value === null} on:change={handleNullChange} />
                 </li>
