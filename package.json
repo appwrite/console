@@ -5,7 +5,7 @@
     },
     "scripts": {
         "dev": "vite dev",
-        "build": "vite build",
+        "build": "node build.js",
         "preview": "vite preview",
         "sync": "svelte-kit sync",
         "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings --threshold warning",
@@ -50,6 +50,7 @@
         "eslint-config-prettier": "^8.8.0",
         "eslint-plugin-svelte3": "^4.0.0",
         "jsdom": "^21.1.1",
+        "kleur": "^4.1.5",
         "pre-commit": "^1.2.2",
         "prettier": "^2.8.6",
         "prettier-plugin-svelte": "^2.9.0",
