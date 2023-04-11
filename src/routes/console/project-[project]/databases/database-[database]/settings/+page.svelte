@@ -72,7 +72,8 @@
                             label="Name"
                             placeholder="Enter database name"
                             autocomplete={false}
-                            bind:value={databaseName} />
+                            bind:value={databaseName}
+                            required />
                         {#if showError === 'name'}
                             <Helper type={errorType}>{errorMessage}</Helper>
                         {/if}

@@ -7,13 +7,20 @@
     export let value: string;
     export let attribute: Models.AttributeEnum;
     export let optionalText: string | undefined = undefined;
+    export let disabled = false;
 
-    $: options = attribute.elements.map((element) => {
-        return {
-            label: element,
-            value: element
-        };
-    });
+    $: options = [
+        ...attribute.elements.map((element) => {
+            return {
+                label: element,
+                value: element
+            };
+        }),
+        !attribute.required && {
+            label: 'NULL',
+            value: null
+        }
+    ].filter(Boolean);
 </script>
 
 <InputSelect
@@ -24,4 +31,5 @@
     {optionalText}
     required={attribute.required}
     placeholder="Select a value"
-    showLabel={!!label?.length} />
+    showLabel={!!label?.length}
+    {disabled} />

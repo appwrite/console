@@ -7,6 +7,7 @@
     export let value: string;
     export let attribute: Models.AttributeString;
     export let optionalText: string | undefined = undefined;
+    export let disabled = false;
 </script>
 
 {#if attribute.size >= 50}
@@ -17,6 +18,7 @@
         showLabel={!!label?.length}
         required={attribute.required}
         maxlength={attribute.size}
+        {disabled}
         bind:value />
 {:else}
     <InputText
@@ -27,5 +29,6 @@
         showLabel={!!label?.length}
         required={attribute.required}
         maxlength={attribute.size}
+        {disabled}
         bind:value />
 {/if}

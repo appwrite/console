@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitString(
         databaseId: string,
@@ -14,7 +14,7 @@
             key,
             data.size,
             data.required,
-            data.default ? (data.default as string) : undefined,
+            data.default,
             data.array
         );
     }
@@ -28,14 +28,14 @@
             collectionId,
             data.key,
             data.required,
-            data.default ? (data.default as string) : null
+            data.default
         );
     }
 </script>
 
 <script lang="ts">
-    import { InputNumber, InputText, InputChoice } from '$lib/elements/forms';
-    import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
+    import { InputChoice, InputNumber } from '$lib/elements/forms';
+    import String from '../document-[document]/attributes/string.svelte';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
@@ -57,23 +57,20 @@
     bind:value={data.size}
     required
     readonly={editing} />
-{#if data.size > 50}
-    <InputTextarea
-        id="default"
-        label="Default value"
-        placeholder="Enter value"
-        bind:value={data.default}
-        maxlength={data.size}
-        disabled={data.required || data.array} />
-{:else}
-    <InputText
-        id="default"
-        label="Default value"
-        placeholder="Enter value"
-        bind:value={data.default}
-        maxlength={data.size}
-        disabled={data.required || data.array} />
-{/if}
+<String
+    id="default"
+    label="Default value"
+    attribute={{
+        key: 'default',
+        type: 'string',
+        required: data.required,
+        array: data.array,
+        size: data.size,
+        default: data.default,
+        status: 'enabled'
+    }}
+    disabled={data.required || data.array}
+    bind:value={data.default} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>

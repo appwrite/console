@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitEnum(
         databaseId: string,
@@ -14,7 +14,7 @@
             key,
             data.elements,
             data.required,
-            data.default ? data.default : undefined,
+            data.default,
             data.array
         );
     }
@@ -30,22 +30,17 @@
             data.key,
             data.elements,
             data.required,
-            data.default ? data.default : null
+            data.default
         );
     }
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputSelect, InputTags } from '$lib/elements/forms';
+    import { InputChoice, InputTags } from '$lib/elements/forms';
+    import Enum from '../document-[document]/attributes/enum.svelte';
 
     export let editing = false;
     export let data: Partial<Models.AttributeEnum>;
-
-    $: options =
-        data.elements?.map((e) => ({
-            value: e,
-            label: e
-        })) ?? [];
 
     $: if (data.required || data.array) {
         data.default = null;
@@ -58,13 +53,20 @@
     bind:tags={data.elements}
     placeholder="Add elements here"
     required />
-<InputSelect
+
+<Enum
     id="default"
     label="Default value"
-    placeholder="Select value"
-    bind:options
-    bind:value={data.default}
-    disabled={data.required} />
+    attribute={{
+        key: data.key,
+        type: 'string',
+        status: 'enabled',
+        format: 'enum',
+        elements: data.elements ?? [],
+        required: data.required,
+        default: data.default
+    }}
+    bind:value={data.default} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>

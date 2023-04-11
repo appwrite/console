@@ -57,7 +57,7 @@
         } else if (Array.isArray(column)) {
             formattedColumn = formatArray(column);
         } else if (column === null) {
-            formattedColumn = 'n/a';
+            formattedColumn = 'null';
         } else {
             formattedColumn = `${column}`;
         }
