@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Copy } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { ID } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
     import { key } from './store';
 
@@ -13,11 +12,6 @@
         <CoverTitle href={`/console/project-${projectId}/overview/keys`}>
             {$key?.name}
         </CoverTitle>
-        <Copy value={$key?.secret}>
-            <Pill button>
-                <span class="icon-duplicate" aria-hidden="true" />
-                API Key Secret
-            </Pill>
-        </Copy>
+        <ID value={$key?.secret}>API Key Secret</ID>
     </svelte:fragment>
 </Cover>

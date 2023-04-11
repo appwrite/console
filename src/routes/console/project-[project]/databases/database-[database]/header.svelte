@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Copy, Tab, Tabs } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { ID, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { database } from './store';
@@ -35,12 +34,7 @@
         <CoverTitle href={`/console/project-${projectId}/databases`}>
             {$database.name}
         </CoverTitle>
-        <Copy value={$database.$id}>
-            <Pill button>
-                <span class="icon-duplicate" aria-hidden="true" />
-                Database ID
-            </Pill>
-        </Copy>
+        <ID value={$database.$id}>{$database.$id}</ID>
     </svelte:fragment>
 
     <Tabs>

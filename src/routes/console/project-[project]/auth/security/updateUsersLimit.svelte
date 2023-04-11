@@ -65,7 +65,7 @@
                         type="radio"
                         bind:group={isLimited}
                         value={false} />
-                    <div class="choice-item-content  u-cross-child-center">
+                    <div class="choice-item-content u-cross-child-center">
                         <div class="choice-item-title">Unlimited</div>
                     </div>
                     <Pill>recommended</Pill>

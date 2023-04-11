@@ -33,7 +33,7 @@
 
 <section class="drop-section">
     <header class="u-flex u-main-space-between u-gap-16">
-        <h4 class="body-text-1">How are we doing?</h4>
+        <h4 class="body-text-1 u-bold">How are we doing?</h4>
         <button
             type="button"
             class="button is-text is-only-icon u-margin-inline-start-auto"
@@ -58,22 +58,12 @@
                 <InputTextarea
                     id="feedback"
                     placeholder="Your message here"
-                    label="Feedback"
+                    label="Message"
                     required
                     bind:value={message}
                     showLabel={false} />
-                <InputText
-                    label="name"
-                    id="name"
-                    bind:value={name}
-                    placeholder="Enter name"
-                    showLabel={false} />
-                <InputEmail
-                    label="email"
-                    id="email"
-                    bind:value={email}
-                    placeholder="Enter email"
-                    showLabel={false} />
+                <InputText label="Name" id="name" bind:value={name} placeholder="Enter name" />
+                <InputEmail label="Email" id="email" bind:value={email} placeholder="Enter email" />
             </FormList>
         {/if}
         <div class="u-flex u-main-end u-gap-16 u-margin-block-start-24">

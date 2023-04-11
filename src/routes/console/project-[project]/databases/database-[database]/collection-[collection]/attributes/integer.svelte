@@ -19,12 +19,27 @@
             data.array
         );
     }
+
+    export async function updateInteger(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeInteger>
+    ) {
+        await sdk.forProject.databases.updateIntegerAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.required,
+            data.min,
+            data.max,
+            typeof data.default === 'number' ? data.default : null
+        );
+    }
 </script>
 
 <script lang="ts">
     import { InputNumber, InputChoice } from '$lib/elements/forms';
 
-    export let selectedAttribute: Models.AttributeInteger;
     export let data: Partial<Models.AttributeInteger> = {
         required: false,
         min: 0,
@@ -32,43 +47,27 @@
         default: 0,
         array: false
     };
+    export let editing = false;
 
-    $: if (selectedAttribute) {
-        ({
-            required: data.required,
-            array: data.array,
-            min: data.min,
-            max: data.max,
-            default: data.default
-        } = selectedAttribute);
-    }
     $: if (data.required || data.array) {
         data.default = null;
     }
 </script>
 
-<InputNumber id="min" label="Min" bind:value={data.min} readonly={!!selectedAttribute} />
-<InputNumber id="max" label="Max" bind:value={data.max} readonly={!!selectedAttribute} />
+<InputNumber id="min" label="Min" placeholder="Enter size" bind:value={data.min} />
+<InputNumber id="max" label="Max" placeholder="Enter size" bind:value={data.max} />
 
 <InputNumber
     id="default"
     label="Default value"
+    placeholder="Enter value"
     min={data.min}
     max={data.max}
     bind:value={data.default}
-    disabled={data.required || data.array}
-    readonly={!!selectedAttribute} />
-<InputChoice
-    id="required"
-    label="Required"
-    bind:value={data.required}
-    disabled={!!selectedAttribute || data.array}>
+    disabled={data.required || data.array} />
+<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
-<InputChoice
-    id="array"
-    label="Array"
-    bind:value={data.array}
-    disabled={!!selectedAttribute || data.required}>
+<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
     Indicate whether this attribute should act as an array
 </InputChoice>

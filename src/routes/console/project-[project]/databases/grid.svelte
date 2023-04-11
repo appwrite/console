@@ -1,8 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { CardContainer, Copy, GridItem1 } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { CardContainer, GridItem1, ID } from '$lib/components';
     import type { PageData } from './$types';
     export let data: PageData;
     export let showCreate = false;
@@ -13,10 +12,7 @@
     {#each data.databases.databases as database}
         <GridItem1 href={`${base}/console/project-${project}/databases/database-${database.$id}`}>
             <svelte:fragment slot="title">{database.name}</svelte:fragment>
-
-            <Copy value={database.$id}>
-                <Pill button><i class="icon-duplicate" />Database ID</Pill>
-            </Copy>
+            <ID value={database.$id}>{database.$id}</ID>
         </GridItem1>
     {/each}
     <svelte:fragment slot="empty">

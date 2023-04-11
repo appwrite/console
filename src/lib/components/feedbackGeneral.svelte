@@ -36,7 +36,7 @@
 
 <section class="drop-section">
     <header class="u-flex u-main-space-between u-gap-16">
-        <h4 class="body-text-1">How can we improve?</h4>
+        <h4 class="body-text-1 u-bold">How can we improve?</h4>
         <button
             type="button"
             class="button is-text is-only-icon u-margin-inline-start-auto"
@@ -53,23 +53,12 @@
 
     <Form onSubmit={handleSubmit}>
         <FormList>
-            <InputText
-                label="name"
-                id="name"
-                bind:value={name}
-                placeholder="Enter name"
-                showLabel={false} />
-            <InputEmail
-                label="email"
-                id="email"
-                bind:value={email}
-                placeholder="Enter email"
-                showLabel={false} />
+            <InputText label="Name" id="name" bind:value={name} placeholder="Enter name" />
+            <InputEmail label="Email" id="email" bind:value={email} placeholder="Enter email" />
             <InputTextarea
                 id="feedback"
                 placeholder="Your message here"
-                showLabel={false}
-                label="Feedback"
+                label="Message"
                 required
                 bind:value={message} />
         </FormList>

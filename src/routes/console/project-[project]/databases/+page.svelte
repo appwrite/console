@@ -2,8 +2,8 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
-    import { Empty, Heading, Pagination, Limit, ViewSelector } from '$lib/components';
-    import { Container } from '$lib/layout';
+    import { Empty, PaginationWithLimit } from '$lib/components';
+    import { Container, GridHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import Create from './create.svelte';
     import Grid from './grid.svelte';
@@ -24,18 +24,12 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Databases</Heading>
-
-        <div class="u-flex u-gap-16">
-            <ViewSelector view={data.view} {columns} />
-
-            <Button on:click={() => (showCreate = true)} event="create_database">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create database</span>
-            </Button>
-        </div>
-    </div>
+    <GridHeader title="Databases" {columns} view={data.view}>
+        <Button on:click={() => (showCreate = true)} event="create_database">
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create database</span>
+        </Button>
+    </GridHeader>
 
     {#if data.databases.total}
         {#if data.view === 'grid'}
@@ -44,10 +38,11 @@
             <Table {data} />
         {/if}
 
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.databases.total} name="Databases" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.databases.total} />
-        </div>
+        <PaginationWithLimit
+            name="Databases"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.databases.total} />
     {:else}
         <Empty
             single
