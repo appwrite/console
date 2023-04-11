@@ -51,4 +51,4 @@
     steps={stepsComponents}
     on:finish={onFinish}
     on:exit={onFinish}
-    finalAction="Take me to my Dashboard" />
+    finalAction="Go to dashboard" />

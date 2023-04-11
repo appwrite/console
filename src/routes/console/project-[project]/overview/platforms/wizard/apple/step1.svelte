@@ -52,7 +52,7 @@
 
     <FormList isCommonSection>
         <FormItem>
-            <p>Choose a platform</p>
+            <p>Choose a device</p>
             <div class="u-flex u-gap-16 u-margin-block-start-8">
                 <Pill
                     button

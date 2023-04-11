@@ -42,7 +42,9 @@
         {#if method === Method.Xcode}
             <ol class="numeric-list">
                 <li class="numeric-list-item">
-                    <span class="text"> Select File > Add Packages </span>
+                    <span class="text">
+                        In the menu bar under Select File, select Add Packages
+                    </span>
                 </li>
                 <li class="numeric-list-item">
                     <span class="text">
@@ -70,7 +72,7 @@
                 </li>
             </ol>
         {:else if method === Method.Swift}
-            <p>Add this to your Package.swift file:</p>
+            <p>Add this to your <code class="inline-code">Package.swift</code> file.</p>
             <Code withCopy withLineNumbers label="Swift" language="swift" code={example1} />
             <p class="common-section">Then add the dependency to your target:</p>
             <Code withCopy withLineNumbers label="Swift" language="swift" code={example2} />

@@ -106,10 +106,19 @@
         $createPlatform.$id = response.$id;
         $createPlatform.type = platform;
     }
+
+    $: registee = {
+        [Platform.Android]: 'package name',
+        [Platform.Ios]: 'bundle ID',
+        [Platform.Linux]: 'package name',
+        [Platform.Macos]: 'bundle ID',
+        [Platform.Windows]: 'package name',
+        [Platform.Web]: 'hostname'
+    }[platform];
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Flutter app</svelte:fragment>
+    <svelte:fragment slot="title">Register your {registee}</svelte:fragment>
     <svelte:fragment slot="subtitle">
         <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
             <Pill
