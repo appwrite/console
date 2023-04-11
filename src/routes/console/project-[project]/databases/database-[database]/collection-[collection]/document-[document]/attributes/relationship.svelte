@@ -3,13 +3,12 @@
     import { PaginationInline } from '$lib/components';
     import { SelectSearchItem } from '$lib/elements';
     import { Button, InputSelectSearch, Label } from '$lib/elements/forms';
-    import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { teamPrefs } from '$lib/stores/team';
     import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { doc } from '../store';
     import { isRelationshipToMany } from './store';
+    import { preferences } from '$lib/stores/preferences';
 
     export let id: string;
     export let label: string;
@@ -31,7 +30,6 @@
     let offset = 0;
 
     onMount(async () => {
-        await teamPrefs.load($organization.$id);
         documentList = await getDocuments();
 
         if (editing && $doc?.[attribute.key]) {
@@ -45,7 +43,7 @@
             }
         }
 
-        displayNames = $teamPrefs?.displayNames?.[attribute?.relatedCollection] ?? ['$id'];
+        displayNames = preferences.getDisplayNames()?.[attribute?.relatedCollection] ?? ['$id'];
         if (!displayNames?.includes('$id')) {
             displayNames.unshift('$id');
         }

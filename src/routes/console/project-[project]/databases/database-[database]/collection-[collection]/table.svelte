@@ -13,9 +13,7 @@
         TableRowLink,
         TableScroll
     } from '$lib/elements/table';
-    import { organization } from '$lib/stores/organization';
     import { preferences } from '$lib/stores/preferences';
-    import { teamPrefs } from '$lib/stores/team';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
@@ -30,9 +28,10 @@
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
     let relationshipData: [];
+    let displayNames = {};
 
-    onMount(() => {
-        teamPrefs.load($organization.$id);
+    onMount(async () => {
+        displayNames = preferences.getDisplayNames();
     });
 
     function formatArray(array: unknown[]) {
@@ -111,9 +110,7 @@
                     {#if column.show}
                         {@const attr = $attributes.find((n) => n.key === column.id)}
                         {#if isRelationship(attr)}
-                            {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
-                                '$id'
-                            ]}
+                            {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
                             <TableCell title={column.title}>
                                 {#if !isRelationshipToMany(attr)}
                                     {#if document[column.id]}

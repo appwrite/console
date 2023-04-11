@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { ClickableList, ClickableListItem, Modal, Paginator } from '$lib/components';
-    import { teamPrefs } from '$lib/stores/team';
+    import { preferences } from '$lib/stores/preferences';
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
@@ -12,7 +12,7 @@
     const databaseId = $page.params.database;
     const limit = 10;
 
-    $: args = $teamPrefs?.displayNames?.[selectedRelationship?.relatedCollection];
+    $: args = preferences.getDisplayNames()?.[selectedRelationship?.relatedCollection] ?? [];
 
     $: if (!show) {
         data = null;
