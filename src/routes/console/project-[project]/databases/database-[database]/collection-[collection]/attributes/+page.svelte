@@ -36,7 +36,7 @@
     let showEdit = false;
     let showCreateIndex = false;
 
-    enum attributeStringIcon {
+    enum attributeFormatIcon {
         ip = 'location-marker',
         url = 'link',
         email = 'mail',
@@ -75,8 +75,8 @@
                                                         : 'arrow-sm-right'
                                                 }`}
                                                 aria-hidden="true" />
-                                        {:else if 'format' in attribute}
-                                            {@const icon = attributeStringIcon[attribute?.format]}
+                                        {:else if 'format' in attribute && attribute.format}
+                                            {@const icon = attributeFormatIcon[attribute?.format]}
                                             <span class={`icon-${icon}`} aria-hidden="true" />
                                         {:else}
                                             <span
@@ -100,7 +100,7 @@
                             </div>
                         </TableCell>
                         <TableCellText onlyDesktop title="Type">
-                            {#if 'format' in attribute}
+                            {#if 'format' in attribute && attribute.format}
                                 <span class="u-capitalize">{attribute.format}</span>
                             {:else}
                                 <span class="u-capitalize">{attribute.type}</span>
