@@ -6,6 +6,7 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { deepEqual } from '$lib/helpers/object';
     import { addNotification } from '$lib/stores/notifications';
     import type { Attributes } from '../store';
     import { options, type Option } from './store';
@@ -54,10 +55,6 @@
         currentAttr ??= { ...selectedAttribute };
         error = null;
     }
-
-    function shouldBeDisabled(oldAttr: Attributes, newAttr: Attributes) {
-        return JSON.stringify(oldAttr) === JSON.stringify(newAttr);
-    }
 </script>
 
 {#if selectedAttribute}
@@ -104,9 +101,7 @@
         </FormList>
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
-            <Button submit disabled={shouldBeDisabled(currentAttr, selectedAttribute)}>
-                Update
-            </Button>
+            <Button submit disabled={deepEqual(currentAttr, selectedAttribute)}>Update</Button>
         </svelte:fragment>
     </Modal>
 {/if}
