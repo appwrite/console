@@ -1,15 +1,14 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Pill } from '$lib/elements';
     import {
         CardGrid,
-        Copy,
         DropList,
         DropListItem,
         Empty,
         Status,
         Heading,
-        PaginationWithLimit
+        PaginationWithLimit,
+        Id
     } from '$lib/components';
     import {
         TableHeader,
@@ -36,7 +35,6 @@
     import Activate from './activate.svelte';
     import { browser } from '$app/environment';
     import { sdk } from '$lib/stores/sdk';
-    import Output from '$lib/components/output.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
 
@@ -102,14 +100,14 @@
                     <div>
                         <div class="u-flex u-gap-12 u-cross-center">
                             <p><b>Function ID: </b></p>
-                            <Output value={$func.$id}><b>{$func.$id}</b></Output>
+                            <Id value={$func.$id}><b>{$func.$id}</b></Id>
                         </div>
 
                         <div class="u-flex u-gap-12 u-cross-center">
                             <p>Deployment ID:</p>
-                            <Output value={$func.deployment}>
+                            <Id value={$func.deployment}>
                                 {$func.deployment}
-                            </Output>
+                            </Id>
                         </div>
                     </div>
                 </div>
@@ -158,7 +156,7 @@
         {#if data.deployments.total > 1 || (!activeDeployment && data.deployments.total === 1)}
             <TableScroll>
                 <TableHeader>
-                    <TableCellHead width={90}>Deployment ID</TableCellHead>
+                    <TableCellHead width={150}>Deployment ID</TableCellHead>
                     <TableCellHead width={140}>Created</TableCellHead>
                     <TableCellHead width={100}>Status</TableCellHead>
                     <TableCellHead width={100}>Build Time</TableCellHead>
@@ -169,25 +167,20 @@
                     {#each data.deployments.deployments as deployment, index}
                         {#if deployment.$id !== $func.deployment}
                             <TableRow>
-                                <TableCell title="Deployment ID">
-                                    <Copy value={deployment.$id}>
-                                        <Pill button trim>
-                                            <span class="icon-duplicate" aria-hidden="true" />
-                                            <span class="text u-trim">{deployment.$id}</span>
-                                        </Pill>
-                                    </Copy>
+                                <TableCell width={150} title="Deployment ID">
+                                    <Id value={deployment.$id}>{deployment.$id}</Id>
                                 </TableCell>
-                                <TableCellText title="Created">
+                                <TableCellText width={140} title="Created">
                                     {toLocaleDateTime(deployment.$createdAt)}
                                 </TableCellText>
 
-                                <TableCell title="Status">
+                                <TableCell width={100} title="Status">
                                     <Status status={deployment.status}>
                                         {deployment.status}
                                     </Status>
                                 </TableCell>
 
-                                <TableCellText title="Build Time">
+                                <TableCellText width={100} title="Build Time">
                                     {#if ['processing', 'building'].includes(deployment.status)}
                                         <span use:timer={{ start: deployment.$createdAt }} />
                                     {:else}
@@ -195,11 +188,11 @@
                                     {/if}
                                 </TableCellText>
 
-                                <TableCellText title="Size">
+                                <TableCellText width={70} title="Size">
                                     {calculateSize(deployment.size)}
                                 </TableCellText>
 
-                                <TableCell showOverflow>
+                                <TableCell width={25} showOverflow>
                                     <DropList
                                         bind:show={showDropdown[index]}
                                         placement="bottom-start"

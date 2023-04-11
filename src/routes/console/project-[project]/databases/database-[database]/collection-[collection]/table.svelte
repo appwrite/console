@@ -3,8 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
-    import { Copy } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Id } from '$lib/components';
     import {
         TableBody,
         TableCell,
@@ -97,13 +96,10 @@
         {#each data.documents.documents as document}
             <TableRowLink
                 href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
-                <TableCell>
-                    <Copy value={document.$id}>
-                        <Pill button trim>
-                            <span class="icon-duplicate" aria-hidden="true" />
-                            <span class="text">{document.$id}</span>
-                        </Pill>
-                    </Copy>
+                <TableCell width={150}>
+                    <Id value={document.$id}>
+                        {document.$id}
+                    </Id>
                 </TableCell>
 
                 {#each $columns as column}
