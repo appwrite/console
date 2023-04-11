@@ -11,6 +11,7 @@
     export let value = '';
     export let placeholder = '';
     export let required = false;
+    export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
@@ -81,7 +82,7 @@
                     <TextCounter max={maxlength} count={value?.length ?? 0} />
                 </li>
             {/if}
-            {#if !required}
+            {#if nullable && !required}
                 <li class="buttons-list-item">
                     <NullCheckbox checked={value === null} on:change={handleNullChange} />
                 </li>

@@ -9,6 +9,7 @@
     export let value = '';
     export let placeholder = '';
     export let required = false;
+    export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
@@ -70,7 +71,7 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
-        {#if !required}
+        {#if nullable && !required}
             <ul
                 class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
                 <li class="buttons-list-item">
