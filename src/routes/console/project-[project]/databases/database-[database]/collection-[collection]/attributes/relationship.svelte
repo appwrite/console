@@ -5,7 +5,7 @@
     export async function submitRelationship(
         databaseId: string,
         collectionId: string,
-        _: string,
+        _key: string,
         data: Partial<Models.AttributeRelationship>
     ) {
         await sdk.forProject.databases.createRelationshipAttribute(

@@ -15,7 +15,7 @@
     import { loading } from '../store';
     import Create from './createOrganization.svelte';
 
-    onMount(async () => {
+    onMount(() => {
         loading.set(false);
 
         setInterval(() => {
