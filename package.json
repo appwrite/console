@@ -19,8 +19,8 @@
     },
     "dependencies": {
         "@analytics/google-analytics": "^1.0.5",
-        "@appwrite.io/console": "0.1.0-preview-0.1",
-        "@appwrite.io/pink": "0.0.6-rc.2",
+        "@appwrite.io/console": "0.1.0",
+        "@appwrite.io/pink": "^0.0.6-rc.9",
         "@popperjs/core": "^2.11.6",
         "@sentry/svelte": "^7.44.2",
         "@sentry/tracing": "^7.44.2",
@@ -35,9 +35,9 @@
     },
     "devDependencies": {
         "@playwright/test": "^1.31.2",
-        "@sveltejs/adapter-static": "2.0.1",
-        "@sveltejs/kit": "1.13.0",
-        "@sveltejs/vite-plugin-svelte": "^2.0.3",
+        "@sveltejs/adapter-static": "^2.0.2",
+        "@sveltejs/kit": "^1.15.4",
+        "@sveltejs/vite-plugin-svelte": "^2.0.4",
         "@testing-library/dom": "^9.0.1",
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/svelte": "^3.2.2",

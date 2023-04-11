@@ -27,7 +27,6 @@ async function main() {
     logEnv('APPWRITE ENDPOINT', env?.VITE_APPWRITE_ENDPOINT, 'relative');
     logEnv('GROWTH ENDPOINT', env?.VITE_APPWRITE_GROWTH_ENDPOINT);
     logEnv('GOOGLE ANALYTICS', env?.VITE_GA_PROJECT);
-    logEnv('SENTRY DSN', env?.VITE_GA_PROJECT);
     log();
     logDelimiter();
     await build();

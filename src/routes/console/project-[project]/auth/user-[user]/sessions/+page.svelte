@@ -29,7 +29,7 @@
 
 <Container>
     {#if data.sessions.total}
-        <div class="u-flex u-main-end  common-section">
+        <div class="u-flex u-main-end common-section">
             <Button secondary on:click={() => (showDeleteAll = true)}>
                 <span class="text">Delete All</span>
             </Button>
