@@ -136,6 +136,7 @@
                                 </button>
                                 <svelte:fragment slot="list">
                                     <DropListItem
+                                        event="edit_attribute"
                                         icon="pencil"
                                         on:click={() => {
                                             selectedAttribute = attribute;
