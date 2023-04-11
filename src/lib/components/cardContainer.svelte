@@ -1,23 +1,12 @@
 <script lang="ts">
     import { Empty } from '$lib/components';
     import { CARD_LIMIT } from '$lib/constants';
-    import { prefs } from '$lib/stores/user';
-    import { onMount } from 'svelte';
 
     export let offset = 0;
     export let total = 0;
     export let event: string = null;
 
     let limit = CARD_LIMIT;
-
-    onMount(async () => {
-        await prefs.load();
-        $prefs?.pageLimit && (limit = $prefs.pageLimit);
-    });
-
-    prefs.subscribe((prefs) => {
-        prefs?.pageLimit && (limit = prefs.pageLimit);
-    });
 </script>
 
 <ul
