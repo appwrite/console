@@ -235,10 +235,21 @@
                 <span>{data.key}</span>
             </div>
         </div>
-        <p class="u-text-center">
-            <b data-private>{camelize($collection.name)}</b> has {isToMany ? 'many' : 'one'}
-            <b data-private>{data.key}</b>
-        </p>
+        <div>
+            <p class="u-text-center">
+                <b data-private>{camelize($collection.name)}</b> can contain {data.relationType &&
+                !['oneToOne', 'oneToMany'].includes(data.relationType)
+                    ? 'many'
+                    : 'one'}
+                <b data-private>{data.key}</b>
+            </p>
+            <p class="u-text-center">
+                <b data-private>{camelize($collection.name)}</b> can belong to {isToMany
+                    ? 'many'
+                    : 'one'}
+                <b data-private>{data.key}</b>
+            </p>
+        </div>
     </div>
     <InputSelect
         id="deleting"
