@@ -63,8 +63,7 @@
                                 }
                             ]
                         });
-                    }
-                    else if (parsedCounter < 2) {
+                    } else if (parsedCounter < 2) {
                         localStorage.setItem(
                             'createRelationshipCounter',
                             (parsedCounter + 1).toString()
