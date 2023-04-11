@@ -1,7 +1,10 @@
 <script lang="ts">
+    import { goto, invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, InputText, FormList } from '$lib/elements/forms';
+    import InputChoice from '$lib/elements/forms/inputChoice.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -30,6 +33,7 @@
                 customId: !!id
             });
             name = id = null;
+            await invalidate(Dependencies.BACKUPS);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -55,8 +59,16 @@
             id="description"
             label="Description"
             placeholder="Enter Backup Description"
-            bind:value={description}
-            autofocus />
+            bind:value={description} />
+
+        <!-- {#each allScopes.filter((s) => s.category === category) as scope}
+            <InputChoice
+                id={scope.scope}
+                label={scope.scope}
+                bind:value={activeScopes[scope.scope]}>
+                {scope.description}
+            </InputChoice>
+        {/each} -->
     </FormList>
 
     <svelte:fragment slot="footer">

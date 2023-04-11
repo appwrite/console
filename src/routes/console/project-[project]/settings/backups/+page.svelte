@@ -8,20 +8,57 @@
         TableCellHead,
         TableCell,
         TableCellText,
-        TableHeader
+        TableHeader,
+        TableRow
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import type { PageData } from './$types';
     import Heading from '$lib/components/heading.svelte';
     import Create from './create.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import Delete from './delete.svelte';
+    import type { Models } from '@aw-labs/appwrite-console';
+    import { sdkForConsole } from '$lib/stores/sdk';
+    import { project } from '../../store';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { addNotification } from '$lib/stores/notifications';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { createEventDispatcher } from 'svelte';
 
     export let data: PageData;
 
     let showCreate = false;
+    let showDelete = false;
+    let selectedBackup: Models.Backup;
+
+    const projectId = $project.$id;
+
+    const dispatch = createEventDispatcher();
 
     async function handleCreate() {
         showCreate = false;
+    }
+
+    async function handleRestore(backup: Models.Backup) {
+        try {
+            const restore = await sdkForConsole.projects.restoreBackup(projectId, backup.$id);
+            dispatch('created', restore);
+            addNotification({
+                type: 'success',
+                message: `${backup.name} is being restored.`
+            });
+            trackEvent(Submit.BackupRestore, {
+                customId: !!backup.$id
+            });
+            await invalidate(Dependencies.BACKUPS);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.BackupRestore);
+        }
     }
 
     console.log(data.backups);
@@ -50,27 +87,32 @@
             </TableHeader>
             <TableBody>
                 {#each data.backups.backups as backup}
-                    <TableCell title="Name">
-                        <div class="u-flex u-main-space-between">
-                            {backup.name}
-                            <!-- {#if webhook.security === false}
-                                <Pill>SLL/TLS disabled</Pill>
-                            {/if} -->
-                        </div>
-                    </TableCell>
-                    <TableCellText title="Created"
-                        >{toLocaleDateTime(backup.$createdAt)}</TableCellText>
-                    <TableCellText title="Status">
-                        <Status status={backup.status}>
-                            {backup.status}
-                        </Status>
-                    </TableCellText>
-                    <TableCellText title="Delete">
-                        <Button secondary>Delete</Button>
-                    </TableCellText>
-                    <TableCellText title="Restore">
-                        <Button secondary>Restore</Button>
-                    </TableCellText>
+                    <TableRow>
+                        <TableCell title="Name">
+                            <div class="u-flex u-main-space-between">
+                                {backup.name}
+                            </div>
+                        </TableCell>
+                        <TableCellText title="Created"
+                            >{toLocaleDateTime(backup.$createdAt)}</TableCellText>
+                        <TableCellText title="Status">
+                            <Status status={backup.status}>
+                                {backup.status}
+                            </Status>
+                        </TableCellText>
+                        <TableCellText title="Delete">
+                            <Button
+                                on:click={async () => {
+                                    showDelete = true;
+                                    selectedBackup = backup;
+                                }}
+                                secondary>Delete</Button>
+                        </TableCellText>
+                        <TableCellText title="Restore">
+                            <Button on:click={async () => handleRestore(backup)} secondary
+                                >Restore</Button>
+                        </TableCellText>
+                    </TableRow>
                 {/each}
             </TableBody>
         </Table>
@@ -84,3 +126,4 @@
 </Container>
 
 <Create bind:showCreate on:created={handleCreate} />
+<Delete bind:showDelete bind:selectedBackup />
