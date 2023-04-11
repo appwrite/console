@@ -7,18 +7,13 @@
     import { last, symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
     import { attributes } from '../store';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/stores';
 
     const collectionId = $page.params.collection;
-    let names: string[] = [];
+    let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
     let search: string;
-
-    onMount(async () => {
-        names = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
-    });
 
     async function updateDisplayName() {
         try {
@@ -58,7 +53,7 @@
 
     $: updateBtnDisabled =
         !symmetricDifference(names, preferences.getDisplayNames()?.[collectionId] ?? [])?.length ||
-        !last(names);
+        (names?.length && !last(names));
 </script>
 
 <Form onSubmit={updateDisplayName}>
