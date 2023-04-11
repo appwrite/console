@@ -21,7 +21,7 @@
 
     $: option = options.find((option) => {
         if (selectedAttribute) {
-            if ('format' in selectedAttribute) {
+            if ('format' in selectedAttribute && selectedAttribute.format) {
                 return option?.format === selectedAttribute?.format;
             } else {
                 return option?.type === selectedAttribute?.type;
