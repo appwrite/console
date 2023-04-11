@@ -39,7 +39,7 @@
     export let editing = false;
     export let data: Partial<Models.AttributeDatetime>;
 
-    $: if (data.required) {
+    $: if (data.required || data.array) {
         data.default = null;
     }
 </script>
@@ -49,9 +49,9 @@
     label="Default value"
     bind:value={data.default}
     disabled={data.required} />
-<InputChoice id="required" label="Required" bind:value={data.required}>
+<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
-<InputChoice id="array" label="Array" bind:value={data.array} disabled={editing}>
+<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
     Indicate whether this attribute should act as an array
 </InputChoice>
