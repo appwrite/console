@@ -4,7 +4,7 @@
 
 <script lang="ts">
     import { createPopper, type Instance } from '@popperjs/core';
-    import { onDestroy, onMount } from 'svelte';
+    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
     export let show = false;
     export let noArrow = false;
@@ -13,6 +13,8 @@
     export let noStyle = false;
     export let fullWidth = false;
     export let fixed = false;
+
+    const dispatch = createEventDispatcher();
 
     let element: HTMLDivElement;
     let tooltip: HTMLDivElement;
@@ -79,6 +81,7 @@
             )
         ) {
             show = false;
+            dispatch('blur');
         }
     };
 </script>

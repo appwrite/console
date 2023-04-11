@@ -161,6 +161,7 @@
                                         on:click={() => {
                                             selectedAttribute = attribute;
                                             showDelete = true;
+                                            showDropdown[index] = false;
                                         }}>
                                         Delete
                                     </DropListItem>

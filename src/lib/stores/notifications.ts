@@ -7,6 +7,7 @@ export type Notification = {
     timeout?: number;
     message: string;
     title?: string;
+    icon?: string;
     buttons?: Buttons[];
 };
 
@@ -21,6 +22,10 @@ export const notifications = writable<Notification[]>([]);
 
 export const dismissNotification = (id: number) => {
     notifications.update((all) => all.filter((t) => t.id !== id));
+};
+
+export const dismissAllNotifications = () => {
+    notifications.update(() => []);
 };
 
 export const addNotification = (notification: Omit<Notification, 'id'>) => {

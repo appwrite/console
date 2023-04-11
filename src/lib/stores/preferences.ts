@@ -48,7 +48,6 @@ function createPreferences() {
                 }
             );
         },
-
         getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
             let preferences: PreferencesStore;
             subscribe((n) => (preferences = n))();
@@ -111,7 +110,6 @@ function createPreferences() {
 
                 return n;
             }),
-
         loadTeamPrefs: async () => {
             const id = get(organization)?.$id;
             if (!id) return {};

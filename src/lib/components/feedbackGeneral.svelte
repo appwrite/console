@@ -10,8 +10,6 @@
     import { feedback } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
 
-    export let show = false;
-
     let message: string;
     let name: string;
     let email: string;
@@ -29,7 +27,7 @@
                 message: error.message
             });
         } finally {
-            show = false;
+            feedback.toggleFeedback();
         }
     }
 </script>
@@ -43,7 +41,7 @@
             style="--button-size:1.5rem;"
             aria-label="Close Modal"
             title="Close Modal"
-            on:click={() => (show = false)}>
+            on:click={() => feedback.toggleFeedback()}>
             <span class="icon-x" aria-hidden="true" />
         </button>
     </header>
@@ -64,7 +62,7 @@
         </FormList>
 
         <div class="u-flex u-main-end u-gap-16 u-margin-block-start-24">
-            <Button text on:click={() => (show = false)}>Cancel</Button>
+            <Button text on:click={() => feedback.toggleFeedback()}>Cancel</Button>
             <Button secondary submit>Submit</Button>
         </div>
     </Form>
