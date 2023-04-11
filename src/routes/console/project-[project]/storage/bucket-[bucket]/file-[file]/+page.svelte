@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, Heading, Alert, ID } from '$lib/components';
+    import { CardGrid, Box, Heading, Alert, Id } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { file } from './store';
@@ -89,7 +89,7 @@
                 </a>
                 <div class="u-flex u-flex-vertical u-gap-16">
                     <Heading tag="h2" size="7">{$file.name}</Heading>
-                    <ID value={getView($file.$id)}>File URL</ID>
+                    <Id value={getView($file.$id)}>File URL</Id>
                 </div>
             </div>
             <svelte:fragment slot="aside">

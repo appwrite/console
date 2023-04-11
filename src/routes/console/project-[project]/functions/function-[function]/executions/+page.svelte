@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { EmptySearch, Heading, ID, PaginationWithLimit, Status } from '$lib/components';
+    import { EmptySearch, Heading, Id, PaginationWithLimit, Status } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -68,7 +68,7 @@
                 {#each data.executions.executions as execution}
                     <TableRow>
                         <TableCell width={150} title="Execution ID">
-                            <ID value={execution.$id}>{execution.$id}</ID>
+                            <Id value={execution.$id}>{execution.$id}</Id>
                         </TableCell>
                         <TableCellText width={140} title="Created">
                             {toLocaleDateTime(execution.$createdAt)}

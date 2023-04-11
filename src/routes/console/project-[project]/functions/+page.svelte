@@ -7,7 +7,7 @@
         GridItem1,
         Heading,
         PaginationWithLimit,
-        ID
+        Id
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -76,7 +76,7 @@
                             </li>
                         {/if}
                     </svelte:fragment>
-                    <ID value={func.$id} event="function">{func.$id}</ID>
+                    <Id value={func.$id} event="function">{func.$id}</Id>
                 </GridItem1>
             {/each}
             <svelte:fragment slot="empty">

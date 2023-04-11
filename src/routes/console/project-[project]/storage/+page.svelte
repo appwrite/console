@@ -8,7 +8,7 @@
         CardContainer,
         Heading,
         PaginationWithLimit,
-        ID
+        Id
     } from '$lib/components';
     import { Pill } from '$lib/elements';
     import Create from './create.svelte';
@@ -54,7 +54,7 @@
                         {/if}
                     </svelte:fragment>
 
-                    <ID value={bucket.$id}>{bucket.$id}</ID>
+                    <Id value={bucket.$id}>{bucket.$id}</Id>
 
                     <svelte:fragment slot="icons">
                         <li>

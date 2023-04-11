@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { CardContainer, GridItem1, ID } from '$lib/components';
+    import { CardContainer, GridItem1, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { PageData } from './$types';
     export let data: PageData;
@@ -23,7 +23,7 @@
                     <Pill>disabled</Pill>
                 {/if}</svelte:fragment>
 
-            <ID value={collection.$id}>{collection.$id}</ID>
+            <Id value={collection.$id}>{collection.$id}</Id>
         </GridItem1>
     {/each}
 </CardContainer>

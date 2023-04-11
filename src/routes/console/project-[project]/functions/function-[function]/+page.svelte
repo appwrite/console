@@ -8,7 +8,7 @@
         Status,
         Heading,
         PaginationWithLimit,
-        ID
+        Id
     } from '$lib/components';
     import {
         TableHeader,
@@ -100,14 +100,14 @@
                     <div>
                         <div class="u-flex u-gap-12 u-cross-center">
                             <p><b>Function ID: </b></p>
-                            <ID value={$func.$id}><b>{$func.$id}</b></ID>
+                            <Id value={$func.$id}><b>{$func.$id}</b></Id>
                         </div>
 
                         <div class="u-flex u-gap-12 u-cross-center">
                             <p>Deployment ID:</p>
-                            <ID value={$func.deployment}>
+                            <Id value={$func.deployment}>
                                 {$func.deployment}
-                            </ID>
+                            </Id>
                         </div>
                     </div>
                 </div>
@@ -168,7 +168,7 @@
                         {#if deployment.$id !== $func.deployment}
                             <TableRow>
                                 <TableCell width={150} title="Deployment ID">
-                                    <ID value={deployment.$id}>{deployment.$id}</ID>
+                                    <Id value={deployment.$id}>{deployment.$id}</Id>
                                 </TableCell>
                                 <TableCellText width={140} title="Created">
                                     {toLocaleDateTime(deployment.$createdAt)}

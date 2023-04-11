@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
-    import { ID } from '$lib/components';
+    import { Id } from '$lib/components';
     import {
         TableBody,
         TableCell,
@@ -98,9 +98,9 @@
             <TableRowLink
                 href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
                 <TableCell width={150}>
-                    <ID value={document.$id}>
+                    <Id value={document.$id}>
                         {document.$id}
-                    </ID>
+                    </Id>
                 </TableCell>
 
                 {#each $columns as column}

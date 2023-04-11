@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { ID } from '$lib/components';
+    import { Id } from '$lib/components';
     import {
         Table,
         TableBody,
@@ -36,9 +36,9 @@
                         {#if column.id === '$id'}
                             {#key $columns}
                                 <TableCell width={column.width} title={column.title}>
-                                    <ID value={database.$id}>
+                                    <Id value={database.$id}>
                                         {database.$id}
-                                    </ID>
+                                    </Id>
                                 </TableCell>
                             {/key}
                         {:else if column.id === 'name'}

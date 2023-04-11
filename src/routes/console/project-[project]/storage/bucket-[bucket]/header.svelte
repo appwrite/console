@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { ID, Tab, Tabs } from '$lib/components';
+    import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { bucket } from './store';
@@ -34,7 +34,7 @@
         <CoverTitle href={`/console/project-${projectId}/storage`}>
             {$bucket?.name}
         </CoverTitle>
-        <ID value={$bucket?.$id} event="bucket">Bucket ID</ID>
+        <Id value={$bucket?.$id} event="bucket">Bucket ID</Id>
     </svelte:fragment>
 
     <Tabs>

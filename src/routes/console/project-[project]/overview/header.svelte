@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ID } from '$lib/components';
+    import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
     import { project } from '../store';
 </script>
@@ -9,6 +9,6 @@
         <CoverTitle>
             {$project?.name}
         </CoverTitle>
-        <ID value={$project.$id}>{$project.$id}</ID>
+        <Id value={$project.$id}>{$project.$id}</Id>
     </svelte:fragment>
 </Cover>

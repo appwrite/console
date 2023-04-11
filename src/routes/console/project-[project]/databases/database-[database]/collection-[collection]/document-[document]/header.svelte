@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { ID, Tab, Tabs } from '$lib/components';
+    import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { doc } from './store';
@@ -37,7 +37,7 @@
             href={`/console/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`}>
             {$doc?.$id}
         </CoverTitle>
-        <ID value={$doc?.$id} event="document">Document ID</ID>
+        <Id value={$doc?.$id} event="document">Document ID</Id>
     </svelte:fragment>
 
     <Tabs>

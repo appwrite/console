@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { ID, Tab, Tabs } from '$lib/components';
+    import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { user } from './store';
@@ -38,7 +38,7 @@
         <CoverTitle href={`/console/project-${projectId}/auth`}>
             {$user.name ? $user.name : '-'}
         </CoverTitle>
-        <ID value={$user.$id} event="user">{$user.$id}</ID>
+        <Id value={$user.$id} event="user">{$user.$id}</Id>
     </svelte:fragment>
 
     <Tabs>

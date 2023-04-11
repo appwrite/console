@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { ID } from '$lib/components';
+    import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
     import { file } from './store';
 
@@ -13,6 +13,6 @@
         <CoverTitle href={`/console/project-${projectId}/storage/bucket-${bucketId}`}>
             {$file?.name}
         </CoverTitle>
-        <ID value={$file?.$id} event="file">{$file?.$id}</ID>
+        <Id value={$file?.$id} event="file">{$file?.$id}</Id>
     </svelte:fragment>
 </Cover>
