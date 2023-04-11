@@ -23,7 +23,6 @@
         collectionId: string,
         data: Partial<Models.AttributeString>
     ) {
-        console.log(data);
         await sdk.forProject.databases.updateStringAttribute(
             databaseId,
             collectionId,
