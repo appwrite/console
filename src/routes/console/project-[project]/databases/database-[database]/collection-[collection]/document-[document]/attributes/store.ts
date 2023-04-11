@@ -1,8 +1,7 @@
 import type { Models } from '@appwrite.io/console';
 import type { Attributes } from '../../store';
 
-//TODO: remove `side` after SDK update
-export function isRelationshipToMany(attribute: Models.AttributeRelationship & { side: string }) {
+export function isRelationshipToMany(attribute: Models.AttributeRelationship) {
     if (!attribute) return false;
     if (!attribute?.relationType) return false;
     if (attribute?.side === 'child') {

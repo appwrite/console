@@ -81,10 +81,7 @@
         }
 
         if (isRelationship(attribute)) {
-            //TODO: remove `side` after SDK update
-            if (
-                isRelationshipToMany(attribute as Models.AttributeRelationship & { side: string })
-            ) {
+            if (isRelationshipToMany(attribute as Models.AttributeRelationship)) {
                 const workIds = workAttribute.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );

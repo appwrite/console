@@ -15,8 +15,7 @@
     export let label: string;
 
     export let value: string | string[];
-    //TODO: remove `side` after SDK update
-    export let attribute: Models.AttributeRelationship & { side: string };
+    export let attribute: Models.AttributeRelationship;
     export let optionalText: string | undefined = undefined;
     export let editing = false;
 

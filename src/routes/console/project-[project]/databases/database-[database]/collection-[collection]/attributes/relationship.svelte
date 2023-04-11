@@ -29,7 +29,6 @@
             databaseId,
             collectionId,
             data.key,
-            data.twoWay,
             data.onDelete
         );
     }
@@ -48,7 +47,7 @@
     import { isRelationshipToMany } from '../document-[document]/attributes/store';
 
     // Props
-    export let data: Models.AttributeRelationship & { side: string };
+    export let data: Models.AttributeRelationship;
     export let editing = false;
 
     // Constants
