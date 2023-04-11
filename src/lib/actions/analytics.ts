@@ -165,6 +165,7 @@ export enum Submit {
     CollectionUpdatePermissions = 'submit_collection_update_permissions',
     CollectionUpdateSecurity = 'submit_collection_update_security',
     CollectionUpdateEnabled = 'submit_collection_update_enabled',
+    CollectionUpdateDisplayNames = 'submit_collection_update_display_names',
     FunctionCreate = 'submit_function_create',
     FunctionDelete = 'submit_function_delete',
     FunctionUpdateName = 'submit_function_update_name',

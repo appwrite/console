@@ -24,13 +24,13 @@
                 message: 'Display names has been updated',
                 type: 'success'
             });
-            trackEvent(Submit.CollectionUpdateName);
+            trackEvent(Submit.CollectionUpdateDisplayNames);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.CollectionUpdateName);
+            trackError(error, Submit.CollectionUpdateDisplayNames);
         }
     }
 
