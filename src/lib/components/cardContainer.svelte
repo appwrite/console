@@ -1,12 +1,14 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { Empty } from '$lib/components';
     import { CARD_LIMIT } from '$lib/constants';
+    import { preferences } from '$lib/stores/preferences';
 
     export let offset = 0;
     export let total = 0;
     export let event: string = null;
 
-    let limit = CARD_LIMIT;
+    $: limit = preferences.get($page.route)?.limit ?? CARD_LIMIT;
 </script>
 
 <ul
