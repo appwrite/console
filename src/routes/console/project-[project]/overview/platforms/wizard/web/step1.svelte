@@ -48,7 +48,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Web app</svelte:fragment>
+    <svelte:fragment slot="title">Register your hostname</svelte:fragment>
     <FormList>
         <InputText
             id="name"

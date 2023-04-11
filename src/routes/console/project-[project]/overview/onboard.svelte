@@ -14,22 +14,22 @@
 
     const platforms = [
         {
-            title: 'Web App',
+            title: 'Web',
             icon: 'grayscale/code',
             platform: Platform.Web
         },
         {
-            title: 'Flutter App',
+            title: 'Flutter',
             icon: 'color/flutter',
             platform: Platform.Flutter
         },
         {
-            title: 'Apple App',
+            title: 'Apple',
             icon: 'color/apple',
             platform: Platform.Apple
         },
         {
-            title: 'Android App',
+            title: 'Android',
             icon: 'color/android',
             platform: Platform.Android
         }
@@ -49,7 +49,7 @@
         <div class="grid-1-2-col-1">
             <h2 class="heading-level-5">Getting Started Guide</h2>
             <p class="u-line-height-1-5 u-margin-block-start-12">
-                Let's get your project up and running
+                Here are some next steps to start building
             </p>
         </div>
         <div class="grid-1-2-col-2 u-flex u-main-end u-cross-end is-not-mobile">
@@ -61,7 +61,7 @@
         <div class="grid-1-2-col-1">
             <h3 class="heading-level-7">Add a Platform</h3>
             <p class="u-line-height-1-5 u-margin-block-start-16">
-                Our SDK's make it possible to easily add any platform that you want to use.
+                Our SDKs make it possible to easily integrate with any platform.
             </p>
         </div>
         <div class="grid-1-2-col-2">
@@ -99,7 +99,8 @@
         <div class="grid-1-2-col-1">
             <h3 class="heading-level-7">Integrate With Your Server</h3>
             <p class="u-line-height-1-5  u-margin-block-start-16">
-                Our SDK's make it possible to easily add any platform that you want to use.
+                Appwrite is designed to adapt to your existing backend. Integrate Appwrite with your
+                backend code base using Server SDKs or Webhooks.
             </p>
         </div>
         <div class="grid-1-2-col-2">
@@ -152,7 +153,7 @@
             <i class="icon-lock-closed" />
         </div>
         <div class="common-section">
-            <h7 class="heading-level-7">Add a Platform to View Data About Your Project</h7>
+            <h7 class="heading-level-7">Add a platform to view data about your project</h7>
         </div>
         <div class="u-margin-block-start-16 u-text-center" style:max-width="550px">
             Get insights on bandwidth usage, requests, realtime connections and more after making

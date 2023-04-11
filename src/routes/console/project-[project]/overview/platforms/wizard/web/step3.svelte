@@ -12,12 +12,12 @@ client
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Let's get coding</svelte:fragment>
+    <svelte:fragment slot="title">Initialize SDK</svelte:fragment>
 
-    <h2 class="heading-level-7">Init your SDK</h2>
+    <h2 class="heading-level-7">Initialize your SDK</h2>
     <p>
-        Now that you've downloaded the SDK, it's time to initialze it. Use your project ID, which
-        can be found in your project settings page.
+        Initialize your SDK by pointing the client to your Appwrite project using your
+        <!-- TODO: insert ID here -->
     </p>
     <Code label="Web SDK" labelIcon="code" language="js" {code} withCopy withLineNumbers />
 </WizardStep>
