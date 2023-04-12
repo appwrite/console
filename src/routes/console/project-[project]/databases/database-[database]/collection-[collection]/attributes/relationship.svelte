@@ -44,7 +44,6 @@
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
     import { SelectSearchItem } from '$lib/elements';
-    import { isRelationshipToMany } from '../document-[document]/attributes/store';
 
     // Props
     export let data: Models.AttributeRelationship;
@@ -102,7 +101,6 @@
 
     $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
-    $: isToMany = isRelationshipToMany(data);
 
     $: if (editing) {
         way = data.twoWay ? 'two' : 'one';
@@ -234,21 +232,26 @@
                 <span>{data.key}</span>
             </div>
         </div>
-        <div>
-            <p class="u-text-center">
-                <b data-private>{camelize($collection.name)}</b> can contain {data.relationType &&
-                !['oneToOne', 'oneToMany'].includes(data.relationType)
-                    ? 'many'
-                    : 'one'}
-                <b data-private>{data.key}</b>
-            </p>
-            <p class="u-text-center">
-                <b data-private>{camelize($collection.name)}</b> can belong to {isToMany
-                    ? 'many'
-                    : 'one'}
-                <b data-private>{data.key}</b>
-            </p>
-        </div>
+        {#if data.relationType}
+            <div>
+                <p class="u-text-center">
+                    <b data-private>{camelize($collection.name)}</b> can contain {[
+                        'oneToOne',
+                        'manyToOne'
+                    ].includes(data.relationType)
+                        ? 'one'
+                        : 'many'}
+                    <b data-private>{camelize(data.key)}</b>
+                </p>
+                <p class="u-text-center">
+                    <b data-private>{camelize(data.key)}</b>
+                    can belong to {['oneToOne', 'oneToMany'].includes(data.relationType)
+                        ? 'one'
+                        : 'many'}
+                    <b data-private>{camelize($collection.name)}</b>
+                </p>
+            </div>
+        {/if}
     </div>
     <InputSelect
         id="deleting"
