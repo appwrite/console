@@ -77,14 +77,13 @@
                     placeholder="Enter Key"
                     bind:value={selectedAttribute.key}
                     autofocus
-                    required
                     readonly />
             {/if}
             {#if option}
                 <svelte:component
                     this={option.component}
-                    bind:data={selectedAttribute}
                     editing
+                    bind:data={selectedAttribute}
                     on:close={() => (option = null)} />
             {/if}
         </FormList>

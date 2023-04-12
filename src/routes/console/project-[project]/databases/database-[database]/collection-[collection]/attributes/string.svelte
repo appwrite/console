@@ -54,7 +54,7 @@
     label="Size"
     placeholder="Enter size"
     bind:value={data.size}
-    required
+    required={!editing}
     readonly={editing} />
 {#if data.size >= 50}
     <InputTextarea

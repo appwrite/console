@@ -54,8 +54,20 @@
     }
 </script>
 
-<InputNumber id="min" label="Min" placeholder="Enter size" bind:value={data.min} step="any" />
-<InputNumber id="max" label="Max" placeholder="Enter size" bind:value={data.max} step="any" />
+<InputNumber
+    id="min"
+    label="Min"
+    placeholder="Enter size"
+    bind:value={data.min}
+    step="any"
+    required={editing} />
+<InputNumber
+    id="max"
+    label="Max"
+    placeholder="Enter size"
+    bind:value={data.max}
+    step="any"
+    required={editing} />
 <InputNumber
     id="default"
     label="Default value"
