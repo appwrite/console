@@ -34,8 +34,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputNumber } from '$lib/elements/forms';
-    import String from '../document-[document]/attributes/string.svelte';
+    import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
@@ -57,20 +56,25 @@
     bind:value={data.size}
     required
     readonly={editing} />
-<String
-    id="default"
-    label="Default value"
-    attribute={{
-        key: 'default',
-        type: 'string',
-        required: data.required,
-        array: data.array,
-        size: data.size,
-        default: data.default,
-        status: 'enabled'
-    }}
-    disabled={data.required || data.array}
-    bind:value={data.default} />
+{#if data.size >= 50}
+    <InputTextarea
+        id="default"
+        label="Default"
+        placeholder="Enter string"
+        disabled={data.required || data.array}
+        nullable={!data.required && !data.array}
+        maxlength={data.size}
+        bind:value={data.default} />
+{:else}
+    <InputText
+        id="default"
+        label="Default"
+        placeholder="Enter string"
+        disabled={data.required || data.array}
+        nullable={!data.required && !data.array}
+        maxlength={data.size}
+        bind:value={data.default} />
+{/if}
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
