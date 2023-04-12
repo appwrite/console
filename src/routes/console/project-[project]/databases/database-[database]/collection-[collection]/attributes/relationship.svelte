@@ -44,7 +44,6 @@
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
     import { SelectSearchItem } from '$lib/elements';
-    import { isRelationshipToMany } from '../document-[document]/attributes/store';
 
     // Props
     export let data: Models.AttributeRelationship;
@@ -102,7 +101,6 @@
 
     $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
-    $: isToMany = isRelationshipToMany(data);
 
     $: if (editing) {
         way = data.twoWay ? 'two' : 'one';
