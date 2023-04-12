@@ -1,8 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Copy } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Id } from '$lib/components';
     import {
         Table,
         TableBody,
@@ -37,21 +36,16 @@
                     {#if column.show}
                         {#if column.id === '$id'}
                             {#key $columns}
-                                <TableCell title={column.title}>
-                                    <Copy value={collection.$id}>
-                                        <Pill button trim>
-                                            <span class="icon-duplicate" aria-hidden="true" />
-                                            <span class="text u-trim">{collection.$id}</span>
-                                        </Pill>
-                                    </Copy>
+                                <TableCell title={column.title} width={column.width}>
+                                    <Id value={collection.$id}>{collection.$id}</Id>
                                 </TableCell>
                             {/key}
                         {:else if column.id === 'name'}
-                            <TableCellText title={column.title}>
+                            <TableCellText title={column.title} width={column.width}>
                                 {collection.name}
                             </TableCellText>
                         {:else}
-                            <TableCellText title={column.title}>
+                            <TableCellText title={column.title} width={column.width}>
                                 {toLocaleDateTime(collection[column.id])}
                             </TableCellText>
                         {/if}

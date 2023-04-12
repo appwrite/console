@@ -418,7 +418,7 @@
                             label="Allowed extensions"
                             placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
                             bind:tags={extensions} />
-                        <li class="u-flex u-gap-12 u-margin-block-start-8 ">
+                        <li class="u-flex u-gap-12 u-margin-block-start-8">
                             {#each suggestedExtensions as ext}
                                 <Pill
                                     selected={extensions.includes(ext)}

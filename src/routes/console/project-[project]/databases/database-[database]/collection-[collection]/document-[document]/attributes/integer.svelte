@@ -13,6 +13,7 @@
     {id}
     {label}
     {optionalText}
+    nullable
     required={attribute.required}
     min={attribute.min}
     max={attribute.max}

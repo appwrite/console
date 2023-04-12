@@ -31,7 +31,12 @@
     }
 </script>
 
-<Modal bind:show={showDeleteAll} onSubmit={deleteAllSessions} warning>
+<Modal
+    bind:show={showDeleteAll}
+    onSubmit={deleteAllSessions}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete All Sessions</svelte:fragment>
     <p data-private>
         Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
