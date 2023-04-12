@@ -1,5 +1,11 @@
 <script lang="ts">
-    import { AvatarInitials, EmptySearch, Limit, Pagination, Trim } from '$lib/components';
+    import {
+        AvatarInitials,
+        EmptySearch,
+        Heading,
+        PaginationWithLimit,
+        Trim
+    } from '$lib/components';
     import {
         TableBody,
         TableHeader,
@@ -19,6 +25,7 @@
 </script>
 
 <Container>
+    <Heading tag="h2" size="5">Activity</Heading>
     {#if logs.total}
         <TableScroll>
             <TableHeader>
@@ -42,7 +49,7 @@
                                         <Trim>{log.userEmail}</Trim>
                                     {/if}
                                 {:else}
-                                    <div class="avatar is-size-small ">
+                                    <div class="avatar is-size-small">
                                         <span class="icon-anonymous" aria-hidden="true" />
                                     </div>
                                     <span class="text u-trim">{log.userName ?? 'Anonymous'}</span>
@@ -64,10 +71,8 @@
                 {/each}
             </TableBody>
         </TableScroll>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit {limit} sum={logs.total} name="Logs" />
-            <Pagination {limit} {offset} sum={logs.total} />
-        </div>
+
+        <PaginationWithLimit name="Logs" {limit} {offset} total={logs.total} />
     {:else}
         <EmptySearch>
             <div class="u-flex u-flex-vertical u-cross-center">

@@ -8,6 +8,7 @@
 
 <div
     class="table-col"
+    style:--p-col-width={width?.toString()}
     class:is-only-desktop={onlyDesktop}
     class:u-overflow-visible={showOverflow}
     style={width ? `--p-col-width:${width?.toString()}` : ''}

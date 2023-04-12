@@ -43,6 +43,7 @@
     class:common-section={!isTile}
     class:is-border-dashed={isDashed}
     class:is-danger={danger}
+    class:is-allowed-focus={href}
     on:click
     on:keyup={clickOnEnter}
     {href}>

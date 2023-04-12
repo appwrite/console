@@ -2,6 +2,7 @@
     import { Container } from '$lib/layout';
     import { collection } from '../store';
     import DangerZone from './dangerZone.svelte';
+    import DisplayName from './displayName.svelte';
     import UpdateName from './updateName.svelte';
     import UpdatePermissions from './updatePermissions.svelte';
     import UpdateSecurity from './updateSecurity.svelte';
@@ -12,6 +13,7 @@
     {#if $collection}
         <UpdateStatus />
         <UpdateName />
+        <DisplayName />
         <UpdatePermissions />
         <UpdateSecurity />
         <DangerZone />

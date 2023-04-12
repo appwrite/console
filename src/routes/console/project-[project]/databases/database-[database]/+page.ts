@@ -1,8 +1,8 @@
 import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getOrder, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
-import { CARD_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
+import { CARD_LIMIT } from '$lib/constants';
 
 export const load: PageLoad = async ({ params, url, route }) => {
     const page = getPage(url);
