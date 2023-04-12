@@ -110,9 +110,7 @@ function createPreferences() {
 
                 return n;
             }),
-        loadTeamPrefs: async () => {
-            const id = get(organization)?.$id;
-            if (!id) return {};
+        loadTeamPrefs: async (id: string) => {
             const teamPrefs = await sdk.forConsole.teams.getPrefs(id);
             update((n) => {
                 n[id] = teamPrefs;

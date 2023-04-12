@@ -6,10 +6,8 @@ import Header from './header.svelte';
 import { error } from '@sveltejs/kit';
 import SubNavigation from './subNavigation.svelte';
 import { Query } from '@appwrite.io/console';
-import { preferences } from '$lib/stores/preferences';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
-    await preferences.loadTeamPrefs();
     depends(Dependencies.COLLECTION);
     try {
         return {
