@@ -34,7 +34,7 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputChoice } from '$lib/elements/forms';
+    import { InputChoice, InputURL } from '$lib/elements/forms';
 
     export let data: Partial<Models.AttributeUrl>;
     export let editing = false;
@@ -44,7 +44,7 @@
     }
 </script>
 
-<InputText
+<InputURL
     id="default"
     label="Default value"
     placeholder="Enter value"
