@@ -4,6 +4,7 @@
     import NullCheckbox from './nullCheckbox.svelte';
 
     export let label: string;
+    export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let id: string;
     export let value = '';
@@ -54,7 +55,7 @@
 </script>
 
 <FormItem>
-    <Label {required} hide={!showLabel} for={id}>
+    <Label {required} {optionalText} hide={!showLabel} for={id}>
         {label}
     </Label>
 

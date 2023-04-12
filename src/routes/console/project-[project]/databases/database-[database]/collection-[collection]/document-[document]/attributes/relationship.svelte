@@ -30,6 +30,13 @@
     let offset = 0;
 
     onMount(async () => {
+        if (value) {
+            if (isRelationshipToMany(attribute)) {
+                relatedList = value as string[];
+            } else {
+                singleRel = value as string;
+            }
+        }
         documentList = await getDocuments();
 
         if (editing && $doc?.[attribute.key]) {
