@@ -11,19 +11,18 @@
 
     export let showDelete = false;
 
-    const deleteOrg = async () => {
+    async function deleteOrg() {
         try {
             await sdk.forConsole.teams.delete($organization.$id);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: `${$organization.name} has been deleted`
             });
             trackEvent(Submit.OrganizationDelete);
             if ($organizationList?.total > 1) {
-                await invalidate(Dependencies.ACCOUNT);
                 goto(`${base}/console/`);
             } else {
-                await invalidate(Dependencies.ACCOUNT);
                 goto(`${base}/console/onboarding`);
             }
             showDelete = false;
@@ -34,10 +33,15 @@
             });
             trackError(error, Submit.OrganizationDelete);
         }
-    };
+    }
 </script>
 
-<Modal onSubmit={deleteOrg} bind:show={showDelete} warning>
+<Modal
+    onSubmit={deleteOrg}
+    bind:show={showDelete}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete Organization</svelte:fragment>
     <p>
         Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})

@@ -12,7 +12,7 @@
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -27,10 +27,10 @@
         try {
             const user = await sdk.forProject.users.create(
                 id ?? ID.unique(),
-                mail,
-                phone,
-                pass,
-                name
+                mail || undefined,
+                phone || undefined,
+                pass || undefined,
+                name || undefined
             );
             mail = pass = name = '';
             showCreate = false;

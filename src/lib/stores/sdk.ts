@@ -13,7 +13,7 @@ import {
     Storage,
     Teams,
     Users
-} from '@aw-labs/appwrite-console';
+} from '@appwrite.io/console';
 import { Billing } from './billing';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;

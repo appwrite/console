@@ -33,7 +33,7 @@
             required
             bind:value={$domain.domain} />
     </FormList>
-    <div class="common-section ">
+    <div class="common-section">
         <p>
             You can find a list of domain providers and their DNS setting documentation <a
                 class="link"

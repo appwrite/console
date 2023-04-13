@@ -9,7 +9,7 @@
     import { Permissions } from '$lib/components/permissions';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
     export let showCreate = false;
 

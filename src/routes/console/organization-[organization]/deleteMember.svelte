@@ -5,7 +5,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -43,7 +43,12 @@
     $: isUser = selectedMember?.userId === $user?.$id;
 </script>
 
-<Modal bind:show={showDelete} onSubmit={deleteMembership} warning>
+<Modal
+    bind:show={showDelete}
+    onSubmit={deleteMembership}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">
         {isUser ? 'Leave Organization' : 'Delete Member'}
     </svelte:fragment>

@@ -9,6 +9,7 @@
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { isRelationship } from '../document-[document]/attributes/store';
     import { indexes, type Attributes } from '../store';
     import { collection } from '../store';
     import Select from './select.svelte';
@@ -27,10 +28,12 @@
     ];
     let selectedType = 'key';
 
-    let attributeOptions = $collection.attributes.map((attribute: Attributes) => ({
-        value: attribute.key,
-        label: attribute.key
-    }));
+    let attributeOptions = $collection.attributes
+        .filter((attribute) => !isRelationship(attribute))
+        .map((attribute) => ({
+            value: attribute.key,
+            label: attribute.key
+        }));
 
     let attributeList = [{ value: '', order: '' }];
 
@@ -133,6 +136,7 @@
 
                 <div class="form-item-part u-cross-child-end">
                     <Button
+                        noMargin
                         text
                         disabled={attributeList.length <= 1}
                         on:click={() => {

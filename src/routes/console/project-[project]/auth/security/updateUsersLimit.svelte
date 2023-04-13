@@ -14,11 +14,9 @@
 
     let isLimited = $project.authLimit !== 0;
     let newLimit = isLimited ? $project.authLimit : 100;
-    let submitting = false;
 
     $: btnDisabled = (function isBtnDisabled() {
         if (
-            submitting ||
             (!isLimited && $project.authLimit === 0) ||
             (isLimited && $project.authLimit === newLimit)
         ) {
@@ -29,10 +27,9 @@
     })();
 
     async function updateLimit() {
-        submitting = true;
         try {
             await sdk.forConsole.projects.updateAuthLimit(projectId, isLimited ? newLimit : 0);
-            invalidate(Dependencies.PROJECT).then(() => (submitting = false));
+            await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Updated project users limit successfully'
@@ -43,18 +40,16 @@
                 type: 'error',
                 message: error.message
             });
-            submitting = false;
             trackError(error, Submit.AuthLimitUpdate);
         }
     }
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Users Limit</Heading>
+    <Heading tag="h2" size="7">Users Limit</Heading>
     <p>
         Limit new users from signing up for your project, regardless of authentication method. You
         can still create users and team memberships from your Appwrite console.
-        <b>The maximum limit is 10,000 users.</b>
     </p>
 
     <svelte:fragment slot="aside">
@@ -69,7 +64,7 @@
                         type="radio"
                         bind:group={isLimited}
                         value={false} />
-                    <div class="choice-item-content  u-cross-child-center">
+                    <div class="choice-item-content u-cross-child-center">
                         <div class="choice-item-title">Unlimited</div>
                     </div>
                     <Pill>recommended</Pill>

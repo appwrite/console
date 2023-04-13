@@ -6,16 +6,16 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showDelete = false;
     export let selectedDomain: Models.Domain;
 
-    const deleteDomain = async () => {
+    async function deleteDomain() {
         try {
             await sdk.forConsole.projects.deleteDomain($project.$id, selectedDomain.$id);
-            invalidate(Dependencies.DOMAINS);
+            await invalidate(Dependencies.DOMAINS);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -29,10 +29,15 @@
             });
             trackError(error, Submit.DomainDelete);
         }
-    };
+    }
 </script>
 
-<Modal bind:show={showDelete} onSubmit={deleteDomain} warning>
+<Modal
+    bind:show={showDelete}
+    onSubmit={deleteDomain}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete Domain</svelte:fragment>
     {#if selectedDomain}
         <p data-private>

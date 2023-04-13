@@ -29,7 +29,7 @@
                 $collection.documentSecurity,
                 enabled
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: `${$collection.name} has been updated`,
                 type: 'success'

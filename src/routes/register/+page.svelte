@@ -16,21 +16,19 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
-    let name: string, mail: string, pass: string, disabled: boolean;
+    let name: string, mail: string, pass: string;
     let terms = false;
 
     async function register() {
         try {
-            disabled = true;
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdk.forConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
             trackEvent(Submit.AccountCreate);
         } catch (error) {
-            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
@@ -83,7 +81,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit {disabled}>Sign up</Button>
+                    <Button fullWidth submit>Sign up</Button>
                 </FormItem>
             </FormList>
         </Form>

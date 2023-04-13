@@ -32,8 +32,7 @@
                 $collection.documentSecurity,
                 $collection.enabled
             );
-            invalidate(Dependencies.COLLECTION);
-            arePermsDisabled = true;
+            await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'

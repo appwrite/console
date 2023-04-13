@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { showCreate } from '../store';
-    import type { PageData } from './[[page]]/$types';
+    import type { PageData } from './$types';
 
     $: data = $page.data as PageData;
     $: project = $page.params.project;
@@ -17,7 +17,7 @@
 <section class="drop-section u-flex-vertical u-gap-8">
     <a
         class="u-flex u-cross-center u-sep-block-end u-padding-block-12 is-not-desktop"
-        href={`${base}/console/project-${project}/databases/database-${databaseId}`}>
+        href={`${base}/console/project-${project}/databases/database-${databaseId}?openNavbar=true`}>
         <span class="icon-cheveron-left" aria-hidden="true" />
         <h5 class="eyebrow-heading-3 u-margin-inline-auto">Collections</h5>
     </a>
@@ -31,11 +31,11 @@
     {#if data?.allCollections?.total}
         <ul class="drop-list">
             {#each sortedCollections as collection}
-                {@const href = `${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}/documents`}
+                {@const href = `${base}/console/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                 {@const isSelected = collectionId === collection.$id}
                 <li class="drop-list-item">
                     <a class="drop-button" class:is-selected={isSelected} {href}>
-                        <span class="text">{collection.name}</span>
+                        <span class="text" data-private>{collection.name}</span>
                     </a>
                 </li>
             {/each}

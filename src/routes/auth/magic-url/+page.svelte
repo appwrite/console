@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { Heading } from '$lib/components';
-    import { Account, Client } from '@aw-labs/appwrite-console';
+    import { Account, Client } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
     const client = new Client();
