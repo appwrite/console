@@ -1,16 +1,71 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import Alert from '$lib/components/alert.svelte';
-    import Container from '$lib/layout/container.svelte';
+    import { page } from '$app/stores';
+    import { Alert, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
+    import { Container } from '$lib/layout';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import EmailTemplate from './emailTemplate.svelte';
+    import SmsTemplate from './smsTemplate.svelte';
+    import { addNotification } from '$lib/stores/notifications';
+    import { onMount } from 'svelte';
+
+    const projectId = $page.params.project;
+
+    let template: any;
+    onMount(() => {
+        loadEmailTemplate('verification', 'en_us');
+    });
+    async function loadEmailTemplate(type: string, locale: string) {
+        const path = '/projects/' + projectId + '/templates/email/' + type + '/' + locale;
+
+        try {
+            template = await sdk.forConsole.client.call(
+                'GET',
+                new URL(sdk.forConsole.client.config.endpoint + path)
+            );
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+
+    async function saveEmailTemplate(type: string, data: any) {
+        const path = '/projects/' + projectId + '/templates/email/' + type + '/' + data.locale;
+
+        try {
+            template = await sdk.forConsole.client.call(
+                'PATCH',
+                new URL(sdk.forConsole.client.config.endpoint + path),
+                { 'content-type': 'application/json' },
+                {
+                    senderName: data.senderName,
+                    senderEmail: data.senderEmail,
+                    subject: data.subject,
+                    message: data.message
+                }
+            );
+            addNotification({
+                type: 'success',
+                message: 'Template updated'
+            });
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
 </script>
 
 <Container>
     {#if !$project.smtpEnabled}
         <Alert
             dismissible
-            info
+            type="info"
             buttons={[
                 {
                     name: 'Add SMTP server',
@@ -26,4 +81,69 @@
             labeled as spam.
         </Alert>
     {/if}
+
+    <CardGrid>
+        <Heading size="6" tag="h6">Email Templates</Heading>
+        <p class="text">
+            Use templates to send and process account management emails. <a
+                href="https://appwrite.io/docs"
+                class="link">
+                Learn more about Email templates
+            </a>. <!-- TODO Docs link -->
+        </p>
+
+        <svelte:fragment slot="aside">
+            <Collapsible>
+                <CollapsibleItem open>
+                    <svelte:fragment slot="title">Verification</svelte:fragment>
+                    <p class="text">
+                        Send a verification email to users that sign in with their email and
+                        password.
+                    </p>
+                    <EmailTemplate
+                        bind:template
+                        onSubmit={(data) => saveEmailTemplate('verification', data)} />
+                </CollapsibleItem>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Magic URL</svelte:fragment>
+                    <EmailTemplate onSubmit={(data) => saveEmailTemplate('verification', data)} />
+                </CollapsibleItem>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Reset Password</svelte:fragment>
+                    <EmailTemplate onSubmit={saveEmailTemplate} />
+                </CollapsibleItem>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Invite User</svelte:fragment>
+                    <EmailTemplate onSubmit={saveEmailTemplate} />
+                </CollapsibleItem>
+            </Collapsible>
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <Heading size="6" tag="h6">SMS Templates</Heading>
+        <p class="text">
+            Use templates to send and process account management mobile messages. <a
+                href="https://appwrite.io/docs"
+                class="link">
+                Learn more about SMS templates
+            </a>. <!-- TODO Docs link -->
+        </p>
+
+        <svelte:fragment slot="aside">
+            <Collapsible>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Verification</svelte:fragment>
+                    <p class="text">
+                        Send a verification SMS to users that sign in with their phone
+                    </p>
+                    <SmsTemplate onSubmit={saveEmailTemplate} />
+                </CollapsibleItem>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Login</svelte:fragment>
+                    <SmsTemplate onSubmit={saveEmailTemplate} />
+                </CollapsibleItem>
+            </Collapsible>
+        </svelte:fragment>
+    </CardGrid>
 </Container>

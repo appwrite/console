@@ -26,6 +26,7 @@
         host = $project.smtpHost;
         port = $project.smtpPort;
         username = $project.smtpUsername;
+        password = $project.smtpPassword;
     });
 
     async function updateSmtp() {
@@ -37,7 +38,7 @@
             host,
             port,
             username,
-            password: password ? password : $project.smtpPassword
+            password
         };
         try {
             await sdk.forConsole.client.call(
