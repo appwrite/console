@@ -6,13 +6,12 @@
     import {
         Empty,
         EmptySearch,
-        Pagination,
         Avatar,
         DropList,
         DropListItem,
         DropListLink,
         SearchQuery,
-        Limit
+        PaginationWithLimit
     } from '$lib/components';
     import Create from './create.svelte';
     import Delete from './deleteFile.svelte';
@@ -184,10 +183,12 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.files.total} name="Files" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.files.total} />
-        </div>
+
+        <PaginationWithLimit
+            name="Files"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.files.total} />
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">

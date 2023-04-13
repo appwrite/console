@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
-    import { GridItem1, Heading, Empty, CardContainer, Pagination, Limit } from '$lib/components';
+    import { GridItem1, Heading, Empty, CardContainer, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateProject from './createProject.svelte';
@@ -94,10 +94,12 @@
             <p>Create a new project</p>
         </Empty>
     {/if}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <Limit limit={data.limit} sum={data.projects.total} name="Projects" />
-        <Pagination limit={data.limit} offset={data.offset} sum={data.projects.total} />
-    </div>
+
+    <PaginationWithLimit
+        name="Projects"
+        limit={data.limit}
+        offset={data.offset}
+        total={data.projects.total} />
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />

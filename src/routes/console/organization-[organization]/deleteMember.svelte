@@ -43,7 +43,12 @@
     $: isUser = selectedMember?.userId === $user?.$id;
 </script>
 
-<Modal bind:show={showDelete} onSubmit={deleteMembership} warning>
+<Modal
+    bind:show={showDelete}
+    onSubmit={deleteMembership}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">
         {isUser ? 'Leave Organization' : 'Delete Member'}
     </svelte:fragment>

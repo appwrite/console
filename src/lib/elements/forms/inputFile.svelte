@@ -63,7 +63,7 @@
         <p class="text">{label}</p>
     {/if}
     <div
-        class="box  is-no-shadow u-padding-24"
+        class="box is-no-shadow u-padding-24"
         style="--box-border-radius:var(--border-radius-xsmall); z-index: 1"
         class:is-border-dashed={!hovering}
         class:is-hover-with-file={hovering}
@@ -93,7 +93,7 @@
             <div class="u-flex u-main-center u-cross-center u-gap-16 u-flex-vertical-mobile">
                 {#if maxSize}
                     {@const readableMaxSize = humanFileSize(maxSize)}
-                    <p class="upload-file-box-info body-text-2 u-normal">
+                    <p class="upload-file-box-info body-text-2">
                         Max file size: {readableMaxSize.value + readableMaxSize.unit}
                     </p>
                 {/if}

@@ -12,6 +12,7 @@
                     <Notification
                         type={notification.type}
                         title={notification.title}
+                        icon={notification.icon}
                         on:dismiss={() => dismissNotification(notification.id)}
                         buttons={notification?.buttons}>
                         {notification.message}

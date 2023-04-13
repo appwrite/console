@@ -2,6 +2,7 @@ import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { error } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
+import { preferences } from '$lib/stores/preferences';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
@@ -10,6 +11,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         const project = await sdk.forConsole.projects.get(params.project);
         localStorage.setItem('project', project.$id);
         localStorage.setItem('organization', project.teamId);
+        preferences.loadTeamPrefs(project.teamId);
 
         return {
             project,

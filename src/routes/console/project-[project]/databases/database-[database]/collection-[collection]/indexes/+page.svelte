@@ -18,6 +18,7 @@
     import CreateAttribute from '../createAttribute.svelte';
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
+    import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -25,6 +26,8 @@
     let showOverview = false;
     let showDelete = false;
     let showCreateAttribute = false;
+    let showCreateDropdown = false;
+    let selectedAttribute: string = null;
 </script>
 
 <Container>
@@ -118,11 +121,35 @@
                 on:click={() => (showCreateIndex = true)} />
         {/if}
     {:else}
-        <Empty
-            single
-            target="attribute"
-            href="https://appwrite.io/docs/databases#attributes"
-            on:click={() => (showCreateAttribute = true)} />
+        <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
+            <div class="u-text-center">
+                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <p class="body-text-2 u-bold u-margin-block-start-4">
+                    Need a hand? Check out our documentation.
+                </p>
+            </div>
+            <div class="u-flex u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/databases#attributes"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create {target}`}>Documentation</Button>
+                <CreateAttributeDropdown
+                    bind:showCreateDropdown
+                    bind:showCreate={showCreateAttribute}
+                    bind:selectedOption={selectedAttribute}>
+                    <Button
+                        secondary
+                        event="create_attribute"
+                        on:click={() => {
+                            showCreateDropdown = !showCreateDropdown;
+                        }}>
+                        Create attribute
+                    </Button>
+                </CreateAttributeDropdown>
+            </div>
+        </Empty>
     {/if}
 </Container>
 
@@ -133,4 +160,4 @@
     <Overview bind:showOverview {selectedIndex} />
 {/if}
 
-<CreateAttribute bind:showCreate={showCreateAttribute} />
+<CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />

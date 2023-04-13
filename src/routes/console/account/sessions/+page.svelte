@@ -80,7 +80,7 @@
                                         {session.osVersion}
                                     </Trim>
                                 {:else}
-                                    <span class="avatar  is-color-empty" />
+                                    <span class="avatar is-color-empty" />
                                     <p class="text u-trim">Unknown</p>
                                 {/if}
                                 <div class="is-only-desktop">
