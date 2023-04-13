@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     let selectedTab: string;
     let rawData: string;
@@ -49,7 +49,7 @@
 {#if $log.data}
     <section class="cover-frame" data-private>
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
-            <h1 class="body-text-1">Function ID: {$log.func.$id}</h1>
+            <h1 class="body-text-1 u-bold">Function ID: {$log.func.$id}</h1>
             <button
                 on:click={() => ($log.show = false)}
                 class="button is-text is-only-icon"
@@ -73,7 +73,7 @@
                     </div>
                     <div>
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <h2 class="body-text-2">Deployment ID:</h2>
+                            <h2 class="body-text-2 u-bold">Deployment ID:</h2>
                             <Output value={$log.data.$id}>
                                 {$log.data.$id}
                             </Output>
@@ -145,7 +145,7 @@
                     </div>
                     <div>
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <h2 class="body-text-2">Execution ID:</h2>
+                            <h2 class="body-text-2 u-bold">Execution ID:</h2>
                             <Output value={$log.data.$id}>
                                 {$log.data.$id}
                             </Output>

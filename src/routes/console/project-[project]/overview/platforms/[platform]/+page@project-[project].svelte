@@ -38,24 +38,22 @@
 
     let showDelete = false;
     let name: string = null;
-    let updating = false;
 
     onMount(() => {
         name ??= $platform.name;
     });
 
     async function updateName() {
-        updating = true;
         try {
             await sdk.forConsole.projects.updatePlatform(
                 $project.$id,
                 $platform.$id,
                 name,
-                $platform.key,
-                $platform.store,
-                $platform.hostname
+                $platform.key || undefined,
+                $platform.store || undefined,
+                $platform.hostname || undefined
             );
-            invalidate(Dependencies.PLATFORM);
+            await invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
                 message: 'Platform name has been updated'
@@ -67,18 +65,12 @@
             });
         }
     }
-
-    $: {
-        // When platform name is updated, finalize the updating flow
-        $platform.name;
-        updating = false;
-    }
 </script>
 
 <Container>
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
             <p class="text">Choose any name that will help you distinguish between platforms.</p>
             <svelte:fragment slot="aside">
                 <FormList>
@@ -92,7 +84,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={name === $platform.name || updating} submit>Update</Button>
+                <Button disabled={name === $platform.name} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>

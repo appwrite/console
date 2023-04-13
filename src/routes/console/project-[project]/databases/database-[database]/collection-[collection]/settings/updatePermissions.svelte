@@ -32,8 +32,7 @@
                 $collection.documentSecurity,
                 $collection.enabled
             );
-            invalidate(Dependencies.COLLECTION);
-            arePermsDisabled = true;
+            await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'
@@ -57,7 +56,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Update Permissions</Heading>
+    <Heading tag="h6" size="7">Permissions</Heading>
     <p class="text">
         Choose who can access your collection and documents. For more information, check out the <a
             href="https://appwrite.io/docs/permissions"

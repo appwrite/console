@@ -6,12 +6,12 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
     export let selectedDeployment: Models.Deployment = null;
 
-    const handleSubmit = async () => {
+    async function handleSubmit() {
         try {
             await sdk.forProject.functions.deleteDeployment(
                 selectedDeployment.resourceId,
@@ -31,10 +31,15 @@
             });
             trackError(error, Submit.DeploymentDelete);
         }
-    };
+    }
 </script>
 
-<Modal bind:show={showDelete} onSubmit={handleSubmit} warning>
+<Modal
+    bind:show={showDelete}
+    onSubmit={handleSubmit}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete Deployment</svelte:fragment>
     <p data-private>Are you sure you want to delete this deployment?</p>
     <svelte:fragment slot="footer">

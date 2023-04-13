@@ -17,7 +17,7 @@
     async function updatePhone() {
         try {
             await sdk.forProject.users.updatePhone($user.$id, userPhone);
-            invalidate(Dependencies.USER);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: 'Phone has been updated',
                 type: 'success'
@@ -35,7 +35,7 @@
 
 <Form onSubmit={updatePhone}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Phone</Heading>
+        <Heading tag="h6" size="7">Phone</Heading>
         <svelte:fragment slot="aside">
             <ul>
                 <InputPhone

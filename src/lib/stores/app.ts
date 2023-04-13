@@ -12,6 +12,7 @@ export type Feedback = {
     visualized: number;
     notification: boolean;
     type: 'nps' | 'general';
+    show: boolean;
 };
 
 export const app = writable<AppStore>({
@@ -24,17 +25,24 @@ function createFeedbackStore() {
         elapsed: browser ? parseInt(localStorage.getItem('feedbackElapsed')) : 0,
         visualized: browser ? parseInt(localStorage.getItem('feedbackVisualized')) : 0,
         notification: false,
-        type: 'general'
+        type: 'general',
+        show: false
     });
     return {
         subscribe,
         update,
+        toggleFeedback: () => {
+            update((feedback) => {
+                feedback.show = !feedback.show;
+                return feedback;
+            });
+        },
         toggleNotification: () =>
             update((feedback) => {
                 feedback.notification = !feedback.notification;
                 return feedback;
             }),
-        switchType: (feedType: 'nps' | 'general') =>
+        switchType: (feedType: Feedback['type']) =>
             update((feedback) => {
                 feedback.type = feedType;
                 return feedback;
@@ -74,7 +82,7 @@ function createFeedbackStore() {
                     customFields: value ? [{ id: '40655', value }] : undefined
                 })
             });
-            if (response.status !== 200) {
+            if (response.status >= 400) {
                 throw new Error('Failed to submit feedback');
             }
         }

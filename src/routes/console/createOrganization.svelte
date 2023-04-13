@@ -8,7 +8,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
     export let show = false;
 
@@ -19,7 +19,7 @@
 
     const dispatch = createEventDispatcher();
 
-    const create = async () => {
+    async function create() {
         try {
             const org = await sdk.forConsole.teams.create(id ?? ID.unique(), name);
             await invalidate(Dependencies.ACCOUNT);
@@ -39,7 +39,7 @@
             error = e.message;
             trackError(e, Submit.OrganizationCreate);
         }
-    };
+    }
 </script>
 
 <Modal {error} onSubmit={create} size="big" bind:show>

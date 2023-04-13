@@ -28,7 +28,7 @@
                 values.antivirus
             );
 
-            invalidate(Dependencies.BUCKET);
+            await invalidate(Dependencies.BUCKET);
 
             if (misc.arePermsDisabled !== undefined) {
                 arePermsDisabled.set(misc.arePermsDisabled);
@@ -72,7 +72,7 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { get, writable } from 'svelte/store';
     import Delete from '../deleteBucket.svelte';
@@ -236,7 +236,7 @@
 
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Name</Heading>
+                <Heading tag="h6" size="7">Name</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputText
@@ -258,7 +258,7 @@
 
         <Form onSubmit={updatePermissions}>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Permissions</Heading>
+                <Heading tag="h6" size="7">Permissions</Heading>
                 <p class="text">
                     Choose who can access your buckets and files. For more information, check out
                     the <a
@@ -282,7 +282,7 @@
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7">Update File Security</Heading>
+                <Heading tag="h6" size="7">File Security</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
@@ -310,7 +310,7 @@
 
         <Form onSubmit={updateSecurity}>
             <CardGrid>
-                <Heading tag="h2" size="7">Update Security Settings</Heading>
+                <Heading tag="h2" size="7">Security Settings</Heading>
                 <p class="text">
                     Enable or disable security services for the bucket including <b>Ecryption</b>
                     and <b>Antivirus scanning.</b>
@@ -381,7 +381,7 @@
 
         <Form onSubmit={updateCompression}>
             <CardGrid>
-                <Heading tag="h2" size="6">Update Compression Algorithm</Heading>
+                <Heading tag="h2" size="6">Compression</Heading>
                 <p class="text">
                     Choose an algorithm for compression. For files larger than 20MB, compression
                     will be skipped even if it's enabled.
@@ -390,7 +390,7 @@
                     <FormList>
                         <InputSelect
                             id="compression"
-                            label="Compression algorithm"
+                            label="Algorithm"
                             options={compressionOptions}
                             bind:value={compression} />
                     </FormList>
@@ -406,19 +406,19 @@
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Allowed File Extensions</Heading>
+                <Heading tag="h6" size="7">File Extensions</Heading>
                 <p class="text">
-                    A maximum of 100 file extensions can be added. Leave blank to allow all file
-                    types.
+                    Allowed file extensions. A maximum of 100 file extensions can be added. Leave
+                    blank to allow all file types.
                 </p>
                 <svelte:fragment slot="aside">
                     <ul class="common-section">
                         <InputTags
                             id="read"
-                            label="Allowed file extensions"
+                            label="Allowed extensions"
                             placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
                             bind:tags={extensions} />
-                        <li class="u-flex u-gap-12 u-margin-block-start-8 ">
+                        <li class="u-flex u-gap-12 u-margin-block-start-8">
                             {#each suggestedExtensions as ext}
                                 <Pill
                                     selected={extensions.includes(ext)}

@@ -3,7 +3,16 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Box, CardGrid, DropList, DropListItem, Empty, Output, Secret } from '$lib/components';
+    import {
+        Box,
+        CardGrid,
+        DropList,
+        DropListItem,
+        Empty,
+        Output,
+        PaginationInline,
+        Secret
+    } from '$lib/components';
     import Heading from '$lib/components/heading.svelte';
     import { Roles } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
@@ -14,11 +23,11 @@
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Variable from '../../createVariable.svelte';
     import { execute, func } from '../store';
-    // import Upload from './uploadVariables.svelte';
+    import UploadVariables from './uploadVariables.svelte';
     import {
         Table,
         TableBody,
@@ -36,7 +45,7 @@
     const functionId = $page.params.function;
     let showDelete = false;
     let selectedVar: Models.Variable = null;
-    // let showVariablesUpload = false;
+    let showVariablesUpload = false;
     let showVariablesModal = false;
     let showVariablesDropdown = [];
     let timeout: number = null;
@@ -44,6 +53,7 @@
     let functionSchedule: string = null;
     let permissions: string[] = [];
     let arePermsDisabled = true;
+    let offset = 0;
 
     onMount(async () => {
         timeout ??= $func.timeout;
@@ -57,13 +67,13 @@
             await sdk.forProject.functions.update(
                 functionId,
                 functionName,
-                $func.execute,
-                $func.events,
-                $func.schedule,
-                $func.timeout,
+                $func.execute || undefined,
+                $func.events || undefined,
+                $func.schedule || undefined,
+                $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -84,12 +94,12 @@
                 functionId,
                 $func.name,
                 permissions,
-                $func.events,
-                $func.schedule,
-                $func.timeout,
+                $func.events || undefined,
+                $func.schedule || undefined,
+                $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'
@@ -109,14 +119,13 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute,
-                $func.events,
+                $func.execute || undefined,
+                $func.events || undefined,
                 functionSchedule,
-                $func.timeout,
+                $func.timeout || undefined,
                 $func.enabled
             );
-            invalidate(Dependencies.FUNCTION);
-
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
                 message: 'Cron Schedule has been updated'
@@ -136,14 +145,13 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute,
-                $func.events,
-                $func.schedule,
+                $func.execute || undefined,
+                $func.events || undefined,
+                $func.schedule || undefined,
                 timeout,
                 $func.enabled
             );
-
-            invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
                 message: 'Timeout has been updated'
@@ -163,8 +171,8 @@
 
         try {
             await sdk.forProject.functions.createVariable(functionId, variable.key, variable.value);
+            await invalidate(Dependencies.VARIABLES);
             showVariablesModal = false;
-            invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `${$func.name} variables have been updated`
@@ -188,9 +196,9 @@
                 variable.key,
                 variable.value
             );
+            await invalidate(Dependencies.VARIABLES);
             selectedVar = null;
             showVariablesModal = false;
-            invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `${$func.name} variables have been updated`
@@ -207,7 +215,7 @@
     async function handleVariableDeleted(variable: Models.Variable) {
         try {
             await sdk.forProject.functions.deleteVariable(variable.functionId, variable.$id);
-            invalidate(Dependencies.VARIABLES);
+            await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
                 message: `Variable has been deleted`
@@ -284,7 +292,7 @@
 
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -332,7 +340,7 @@
 
     <Form onSubmit={updateSchedule}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Schedule</Heading>
+            <Heading tag="h6" size="7">Schedule</Heading>
             <p>
                 Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
                     href="https://en.wikipedia.org/wiki/Cron"
@@ -357,7 +365,7 @@
     </Form>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Update Variables</Heading>
+        <Heading tag="h6" size="7">Variables</Heading>
         <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
@@ -369,24 +377,26 @@
                     <span class="icon-download" />
                     <span class="text">Download .env file</span>
                 </Button>
-                <!-- <Button secondary on:click={() => (showVariablesUpload = true)}>
+                <Button secondary on:click={() => (showVariablesUpload = true)}>
                     <span class="icon-upload" />
                     <span class="text">Import .env file</span>
-                </Button> -->
+                </Button>
             </div>
-            {#if data.variables.total}
+            {@const limit = 10}
+            {@const sum = data.variables.total}
+            {#if sum}
                 <div class="u-flex u-flex-vertical u-gap-16">
                     <Table noMargin noStyles>
                         <TableHeader>
                             <TableCellHead>Key</TableCellHead>
-                            <TableCellHead>Value</TableCellHead>
+                            <TableCellHead width={180}>Value</TableCellHead>
                             <TableCellHead width={30} />
                         </TableHeader>
                         <TableBody>
-                            {#each data.variables.variables as variable, i}
+                            {#each data.variables.variables.slice(offset, offset + limit) as variable, i}
                                 <TableRow>
                                     <TableCell title="key">
-                                        <Output value={variable.key}>
+                                        <Output value={variable.key} hideCopyIcon>
                                             {variable.key}
                                         </Output>
                                     </TableCell>
@@ -435,26 +445,26 @@
                             {/each}
                         </TableBody>
                     </Table>
-                    <Button
-                        text
-                        noMargin
-                        on:click={() => {
-                            showVariablesModal = true;
-                        }}>
+                    <Button text noMargin on:click={() => (showVariablesModal = true)}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="text">Create variable</span>
                     </Button>
+                    <div class="u-flex u-main-space-between">
+                        <p class="text">Total variables: {sum}</p>
+                        <PaginationInline {sum} {limit} bind:offset hidePages />
+                    </div>
                 </div>
             {:else}
-                <Empty on:click={() => (showVariablesModal = !showVariablesModal)}
-                    >Create a variable to get started</Empty>
+                <Empty on:click={() => (showVariablesModal = !showVariablesModal)}>
+                    Create a variable to get started
+                </Empty>
             {/if}
         </svelte:fragment>
     </CardGrid>
 
     <Form onSubmit={updateTimeout}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Timeout</Heading>
+            <Heading tag="h6" size="7">Timeout</Heading>
             <p>
                 Limit the execution time of your function. Maximum value is 900 seconds (15
                 minutes).
@@ -504,4 +514,7 @@
         bind:showCreate={showVariablesModal}
         on:created={handleVariableCreated}
         on:updated={handleVariableUpdated} />
+{/if}
+{#if showVariablesUpload}
+    <UploadVariables bind:show={showVariablesUpload} />
 {/if}

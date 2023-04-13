@@ -4,7 +4,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let file: Models.File;
@@ -32,7 +32,12 @@
     };
 </script>
 
-<Modal bind:show={showDelete} onSubmit={deleteFile} warning>
+<Modal
+    bind:show={showDelete}
+    onSubmit={deleteFile}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete File</svelte:fragment>
     <p data-private>Are you sure you want to delete <b>{file.name}</b>?</p>
     <svelte:fragment slot="footer">

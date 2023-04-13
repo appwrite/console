@@ -16,7 +16,7 @@
     async function updateSessionLength() {
         try {
             await sdk.forConsole.projects.updateAuthDuration(projectId, $baseValue);
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
 
             addNotification({
                 type: 'success',
@@ -34,7 +34,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Session Length</Heading>
+    <Heading tag="h2" size="7">Session Length</Heading>
 
     <p>
         If you reduce the limit, users who are currently logged in will be logged out of the

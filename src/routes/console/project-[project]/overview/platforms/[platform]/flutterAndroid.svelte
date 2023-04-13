@@ -23,10 +23,10 @@
                 $platform.$id,
                 $platform.name,
                 key,
-                $platform.store,
-                $platform.hostname
+                $platform.store || undefined,
+                $platform.hostname || undefined
             );
-            invalidate(Dependencies.PLATFORM);
+            await invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
                 type: 'flutter-android'
             });
@@ -46,7 +46,7 @@
 
 <Form onSubmit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Package Name</Heading>
+        <Heading tag="h6" size="7">Package Name</Heading>
         <p class="text">
             Your package name is generally the applicationId in your app-level build.gradle file.
         </p>

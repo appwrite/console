@@ -17,7 +17,7 @@
     async function updateName() {
         try {
             await sdk.forProject.users.updateName($user.$id, userName);
-            invalidate(Dependencies.USER);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -35,7 +35,7 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Name</Heading>
+        <Heading tag="h6" size="7">Name</Heading>
 
         <svelte:fragment slot="aside">
             <ul data-private>

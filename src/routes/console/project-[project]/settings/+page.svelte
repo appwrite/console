@@ -17,7 +17,6 @@
 
     let name: string = null;
     let showDelete = false;
-    let updating = false;
     const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
 
@@ -26,10 +25,9 @@
     });
 
     async function updateName() {
-        updating = true;
         try {
             await sdk.forConsole.projects.update($project.$id, name);
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'
@@ -44,12 +42,6 @@
         }
     }
 
-    $: {
-        // When project name is updated, finalize the updating flow
-        $project.name;
-        updating = false;
-    }
-
     async function serviceUpdate(service: Service) {
         try {
             await sdk.forConsole.projects.updateServiceStatus(
@@ -57,7 +49,7 @@
                 service.method,
                 service.value
             );
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: `${service.label} service has been ${
@@ -102,7 +94,7 @@
                 </svelte:fragment>
             </CardGrid>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Name</Heading>
+                <Heading tag="h6" size="7">Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <FormList>
@@ -116,7 +108,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={name === $project.name || updating} submit>Update</Button>
+                    <Button disabled={name === $project.name} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>

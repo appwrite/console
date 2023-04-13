@@ -1,6 +1,5 @@
 <script>
-    import { Mode, MODE } from '$lib/system';
-
+    import { isCloud } from '$lib/system';
     import { version } from '$routes/console/store';
 
     const currentYear = new Date().getFullYear();
@@ -11,13 +10,13 @@
         <ul class="inline-links is-no-padding-first-and-last u-x-small">
             <li class="inline-links-item">
                 <div class="u-flex u-cross-center u-gap-8">
-                    {#if MODE === Mode.CLOUD}
+                    {#if isCloud}
                         <span class="icon-cloud" />
                     {/if}
                     {#if $version}
                         <a
                             class="text"
-                            href="https://github.com/appwrite/appwrite/blob/master/CHANGES.md"
+                            href="https://github.com/appwrite/appwrite/releases"
                             target="_blank"
                             rel="noreferrer">
                             Version {$version}
@@ -62,7 +61,7 @@
         margin-block-start: auto;
     }
 
-    [class^='icon-']:not(:hover) {
+    [class^='icon-']:not(.icon-cloud):not(:hover) {
         color: hsl(var(--color-neutral-50));
     }
 </style>

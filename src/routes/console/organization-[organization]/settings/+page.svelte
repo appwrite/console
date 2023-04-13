@@ -20,7 +20,7 @@
 
     async function updateName() {
         try {
-            await sdk.forConsole.teams.update($organization.$id, name);
+            await sdk.forConsole.teams.updateName($organization.$id, name);
             await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 message: 'Name has been updated',
@@ -43,7 +43,7 @@
     {#if $organization}
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Name</Heading>
+                <Heading tag="h6" size="7">Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <ul>

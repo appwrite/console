@@ -27,7 +27,7 @@
     async function updateName() {
         try {
             await sdk.forConsole.account.updateName(name);
-            invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
@@ -41,10 +41,11 @@
             trackError(error, Submit.AccountUpdateName);
         }
     }
+
     async function updateEmail() {
         try {
             await sdk.forConsole.account.updateEmail(email, emailPassword);
-            invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'
@@ -81,7 +82,7 @@
 <Container>
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
@@ -96,7 +97,7 @@
     </Form>
     <Form onSubmit={updateEmail}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Email</Heading>
+            <Heading tag="h6" size="7">Email</Heading>
 
             <svelte:fragment slot="aside">
                 <FormList>
@@ -124,7 +125,7 @@
     </Form>
     <Form onSubmit={updatePassword}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Password</Heading>
+            <Heading tag="h6" size="7">Password</Heading>
             <p class="text">
                 Forgot your password? <a class="link" href={`${base}/recover`}
                     >Recover your password</a>

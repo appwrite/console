@@ -23,13 +23,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
 
-    let showFeedback = false;
     let showDropdown = false;
     let showSupport = false;
     let droplistElement: HTMLDivElement;
 
     function toggleFeedback() {
-        showFeedback = !showFeedback;
+        feedback.toggleFeedback();
         if ($feedback.notification) {
             feedback.toggleNotification();
             feedback.addVisualization();
@@ -74,15 +73,15 @@
                 <div class="pulse-notification" />
             </div>
         {/if}
-        <DropList width="28" bind:show={showFeedback} scrollable={true}>
-            <Button text on:click={toggleFeedback}>
+        <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
+            <button class="button is-small is-text" on:click={toggleFeedback}>
                 <span class="text">Feedback</span>
-            </Button>
+            </button>
             <svelte:fragment slot="other">
                 {#if $feedback.type === 'nps'}
-                    <FeedbackNPS bind:show={showFeedback} />
+                    <FeedbackNPS />
                 {:else}
-                    <FeedbackGeneral bind:show={showFeedback} />
+                    <FeedbackGeneral />
                 {/if}
             </svelte:fragment>
         </DropList>

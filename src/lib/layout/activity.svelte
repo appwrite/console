@@ -1,5 +1,11 @@
 <script lang="ts">
-    import { AvatarInitials, EmptySearch, Pagination, Trim } from '$lib/components';
+    import {
+        AvatarInitials,
+        EmptySearch,
+        Heading,
+        PaginationWithLimit,
+        Trim
+    } from '$lib/components';
     import {
         TableBody,
         TableHeader,
@@ -11,15 +17,15 @@
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { PAGE_LIMIT } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let logs: Models.LogList;
-    export let path: string;
     export let offset = 0;
+    export let limit = 0;
 </script>
 
 <Container>
+    <Heading tag="h2" size="5">Activity</Heading>
     {#if logs.total}
         <TableScroll>
             <TableHeader>
@@ -43,7 +49,7 @@
                                         <Trim>{log.userEmail}</Trim>
                                     {/if}
                                 {:else}
-                                    <div class="avatar is-size-small ">
+                                    <div class="avatar is-size-small">
                                         <span class="icon-anonymous" aria-hidden="true" />
                                     </div>
                                     <span class="text u-trim">{log.userName ?? 'Anonymous'}</span>
@@ -65,10 +71,8 @@
                 {/each}
             </TableBody>
         </TableScroll>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {logs.total}</p>
-            <Pagination limit={PAGE_LIMIT} {path} {offset} sum={logs.total} />
-        </div>
+
+        <PaginationWithLimit name="Logs" {limit} {offset} total={logs.total} />
     {:else}
         <EmptySearch>
             <div class="u-flex u-flex-vertical u-cross-center">

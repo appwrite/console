@@ -26,10 +26,10 @@
                 $webhook.events,
                 url,
                 $webhook.security,
-                $webhook.httpUser,
-                $webhook.httpPass
+                $webhook.httpUser || undefined,
+                $webhook.httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOK);
+            await invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',
                 message: 'Webhook url has been updated'
@@ -47,7 +47,7 @@
 
 <Form onSubmit={updateUrl}>
     <CardGrid>
-        <Heading tag="h2" size="7">Update Url</Heading>
+        <Heading tag="h2" size="7">URL</Heading>
 
         <svelte:fragment slot="aside">
             <FormList>

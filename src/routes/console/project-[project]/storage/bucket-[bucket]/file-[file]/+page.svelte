@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { CardGrid, Box, Copy, Heading, Alert } from '$lib/components';
+    import { CardGrid, Box, Heading, Alert, Id } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { Pill } from '$lib/elements';
     import { file } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
@@ -48,7 +47,7 @@
     async function updatePermissions() {
         try {
             await sdk.forProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
-            invalidate(Dependencies.FILE);
+            await invalidate(Dependencies.FILE);
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
@@ -90,9 +89,7 @@
                 </a>
                 <div class="u-flex u-flex-vertical u-gap-16">
                     <Heading tag="h2" size="7">{$file.name}</Heading>
-                    <Copy value={getView($file.$id)}>
-                        <Pill button><i class="icon-duplicate" />File URL</Pill>
-                    </Copy>
+                    <Id value={getView($file.$id)}>File URL</Id>
                 </div>
             </div>
             <svelte:fragment slot="aside">
@@ -112,7 +109,7 @@
         </CardGrid>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Update Permissions</Heading>
+            <Heading tag="h6" size="7">Permissions</Heading>
             <p>
                 Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
                 permissions are enabled, file permissions will be ignored.

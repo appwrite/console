@@ -22,7 +22,7 @@
                 $key.scopes,
                 expiration
             );
-            invalidate(Dependencies.KEY);
+            await invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateExpire);
             addNotification({
                 type: 'success',
@@ -45,7 +45,7 @@
 
 <Form onSubmit={updateExpire}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Expiration Date</Heading>
+        <Heading tag="h6" size="7">Expiration Date</Heading>
         <p class="text">Set a date after which your API Key will expire.</p>
         <svelte:fragment slot="aside">
             {#if isExpired}

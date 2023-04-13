@@ -9,7 +9,7 @@
     import { Permissions } from '$lib/components/permissions';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
     export let showCreate = false;
 
@@ -69,7 +69,7 @@
         {:else}
             <CustomId bind:show={showCustomId} name="File" bind:id />
         {/if}
-        <Heading tag="h6" size="7">Update Permissions</Heading>
+        <Heading tag="h6" size="7">Permissions</Heading>
         <p class="text">
             Choose who can access your buckets and files. For more information, check out the
             <a

@@ -27,6 +27,7 @@ export enum Dependencies {
     TEAMS = 'dependency:teams',
     MEMBERSHIPS = 'dependency:memberships',
     DATABASE = 'dependency:database',
+    DATABASES = 'dependency:databases',
     COLLECTION = 'dependency:collection',
     DOCUMENT = 'dependency:document',
     DOCUMENTS = 'dependency:documents',
