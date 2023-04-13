@@ -7,7 +7,7 @@
     import Header from '$lib/layout/header.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
-    import { feedback } from '$lib/stores/app';
+    import { feedback } from '$lib/stores/feedback';
     import { log } from '$lib/stores/logs';
     import { newOrgModal } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';

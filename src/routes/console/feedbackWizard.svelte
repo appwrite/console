@@ -1,0 +1,30 @@
+<script lang="ts">
+    import { Wizard } from '$lib/layout';
+    import { onDestroy } from 'svelte';
+    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import { feedbackData } from '$lib/stores/feedback';
+    import Step1 from './wizardFeedback/step1.svelte';
+    import Step2 from './wizardFeedback/step2.svelte';
+
+    onDestroy(() => {
+        $feedbackData = {
+            message: '',
+            name: '',
+            email: '',
+            value: 0
+        };
+    });
+
+    const stepsComponents: WizardStepsType = new Map();
+    stepsComponents.set(1, {
+        label: 'Feedback',
+        component: Step1
+    });
+    stepsComponents.set(2, {
+        label: 'Thank you',
+        component: Step2,
+        optional: true
+    });
+</script>
+
+<Wizard title="Feedback" steps={stepsComponents} finalAction="Close" />
