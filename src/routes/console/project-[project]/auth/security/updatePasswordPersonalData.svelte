@@ -1,4 +1,4 @@
-<!-- <script lang="ts">
+<script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
@@ -10,38 +10,37 @@
     import { project } from '../../store';
 
     const projectId = $project.$id;
-    let disallowPersonalData = $project.disallowPersonalData ?? false;
+    let disallowPersonalData = $project.authDisallowPersonalData ?? false;
 
-    async function updatePasswordPersonalData() {
+    async function updateDisallowPersonalData() {
         try {
-            await sdk.forConsole.projects.updateAuthPasswordHistory(
+            await sdk.forConsole.projects.updateDisallowPersonalData(
                 projectId,
-                passwordHistoryEnabled ? passwordHistory : 0
+                disallowPersonalData
             );
             await invalidate(Dependencies.PROJECT);
-            initialPasswordHistoryEnabled = passwordHistoryEnabled;
             addNotification({
                 type: 'success',
-                message: 'Updated password history limit.'
+                message: 'Updated disallow personal data.'
             });
-            trackEvent(Submit.AuthPasswordHistoryUpdate);
+            trackEvent(Submit.AuthDisallowPersonalDataUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.AuthPasswordHistoryUpdate);
+            trackError(error, Submit.AuthDisallowPersonalDataUpdate);
         }
     }
 </script>
 
-<Form onSubmit={updatePasswordPersonalData}>
+<Form onSubmit={updateDisallowPersonalData}>
     <CardGrid>
         <Heading tag="h2" size="7">Personal Data</Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch
-                    bind:value={passwordHistoryEnabled}
+                    bind:value={disallowPersonalData}
                     id="passwordHisotryEnabled"
                     label="Disallow Personal Data" />
             </FormList>
@@ -52,11 +51,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button
-                disabled={(passwordHistory === $project.authPasswordHistory ||
-                    $project.authPasswordHistory === 0) &&
-                    initialPasswordHistoryEnabled === passwordHistoryEnabled}
-                submit>Update</Button>
+            <Button disabled={disallowPersonalData === $project.authDisallowPersonalData} submit
+                >Update</Button>
         </svelte:fragment>
     </CardGrid>
-</Form> -->
+</Form>
