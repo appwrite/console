@@ -1,5 +1,5 @@
 <script lang="ts">
-    import InputURL from '$lib/elements/forms/inputURL.svelte';
+    import InputEmail from '$lib/elements/forms/inputEmail.svelte';
     import type { Models } from '@appwrite.io/console';
 
     export let id: string;
@@ -9,7 +9,7 @@
     export let attribute: Models.AttributeUrl;
 </script>
 
-<InputURL
+<InputEmail
     {id}
     {label}
     {optionalText}

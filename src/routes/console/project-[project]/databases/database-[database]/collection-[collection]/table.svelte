@@ -3,8 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
-    import { Copy } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Id } from '$lib/components';
     import {
         TableBody,
         TableCell,
@@ -13,9 +12,7 @@
         TableRowLink,
         TableScroll
     } from '$lib/elements/table';
-    import { organization } from '$lib/stores/organization';
     import { preferences } from '$lib/stores/preferences';
-    import { teamPrefs } from '$lib/stores/team';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
@@ -30,9 +27,10 @@
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
     let relationshipData: [];
+    let displayNames = {};
 
-    onMount(() => {
-        teamPrefs.load($organization.$id);
+    onMount(async () => {
+        displayNames = preferences.getDisplayNames();
     });
 
     function formatArray(array: unknown[]) {
@@ -58,7 +56,7 @@
         } else if (Array.isArray(column)) {
             formattedColumn = formatArray(column);
         } else if (column === null) {
-            formattedColumn = 'n/a';
+            formattedColumn = 'null';
         } else {
             formattedColumn = `${column}`;
         }
@@ -98,22 +96,17 @@
         {#each data.documents.documents as document}
             <TableRowLink
                 href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
-                <TableCell>
-                    <Copy value={document.$id}>
-                        <Pill button trim>
-                            <span class="icon-duplicate" aria-hidden="true" />
-                            <span class="text">{document.$id}</span>
-                        </Pill>
-                    </Copy>
+                <TableCell width={150}>
+                    <Id value={document.$id}>
+                        {document.$id}
+                    </Id>
                 </TableCell>
 
                 {#each $columns as column}
                     {#if column.show}
                         {@const attr = $attributes.find((n) => n.key === column.id)}
                         {#if isRelationship(attr)}
-                            {@const args = $teamPrefs?.displayNames?.[attr.relatedCollection] ?? [
-                                '$id'
-                            ]}
+                            {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
                             <TableCell title={column.title}>
                                 {#if !isRelationshipToMany(attr)}
                                     {#if document[column.id]}

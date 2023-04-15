@@ -14,7 +14,7 @@
     export let position: 'relative' | 'static' = 'relative';
 </script>
 
-<Drop bind:show {placement} {childStart} {noArrow} {noStyle} {fullWidth} {fixed}>
+<Drop bind:show {placement} {childStart} {noArrow} {noStyle} {fullWidth} {fixed} on:blur>
     <slot />
     <svelte:fragment slot="list">
         <div

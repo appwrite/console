@@ -4,12 +4,11 @@
     import {
         Empty,
         CardContainer,
-        Copy,
         GridItem1,
         Heading,
-        PaginationWithLimit
+        PaginationWithLimit,
+        Id
     } from '$lib/components';
-    import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { tooltip } from '$lib/actions/tooltip';
@@ -77,10 +76,7 @@
                             </li>
                         {/if}
                     </svelte:fragment>
-
-                    <Copy value={func.$id} event="function">
-                        <Pill button><i class="icon-duplicate" />Function ID</Pill>
-                    </Copy>
+                    <Id value={func.$id} event="function">{func.$id}</Id>
                 </GridItem1>
             {/each}
             <svelte:fragment slot="empty">

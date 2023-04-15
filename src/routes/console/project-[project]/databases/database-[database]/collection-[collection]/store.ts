@@ -2,7 +2,6 @@ import { page } from '$app/stores';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
-//TODO: remove `side` after SDK update
 export type Attributes =
     | Models.AttributeBoolean
     | Models.AttributeEmail
@@ -12,7 +11,7 @@ export type Attributes =
     | Models.AttributeIp
     | Models.AttributeString
     | Models.AttributeUrl
-    | (Models.AttributeRelationship & { side: string; default?: never });
+    | (Models.AttributeRelationship & { default?: never });
 
 type Collection = Omit<Models.Collection, 'attributes'> & {
     attributes: Array<Attributes>;

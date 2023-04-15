@@ -4,47 +4,33 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputSelectSearch, InputText } from '$lib/elements/forms';
-    import { symmetricDifference } from '$lib/helpers/array';
+    import { last, symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization } from '$lib/stores/organization';
-    import { teamPrefs } from '$lib/stores/team';
     import type { Models } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
-    import { attributes, collection } from '../store';
+    import { attributes } from '../store';
+    import { preferences } from '$lib/stores/preferences';
+    import { page } from '$app/stores';
 
-    let displayNames = [];
+    const collectionId = $page.params.collection;
+    let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
     let search: string;
-
-    onMount(async () => {
-        await teamPrefs.load($organization.$id);
-
-        $teamPrefs.displayNames ??= {};
-        $teamPrefs.displayNames[$collection.$id] ??= [];
-        displayNames = [...$teamPrefs.displayNames[$collection.$id]];
-    });
 
     async function updateDisplayName() {
         try {
-            const pref = {
-                ...$teamPrefs,
-                displayNames: {
-                    ...$teamPrefs.displayNames,
-                    [$collection.$id]: displayNames
-                }
-            };
-            await teamPrefs.updatePrefs($organization.$id, pref);
+            await preferences.setDisplayNames(collectionId, names);
+            names = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
             await invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Display names has been updated',
                 type: 'success'
             });
-            trackEvent(Submit.CollectionUpdateName);
+            trackEvent(Submit.CollectionUpdateDisplayNames);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.CollectionUpdateName);
+            trackError(error, Submit.CollectionUpdateDisplayNames);
         }
     }
 
@@ -54,7 +40,7 @@
                 attr.type === 'string' &&
                 attr?.size <= 50 &&
                 !attr?.array &&
-                !displayNames?.some((name) => name === attr.key)
+                !names?.some((name) => name === attr.key)
         )
         .map((attr) => {
             return {
@@ -63,14 +49,11 @@
             };
         });
 
-    $: addAttributeDisabled =
-        displayNames?.length >= 5 ||
-        (displayNames?.length && !displayNames[displayNames?.length - 1]);
+    $: addAttributeDisabled = names?.length >= 5 || (names?.length && !names[names?.length - 1]);
 
-    $: updateBtnDisabled = !symmetricDifference(
-        displayNames,
-        $teamPrefs?.displayNames?.[$collection.$id] ?? []
-    )?.length;
+    $: updateBtnDisabled =
+        !symmetricDifference(names, preferences.getDisplayNames()?.[collectionId] ?? [])?.length ||
+        (names?.length && !last(names));
 </script>
 
 <Form onSubmit={updateDisplayName}>
@@ -90,18 +73,18 @@
                         showLabel={false}
                         placeholder="Document ID"
                         readonly />
-                    {#if displayNames?.length}
-                        {#each displayNames as name, i}
+                    {#if names?.length}
+                        {#each names as name, i}
                             <div class="u-flex u-gap-8">
-                                {#if displayNames[i]}
+                                {#if names[i]}
                                     <InputSelectSearch
                                         id={name}
                                         label={name}
                                         showLabel={false}
                                         interactiveOutput
                                         placeholder="Select attribute"
-                                        bind:value={displayNames[i]}
-                                        bind:search={displayNames[i]}
+                                        bind:value={names[i]}
+                                        bind:search={names[i]}
                                         name="attributes"
                                         disabled
                                         {options} />
@@ -111,7 +94,7 @@
                                         label={name}
                                         showLabel={false}
                                         placeholder="Select attribute"
-                                        bind:value={displayNames[i]}
+                                        bind:value={names[i]}
                                         bind:search
                                         name="attributes"
                                         {options} />
@@ -121,8 +104,8 @@
                                         text
                                         noMargin
                                         on:click={() => {
-                                            displayNames.splice(i, 1);
-                                            displayNames = displayNames;
+                                            names.splice(i, 1);
+                                            names = names;
                                         }}>
                                         <span class="icon-x" aria-hidden="true" />
                                     </Button>
@@ -136,9 +119,9 @@
                     text
                     disabled={addAttributeDisabled}
                     on:click={() => {
-                        displayNames[displayNames.length] = null;
+                        names[names.length] = null;
                         search = null;
-                        displayNames = displayNames;
+                        names = names;
                     }}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Add attribute</span>

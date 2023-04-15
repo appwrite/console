@@ -5,7 +5,7 @@
 </script>
 
 <div
-    style={width ? `--p-col-width:${width?.toString()}` : ''}
+    style:--p-col-width={width?.toString()}
     class:is-only-desktop={onlyDesktop}
     class="table-thead-col"
     role="columnheader">

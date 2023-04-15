@@ -86,19 +86,19 @@
                     <TableRow>
                         <TableCell title="relation">
                             <span class="u-flex u-cross-center u-gap-8">
-                                {#if attr?.twoWay}
+                                {#if attr.twoWay}
                                     <span class="icon-switch-horizontal" />
                                 {:else}
                                     <span class="icon-arrow-sm-right" />
                                 {/if}
-                                <span data-private>{attr?.key}</span>
+                                <span data-private>{attr.key}</span>
                             </span>
                         </TableCell>
                         <TableCellText title="Settings">
-                            {attr?.onDelete}
+                            {attr.onDelete}
                         </TableCellText>
                         <TableCellText title="description">
-                            {Deletion[attr?.onDelete]}
+                            {Deletion[attr.onDelete]}
                         </TableCellText>
                     </TableRow>
                 {/each}

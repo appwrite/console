@@ -5,11 +5,12 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';
-    import { addNotification } from '$lib/stores/notifications';
+    import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { preferences } from '$lib/stores/preferences';
+    import { feedback } from '$lib/stores/app';
 
     export let showCreate = false;
     export let selectedOption: string = null;
@@ -27,9 +28,10 @@
     async function submit() {
         try {
             await $option.create(databaseId, collectionId, key, data);
-            let selected = preferences.getCustomCollectionColumns(collectionId);
-            selected.push(key ?? data?.key);
-            preferences.setCustomCollectionColumns(selected);
+
+            let selectedColumns = preferences.getCustomCollectionColumns(collectionId);
+            selectedColumns.push(key ?? data?.key);
+            preferences.setCustomCollectionColumns(selectedColumns);
             await invalidate(Dependencies.COLLECTION);
             if (!$page.url.pathname.includes('attributes')) {
                 await goto(
@@ -40,6 +42,37 @@
                 type: 'success',
                 message: `Attribute ${key ?? data?.key} has been created`
             });
+            if ($option.type === 'relationship') {
+                let counter = localStorage.getItem('createRelationshipCounter');
+
+                if (counter) {
+                    const parsedCounter = parseInt(counter);
+                    if (parsedCounter === 2) {
+                        addNotification({
+                            type: 'info',
+                            icon: 'question-mark-circle',
+                            message: `How is your experience with our new "Relationships" feature? We'd love to hear your feedback!`,
+                            timeout: 15000,
+                            buttons: [
+                                {
+                                    name: 'Give Feedback',
+                                    method: () => {
+                                        feedback.toggleFeedback();
+                                        dismissAllNotifications();
+                                    }
+                                }
+                            ]
+                        });
+                    } else if (parsedCounter < 2) {
+                        localStorage.setItem(
+                            'createRelationshipCounter',
+                            (parsedCounter + 1).toString()
+                        );
+                    }
+                } else {
+                    localStorage.setItem('createRelationshipCounter', '1');
+                }
+            }
             showCreate = false;
             trackEvent(Submit.AttributeCreate);
         } catch (e) {

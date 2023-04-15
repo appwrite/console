@@ -4,11 +4,11 @@
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
-        Copy,
         GridItem1,
         CardContainer,
         Heading,
-        PaginationWithLimit
+        PaginationWithLimit,
+        Id
     } from '$lib/components';
     import { Pill } from '$lib/elements';
     import Create from './create.svelte';
@@ -54,9 +54,7 @@
                         {/if}
                     </svelte:fragment>
 
-                    <Copy value={bucket.$id}>
-                        <Pill button><i class="icon-duplicate" />Bucket ID</Pill>
-                    </Copy>
+                    <Id value={bucket.$id}>{bucket.$id}</Id>
 
                     <svelte:fragment slot="icons">
                         <li>

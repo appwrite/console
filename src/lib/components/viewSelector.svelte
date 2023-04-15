@@ -78,7 +78,7 @@
 <div class="grid-header-col-4">
     {#if !hideColumns && view === View.Table}
         {#if $columns?.length}
-            <DropList bind:show={showSelectColumns} scrollable={true}>
+            <DropList bind:show={showSelectColumns} scrollable>
                 <Button secondary on:click={() => (showSelectColumns = !showSelectColumns)}>
                     <span
                         class="icon-view-boards u-opacity-50"

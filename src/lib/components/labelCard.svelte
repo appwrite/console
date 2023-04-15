@@ -19,7 +19,8 @@
 <label
     class="card is-allow-focus u-cursor-pointer"
     class:u-height-100-percent={fullHeight}
-    style={`--card-padding:${padding}rem;  --card-border-radius:var(${Radius[borderRadius]});`}>
+    style:--card-padding={`${padding}rem`}
+    style:--card-border-radius={`var(${Radius[borderRadius]})`}>
     <div class="u-flex u-gap-16">
         <input
             class="is-small u-margin-block-start-2"

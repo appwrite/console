@@ -1,5 +1,11 @@
 <script lang="ts">
-    import { AvatarInitials, EmptySearch, PaginationWithLimit, Trim } from '$lib/components';
+    import {
+        AvatarInitials,
+        EmptySearch,
+        Heading,
+        PaginationWithLimit,
+        Trim
+    } from '$lib/components';
     import {
         TableBody,
         TableHeader,
@@ -19,6 +25,7 @@
 </script>
 
 <Container>
+    <Heading tag="h2" size="5">Activity</Heading>
     {#if logs.total}
         <TableScroll>
             <TableHeader>

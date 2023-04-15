@@ -24,7 +24,21 @@
     }
 
     function getAttributeType(attribute: Attributes) {
-        if ('format' in attribute && attribute.format === 'enum') return 'Enum';
+        if ('format' in attribute) {
+            switch (attribute.format) {
+                case 'ip':
+                    return 'IP';
+                case 'email':
+                    return 'Email';
+                case 'url':
+                    return 'URL';
+                case 'enum':
+                    return 'Enum';
+                default:
+                    'String';
+                    break;
+            }
+        }
         return `${capitalize(attribute.type)}${attribute.array ? '[]' : ''}`;
     }
 </script>
@@ -43,9 +57,7 @@
                 <span class="text">Add item</span>
             </Button>
         </div>
-    {/if}
-
-    {#if formValues[attribute.key].length !== 0}
+    {:else}
         <ul class="u-grid u-gap-8">
             {#each [...formValues[attribute.key].keys()] as index}
                 <li class="form-item is-multiple">

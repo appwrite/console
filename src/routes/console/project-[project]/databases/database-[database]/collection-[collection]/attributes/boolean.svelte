@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitBoolean(
         databaseId: string,
@@ -13,7 +13,7 @@
             collectionId,
             key,
             data.required,
-            data.default ? data.default : undefined,
+            data.default,
             data.array
         );
     }
@@ -28,13 +28,14 @@
             collectionId,
             data.key,
             data.required,
-            data.default ? data.default : null
+            data.default
         );
     }
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputSelect } from '$lib/elements/forms';
+    import { InputChoice } from '$lib/elements/forms';
+    import Boolean from '../document-[document]/attributes/boolean.svelte';
 
     export let editing = false;
     export let data: Partial<Models.AttributeBoolean> = {
@@ -48,16 +49,17 @@
     }
 </script>
 
-<InputSelect
+<Boolean
     id="default"
     label="Default value"
-    placeholder="Select a value"
-    options={[
-        { label: 'NULL', value: null },
-        { label: 'True', value: true },
-        { label: 'False', value: false }
-    ]}
     bind:value={data.default}
+    attribute={{
+        key: data.key,
+        required: data.required,
+        status: 'enabled',
+        type: 'boolean',
+        array: data.array
+    }}
     disabled={data.array || data.required} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
