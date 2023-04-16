@@ -221,7 +221,7 @@
                                                 }}>
                                                 Activate
                                             </DropListItem>
-                                            {#if ['failed'].includes(deployment.status)}
+                                            {#if 'failed' === deployment.status}
                                                 <DropListItem
                                                     icon="refresh"
                                                     on:click={() => {
@@ -229,7 +229,7 @@
                                                         showRebuild = true;
                                                         showDropdown = [];
                                                     }}>
-                                                    Re-Build
+                                                    Retry Build
                                                 </DropListItem>
                                             {/if}
                                             <DropListItem

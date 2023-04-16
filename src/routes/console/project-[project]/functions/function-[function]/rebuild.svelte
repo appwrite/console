@@ -22,7 +22,7 @@
             showRebuild = false;
             addNotification({
                 type: 'success',
-                message: `Deployment has been re-build`
+                message: `Retrying build`
             });
             dispatch('rebuild');
             trackEvent(Submit.DeploymentUpdate);
@@ -37,10 +37,10 @@
 </script>
 
 <Modal bind:show={showRebuild} onSubmit={handleSubmit}>
-    <svelte:fragment slot="header">Re-build Deployment</svelte:fragment>
-    <p>Are you sure you want to re-build this deployment?</p>
+    <svelte:fragment slot="header">Retry build Deployment</svelte:fragment>
+    <p>Are you sure you want to retry build this deployment?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showRebuild = false)}>Cancel</Button>
-        <Button secondary submit>Re-build</Button>
+        <Button secondary submit>Retry build</Button>
     </svelte:fragment>
 </Modal>
