@@ -35,6 +35,10 @@
         element.setCustomValidity('');
     }
 
+    $: if (element && !required){
+        element.setCustomValidity('');
+    }
+    
     $: if (value) {
         error = null;
     }
