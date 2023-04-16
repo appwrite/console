@@ -18,7 +18,7 @@
 </label>
 
 {#if optionalText}
-    <span class="optional">{optionalText}</span>
+    <span class="optional u-margin-inline-start-8">{optionalText}</span>
 {/if}
 
 {#if tooltip}

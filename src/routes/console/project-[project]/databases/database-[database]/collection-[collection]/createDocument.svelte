@@ -1,19 +1,19 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
     import { beforeNavigate, invalidate } from '$app/navigation';
-    import { attributes } from './store';
-    import { sdkForProject } from '$lib/stores/sdk';
     import { page } from '$app/stores';
-    import { onDestroy, onMount } from 'svelte';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Dependencies } from '$lib/constants';
+    import { Wizard } from '$lib/layout';
+    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
+    import { ID } from '@appwrite.io/console';
+    import { onDestroy, onMount } from 'svelte';
+    import { attributes } from './store';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import { createDocument } from './wizard/store';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -33,13 +33,14 @@
 
     async function create() {
         try {
-            await sdkForProject.databases.createDocument(
+            await sdk.forProject.databases.createDocument(
                 databaseId,
                 collectionId,
                 $createDocument.id ?? ID.unique(),
                 $createDocument.document,
                 $createDocument.permissions
             );
+            await invalidate(Dependencies.DOCUMENTS);
 
             addNotification({
                 message: 'Document has been created',
@@ -48,7 +49,6 @@
             trackEvent(Submit.DocumentCreate, {
                 customId: !!$createDocument.id
             });
-            invalidate(Dependencies.DOCUMENTS);
 
             createDocument.reset();
             wizard.hide();

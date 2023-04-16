@@ -97,7 +97,8 @@
 {#if data.platforms.platforms.length}
     <div
         class="grid-box u-margin-block-start-32"
-        style="--grid-gap:1.5rem; --grid-item-size:20rem;">
+        style="--grid-gap:1.5rem; --grid-item-size:20rem;"
+        data-private>
         {#each data.platforms.platforms as platform}
             <a class="card" href={`${path}/${platform.$id}`}>
                 <div class="grid-item-1" style="min-block-size: calc(182 / 16 * 1rem)">
@@ -140,7 +141,7 @@
             <slot>
                 <div class="u-text-center">
                     <Heading size="7" tag="h4">Create your first platform to get started.</Heading>
-                    <p class="body-text-2 u-margin-block-start-4">
+                    <p class="body-text-2 u-bold u-margin-block-start-4">
                         Need a hand? Check out our documentation.
                     </p>
                 </div>

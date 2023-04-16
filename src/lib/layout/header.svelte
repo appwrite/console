@@ -16,18 +16,17 @@
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { FeedbackNPS } from '$lib/components';
 
-    let showFeedback = false;
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
 
     function toggleFeedback() {
-        showFeedback = !showFeedback;
+        feedback.toggleFeedback();
         if ($feedback.notification) {
             feedback.toggleNotification();
             feedback.addVisualization();
@@ -35,7 +34,7 @@
     }
 
     async function logout() {
-        await sdkForConsole.account.deleteSession('current');
+        await sdk.forConsole.account.deleteSession('current');
         trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }
@@ -73,15 +72,15 @@
                 <div class="pulse-notification" />
             </div>
         {/if}
-        <DropList width="28" bind:show={showFeedback} scrollable={true}>
+        <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
             <button class="button is-small is-text" on:click={toggleFeedback}>
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
                 {#if $feedback.type === 'nps'}
-                    <FeedbackNPS bind:show={showFeedback} />
+                    <FeedbackNPS />
                 {:else}
-                    <FeedbackGeneral bind:show={showFeedback} />
+                    <FeedbackGeneral />
                 {/if}
             </svelte:fragment>
         </DropList>

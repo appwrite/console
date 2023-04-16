@@ -11,8 +11,8 @@
         FormList
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -25,12 +25,12 @@
 
     const create = async () => {
         try {
-            const user = await sdkForProject.users.create(
+            const user = await sdk.forProject.users.create(
                 id ?? ID.unique(),
-                mail,
-                phone,
-                pass,
-                name
+                mail || undefined,
+                phone || undefined,
+                pass || undefined,
+                name || undefined
             );
             mail = pass = name = '';
             showCreate = false;
@@ -58,7 +58,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Create User</svelte:fragment>
     <FormList>
         <InputText

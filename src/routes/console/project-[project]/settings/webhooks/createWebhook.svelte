@@ -4,7 +4,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
     import { createWebhook } from './wizard/store';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
@@ -15,18 +15,18 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
-    const create = async () => {
+    async function create() {
         try {
-            await sdkForConsole.projects.createWebhook(
+            await sdk.forConsole.projects.createWebhook(
                 projectId,
                 $createWebhook.name,
                 $createWebhook.events,
                 $createWebhook.url,
                 $createWebhook.security,
-                $createWebhook.httpUser,
-                $createWebhook.httpPass
+                $createWebhook.httpUser || undefined,
+                $createWebhook.httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOKS);
+            await invalidate(Dependencies.WEBHOOKS);
             addNotification({
                 message: 'Webhook has been created',
                 type: 'success'
@@ -42,7 +42,7 @@
             });
             trackError(error, Submit.WebhookCreate);
         }
-    };
+    }
 
     onDestroy(() => {
         $createWebhook = {

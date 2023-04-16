@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { Button, Form, FormList, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
@@ -22,7 +22,7 @@
 
     const acceptInvite = async () => {
         try {
-            await sdkForConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
+            await sdk.forConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'
@@ -57,12 +57,12 @@
                 <svelte:fragment slot="title">The invite link is not valid</svelte:fragment>
                 Please ask the project owner to send you a new invite.
             </Alert>
-            <div class="u-flex u-main-end u-margin-block-start-40	">
+            <div class="u-flex u-main-end u-margin-block-start-40">
                 <Button href={`${base}/register`}>Sign up to Appwrite</Button>
             </div>
         {:else}
             <p class="text">You have been invited to join a team project on Appwrite</p>
-            <Form on:submit={acceptInvite}>
+            <Form onSubmit={acceptInvite}>
                 <FormList>
                     <InputChoice
                         required

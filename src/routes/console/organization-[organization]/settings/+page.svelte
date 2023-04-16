@@ -3,7 +3,7 @@
     import { InputText, Form, Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { members, organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -20,7 +20,7 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.teams.update($organization.$id, name);
+            await sdk.forConsole.teams.updateName($organization.$id, name);
             await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 message: 'Name has been updated',
@@ -41,9 +41,9 @@
 
 <Container>
     {#if $organization}
-        <Form on:submit={updateName}>
+        <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Name</Heading>
+                <Heading tag="h6" size="7">Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <ul>

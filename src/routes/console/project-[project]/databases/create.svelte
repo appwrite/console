@@ -4,8 +4,8 @@
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -14,11 +14,11 @@
 
     let name = '';
     let id: string = null;
-    let showCustomId = false;
+    let showCustomId = true;
 
     const create = async () => {
         try {
-            const database = await sdkForProject.databases.create(id ? id : ID.unique(), name);
+            const database = await sdk.forProject.databases.create(id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', database);
             addNotification({
@@ -39,7 +39,7 @@
     };
 </script>
 
-<Modal size="big" on:submit={create} bind:show={showCreate}>
+<Modal size="big" onSubmit={create} bind:show={showCreate}>
     <svelte:fragment slot="header">Create Database</svelte:fragment>
     <FormList>
         <InputText
@@ -58,7 +58,7 @@
                     </span></Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Database" bind:id />
+            <CustomId bind:show={showCustomId} name="Database" bind:id autofocus={false} />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">

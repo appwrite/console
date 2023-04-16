@@ -1,4 +1,4 @@
-import type { Models, Payload } from '@aw-labs/appwrite-console';
+import type { Models, Payload } from '@appwrite.io/console';
 import { Service } from './service';
 
 export class Project extends Service {

@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
@@ -20,7 +20,7 @@
 
     async function updateSecurity() {
         try {
-            await sdkForProject.databases.updateCollection(
+            await sdk.forProject.databases.updateCollection(
                 databaseId,
                 $collection.$id,
                 $collection.name,
@@ -28,7 +28,7 @@
                 collectionDocumentSecurity,
                 $collection.enabled
             );
-            invalidate(Dependencies.COLLECTION);
+            await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Security has been updated',
                 type: 'success'
@@ -45,7 +45,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Update Document Security</Heading>
+    <Heading tag="h6" size="7">Document Security</Heading>
     <svelte:fragment slot="aside">
         <FormList>
             <InputSwitch
