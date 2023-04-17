@@ -27,15 +27,28 @@
         error = element.validationMessage;
     };
 
-    $: if (element && required && !value) {
+    const isValid = (value: string | number | boolean) => {
+        if (typeof value === 'boolean') {
+            if (value === null || value === undefined) return false;
+            else return true;
+        }
+
+        if (!value) {
+            return false;
+        }
+
+        return true;
+    };
+
+    $: if (element && required && !isValid(value)) {
         element.setCustomValidity('This field is required');
     }
 
-    $: if (element && required && value) {
+    $: if (element && required && isValid(value)) {
         element.setCustomValidity('');
     }
 
-    $: if (value) {
+    $: if (isValid(value)) {
         error = null;
     }
 
