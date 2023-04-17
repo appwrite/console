@@ -74,7 +74,7 @@
         {:else if method === Method.Swift}
             <p>Add this to your <code class="inline-code">Package.swift</code> file.</p>
             <Code withCopy withLineNumbers label="Swift" language="swift" code={example1} />
-            <p class="common-section">Then add the dependency to your target:</p>
+            <p class="common-section">Then add the dependency to your target.</p>
             <Code withCopy withLineNumbers label="Swift" language="swift" code={example2} />
         {/if}
     </div>

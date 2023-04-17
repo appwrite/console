@@ -48,11 +48,11 @@
             or
             <a href="https://rollupjs.org" target="_blank" rel="noopener noreferrer" class="link"
                 >Rollup</a
-            >, import Appwrite as a module:
+            >, import Appwrite as a module.
         </p>
         <Code label="Web SDK" labelIcon="code" language="js" code={example1} withCopy />
     {:else if method === Method.CDN}
-        <p>Add the following script tags to install Appwrite with a CDN:</p>
+        <p>Add the following script tags to install Appwrite with a CDN.</p>
         <Code label="HTML" language="html" code={example2} withCopy />
     {/if}
 </WizardStep>
