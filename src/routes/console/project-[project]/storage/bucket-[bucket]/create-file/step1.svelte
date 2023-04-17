@@ -10,7 +10,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Upload a File</svelte:fragment>
+    <svelte:fragment slot="title">Create file</svelte:fragment>
     <svelte:fragment slot="subtitle">Upload a file to add it to your bucket.</svelte:fragment>
     <FormList>
         <div class="u-width-full-line u-overflow-hidden">

@@ -19,7 +19,7 @@
 
     stepComponents.set(1, {
         component: Step1,
-        label: 'Upload a file'
+        label: 'Create file'
     });
 
     stepComponents.set(2, {
