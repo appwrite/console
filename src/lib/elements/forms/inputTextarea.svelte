@@ -3,6 +3,7 @@
     import { FormItem, Helper, Label } from '.';
     import NullCheckbox from './nullCheckbox.svelte';
     import TextCounter from './textCounter.svelte';
+    import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let label: string;
     export let showLabel = true;
@@ -57,7 +58,7 @@
         {label}
     </Label>
 
-    <div class="input-text-wrapper">
+    <div class="input-text-wrapper" on:click on:keydown={clickOnEnter}>
         <textarea
             {id}
             {placeholder}

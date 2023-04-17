@@ -110,8 +110,9 @@
             Use templates to send and process account management emails. <a
                 href="https://appwrite.io/docs"
                 class="link">
-                Learn more about Email templates
-            </a>. <!-- TODO Docs link -->
+                Learn more about Email templates.
+            </a>
+            <!-- TODO Docs link -->
         </p>
 
         <svelte:fragment slot="aside">
