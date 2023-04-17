@@ -6,22 +6,43 @@
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
-    import EmailTemplate from './emailTemplate.svelte';
-    import SmsTemplate from './smsTemplate.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
+    import type { PageData } from './$types';
+    import EmailVerificationTemplate from './emailVerificationTemplate.svelte';
+    import EmailMagicUrlTemplate from './emailMagicUrlTemplate.svelte';
+    import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
+    import EmailInviteTemplate from './emailInviteTemplate.svelte';
 
+    export let data: PageData;
     const projectId = $page.params.project;
+    interface EmailTemplate {
+        senderName: string;
+        senderEmail: string;
+        locale: string;
+        subject: string;
+        message: string;
+    }
+    let emailTemplates:
+        | {
+              verification: EmailTemplate;
+              magicSession: EmailTemplate;
+              recovery: EmailTemplate;
+              invitation: EmailTemplate;
+          }
+        | any = {};
 
-    let template: any;
     onMount(() => {
-        loadEmailTemplate('verification', 'en_us');
+        loadEmailTemplate('verification', 'en-us');
+        loadEmailTemplate('magicSession', 'en-us');
+        loadEmailTemplate('recovery', 'en-us');
+        loadEmailTemplate('invitation', 'en-us');
     });
     async function loadEmailTemplate(type: string, locale: string) {
         const path = '/projects/' + projectId + '/templates/email/' + type + '/' + locale;
 
         try {
-            template = await sdk.forConsole.client.call(
+            emailTemplates[type] = await sdk.forConsole.client.call(
                 'GET',
                 new URL(sdk.forConsole.client.config.endpoint + path)
             );
@@ -34,10 +55,11 @@
     }
 
     async function saveEmailTemplate(type: string, data: any) {
+        console.log(data);
         const path = '/projects/' + projectId + '/templates/email/' + type + '/' + data.locale;
 
         try {
-            template = await sdk.forConsole.client.call(
+            emailTemplates[type] = await sdk.forConsole.client.call(
                 'PATCH',
                 new URL(sdk.forConsole.client.config.endpoint + path),
                 { 'content-type': 'application/json' },
@@ -100,21 +122,35 @@
                         Send a verification email to users that sign in with their email and
                         password.
                     </p>
-                    <EmailTemplate
-                        bind:template
-                        onSubmit={(data) => saveEmailTemplate('verification', data)} />
+                    <EmailVerificationTemplate
+                        {loadEmailTemplate}
+                        {saveEmailTemplate}
+                        localeCodes={data.localeCodes}
+                        template={emailTemplates?.verification} />
                 </CollapsibleItem>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Magic URL</svelte:fragment>
-                    <EmailTemplate onSubmit={(data) => saveEmailTemplate('verification', data)} />
+                    <EmailMagicUrlTemplate
+                        {loadEmailTemplate}
+                        {saveEmailTemplate}
+                        localeCodes={data.localeCodes}
+                        template={emailTemplates?.magicSession} />
                 </CollapsibleItem>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Reset Password</svelte:fragment>
-                    <EmailTemplate onSubmit={saveEmailTemplate} />
+                    <EmailRecoveryTemplate
+                        {loadEmailTemplate}
+                        {saveEmailTemplate}
+                        localeCodes={data.localeCodes}
+                        template={emailTemplates?.recovery} />
                 </CollapsibleItem>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Invite User</svelte:fragment>
-                    <EmailTemplate onSubmit={saveEmailTemplate} />
+                    <EmailInviteTemplate
+                        {loadEmailTemplate}
+                        {saveEmailTemplate}
+                        localeCodes={data.localeCodes}
+                        template={emailTemplates?.invitation} />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
@@ -137,11 +173,11 @@
                     <p class="text">
                         Send a verification SMS to users that sign in with their phone
                     </p>
-                    <SmsTemplate onSubmit={saveEmailTemplate} />
+                    <!-- <SmsTemplate onSubmit={saveEmailTemplate} /> -->
                 </CollapsibleItem>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Login</svelte:fragment>
-                    <SmsTemplate onSubmit={saveEmailTemplate} />
+                    <!-- <SmsTemplate onSubmit={saveEmailTemplate} /> -->
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
