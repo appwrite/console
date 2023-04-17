@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
     import Step1 from './step1.svelte';
     import Step2 from './step2.svelte';
     import { createFile } from './store';

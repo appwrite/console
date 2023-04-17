@@ -20,7 +20,7 @@ function createWizardStore() {
     return {
         subscribe,
         set,
-        start: (component: typeof SvelteComponent, media: string = null) =>
+        start: <CMP extends typeof SvelteComponent>(component: CMP, media: string = null) =>
             update((n) => {
                 n.show = true;
                 n.component = component;
