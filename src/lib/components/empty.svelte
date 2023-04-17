@@ -41,8 +41,9 @@
             </button>
             <slot>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2" trimmed={false}
-                        >Create your first {target} to get started.</Heading>
+                    <Heading size="7" tag="h2" trimmed={false}>
+                        Create your first {target} to get started.
+                    </Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Need a hand? Check out our documentation.
                     </p>
