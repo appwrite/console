@@ -16,7 +16,7 @@
     import { BarChart, LineChart } from '$lib/charts';
     import { Card, SecondaryTabs, SecondaryTabsItem, Heading, Tiles } from '$lib/components';
     import { Colors } from '$lib/charts/config';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
 
     type MetricMetadata = {
@@ -58,7 +58,7 @@
     </div>
     <Card>
         {#if count}
-            <Heading tag="h6" size="6">{last(count).value}</Heading>
+            <Heading tag="h6" size="6">{total(count)}</Heading>
             <p>{countMetadata.title}</p>
             <div class="u-margin-block-start-16" />
             <div class="chart-container">

@@ -11,26 +11,24 @@
         InputText
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
-    let name: string, mail: string, pass: string, disabled: boolean;
+    let name: string, mail: string, pass: string;
     let terms = false;
 
     async function register() {
         try {
-            disabled = true;
-            await sdkForConsole.account.create(ID.unique(), mail, pass, name ?? '');
-            await sdkForConsole.account.createEmailSession(mail, pass);
+            await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
+            await sdk.forConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
             trackEvent(Submit.AccountCreate);
         } catch (error) {
-            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
@@ -47,7 +45,7 @@
 <Unauthenticated>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={register}>
+        <Form onSubmit={register}>
             <FormList>
                 <InputText
                     id="name"
@@ -83,7 +81,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit {disabled}>Sign up</Button>
+                    <Button fullWidth submit>Sign up</Button>
                 </FormItem>
             </FormList>
         </Form>

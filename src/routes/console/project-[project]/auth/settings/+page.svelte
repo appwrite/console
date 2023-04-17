@@ -4,7 +4,7 @@
     import { InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
     import { authMethods, type AuthMethod } from '$lib/stores/auth-methods';
     import { OAuthProviders } from '$lib/stores/oauth-providers';
@@ -22,12 +22,10 @@
 
     async function authUpdate(box: AuthMethod) {
         try {
-            await sdkForConsole.projects.updateAuthStatus(projectId, box.method, box.value);
+            await sdk.forConsole.projects.updateAuthStatus(projectId, box.method, box.value);
             addNotification({
                 type: 'success',
-                message: `${box.label} authentication has been ${
-                    box.value ? 'enabled' : 'disabled'
-                }`
+                message: `${box.label} authentication has been updated`
             });
             trackEvent(Submit.AuthStatusUpdate, {
                 method: box.method,

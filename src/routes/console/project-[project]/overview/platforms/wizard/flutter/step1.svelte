@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import { app } from '$lib/stores/app';
@@ -87,10 +87,10 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.deletePlatform(projectId, $createPlatform.$id);
+            await sdk.forConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
 
-        const response = await sdkForConsole.projects.createPlatform(
+        const response = await sdk.forConsole.projects.createPlatform(
             projectId,
             platform,
             $createPlatform.name,
@@ -110,45 +110,46 @@
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Register your Flutter app</svelte:fragment>
-
-    <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
-        <Pill
-            button
-            on:click={() => (platform = Platform.Android)}
-            selected={platform === Platform.Android}>
-            Android
-        </Pill>
-        <Pill
-            button
-            on:click={() => (platform = Platform.Ios)}
-            selected={platform === Platform.Ios}>
-            iOS
-        </Pill>
-        <Pill
-            button
-            on:click={() => (platform = Platform.Linux)}
-            selected={platform === Platform.Linux}>
-            Linux
-        </Pill>
-        <Pill
-            button
-            on:click={() => (platform = Platform.Macos)}
-            selected={platform === Platform.Macos}>
-            Mac OS
-        </Pill>
-        <Pill
-            button
-            on:click={() => (platform = Platform.Windows)}
-            selected={platform === Platform.Windows}>
-            Windows
-        </Pill>
-        <Pill
-            button
-            on:click={() => (platform = Platform.Web)}
-            selected={platform === Platform.Web}>
-            Web
-        </Pill>
-    </div>
+    <svelte:fragment slot="subtitle">
+        <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
+            <Pill
+                button
+                on:click={() => (platform = Platform.Android)}
+                selected={platform === Platform.Android}>
+                Android
+            </Pill>
+            <Pill
+                button
+                on:click={() => (platform = Platform.Ios)}
+                selected={platform === Platform.Ios}>
+                iOS
+            </Pill>
+            <Pill
+                button
+                on:click={() => (platform = Platform.Linux)}
+                selected={platform === Platform.Linux}>
+                Linux
+            </Pill>
+            <Pill
+                button
+                on:click={() => (platform = Platform.Macos)}
+                selected={platform === Platform.Macos}>
+                macOS
+            </Pill>
+            <Pill
+                button
+                on:click={() => (platform = Platform.Windows)}
+                selected={platform === Platform.Windows}>
+                Windows
+            </Pill>
+            <Pill
+                button
+                on:click={() => (platform = Platform.Web)}
+                selected={platform === Platform.Web}>
+                Web
+            </Pill>
+        </div>
+    </svelte:fragment>
 
     <FormList isCommonSection>
         <InputText

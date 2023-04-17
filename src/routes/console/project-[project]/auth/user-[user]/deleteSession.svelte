@@ -6,15 +6,15 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
     export let selectedSessionId: string;
 
-    const deleteSession = async () => {
+    async function deleteSession() {
         try {
-            await sdkForProject.users.deleteSession($page.params.user, selectedSessionId);
-            invalidate(Dependencies.SESSIONS);
+            await sdk.forProject.users.deleteSession($page.params.user, selectedSessionId);
+            await invalidate(Dependencies.SESSIONS);
             addNotification({
                 type: 'success',
                 message: 'Session has been deleted'
@@ -27,10 +27,15 @@
             });
             trackError(error, Submit.SessionDelete);
         }
-    };
+    }
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteSession} warning>
+<Modal
+    bind:show={showDelete}
+    onSubmit={deleteSession}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete Sessions</svelte:fragment>
 
     <p>Are you sure you want to delete this session?</p>

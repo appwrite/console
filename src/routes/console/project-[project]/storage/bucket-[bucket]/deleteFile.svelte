@@ -3,8 +3,8 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let file: Models.File;
@@ -14,7 +14,7 @@
 
     const deleteFile = async () => {
         try {
-            await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
+            await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
             showDelete = false;
             dispatch('deleted', file);
             addNotification({
@@ -32,9 +32,14 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteFile} warning>
+<Modal
+    bind:show={showDelete}
+    onSubmit={deleteFile}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete File</svelte:fragment>
-    <p>Are you sure you want to delete <b>{file.name}</b>?</p>
+    <p data-private>Are you sure you want to delete <b>{file.name}</b>?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

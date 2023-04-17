@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
@@ -16,27 +16,29 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { ID } from '@appwrite.io/console';
 
     const projectId = $page.params.project;
 
     async function onFinish() {
         await invalidate(Dependencies.FUNCTIONS);
     }
+
     async function create() {
         try {
-            const response = await sdkForProject.functions.create(
+            const response = await sdk.forProject.functions.create(
                 $createFunction.id ?? ID.unique(),
                 $createFunction.name,
-                $createFunction.execute,
                 $createFunction.runtime,
-                $createFunction.events,
-                $createFunction.schedule,
-                $createFunction.timeout
+                $createFunction.execute || undefined,
+                $createFunction.events || undefined,
+                $createFunction.schedule || undefined,
+                $createFunction.timeout || undefined
             );
-            $createFunction.vars.forEach(
-                async (v) =>
-                    await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
+            await Promise.all(
+                $createFunction.vars.map((v) =>
+                    sdk.forProject.functions.createVariable(response.$id, v.key, v.value)
+                )
             );
             await invalidate(Dependencies.FUNCTIONS);
             goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);

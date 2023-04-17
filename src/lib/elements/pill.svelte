@@ -9,42 +9,10 @@
     export let submit = false;
     export let external = false;
     export let href: string = null;
-    export let trim = false;
-
-    //allows to add the disabled attribute to <a> tag without throwing an error
-    let attributes = { disabled } as Record<string, boolean>;
-
-    let element: HTMLButtonElement;
-
-    const isOverflowing = (elem: HTMLButtonElement, iterator = 1) => {
-        let parent = elem?.parentElement;
-        if (
-            trim &&
-            elem &&
-            elem.scrollWidth + 10 >
-                (parent.clientWidth ? parent.clientWidth : parent.parentElement.clientWidth)
-        )
-            trimText(iterator);
-        else return;
-    };
-
-    function trimText(iterator: number) {
-        if (iterator > 3) {
-            element.childNodes[element.childElementCount].textContent = '...';
-        } else {
-            let text = element.childNodes[element.childElementCount].textContent;
-            element.childNodes[element.childElementCount].textContent =
-                text.slice(0, 3) + '...' + text.slice(-9 + iterator * 2);
-            isOverflowing(element, iterator + 1);
-        }
-    }
-
-    $: isOverflowing(element);
 </script>
 
 {#if href}
     <a
-        {...attributes}
         {href}
         target={external ? '_blank' : '_self'}
         rel={external ? 'noopener noreferrer' : ''}
@@ -59,7 +27,6 @@
     </a>
 {:else if button}
     <button
-        bind:this={element}
         on:click
         {disabled}
         type={submit ? 'submit' : 'button'}

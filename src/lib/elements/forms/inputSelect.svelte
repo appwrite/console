@@ -38,6 +38,8 @@
     $: if (value) {
         error = null;
     }
+
+    $: hasNullOption = options.some((option) => option.value === null);
 </script>
 
 <FormItem>
@@ -52,8 +54,9 @@
             {disabled}
             bind:this={element}
             bind:value
-            on:invalid={handleInvalid}>
-            {#if placeholder}
+            on:invalid={handleInvalid}
+            on:change>
+            {#if placeholder && !hasNullOption}
                 <option value={null} disabled selected hidden>{placeholder}</option>
             {/if}
             {#each options as option}

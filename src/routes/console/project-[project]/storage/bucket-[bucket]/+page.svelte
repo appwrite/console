@@ -10,10 +10,10 @@
         DropListLink,
         Empty,
         EmptySearch,
-        Pagination,
+        PaginationWithLimit,
         SearchQuery
     } from '$lib/components';
-    import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -30,13 +30,13 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import CreateWizard from './create-file/create.svelte';
     import Delete from './deleteFile.svelte';
+    import { sdk } from '$lib/stores/sdk';
 
     export let data: PageData;
 
@@ -47,19 +47,19 @@
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+        sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
-    function fileDeleted(event: CustomEvent<Models.File>) {
+    async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
         uploader.removeFile(event.detail);
-        invalidate(Dependencies.FILES);
+        await invalidate(Dependencies.FILES);
     }
 
     async function deleteFile(file: Models.File) {
         try {
-            await sdkForProject.storage.deleteFile(file.bucketId, file.$id);
+            await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
+            await invalidate(Dependencies.FILES);
             uploader.removeFile(file);
-            invalidate(Dependencies.FILES);
             trackEvent(Submit.FileDelete);
         } catch (error) {
             addNotification({
@@ -179,14 +179,12 @@
                 {/each}
             </TableBody>
         </Table>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {data.files.total}</p>
-            <Pagination
-                limit={PAGE_LIMIT}
-                path={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}
-                offset={data.offset}
-                sum={data.files.total} />
-        </div>
+
+        <PaginationWithLimit
+            name="Files"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.files.total} />
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">

@@ -10,17 +10,16 @@
         InputPassword
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
-    let mail: string, pass: string, disabled: boolean;
+    let mail: string, pass: string;
 
     async function login() {
         try {
-            disabled = true;
-            await sdkForConsole.account.createEmailSession(mail, pass);
+            await sdk.forConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
@@ -29,7 +28,6 @@
             trackEvent(Submit.AccountCreate);
             await goto(`${base}/console`);
         } catch (error) {
-            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
@@ -46,7 +44,7 @@
 <Unauthenticated>
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={login}>
+        <Form onSubmit={login}>
             <FormList>
                 <InputEmail
                     id="email"
@@ -64,7 +62,7 @@
                     showPasswordButton={true}
                     bind:value={pass} />
                 <FormItem>
-                    <Button fullWidth submit {disabled}>Sign in</Button>
+                    <Button fullWidth submit>Sign in</Button>
                 </FormItem>
             </FormList>
         </Form>

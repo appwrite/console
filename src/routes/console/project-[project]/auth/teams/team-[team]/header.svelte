@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Copy, Tab, Tabs } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { team } from './store';
@@ -35,12 +34,7 @@
         <CoverTitle href={`/console/project-${projectId}/auth/teams`}>
             {$team?.name}
         </CoverTitle>
-        <Copy value={$team?.$id} event="team">
-            <Pill button>
-                <span class="icon-duplicate" aria-hidden="true" />
-                Team ID
-            </Pill>
-        </Copy>
+        <Id value={$team?.$id} event="team">{$team?.$id}</Id>
     </svelte:fragment>
 
     <Tabs>
