@@ -15,11 +15,10 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
-    let mail: string, pass: string, disabled: boolean;
+    let mail: string, pass: string;
 
     async function login() {
         try {
-            disabled = true;
             await sdk.forConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
@@ -29,7 +28,6 @@
             trackEvent(Submit.AccountCreate);
             await goto(`${base}/console`);
         } catch (error) {
-            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
@@ -64,7 +62,7 @@
                     showPasswordButton={true}
                     bind:value={pass} />
                 <FormItem>
-                    <Button fullWidth submit {disabled}>Sign in</Button>
+                    <Button fullWidth submit>Sign in</Button>
                 </FormItem>
             </FormList>
         </Form>

@@ -4,13 +4,19 @@
 
 <script lang="ts">
     import { createPopper, type Instance } from '@popperjs/core';
-    import { onDestroy, onMount } from 'svelte';
+    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
     export let show = false;
     export let noArrow = false;
     export let placement: Placement = 'bottom-start';
     export let childStart = false;
+    export let noStyle = false;
+    export let fullWidth = false;
     export let fixed = false;
+
+    const dispatch = createEventDispatcher<{
+        blur: undefined;
+    }>();
 
     let element: HTMLDivElement;
     let tooltip: HTMLDivElement;
@@ -77,17 +83,22 @@
             )
         ) {
             show = false;
+            dispatch('blur');
         }
     };
 </script>
 
 <svelte:window on:click={onBlur} />
 
-<div class="drop-wrapper" class:u-cross-child-start={childStart} bind:this={element}>
+<div class:drop-wrapper={!noStyle} class:u-cross-child-start={childStart} bind:this={element}>
     <slot />
 </div>
 
-<div class="drop-tooltip" bind:this={tooltip} style="z-index: 10">
+<div
+    class="drop-tooltip"
+    class:u-width-full-line={fullWidth}
+    bind:this={tooltip}
+    style:z-index="10">
     <div class="drop-arrow" class:u-hide={!show || (show && noArrow)} bind:this={arrow} />
     {#if show}
         <slot name="list" />

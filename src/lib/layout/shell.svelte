@@ -1,17 +1,17 @@
 <script lang="ts">
-    import { navigating, page } from '$app/stores';
     import { browser } from '$app/environment';
-    import { wizard } from '$lib/stores/wizard';
-    import { log } from '$lib/stores/logs';
     import { beforeNavigate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { log } from '$lib/stores/logs';
+    import { wizard } from '$lib/stores/wizard';
 
     export let isOpen = false;
     export let showSideNavigation = false;
 
     let y: number;
 
-    navigating.subscribe(() => {
-        if (isOpen) isOpen = false;
+    page.subscribe(({ url }) => {
+        isOpen = url.searchParams.get('openNavbar') === 'true';
     });
 
     const toggleMenu = () => {
@@ -64,8 +64,8 @@
         {/if}
 
         <slot />
+        <slot name="footer" />
     </section>
-    <slot name="footer" />
 </main>
 
 <style lang="scss">
@@ -87,8 +87,9 @@
             top: 4.5rem;
         }
     }
-
-    .main-content {
-        overflow: hidden;
+    @media (min-width: 1199px) {
+        .grid-with-side {
+            grid-template-columns: auto 1fr !important;
+        }
     }
 </style>

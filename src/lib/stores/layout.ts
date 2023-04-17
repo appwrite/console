@@ -1,4 +1,4 @@
-import { writable, readable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
 
 export type Tab = {
@@ -10,6 +10,8 @@ export type Breadcrumb = {
     href: string;
     title: string;
 };
+
+export type View = 'list' | 'grid';
 
 export type updateLayoutArguments = {
     header?: typeof SvelteComponent;
@@ -23,6 +25,3 @@ export function updateLayout(args: updateLayoutArguments) {
     header.set(args.header ?? null);
     breadcrumb.set(args.breadcrumb ?? null);
 }
-
-export const pageLimit = readable(12); // default page limit
-export const cardLimit = readable(6); // default card limit

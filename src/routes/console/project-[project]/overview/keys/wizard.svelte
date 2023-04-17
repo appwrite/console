@@ -20,10 +20,10 @@
                 $page.params.project,
                 $key.name,
                 $key.scopes,
-                $key.expire ?? undefined
+                $key.expire || undefined
             );
             if ($onboarding) {
-                invalidate(Dependencies.PROJECT);
+                await invalidate(Dependencies.PROJECT);
             }
             trackEvent(Submit.KeyCreate, {
                 scopes: $key.scopes

@@ -20,9 +20,9 @@
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
+                $createPlatform.key || undefined,
+                $createPlatform.store || undefined,
+                $createPlatform.hostname || undefined
             );
 
             return;
@@ -32,7 +32,7 @@
             projectId,
             'android',
             $createPlatform.name,
-            $createPlatform.key,
+            $createPlatform.key || undefined,
             undefined,
             undefined
         );

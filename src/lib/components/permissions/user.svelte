@@ -3,7 +3,7 @@
     import { createEventDispatcher } from 'svelte';
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
     import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@appwrite.io/console';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
 
@@ -31,7 +31,10 @@
 
     async function request() {
         if (!show) return;
-        results = await sdk.forProject.users.list([Query.limit(5), Query.offset(offset)], search);
+        results = await sdk.forProject.users.list(
+            [Query.limit(5), Query.offset(offset)],
+            search || undefined
+        );
     }
 
     function onSelection(event: Event, role: string) {
@@ -90,28 +93,28 @@
                                         {#if user.name}
                                             <AvatarInitials size={32} name={user.name} />
                                             <div class="u-line-height-1-5">
-                                                <div class="body-text-2">
+                                                <div class="body-text-2 u-bold">
                                                     {user.name}
                                                 </div>
                                                 <div class="u-x-small">{user.$id}</div>
                                             </div>
                                         {:else}
-                                            <div class="avatar is-size-small ">
+                                            <div class="avatar is-size-small">
                                                 <span class="icon-minus-sm" aria-hidden="true" />
                                             </div>
                                             <div class="u-line-height-1-5">
-                                                <div class="body-text-2">
+                                                <div class="body-text-2 u-bold">
                                                     {user.email ? user.email : user.phone}
                                                 </div>
                                                 <div class="u-x-small">{user.$id}</div>
                                             </div>
                                         {/if}
                                     {:else}
-                                        <div class="avatar is-size-small ">
+                                        <div class="avatar is-size-small">
                                             <span class="icon-anonymous" aria-hidden="true" />
                                         </div>
                                         <div class="u-line-height-1-5">
-                                            <div class="body-text-2">
+                                            <div class="body-text-2 u-bold">
                                                 {user.name ? user.name : '-'}
                                             </div>
                                             <div class="u-x-small">{user.$id}</div>
@@ -132,7 +135,7 @@
         <EmptySearch hidePages>
             <div class="common-section">
                 <div class="u-text-center common-section">
-                    <b class="body-text-2">Sorry we couldn't find "{search}"</b>
+                    <b class="body-text-2 u-bold">Sorry we couldn't find "{search}"</b>
                     <p>There are no Users that match your search.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">

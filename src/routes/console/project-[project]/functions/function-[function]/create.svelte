@@ -187,7 +187,7 @@
                 <img src={GithubLight} alt="github" />
             {/if}
             <div class="u-flex u-flex-vertical u-gap-24">
-                <h3 class="body-text-1">Coming Soon!</h3>
+                <h3 class="body-text-1 u-bold">Coming Soon!</h3>
                 <p>
                     Creating deployments will be easier than ever with our upcoming Git Integration.
                     Just set up a repository and we'll do the rest.

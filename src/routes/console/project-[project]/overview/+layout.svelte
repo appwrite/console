@@ -21,7 +21,7 @@
 </script>
 
 <script lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { page } from '$app/stores';
     import { onboarding, project } from '../store';
@@ -119,7 +119,7 @@
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
                                         {storage.value}
-                                        <span class="body-text-2">{storage.unit}</span>
+                                        <span class="body-text-2 u-bold">{storage.unit}</span>
                                     </div>
                                     <div>Storage</div>
                                 </div>

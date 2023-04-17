@@ -141,7 +141,7 @@
             <slot>
                 <div class="u-text-center">
                     <Heading size="7" tag="h4">Create your first platform to get started.</Heading>
-                    <p class="body-text-2 u-margin-block-start-4">
+                    <p class="body-text-2 u-bold u-margin-block-start-4">
                         Need a hand? Check out our documentation.
                     </p>
                 </div>
