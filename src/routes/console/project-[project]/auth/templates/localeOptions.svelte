@@ -1,17 +1,17 @@
 <script lang="ts">
     import { InputSelectSearch } from '$lib/elements/forms';
 
-    export let localeCodes: string[] = ['en', 'en-US', 'en-GB'];
+    export let localeCodes: { name: string; code: string }[];
     export let value: string;
 
     let search: string;
 
     $: options = localeCodes
         .map((code) => ({
-            label: code,
-            value: code
+            label: code.name,
+            value: code.code
         }))
-        .filter((option) => option.label.toLowerCase().startsWith(search?.toLowerCase()));
+        .filter((option) => option.label?.toLowerCase().startsWith(search?.toLowerCase()));
 </script>
 
 <div class="u-flex u-main-space-between">

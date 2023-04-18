@@ -108,6 +108,7 @@
                             required
                             placeholder="Enter username" />
                         <InputPassword
+                            showPasswordButton
                             id="passwort"
                             label="Password"
                             bind:value={password}

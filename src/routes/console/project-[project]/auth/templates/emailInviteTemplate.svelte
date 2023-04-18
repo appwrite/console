@@ -2,10 +2,9 @@
     import { afterUpdate } from 'svelte';
     import EmailTemplate from './emailTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
-    import Box from '$lib/components/box.svelte';
 
     let locale = 'en-us';
-    export let localeCodes: string[];
+    export let localeCodes: { name: string; code: string }[];
     export let loadEmailTemplate: (type: string, locale: string) => Promise<void> | void;
     export let saveEmailTemplate: (type: string, data: any) => Promise<void> | void;
 
@@ -27,7 +26,7 @@
     }
 </script>
 
-<Box>
+<div class="box">
     <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
     <EmailTemplate
         senderName={template?.senderName}
@@ -35,4 +34,4 @@
         subject={template?.subject}
         message={template?.message}
         onSubmit={(data) => saveEmailTemplate('invitation', { ...data, locale })} />
-</Box>
+</div>

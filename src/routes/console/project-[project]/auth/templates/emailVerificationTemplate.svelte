@@ -4,7 +4,7 @@
     import LocaleOptions from './localeOptions.svelte';
 
     let locale = 'en-us';
-    export let localeCodes: string[];
+    export let localeCodes: { name: string; code: string }[];
     export let loadEmailTemplate: (type: string, locale: string) => Promise<void> | void;
     export let saveEmailTemplate: (type: string, data: any) => Promise<void> | void;
 
