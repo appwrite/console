@@ -42,9 +42,10 @@
         const path = '/projects/' + projectId + '/templates/email/' + type + '/' + locale;
 
         try {
-            emailTemplates[type] = await sdk.forConsole.client.call(
-                'GET',
-                new URL(sdk.forConsole.client.config.endpoint + path)
+            emailTemplates[type] = await sdk.forConsole.projects.getEmailTemplate(
+                projectId,
+                type,
+                locale
             );
         } catch (e) {
             addNotification({

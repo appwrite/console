@@ -1,16 +1,9 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
+import type { Models } from '@appwrite.io/console';
 
 export const load: PageLoad = async () => {
-    let codes = { localeCodes: [] };
-    try {
-        codes = await sdk.forProject.client.call(
-            'GET',
-            new URL(sdk.forProject.client.config.endpoint + '/locale/codes')
-        );
-    } catch (e) {
-        console.log(e);
-    }
+    const codes: Models.LocaleCodeList = await sdk.forProject.locale.listCodes();
     return {
         localeCodes: codes.localeCodes
     };

@@ -1,7 +1,8 @@
 <script lang="ts">
     import { InputSelectSearch } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
 
-    export let localeCodes: { name: string; code: string }[];
+    export let localeCodes: Models.LocaleCode[];
     export let value: string;
 
     let search: string;

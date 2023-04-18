@@ -38,7 +38,7 @@
             <TableCellHead>Variables</TableCellHead>
             <TableCellHead width={180} />
         </TableHeader>
-        <TableBody>
+        <!-- <TableBody>
             {#each data?.variables as variable}
                 <TableRow>
                     <TableCell title="variable">
@@ -51,7 +51,7 @@
                     </TableCellText>
                 </TableRow>
             {/each}
-        </TableBody>
+        </TableBody> -->
     </Table>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
