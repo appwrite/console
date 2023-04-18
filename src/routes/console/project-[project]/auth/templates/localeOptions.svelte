@@ -18,7 +18,10 @@
 <div class="u-flex u-main-space-between">
     <div>
         <span class="icon-translate" />
-        <span class="text">{value}</span>
+        <span class="text"
+            >{value
+                ? localeCodes.find((locale) => locale.code === value).name
+                : 'Select a language'}</span>
     </div>
     <InputSelectSearch
         on:select
@@ -28,6 +31,7 @@
         name="locale"
         bind:value
         bind:search
+        required
         stretch={false}
         showLabel={false}
         interactiveOutput

@@ -44,8 +44,6 @@
         loadEmailTemplate('invitation', 'en-us');
     });
     async function loadEmailTemplate(type: string, locale: string) {
-        const path = '/projects/' + projectId + '/templates/email/' + type + '/' + locale;
-
         try {
             emailTemplates[type] = await sdk.forConsole.projects.getEmailTemplate(
                 projectId,
@@ -61,24 +59,27 @@
     }
 
     async function saveEmailTemplate(type: string, data: any) {
-        console.log(data);
-        const path = '/projects/' + projectId + '/templates/email/' + type + '/' + data.locale;
-
+        if (!data.locale) {
+            addNotification({
+                type: 'error',
+                message: 'Locale is required'
+            });
+            return;
+        }
         try {
-            emailTemplates[type] = await sdk.forConsole.client.call(
-                'PATCH',
-                new URL(sdk.forConsole.client.config.endpoint + path),
-                { 'content-type': 'application/json' },
-                {
-                    senderName: data.senderName,
-                    senderEmail: data.senderEmail,
-                    subject: data.subject,
-                    message: data.message
-                }
+            emailTemplates[type] = await sdk.forConsole.projects.updateEmailTemplate(
+                projectId,
+                type,
+                data.locale,
+                data.senderName,
+                data.senderEmail,
+                data.subject,
+                data.message,
+                data.replyTo
             );
             addNotification({
                 type: 'success',
-                message: 'Template updated'
+                message: `Email ${type} template for ${data.locale} updated`
             });
         } catch (e) {
             addNotification({
