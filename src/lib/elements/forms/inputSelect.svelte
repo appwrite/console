@@ -27,29 +27,17 @@
         error = element.validationMessage;
     };
 
-    const isValid = (value: string | number | boolean) => {
-        if (value === null) return false;
-
-        if (value === undefined) return false;
-
-        if (typeof value !== 'boolean') {
-            if (!value) {
-                return false;
-            }
-        }
-
-        return true;
+    const isNotEmpty = (value: string | number | boolean) => {
+        return typeof value === 'boolean' ? true : !!value;
     };
 
-    $: if (element && required && !isValid(value)) {
-        element.setCustomValidity('This field is required');
-    }
-
-    $: if (element && required && isValid(value)) {
-        element.setCustomValidity('');
-    }
-
-    $: if (isValid(value)) {
+    $: if (element && required) {
+        if (!isNotEmpty(value)) {
+            element.setCustomValidity('This field is required');
+        } else {
+            element.setCustomValidity('');
+        }
+    } else if (isNotEmpty(value)) {
         error = null;
     }
 
