@@ -5,8 +5,8 @@
     export let open = false;
 </script>
 
-<li class="collapsible-item">
-    <details class="collapsible-wrapper" on:keyup={clickOnEnter} on:click {open}>
+<li class="collapsible-item" on:keyup={clickOnEnter} on:click>
+    <details class="collapsible-wrapper" {open}>
         <summary class="collapsible-button">
             <slot name="beforetitle" />
             <div>

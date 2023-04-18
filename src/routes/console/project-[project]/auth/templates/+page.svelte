@@ -31,6 +31,11 @@
               invitation: EmailTemplate;
           }
         | any = {};
+    let emailVerificationOpen = true;
+    let emailMagicSessionOpen = false;
+    let emailOpen = 'verification';
+    $: emailVerificationOpen = emailOpen === 'verification';
+    $: emailMagicSessionOpen = emailOpen === 'magicSession';
 
     onMount(() => {
         loadEmailTemplate('verification', 'en-us');
@@ -118,7 +123,11 @@
 
         <svelte:fragment slot="aside">
             <Collapsible>
-                <CollapsibleItem open>
+                <CollapsibleItem
+                    bind:open={emailVerificationOpen}
+                    on:click={() => {
+                        emailOpen = 'verification';
+                    }}>
                     <svelte:fragment slot="title">Verification</svelte:fragment>
                     <p class="text">
                         Send a verification email to users that sign in with their email and
@@ -130,7 +139,11 @@
                         localeCodes={data.localeCodes}
                         template={emailTemplates?.verification} />
                 </CollapsibleItem>
-                <CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={emailMagicSessionOpen}
+                    on:click={() => {
+                        emailOpen = 'magicSession';
+                    }}>
                     <svelte:fragment slot="title">Magic URL</svelte:fragment>
                     <EmailMagicUrlTemplate
                         {loadEmailTemplate}
