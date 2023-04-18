@@ -33,10 +33,6 @@
         element?.setCustomValidity('');
     }
 
-    $: if (element && required && value) {
-        element.setCustomValidity('');
-    }
-
     $: if (value) {
         error = null;
     }
