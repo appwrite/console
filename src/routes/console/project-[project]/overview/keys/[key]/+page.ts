@@ -10,6 +10,8 @@ export const load: PageLoad = async ({ params, depends }) => {
     const key = await sdk.forConsole.projects.getKey(params.project, params.key);
     if (key.expire) {
         key.expire = new Date(key.expire).toISOString().slice(0, 23);
+    } else {
+        key.expire = undefined;
     }
 
     return {
