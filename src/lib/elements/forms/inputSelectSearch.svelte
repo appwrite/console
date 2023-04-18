@@ -22,7 +22,7 @@
     export let disabled = false;
     export let autofocus = false;
     export let interactiveOutput = false;
-    // Input value
+    export let stretch = true;
     export let search = '';
     // The actual selected value
     export let value: Option['value'];
@@ -82,9 +82,8 @@
         value = option.value;
         search = option.label;
         // It's not working without this line.
-        !$$slots.output && (element.value = search);
+        $$slots.output ? (search = '') : (element.value = search);
         hasFocus = false;
-        search = '';
         dispatch('select', option);
     }
 
@@ -99,7 +98,7 @@
     $: showClearBtn = (hasFocus && search) || value;
 </script>
 
-<li class="u-position-relative form-item u-stretch">
+<li class="u-position-relative form-item" class:u-stretch={stretch}>
     <DropList
         bind:show={hasFocus}
         noStyle

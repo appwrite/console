@@ -5,7 +5,7 @@
     import Box from '$lib/components/box.svelte';
 
     let locale = 'en-us';
-    export let localeCodes: any[];
+    export let localeCodes: string[];
     export let loadEmailTemplate: (type: string, locale: string) => Promise<void> | void;
     export let saveEmailTemplate: (type: string, data: any) => Promise<void> | void;
 
@@ -28,7 +28,7 @@
 </script>
 
 <Box>
-    <LocaleOptions {localeCodes} on:change={onLocaleChange} bind:value={locale} />
+    <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
     <EmailTemplate
         senderName={template?.senderName}
         senderEmail={template?.senderEmail}
