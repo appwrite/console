@@ -17,7 +17,9 @@
 </script>
 
 <label
-    class="card is-allow-focus u-cursor-pointer"
+    class="card u-cursor-pointer"
+    class:is-allow-focus={!disabled}
+    class:is-disabled={disabled}
     class:u-height-100-percent={fullHeight}
     style:--card-padding={`${padding}rem`}
     style:--card-border-radius={`var(${Radius[borderRadius]})`}>
@@ -30,14 +32,22 @@
             {value}
             bind:group
             on:click />
-        <div class="u-flex u-flex-vertical u-gap-4">
-            <h4 class="body-text-2 u-bold"><slot name="title" /></h4>
-            <p class="u-color-text-gray u-small">
-                <slot />
-            </p>
-        </div>
-        {#if icon}
-            <span class={`icon-${icon} u-margin-inline-start-auto`} aria-hidden="true" />
+        {#if $$slots.custom}
+            <slot name="custom" />
+        {:else}
+            <div class="u-flex u-flex-vertical u-gap-4">
+                {#if $$slots.title}
+                    <h4 class="body-text-2 u-bold"><slot name="title" /></h4>
+                {/if}
+                {#if $$slots.default}
+                    <p class="u-color-text-gray u-small">
+                        <slot />
+                    </p>
+                {/if}
+            </div>
+            {#if icon}
+                <span class={`icon-${icon} u-margin-inline-start-auto`} aria-hidden="true" />
+            {/if}
         {/if}
     </div>
 </label>

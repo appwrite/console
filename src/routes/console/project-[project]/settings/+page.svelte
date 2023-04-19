@@ -14,6 +14,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { TIER, isCloud, isFree } from '$lib/system';
 
     let name: string = null;
     let showDelete = false;
@@ -74,6 +75,40 @@
 
 <Container>
     {#if $project}
+        {#if isCloud}
+            <CardGrid>
+                <Heading tag="h6" size="7">Plan Summary</Heading>
+                <p class="text">
+                    Your current project plan. For more information on Appwrite plans, <a
+                        href="http://appwrite.io/pricing"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="link">
+                        view our pricing guide.</a>
+                </p>
+                <svelte:fragment slot="aside">
+                    <div class="box u-flex u-main-space-between">
+                        <div>
+                            <h6 class="u-bold u-trim-1">
+                                <span class="u-capitalize">{TIER}</span> plan
+                            </h6>
+                            <p class="text">REGION</p>
+                        </div>
+                        {#if !isFree}
+                            <p>PRICE</p>
+                        {/if}
+                    </div>
+                </svelte:fragment>
+                <svelte:fragment slot="actions">
+                    {#if isFree}
+                        <Button event="change_plan">Upgrade to Pro</Button>
+                    {:else}
+                        <Button text event="change_plan">Change plan</Button>
+                        <Button secondary event="change_plan">View payment details</Button>
+                    {/if}
+                </svelte:fragment>
+            </CardGrid>
+        {/if}
         <Form onSubmit={updateName}>
             <CardGrid>
                 <Heading tag="h6" size="7">API Credentials</Heading>

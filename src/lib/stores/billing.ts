@@ -1,4 +1,4 @@
-import type { Client, Payload } from '@aw-labs/appwrite-console';
+import type { Client, Payload } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
 
 export class Billing {

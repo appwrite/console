@@ -4,14 +4,13 @@
     import { GridItem1, Heading, Empty, CardContainer, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import CreateProject from './createProject.svelte';
+    import Create from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
-    import { page } from '$app/stores';
+    import { wizard } from '$lib/stores/wizard';
 
     export let data: PageData;
 
-    let showCreate = false;
     let addOrganization = false;
 
     const getPlatformInfo = (platform: string) => {
@@ -43,12 +42,16 @@
             (value, index, self) => index === self.findIndex((t) => t.name === value.name)
         );
     }
+
+    function openWizard() {
+        wizard.start(Create);
+    }
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Projects</Heading>
-        <Button on:click={() => (showCreate = true)} event="create_project">
+        <Button on:click={openWizard} event="create_project">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create project</span>
         </Button>
     </div>
@@ -58,7 +61,7 @@
             total={data.projects.total}
             offset={data.offset}
             event="project"
-            on:click={() => (showCreate = true)}>
+            on:click={openWizard}>
             {#each data.projects.projects as project}
                 <GridItem1 href={`${base}/console/project-${project.$id}`}>
                     <svelte:fragment slot="eyebrow">
@@ -90,7 +93,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty single on:click={() => (showCreate = true)}>
+        <Empty single on:click={openWizard}>
             <p>Create a new project</p>
         </Empty>
     {/if}
@@ -103,4 +106,3 @@
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
-<CreateProject bind:show={showCreate} teamId={$page.params.organization} />
