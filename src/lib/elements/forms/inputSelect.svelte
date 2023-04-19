@@ -31,13 +31,13 @@
         return typeof value === 'boolean' ? true : !!value;
     };
 
-    $: if (element && required) {
-        if (!isNotEmpty(value)) {
-            element.setCustomValidity('This field is required');
-        } else {
-            element.setCustomValidity('');
-        }
-    } else if (isNotEmpty(value)) {
+    $: if (required && !isNotEmpty(value)) {
+        element?.setCustomValidity('This field is required');
+    } else {
+        element?.setCustomValidity('');
+    }
+
+    $: if (isNotEmpty(value)) {
         error = null;
     }
 
