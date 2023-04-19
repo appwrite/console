@@ -5,6 +5,7 @@
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { user } from '$lib/stores/user';
+    import { sdkForConsole } from '$lib/stores/sdk';
 
     export let imgLight = LoginLight;
     export let imgDark = LoginDark;
@@ -22,6 +23,15 @@
         'kotlin',
         'swift'
     ];
+
+    function onGithubLogin() {
+        sdkForConsole.account.createOAuth2Session(
+            'github',
+            window.location.origin,
+            window.location.origin,
+            ['read:user', 'user:email']
+        );
+    }
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">
@@ -82,6 +92,14 @@
                 <ul class="inline-links is-center is-with-sep u-margin-block-start-32">
                     <slot name="links" />
                 </ul>
+            </div>
+
+            <p class="u-margin-block-start-20">Or sign in with:</p>
+
+            <div class="u-margin-block-start-16 u-flex u-gap-12">
+                <button on:click={onGithubLogin} class="button is-secondary">
+                    <span class="text">GitHub</span>
+                </button>
             </div>
 
             <div class="u-margin-block-start-auto" />
