@@ -1,7 +1,7 @@
 import type { Client, Models } from '@aw-labs/appwrite-console';
 
 type Payload = {
-    [key: string]: any;
+    [key: string]: any /* eslint-disable  @typescript-eslint/no-explicit-any */;
 };
 
 class Service {
