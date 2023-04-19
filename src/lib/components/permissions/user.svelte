@@ -96,7 +96,7 @@
                                                 <div class="u-x-small">{user.$id}</div>
                                             </div>
                                         {:else}
-                                            <div class="avatar is-size-small ">
+                                            <div class="avatar is-size-small">
                                                 <span class="icon-minus-sm" aria-hidden="true" />
                                             </div>
                                             <div class="u-line-height-1-5">
@@ -107,7 +107,7 @@
                                             </div>
                                         {/if}
                                     {:else}
-                                        <div class="avatar is-size-small ">
+                                        <div class="avatar is-size-small">
                                             <span class="icon-anonymous" aria-hidden="true" />
                                         </div>
                                         <div class="u-line-height-1-5">

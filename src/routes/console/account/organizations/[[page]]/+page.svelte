@@ -51,7 +51,7 @@
                         {organization.name}
                     </svelte:fragment>
                     {#await avatarList}
-                        <span class="avatar  is-color-empty" />
+                        <span class="avatar is-color-empty" />
                     {:then avatars}
                         <AvatarGroup size={40} {avatars} />
                     {/await}

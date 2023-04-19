@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { tooltip as tooltipAction } from '$lib/actions/tooltip';
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let label: string;
     export let optionalText: string | undefined = undefined;
@@ -43,20 +42,9 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>
+    <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
         {label}
-        {#if tooltip}
-            <span
-                class="icon-info"
-                aria-hidden="true"
-                use:tooltipAction={{
-                    content: tooltip
-                }} />
-        {/if}
-        {#if optionalText}
-            <span class="optional">{optionalText}</span>
-        {/if}
-    </label>
+    </Label>
 
     <div class="input-text-wrapper">
         <input
@@ -72,6 +60,13 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
+        {#if maxlength}
+            <span class="text-counter">
+                <span class="text-counter-count">{value?.length ?? 0}</span>
+                <span class="text-counter-separator" />
+                <span class="text-counter-max">{maxlength}</span>
+            </span>
+        {/if}
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

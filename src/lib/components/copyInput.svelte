@@ -31,7 +31,7 @@
         <div class="options-list">
             <button
                 type="button"
-                class="input-button"
+                class="options-list-button"
                 aria-label="Click to copy."
                 on:click={handleCopy}
                 on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}

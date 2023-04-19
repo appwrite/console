@@ -63,7 +63,7 @@
         <p class="text">{label}</p>
     {/if}
     <div
-        class="box  is-no-shadow u-padding-24"
+        class="box is-no-shadow u-padding-24"
         style="--box-border-radius:var(--border-radius-xsmall); z-index: 1"
         class:is-border-dashed={!hovering}
         class:is-hover-with-file={hovering}
@@ -77,7 +77,7 @@
             </div>
             <div class="u-min-width-0 u-text-center">
                 <h5 class="upload-file-box-title heading-level-7 u-inline">
-                    <span class="is-only-desktop">Drag and drop files here to upload</span>
+                    <span class="is-only-desktop">Drag and drop a file here to upload</span>
                     <span class="is-not-desktop">Upload a File</span>
                 </h5>
                 {#if allowedFileExtensions?.length}

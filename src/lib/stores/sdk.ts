@@ -1,3 +1,5 @@
+import { Project } from '$lib/sdk/project';
+import { VARS } from '$lib/system';
 import {
     Account,
     Avatars,
@@ -12,10 +14,8 @@ import {
     Users
 } from '@aw-labs/appwrite-console';
 
-import { Project } from './project';
+const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
-const endpoint =
-    import.meta.env.VITE_APPWRITE_ENDPOINT?.toString() ?? `${globalThis?.location?.origin}/v1`;
 const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');
 
@@ -45,7 +45,6 @@ const sdkForProject = {
     health: new Health(clientProject),
     locale: new Locale(clientProject),
     project: new Project(clientProject),
-    projects: new Projects(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject)

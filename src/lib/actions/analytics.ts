@@ -1,18 +1,16 @@
-import Analytics from 'analytics';
-import googleAnalytics from '@analytics/google-analytics';
-import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
-import { growthEndpoint, Mode } from '$lib/constants';
+import { ENV, MODE, VARS } from '$lib/system';
+import googleAnalytics from '@analytics/google-analytics';
 import { AppwriteException } from '@aw-labs/appwrite-console';
+import Analytics from 'analytics';
+import { get } from 'svelte/store';
 
-const isDevelopment =
-    import.meta.env.DEV || import.meta.env?.VITE_VERCEL_ENV?.toString() === 'preview';
 const analytics = Analytics({
     app: 'appwrite',
     plugins: [
         googleAnalytics({
-            measurementIds: [import.meta.env.VITE_GA_PROJECT?.toString() || 'G-R4YJ9JN8L4']
+            measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
         })
     ]
 });
@@ -32,7 +30,7 @@ export function trackEvent(name: string, data: object = null): void {
         };
     }
 
-    if (isDevelopment) {
+    if (ENV.DEV || ENV.PREVIEW) {
         console.debug(`[Analytics] Event ${name} ${path}`, data);
     } else {
         analytics.track(name, { ...data, path });
@@ -54,7 +52,7 @@ export function trackPageView(path: string) {
         return;
     }
 
-    if (isDevelopment) {
+    if (ENV.DEV || ENV.PREVIEW) {
         console.debug(`[Analytics] Pageview ${path}`);
     } else {
         analytics.page({
@@ -64,14 +62,14 @@ export function trackPageView(path: string) {
 }
 
 function sendEventToGrowth(event: string, path: string, data: object = null): void {
-    if (!growthEndpoint) return;
+    if (!VARS.GROWTH_ENDPOINT) return;
     const userStore = get(user);
     let email: string, name: string;
     if (userStore) {
         email = userStore.email;
         name = userStore.name;
     }
-    fetch(`${growthEndpoint}/analytics`, {
+    fetch(`${VARS.GROWTH_ENDPOINT}/analytics`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -80,7 +78,7 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
             action: event,
             label: event,
             url: window.location.origin + path,
-            account: import.meta.env.VITE_CONSOLE_MODE?.toString() || Mode.SELF_HOSTED,
+            account: MODE,
             data: {
                 email,
                 name,
@@ -90,8 +88,8 @@ function sendEventToGrowth(event: string, path: string, data: object = null): vo
     });
 }
 
-function isTrackingAllowed() {
-    if (import.meta.env?.VITEST) {
+export function isTrackingAllowed() {
+    if (ENV.TEST) {
         return;
     }
     if (window.navigator?.doNotTrack) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormItem } from '.';
+    import { FormItem, Label } from '.';
 
     export let id: string;
     export let label: string;
@@ -11,7 +11,10 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+    <Label hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
     <div class="input-text-wrapper" style=" --amount-of-buttons: 1;">
         {#if showInPlainText}
             <div
@@ -19,7 +22,7 @@
                 role="textbox"
                 {id}
                 aria-placeholder={placeholder}
-                class="input-text  is-resizable"
+                class="input-text is-resizable"
                 bind:textContent={value} />
         {:else}
             <input
