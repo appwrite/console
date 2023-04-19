@@ -13,8 +13,9 @@
 
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { BarChart } from '$lib/charts';
-    import { Card, SecondaryTabs, SecondaryTabsItem, Heading } from '$lib/components';
+    import { BarChart, LineChart } from '$lib/charts';
+    import { Card, SecondaryTabs, SecondaryTabsItem, Heading, Tiles } from '$lib/components';
+    import { Colors } from '$lib/charts/config';
     import type { Models } from '@aw-labs/appwrite-console';
     import { page } from '$app/stores';
 
