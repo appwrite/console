@@ -21,7 +21,7 @@
     "dependencies": {
         "@analytics/google-analytics": "^1.0.5",
         "@appwrite.io/pink": "^0.0.4",
-        "@aw-labs/appwrite-console": "npm:appwrite-shimon@^7.1.1",
+        "@aw-labs/appwrite-console": "npm:appwrite-shimon@^7.2.4",
         "@popperjs/core": "^2.11.6",
         "@sentry/svelte": "^7.36.0",
         "@sentry/tracing": "^7.36.0",

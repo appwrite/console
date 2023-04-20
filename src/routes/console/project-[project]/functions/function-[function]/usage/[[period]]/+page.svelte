@@ -5,6 +5,7 @@
     import { BarChart } from '$lib/charts';
     import { page } from '$app/stores';
     import type { PageData } from './$types';
+
     export let data: PageData;
     $: count = data.executionsTotal;
 </script>
