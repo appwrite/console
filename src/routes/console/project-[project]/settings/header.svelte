@@ -21,6 +21,11 @@
             href: `${path}/webhooks`,
             title: 'Webhooks',
             event: 'webhooks'
+        },
+        {
+            href: `${path}/git-installations`,
+            title: 'Git Installations',
+            event: 'vcs'
         }
     ];
 </script>

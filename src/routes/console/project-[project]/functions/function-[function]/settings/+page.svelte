@@ -28,6 +28,7 @@
     import Variable from '../../createVariable.svelte';
     import { execute, func } from '../store';
     import UploadVariables from './uploadVariables.svelte';
+    import GitConnection from './gitConnection.svelte';
     import {
         Table,
         TableBody,
@@ -45,6 +46,7 @@
     const functionId = $page.params.function;
     let showDelete = false;
     let selectedVar: Models.Variable = null;
+    let showGitConnection = false;
     let showVariablesUpload = false;
     let showVariablesModal = false;
     let showVariablesDropdown = [];
@@ -71,7 +73,9 @@
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled
+                $func.enabled,
+                $func.vcsInstallationId || undefined,
+                $func.repositoryId || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -97,7 +101,9 @@
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled
+                $func.enabled,
+                $func.vcsInstallationId || undefined,
+                $func.repositoryId || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -123,7 +129,9 @@
                 $func.events || undefined,
                 functionSchedule,
                 $func.timeout || undefined,
-                $func.enabled
+                $func.enabled,
+                $func.vcsInstallationId || undefined,
+                $func.repositoryId || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -149,7 +157,9 @@
                 $func.events || undefined,
                 $func.schedule || undefined,
                 timeout,
-                $func.enabled
+                $func.enabled,
+                $func.vcsInstallationId || undefined,
+                $func.repositoryId || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -163,6 +173,34 @@
                 message: error.message
             });
             trackError(error, Submit.FunctionUpdateTimeout);
+        }
+    }
+
+    async function disconnectVcs() {
+        try {
+            await sdk.forProject.functions.update(
+                functionId,
+                $func.name,
+                $func.execute || undefined,
+                $func.events || undefined,
+                $func.schedule || undefined,
+                timeout,
+                $func.enabled,
+                '',
+                ''
+            );
+            await invalidate(Dependencies.FUNCTION);
+            addNotification({
+                type: 'success',
+                message: 'Git has been disconnected'
+            });
+            trackEvent(Submit.FunctionUpdateVcs);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.FunctionUpdateVcs);
         }
     }
 
@@ -286,7 +324,14 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+            <div class="u-flex u-gap-16 u-main-end">
+                {#if $func.vcsInstallationId}
+                    <Button danger on:click={disconnectVcs}>Disconnect Git</Button>
+                {:else}
+                    <Button on:click={() => (showGitConnection = true)}>Connect Git</Button>
+                {/if}
+                <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+            </div>
         </svelte:fragment>
     </CardGrid>
 
@@ -517,4 +562,7 @@
 {/if}
 {#if showVariablesUpload}
     <UploadVariables bind:show={showVariablesUpload} />
+{/if}
+{#if showGitConnection}
+    <GitConnection installations={data.installations} bind:show={showGitConnection} />
 {/if}

@@ -6,6 +6,7 @@ export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.VARIABLES);
 
     return {
-        variables: await sdk.forProject.functions.listVariables(params.function)
+        variables: await sdk.forProject.functions.listVariables(params.function),
+        installations: await sdk.forProject.vcs.listInstallations()
     };
 };
