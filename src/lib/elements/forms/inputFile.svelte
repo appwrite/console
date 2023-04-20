@@ -63,7 +63,7 @@
         <p class="text">{label}</p>
     {/if}
     <div
-        class="box  is-no-shadow u-padding-24"
+        class="box is-no-shadow u-padding-24"
         style="--box-border-radius:var(--border-radius-xsmall); z-index: 1"
         class:is-border-dashed={!hovering}
         class:is-hover-with-file={hovering}

@@ -43,7 +43,7 @@
                                         <Trim>{log.userEmail}</Trim>
                                     {/if}
                                 {:else}
-                                    <div class="avatar is-size-small ">
+                                    <div class="avatar is-size-small">
                                         <span class="icon-anonymous" aria-hidden="true" />
                                     </div>
                                     <span class="text u-trim">{log.userName ?? 'Anonymous'}</span>

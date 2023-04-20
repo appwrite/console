@@ -15,8 +15,12 @@
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { trackEvent } from '$lib/actions/analytics';
+    import LoginLight from '$lib/images/login/login-light-mode.svg';
+    import LoginDark from '$lib/images/login/login-dark-mode.svg';
+
+    let imgLight = LoginLight;
+    let imgDark = LoginDark;
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
@@ -24,18 +28,17 @@
     async function register() {
         try {
             disabled = true;
-            await sdkForConsole.account.create(ID.unique(), mail, pass, name ?? '');
+            await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
             await sdkForConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
-            trackEvent(Submit.AccountCreate);
+            trackEvent('submit_account_create');
         } catch (error) {
             disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.AccountCreate);
         }
     }
 </script>
@@ -44,7 +47,7 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated {imgLight} {imgDark}>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form on:submit={register}>

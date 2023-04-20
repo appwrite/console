@@ -57,7 +57,7 @@
                 <svelte:fragment slot="title">The invite link is not valid</svelte:fragment>
                 Please ask the project owner to send you a new invite.
             </Alert>
-            <div class="u-flex u-main-end u-margin-block-start-40	">
+            <div class="u-flex u-main-end u-margin-block-start-40">
                 <Button href={`${base}/register`}>Sign up to Appwrite</Button>
             </div>
         {:else}

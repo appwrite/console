@@ -1,10 +1,10 @@
 <script lang="ts">
     import AppwriteLogo from '$lib/images/appwrite.svg';
-    import LoginLight from '$lib/images/login/login-light-mode.svg';
-    import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { user } from '$lib/stores/user';
+    import LoginLight from '$lib/images/login/login-light-mode.svg';
+    import LoginDark from '$lib/images/login/login-dark-mode.svg';
 
     export let imgLight = LoginLight;
     export let imgDark = LoginDark;
@@ -36,9 +36,9 @@
 
         <div class="u-margin-block-start-auto" />
 
-        <div class="u-margin-block-start-auto is-not-mobile" />
+        <div class="u-margin-block-start-auto is-no-mobile" />
         <div
-            class="container u-margin-block-start-20 is-not-mobile"
+            class="container u-margin-block-start-20 is-no-mobile u-flex u-main-center"
             style="--p-container-max-size: var(--container-size-large);">
             {#if $app.themeInUse === 'dark'}
                 <img src={imgDark} alt="" class="u-only-dark" />
@@ -49,13 +49,13 @@
 
         <div class="u-margin-block-start-auto" />
 
-        <div class="u-margin-block-start-auto is-not-mobile" />
+        <div class="u-margin-block-start-auto is-no-mobile" />
         <div
-            class="container u-color-text-gray is-not-mobile"
+            class="container u-text-color-light-gray is-no-mobile"
             style="--p-container-max-size:var(--container-size-small); --p-container-padding-inline:1rem;">
             <p>Integrate with your favourite technologies</p>
             <ul
-                class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 u-opacity-50">
+                class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 u-opacity-0-5">
                 {#each technologies as tech}
                     <li>
                         <img

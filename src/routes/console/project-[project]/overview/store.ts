@@ -7,7 +7,7 @@ import { isCloud } from '$lib/system';
 export const usage = cachedStore<
     Models.UsageProject,
     {
-        load: (projectId: string, range: string) => Promise<void>;
+        load: (range: string) => Promise<void>;
     }
 >('projectUsage', function ({ set }) {
     return {

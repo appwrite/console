@@ -19,6 +19,10 @@ export const app = writable<AppStore>({
     themeInUse: 'light'
 });
 
+//TODO: remove cloud always set to true
+export const isCloud =
+    (import.meta.env.VITE_CONSOLE_MODE?.toString() ?? 'cloud') === 'cloud' ? true : false;
+
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({
         elapsed: browser ? parseInt(localStorage.getItem('feedbackElapsed')) : 0,
