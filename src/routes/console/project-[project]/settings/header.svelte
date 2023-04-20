@@ -21,6 +21,17 @@
             href: `${path}/webhooks`,
             title: 'Webhooks',
             event: 'webhooks'
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage',
+            event: 'usage',
+            hasChildren: true
+        },
+        {
+            href: `${path}/billing`,
+            title: 'Billing',
+            event: 'billing'
         }
     ];
 </script>

@@ -54,3 +54,5 @@ export { default as PaginationWithLimit } from './paginationWithLimit.svelte';
 export { default as ClickableList } from './clickableList.svelte';
 export { default as ClickableListItem } from './clickableListItem.svelte';
 export { default as Id } from './id.svelte';
+export { default as ProgressBar } from './progressBar.svelte';
+export { default as ProjectUsage } from './projectUsage.svelte';

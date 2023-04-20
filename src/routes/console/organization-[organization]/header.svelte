@@ -37,6 +37,12 @@
             title: 'Settings'
         },
         {
+            href: `${path}/usage`,
+            event: 'usage',
+            title: 'Usage',
+            hasChildren: true
+        },
+        {
             href: `${path}/billing`,
             event: 'billing',
             title: 'Billing'
