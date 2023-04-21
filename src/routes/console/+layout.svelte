@@ -50,6 +50,7 @@
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
+        !$page.url.pathname.includes('/console/cloud-beta-card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <Header slot="header" />
     <SideNavigation slot="side" />
