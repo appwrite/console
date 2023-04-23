@@ -31,7 +31,7 @@
                 }
             }
         }
-        checkOverflow();
+        requestAnimationFrame(checkOverflow);
         window.addEventListener('resize', checkOverflow);
 
         return {
