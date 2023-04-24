@@ -64,7 +64,8 @@
             if ($user) {
                 if (
                     !$page.url.pathname.startsWith('/console') &&
-                    !$page.url.pathname.startsWith('/invite')
+                    !$page.url.pathname.startsWith('/invite') &&
+                    !$page.url.pathname.startsWith('/cloud-beta-card')
                 ) {
                     await goto(`${base}/console`, {
                         replaceState: true

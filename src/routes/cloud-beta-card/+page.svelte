@@ -17,122 +17,126 @@
     let cardIsFlipped = false;
 </script>
 
-<div class="wrapper">
-    <div class="card">
-        <h3 class="heading-level-3 u-flex u-cross-center u-gap-8">
-            Welcome to the Cloud
-            <button class="confetti-btn" on:click={() => triggerConfettiKey++}>
-                🎉
-                {#each Array(triggerConfettiKey) as _, i (i)}
-                    <Confetti
-                        delay={i === 0 ? [500, 500] : [0, 100]}
-                        x={[0.5, 2]}
-                        y={[0, 1.5]}
-                        amount="30"
-                        fallDistance="50px"
-                        colorArray={confettiColors} />
-                {/each}
-            </button>
-        </h3>
+<div class="main-content">
+    <div class="wrapper">
+        <div class="card">
+            <h3 class="heading-level-3 u-flex u-cross-center u-gap-8">
+                Welcome to the Cloud
+                <button class="confetti-btn" on:click={() => triggerConfettiKey++}>
+                    🎉
+                    {#each Array(triggerConfettiKey) as _, i (i)}
+                        <Confetti
+                            delay={i === 0 ? [500, 500] : [0, 100]}
+                            x={[0.5, 2]}
+                            y={[0, 1.5]}
+                            amount="30"
+                            fallDistance="50px"
+                            colorArray={confettiColors} />
+                    {/each}
+                </button>
+            </h3>
 
-        <div class="content">
-            <div class="hoodie-container">
-                <img
-                    src="/images/hoodies-bg.png"
-                    alt="red background"
-                    aria-hidden="true"
-                    class="bg" />
-                <img src="/images/hoodie-1.png" class="hoodie" alt="Cloud Beta hoodies" />
-                <img src="/images/hoodie-2.png" class="hoodie" alt="Cloud Beta hoodies" />
-            </div>
-            <div>
-                <div class="u-flex u-cross-center u-gap-8">
-                    <h4 class="eyebrow-heading-1">Cloud is live in public</h4>
-                    <h4 class="eyebrow-heading-1 beta-tag">Beta</h4>
+            <div class="content">
+                <div class="hoodie-container">
+                    <img
+                        src="/images/hoodies-bg.png"
+                        alt="red background"
+                        aria-hidden="true"
+                        class="bg" />
+                    <img src="/images/hoodie-1.png" class="hoodie" alt="Cloud Beta hoodies" />
+                    <img src="/images/hoodie-2.png" class="hoodie" alt="Cloud Beta hoodies" />
                 </div>
-                <p class="u-margin-block-start-8">
-                    Share your Cloud card and you may win an exclusive Cloud hoodie!
-                </p>
+                <div>
+                    <div class="u-flex u-cross-center u-gap-8">
+                        <h4 class="eyebrow-heading-1">Cloud is live in public</h4>
+                        <h4 class="eyebrow-heading-1 beta-tag">Beta</h4>
+                    </div>
+                    <p class="u-margin-block-start-8">
+                        Share your Cloud card and you may win an exclusive Cloud hoodie!
+                    </p>
+                </div>
+            </div>
+            <img class="card-preview" src="/images/front.png" alt="The front of the card" />
+            <ul class="buttons-list u-margin-block-start-32">
+                <li class="buttons-list-item">
+                    <button class="button is-text">
+                        <span class="icon-twitter" aria-hidden="true" />
+                        <span class="text">Tweet it</span>
+                    </button>
+                </li>
+                <li class="buttons-list-item">
+                    <button class="button is-text">
+                        <span class="icon-code" aria-hidden="true" />
+                        <span class="text">Get embed code</span>
+                    </button>
+                </li>
+                <li class="buttons-list-item">
+                    <button class="button is-text">
+                        <span class="icon-link" aria-hidden="true" />
+                        <span class="text">Get a link</span>
+                    </button>
+                </li>
+            </ul>
+            <div class="card-footer">
+                <a href="/console" class="button">Go to console</a>
             </div>
         </div>
-        <img class="card-preview" src="/images/front.png" alt="The front of the card" />
-        <ul class="buttons-list u-margin-block-start-32">
-            <li class="buttons-list-item">
-                <button class="button is-text">
-                    <span class="icon-twitter" aria-hidden="true" />
-                    <span class="text">Tweet it</span>
-                </button>
-            </li>
-            <li class="buttons-list-item">
-                <button class="button is-text">
-                    <span class="icon-code" aria-hidden="true" />
-                    <span class="text">Get embed code</span>
-                </button>
-            </li>
-            <li class="buttons-list-item">
-                <button class="button is-text">
-                    <span class="icon-link" aria-hidden="true" />
-                    <span class="text">Get a link</span>
-                </button>
-            </li>
-        </ul>
-        <div class="card-footer">
-            <a href="/console" class="button">Go to console</a>
+        <div class="cbc-wrapper">
+            {#if !cardActive}
+                <div transition:fade>
+                    <Confetti
+                        x={[-1.75, 1.85]}
+                        y={[-1.875, 1]}
+                        amount={100}
+                        size="10"
+                        infinite
+                        delay={[2000, 7000]}
+                        colorArray={confettiColors}
+                        fallDistance="50px" />
+                </div>
+            {/if}
+            <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} />
         </div>
-    </div>
-    <div class="cbc-wrapper">
-        {#if !cardActive}
-            <div transition:fade>
-                <Confetti
-                    x={[-1.75, 1.85]}
-                    y={[-1.875, 1]}
-                    amount={100}
-                    size="10"
-                    infinite
-                    delay={[2000, 7000]}
-                    colorArray={confettiColors}
-                    fallDistance="50px" />
-            </div>
+        {#if cardActive}
+            <div
+                class="overlay"
+                on:click={() => (cardActive = false)}
+                on:keydown={() => {
+                    /* no-op */
+                }}
+                transition:fade />
         {/if}
-        <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} />
-    </div>
-    {#if cardActive}
-        <div
-            class="overlay"
-            on:click={() => (cardActive = false)}
-            on:keydown={() => {
-                /* no-op */
-            }}
-            transition:fade />
-    {/if}
-    <div class="controls" class:invisible={!cardActive}>
-        <button
-            class="button is-text"
-            on:click={() => (cardIsFlipped = !cardIsFlipped)}
-            aria-label="Rotate card">
-            <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true">
-                <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M2 11C2 8.2 6.5 6 12 6C17.5 6 22 8.2 22 11C22 12.8414 20.0779 14.3752 17.2449 15.2644C16.615 15.4621 16 14.9707 16 14.3105C16 13.8351 16.3283 13.4267 16.7816 13.2837C18.8093 12.6442 20 11.6237 20 11C20 9.9 17 8 12 8C7 8 4 9.9 4 11C4 11.7821 6.79551 13.1137 9.91054 13.7336C10.0265 13.7566 10.1405 13.7886 10.2509 13.8305C10.308 13.8187 10.3669 13.8125 10.4273 13.8125L9.26357 12.6004C8.9121 12.2343 8.9121 11.6407 9.26357 11.2746C9.61504 10.9085 10.1849 10.9085 10.5364 11.2746L13.2364 14.0871C13.4051 14.2629 13.5 14.5013 13.5 14.75C13.5 14.9986 13.4051 15.2371 13.2364 15.4129L10.5364 18.2254C10.1849 18.5915 9.61504 18.5915 9.26357 18.2254C8.9121 17.8593 8.9121 17.2657 9.26357 16.8996L10.2838 15.8369C6.24683 15.1056 2 13.1614 2 11Z"
-                    fill="currentColor" />
-            </svg>
-            <span class="text">Spin</span>
-        </button>
+        <div class="controls" class:invisible={!cardActive}>
+            <button
+                class="button is-text"
+                on:click={() => (cardIsFlipped = !cardIsFlipped)}
+                aria-label="Rotate card">
+                <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true">
+                    <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M2 11C2 8.2 6.5 6 12 6C17.5 6 22 8.2 22 11C22 12.8414 20.0779 14.3752 17.2449 15.2644C16.615 15.4621 16 14.9707 16 14.3105C16 13.8351 16.3283 13.4267 16.7816 13.2837C18.8093 12.6442 20 11.6237 20 11C20 9.9 17 8 12 8C7 8 4 9.9 4 11C4 11.7821 6.79551 13.1137 9.91054 13.7336C10.0265 13.7566 10.1405 13.7886 10.2509 13.8305C10.308 13.8187 10.3669 13.8125 10.4273 13.8125L9.26357 12.6004C8.9121 12.2343 8.9121 11.6407 9.26357 11.2746C9.61504 10.9085 10.1849 10.9085 10.5364 11.2746L13.2364 14.0871C13.4051 14.2629 13.5 14.5013 13.5 14.75C13.5 14.9986 13.4051 15.2371 13.2364 15.4129L10.5364 18.2254C10.1849 18.5915 9.61504 18.5915 9.26357 18.2254C8.9121 17.8593 8.9121 17.2657 9.26357 16.8996L10.2838 15.8369C6.24683 15.1056 2 13.1614 2 11Z"
+                        fill="currentColor" />
+                </svg>
+                <span class="text">Spin</span>
+            </button>
+        </div>
     </div>
 </div>
 
 <style lang="scss">
-    :global(.main-content) {
+    .main-content {
         flex-grow: 1;
         display: flex;
         flex-direction: column;
+
+        min-height: 100vh;
     }
 
     :global(.theme-dark) .wrapper {
