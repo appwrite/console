@@ -1,19 +1,26 @@
 <script lang="ts">
     import { Confetti } from 'svelte-confetti';
     import Card from './Card.svelte';
+    import { fade } from 'svelte/transition';
 
     let triggerConfettiKey = 1;
     const confettiColors = [
         'hsl(var(--color-primary-100))',
         'hsl(var(--color-primary-200))',
-        'hsl(var(--color-primary-300))'
+        'hsl(var(--color-primary-300))',
+        '#F05088',
+        '#FF86BB',
+        '#FFFFFF80'
     ];
+
+    let cardActive = false;
+    let cardIsFlipped = false;
 </script>
 
 <div class="wrapper">
     <div class="card">
         <h3 class="heading-level-3">
-            Join the celebration
+            Welcome to the Cloud Club
             <button class="confetti-btn" on:click={() => triggerConfettiKey++}>
                 🎉
                 {#each Array(triggerConfettiKey) as _, i (i)}
@@ -28,7 +35,10 @@
             </button>
         </h3>
         <div class="u-flex u-margin-block-start-40 u-cross-center u-gap-24">
-            <img src="/images/cloud-beta-hoodies.png" alt="Cloud Beta hoodies" />
+            <div class="hoodie-container">
+                <img src="/images/hoodie-1.png" alt="Cloud Beta hoodies" />
+                <img src="/images/hoodie-2.png" alt="Cloud Beta hoodies" />
+            </div>
             <div>
                 <div class="u-flex u-cross-center u-gap-8">
                     <h4 class="eyebrow-heading-1">Cloud is live in public</h4>
@@ -64,17 +74,38 @@
         </div>
     </div>
     <div class="cbc-wrapper">
-        <!-- <div class="confetti-wrapper">
-            <Confetti
-                x={[-2, 2]}
-                y={[-2.25, 1.25]}
-                amount={50}
-                size="10"
-                delay={[0, 5000]}
-                colorArray={confettiColors}
-                fallDistance="50px" />
-        </div> -->
-        <Card />
+        {#if !cardActive}
+            <div transition:fade>
+                <Confetti
+                    x={[-1.75, 1.85]}
+                    y={[-1.875, 1]}
+                    amount={100}
+                    size="10"
+                    infinite
+                    delay={[2000, 7000]}
+                    colorArray={confettiColors}
+                    fallDistance="50px" />
+            </div>
+        {/if}
+        <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} />
+    </div>
+    {#if cardActive}
+        <div
+            class="overlay"
+            on:click={() => (cardActive = false)}
+            on:keydown={() => {
+                /* no-op */
+            }}
+            transition:fade />
+    {/if}
+    <div class="controls" class:invisible={!cardActive}>
+        <button
+            class="button is-text"
+            on:click={() => (cardIsFlipped = !cardIsFlipped)}
+            aria-label="Rotate card">
+            <span class="icon-refresh" aria-hidden="true" />
+            <span class="text">Spin</span>
+        </button>
     </div>
 </div>
 
@@ -85,7 +116,19 @@
         flex-direction: column;
     }
 
+    :global(.theme-dark) .wrapper {
+        --glow: hsl(var(--color-primary-100));
+        --beta-bg: hsl(var(--color-neutral-120));
+        --beta-fg: hsl(var(--color-neutral-0));
+        --sep-clr: hsl(var(--color-neutral-150));
+    }
+
     .wrapper {
+        --glow: transparent;
+        --beta-bg: rgba(240, 46, 101, 0.16);
+        --beta-fg: rgba(240, 46, 101, 0.8);
+        --sep-clr: hsl(var(--color-neutral-10));
+
         display: grid;
         place-items: center;
         justify-content: center;
@@ -107,7 +150,8 @@
         }
 
         .beta-tag {
-            background-color: hsl(var(--color-neutral-120));
+            background-color: var(--beta-bg);
+            color: var(--beta-fg);
             padding-inline: 0.75rem; // 12px
             padding-block: 0.25rem; // 4px
             border-radius: 0.375rem; // 6px
@@ -117,11 +161,59 @@
             font-size: 1rem;
         }
 
+        .hoodie-container {
+            background-image: url('/images/hoodies-bg.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: relative;
+            width: 9.9375rem; // 159px
+            height: 7.375rem; // 118px
+            flex-shrink: 0;
+
+            transition: 300ms ease;
+
+            img {
+                display: block;
+                position: absolute;
+                object-fit: contain;
+                width: 5.8125rem; // 93px
+                height: 5.8125rem; // 93px
+
+                transition: 300ms ease;
+
+                &:first-child {
+                    top: 1rem;
+                    left: 0.1875rem;
+                }
+
+                &:last-child {
+                    top: 0.5625rem; // 9px
+                    right: 0.1875rem; // 3px
+                }
+            }
+
+            &:hover {
+                box-shadow: 0 0 30px var(--glow);
+
+                img:first-child {
+                    scale: 1.5;
+                    rotate: -5deg;
+                    translate: -1rem 1rem;
+                }
+
+                img:last-child {
+                    scale: 1.5;
+                    rotate: 5deg;
+                    translate: 1rem -1rem;
+                }
+            }
+        }
+
         .card-footer {
             display: flex;
             justify-content: flex-end;
 
-            border-top: 1px solid hsl(var(--color-neutral-150));
+            border-top: 1px solid var(--sep-clr);
 
             margin-block-start: 2rem;
             padding-block-start: 2rem;
@@ -134,11 +226,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-
-    .confetti-wrapper {
-        position: relative;
-        // z-index: 9999;
     }
 
     @keyframes shake {
@@ -178,5 +265,34 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+    }
+
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        position: absolute;
+        top: 80%;
+        left: 50%;
+        translate: -50% -50%;
+
+        transition: opacity 250ms ease;
+
+        &.invisible {
+            opacity: 0;
+        }
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        background-color: hsl(var(--p-body-bg-color));
+        backdrop-filter: blur(80px);
+        opacity: 0.5;
     }
 </style>
