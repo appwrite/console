@@ -76,12 +76,6 @@
             <b> document Level</b>. If collection level permissions are assigned, permissions
             applied to individual documents are ignored.
         </p>
-        <p>
-            Go to <a
-                href={`${base}/console/project-${projectId}/databases/database-${$doc.$databaseId}/collection-${$doc.$collectionId}/settings`}
-                class="link">
-                Collection settings</a> to enable document security.
-        </p>
         <svelte:fragment slot="aside">
             {#if $collection.documentSecurity}
                 {#if showPermissionAlert}
@@ -100,10 +94,11 @@
             {:else}
                 <Alert type="info">
                     <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
-                    <p class="text">
-                        If you want to assign document permissions, navigate to Collection settings
-                        and enable document security. Otherwise, only Collection permissions will be
-                        used.
+                    <p>
+                        Go to <a
+                            href={`${base}/console/project-${projectId}/databases/database-${$doc.$databaseId}/collection-${$doc.$collectionId}/settings`}
+                            class="link">
+                            Collection settings</a> to enable document level permissions.
                     </p>
                 </Alert>
             {/if}
@@ -119,7 +114,7 @@
     </CardGrid>
 
     <CardGrid danger>
-        <Heading tag="h6" size="7">Delete Document</Heading>
+        <Heading tag="h6" size="7">Delete document</Heading>
         <p>
             The document will be permanently deleted, including all the data within it. This action
             is irreversible.
@@ -130,7 +125,7 @@
                     <h6 class="u-bold u-trim-1">{$doc.$id}</h6>
                 </svelte:fragment>
                 <p>
-                    Last Updated: {toLocaleDateTime($doc.$updatedAt)}
+                    Last updated: {toLocaleDateTime($doc.$updatedAt)}
                 </p>
             </Box>
         </svelte:fragment>
