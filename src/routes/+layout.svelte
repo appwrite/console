@@ -60,7 +60,13 @@
          * Handle initial load.
          */
         if (!$page.url.pathname.startsWith('/auth')) {
-            const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+            const acceptedRoutes = [
+                '/login',
+                '/register',
+                '/recover',
+                '/invite',
+                '/cloud-beta-card'
+            ];
             if ($user) {
                 if (
                     !$page.url.pathname.startsWith('/console') &&
