@@ -19,8 +19,8 @@
 
 <div class="wrapper">
     <div class="card">
-        <h3 class="heading-level-3">
-            Welcome to the Cloud Club
+        <h3 class="heading-level-3 u-flex u-cross-center u-gap-8">
+            Welcome to the Cloud
             <button class="confetti-btn" on:click={() => triggerConfettiKey++}>
                 🎉
                 {#each Array(triggerConfettiKey) as _, i (i)}
@@ -34,10 +34,16 @@
                 {/each}
             </button>
         </h3>
-        <div class="u-flex u-margin-block-start-40 u-cross-center u-gap-24">
+
+        <div class="content">
             <div class="hoodie-container">
-                <img src="/images/hoodie-1.png" alt="Cloud Beta hoodies" />
-                <img src="/images/hoodie-2.png" alt="Cloud Beta hoodies" />
+                <img
+                    src="/images/hoodies-bg.png"
+                    alt="red background"
+                    aria-hidden="true"
+                    class="bg" />
+                <img src="/images/hoodie-1.png" class="hoodie" alt="Cloud Beta hoodies" />
+                <img src="/images/hoodie-2.png" class="hoodie" alt="Cloud Beta hoodies" />
             </div>
             <div>
                 <div class="u-flex u-cross-center u-gap-8">
@@ -49,11 +55,12 @@
                 </p>
             </div>
         </div>
+        <img class="card-preview" src="/images/front.png" alt="The front of the card" />
         <ul class="buttons-list u-margin-block-start-32">
             <li class="buttons-list-item">
                 <button class="button is-text">
                     <span class="icon-twitter" aria-hidden="true" />
-                    <span class="text">Share</span>
+                    <span class="text">Tweet it</span>
                 </button>
             </li>
             <li class="buttons-list-item">
@@ -70,7 +77,7 @@
             </li>
         </ul>
         <div class="card-footer">
-            <a href="/console" class="button">Back to console</a>
+            <a href="/console" class="button">Go to console</a>
         </div>
     </div>
     <div class="cbc-wrapper">
@@ -103,7 +110,19 @@
             class="button is-text"
             on:click={() => (cardIsFlipped = !cardIsFlipped)}
             aria-label="Rotate card">
-            <span class="icon-refresh" aria-hidden="true" />
+            <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true">
+                <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M2 11C2 8.2 6.5 6 12 6C17.5 6 22 8.2 22 11C22 12.8414 20.0779 14.3752 17.2449 15.2644C16.615 15.4621 16 14.9707 16 14.3105C16 13.8351 16.3283 13.4267 16.7816 13.2837C18.8093 12.6442 20 11.6237 20 11C20 9.9 17 8 12 8C7 8 4 9.9 4 11C4 11.7821 6.79551 13.1137 9.91054 13.7336C10.0265 13.7566 10.1405 13.7886 10.2509 13.8305C10.308 13.8187 10.3669 13.8125 10.4273 13.8125L9.26357 12.6004C8.9121 12.2343 8.9121 11.6407 9.26357 11.2746C9.61504 10.9085 10.1849 10.9085 10.5364 11.2746L13.2364 14.0871C13.4051 14.2629 13.5 14.5013 13.5 14.75C13.5 14.9986 13.4051 15.2371 13.2364 15.4129L10.5364 18.2254C10.1849 18.5915 9.61504 18.5915 9.26357 18.2254C8.9121 17.8593 8.9121 17.2657 9.26357 16.8996L10.2838 15.8369C6.24683 15.1056 2 13.1614 2 11Z"
+                    fill="currentColor" />
+            </svg>
             <span class="text">Spin</span>
         </button>
     </div>
@@ -137,76 +156,88 @@
 
         grid-template-columns: 600px 400px;
         padding-block: 4rem;
-        gap: 8rem;
+        gap: max(4rem, 10vw);
         overflow: hidden;
     }
 
     .card {
         max-width: 660px;
 
-        img {
-            width: 159px;
-            height: 118px;
-        }
+        .content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-block-start: 2.5rem;
 
-        .beta-tag {
-            background-color: var(--beta-bg);
-            color: var(--beta-fg);
-            padding-inline: 0.75rem; // 12px
-            padding-block: 0.25rem; // 4px
-            border-radius: 0.375rem; // 6px
-        }
-
-        p {
-            font-size: 1rem;
-        }
-
-        .hoodie-container {
-            background-image: url('/images/hoodies-bg.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            position: relative;
-            width: 9.9375rem; // 159px
-            height: 7.375rem; // 118px
-            flex-shrink: 0;
-
-            transition: 300ms ease;
-
-            img {
-                display: block;
-                position: absolute;
-                object-fit: contain;
-                width: 5.8125rem; // 93px
-                height: 5.8125rem; // 93px
-
-                transition: 300ms ease;
-
-                &:first-child {
-                    top: 1rem;
-                    left: 0.1875rem;
-                }
-
-                &:last-child {
-                    top: 0.5625rem; // 9px
-                    right: 0.1875rem; // 3px
-                }
+            .beta-tag {
+                background-color: var(--beta-bg);
+                color: var(--beta-fg);
+                padding-inline: 0.75rem; // 12px
+                padding-block: 0.25rem; // 4px
+                border-radius: 0.375rem; // 6px
             }
 
-            &:hover {
-                box-shadow: 0 0 30px var(--glow);
+            p {
+                font-size: 1rem;
+            }
 
-                img:first-child {
-                    scale: 1.5;
-                    rotate: -5deg;
-                    translate: -1rem 1rem;
+            .hoodie-container {
+                position: relative;
+                flex-shrink: 0;
+
+                .bg {
+                    display: block;
+                    width: 9.9375rem; // 159px
+                    height: 7.375rem; // 118px
+                    aspect-ratio: 358 / 265.69;
+
+                    background-color: #ec2f65;
+                    border-radius: 12px;
+                    transition: 300ms ease;
                 }
 
-                img:last-child {
-                    scale: 1.5;
-                    rotate: 5deg;
-                    translate: 1rem -1rem;
+                .hoodie {
+                    display: block;
+                    position: absolute;
+                    object-fit: contain;
+                    width: 5.8125rem; // 93px
+                    height: 5.8125rem; // 93px
+
+                    transition: 300ms ease;
+
+                    &:nth-child(2) {
+                        top: 1rem;
+                        left: 0.1875rem;
+                    }
+
+                    &:nth-child(3) {
+                        top: 0.5625rem; // 9px
+                        right: 0.1875rem; // 3px
+                    }
+                }
+
+                &:hover {
+                    .bg {
+                        box-shadow: 0 0 30px var(--glow);
+                    }
+
+                    .hoodie:nth-child(2) {
+                        scale: 1.5;
+                        rotate: -5deg;
+                        translate: -1rem 1rem;
+                    }
+
+                    .hoodie:nth-child(3) {
+                        scale: 1.5;
+                        rotate: 5deg;
+                        translate: 1rem -1rem;
+                    }
                 }
             }
+        }
+
+        .card-preview {
+            display: none;
         }
 
         .card-footer {
@@ -261,12 +292,6 @@
         }
     }
 
-    h3 {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
     .controls {
         display: flex;
         align-items: center;
@@ -294,5 +319,95 @@
         background-color: hsl(var(--p-body-bg-color));
         backdrop-filter: blur(80px);
         opacity: 0.5;
+    }
+
+    @media (max-width: 1024px) {
+        .wrapper {
+            display: block;
+            padding-block: 2rem;
+
+            max-width: min(100%, 500px);
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: transparent;
+            border: none;
+            padding-inline: 1rem;
+            padding-block: 0;
+
+            .content {
+                flex-direction: column;
+                align-items: stretch;
+                margin-block-start: 1rem;
+                padding-block-end: 2rem;
+                border-block-end: 1px solid var(--sep-clr);
+
+                .hoodie-container {
+                    .bg {
+                        width: 100%;
+                        height: auto;
+                    }
+
+                    .hoodie {
+                        width: 65%;
+                        height: auto;
+
+                        &:nth-child(2) {
+                            top: 10%;
+                            left: 0;
+                        }
+
+                        &:nth-child(3) {
+                            top: 0%;
+                            right: 0;
+                        }
+                    }
+
+                    &:hover {
+                        .hoodie:nth-child(2) {
+                            scale: 1.25;
+                        }
+
+                        .hoodie:nth-child(3) {
+                            scale: 1.25;
+                        }
+                    }
+                }
+            }
+
+            .card-preview {
+                display: block;
+                margin-block-start: 2rem;
+            }
+
+            .buttons-list {
+                flex-wrap: wrap;
+                justify-content: center;
+
+                .buttons-list-item {
+                    border: none !important;
+                }
+            }
+
+            .card-footer {
+                border: none;
+
+                .button {
+                    display: grid;
+                    place-items: center;
+                    text-align: center;
+                    width: 100%;
+                }
+            }
+        }
+
+        .confetti-btn {
+            display: none;
+        }
+
+        .cbc-wrapper {
+            display: none;
+        }
     }
 </style>

@@ -28,7 +28,7 @@
     let interacting = false;
 
     const springR = { stiffness: 0.066, damping: 0.25 };
-    const springD = { stiffness: 0.033, damping: 0.45 };
+    const springD = { stiffness: 0.03, damping: 0.45 };
     const THICKNESS = 3;
 
     let springRotate = spring({ x: 0, y: 0 }, springR);
@@ -163,10 +163,20 @@
     };
 
     const windowKeyDown = (e: KeyboardEvent) => {
+        // if (e.key === 'q') {
+        //     springRotateDelta.update((old) => {
+        //         return {
+        //             ...old,
+        //             x: old.x + 360
+        //         };
+        //     });
+        // }
         if (!active) return;
-        // If user presses q, rotate card
+
         if (e.key === 'q') {
             isFlipped = !isFlipped;
+        } else if (e.key === 'Escape') {
+            active = false;
         }
     };
 
