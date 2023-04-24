@@ -22,12 +22,14 @@
     import { spring } from 'svelte/motion';
 
     let cardEl: HTMLDivElement | undefined;
-    let active = false;
+    export let active = false;
+    export let isFlipped = false;
+
     let interacting = false;
 
     const springR = { stiffness: 0.066, damping: 0.25 };
     const springD = { stiffness: 0.033, damping: 0.45 };
-    const THICKNESS = 6;
+    const THICKNESS = 3;
 
     let springRotate = spring({ x: 0, y: 0 }, springR);
     let springGlare = spring({ x: 50, y: 50, o: 0.25 }, springR);
@@ -38,8 +40,6 @@
     let angle = 0;
     let centerProximity = spring(0, springR);
     let springRotateZ = spring(-15, springD);
-
-    let isBackwards = false;
 
     // Events
     const interact = (e: MouseEvent | TouchEvent) => {
@@ -61,7 +61,7 @@
         };
         const center = {
             x: percent.x - 50,
-            y: (percent.y - 50) * (isBackwards ? -1 : 1)
+            y: (percent.y - 50) * (isFlipped ? -1 : 1)
         };
 
         springBackground.stiffness = springR.stiffness;
@@ -153,6 +153,7 @@
         springTranslate.set({ x: 0, y: 0 });
         springRotateDelta.set({ x: 0, y: 0 });
         springRotate.set({ x: 0, y: 0 });
+        springGlare.set({ x: 50, y: 50, o: 0 });
         $centerProximity = 0;
         springRotateZ.set(-15);
     };
@@ -161,23 +162,19 @@
         active = !active;
     };
 
-    const handleBlur = () => {
-        active = false;
-    };
-
     const windowKeyDown = (e: KeyboardEvent) => {
         if (!active) return;
         // If user presses q, rotate card
         if (e.key === 'q') {
-            isBackwards = !isBackwards;
+            isFlipped = !isFlipped;
         }
     };
 
     $: if (!active) {
-        isBackwards = false;
+        isFlipped = false;
     } else {
         springRotateDelta.update((old) => ({
-            x: isBackwards ? 180 : 360,
+            x: isFlipped ? 180 : 360,
             y: old.y
         }));
     }
@@ -273,7 +270,9 @@
             on:pointermove={interact}
             on:mouseout={interactEnd}
             on:click={handleClick}
-            on:blur={handleBlur}>
+            on:blur={() => {
+                /* noop */
+            }}>
             <div class="card__back">
                 <img
                     src="/images/back.png"
@@ -310,20 +309,24 @@
         --hyp: 0;
     }
 
+    :global(.theme-dark) .cb-card {
+        --shadow-clr: transparent;
+    }
+
     .cb-card {
-        --radius: 12px;
-        --back: white;
-        --glow: var(--primary);
+        --radius: 16px;
+        --shadow-clr: hsl(var(--color-neutral-30));
+
         z-index: calc(var(--s) * 100);
         transform: translate3d(0, 0, 0.1px);
         -webkit-transform: translate3d(0, 0, 0.1px);
         will-change: transform, visibility;
         transform-style: preserve-3d;
         -webkit-transform-style: preserve-3d;
-    }
 
-    .cb-card.interacting {
-        z-index: calc(var(--s) * 120);
+        &.interacting {
+            z-index: calc(var(--s) * 120);
+        }
     }
 
     .cb-card.active .card__translater,
@@ -352,17 +355,30 @@
         transform-style: preserve-3d;
         -webkit-transform: rotateY(var(--rx)) rotateX(var(--ry)) rotateZ(var(--rz));
         -webkit-transform-style: preserve-3d;
-        box-shadow: 0px 10px 20px -5px #14141f;
+        box-shadow: 0px 10px 20px -5px var(--shadow-clr);
         border-radius: var(--radius);
         outline: none;
-        transition: box-shadow 0.4s ease, outline 0.2s ease;
-    }
-    button.card__rotator {
+
         appearance: none;
         -webkit-appearance: none;
         border: none;
         background: top;
         padding: 0;
+
+        :global(*) {
+            width: 100%;
+            display: grid;
+            grid-area: 1/1;
+            border-radius: var(--radius);
+            image-rendering: optimizeQuality;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+        }
+
+        img {
+            outline: 1px solid transparent;
+            height: auto;
+        }
     }
 
     .card__thick {
@@ -373,44 +389,14 @@
         transform: translateZ(calc(var(--i) * 1px));
     }
 
-    .cb-card.active .card__rotator {
-        box-shadow: 0 0 10px 0px var(--glow), 0 0 10px 0px var(--glow), 0 0 30px 0px var(--glow);
-    }
-
-    .card__rotator:focus {
-        box-shadow: 0 0 10px 0px var(--glow), 0 0 10px 0px var(--glow), 0 0 30px 0px var(--glow);
-    }
-
-    .cb-card.active .card__rotator:focus {
-        box-shadow: 0px 10px 30px 3px #14141f;
-    }
-
-    .card__rotator :global(*) {
-        width: 100%;
-        display: grid;
-        grid-area: 1/1;
-        border-radius: var(--radius);
-        image-rendering: optimizeQuality;
-        transform-style: preserve-3d;
-        -webkit-transform-style: preserve-3d;
-    }
-
-    .card__rotator img {
-        outline: 1px solid transparent;
-
-        height: auto;
-    }
-
     .card__back {
-        background-color: var(--back);
         transform: rotateY(180deg) translateZ(0px);
         -webkit-transform: rotateY(180deg) translateZ(0px);
         backface-visibility: hidden;
-    }
 
-    .card__front,
-    .card__front * {
-        backface-visibility: hidden;
+        &::before {
+            --resolved-angle: calc(calc(var(--angle) * -1) + 60deg);
+        }
     }
 
     .card__front {
@@ -418,18 +404,20 @@
         transition: opacity 0.33s ease-out;
         transform: translateZ(calc(var(--thickness) * 1px));
         position: relative;
-    }
 
-    .card__front::before {
-        --resolved-angle: calc(var(--angle) + 65deg);
-    }
-    .card__back::before {
-        --resolved-angle: calc(calc(var(--angle) * -1) + 60deg);
+        backface-visibility: hidden;
+
+        * {
+            backface-visibility: hidden;
+        }
+
+        &::before {
+            --resolved-angle: calc(var(--angle) + 65deg);
+        }
     }
 
     .card__front::before,
     .card__back::before {
-        /* Conic gradient */
         content: '';
         position: absolute;
         top: 0;
@@ -449,6 +437,7 @@
     }
 
     .card__glare {
+        border-radius: calc(var(--radius) + 3px);
         transform: translateZ(1px);
         z-index: 4;
         background: radial-gradient(
@@ -458,6 +447,6 @@
             rgba(0, 0, 0, 0.5) 90%
         );
         mix-blend-mode: overlay;
-        opacity: calc(var(--o) * 0.25);
+        opacity: calc(var(--o) * 0.5);
     }
 </style>
