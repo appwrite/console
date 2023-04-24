@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
     import { CardGrid, Box, Heading, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
@@ -13,6 +15,8 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { collection } from '../store';
+
+    const projectId = $page.params.project;
 
     let showDelete = false;
     let permissions = $doc?.$permissions;
@@ -72,7 +76,12 @@
             <b> document Level</b>. If collection level permissions are assigned, permissions
             applied to individual documents are ignored.
         </p>
-
+        <p>
+            Go to <a
+                href={`${base}/console/project-${projectId}/databases/database-${$doc.$databaseId}/collection-${$doc.$collectionId}/settings`}
+                class="link">
+                Collection settings</a> to enable document security.
+        </p>
         <svelte:fragment slot="aside">
             {#if $collection.documentSecurity}
                 {#if showPermissionAlert}
