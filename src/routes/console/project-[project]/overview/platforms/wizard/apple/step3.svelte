@@ -25,7 +25,7 @@ let client = Client()
             value={project}>Project ID</Id>
     </p>
     <Code label="Apple SDK" labelIcon="apple" language="swift" {code} withCopy withLineNumbers />
-    <p>
+    <p class="u-margin-block-start-24">
         Before sending any API calls to your new Appwrite project, make sure your device or emulator
         has network access to your Appwrite project's hostname or IP address.
     </p>

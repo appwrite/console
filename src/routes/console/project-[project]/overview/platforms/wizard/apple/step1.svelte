@@ -48,11 +48,11 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Apple app</svelte:fragment>
+    <svelte:fragment slot="title">Register your bundle ID</svelte:fragment>
 
     <FormList isCommonSection>
         <FormItem>
-            <p>Choose a device</p>
+            <p>Choose an Apple platform</p>
             <div class="u-flex u-gap-16 u-margin-block-start-8">
                 <Pill
                     button

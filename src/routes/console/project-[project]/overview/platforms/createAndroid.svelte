@@ -26,7 +26,7 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Register your app',
+        label: 'Register your platform',
         component: Step1
     });
     stepsComponents.set(2, {
