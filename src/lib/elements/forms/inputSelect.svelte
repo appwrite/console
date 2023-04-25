@@ -27,13 +27,17 @@
         error = element.validationMessage;
     };
 
-    $: if (required && !value) {
+    const isNotEmpty = (value: string | number | boolean) => {
+        return typeof value === 'boolean' ? true : !!value;
+    };
+
+    $: if (required && !isNotEmpty(value)) {
         element?.setCustomValidity('This field is required');
     } else {
         element?.setCustomValidity('');
     }
 
-    $: if (value) {
+    $: if (isNotEmpty(value)) {
         error = null;
     }
 
