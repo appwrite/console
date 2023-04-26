@@ -17,6 +17,7 @@
 
 <script lang="ts">
     import { windowFocusStore } from '$lib/stores/windowFocus';
+    import { VARS } from '$lib/system';
 
     import { onMount } from 'svelte';
     import { spring } from 'svelte/motion';
@@ -24,6 +25,7 @@
     let cardEl: HTMLDivElement | undefined;
     export let active = false;
     export let isFlipped = false;
+    export let userId: string;
 
     let interacting = false;
 
@@ -267,6 +269,10 @@
             cb && window.cancelAnimationFrame(cb);
         };
     });
+
+    const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?userId=${userId}`;
+    // const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?mock=employee`;
+    const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?userId=${userId}`;
 </script>
 
 <svelte:window on:keydown={windowKeyDown} />
@@ -285,18 +291,19 @@
             }}>
             <div class="card__back">
                 <img
-                    src="/images/back.png"
+                    src={backImg}
                     alt="The back of the Card"
                     loading="lazy"
                     width="450"
                     height="274" />
                 <div class="card__glare" />
             </div>
+
             {#each new Array(THICKNESS) as _, i (i)}
                 <div class="card__thick" style:--i={i + 1} />
             {/each}
             <div class="card__front" style:--thickness={THICKNESS}>
-                <img src="/images/front.png" alt="The front of the card" />
+                <img src={frontImg} alt="The front of the card" />
                 <div class="card__glare" />
             </div>
         </button>
@@ -324,7 +331,7 @@
     }
 
     .cb-card {
-        --radius: 16px;
+        --radius: 12px;
         --shadow-clr: hsl(var(--color-neutral-30));
 
         z-index: calc(var(--s) * 100);
