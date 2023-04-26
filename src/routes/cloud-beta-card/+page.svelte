@@ -3,6 +3,8 @@
     import Card from './Card.svelte';
     import { fade } from 'svelte/transition';
 
+    export let data;
+
     let triggerConfettiKey = 1;
     const confettiColors = [
         'hsl(var(--color-primary-100))',
@@ -95,7 +97,10 @@
                         fallDistance="50px" />
                 </div>
             {/if}
-            <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} />
+            <Card
+                bind:active={cardActive}
+                bind:isFlipped={cardIsFlipped}
+                userId={data.account.$id} />
         </div>
         {#if cardActive}
             <div

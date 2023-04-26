@@ -15,8 +15,7 @@
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
