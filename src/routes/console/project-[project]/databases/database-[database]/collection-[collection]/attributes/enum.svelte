@@ -36,8 +36,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputTags } from '$lib/elements/forms';
-    import Enum from '../document-[document]/attributes/enum.svelte';
+    import { InputChoice, InputSelect, InputTags } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeEnum>;
@@ -45,6 +44,20 @@
     $: if (data.required || data.array) {
         data.default = null;
     }
+
+    $: options = [
+        ...(data?.elements ?? []).map((element) => {
+            return {
+                label: element,
+                value: element
+            };
+        }),
+        !data.required &&
+            !data.array && {
+                label: 'NULL',
+                value: null
+            }
+    ].filter(Boolean);
 </script>
 
 <InputTags
@@ -53,19 +66,12 @@
     bind:tags={data.elements}
     placeholder="Add elements here"
     required />
-
-<Enum
+<InputSelect
     id="default"
     label="Default value"
-    attribute={{
-        key: data.key,
-        type: 'string',
-        status: 'enabled',
-        format: 'enum',
-        elements: data.elements ?? [],
-        required: data.required,
-        default: data.default
-    }}
+    disabled={data.array || data.required}
+    placeholder="Select a value"
+    {options}
     bind:value={data.default} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute

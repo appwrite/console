@@ -53,6 +53,9 @@
             value = prevValue;
         }
     }
+
+    $: showTextCounter = !!maxlength;
+    $: showNullCheckbox = nullable && !required;
 </script>
 
 <FormItem>
@@ -75,19 +78,21 @@
             class:u-padding-inline-end-56={typeof maxlength === 'number'}
             bind:this={element}
             on:invalid={handleInvalid} />
-        <ul
-            class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
-            {#if maxlength}
-                <li class="buttons-list-item">
-                    <TextCounter max={maxlength} count={value?.length ?? 0} />
-                </li>
-            {/if}
-            {#if nullable && !required}
-                <li class="buttons-list-item">
-                    <NullCheckbox checked={value === null} on:change={handleNullChange} />
-                </li>
-            {/if}
-        </ul>
+        {#if showTextCounter || showNullCheckbox}
+            <ul
+                class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
+                {#if showTextCounter}
+                    <li class="buttons-list-item">
+                        <TextCounter max={maxlength} count={value?.length ?? 0} />
+                    </li>
+                {/if}
+                {#if showNullCheckbox}
+                    <li class="buttons-list-item">
+                        <NullCheckbox checked={value === null} on:change={handleNullChange} />
+                    </li>
+                {/if}
+            </ul>
+        {/if}
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
