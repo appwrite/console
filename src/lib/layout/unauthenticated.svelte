@@ -1,14 +1,16 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import AppwriteLogo from '$lib/images/appwrite.svg';
-    import AppwriteCloudLogo from '$lib/images/appwrite-cloud.svg';
-    import AppwriteCloudBg from '$lib/images/login/cloud-bg.svg';
-    import LoginDark from '$lib/images/login/login-dark-mode.svg';
-    import LoginLight from '$lib/images/login/login-light-mode.svg';
     import { app } from '$lib/stores/app';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { isCloud } from '$lib/system';
+    import LoginDark from '$lib/images/login/login-dark-mode.svg';
+    import LoginLight from '$lib/images/login/login-light-mode.svg';
+    import AppwriteLogo from '$lib/images/appwrite.svg';
+    import AppwriteCloudLogo from '$lib/images/appwrite-cloud.svg';
+    import AppwriteCloudBg from '$lib/images/login/cloud-bg.svg';
+    import Cloud1 from '$lib/images/login/cloud-1.svg';
+    import Cloud2 from '$lib/images/login/cloud-2.svg';
 
     export let imgLight = LoginLight;
     export let imgDark = LoginDark;
@@ -40,8 +42,10 @@
 <main class="grid-1-1 is-full-page" id="main">
     {#if isCloud}
         <section
-            class="grid-1-1-col-1 u-flex u-flex-vertical cloud-section"
+            class="grid-1-1-col-1 u-flex u-flex-vertical cloud-section u-overflow-hidden"
             style:--url={`url(${AppwriteCloudBg})`}>
+            <div class="u-margin-block-start-auto" />
+            <div class="u-margin-block-start-auto" />
             <div class="u-margin-block-start-auto" />
             <div class="u-margin-block-start-auto" />
             <div class="u-margin-block-start-auto" />
@@ -56,12 +60,17 @@
                     alt="Appwrite" />
             </a>
 
-            <p class="header">Cloud is Live</p>
+            <div class="header">
+                <p>Cloud is Live</p>
+                <img src={Cloud1} alt="" class="cloud-1" />
+                <img src={Cloud2} alt="" class="cloud-2" />
+            </div>
 
             <div class="u-margin-block-start-auto" />
 
             <p class="beta">Now in public <span>beta</span></p>
 
+            <div class="u-margin-block-start-auto" />
             <div class="u-margin-block-start-auto" />
             <div class="u-margin-block-start-auto" />
             <div class="u-margin-block-start-auto" />
@@ -170,6 +179,18 @@
 </main>
 
 <style lang="scss">
+    @keyframes float {
+        0% {
+            transform: translatey(0px);
+        }
+        50% {
+            transform: translatey(-8px);
+        }
+        100% {
+            transform: translatey(0px);
+        }
+    }
+
     .cloud-section {
         background: var(--url);
         background-repeat: no-repeat;
@@ -185,9 +206,30 @@
         .header {
             text-align: center;
             align-self: center;
-            font-family: 'Poppins';
-            font-size: 5.25rem;
-            font-weight: 700;
+            position: relative;
+
+            p {
+                font-family: 'Poppins';
+                font-size: clamp(3.5rem, 7vw, 5.25rem);
+                font-weight: 700;
+            }
+
+            .cloud-1 {
+                position: absolute;
+                top: 95%;
+                left: 0;
+                translate: 15% -50%;
+                animation: float 6s ease-in-out infinite;
+            }
+
+            .cloud-2 {
+                position: absolute;
+                top: 110%;
+                right: 0;
+                translate: 20% -50%;
+                animation: float 7s ease-in-out infinite;
+                animation-delay: 3s;
+            }
         }
 
         .beta {
