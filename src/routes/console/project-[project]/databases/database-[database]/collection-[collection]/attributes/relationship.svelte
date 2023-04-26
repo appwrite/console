@@ -98,7 +98,6 @@
     });
 
     // Reactive statements
-
     $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
@@ -219,7 +218,6 @@
         placeholder="Select a relation"
         options={relationshipType}
         disabled={editing} />
-
     <div class="u-flex u-flex-vertical u-gap-16">
         <div class="box">
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
