@@ -42,15 +42,8 @@
 <main class="grid-1-1 is-full-page" id="main">
     {#if isCloud}
         <section
-            class="grid-1-1-col-1 u-flex u-flex-vertical cloud-section u-overflow-hidden"
+            class="cloud-section grid-1-1-col-1 u-flex u-flex-vertical u-overflow-hidden"
             style:--url={`url(${AppwriteCloudBg})`}>
-            <div class="u-margin-block-start-auto" />
-            <div class="u-margin-block-start-auto" />
-            <div class="u-margin-block-start-auto" />
-            <div class="u-margin-block-start-auto" />
-            <div class="u-margin-block-start-auto" />
-            <div class="u-margin-block-start-auto" />
-
             <a class="logo" href={user ? '/console' : '/'}>
                 <img
                     src={AppwriteCloudLogo}
@@ -66,16 +59,10 @@
                 <img src={Cloud2} alt="" class="cloud-2" />
             </div>
 
-            <div class="u-margin-block-start-auto" />
-
             <p class="beta">Now in public <span>beta</span></p>
 
-            <div class="u-margin-block-start-auto" />
-            <div class="u-margin-block-start-auto" />
-            <div class="u-margin-block-start-auto" />
-            <div class="u-margin-block-start-auto" />
-
             <div class="u-margin-block-start-auto is-no-mobile" />
+
             <div
                 class="container u-text-color-light-gray is-no-mobile"
                 style="--p-container-max-size:var(--container-size-small); --p-container-padding-inline:1rem;">
@@ -146,9 +133,21 @@
             <div class="u-margin-block-start-40" />
         </section>
     {/if}
-    <section class="grid-1-1-col-2 u-flex u-main-center u-cross-center">
-        <div class="container u-flex u-flex-vertical u-cross-center u-height-100-percent">
-            <div class="u-margin-block-start-auto" />
+    <section
+        class="grid-1-1-col-2 u-flex u-main-center u-cross-center"
+        class:is-cloud={isCloud}
+        style:--url={`url(${AppwriteCloudBg})`}>
+        <div class="container u-flex u-flex-vertical u-main-center u-cross-center full-height">
+            {#if isCloud}
+                <a class="mobile-logo is-only-mobile" href={user ? '/console' : '/'}>
+                    <img
+                        src={AppwriteCloudLogo}
+                        width="196"
+                        height="47"
+                        class="u-block"
+                        alt="Appwrite" />
+                </a>
+            {/if}
 
             <div class="u-max-width-500 u-width-full-line">
                 <h1 class="heading-level-3 u-margin-block-start-auto"><slot name="title" /></h1>
@@ -169,11 +168,11 @@
                 </button>
             </div>
 
-            <div class="u-margin-block-start-auto" />
-            <p class="u-max-width-500 u-width-full-line u-margin-block-start-24">
-                <!-- version 0.15.2.402 -->
-            </p>
-            <div class="u-margin-block-start-20" />
+            {#if isCloud}
+                <div class="is-only-mobile u-margin-block-start-auto">
+                    <div class="mobile-beta">Public <span>beta</span></div>
+                </div>
+            {/if}
         </div>
     </section>
 </main>
@@ -191,6 +190,11 @@
         }
     }
 
+    .full-height {
+        block-size: 100vh;
+        block-size: 100lvh;
+    }
+
     .cloud-section {
         background: var(--url);
         background-repeat: no-repeat;
@@ -201,6 +205,8 @@
         .logo {
             display: block;
             align-self: center;
+            margin-block-start: 32.5vh;
+            margin-block-start: 32.5lvh;
         }
 
         .header {
@@ -231,27 +237,62 @@
                 animation-delay: 3s;
             }
         }
+    }
 
-        .beta {
+    .beta,
+    .mobile-beta {
+        text-align: center;
+        align-self: center;
+        font-family: 'Poppins';
+        font-size: 1.125rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        line-height: 130%;
+        letter-spacing: 0.25em;
+
+        color: hsl(var(--color-neutral-0));
+
+        > span {
+            background: linear-gradient(
+                180deg,
+                rgba(252, 252, 255, 0.5) 0%,
+                rgba(252, 252, 255, 0.25) 100%
+            );
+            border-radius: 5.38636px;
             text-align: center;
-            align-self: center;
-            font-family: 'Poppins';
-            font-size: 1.125rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            line-height: 130%;
-            letter-spacing: 0.25em;
+            padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+        }
+    }
 
-            > span {
-                background: linear-gradient(
-                    180deg,
-                    rgba(252, 252, 255, 0.5) 0%,
-                    rgba(252, 252, 255, 0.25) 100%
-                );
-                border-radius: 5.38636px;
-                text-align: center;
-                padding: 0.5rem 0.5rem 0.5rem 0.75rem;
-            }
+    .beta {
+        margin-block-start: 4rem;
+    }
+
+    .mobile-logo {
+        margin-block-start: 6.25rem;
+        margin-block-end: 3rem;
+    }
+
+    .mobile-beta {
+        font-size: 0.75rem;
+        margin-block-end: 2rem;
+
+        > span {
+            background: hsl(var(--color-neutral-120));
+            padding: 0.25rem 0.375rem 0.25rem 0.5rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .is-cloud {
+            background: var(--url);
+            background-position: center -150px;
+
+            background-repeat: no-repeat;
+        }
+
+        .cloud-section {
+            display: none;
         }
     }
 </style>
