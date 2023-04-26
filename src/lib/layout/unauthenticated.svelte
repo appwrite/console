@@ -5,6 +5,8 @@
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { user } from '$lib/stores/user';
+    import LoginLight from '$lib/images/login/login-light-mode.svg';
+    import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { sdkForConsole } from '$lib/stores/sdk';
 
     export let imgLight = LoginLight;
