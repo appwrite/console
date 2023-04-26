@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import { Card, Heading, ProgressBar } from '.';
     export let title: string;
     export let data: {
@@ -11,30 +13,41 @@
     }[];
 </script>
 
-<Card>
-    <div class="grid-item-1">
-        <div class="grid-item-1-start-start">
-            <div class="eyebrow-heading-3"><slot name="eyebrow" /></div>
-            <Heading tag="h2" size="7">{title}</Heading>
-        </div>
-        <div class="grid-item-1-start-end">status</div>
-
-        <div class="grid-item-1-end-start">
-            <ul class="u-flex-vertical u-gap-24">
-                {#each data as project}
-                    <li>
-                        <ProgressBar
-                            name={project.name}
-                            max={project.max}
-                            used={project.used}
-                            unit={project.unit}
-                            icon={project.icon} />
-                    </li>
-                {/each}
-            </ul>
-        </div>
-        <div class="grid-item-1-end-end">
-            <a href="https://#">More details</a>
-        </div>
+<Card isTile>
+    <div class="u-flex u-main-space-between">
+        <Heading tag="h2" size="7">{title}</Heading>
+        {#if data.some((d) => d.status === 'warning' || d.status === 'error')}
+            {@const highestUsage = data.reduce(
+                (acc, curr) => {
+                    if (curr.status === 'error') return curr;
+                    if (curr.status === 'warning' && acc.status !== 'error') return curr;
+                    return acc;
+                },
+                { status: null, used: 0, max: 0 }
+            )}
+            <div class="grid-item-1-start-end">
+                <Pill
+                    warning={highestUsage.status === 'warning'}
+                    danger={highestUsage.status === 'error'}>
+                    {Math.round((highestUsage.used / highestUsage.max) * 100)}% of limit used
+                </Pill>
+            </div>
+        {/if}
+    </div>
+    <ul class="u-flex-vertical u-gap-24 u-margin-block-start-32">
+        {#each data as usage}
+            <li>
+                <ProgressBar
+                    name={usage.name}
+                    max={usage.max}
+                    used={usage.used}
+                    unit={usage.unit}
+                    icon={usage.icon}
+                    status={usage.status} />
+            </li>
+        {/each}
+    </ul>
+    <div class="u-flex u-main-end u-margin-block-start-8">
+        <Button text noMargin href="https://#">More details</Button>
     </div>
 </Card>

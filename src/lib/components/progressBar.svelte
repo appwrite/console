@@ -30,9 +30,9 @@
         class="progress-bar-container"
         class:is-warning={status === 'warning'}
         class:is-danger={status === 'error'}
-        style:--graph-size={progress} />
+        style:--graph-size={progress + '%'} />
     <div class="u-flex u-gap-8 u-main-space-between u-cross-baseline">
-        <span class="progress-bar-text-used">{used}</span>
+        <span class="progress-bar-text-used">{used}{unit}</span>
         <span class="progress-bar-text-max">{max}{unit}</span>
     </div>
 </section>

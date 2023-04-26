@@ -21,11 +21,9 @@
     </div>
     <ul
         class="grid-box common-section u-margin-block-start-32"
-        style={`--grid-gap:1.5rem; --grid-item-size:25rem'};`}
-        data-private>
-        {#each data.projectUsage as projectUsage}
-        {@const usage}
-            <ProjectUsage data={projectUsage} />
+        style="--grid-gap:1.5rem; --grid-item-size:25rem;'}">
+        {#each data?.usageData as project}
+            <ProjectUsage title={project?.name} data={project?.projectUsage} />
         {/each}
     </ul>
 </Container>
