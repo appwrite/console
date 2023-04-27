@@ -36,6 +36,15 @@
             });
         }
     }
+
+    function onGithubLogin() {
+        sdkForConsole.account.createOAuth2Session(
+            'github',
+            window.location.origin,
+            window.location.origin,
+            ['read:user', 'user:email']
+        );
+    }
 </script>
 
 <svelte:head>
@@ -82,6 +91,13 @@
                     >.</InputChoice>
                 <FormItem>
                     <Button fullWidth submit {disabled}>Sign up</Button>
+                </FormItem>
+                <span class="with-separators eyebrow-heading-3">or</span>
+                <FormItem>
+                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true" />
+                        <span class="text">Sign up with Github</span>
+                    </Button>
                 </FormItem>
             </FormList>
         </Form>
