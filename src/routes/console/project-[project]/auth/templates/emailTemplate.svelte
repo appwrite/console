@@ -22,6 +22,10 @@
             onSubmit({ senderName, senderEmail, message, subject });
         }
     }
+
+    function reset() {
+        console.log('reset form');
+    }
 </script>
 
 <Form onSubmit={submit}>
@@ -45,8 +49,11 @@
             placeholder="Enter your message"
             readonly
             on:click={() => (showEdit = true)} />
-        <Button submit>Update</Button>
     </FormList>
+    <div class="u-flex">
+        <Button on:click={reset} text>Reset changes</Button>
+        <Button submit>Update</Button>
+    </div>
 </Form>
 
 <EditMessage {message} bind:show={showEdit} />

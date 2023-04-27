@@ -1,16 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import Output from '$lib/components/output.svelte';
     import { Button, FormList, InputTextarea } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
+    import { Table, TableCellHead, TableHeader } from '$lib/elements/table';
 
     export let show = false;
     export let message: string;

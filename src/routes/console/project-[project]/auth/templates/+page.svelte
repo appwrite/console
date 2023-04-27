@@ -13,24 +13,29 @@
     import EmailMagicUrlTemplate from './emailMagicUrlTemplate.svelte';
     import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
     import EmailInviteTemplate from './emailInviteTemplate.svelte';
+    import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
+    import SmsLoginTemplate from './smsLoginTemplate.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let data: PageData;
     const projectId = $page.params.project;
-    interface EmailTemplate {
-        senderName: string;
-        senderEmail: string;
-        locale: string;
-        subject: string;
-        message: string;
-    }
+
     let emailTemplates:
         | {
-              verification: EmailTemplate;
-              magicSession: EmailTemplate;
-              recovery: EmailTemplate;
-              invitation: EmailTemplate;
+              verification: Models.EmailTemplate;
+              magicSession: Models.EmailTemplate;
+              recovery: Models.EmailTemplate;
+              invitation: Models.EmailTemplate;
           }
         | any = {};
+    let smsTemplates:
+        | {
+              verification: Models.SmsTemplate;
+              login: Models.SmsTemplate;
+              invitation: Models.SmsTemplate;
+          }
+        | any = {};
+
     let emailVerificationOpen = true;
     let emailMagicSessionOpen = false;
     let emailOpen = 'verification';
@@ -42,10 +47,27 @@
         loadEmailTemplate('magicSession', 'en-us');
         loadEmailTemplate('recovery', 'en-us');
         loadEmailTemplate('invitation', 'en-us');
+        loadSmsTemplate('verification', 'en-us');
+        loadSmsTemplate('login', 'en-us');
+        loadSmsTemplate('invitation', 'en-us');
     });
     async function loadEmailTemplate(type: string, locale: string) {
         try {
             emailTemplates[type] = await sdk.forConsole.projects.getEmailTemplate(
+                projectId,
+                type,
+                locale
+            );
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+    async function loadSmsTemplate(type: string, locale: string) {
+        try {
+            smsTemplates[type] = await sdk.forConsole.projects.getSmsTemplate(
                 projectId,
                 type,
                 locale
@@ -80,6 +102,33 @@
             addNotification({
                 type: 'success',
                 message: `Email ${type} template for ${data.locale} updated`
+            });
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+
+    async function saveSmsTemplate(type: string, data: any) {
+        if (!data.locale) {
+            addNotification({
+                type: 'error',
+                message: 'Locale is required'
+            });
+            return;
+        }
+        try {
+            emailTemplates[type] = await sdk.forConsole.projects.updateSmsTemplate(
+                projectId,
+                type,
+                data.locale,
+                data.message
+            );
+            addNotification({
+                type: 'success',
+                message: `SMS ${type} template for ${data.locale} updated`
             });
         } catch (e) {
             addNotification({
@@ -189,11 +238,27 @@
                     <p class="text">
                         Send a verification SMS to users that sign in with their phone
                     </p>
-                    <!-- <SmsTemplate onSubmit={saveEmailTemplate} /> -->
+                    <SmsVerificationTemplate
+                        localeCodes={data.localeCodes}
+                        {loadSmsTemplate}
+                        {saveSmsTemplate}
+                        template={smsTemplates?.verification} />
                 </CollapsibleItem>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Login</svelte:fragment>
-                    <!-- <SmsTemplate onSubmit={saveEmailTemplate} /> -->
+                    <SmsLoginTemplate
+                        localeCodes={data.localeCodes}
+                        {loadSmsTemplate}
+                        {saveSmsTemplate}
+                        template={smsTemplates?.login} />
+                </CollapsibleItem>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Invitation</svelte:fragment>
+                    <SmsLoginTemplate
+                        localeCodes={data.localeCodes}
+                        {loadSmsTemplate}
+                        {saveSmsTemplate}
+                        template={smsTemplates?.invitation} />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>

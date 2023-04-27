@@ -9,13 +9,7 @@
     export let loadEmailTemplate: (type: string, locale: string) => Promise<void> | void;
     export let saveEmailTemplate: (type: string, data: any) => Promise<void> | void;
 
-    export let template: {
-        senderName: string;
-        senderEmail: string;
-        locale: string;
-        subject: string;
-        message: string;
-    };
+    export let template: Models.EmailTemplate;
 
     afterUpdate(() => {
         template = template;

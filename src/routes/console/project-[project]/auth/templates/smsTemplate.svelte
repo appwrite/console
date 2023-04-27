@@ -1,13 +1,26 @@
 <script lang="ts">
-    import { Box } from '$lib/components';
-    import { Form, FormList, InputEmail, InputText, InputTextarea } from '$lib/elements/forms';
-    export let onSubmit: () => Promise<void> | void;
+    import { Button, Form, FormList, InputTextarea } from '$lib/elements/forms';
+    export let onSubmit: (data: any) => Promise<void> | void;
+
+    export let message: string;
+
+    function submit() {
+        if (onSubmit) {
+            onSubmit({ message });
+        }
+    }
+
+    function reset() {
+        console.log('reset form');
+    }
 </script>
 
-<Box>
-    <Form {onSubmit}>
-        <FormList>
-            <InputTextarea id="message" label="Message" />
-        </FormList>
-    </Form>
-</Box>
+<Form onSubmit={submit}>
+    <FormList>
+        <InputTextarea bind:value={message} id="message" label="Message" />
+    </FormList>
+    <div class="u-flex">
+        <Button on:click={reset} text>Reset changes</Button>
+        <Button submit>Update</Button>
+    </div>
+</Form>
