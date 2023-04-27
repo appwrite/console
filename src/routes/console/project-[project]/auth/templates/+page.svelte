@@ -1,3 +1,84 @@
+<script context="module" lang="ts">
+    export async function loadEmailTemplate(projectId: string, type: string, locale: string) {
+        try {
+            return await sdk.forConsole.projects.getEmailTemplate(projectId, type, locale);
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+    export async function loadSmsTemplate(projectId: string, type: string, locale: string) {
+        try {
+            return await sdk.forConsole.projects.getSmsTemplate(projectId, type, locale);
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+
+    export async function saveEmailTemplate(projectId: string, data: Models.EmailTemplate) {
+        if (!data.locale) {
+            addNotification({
+                type: 'error',
+                message: 'Locale is required'
+            });
+            return;
+        }
+        try {
+            await sdk.forConsole.projects.updateEmailTemplate(
+                projectId,
+                data.type,
+                data.locale,
+                data.senderName,
+                data.senderEmail,
+                data.subject,
+                data.message,
+                data.replyTo
+            );
+            addNotification({
+                type: 'success',
+                message: `Email ${data.type} template for ${data.locale} updated`
+            });
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+
+    export async function saveSmsTemplate(projectId: string, data: Models.SmsTemplate) {
+        if (!data.locale) {
+            addNotification({
+                type: 'error',
+                message: 'Locale is required'
+            });
+            return;
+        }
+        try {
+            await sdk.forConsole.projects.updateSmsTemplate(
+                projectId,
+                data.type,
+                data.locale,
+                data.message
+            );
+            addNotification({
+                type: 'success',
+                message: `SMS ${data.type} template for ${data.locale} updated`
+            });
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+</script>
+
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
@@ -15,127 +96,27 @@
     import EmailInviteTemplate from './emailInviteTemplate.svelte';
     import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
     import SmsLoginTemplate from './smsLoginTemplate.svelte';
+    import { emailTemplate } from './strote';
     import type { Models } from '@appwrite.io/console';
 
     export let data: PageData;
     const projectId = $page.params.project;
-
-    let emailTemplates:
-        | {
-              verification: Models.EmailTemplate;
-              magicSession: Models.EmailTemplate;
-              recovery: Models.EmailTemplate;
-              invitation: Models.EmailTemplate;
-          }
-        | any = {};
-    let smsTemplates:
-        | {
-              verification: Models.SmsTemplate;
-              login: Models.SmsTemplate;
-              invitation: Models.SmsTemplate;
-          }
-        | any = {};
 
     let emailVerificationOpen = true;
     let emailMagicSessionOpen = false;
     let emailOpen = 'verification';
     $: emailVerificationOpen = emailOpen === 'verification';
     $: emailMagicSessionOpen = emailOpen === 'magicSession';
+    $: emailResetPassword = emailOpen === 'recovery';
+    $: emailInviteUser = emailOpen === 'invitation';
 
-    onMount(() => {
-        loadEmailTemplate('verification', 'en-us');
-        loadEmailTemplate('magicSession', 'en-us');
-        loadEmailTemplate('recovery', 'en-us');
-        loadEmailTemplate('invitation', 'en-us');
-        loadSmsTemplate('verification', 'en-us');
-        loadSmsTemplate('login', 'en-us');
-        loadSmsTemplate('invitation', 'en-us');
+    onMount(async () => {
+        openEmail('verification');
     });
-    async function loadEmailTemplate(type: string, locale: string) {
-        try {
-            emailTemplates[type] = await sdk.forConsole.projects.getEmailTemplate(
-                projectId,
-                type,
-                locale
-            );
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
-    }
-    async function loadSmsTemplate(type: string, locale: string) {
-        try {
-            smsTemplates[type] = await sdk.forConsole.projects.getSmsTemplate(
-                projectId,
-                type,
-                locale
-            );
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
-    }
 
-    async function saveEmailTemplate(type: string, data: any) {
-        if (!data.locale) {
-            addNotification({
-                type: 'error',
-                message: 'Locale is required'
-            });
-            return;
-        }
-        try {
-            emailTemplates[type] = await sdk.forConsole.projects.updateEmailTemplate(
-                projectId,
-                type,
-                data.locale,
-                data.senderName,
-                data.senderEmail,
-                data.subject,
-                data.message,
-                data.replyTo
-            );
-            addNotification({
-                type: 'success',
-                message: `Email ${type} template for ${data.locale} updated`
-            });
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
-    }
-
-    async function saveSmsTemplate(type: string, data: any) {
-        if (!data.locale) {
-            addNotification({
-                type: 'error',
-                message: 'Locale is required'
-            });
-            return;
-        }
-        try {
-            emailTemplates[type] = await sdk.forConsole.projects.updateSmsTemplate(
-                projectId,
-                type,
-                data.locale,
-                data.message
-            );
-            addNotification({
-                type: 'success',
-                message: `SMS ${type} template for ${data.locale} updated`
-            });
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
+    async function openEmail(type: string) {
+        emailOpen = type;
+        $emailTemplate = await loadEmailTemplate(projectId, type, 'en-us');
     }
 </script>
 
@@ -175,47 +156,43 @@
             <Collapsible>
                 <CollapsibleItem
                     bind:open={emailVerificationOpen}
-                    on:click={() => {
-                        emailOpen = 'verification';
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('verification');
                     }}>
                     <svelte:fragment slot="title">Verification</svelte:fragment>
                     <p class="text">
                         Send a verification email to users that sign in with their email and
                         password.
                     </p>
-                    <EmailVerificationTemplate
-                        {loadEmailTemplate}
-                        {saveEmailTemplate}
-                        localeCodes={data.localeCodes}
-                        template={emailTemplates?.verification} />
+                    <EmailVerificationTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={emailMagicSessionOpen}
-                    on:click={() => {
-                        emailOpen = 'magicSession';
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('magicSession');
                     }}>
                     <svelte:fragment slot="title">Magic URL</svelte:fragment>
-                    <EmailMagicUrlTemplate
-                        {loadEmailTemplate}
-                        {saveEmailTemplate}
-                        localeCodes={data.localeCodes}
-                        template={emailTemplates?.magicSession} />
+                    <EmailMagicUrlTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
-                <CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={emailResetPassword}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('recovery');
+                    }}>
                     <svelte:fragment slot="title">Reset Password</svelte:fragment>
-                    <EmailRecoveryTemplate
-                        {loadEmailTemplate}
-                        {saveEmailTemplate}
-                        localeCodes={data.localeCodes}
-                        template={emailTemplates?.recovery} />
+                    <EmailRecoveryTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
-                <CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={emailInviteUser}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('invitation');
+                    }}>
                     <svelte:fragment slot="title">Invite User</svelte:fragment>
-                    <EmailInviteTemplate
-                        {loadEmailTemplate}
-                        {saveEmailTemplate}
-                        localeCodes={data.localeCodes}
-                        template={emailTemplates?.invitation} />
+                    <EmailInviteTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
@@ -238,27 +215,15 @@
                     <p class="text">
                         Send a verification SMS to users that sign in with their phone
                     </p>
-                    <SmsVerificationTemplate
-                        localeCodes={data.localeCodes}
-                        {loadSmsTemplate}
-                        {saveSmsTemplate}
-                        template={smsTemplates?.verification} />
+                    <SmsVerificationTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Login</svelte:fragment>
-                    <SmsLoginTemplate
-                        localeCodes={data.localeCodes}
-                        {loadSmsTemplate}
-                        {saveSmsTemplate}
-                        template={smsTemplates?.login} />
+                    <SmsLoginTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Invitation</svelte:fragment>
-                    <SmsLoginTemplate
-                        localeCodes={data.localeCodes}
-                        {loadSmsTemplate}
-                        {saveSmsTemplate}
-                        template={smsTemplates?.invitation} />
+                    <SmsLoginTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>

@@ -1,31 +1,23 @@
 <script lang="ts">
-    import { afterUpdate } from 'svelte';
+    import { loadEmailTemplate } from './+page.svelte';
     import EmailTemplate from './emailTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { emailTemplate } from './strote';
+    import { page } from '$app/stores';
+
+    export let localeCodes: Models.LocaleCode[];
+    const projectId = $page.params.project;
 
     let locale = 'en-us';
-    export let localeCodes: Models.LocaleCode[];
-    export let loadEmailTemplate: (type: string, locale: string) => Promise<void> | void;
-    export let saveEmailTemplate: (type: string, data: any) => Promise<void> | void;
 
-    export let template: Models.EmailTemplate;
-
-    afterUpdate(() => {
-        template = template;
-    });
-
-    function onLocaleChange() {
-        loadEmailTemplate('magicSession', locale);
+    async function onLocaleChange() {
+        let template = await loadEmailTemplate(projectId, 'magicSession', locale);
+        emailTemplate.set(template);
     }
 </script>
 
 <div class="box">
     <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
-    <EmailTemplate
-        senderName={template?.senderName}
-        senderEmail={template?.senderEmail}
-        subject={template?.subject}
-        message={template?.message}
-        onSubmit={(data) => saveEmailTemplate('magicSession', { ...data, locale })} />
+    <EmailTemplate />
 </div>
