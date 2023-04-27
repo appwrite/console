@@ -96,27 +96,35 @@
     import EmailInviteTemplate from './emailInviteTemplate.svelte';
     import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
     import SmsLoginTemplate from './smsLoginTemplate.svelte';
-    import { emailTemplate } from './strote';
+    import { emailTemplate, smsTemplate } from './strote';
     import type { Models } from '@appwrite.io/console';
 
     export let data: PageData;
     const projectId = $page.params.project;
 
-    let emailVerificationOpen = true;
-    let emailMagicSessionOpen = false;
     let emailOpen = 'verification';
     $: emailVerificationOpen = emailOpen === 'verification';
     $: emailMagicSessionOpen = emailOpen === 'magicSession';
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
 
+    let smsOpen = 'verification';
+    $: smsVerificationOpen = smsOpen === 'verification';
+    $: smsLoginOpen = smsOpen === 'login';
+    $: smsInvitationOpen = smsOpen === 'invitation';
+
     onMount(async () => {
         openEmail('verification');
+        openSms('verification');
     });
 
     async function openEmail(type: string) {
         emailOpen = type;
         $emailTemplate = await loadEmailTemplate(projectId, type, 'en-us');
+    }
+    async function openSms(type: string) {
+        smsOpen = type;
+        $smsTemplate = await loadSmsTemplate(projectId, type, 'en-us');
     }
 </script>
 
@@ -210,18 +218,33 @@
 
         <svelte:fragment slot="aside">
             <Collapsible>
-                <CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={smsVerificationOpen}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openSms('verification');
+                    }}>
                     <svelte:fragment slot="title">Verification</svelte:fragment>
                     <p class="text">
                         Send a verification SMS to users that sign in with their phone
                     </p>
                     <SmsVerificationTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
-                <CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={smsLoginOpen}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openSms('login');
+                    }}>
                     <svelte:fragment slot="title">Login</svelte:fragment>
                     <SmsLoginTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
-                <CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={smsInvitationOpen}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openSms('invitation');
+                    }}>
                     <svelte:fragment slot="title">Invitation</svelte:fragment>
                     <SmsLoginTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>

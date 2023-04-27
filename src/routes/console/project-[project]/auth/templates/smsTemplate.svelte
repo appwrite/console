@@ -14,10 +14,14 @@
 
 <Form onSubmit={submit}>
     <FormList>
-        <InputTextarea bind:value={$smsTemplate.message} id="message" label="Message" />
+        <InputTextarea
+            bind:value={$smsTemplate.message}
+            id="message"
+            label="Message"
+            placeholder="Enter your message" />
+        <div class="u-flex u-gap-32 u-main-end">
+            <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
+            <Button submit>Update</Button>
+        </div>
     </FormList>
-    <div class="u-flex u-gap-32 u-main-end">
-        <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
-        <Button submit>Update</Button>
-    </div>
 </Form>
