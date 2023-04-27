@@ -149,4 +149,23 @@
             border-right-color: hsl(var(--p-tooltip--bg-color));
         }
     }
+
+    .with-separators {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        text-transform: uppercase;
+        width: 100%;
+
+        color: hsl(var(--color-neutral-100));
+
+        &::before,
+        &::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: hsl(var(--color-neutral-200));
+        }
+    }
 </style>

@@ -236,43 +236,12 @@
 		--center: ${$centerProximity};
 	`;
 
-    // Lifecycle
-    onMount(() => {
-        let cb: number | null = null;
-        const animate = () => {
-            if (active) return (cb = window.requestAnimationFrame(animate));
-
-            // Rotate
-            springRotate.update((old) => {
-                const step = old.x % 360 > 90 && old.x % 360 < 270 ? 0.5 : 0.25;
-
-                return {
-                    ...old,
-                    x: old.x + step * 4,
-                    y: 15
-                };
-            });
-
-            // Set glare opacity
-            springGlare.update((old) => ({
-                ...old,
-                x: 50,
-                y: 50,
-                o: opacityFromDegree(old.x)
-            }));
-
-            cb = window.requestAnimationFrame(animate);
-        };
-        // animate();
-
-        return () => {
-            cb && window.cancelAnimationFrame(cb);
-        };
-    });
-
-    const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?userId=${userId}`;
-    // const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?mock=employee`;
-    const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?userId=${userId}`;
+    // const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?userId=${userId}`;
+    const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?mock=employee`;
+    // const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?mock=normal`;
+    // const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?userId=${userId}`;
+    const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?mock=golden`;
+    // const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?mock=normal`;
 </script>
 
 <svelte:window on:keydown={windowKeyDown} />
