@@ -40,12 +40,17 @@ git clone https://github.com/appwrite/console.git appwrite-console
 ```
 
 ### 2. Install dependencies with npm
-
+Navigate to the Appwrite Console repository and install dependencies.
 ```bash
-npm install
+cd appwrite-console && npm install
 ```
 
-### 3. Setup environment variables
+### 3. Install and run Appwrite locally
+When you run the Appwrite Console locally, it needs to point to a backend as well. The easiest way to do this is to run an Appwrite instance locally.
+
+Follow the [install instructions](https://appwrite.io/docs/installation) in the Appwrite docs.
+
+### 4. Setup environment variables
 
 Add a `.env` file by copying the `.env.example` file as a template in the project's root directory.
 

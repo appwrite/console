@@ -49,7 +49,8 @@
     label="Default value"
     placeholder="Enter value"
     bind:value={data.default}
-    disabled={data.required || data.array} />
+    disabled={data.required || data.array}
+    nullable={!data.required && !data.array} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
