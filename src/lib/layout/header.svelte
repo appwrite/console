@@ -5,24 +5,24 @@
         DropList,
         DropListItem,
         DropListLink,
-        FeedbackGeneral
+        FeedbackGeneral,
+        FeedbackNPS
     } from '$lib/components';
-    import { app, feedback } from '$lib/stores/app';
-    import { user } from '$lib/stores/user';
-    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
-    import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
+    import LightMode from '$lib/images/mode/light-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { FeedbackNPS } from '$lib/components';
+    import { app, feedback } from '$lib/stores/app';
+    import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
+    import { user } from '$lib/stores/user';
 
-    let showFeedback = false;
-    import { slide } from 'svelte/transition';
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { sdkForConsole } from '$lib/stores/sdk';
-    import { goto } from '$app/navigation';
+    import { slide } from 'svelte/transition';
 
+    let showFeedback = false;
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
 
@@ -52,6 +52,17 @@
     $: if (showDropdown) {
         trackEvent('click_menu_dropdown');
     }
+
+    const slideFade: typeof slide = (node, options) => {
+        const slideTrans = slide(node, options);
+        return {
+            ...slideTrans,
+            css: (t, u) => `
+            ${slideTrans.css(t, u)};
+            opacity: ${t};
+			`
+        };
+    };
 </script>
 
 <svelte:window on:click={onBlur} />
@@ -113,7 +124,7 @@
                 {#if showDropdown}
                     <div
                         class="drop is-no-arrow is-block-end is-inline-end"
-                        transition:slide={{ duration: 100 }}>
+                        transition:slideFade={{ duration: 150 }}>
                         {#if $organizationList?.total}
                             <section class="drop-section u-overflow-y-auto u-max-height-200">
                                 <ul class="drop-list">
