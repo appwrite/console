@@ -20,7 +20,7 @@
     "dependencies": {
         "@analytics/google-analytics": "^1.0.5",
         "@appwrite.io/console": "github:appwrite/sdk-for-console#smtp",
-        "@appwrite.io/pink": "^0.0.6-rc.9",
+        "@appwrite.io/pink": "0.0.6-rc.11",
         "@popperjs/core": "^2.11.6",
         "@sentry/svelte": "^7.44.2",
         "@sentry/tracing": "^7.44.2",

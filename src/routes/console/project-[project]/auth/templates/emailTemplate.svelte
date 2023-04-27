@@ -7,15 +7,13 @@
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
-    import EditMessage from './editMessage.svelte';
+    import { project } from '../../store';
     export let onSubmit: (data: any) => Promise<void> | void;
 
     export let senderName: string;
     export let senderEmail: string;
     export let message: string;
     export let subject: string;
-
-    let showEdit = false;
 
     function submit() {
         if (onSubmit) {
@@ -47,13 +45,10 @@
             id="message"
             label="Message"
             placeholder="Enter your message"
-            readonly
-            on:click={() => (showEdit = true)} />
+            readonly={!$project.smtpEnabled} />
+        <div class="u-flex u-gap-32 u-main-end">
+            <Button on:click={reset} text>Reset changes</Button>
+            <Button submit>Update</Button>
+        </div>
     </FormList>
-    <div class="u-flex">
-        <Button on:click={reset} text>Reset changes</Button>
-        <Button submit>Update</Button>
-    </div>
 </Form>
-
-<EditMessage {message} bind:show={showEdit} />

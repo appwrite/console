@@ -18,10 +18,7 @@
 <div class="u-flex u-main-space-between">
     <div>
         <span class="icon-translate" />
-        <span class="text"
-            >{value
-                ? localeCodes.find((locale) => locale.code === value).name
-                : 'Select a language'}</span>
+        <span class="text">Template language</span>
     </div>
     <InputSelectSearch
         on:select

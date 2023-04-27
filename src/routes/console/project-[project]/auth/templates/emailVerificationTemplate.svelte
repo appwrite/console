@@ -27,7 +27,7 @@
     }
 </script>
 
-<div class="box">
+<div class="box common-section">
     <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
     <EmailTemplate
         senderName={template?.senderName}
