@@ -276,6 +276,15 @@
 </div>
 
 <style lang="scss">
+    @media (prefers-reduced-motion: reduce) {
+        .cb-card,
+        .cb-card * {
+            transition: none !important;
+            animation: none !important;
+            pointer-events: none !important;
+        }
+    }
+
     :root {
         --mx: 50%;
         --my: 50%;
