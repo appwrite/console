@@ -1,9 +1,11 @@
 import { VARS } from '$lib/system';
 
-export function getCardImgUrls(userId: string) {
-    const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?userId=${userId}`;
-    const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?userId=${userId}`;
-    const ogImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-og?userId=${userId}`;
+export function getCardImgUrls(userId: string, endpoint: string) {
+    const resolved = endpoint;
+
+    const frontImg = `${resolved}/cards/cloud?userId=${userId}`;
+    const backImg = `${resolved}/cards/cloud-back?userId=${userId}`;
+    const ogImg = `${resolved}/cards/cloud-og?userId=${userId}`;
 
     return { frontImg, backImg, ogImg };
 }

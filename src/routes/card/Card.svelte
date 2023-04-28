@@ -13,6 +13,8 @@
 
     import { spring } from 'svelte/motion';
     import { getCardImgUrls } from './helpers';
+    import { VARS } from '$lib/system';
+    import { page } from '$app/stores';
 
     let cardEl: HTMLDivElement | undefined;
     export let active = false;
@@ -228,7 +230,8 @@
 		--center: ${$centerProximity};
 	`;
 
-    const { frontImg, backImg } = getCardImgUrls(userId);
+    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
+    const { frontImg, backImg } = getCardImgUrls(userId, endpoint);
 </script>
 
 <svelte:window on:keydown={windowKeyDown} />
