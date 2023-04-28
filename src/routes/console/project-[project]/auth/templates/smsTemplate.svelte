@@ -1,18 +1,46 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Button, Form, FormList, InputTextarea } from '$lib/elements/forms';
-    import { saveSmsTemplate } from './+page.svelte';
-    import { smsTemplate } from './strote';
+    import ResetSms from './resetSms.svelte';
+    import { baseSmsTemplate, smsTemplate } from './strote';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
+    import { deepEqual } from '$lib/helpers/object';
 
     const projectId = $page.params.project;
     let openResetModal = false;
 
-    function submit() {
-        saveSmsTemplate(projectId, $smsTemplate);
+    async function saveSmsTemplate() {
+        if (!$smsTemplate.locale) {
+            addNotification({
+                type: 'error',
+                message: 'Locale is required'
+            });
+            return;
+        }
+        try {
+            await sdk.forConsole.projects.updateSmsTemplate(
+                projectId,
+                $smsTemplate.type,
+                $smsTemplate.locale,
+                $smsTemplate.message
+            );
+            addNotification({
+                type: 'success',
+                message: `SMS ${$smsTemplate.type} template for ${$smsTemplate.locale} updated`
+            });
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
     }
+
+    $: isButtonDisabled = deepEqual($smsTemplate, $baseSmsTemplate);
 </script>
 
-<Form onSubmit={submit}>
+<Form onSubmit={saveSmsTemplate}>
     <FormList>
         <InputTextarea
             bind:value={$smsTemplate.message}
@@ -21,7 +49,9 @@
             placeholder="Enter your message" />
         <div class="u-flex u-gap-32 u-main-end">
             <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
-            <Button submit>Update</Button>
+            <Button submit disabled={isButtonDisabled}>Update</Button>
         </div>
     </FormList>
 </Form>
+
+<ResetSms bind:show={openResetModal} />

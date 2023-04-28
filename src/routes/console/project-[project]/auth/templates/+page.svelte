@@ -19,64 +19,6 @@
             });
         }
     }
-
-    export async function saveEmailTemplate(projectId: string, data: Models.EmailTemplate) {
-        if (!data.locale) {
-            addNotification({
-                type: 'error',
-                message: 'Locale is required'
-            });
-            return;
-        }
-        try {
-            await sdk.forConsole.projects.updateEmailTemplate(
-                projectId,
-                data.type,
-                data.locale,
-                data.senderName,
-                data.senderEmail,
-                data.subject,
-                data.message,
-                data.replyTo
-            );
-            addNotification({
-                type: 'success',
-                message: `Email ${data.type} template for ${data.locale} updated`
-            });
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
-    }
-
-    export async function saveSmsTemplate(projectId: string, data: Models.SmsTemplate) {
-        if (!data.locale) {
-            addNotification({
-                type: 'error',
-                message: 'Locale is required'
-            });
-            return;
-        }
-        try {
-            await sdk.forConsole.projects.updateSmsTemplate(
-                projectId,
-                data.type,
-                data.locale,
-                data.message
-            );
-            addNotification({
-                type: 'success',
-                message: `SMS ${data.type} template for ${data.locale} updated`
-            });
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
-    }
 </script>
 
 <script lang="ts">
@@ -96,8 +38,8 @@
     import EmailInviteTemplate from './emailInviteTemplate.svelte';
     import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
     import SmsLoginTemplate from './smsLoginTemplate.svelte';
-    import { emailTemplate, smsTemplate } from './strote';
-    import type { Models } from '@appwrite.io/console';
+    import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './strote';
+    import { Button } from '$lib/elements/forms';
 
     export let data: PageData;
     const projectId = $page.params.project;
@@ -121,10 +63,12 @@
     async function openEmail(type: string) {
         emailOpen = type;
         $emailTemplate = await loadEmailTemplate(projectId, type, 'en-us');
+        $baseEmailTemplate = { ...$emailTemplate };
     }
     async function openSms(type: string) {
         smsOpen = type;
         $smsTemplate = await loadSmsTemplate(projectId, type, 'en-us');
+        $baseSmsTemplate = { ...$smsTemplate };
     }
 </script>
 
@@ -150,7 +94,14 @@
     {/if}
 
     <CardGrid>
-        <Heading size="6" tag="h6">Email Templates</Heading>
+        <Heading size="6" tag="h6">
+            <div class="u-flex u-gap-8">
+                Email Templates
+                <div class="tag eyebrow-heading-3">
+                    <span class="text u-x-small">Beta</span>
+                </div>
+            </div>
+        </Heading>
         <p class="text">
             Use templates to send and process account management emails. <a
                 href="https://appwrite.io/docs"
@@ -204,10 +155,22 @@
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
+        <svelte:fragment slot="actions">
+            <Button href={base + '/console/project-' + $project.$id + '/settings/smtp'} secondary>
+                SMTP settings
+            </Button>
+        </svelte:fragment>
     </CardGrid>
 
     <CardGrid>
-        <Heading size="6" tag="h6">SMS Templates</Heading>
+        <Heading size="6" tag="h6">
+            <div class="u-flex u-gap-8">
+                SMS Templates
+                <div class="tag eyebrow-heading-3">
+                    <span class="text u-x-small">Beta</span>
+                </div>
+            </div>
+        </Heading>
         <p class="text">
             Use templates to send and process account management mobile messages. <a
                 href="https://appwrite.io/docs"
