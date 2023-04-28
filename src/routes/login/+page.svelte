@@ -77,7 +77,7 @@
                 </FormItem>
                 <span class="with-separators eyebrow-heading-3">or</span>
                 <FormItem>
-                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                    <Button github fullWidth on:click={onGithubLogin} {disabled}>
                         <span class="icon-github" aria-hidden="true" />
                         <span class="text">Sign in with Github</span>
                     </Button>
