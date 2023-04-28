@@ -16,11 +16,6 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import LoginLight from '$lib/images/login/login-light-mode.svg';
-    import LoginDark from '$lib/images/login/login-dark-mode.svg';
-
-    let imgLight = LoginLight;
-    let imgDark = LoginDark;
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
@@ -41,13 +36,22 @@
             });
         }
     }
+
+    function onGithubLogin() {
+        sdkForConsole.account.createOAuth2Session(
+            'github',
+            window.location.origin,
+            window.location.origin,
+            ['read:user', 'user:email']
+        );
+    }
 </script>
 
 <svelte:head>
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated {imgLight} {imgDark}>
+<Unauthenticated>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form on:submit={register}>
@@ -56,20 +60,21 @@
                     id="name"
                     label="Name"
                     placeholder="Your name"
-                    autofocus={true}
+                    autofocus
+                    required
                     bind:value={name} />
                 <InputEmail
                     id="email"
                     label="Email"
                     placeholder="Your email"
-                    required={true}
+                    required
                     bind:value={mail} />
                 <InputPassword
                     id="password"
                     label="Password"
                     placeholder="Your password"
-                    required={true}
-                    showPasswordButton={true}
+                    required
+                    showPasswordButton
                     bind:value={pass} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <a
@@ -87,6 +92,13 @@
                     >.</InputChoice>
                 <FormItem>
                     <Button fullWidth submit {disabled}>Sign up</Button>
+                </FormItem>
+                <span class="with-separators eyebrow-heading-3">or</span>
+                <FormItem>
+                    <Button github fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true" />
+                        <span class="text">Sign up with GitHub</span>
+                    </Button>
                 </FormItem>
             </FormList>
         </Form>

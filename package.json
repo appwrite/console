@@ -30,6 +30,7 @@
         "logrocket": "^3.0.1",
         "pretty-bytes": "^6.1.0",
         "prismjs": "^1.29.0",
+        "svelte-confetti": "^1.2.2",
         "tippy.js": "^6.3.7",
         "web-vitals": "^3.1.1"
     },
