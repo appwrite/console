@@ -6,19 +6,10 @@
     function isTouchEvent(e: MouseEvent | TouchEvent): e is TouchEvent {
         return e.type === 'touchmove';
     }
-
-    function opacityFromDegree(degree: number): number {
-        const degreeNormalized: number = degree % 360;
-        const step: number = degreeNormalized % 180;
-
-        return step <= 90 ? step / 90 : 2 - step / 90;
-    }
 </script>
 
 <script lang="ts">
     import { windowFocusStore } from '$lib/stores/windowFocus';
-    import { VARS } from '$lib/system';
-    import { onMount } from 'svelte';
 
     import { spring } from 'svelte/motion';
     import { getCardImgUrls } from './helpers';
@@ -166,14 +157,14 @@
     };
 
     const windowKeyDown = (e: KeyboardEvent) => {
-        // if (e.key === 'q') {
-        //     springRotateDelta.update((old) => {
-        //         return {
-        //             ...old,
-        //             x: old.x + 360
-        //         };
-        //     });
-        // }
+        if (e.key === 'q') {
+            springRotateDelta.update((old) => {
+                return {
+                    ...old,
+                    x: old.x + 360
+                };
+            });
+        }
         if (!active) return;
 
         if (e.key === 'q') {
