@@ -26,7 +26,7 @@
     let cardIsFlipped = false;
     let showEmbedCode = false;
 
-    const { frontImg } = getCardImgUrls(userId);
+    const { frontImg, ogImg } = getCardImgUrls(userId);
 
     $: title = variant === 'owner' ? 'Welcome to the cloud' : 'Join the Appwrite Cloud';
     $: shareableLink = `${window.location.origin}/card/${userId}`;
@@ -57,7 +57,31 @@
         });
         showEmbedCode = false;
     }
+
+    const seo = {
+        title: 'Appwrite Cloud Card',
+        description:
+            'Cloud is live in public beta, create your Cloud account and unlock your exclusive card!'
+    };
 </script>
+
+<svelte:head>
+    <!-- HTML Meta Tags -->
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content={window.location.href} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:image" content={ogImg} />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={ogImg} />
+</svelte:head>
 
 <div class="wrapper">
     <div class="card">
