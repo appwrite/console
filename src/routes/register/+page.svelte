@@ -60,20 +60,21 @@
                     id="name"
                     label="Name"
                     placeholder="Your name"
-                    autofocus={true}
+                    autofocus
+                    required
                     bind:value={name} />
                 <InputEmail
                     id="email"
                     label="Email"
                     placeholder="Your email"
-                    required={true}
+                    required
                     bind:value={mail} />
                 <InputPassword
                     id="password"
                     label="Password"
                     placeholder="Your password"
-                    required={true}
-                    showPasswordButton={true}
+                    required
+                    showPasswordButton
                     bind:value={pass} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <a
