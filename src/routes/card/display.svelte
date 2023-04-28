@@ -5,6 +5,9 @@
     import { getCardImgUrls } from './helpers';
     import { copy } from '$lib/helpers/copy';
     import { addNotification } from '$lib/stores/notifications';
+    import { Modal } from '$lib/components';
+    import Code from '$lib/components/code.svelte';
+    import Button from '$lib/elements/forms/button.svelte';
 
     export let userId: string;
     export let variant: 'owner' | 'external';
@@ -21,17 +24,33 @@
 
     let cardActive = false;
     let cardIsFlipped = false;
+    let showEmbedCode = false;
 
     $: title = variant === 'owner' ? 'Welcome to the cloud' : 'Join the Appwrite Cloud';
+    $: shareableLink = `${window.location.origin}/card/${userId}`;
+    $: embedCode = [
+        `<a href="${shareableLink}">`,
+        `\t<img src="${getCardImgUrls(userId).frontImg}" alt="Appwrite Cloud Card" />`,
+        `</a>`
+    ].join('\n');
 
     function copyShareableLink() {
-        const link = `${window.location.origin}/card/${userId}`;
-        copy(link);
+        copy(shareableLink);
         addNotification({
             title: 'Link copied',
             message: 'Share your card with everyone you know!',
             type: 'success'
         });
+    }
+
+    function copyEmbedCode() {
+        copy(embedCode);
+        addNotification({
+            title: 'Embed code copied',
+            message: 'Paste this code to embed your card!',
+            type: 'success'
+        });
+        showEmbedCode = false;
     }
 </script>
 
@@ -92,7 +111,7 @@
             </li>
             {#if variant === 'owner'}
                 <li class="buttons-list-item">
-                    <button class="button is-text">
+                    <button class="button is-text" on:click={() => (showEmbedCode = true)}>
                         <span class="icon-code" aria-hidden="true" />
                         <span class="text">Get embed code</span>
                     </button>
@@ -161,6 +180,17 @@
     </div>
 </div>
 
+<Modal bind:show={showEmbedCode}>
+    <svelte:fragment slot="header">Get Embed Code</svelte:fragment>
+    <div class="u-overflow-hidden">
+        HTML Code
+        <Code language="html" code={embedCode} noMargin />
+    </div>
+    <svelte:fragment slot="footer">
+        <Button on:click={copyEmbedCode}>Copy</Button>
+    </svelte:fragment>
+</Modal>
+
 <style lang="scss">
     :global(.theme-dark) .wrapper {
         --glow: hsl(var(--color-primary-100));
@@ -186,7 +216,7 @@
         gap: max(4rem, 10vw);
         overflow: hidden;
 
-        height: 100vh;
+        min-height: 100vh;
     }
 
     .card {
@@ -425,6 +455,7 @@
 
             .card-footer {
                 border: none;
+                padding-block-start: 0;
 
                 .button {
                     display: grid;
