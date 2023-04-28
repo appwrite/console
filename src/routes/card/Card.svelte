@@ -18,8 +18,10 @@
 <script lang="ts">
     import { windowFocusStore } from '$lib/stores/windowFocus';
     import { VARS } from '$lib/system';
+    import { onMount } from 'svelte';
 
     import { spring } from 'svelte/motion';
+    import { getCardImgUrls } from './helpers';
 
     let cardEl: HTMLDivElement | undefined;
     export let active = false;
@@ -235,12 +237,7 @@
 		--center: ${$centerProximity};
 	`;
 
-    const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?userId=${userId}`;
-    // const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?mock=employee`;
-    // const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?mock=normal`;
-    const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?userId=${userId}`;
-    // const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?mock=golden`;
-    // const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?mock=normal`;
+    const { frontImg, backImg } = getCardImgUrls(userId);
 </script>
 
 <svelte:window on:keydown={windowKeyDown} />
