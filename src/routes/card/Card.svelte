@@ -364,7 +364,7 @@
     }
 
     .card__thick {
-        background-color: #1b1b28;
+        background-color: transparent;
         position: absolute;
         width: 100%;
         height: 100%;

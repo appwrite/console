@@ -26,7 +26,7 @@
     let cardIsFlipped = false;
     let showEmbedCode = false;
 
-    const { frontImg, ogImg } = getCardImgUrls(userId);
+    const { frontImg } = getCardImgUrls(userId);
 
     $: title = variant === 'owner' ? 'Welcome to the cloud' : 'Join the Appwrite Cloud';
     $: shareableLink = `${window.location.origin}/card/${userId}`;
@@ -36,7 +36,7 @@
         `</a>`
     ].join('\n');
     $: twitterText = encodeURIComponent(
-        [`Check out my Appwrite Cloud card at ${shareableLink}!`, `${ogImg}`].join('\n')
+        [`Check out my Appwrite Cloud card at ${shareableLink}!`].join('\n')
     );
 
     function copyShareableLink() {
