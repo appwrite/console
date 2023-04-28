@@ -1,16 +1,16 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { app } from '$lib/stores/app';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
-    import { isCloud } from '$lib/system';
-    import LoginDark from '$lib/images/login/login-dark-mode.svg';
-    import LoginLight from '$lib/images/login/login-light-mode.svg';
-    import AppwriteLogo from '$lib/images/appwrite.svg';
     import AppwriteCloudLogo from '$lib/images/appwrite-cloud.svg';
-    import AppwriteCloudBg from '$lib/images/login/cloud-bg.svg';
+    import AppwriteLogo from '$lib/images/appwrite.svg';
     import Cloud1 from '$lib/images/login/cloud-1.svg';
     import Cloud2 from '$lib/images/login/cloud-2.svg';
+    import AppwriteCloudBg from '$lib/images/login/cloud-bg.svg';
+    import LoginDark from '$lib/images/login/login-dark-mode.svg';
+    import LoginLight from '$lib/images/login/login-light-mode.svg';
+    import { app } from '$lib/stores/app';
+    import { user } from '$lib/stores/user';
+    import { isCloud } from '$lib/system';
+    import { onDestroy } from 'svelte';
 
     export let imgLight = LoginLight;
     export let imgDark = LoginDark;
@@ -28,9 +28,25 @@
         'kotlin',
         'swift'
     ];
+
+    let innerWidth = 0;
+    $: isMobile = innerWidth < 768;
+
+    const prevTheme = $app.theme;
+    $: if (isMobile && isCloud) {
+        $app.theme = 'dark';
+    } else {
+        $app.theme = prevTheme;
+    }
+
+    onDestroy(() => {
+        $app.theme = prevTheme;
+    });
 </script>
 
-<main class="grid-1-1 is-full-page" id="main">
+<svelte:window bind:innerWidth />
+
+<main class="grid-1-1 is-full-page" class:main-cloud={isCloud} id="main">
     {#if isCloud}
         <section
             class="cloud-section grid-1-1-col-1 u-flex u-flex-vertical u-overflow-hidden"
@@ -63,7 +79,7 @@
                     {#each technologies as tech}
                         <li>
                             <img
-                                src={`${base}/icons/${$app.themeInUse}/grayscale/${tech}.svg`}
+                                src={`${base}/icons/dark/grayscale/${tech}.svg`}
                                 alt={tech}
                                 aria-hidden="true"
                                 aria-label={tech} />
@@ -152,7 +168,7 @@
             </div>
 
             {#if isCloud}
-                <div class="is-only-mobile u-margin-block-start-auto">
+                <div class="is-only-mobile u-margin-block-start-auto theme-dark">
                     <div class="mobile-beta">Public <span>beta</span></div>
                 </div>
             {/if}
@@ -267,6 +283,10 @@
     }
 
     @media (max-width: 767px) {
+        .main-cloud {
+            background-color: hsl(var(--color-neutral-500));
+        }
+
         .is-cloud {
             background: var(--url);
             background-position: center -150px;
