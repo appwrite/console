@@ -2,8 +2,12 @@
     import { Confetti } from 'svelte-confetti';
     import Card from './Card.svelte';
     import { fade } from 'svelte/transition';
+    import { getCardImgUrls } from './helpers';
+    import { copy } from '$lib/helpers/copy';
+    import { addNotification } from '$lib/stores/notifications';
 
-    export let data;
+    export let userId: string;
+    export let variant: 'owner' | 'external';
 
     let triggerConfettiKey = 1;
     const confettiColors = [
@@ -17,12 +21,24 @@
 
     let cardActive = false;
     let cardIsFlipped = false;
+
+    $: title = variant === 'owner' ? 'Welcome to the cloud' : 'Join the Appwrite Cloud';
+
+    function copyShareableLink() {
+        const link = `${window.location.origin}/card/${userId}`;
+        copy(link);
+        addNotification({
+            title: 'Link copied',
+            message: 'Share your card with everyone you know!',
+            type: 'success'
+        });
+    }
 </script>
 
 <div class="wrapper">
     <div class="card">
         <h3 class="heading-level-3 u-flex u-cross-center u-gap-8">
-            Welcome to the Cloud
+            {title}
             <button class="confetti-btn" on:click={() => triggerConfettiKey++}>
                 🎉
                 {#each Array(triggerConfettiKey) as _, i (i)}
@@ -38,26 +54,35 @@
         </h3>
 
         <div class="content">
-            <div class="hoodie-container">
-                <img
-                    src="/images/hoodies-bg.png"
-                    alt="red background"
-                    aria-hidden="true"
-                    class="bg" />
-                <img src="/images/hoodie-1.png" class="hoodie" alt="Cloud Beta hoodies" />
-                <img src="/images/hoodie-2.png" class="hoodie" alt="Cloud Beta hoodies" />
-            </div>
+            {#if variant === 'owner'}
+                <div class="hoodie-container">
+                    <img
+                        src="/images/hoodies-bg.png"
+                        alt="red background"
+                        aria-hidden="true"
+                        class="bg" />
+                    <img src="/images/hoodie-1.png" class="hoodie" alt="Cloud Beta hoodies" />
+                    <img src="/images/hoodie-2.png" class="hoodie" alt="Cloud Beta hoodies" />
+                </div>
+            {/if}
             <div>
                 <div class="u-flex u-cross-center u-gap-8">
                     <h4 class="eyebrow-heading-1">Cloud is live in public</h4>
                     <h4 class="eyebrow-heading-1 beta-tag">Beta</h4>
                 </div>
                 <p class="u-margin-block-start-8">
-                    Share your Cloud card and you may win an exclusive Cloud hoodie!
+                    {#if variant === 'owner'}
+                        Share your Cloud card and you may win an exclusive Cloud hoodie!
+                    {:else}
+                        Create your Cloud account and unlock your exclusive card!
+                    {/if}
                 </p>
             </div>
         </div>
-        <img class="card-preview" src="/images/front.png" alt="The front of the card" />
+        <img
+            class="card-preview"
+            src={getCardImgUrls(userId).frontImg}
+            alt="The front of the card" />
         <ul class="buttons-list u-margin-block-start-32">
             <li class="buttons-list-item">
                 <button class="button is-text">
@@ -65,21 +90,27 @@
                     <span class="text">Tweet it</span>
                 </button>
             </li>
+            {#if variant === 'owner'}
+                <li class="buttons-list-item">
+                    <button class="button is-text">
+                        <span class="icon-code" aria-hidden="true" />
+                        <span class="text">Get embed code</span>
+                    </button>
+                </li>
+            {/if}
             <li class="buttons-list-item">
-                <button class="button is-text">
-                    <span class="icon-code" aria-hidden="true" />
-                    <span class="text">Get embed code</span>
-                </button>
-            </li>
-            <li class="buttons-list-item">
-                <button class="button is-text">
+                <button class="button is-text" on:click={copyShareableLink}>
                     <span class="icon-link" aria-hidden="true" />
                     <span class="text">Get a link</span>
                 </button>
             </li>
         </ul>
         <div class="card-footer">
-            <a href="/console" class="button">Go to console</a>
+            {#if variant === 'owner'}
+                <a href="/console" class="button">Go to console</a>
+            {:else}
+                <a href="/card" class="button">Claim your card</a>
+            {/if}
         </div>
     </div>
     <div class="cbc-wrapper">
@@ -96,7 +127,7 @@
                     fallDistance="50px" />
             </div>
         {/if}
-        <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} userId={data.account.$id} />
+        <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} {userId} />
     </div>
     {#if cardActive}
         <div
@@ -131,12 +162,6 @@
 </div>
 
 <style lang="scss">
-    :global(.main-content) {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
     :global(.theme-dark) .wrapper {
         --glow: hsl(var(--color-primary-100));
         --beta-bg: hsl(var(--color-neutral-120));
@@ -160,6 +185,8 @@
         padding-block: 4rem;
         gap: max(4rem, 10vw);
         overflow: hidden;
+
+        height: 100vh;
     }
 
     .card {
@@ -309,6 +336,10 @@
         &.invisible {
             opacity: 0;
         }
+    }
+
+    .buttons-list-item:first-child .button {
+        padding-inline-start: 0;
     }
 
     .overlay {
