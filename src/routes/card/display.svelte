@@ -9,6 +9,8 @@
     import Code from '$lib/components/code.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { browser } from '$app/environment';
+    import { VARS } from '$lib/system';
+    import { page } from '$app/stores';
 
     export let userId: string;
     export let variant: 'owner' | 'external';
@@ -27,7 +29,8 @@
     let cardIsFlipped = false;
     let showEmbedCode = false;
 
-    const { frontImg, ogImg } = getCardImgUrls(userId);
+    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
+    const { frontImg, ogImg } = getCardImgUrls(userId, endpoint);
 
     $: title = variant === 'owner' ? 'Welcome to the cloud' : 'Join the Appwrite Cloud';
     $: shareableLink =
@@ -128,10 +131,7 @@
                 </p>
             </div>
         </div>
-        <img
-            class="card-preview"
-            src={getCardImgUrls(userId).frontImg}
-            alt="The front of the card" />
+        <img class="card-preview" src={frontImg} alt="The front of the card" />
         <ul class="buttons-list u-margin-block-start-32">
             <li class="buttons-list-item">
                 <a
