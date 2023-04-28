@@ -177,6 +177,12 @@
 </main>
 
 <style lang="scss">
+    @media (prefers-reduced-motion: reduce) {
+        main * {
+            animation: none !important;
+        }
+    }
+
     @keyframes float {
         0% {
             transform: translatey(0px);
