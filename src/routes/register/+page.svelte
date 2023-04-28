@@ -98,7 +98,7 @@
                 <FormItem>
                     <Button github fullWidth on:click={onGithubLogin} {disabled}>
                         <span class="icon-github" aria-hidden="true" />
-                        <span class="text">Sign up with Github</span>
+                        <span class="text">Sign up with GitHub</span>
                     </Button>
                 </FormItem>
             </FormList>
