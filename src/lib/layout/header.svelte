@@ -216,7 +216,7 @@
                             <a
                                 class="claim"
                                 title="Gradient Border"
-                                href="/cloud-beta-card"
+                                href="/card"
                                 data-sveltekit-reload>
                                 Claim your Cloud card
                             </a>

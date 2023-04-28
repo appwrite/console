@@ -60,18 +60,12 @@
          * Handle initial load.
          */
         if (!$page.url.pathname.startsWith('/auth')) {
-            const acceptedRoutes = [
-                '/login',
-                '/register',
-                '/recover',
-                '/invite',
-                '/cloud-beta-card'
-            ];
+            const acceptedRoutes = ['/login', '/register', '/recover', '/invite', '/card'];
             if ($user) {
                 if (
                     !$page.url.pathname.startsWith('/console') &&
                     !$page.url.pathname.startsWith('/invite') &&
-                    !$page.url.pathname.startsWith('/cloud-beta-card')
+                    !$page.url.pathname.startsWith('/card')
                 ) {
                     await goto(`${base}/console`, {
                         replaceState: true
