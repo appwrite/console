@@ -5,7 +5,7 @@ export const emailTemplate = writable<Models.EmailTemplate>({
     type: null,
     locale: null,
     message: null,
-    senderName: null,
+    senderName: '',
     senderEmail: null,
     replyTo: null,
     subject: null

@@ -7,12 +7,14 @@
 
     let search: string = 'English';
 
-    $: options = localeCodes
-        .map((code) => ({
-            label: code.name,
-            value: code.code
-        }))
-        .filter((option) => option.label?.toLowerCase().startsWith(search?.toLowerCase()));
+    $: options =
+        localeCodes
+            ?.map((code) => ({
+                label: code.name,
+                value: code.code
+            }))
+            ?.filter((option) => option.label?.toLowerCase().startsWith(search?.toLowerCase())) ??
+        [];
 </script>
 
 <div class="u-flex u-main-space-between">

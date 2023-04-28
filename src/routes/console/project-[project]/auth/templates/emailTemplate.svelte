@@ -64,15 +64,18 @@
             label="Sender Email"
             placeholder="Enter sender email" />
         <InputEmail id="replyTo" label="Reply to" placeholder="DoNotReply" />
-
-        <li>
-            <p class="text">
-                Click to copy the variables you can use in the fields below. For more information,
-                <button class="link" on:click={() => (openVariablesDescription = true)}>
-                    click here
-                </button>.
-            </p>
-        </li>
+        {#if $$slots.default}
+            <li>
+                <p class="text">
+                    Click to copy the variables you can use in the fields below. For more
+                    information,
+                    <a class="link" href="#">click here</a>.
+                </p>
+                <div class="common-section u-flex u-gap-24">
+                    <slot />
+                </div>
+            </li>
+        {/if}
         <InputText
             bind:value={$emailTemplate.subject}
             id="subject"

@@ -63,6 +63,7 @@
     async function openEmail(type: string) {
         emailOpen = type;
         $emailTemplate = await loadEmailTemplate(projectId, type, 'en-us');
+
         $baseEmailTemplate = { ...$emailTemplate };
     }
     async function openSms(type: string) {

@@ -1,6 +1,13 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
-    import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputText,
+        InputSwitch,
+        InputChoice
+    } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { project } from '../../store';
     import { onMount } from 'svelte/internal';
@@ -76,11 +83,14 @@
             </p>
             <svelte:fragment slot="aside">
                 <FormList>
-                    <InputSwitch id="enabled" bind:value={enabled} label="Custom SMTP Server" />
-                    <p class="text">
+                    <InputChoice
+                        type="switchbox"
+                        id="enabled"
+                        bind:value={enabled}
+                        label="Custom SMTP Server">
                         Enabling this option allows customizing email templates and prevents emails
                         from being labeled as spam.
-                    </p>
+                    </InputChoice>
 
                     {#if enabled}
                         <InputText
@@ -114,6 +124,10 @@
                             bind:value={password}
                             required
                             placeholder="Enter password" />
+
+                        <InputChoice id="tls" label="TLS Secure Protocol">
+                            Enable if TLS is supported on your SMTP server.
+                        </InputChoice>
                     {/if}
                 </FormList>
             </svelte:fragment>
