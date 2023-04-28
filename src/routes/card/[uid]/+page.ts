@@ -1,7 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import { getCardImgUrls } from '../helpers.js';
 
-export const prerender = true;
 export const ssr = true;
 
 export async function load({ params }) {
