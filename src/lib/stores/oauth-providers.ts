@@ -1,14 +1,15 @@
-import { writable } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
 import type { SvelteComponent } from 'svelte';
+import { writable } from 'svelte/store';
 import Apple from '../../routes/console/project-[project]/auth/appleOAuth.svelte';
-import Microsoft from '../../routes/console/project-[project]/auth/microsoftOAuth.svelte';
-import Okta from '../../routes/console/project-[project]/auth/oktaOAuth.svelte';
 import Auth0 from '../../routes/console/project-[project]/auth/auth0OAuth.svelte';
 import Authentik from '../../routes/console/project-[project]/auth/authentikOAuth.svelte';
 import GitLab from '../../routes/console/project-[project]/auth/gitlabOAuth.svelte';
 import Google from '../../routes/console/project-[project]/auth/googleOAuth.svelte';
 import Main from '../../routes/console/project-[project]/auth/mainOAuth.svelte';
+import Microsoft from '../../routes/console/project-[project]/auth/microsoftOAuth.svelte';
+import Oidc from '../../routes/console/project-[project]/auth/oidcOAuth.svelte';
+import Okta from '../../routes/console/project-[project]/auth/oktaOAuth.svelte';
 
 export type Provider = Models.Provider & {
     icon: string;
@@ -93,6 +94,10 @@ const setProviders = (project: Models.Project): Provider[] => {
                     break;
                 case 'notion':
                     docs = 'https://developers.notion.com/docs';
+                    break;
+                case 'oidc':
+                    docs = 'https://openid.net/connect/faq/';
+                    component = Oidc;
                     break;
                 case 'okta':
                     docs = 'https://developer.okta.com';
