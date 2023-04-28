@@ -21,6 +21,7 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { sdkForConsole } from '$lib/stores/sdk';
     import { slide } from 'svelte/transition';
+    import { isCloud } from '$lib/system';
 
     let showFeedback = false;
     let showDropdown = false;
@@ -212,15 +213,17 @@
                                 </li>
                             </ul>
                         </section>
-                        <section class="drop-section">
-                            <a
-                                class="claim"
-                                title="Gradient Border"
-                                href="/card"
-                                data-sveltekit-reload>
-                                Claim your Cloud card
-                            </a>
-                        </section>
+                        {#if isCloud}
+                            <section class="drop-section">
+                                <a
+                                    class="claim"
+                                    title="Gradient Border"
+                                    href="/card"
+                                    data-sveltekit-reload>
+                                    Claim your Cloud card
+                                </a>
+                            </section>
+                        {/if}
                     </div>
                 {/if}
             </div>

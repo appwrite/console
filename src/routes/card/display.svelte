@@ -8,6 +8,7 @@
     import { Modal } from '$lib/components';
     import Code from '$lib/components/code.svelte';
     import Button from '$lib/elements/forms/button.svelte';
+    import { browser } from '$app/environment';
 
     export let userId: string;
     export let variant: 'owner' | 'external';
@@ -29,7 +30,8 @@
     const { frontImg, ogImg } = getCardImgUrls(userId);
 
     $: title = variant === 'owner' ? 'Welcome to the cloud' : 'Join the Appwrite Cloud';
-    $: shareableLink = `${window.location.origin}/card/${userId}`;
+    $: shareableLink =
+        typeof window !== 'undefined' ? `${window.location.origin}/card/${userId}` : '';
     $: embedCode = [
         `<a href="${shareableLink}">`,
         `\t<img src="${frontImg}" alt="Appwrite Cloud Card" />`,
@@ -71,7 +73,6 @@
     <meta name="description" content={seo.description} />
 
     <!-- Facebook Meta Tags -->
-    <meta property="og:url" content={window.location.href} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={seo.title} />
     <meta property="og:description" content={seo.description} />
@@ -178,7 +179,9 @@
                     fallDistance="50px" />
             </div>
         {/if}
-        <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} {userId} />
+        {#if browser}
+            <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} {userId} />
+        {/if}
     </div>
     {#if cardActive}
         <div
