@@ -32,7 +32,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
             '/auth/magic-url',
             '/auth/oauth2/success',
             '/auth/oauth2/failure',
-            '/cloud-beta-card'
+            '/card'
         ];
 
         if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {

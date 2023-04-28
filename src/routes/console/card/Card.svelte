@@ -19,7 +19,6 @@
     import { windowFocusStore } from '$lib/stores/windowFocus';
     import { VARS } from '$lib/system';
 
-    import { onMount } from 'svelte';
     import { spring } from 'svelte/motion';
 
     let cardEl: HTMLDivElement | undefined;
@@ -236,11 +235,11 @@
 		--center: ${$centerProximity};
 	`;
 
-    // const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?userId=${userId}`;
-    const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?mock=employee`;
+    const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?userId=${userId}`;
+    // const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?mock=employee`;
     // const frontImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud?mock=normal`;
-    // const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?userId=${userId}`;
-    const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?mock=golden`;
+    const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?userId=${userId}`;
+    // const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?mock=golden`;
     // const backImg = `${VARS.APPWRITE_ENDPOINT}/cards/cloud-back?mock=normal`;
 </script>
 
