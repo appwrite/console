@@ -144,7 +144,9 @@
         class="grid-1-1-col-2 u-flex u-main-center u-cross-center"
         class:is-cloud={isCloud}
         style:--url={`url(${AppwriteCloudBg})`}>
-        <div class="container u-flex u-flex-vertical u-main-center u-cross-center full-height">
+        <div
+            class="container u-flex u-flex-vertical u-cross-center full-height"
+            class:cloud-contents={isCloud}>
             {#if isCloud}
                 <a class="mobile-logo is-only-mobile" href={user ? '/console' : '/'}>
                     <img
@@ -154,6 +156,10 @@
                         class="u-block"
                         alt="Appwrite" />
                 </a>
+
+                <div class="is-only-mobile theme-dark">
+                    <div class="mobile-beta">Public <span>beta</span></div>
+                </div>
             {/if}
 
             <div class="u-max-width-500 u-width-full-line">
@@ -166,12 +172,6 @@
                     <slot name="links" />
                 </ul>
             </div>
-
-            {#if isCloud}
-                <div class="is-only-mobile u-margin-block-start-auto theme-dark">
-                    <div class="mobile-beta">Public <span>beta</span></div>
-                </div>
-            {/if}
         </div>
     </section>
 </main>
@@ -274,8 +274,8 @@
     }
 
     .mobile-logo {
-        margin-block-start: 6.25rem;
-        margin-block-end: 3rem;
+        margin-block-start: 5rem;
+        margin-block-end: 0.5rem;
     }
 
     .mobile-beta {
@@ -288,9 +288,17 @@
         }
     }
 
+    .cloud-contents {
+        justify-content: center;
+    }
+
     @media (max-width: 767px) {
         .main-cloud {
             background-color: hsl(var(--color-neutral-500));
+        }
+
+        .cloud-contents {
+            justify-content: initial;
         }
 
         .is-cloud {

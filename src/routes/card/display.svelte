@@ -129,6 +129,12 @@
                         Create your Cloud account and unlock your exclusive card!
                     {/if}
                 </p>
+                {#if variant === 'external'}
+                    <a
+                        href="/card"
+                        class="button u-width-full-line u-main-center u-margin-block-start-16"
+                        >Claim your card</a>
+                {/if}
             </div>
         </div>
         <img class="card-preview" src={frontImg} alt="The front of the card" />
@@ -160,8 +166,6 @@
         <div class="card-footer">
             {#if variant === 'owner'}
                 <a href="/console" class="button">Go to console</a>
-            {:else}
-                <a href="/card" class="button">Claim your card</a>
             {/if}
         </div>
     </div>
@@ -218,7 +222,6 @@
 <Modal bind:show={showEmbedCode}>
     <svelte:fragment slot="header">Get Embed Code</svelte:fragment>
     <div class="u-overflow-hidden">
-        HTML Code
         <Code language="html" code={embedCode} noMargin />
     </div>
     <svelte:fragment slot="footer">
@@ -232,6 +235,13 @@
         --beta-bg: hsl(var(--color-neutral-120));
         --beta-fg: hsl(var(--color-neutral-0));
         --sep-clr: hsl(var(--color-neutral-150));
+    }
+
+    :global(.main-content) {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        flex-grow: 1;
     }
 
     .wrapper {
@@ -250,8 +260,6 @@
         padding-block: 4rem;
         gap: max(4rem, 10vw);
         overflow: hidden;
-
-        min-height: 100vh;
     }
 
     .card {
@@ -392,7 +400,7 @@
         gap: 0.5rem;
 
         position: absolute;
-        top: 80%;
+        top: 75%;
         left: 50%;
         translate: -50% -50%;
 
