@@ -172,4 +172,8 @@
             background: var(--separator-color);
         }
     }
+
+    [type='checkbox']:where(:checked)::before {
+        content: '\ea38';
+    }
 </style>
