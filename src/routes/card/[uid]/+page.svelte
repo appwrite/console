@@ -38,7 +38,17 @@
         `</a>`
     ].join('\n');
     $: twitterText = encodeURIComponent(
-        [`Check out my Appwrite Cloud card at ${shareableLink}!`].join('\n')
+        [
+            `Guess what I just received? 💳 My personalized Cloud card from @appwrite! 🚀`,
+            ``,
+            `Appwrite Cloud just announced their Public Beta!`,
+            ``,
+            `🌥️ Sign up now and claim your own card at ${shareableLink}`,
+            ``,
+            `PS: Limited edition cloud hoodies up for grabs 🤩`,
+            ``,
+            `#AppwriteCloud`
+        ].join('\n')
     );
 
     function copyShareableLink() {
