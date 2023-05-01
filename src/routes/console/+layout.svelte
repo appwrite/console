@@ -15,6 +15,7 @@
     import { loading } from '../store';
     import Create from './createOrganization.svelte';
     import { isCloud } from '$lib/system';
+    export let data;
 
     onMount(() => {
         loading.set(false);
@@ -22,9 +23,9 @@
         // Check if user already viewed cloud card
         if (isCloud) {
             const viewed = localStorage.getItem('cloud-card-viewed');
-            console.log('viewed', viewed);
-            if (!viewed) {
-                localStorage.setItem('cloud-card-viewed', 'true');
+
+            if (viewed !== data.account.$id) {
+                localStorage.setItem('cloud-card-viewed', data.account.$id);
                 goto('/card');
             }
         }
