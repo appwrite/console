@@ -12,15 +12,11 @@
     import { windowFocusStore } from '$lib/stores/windowFocus';
 
     import { spring } from 'svelte/motion';
-    import { getCardImgUrls } from './helpers';
-    import { VARS } from '$lib/system';
-    import { page } from '$app/stores';
 
     let cardEl: HTMLDivElement | undefined;
     export let active = false;
     export let isFlipped = false;
-    export let userId: string;
-    export let frontImgBase64: string | undefined = undefined;
+    export let base64: { front: string; back: string };
 
     let interacting = false;
 
@@ -230,9 +226,6 @@
 		--angle: ${angle}deg;
 		--center: ${$centerProximity};
 	`;
-
-    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
-    const { frontImg, backImg } = getCardImgUrls(userId, endpoint);
 </script>
 
 <svelte:window on:keydown={windowKeyDown} />
@@ -251,7 +244,7 @@
             }}>
             <div class="card__back">
                 <img
-                    src={backImg}
+                    src={base64.back}
                     alt="The back of the Card"
                     loading="lazy"
                     width="450"
@@ -263,7 +256,7 @@
                 <div class="card__thick" style:--i={i + 1} />
             {/each}
             <div class="card__front" style:--thickness={THICKNESS}>
-                <img src={frontImgBase64 ?? frontImg} alt="The front of the card" />
+                <img src={base64.front} alt="The front of the card" />
                 <div class="card__glare" />
             </div>
         </button>

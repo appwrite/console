@@ -5,4 +5,6 @@ export async function load({ parent }) {
     if (!isCloud) throw redirect(303, '/');
     const { account } = await parent();
     if (!account) throw redirect(303, '/login');
+
+    throw redirect(303, `/card/${account.$id}`);
 }
