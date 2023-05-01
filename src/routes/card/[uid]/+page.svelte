@@ -137,7 +137,8 @@
                 <a
                     class="button is-text"
                     href="https://twitter.com/intent/tweet?text={twitterText}"
-                    target="_blank">
+                    target="_blank"
+                    rel="noreferrer">
                     <span class="icon-twitter" aria-hidden="true" />
                     <span class="text">Tweet it</span>
                 </a>
