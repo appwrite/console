@@ -4,4 +4,4 @@
     export let data;
 </script>
 
-<Display userId={data.userId} variant="external" />
+<Display userId={data.userId} frontImgBase64={data.frontBase64} variant="external" />

@@ -5,6 +5,7 @@
     import Cloud1 from '$lib/images/login/cloud-1.svg';
     import Cloud2 from '$lib/images/login/cloud-2.svg';
     import AppwriteCloudBg from '$lib/images/login/cloud-bg.svg';
+    import AppwriteCloudBgMobile from '$lib/images/login/cloud-bg-mobile.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import { app } from '$lib/stores/app';
@@ -143,7 +144,8 @@
     <section
         class="grid-1-1-col-2 u-flex u-main-center u-cross-center"
         class:is-cloud={isCloud}
-        style:--url={`url(${AppwriteCloudBg})`}>
+        style:--url={`url(${AppwriteCloudBg})`}
+        style:--url-mobile={`url(${AppwriteCloudBgMobile})`}>
         <div
             class="container u-flex u-flex-vertical u-cross-center full-height"
             class:cloud-contents={isCloud}>
@@ -163,8 +165,14 @@
             {/if}
 
             <div class="u-max-width-500 u-width-full-line">
-                <h1 class="heading-level-3 u-margin-block-start-auto"><slot name="title" /></h1>
-                <div class="u-margin-block-start-40">
+                <h1 class="heading-level-2 u-margin-block-start-auto">
+                    {#if isCloud}
+                        <img src={Cloud1} alt="" class="cloud-1" />
+                        <img src={Cloud2} alt="" class="cloud-2" />
+                    {/if}
+                    <slot name="title" />
+                </h1>
+                <div class="u-margin-block-start-24">
                     <slot />
                 </div>
 
@@ -274,13 +282,13 @@
     }
 
     .mobile-logo {
-        margin-block-start: 5rem;
+        margin-block-start: 3rem;
         margin-block-end: 0.5rem;
     }
 
     .mobile-beta {
         font-size: 0.75rem;
-        margin-block-end: 2rem;
+        margin-block-end: 6rem;
 
         > span {
             background: hsl(var(--color-neutral-120));
@@ -292,7 +300,32 @@
         justify-content: center;
     }
 
+    .heading-level-2 {
+        .cloud-1,
+        .cloud-2 {
+            display: none;
+        }
+    }
+
     @media (max-width: 767px) {
+        .heading-level-2 {
+            position: relative;
+            .cloud-1,
+            .cloud-2 {
+                display: block;
+                position: absolute;
+            }
+
+            .cloud-1 {
+                left: 32px;
+                top: -40px;
+            }
+
+            .cloud-2 {
+                right: 0;
+                top: 10px;
+            }
+        }
         .main-cloud {
             background-color: hsl(var(--color-neutral-500));
         }
@@ -302,14 +335,27 @@
         }
 
         .is-cloud {
-            background: var(--url);
-            background-position: center -150px;
+            background: var(--url-mobile);
+            background-position: 0px calc(30px - 5vw);
+            background-size: 100vw;
 
             background-repeat: no-repeat;
         }
 
         .cloud-section {
             display: none;
+        }
+    }
+
+    @media (min-width: 530px) and (max-width: 767px) {
+        .heading-level-2 {
+            .cloud-1 {
+                display: none;
+            }
+        }
+
+        .is-cloud {
+            background-position: 0px calc(30px - 15vw);
         }
     }
 </style>
