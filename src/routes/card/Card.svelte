@@ -125,9 +125,9 @@
         if (!cardEl) return;
         const rect = cardEl.getBoundingClientRect(); // get element's size/position
         let delay = 100;
-        let scaleW = (window.innerWidth / rect.width) * 0.9;
-        let scaleH = (window.innerHeight / rect.height) * 0.9;
-        let scaleF = 1.75;
+        let scaleW = (window.innerWidth / rect.width) * 0.65;
+        let scaleH = (window.innerHeight / rect.height) * 0.65;
+        let scaleF = 1.5;
         setCenter();
 
         delay = 1000;
@@ -244,6 +244,14 @@
             }}>
             <div class="card__back">
                 <img
+                    class="invisible"
+                    src={base64.back}
+                    alt="The back of the Card"
+                    loading="lazy"
+                    width="450"
+                    height="274" />
+                <img
+                    class="abs"
                     src={base64.back}
                     alt="The back of the Card"
                     loading="lazy"
@@ -397,7 +405,10 @@
         &::before {
             --resolved-angle: calc(var(--angle) + 65deg);
         }
+    }
 
+    .card__front,
+    .card__back {
         .abs {
             display: block;
             position: absolute;
@@ -406,7 +417,6 @@
             translate: -50% -50%;
             width: 200%;
             scale: calc(100 / 200);
-            // scale: 0.1;
             max-inline-size: initial;
             max-block-size: initial;
         }
