@@ -20,12 +20,14 @@
     $: if (period) {
         showPeriod = false;
     }
+
+    const requestsTotal = $usage?.requestsTotal ? total($usage?.requestsTotal) : 0;
 </script>
 
 <div class="u-flex u-gap-16 u-main-space-between">
     <div>
         <div class="heading-level-4">
-            {format(total($usage?.requestsTotal))}
+            {format(requestsTotal)}
         </div>
         <div>Requests</div>
     </div>
@@ -41,7 +43,7 @@
         </svelte:fragment>
     </DropList>
 </div>
-{#if total($usage?.requestsTotal) !== 0}
+{#if requestsTotal !== 0 && requests?.length}
     <div style="height: 12rem;">
         <LineChart
             options={{
@@ -54,7 +56,7 @@
             series={[
                 {
                     name: 'Requests',
-                    data: [...requests.map((e) => [e.date, e.value])]
+                    data: [...(requests?.map((e) => [e.date, e.value]) ?? [])]
                 }
             ]} />
     </div>

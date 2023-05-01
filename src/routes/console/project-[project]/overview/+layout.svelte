@@ -5,12 +5,12 @@
 
     // TODO: metric type is wrong
     export function last(set: Array<unknown>): Models.Metric | null {
-        return (set as Models.Metric[]).slice(-1)[0] ?? null;
+        return (set as Models.Metric[])?.slice(-1)[0] ?? null;
     }
 
     // TODO: metric type is wrong
     export function total(set: Array<unknown>): number {
-        return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
+        return (set as Models.Metric[])?.reduce((prev, curr) => prev + curr.value, 0);
     }
 
     export function format(number: number): string {
