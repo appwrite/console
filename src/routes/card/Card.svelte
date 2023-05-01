@@ -256,7 +256,8 @@
                 <div class="card__thick" style:--i={i + 1} />
             {/each}
             <div class="card__front" style:--thickness={THICKNESS}>
-                <img src={base64.front} alt="The front of the card" />
+                <img class="invisible" src={base64.front} alt="" />
+                <img class="abs" src={base64.front} alt="The front of the card" />
                 <div class="card__glare" />
             </div>
         </button>
@@ -264,6 +265,9 @@
 </div>
 
 <style lang="scss">
+    .invisible {
+        opacity: 0;
+    }
     @media (prefers-reduced-motion: reduce) {
         .cb-card,
         .cb-card * {
@@ -330,10 +334,10 @@
     }
 
     .card__rotator {
-        transform: rotateY(var(--rx)) rotateX(var(--ry)) rotateZ(var(--rz));
-        transform-style: preserve-3d;
         -webkit-transform: rotateY(var(--rx)) rotateX(var(--ry)) rotateZ(var(--rz));
         -webkit-transform-style: preserve-3d;
+        transform: rotateY(var(--rx)) rotateX(var(--ry)) rotateZ(var(--rz));
+        transform-style: preserve-3d;
         box-shadow: 0px 10px 20px -5px var(--shadow-clr);
         border-radius: var(--radius);
         outline: none;
@@ -392,6 +396,19 @@
 
         &::before {
             --resolved-angle: calc(var(--angle) + 65deg);
+        }
+
+        .abs {
+            display: block;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            translate: -50% -50%;
+            width: 200%;
+            scale: calc(100 / 200);
+            // scale: 0.1;
+            max-inline-size: initial;
+            max-block-size: initial;
         }
     }
 

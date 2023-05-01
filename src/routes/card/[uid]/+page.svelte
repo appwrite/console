@@ -83,7 +83,7 @@
 
 <div class="wrapper">
     <div class="card">
-        <h3 class="heading-level-3 u-flex u-cross-center u-gap-8">
+        <h3 class="heading-level-3 u-flex u-cross-center u-gap-8 no-text-select">
             {title}
             <button class="confetti-btn" on:click={() => triggerConfettiKey++}>
                 🎉
@@ -125,7 +125,7 @@
                 </p>
                 {#if variant === 'external'}
                     <a
-                        href="/card"
+                        href="/register"
                         class="button u-width-full-line u-main-center u-margin-block-start-16 external-btn-top"
                         >Claim your card</a>
                 {/if}
@@ -168,7 +168,7 @@
     </div>
     <div class="cbc-wrapper">
         {#if !cardActive}
-            <div transition:fade>
+            <div class="cbc-confetti" transition:fade>
                 <Confetti
                     x={[-1.75, 1.85]}
                     y={[-1.875, 1]}
@@ -356,6 +356,17 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 500px;
+        position: relative;
+    }
+
+    .cbc-confetti {
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        translate: -50% -50%;
     }
 
     @keyframes shake {
@@ -426,6 +437,10 @@
 
     .external-btn-top {
         display: none;
+    }
+
+    .no-text-select {
+        user-select: none;
     }
 
     @media (max-width: 1024px) {
