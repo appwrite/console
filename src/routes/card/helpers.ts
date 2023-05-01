@@ -1,5 +1,3 @@
-import { VARS } from '$lib/system';
-
 export function getCardImgUrls(userId: string, endpoint: string) {
     const resolved = endpoint;
 

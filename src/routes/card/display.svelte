@@ -14,6 +14,7 @@
 
     export let userId: string;
     export let variant: 'owner' | 'external';
+    export let frontImgBase64: string | undefined = undefined;
 
     let triggerConfettiKey = 1;
     const confettiColors = [
@@ -37,7 +38,7 @@
         typeof window !== 'undefined' ? `${window.location.origin}/card/${userId}` : '';
     $: embedCode = [
         `<a href="${shareableLink}">`,
-        `\t<img src="${frontImg}" alt="Appwrite Cloud Card" />`,
+        `\t<img width="350" src="${frontImg}" alt="Appwrite Cloud Card" />`,
         `</a>`
     ].join('\n');
     $: twitterText = encodeURIComponent(
@@ -47,8 +48,7 @@
     function copyShareableLink() {
         copy(shareableLink);
         addNotification({
-            title: 'Link copied',
-            message: 'Share your card with everyone you know!',
+            message: 'The link has been copied',
             type: 'success'
         });
     }
@@ -56,8 +56,7 @@
     function copyEmbedCode() {
         copy(embedCode);
         addNotification({
-            title: 'Embed code copied',
-            message: 'Paste this code to embed your card!',
+            message: 'Embed code has been copied',
             type: 'success'
         });
         showEmbedCode = false;
@@ -132,12 +131,12 @@
                 {#if variant === 'external'}
                     <a
                         href="/card"
-                        class="button u-width-full-line u-main-center u-margin-block-start-16"
+                        class="button u-width-full-line u-main-center u-margin-block-start-16 external-btn-top"
                         >Claim your card</a>
                 {/if}
             </div>
         </div>
-        <img class="card-preview" src={frontImg} alt="The front of the card" />
+        <img class="card-preview" src={frontImgBase64 ?? frontImg} alt="The front of the card" />
         <ul class="buttons-list u-margin-block-start-32">
             <li class="buttons-list-item">
                 <a
@@ -149,7 +148,7 @@
                 </a>
             </li>
             {#if variant === 'owner'}
-                <li class="buttons-list-item">
+                <li class="buttons-list-item embed-btn">
                     <button class="button is-text" on:click={() => (showEmbedCode = true)}>
                         <span class="icon-code" aria-hidden="true" />
                         <span class="text">Get embed code</span>
@@ -166,6 +165,8 @@
         <div class="card-footer">
             {#if variant === 'owner'}
                 <a href="/console" class="button">Go to console</a>
+            {:else}
+                <a href="/card" class="button external-btn-bottom">Claim your card</a>
             {/if}
         </div>
     </div>
@@ -184,7 +185,11 @@
             </div>
         {/if}
         {#if browser}
-            <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} {userId} />
+            <Card
+                bind:active={cardActive}
+                bind:isFlipped={cardIsFlipped}
+                {frontImgBase64}
+                {userId} />
         {/if}
     </div>
     {#if cardActive}
@@ -400,9 +405,9 @@
         gap: 0.5rem;
 
         position: absolute;
-        top: 75%;
+        bottom: 5vh;
         left: 50%;
-        translate: -50% -50%;
+        translate: -50%;
 
         transition: opacity 250ms ease;
 
@@ -427,7 +432,24 @@
         opacity: 0.5;
     }
 
+    .external-btn-top {
+        display: none;
+    }
+
     @media (max-width: 1024px) {
+        .external-btn-top {
+            display: flex;
+        }
+
+        .external-btn-bottom {
+            display: none !important;
+        }
+
+        .embed-btn {
+            order: 2;
+            border: none !important;
+        }
+
         .wrapper {
             display: block;
             padding-block: 2rem;
@@ -491,7 +513,7 @@
                 flex-wrap: wrap;
                 justify-content: center;
 
-                .buttons-list-item {
+                .buttons-list-item:last-child {
                     border: none !important;
                 }
             }
@@ -507,10 +529,6 @@
                     width: 100%;
                 }
             }
-        }
-
-        .confetti-btn {
-            display: none;
         }
 
         .cbc-wrapper {

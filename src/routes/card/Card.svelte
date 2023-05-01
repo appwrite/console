@@ -20,6 +20,7 @@
     export let active = false;
     export let isFlipped = false;
     export let userId: string;
+    export let frontImgBase64: string | undefined = undefined;
 
     let interacting = false;
 
@@ -262,7 +263,7 @@
                 <div class="card__thick" style:--i={i + 1} />
             {/each}
             <div class="card__front" style:--thickness={THICKNESS}>
-                <img src={frontImg} alt="The front of the card" />
+                <img src={frontImgBase64 ?? frontImg} alt="The front of the card" />
                 <div class="card__glare" />
             </div>
         </button>

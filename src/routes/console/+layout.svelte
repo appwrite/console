@@ -22,6 +22,7 @@
         // Check if user already viewed cloud card
         if (isCloud) {
             const viewed = localStorage.getItem('cloud-card-viewed');
+            console.log('viewed', viewed);
             if (!viewed) {
                 localStorage.setItem('cloud-card-viewed', 'true');
                 goto('/card');
