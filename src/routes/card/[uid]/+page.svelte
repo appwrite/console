@@ -118,7 +118,7 @@
                 </div>
                 <p class="u-margin-block-start-8">
                     {#if variant === 'owner'}
-                        Share your Cloud card and you may win an exclusive Cloud hoodie!
+                        Share your Cloud card for a chance to win an exclusive Cloud hoodie!
                     {:else}
                         Create your Cloud account and unlock your exclusive card!
                     {/if}
