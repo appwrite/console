@@ -1,7 +1,8 @@
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
-import { ENV, MODE, VARS } from '$lib/system';
+import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import googleAnalytics from '@analytics/google-analytics';
+import googleTagManager from '@analytics/google-tag-manager';
 import { AppwriteException } from '@aw-labs/appwrite-console';
 import Analytics from 'analytics';
 import { get } from 'svelte/store';
@@ -11,7 +12,14 @@ const analytics = Analytics({
     plugins: [
         googleAnalytics({
             measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-        })
+        }),
+        ...(isCloud
+            ? [
+                  googleTagManager({
+                      containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
+                  })
+              ]
+            : [])
     ]
 });
 
