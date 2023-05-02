@@ -127,7 +127,7 @@
                     <a
                         href="/register"
                         class="button u-width-full-line u-main-center u-margin-block-start-16 external-btn-top"
-                        >Claim your card</a>
+                        data-sveltekit-reload>Claim your card</a>
                 {/if}
             </div>
         </div>
@@ -160,9 +160,10 @@
         </ul>
         <div class="card-footer">
             {#if variant === 'owner'}
-                <a href="/console" class="button">Go to console</a>
+                <a data-sveltekit-reload href="/console" class="button">Go to console</a>
             {:else}
-                <a href="/card" class="button external-btn-bottom">Claim your card</a>
+                <a data-sveltekit-reload href="/card" class="button external-btn-bottom"
+                    >Claim your card</a>
             {/if}
         </div>
     </div>

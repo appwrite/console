@@ -183,10 +183,6 @@
 </main>
 
 <style lang="scss">
-    :global(body) {
-        --main-header-height: 0px !important;
-    }
-
     @media (prefers-reduced-motion: reduce) {
         main * {
             animation: none !important;
