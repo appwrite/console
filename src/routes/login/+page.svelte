@@ -35,6 +35,15 @@
             trackError(error, Submit.AccountCreate);
         }
     }
+
+    function onGithubLogin() {
+        sdk.forConsole.account.createOAuth2Session(
+            'github',
+            window.location.origin,
+            window.location.origin,
+            ['read:user', 'user:email']
+        );
+    }
 </script>
 
 <svelte:head>
@@ -63,6 +72,13 @@
                     bind:value={pass} />
                 <FormItem>
                     <Button fullWidth submit>Sign in</Button>
+                </FormItem>
+                <span class="with-separators eyebrow-heading-3">or</span>
+                <FormItem>
+                    <Button github fullWidth on:click={onGithubLogin}>
+                        <span class="icon-github" aria-hidden="true" />
+                        <span class="text">Sign in with GitHub</span>
+                    </Button>
                 </FormItem>
             </FormList>
         </Form>

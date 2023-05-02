@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
+    import { beforeNavigate, goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
@@ -14,9 +14,21 @@
     import { onMount } from 'svelte';
     import { loading } from '../store';
     import Create from './createOrganization.svelte';
+    import { isCloud } from '$lib/system';
+    export let data;
 
     onMount(() => {
         loading.set(false);
+
+        // Check if user already viewed cloud card
+        if (isCloud) {
+            const viewed = localStorage.getItem('cloud-card-viewed');
+
+            if (viewed !== data.account.$id) {
+                localStorage.setItem('cloud-card-viewed', data.account.$id);
+                goto('/card');
+            }
+        }
 
         setInterval(() => {
             checkForFeedback(INTERVAL);
@@ -50,6 +62,7 @@
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
+        !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <Header slot="header" />
     <SideNavigation slot="side" />
