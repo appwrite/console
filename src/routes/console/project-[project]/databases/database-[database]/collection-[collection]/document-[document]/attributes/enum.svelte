@@ -8,12 +8,18 @@
     export let attribute: Models.AttributeEnum;
     export let optionalText: string | undefined = undefined;
 
-    $: options = attribute.elements.map((element) => {
-        return {
-            label: element,
-            value: element
-        };
-    });
+    $: options = [
+        ...attribute.elements.map((element) => {
+            return {
+                label: element,
+                value: element
+            };
+        }),
+        !attribute.required && {
+            label: 'NULL',
+            value: null
+        }
+    ].filter(Boolean);
 </script>
 
 <InputSelect

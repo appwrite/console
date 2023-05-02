@@ -70,13 +70,13 @@
                         {@const isAnonymous = !data.email && !data.phone && isUser}
                         <div class="user-profile">
                             {#if isAnonymous}
-                                <div class="avatar is-size-small ">
+                                <div class="avatar is-size-small">
                                     <span class="icon-anonymous" aria-hidden="true" />
                                 </div>
                             {:else if data.name}
                                 <AvatarInitials name={data.name} size={40} />
                             {:else}
-                                <div class="avatar is-size-small ">
+                                <div class="avatar is-size-small">
                                     <span class="icon-minus-sm" aria-hidden="true" />
                                 </div>
                             {/if}

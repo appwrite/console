@@ -119,7 +119,7 @@
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
                                         {storage.value}
-                                        <span class="body-text-2">{storage.unit}</span>
+                                        <span class="body-text-2 u-bold">{storage.unit}</span>
                                     </div>
                                     <div>Storage</div>
                                 </div>

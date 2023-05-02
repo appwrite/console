@@ -98,7 +98,7 @@
                                 <label class="u-flex u-cross-center u-gap-8" for={team.$id}>
                                     <AvatarInitials size={32} name={team.name} />
                                     <div class="u-line-height-1-5">
-                                        <div class="body-text-2">{team.name}</div>
+                                        <div class="body-text-2 u-bold">{team.name}</div>
                                         <div class="u-x-small">{team.$id}</div>
                                     </div>
                                 </label>
@@ -116,7 +116,7 @@
         <EmptySearch hidePages>
             <div class="common-section">
                 <div class="u-text-center common-section">
-                    <b class="body-text-2">Sorry we couldn't find "{search}"</b>
+                    <b class="body-text-2 u-bold">Sorry we couldn't find "{search}"</b>
                     <p>There are no teams that match your search.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
@@ -134,7 +134,7 @@
                         You have no teams. Create a team to see them here.
                     </p>
                     <p class="text u-line-height-1-5">
-                        Need a hand? Check out our <a
+                        Need a hand? Learn more in our <a
                             href="https://appwrite.io/docs/client/teams"
                             target="_blank"
                             rel="noopener noreferrer">
