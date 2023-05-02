@@ -15,9 +15,10 @@ const analytics = Analytics({
         }),
         ...(isCloud
             ? [
-                googleTagManager({
-                    containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
-                })]
+                  googleTagManager({
+                      containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
+                  })
+              ]
             : [])
     ]
 });
