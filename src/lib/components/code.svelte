@@ -100,7 +100,7 @@
     :not(pre) > code[class*='language-'],
     pre[class*='language-'] {
         background: hsl(var(--p-box-background-color));
-        padding-top: 4%;
+        padding-block-start: 4% ;
         margin: 0;
     }
     .prism-token {
