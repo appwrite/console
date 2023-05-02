@@ -146,9 +146,7 @@
         class:is-cloud={isCloud}
         style:--url={`url(${AppwriteCloudBg})`}
         style:--url-mobile={`url(${AppwriteCloudBgMobile})`}>
-        <div
-            class="container u-flex u-flex-vertical u-cross-center full-height"
-            class:cloud-contents={isCloud}>
+        <div class="container u-flex u-flex-vertical u-cross-center" class:cloud-contents={isCloud}>
             {#if isCloud}
                 <a class="mobile-logo is-only-mobile" href={user ? '/console' : '/'}>
                     <img
@@ -185,6 +183,10 @@
 </main>
 
 <style lang="scss">
+    :global(body) {
+        --main-header-height: 0px !important;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         main * {
             animation: none !important;
@@ -201,11 +203,6 @@
         100% {
             transform: translatey(0px);
         }
-    }
-
-    .full-height {
-        block-size: 100vh;
-        block-size: 100lvh;
     }
 
     .cloud-section {
@@ -282,7 +279,7 @@
     }
 
     .mobile-logo {
-        margin-block-start: 3rem;
+        margin-block-start: 1rem;
         margin-block-end: 0.5rem;
     }
 
@@ -344,6 +341,10 @@
 
         .cloud-section {
             display: none;
+        }
+
+        section:last-child {
+            padding-block-end: 32px;
         }
     }
 
