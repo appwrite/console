@@ -9,20 +9,17 @@ import { get } from 'svelte/store';
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: isCloud
-        ? [
-              googleAnalytics({
-                  measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-              }),
-              googleTagManager({
-                  containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
-              })
-          ]
-        : [
-              googleAnalytics({
-                  measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-              })
-          ]
+    plugins: [
+        googleAnalytics({
+            measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
+        }),
+        ...(isCloud
+            ? [
+                googleTagManager({
+                    containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
+                })]
+            : [])
+    ]
 });
 
 export function trackEvent(name: string, data: object = null): void {
