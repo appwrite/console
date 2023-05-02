@@ -16,11 +16,11 @@
     import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
 
-    import { slide } from 'svelte/transition';
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
-    import { goto } from '$app/navigation';
+    import { slide } from 'svelte/transition';
     import { isCloud } from '$lib/system';
 
     let showDropdown = false;

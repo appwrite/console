@@ -31,10 +31,11 @@
         z-index: 1000;
     }
 
-    @media (min-width: 768px) {
+    @media (max-width: 512px) {
         section {
-            top: calc(var(--main-header-height) + 24px);
-            right: 24px;
+            top: calc(var(--main-header-height) + 16px);
+            right: 16px;
+            left: 16px;
         }
     }
 </style>
