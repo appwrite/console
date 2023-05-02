@@ -83,7 +83,7 @@
 
 <div class="wrapper">
     <div class="card">
-        <h3 class="heading-level-3 u-flex u-cross-center u-gap-8 no-text-select">
+        <h3 class="heading-level-3 no-text-select">
             {title}
             <button class="confetti-btn" on:click={() => triggerConfettiKey++}>
                 🎉
@@ -390,7 +390,7 @@
     .confetti-btn {
         animation: shake 2000ms ease infinite;
         user-select: none;
-        display: grid;
+        display: inline-flex;
         place-items: center;
         position: relative;
 
