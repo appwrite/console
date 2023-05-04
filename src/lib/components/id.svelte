@@ -47,7 +47,7 @@
 </script>
 
 <div
-    class="interactive-text-output is-buttons-on-top"
+    class="interactive-text-output is-buttons-on-top u-text-center"
     style:min-inline-size="0"
     style:display="inline-flex">
     <span

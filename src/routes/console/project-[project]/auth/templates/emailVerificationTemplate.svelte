@@ -12,13 +12,18 @@
 
     let locale = 'en-us';
     let loading = false;
+    let timeout: NodeJS.Timeout;
 
     async function onLocaleChange() {
-        loading = true;
+        timeout = setTimeout(() => {
+            loading = true;
+        }, 1);
         try {
             const template = await loadEmailTemplate(projectId, 'verification', locale);
+            clearTimeout(timeout);
             emailTemplate.set(template);
         } catch (error) {
+            clearTimeout(timeout);
             console.log(error);
         } finally {
             loading = false;
@@ -26,7 +31,7 @@
     }
 </script>
 
-<div class="box common-section">
+<div class="box u-margin-block-start-16" style:--box-border-radius="var(--border-radius-small)">
     <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
     {#if loading}
         <div

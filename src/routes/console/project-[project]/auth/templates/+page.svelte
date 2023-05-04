@@ -61,7 +61,7 @@
     });
 
     async function openEmail(type: string) {
-        emailOpen = type;
+        type === emailOpen ? (emailOpen = null) : (emailOpen = type);
         $emailTemplate = await loadEmailTemplate(projectId, type, 'en-us');
 
         $baseEmailTemplate = { ...$emailTemplate };
@@ -76,6 +76,7 @@
 <Container>
     {#if !$project.smtpEnabled}
         <Alert
+            fullWidth
             dismissible
             type="info"
             buttons={[
@@ -95,7 +96,7 @@
     {/if}
 
     <CardGrid>
-        <Heading size="6" tag="h6">
+        <Heading size="7" tag="h2">
             <div class="u-flex u-gap-8">
                 Email Templates
                 <div class="tag eyebrow-heading-3">
@@ -118,6 +119,7 @@
                     bind:open={emailVerificationOpen}
                     on:click={(e) => {
                         e.preventDefault();
+                        e.stopImmediatePropagation();
                         openEmail('verification');
                     }}>
                     <svelte:fragment slot="title">Verification</svelte:fragment>
@@ -134,6 +136,7 @@
                         openEmail('magicSession');
                     }}>
                     <svelte:fragment slot="title">Magic URL</svelte:fragment>
+                    <p class="text">Send an email to users that sign in with a magic URL.</p>
                     <EmailMagicUrlTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
                 <CollapsibleItem
@@ -143,6 +146,7 @@
                         openEmail('recovery');
                     }}>
                     <svelte:fragment slot="title">Reset Password</svelte:fragment>
+                    <p class="text">Send a recovery email to users that forget their password.</p>
                     <EmailRecoveryTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
                 <CollapsibleItem
@@ -152,6 +156,7 @@
                         openEmail('invitation');
                     }}>
                     <svelte:fragment slot="title">Invite User</svelte:fragment>
+                    <p class="text">Send an invitation email to become a member of your project.</p>
                     <EmailInviteTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
             </Collapsible>
@@ -164,7 +169,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading size="6" tag="h6">
+        <Heading size="7" tag="h2">
             <div class="u-flex u-gap-8">
                 SMS Templates
                 <div class="tag eyebrow-heading-3">

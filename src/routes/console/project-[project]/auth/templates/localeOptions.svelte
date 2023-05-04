@@ -17,8 +17,8 @@
         [];
 </script>
 
-<div class="u-flex u-main-space-between">
-    <div>
+<div class="u-flex u-gap-16">
+    <div class="u-un-break-text">
         <span class="icon-translate" />
         <span class="text">Template language</span>
     </div>
@@ -31,6 +31,7 @@
         bind:value
         bind:search
         required
+        fullWidth
         stretch={false}
         showLabel={false}
         interactiveOutput

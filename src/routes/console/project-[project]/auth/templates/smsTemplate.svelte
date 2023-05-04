@@ -41,7 +41,7 @@
 </script>
 
 <Form onSubmit={saveSmsTemplate}>
-    <FormList>
+    <FormList gap={8}>
         <InputTextarea
             bind:value={$smsTemplate.message}
             id="message"

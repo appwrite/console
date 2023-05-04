@@ -20,6 +20,7 @@
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
+    export let fullWidth = false;
     export let autofocus = false;
     export let interactiveOutput = false;
     export let stretch = true;
@@ -98,7 +99,10 @@
     $: showClearBtn = (hasFocus && search) || value;
 </script>
 
-<li class="u-position-relative form-item" class:u-stretch={stretch}>
+<li
+    class="u-position-relative form-item"
+    class:u-width-full-line={fullWidth}
+    class:u-stretch={stretch}>
     <DropList
         bind:show={hasFocus}
         noStyle

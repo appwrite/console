@@ -14,7 +14,6 @@
     import { baseEmailTemplate, emailTemplate } from './strote';
     import { deepEqual } from '$lib/helpers/object';
 
-    let openVariablesDescription = false;
     let openResetModal = false;
 
     async function saveEmailTemplate() {
@@ -52,7 +51,7 @@
 </script>
 
 <Form onSubmit={saveEmailTemplate}>
-    <FormList>
+    <FormList gap={8}>
         <InputText
             id="senderName"
             label="Sender Name"
@@ -65,13 +64,14 @@
             placeholder="Enter sender email" />
         <InputEmail id="replyTo" label="Reply to" placeholder="DoNotReply" />
         {#if $$slots.default}
-            <li>
+            <li style="margin-block: 1rem;">
                 <p class="text">
-                    Click to copy the variables you can use in the fields below. For more
-                    information,
-                    <a class="link" href="#">click here</a>.
+                    Click to copy variables for the fields below. Learn more <a
+                        class="link"
+                        href="#">here</a
+                    >.
                 </p>
-                <div class="common-section u-flex u-gap-24">
+                <div class="u-margin-block-start-16 u-flex u-gap-8">
                     <slot />
                 </div>
             </li>
@@ -86,6 +86,7 @@
             id="message"
             label="Message"
             placeholder="Enter your message"
+            tooltip="Set up an SMTP server to edit the message body"
             readonly={!$project.smtpEnabled} />
         <div class="u-flex u-gap-32 u-main-end">
             <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
