@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { LabelCard } from '$lib/components';
+    import { RegionCard } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
@@ -45,36 +45,34 @@
         style="--p-grid-item-size:12em; --p-grid-item-size-small-screens:12rem; --grid-gap: 1rem;">
         {#each regions as region}
             <li>
-                <LabelCard
+                <RegionCard
                     name="region"
                     bind:group={$createProject.region}
                     value={region.name}
                     disabled={region.disabled}>
-                    <svelte:fragment slot="custom">
-                        <div
-                            class="u-flex u-flex-vertical u-gap-12 u-justify-main-center u-cross-center u-margin-inline-auto">
-                            {#if region.disabled}
-                                <img
-                                    src={getFlag(region.flag)}
-                                    alt={region.name}
-                                    width="40"
-                                    height="30" />
-                                {region.label}
-                                <Pill button>
-                                    <span class="icon-bell" aria-hidden="true" />
-                                    <span class="text">Notify me</span>
-                                </Pill>
-                            {:else}
-                                <img
-                                    src={getFlag(region.flag)}
-                                    alt={region.name}
-                                    width="40"
-                                    height="30" />
-                                {region.label}
-                            {/if}
-                        </div>
-                    </svelte:fragment>
-                </LabelCard>
+                    <div
+                        class="u-flex u-flex-vertical u-gap-12 u-justify-main-center u-cross-center u-margin-inline-auto">
+                        {#if region.disabled}
+                            <img
+                                src={getFlag(region.flag)}
+                                alt={region.name}
+                                width="40"
+                                height="30" />
+                            <p class:u-opacity-50={region.disabled}>{region.label}</p>
+                            <Pill button>
+                                <span class="icon-bell" aria-hidden="true" />
+                                <span class="text">Notify me</span>
+                            </Pill>
+                        {:else}
+                            <img
+                                src={getFlag(region.flag)}
+                                alt={region.name}
+                                width="40"
+                                height="30" />
+                            {region.label}
+                        {/if}
+                    </div>
+                </RegionCard>
             </li>
         {/each}
     </ul>

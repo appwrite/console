@@ -33,7 +33,15 @@
         {/if}
     </FormList>
 
-    <p class="text common-section">Plan</p>
+    <p class="body-text-1 u-bold common-section">Plan</p>
+    <p class="text">
+        For more details on our plans, visit our <a
+            class="link"
+            href="http://#"
+            target="_blank"
+            rel="noopener noreferrer">pricing page</a
+        >.
+    </p>
     <ul
         class="grid-box u-margin-block-start-16"
         style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
