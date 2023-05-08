@@ -39,7 +39,8 @@
                 $page.data.function.timeout || undefined,
                 $page.data.function.enabled,
                 selectedInstallation.$id,
-                `${repository.id}`
+                `${repository.id}`,
+                `${repository.owner.login}`
             );
 
             show = false;
