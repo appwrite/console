@@ -17,7 +17,7 @@
         [];
 </script>
 
-<div class="u-flex u-gap-16">
+<div class="box u-flex u-gap-16" style:--box-border-radius="var(--border-radius-small)">
     <div class="u-un-break-text">
         <span class="icon-translate" />
         <span class="text">Template language</span>

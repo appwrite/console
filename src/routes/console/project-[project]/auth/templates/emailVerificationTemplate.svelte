@@ -32,9 +32,7 @@
 </script>
 
 <div class="boxes-wrapper u-margin-block-start-16">
-    <div class="box" style:--box-border-radius="var(--border-radius-small)">
-        <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
-    </div>
+    <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
 
     <EmailTemplate bind:loading>
         <Id value={'{{name}}'}>{'{{name}}'}</Id>

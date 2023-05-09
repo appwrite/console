@@ -17,7 +17,7 @@
     }
 </script>
 
-<div class="box u-margin-block-start-16" style:--box-border-radius="var(--border-radius-small)">
+<div class="boxes-wrapper u-margin-block-start-16">
     <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
     <EmailTemplate />
 </div>

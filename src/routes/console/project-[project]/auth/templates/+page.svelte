@@ -76,7 +76,7 @@
 <Container>
     {#if !$project.smtpEnabled}
         <Alert
-            fullWidth
+            isStandalone
             dismissible
             type="info"
             buttons={[

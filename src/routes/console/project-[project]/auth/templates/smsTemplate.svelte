@@ -40,18 +40,22 @@
     $: isButtonDisabled = deepEqual($smsTemplate, $baseSmsTemplate);
 </script>
 
-<Form onSubmit={saveSmsTemplate}>
-    <FormList gap={8}>
-        <InputTextarea
-            bind:value={$smsTemplate.message}
-            id="message"
-            label="Message"
-            placeholder="Enter your message" />
-        <div class="u-flex u-gap-32 u-main-end">
+<div class="box">
+    <Form onSubmit={saveSmsTemplate}>
+        <FormList gap={8}>
+            <InputTextarea
+                bind:value={$smsTemplate.message}
+                id="message"
+                label="Message"
+                placeholder="Enter your message" />
+        </FormList>
+
+        <div class="u-sep-block-start u-margin-block-start-24" />
+
+        <div class="u-flex u-gap-32 u-main-end u-margin-block-start-24">
             <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
             <Button submit disabled={isButtonDisabled}>Update</Button>
         </div>
-    </FormList>
-</Form>
-
+    </Form>
+</div>
 <ResetSms bind:show={openResetModal} />

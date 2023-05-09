@@ -51,16 +51,16 @@
     $: isButtonDisabled = deepEqual($emailTemplate, $baseEmailTemplate);
 </script>
 
-{#if loading}
-    <div
-        class="u-width-full-100 u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32">
-        <div class="loader" />
-        <p class="text">Loading template...</p>
-    </div>
-{/if}
-<div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
-    <Form onSubmit={saveEmailTemplate}>
-        <div class="box">
+<div class="box">
+    {#if loading}
+        <div
+            class="u-width-full-100 u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32">
+            <div class="loader" />
+            <p class="text">Loading template...</p>
+        </div>
+    {/if}
+    <div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
+        <Form onSubmit={saveEmailTemplate}>
             <FormList gap={8}>
                 <InputText
                     id="senderName"
@@ -99,15 +99,13 @@
                     tooltip="Set up an SMTP server to edit the message body"
                     readonly={!$project.smtpEnabled} />
             </FormList>
-        </div>
-
-        <div class="box">
+            <div class="u-sep-block-start u-margin-block-start-24" />
             <div class="u-flex u-gap-32 u-main-end u-margin-block-start-24">
                 <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
                 <Button submit disabled={isButtonDisabled}>Update</Button>
             </div>
-        </div>
-    </Form>
+        </Form>
+    </div>
 </div>
 
 <ResetEmail bind:show={openResetModal} />
