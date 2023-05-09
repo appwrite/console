@@ -31,19 +31,13 @@
     }
 </script>
 
-<div class="box u-margin-block-start-16" style:--box-border-radius="var(--border-radius-small)">
-    <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
-    {#if loading}
-        <div
-            class="u-width-full-100 u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32">
-            <div class="loader" />
-            <p class="text">Loading template...</p>
-        </div>
-    {/if}
-    <div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
-        <EmailTemplate>
-            <Id value={'{{name}}'}>{'{{name}}'}</Id>
-            <Id value={'{{project}}'}>{'{{project}}'}</Id>
-        </EmailTemplate>
+<div class="boxes-wrapper u-margin-block-start-16">
+    <div class="box" style:--box-border-radius="var(--border-radius-small)">
+        <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
     </div>
+
+    <EmailTemplate bind:loading>
+        <Id value={'{{name}}'}>{'{{name}}'}</Id>
+        <Id value={'{{project}}'}>{'{{project}}'}</Id>
+    </EmailTemplate>
 </div>
