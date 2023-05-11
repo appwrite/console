@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputChoice, Button, InputText, InputFile, FormList } from '$lib/elements/forms';
+    import { InputChoice, Button, InputFile, FormList } from '$lib/elements/forms';
     import { Modal, Collapsible, CollapsibleItem, Tabs, Tab, Code } from '$lib/components';
     import { sdkForProject } from '$lib/stores/sdk';
     import { createEventDispatcher, onMount } from 'svelte';
@@ -19,9 +19,6 @@
         Manual
     }
     let mode: Mode = Mode.CLI;
-    let entrypoint: string = 'fromFunction()';
-    let buildCommand: string = 'fromFunction()';
-    let installCommand: string = 'fromFunction()';
     let active = false;
     let files: FileList;
     let lang = 'js';
@@ -89,14 +86,7 @@
 
     async function create() {
         try {
-            await sdkForProject.functions.createDeployment(
-                functionId,
-                entrypoint,
-                files[0],
-                active,
-                buildCommand,
-                installCommand
-            );
+            await sdkForProject.functions.createDeployment(functionId, files[0], active);
             await invalidate(Dependencies.FUNCTION);
             files = null;
             showCreate = false;
@@ -173,24 +163,6 @@
     {:else if mode === Mode.Manual}
         <FormList>
             <InputFile label="Gzipped code (tar.gz)" allowedFileExtensions={['gz']} bind:files />
-            <InputText
-                label="Entrypoint"
-                placeholder={`main.js`}
-                id="entrypoint"
-                bind:value={entrypoint}
-                required={true} />
-            <InputText
-                label="Install Command"
-                placeholder={`npm install`}
-                id="install-command"
-                bind:value={installCommand}
-                required={true} />
-            <InputText
-                label="Build Command"
-                placeholder={`npm run build`}
-                id="build-command"
-                bind:value={buildCommand}
-                required={true} />
             <InputChoice label="Activate Deployment after build" id="activate" bind:value={active}>
                 This deployment will be activated after the build is completed.</InputChoice>
         </FormList>
