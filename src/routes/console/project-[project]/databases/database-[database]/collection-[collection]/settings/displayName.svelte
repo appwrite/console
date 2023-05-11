@@ -66,13 +66,21 @@
 
         <svelte:fragment slot="aside">
             <div class="u-flex u-flex-vertical u-gap-4">
-                <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
-                    <InputText
-                        id="id"
-                        label="Document ID"
-                        showLabel={false}
-                        placeholder="Document ID"
-                        readonly />
+                <ul class="u-flex-vertical u-gap-8">
+                    <li class="u-flex u-gap-8">
+                        <InputText
+                            id="id"
+                            label="Document ID"
+                            showLabel={false}
+                            placeholder="Document ID"
+                            readonly
+                            fullWidth />
+                        <div class="form-item-part u-cross-child-end u-opacity-0">
+                            <Button text noMargin disabled>
+                                <span class="icon-x" aria-hidden="true" />
+                            </Button>
+                        </div>
+                    </li>
                     {#if names?.length}
                         {#each names as name, i}
                             <div class="u-flex u-gap-8">
