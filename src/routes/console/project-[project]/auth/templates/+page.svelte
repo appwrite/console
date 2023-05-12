@@ -63,11 +63,11 @@
     async function openEmail(type: string) {
         type === emailOpen ? (emailOpen = null) : (emailOpen = type);
         $emailTemplate = await loadEmailTemplate(projectId, type, 'en-us');
-
         $baseEmailTemplate = { ...$emailTemplate };
     }
+
     async function openSms(type: string) {
-        smsOpen = type;
+        type === smsOpen ? (smsOpen = null) : (smsOpen = type);
         $smsTemplate = await loadSmsTemplate(projectId, type, 'en-us');
         $baseSmsTemplate = { ...$smsTemplate };
     }
@@ -97,8 +97,8 @@
 
     <CardGrid>
         <Heading size="7" tag="h2">
-            <div class="u-flex u-gap-8">
-                Email Templates
+            <div class="u-flex u-gap-8 u-cross-center">
+                Email templates
                 <div class="tag eyebrow-heading-3">
                     <span class="text u-x-small">Beta</span>
                 </div>
@@ -108,7 +108,7 @@
             Use templates to send and process account management emails. <a
                 href="https://appwrite.io/docs"
                 class="link">
-                Learn more about Email templates.
+                Learn more about email templates.
             </a>
             <!-- TODO Docs link -->
         </p>
@@ -145,7 +145,7 @@
                         e.preventDefault();
                         openEmail('recovery');
                     }}>
-                    <svelte:fragment slot="title">Reset Password</svelte:fragment>
+                    <svelte:fragment slot="title">Reset password</svelte:fragment>
                     <p class="text">Send a recovery email to users that forget their password.</p>
                     <EmailRecoveryTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
@@ -155,7 +155,7 @@
                         e.preventDefault();
                         openEmail('invitation');
                     }}>
-                    <svelte:fragment slot="title">Invite User</svelte:fragment>
+                    <svelte:fragment slot="title">Invite user</svelte:fragment>
                     <p class="text">Send an invitation email to become a member of your project.</p>
                     <EmailInviteTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
@@ -163,15 +163,15 @@
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button href={base + '/console/project-' + $project.$id + '/settings/smtp'} secondary>
-                SMTP settings
+                Add SMTP server
             </Button>
         </svelte:fragment>
     </CardGrid>
 
     <CardGrid>
         <Heading size="7" tag="h2">
-            <div class="u-flex u-gap-8">
-                SMS Templates
+            <div class="u-flex u-gap-8 u-cross-center">
+                SMS templates
                 <div class="tag eyebrow-heading-3">
                     <span class="text u-x-small">Beta</span>
                 </div>
@@ -181,8 +181,8 @@
             Use templates to send and process account management mobile messages. <a
                 href="https://appwrite.io/docs"
                 class="link">
-                Learn more about SMS templates
-            </a>. <!-- TODO Docs link -->
+                Learn more about SMS templates</a
+            >. <!-- TODO Docs link -->
         </p>
 
         <svelte:fragment slot="aside">
@@ -206,6 +206,9 @@
                         openSms('login');
                     }}>
                     <svelte:fragment slot="title">Login</svelte:fragment>
+                    <p class="text">
+                        Send a one-time passcode to users' mobile phones to allow them to sign in.
+                    </p>
                     <SmsLoginTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
                 <CollapsibleItem
@@ -215,6 +218,7 @@
                         openSms('invitation');
                     }}>
                     <svelte:fragment slot="title">Invitation</svelte:fragment>
+                    <p class="text">Send an invitation SMS to become a member of your project.</p>
                     <SmsLoginTemplate localeCodes={data.localeCodes} />
                 </CollapsibleItem>
             </Collapsible>

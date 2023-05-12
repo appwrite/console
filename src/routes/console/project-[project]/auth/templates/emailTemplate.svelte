@@ -64,15 +64,15 @@
             <FormList gap={8}>
                 <InputText
                     id="senderName"
-                    label="Sender Name"
+                    label="Sender name"
                     bind:value={$emailTemplate.senderName}
                     placeholder={'{{project}}'} />
                 <InputEmail
                     bind:value={$emailTemplate.senderEmail}
                     id="senderEmail"
-                    label="Sender Email"
+                    label="Sender email"
                     placeholder="Enter sender email" />
-                <InputEmail id="replyTo" label="Reply to" placeholder="DoNotReply" />
+                <InputEmail id="replyTo" label="Reply to" placeholder="noreply@appwrite.io" />
                 {#if $$slots.default}
                     <li style="margin-block: 1rem;">
                         <p class="text">

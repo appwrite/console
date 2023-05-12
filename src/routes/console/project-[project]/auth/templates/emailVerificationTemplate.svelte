@@ -6,6 +6,7 @@
     import { emailTemplate } from './strote';
     import { page } from '$app/stores';
     import { Id } from '$lib/components';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let localeCodes: Models.LocaleCode[];
     const projectId = $page.params.project;
@@ -24,7 +25,10 @@
             emailTemplate.set(template);
         } catch (error) {
             clearTimeout(timeout);
-            console.log(error);
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
         } finally {
             loading = false;
         }

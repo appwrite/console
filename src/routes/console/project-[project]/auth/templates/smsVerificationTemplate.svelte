@@ -10,10 +10,23 @@
 
     const projectId = $page.params.project;
     let locale = 'en-us';
+    let loading = false;
+    let timeout: NodeJS.Timeout;
 
     async function onLocaleChange() {
-        let template = await loadSmsTemplate(projectId, 'verification', locale);
-        smsTemplate.set(template);
+        timeout = setTimeout(() => {
+            loading = true;
+        }, 1);
+        try {
+            const template = await loadSmsTemplate(projectId, 'verification', locale);
+            clearTimeout(timeout);
+            smsTemplate.set(template);
+        } catch (error) {
+            clearTimeout(timeout);
+            console.log(error);
+        } finally {
+            loading = false;
+        }
     }
 </script>
 

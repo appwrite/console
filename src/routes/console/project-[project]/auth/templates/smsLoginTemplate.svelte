@@ -5,15 +5,32 @@
     import { page } from '$app/stores';
     import { loadSmsTemplate } from './+page.svelte';
     import { smsTemplate } from './strote';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let localeCodes: Models.LocaleCode[];
 
     const projectId = $page.params.project;
     let locale = 'en-us';
+    let loading = false;
+    let timeout: NodeJS.Timeout;
 
     async function onLocaleChange() {
-        let template = await loadSmsTemplate(projectId, 'login', locale);
-        smsTemplate.set(template);
+        timeout = setTimeout(() => {
+            loading = true;
+        }, 1);
+        try {
+            const template = await loadSmsTemplate(projectId, 'login', locale);
+            clearTimeout(timeout);
+            smsTemplate.set(template);
+        } catch (error) {
+            clearTimeout(timeout);
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        } finally {
+            loading = false;
+        }
     }
 </script>
 

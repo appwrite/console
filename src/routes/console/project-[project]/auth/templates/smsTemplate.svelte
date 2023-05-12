@@ -52,7 +52,7 @@
 
         <div class="u-sep-block-start u-margin-block-start-24" />
 
-        <div class="u-flex u-gap-32 u-main-end u-margin-block-start-24">
+        <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
             <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
             <Button submit disabled={isButtonDisabled}>Update</Button>
         </div>
