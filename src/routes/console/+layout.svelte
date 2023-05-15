@@ -20,13 +20,13 @@
     onMount(() => {
         loading.set(false);
 
-        // Check if user already viewed cloud card
+        // Check if user already viewed cloud hackathon page
         if (isCloud) {
-            const viewed = localStorage.getItem('cloud-card-viewed');
+            const viewed = localStorage.getItem('cloud-hackathon-viewed');
 
             if (viewed !== data.account.$id) {
-                localStorage.setItem('cloud-card-viewed', data.account.$id);
-                goto('/card');
+                localStorage.setItem('cloud-hackathon-viewed', data.account.$id);
+                goto('/hackathon');
             }
         }
 

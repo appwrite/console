@@ -100,29 +100,12 @@
         </h3>
 
         <div class="content">
-            {#if variant === 'owner'}
-                <div class="hoodie-container">
-                    <img
-                        src="/images/hoodies-bg.png"
-                        alt="red background"
-                        aria-hidden="true"
-                        class="bg" />
-                    <img src="/images/hoodie-1.png" class="hoodie" alt="Cloud Beta hoodies" />
-                    <img src="/images/hoodie-2.png" class="hoodie" alt="Cloud Beta hoodies" />
-                </div>
-            {/if}
             <div>
-                <div class="u-flex u-cross-center u-gap-8">
-                    <h4 class="eyebrow-heading-1">Cloud is live in public</h4>
-                    <h4 class="eyebrow-heading-1 beta-tag">Beta</h4>
-                </div>
-                <p class="u-margin-block-start-8">
-                    {#if variant === 'owner'}
-                        Share your Cloud card for a chance to win an exclusive Cloud hoodie!
-                    {:else}
-                        Create your Cloud account and unlock your exclusive card!
-                    {/if}
-                </p>
+                {#if variant === 'owner'}
+                    <h4 class="eyebrow-heading-2">Share your card</h4>
+                {:else if variant === 'external'}
+                    <h4 class="eyebrow-heading-2">Share card</h4>
+                {/if}
                 {#if variant === 'external'}
                     <a
                         href="/register"
@@ -132,7 +115,7 @@
             </div>
         </div>
         <img class="card-preview" src={base64.front} alt="The front of the card" />
-        <ul class="buttons-list u-margin-block-start-32">
+        <ul class="buttons-list u-margin-block-start-16">
             <li class="buttons-list-item">
                 <a
                     class="button is-text"
@@ -268,72 +251,6 @@
             align-items: center;
             gap: 1.5rem;
             margin-block-start: 2.5rem;
-
-            .beta-tag {
-                background-color: var(--beta-bg);
-                color: var(--beta-fg);
-                padding-inline: 0.75rem; // 12px
-                padding-block: 0.25rem; // 4px
-                border-radius: 0.375rem; // 6px
-            }
-
-            p {
-                font-size: 1rem;
-            }
-
-            .hoodie-container {
-                position: relative;
-                flex-shrink: 0;
-
-                .bg {
-                    display: block;
-                    width: 9.9375rem; // 159px
-                    height: 7.375rem; // 118px
-                    aspect-ratio: 358 / 265.69;
-
-                    background-color: #ec2f65;
-                    border-radius: 12px;
-                    transition: 300ms ease;
-                }
-
-                .hoodie {
-                    display: block;
-                    position: absolute;
-                    object-fit: contain;
-                    width: 5.8125rem; // 93px
-                    height: 5.8125rem; // 93px
-
-                    transition: 300ms ease;
-
-                    &:nth-child(2) {
-                        top: 1rem;
-                        left: 0.1875rem;
-                    }
-
-                    &:nth-child(3) {
-                        top: 0.5625rem; // 9px
-                        right: 0.1875rem; // 3px
-                    }
-                }
-
-                &:hover {
-                    .bg {
-                        box-shadow: 0 0 30px var(--glow);
-                    }
-
-                    .hoodie:nth-child(2) {
-                        scale: 1.5;
-                        rotate: -5deg;
-                        translate: -1rem 1rem;
-                    }
-
-                    .hoodie:nth-child(3) {
-                        scale: 1.5;
-                        rotate: 5deg;
-                        translate: 1rem -1rem;
-                    }
-                }
-            }
         }
 
         .card-preview {
@@ -478,38 +395,6 @@
                 margin-block-start: 1rem;
                 padding-block-end: 2rem;
                 border-block-end: 1px solid var(--sep-clr);
-
-                .hoodie-container {
-                    .bg {
-                        width: 100%;
-                        height: auto;
-                    }
-
-                    .hoodie {
-                        width: 65%;
-                        height: auto;
-
-                        &:nth-child(2) {
-                            top: 10%;
-                            left: 0;
-                        }
-
-                        &:nth-child(3) {
-                            top: 0%;
-                            right: 0;
-                        }
-                    }
-
-                    &:hover {
-                        .hoodie:nth-child(2) {
-                            scale: 1.25;
-                        }
-
-                        .hoodie:nth-child(3) {
-                            scale: 1.25;
-                        }
-                    }
-                }
             }
 
             .card-preview {
