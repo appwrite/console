@@ -1,15 +1,15 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { CardContainer, Empty, GridItem1, Heading, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { GridItem1, Heading, Empty, CardContainer, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { cmdRegistrant } from '$lib/helpers/commandCenter';
     import { Container } from '$lib/layout';
-    import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
-    import { page } from '$app/stores';
-    import { CommandRegistrant } from '$lib/helpers/commandCenter';
-    import { goto } from '$app/navigation';
+    import CreateProject from './createProject.svelte';
 
     export let data: PageData;
 
@@ -46,8 +46,7 @@
         );
     }
 
-    const { register } = CommandRegistrant();
-    $: register([
+    $: $cmdRegistrant.register([
         ...data.projects.projects.map((project, i) => ({
             label: `Project ${project.name}`,
             callback: () => {

@@ -13,8 +13,6 @@
     import CreateOrganization from '../../createOrganization.svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
-    import { CommandRegistrant } from '$lib/helpers/commandCenter';
-    import { goto } from '$app/navigation';
 
     export let data: PageData;
 

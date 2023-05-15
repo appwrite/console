@@ -1,23 +1,23 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { Button } from '$lib/elements/forms';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { tooltip } from '$lib/actions/tooltip';
     import {
+        CardContainer,
         Empty,
         GridItem1,
-        CardContainer,
         Heading,
-        PaginationWithLimit,
-        Id
+        Id,
+        PaginationWithLimit
     } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import Create from './create.svelte';
+    import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { tooltip } from '$lib/actions/tooltip';
     import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import { projectRegistrant } from '../store';
+    import type { PageData } from './$types';
+    import Create from './create.svelte';
 
     export let data: PageData;
 
@@ -30,8 +30,7 @@
         await goto(`${base}/console/project-${project}/storage/bucket-${event.detail.$id}`);
     }
 
-    const { register } = $projectRegistrant();
-    $: register([
+    $: $projectRegistrant.register([
         {
             label: 'Create bucket',
             callback: () => {

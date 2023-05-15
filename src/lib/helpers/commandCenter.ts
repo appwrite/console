@@ -1,4 +1,3 @@
-import { onDestroy } from 'svelte';
 import { derived, writable } from 'svelte/store';
 
 // type Key = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k'
@@ -7,7 +6,7 @@ import { derived, writable } from 'svelte/store';
 // | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X'
 // | 'Y' | 'Z' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
-type Command = {
+export type Command = {
     keys: string[];
     /* Ctrl on Windows/Linux, Meta on Mac */
     meta?: boolean;
@@ -20,7 +19,7 @@ type Command = {
 };
 
 type CommandCenterState = {
-    commandMap: Map<string, Command[]>;
+    commandMap: Map<RegisterProxy, Command[]>;
     enabled: boolean;
 };
 
@@ -39,37 +38,38 @@ export const commands = derived(commandCenter, ($commandCenter) => {
     return Array.from($commandCenter.commandMap.values()).flat();
 });
 
-export function CommandRegistrant() {
-    const uuid = crypto.randomUUID();
+function createRegisterProxy() {
+    return new Proxy(
+        {},
+        {
+            get(_obj, field, receiver) {
+                if (field !== 'register') return;
+                return (newCommands: Command[]) => {
+                    commandCenter.update((curr) => {
+                        curr.commandMap.set(receiver, newCommands);
+                        return curr;
+                    });
+                };
+            }
+        }
+    ) as { register: (newCommands: Command[]) => void };
+}
 
-    onDestroy(() => {
-        commandCenter.update((curr) => {
-            curr.commandMap.delete(uuid);
-            return curr;
-        });
-    });
+export type RegisterProxy = ReturnType<typeof createRegisterProxy>;
 
-    return {
-        register(newCommands: Command[]) {
+export const cmdRegistrant = {
+    subscribe(runner: (proxy: RegisterProxy) => void) {
+        const proxy = createRegisterProxy();
+        runner(proxy);
+
+        return () => {
             commandCenter.update((curr) => {
-                curr.commandMap.set(uuid, newCommands);
+                curr.commandMap.delete(proxy);
                 return curr;
             });
-        }
-    };
-}
-
-export function ExtendCommandRegistrant(baseCommands: Command[]) {
-    return () => {
-        const registrant = CommandRegistrant();
-
-        return {
-            register: (newCommands?: Command[]) => {
-                registrant.register([...baseCommands, ...(newCommands ?? [])]);
-            }
         };
-    };
-}
+    }
+};
 
 const debounce = (fn: () => void, ms: number) => {
     let timeout: NodeJS.Timeout;

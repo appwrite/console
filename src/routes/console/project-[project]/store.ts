@@ -1,54 +1,57 @@
-import { derived, writable } from 'svelte/store';
+import { goto } from '$app/navigation';
 import { page } from '$app/stores';
+import { cmdRegistrant, type Command } from '$lib/helpers/commandCenter';
 import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
-import { ExtendCommandRegistrant } from '$lib/helpers/commandCenter';
-import { goto } from '$app/navigation';
+import { derived, writable } from 'svelte/store';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
 
-export const projectRegistrant = derived<
-    typeof project,
-    ReturnType<typeof ExtendCommandRegistrant>
->(project, ($project) => {
-    return ExtendCommandRegistrant([
-        {
-            label: 'Go to Overview',
-            keys: ['o'],
-            callback: () => {
-                goto(`/console/project-${$project.$id}`);
-            }
-        },
+export const projectRegistrant = derived([project, cmdRegistrant], ([$project, $registrant]) => {
+    return {
+        register: (c: Command[] = []) =>
+            $registrant.register([
+                ...[
+                    {
+                        label: 'Go to Overview',
+                        keys: ['o'],
+                        callback: () => {
+                            goto(`/console/project-${$project.$id}`);
+                        }
+                    },
 
-        {
-            label: 'Go to Auth',
-            callback: () => {
-                goto(`/console/project-${$project.$id}/auth`);
-            },
-            keys: ['a']
-        },
-        {
-            label: 'Go to Databases',
-            callback: () => {
-                goto(`/console/project-${$project.$id}/databases`);
-            },
-            keys: ['d']
-        },
-        {
-            label: 'Go to Functions',
-            callback: () => {
-                goto(`/console/project-${$project.$id}/functions`);
-            },
-            keys: ['f']
-        },
-        {
-            label: 'Go to Storage',
-            callback: () => {
-                goto(`/console/project-${$project.$id}/storage`);
-            },
-            keys: ['s']
-        }
-    ]);
+                    {
+                        label: 'Go to Auth',
+                        callback: () => {
+                            goto(`/console/project-${$project.$id}/auth`);
+                        },
+                        keys: ['a']
+                    },
+                    {
+                        label: 'Go to Databases',
+                        callback: () => {
+                            goto(`/console/project-${$project.$id}/databases`);
+                        },
+                        keys: ['d']
+                    },
+                    {
+                        label: 'Go to Functions',
+                        callback: () => {
+                            goto(`/console/project-${$project.$id}/functions`);
+                        },
+                        keys: ['f']
+                    },
+                    {
+                        label: 'Go to Storage',
+                        callback: () => {
+                            goto(`/console/project-${$project.$id}/storage`);
+                        },
+                        keys: ['s']
+                    }
+                ],
+                ...(c ?? [])
+            ])
+    };
 });
 
 export const onboarding = derived(

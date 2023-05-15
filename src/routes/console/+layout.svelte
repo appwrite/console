@@ -16,11 +16,10 @@
     import Create from './createOrganization.svelte';
 
     import { goto } from '$app/navigation';
-    import { commandCenterKeyDownHandler, CommandRegistrant } from '$lib/helpers/commandCenter';
+    import { cmdRegistrant, commandCenterKeyDownHandler } from '$lib/helpers/commandCenter';
     import CommandCenter from './commandCenter.svelte';
 
-    const { register } = CommandRegistrant();
-    $: register([
+    $: $cmdRegistrant.register([
         {
             label: 'Go to Account',
             callback: () => {

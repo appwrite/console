@@ -23,8 +23,7 @@
         await goto(`${base}/console/project-${project}/databases/database-${event.detail.$id}`);
     }
 
-    const { register } = $projectRegistrant();
-    $: register([
+    $: $projectRegistrant.register([
         {
             label: 'Create database',
             callback: () => {

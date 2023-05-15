@@ -1,14 +1,13 @@
 <script lang="ts">
     import Dialog from '$lib/components/dialog.svelte';
-    import { CommandRegistrant, commands, commandCenter } from '$lib/helpers/commandCenter';
+    import { commands, commandCenter, cmdRegistrant } from '$lib/helpers/commandCenter';
     import { isMac } from '$lib/helpers/platform';
 
     let open = false;
     let search = '';
     let selected = 0;
 
-    const { register } = CommandRegistrant();
-    $: register([
+    $: $cmdRegistrant.register([
         {
             callback: () => {
                 open = !open;
@@ -68,13 +67,13 @@
                     </span>
                     <div class="u-flex u-gap-4">
                         {#if command.meta}
-                            <kbd class="kbd"> {isMac ? '⌘' : 'ctrl'} </kbd>
+                            <kbd class="kbd"> {isMac() ? '⌘' : 'ctrl'} </kbd>
                         {/if}
                         {#if command.shift}
-                            <kbd class="kbd"> ⇧ </kbd>
+                            <kbd class="kbd"> {isMac() ? '⇧' : 'shift'} </kbd>
                         {/if}
                         {#if command.alt}
-                            <kbd class="kbd"> {isMac ? '⌥' : 'alt'} </kbd>
+                            <kbd class="kbd"> {isMac() ? '⌥' : 'alt'} </kbd>
                         {/if}
                         {#each command.keys as key}
                             <kbd class="kbd">
@@ -105,5 +104,9 @@
 
     .result[data-selected] {
         background-color: hsl(var(--color-neutral-200));
+    }
+
+    .kbd {
+        padding-inline: 0.25rem;
     }
 </style>

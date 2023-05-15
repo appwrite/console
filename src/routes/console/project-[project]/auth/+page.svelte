@@ -36,8 +36,7 @@
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
     }
 
-    const { register } = $projectRegistrant();
-    $: register([
+    $: $projectRegistrant.register([
         {
             label: 'Create user',
             callback: () => {
