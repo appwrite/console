@@ -6,6 +6,7 @@
     import HashnodeLight from './hashnode-light.svg';
     import Badge from './hackathon-badge.svg';
     import { tooltip } from '$lib/actions/tooltip';
+    import { base } from '$app/paths';
 </script>
 
 <svelte:head>
@@ -25,9 +26,7 @@
                 <span class="text"> Build an open-source app using Appwrite Cloud</span>
             </li>
             <li class="numeric-list-item">
-                <span class="text">
-                    Publish an article on your Hashnode blog to launch your app
-                </span>
+                <span class="text"> Publish an article on your Hashnode blog </span>
             </li>
             <li class="numeric-list-item">
                 <span class="text">
@@ -35,12 +34,12 @@
                         class="link"
                         href="https://builtwith.appwrite.io"
                         target="_blank"
-                        rel="noopener noreferrer">Built with Appwrite</a> website
+                        rel="noopener noreferrer">Built with Appwrite</a>
                 </span>
             </li>
         </ol>
         <div class="u-margin-block-start-32 u-flex u-gap-16">
-            <Button external href="https://cloud.appwrite.io">Get started</Button>
+            <Button external href={`${base}/console`}>Get started</Button>
             <Button
                 secondary
                 external
