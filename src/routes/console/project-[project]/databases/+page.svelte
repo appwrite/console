@@ -6,7 +6,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container, GridHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
-    import { projectRegistrant } from '../store';
+    import { registerProjectCommand } from '../store';
     import type { PageData } from './$types';
     import Create from './create.svelte';
     import Grid from './grid.svelte';
@@ -23,7 +23,7 @@
         await goto(`${base}/console/project-${project}/databases/database-${event.detail.$id}`);
     }
 
-    $: $projectRegistrant.register([
+    $: $registerProjectCommand([
         {
             label: 'Create database',
             callback: () => {

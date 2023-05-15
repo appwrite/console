@@ -1,19 +1,19 @@
 <script lang="ts">
     import Dialog from '$lib/components/dialog.svelte';
-    import { commands, commandCenter, cmdRegistrant } from '$lib/helpers/commandCenter';
+    import { commands, commandCenter, registerCommand } from '$lib/helpers/commandCenter';
     import { isMac } from '$lib/helpers/platform';
 
     let open = false;
     let search = '';
     let selected = 0;
 
-    $: $cmdRegistrant.register([
+    $: $registerCommand([
         {
             callback: () => {
                 open = !open;
             },
             keys: ['k'],
-            meta: true,
+            ctrl: true,
             forceEnable: true
         }
     ]);
@@ -66,7 +66,7 @@
                         {command.label}
                     </span>
                     <div class="u-flex u-gap-4">
-                        {#if command.meta}
+                        {#if command.ctrl}
                             <kbd class="kbd"> {isMac() ? '⌘' : 'ctrl'} </kbd>
                         {/if}
                         {#if command.shift}

@@ -15,7 +15,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
-    import { projectRegistrant } from '../store';
+    import { registerProjectCommand } from '../store';
     import type { PageData } from './$types';
     import Create from './create.svelte';
 
@@ -30,7 +30,7 @@
         await goto(`${base}/console/project-${project}/storage/bucket-${event.detail.$id}`);
     }
 
-    $: $projectRegistrant.register([
+    $: $registerProjectCommand([
         {
             label: 'Create bucket',
             callback: () => {

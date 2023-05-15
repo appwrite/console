@@ -1,16 +1,15 @@
 import { goto } from '$app/navigation';
 import { page } from '$app/stores';
-import { cmdRegistrant, type Command } from '$lib/helpers/commandCenter';
+import { registerCommand, type Command } from '$lib/helpers/commandCenter';
 import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
-import { derived, writable } from 'svelte/store';
+import { derived, writable, type Readable } from 'svelte/store';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
 
-export const projectRegistrant = derived([project, cmdRegistrant], ([$project, $registrant]) => {
-    return {
-        register: (c: Command[] = []) =>
-            $registrant.register([
+export const registerProjectCommand = derived([project, registerCommand], ([$project, $register]) => {
+    return (c: Command[] = []) =>
+            $register([
                 ...[
                     {
                         label: 'Go to Overview',
@@ -51,8 +50,8 @@ export const projectRegistrant = derived([project, cmdRegistrant], ([$project, $
                 ],
                 ...(c ?? [])
             ])
-    };
-});
+    
+}) as Readable<(c?: Command[]) => void>;
 
 export const onboarding = derived(
     project,

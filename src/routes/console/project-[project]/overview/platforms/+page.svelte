@@ -36,7 +36,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
-    import { projectRegistrant } from '../../store';
+    import { registerProjectCommand } from '../../store';
 
     export let data: PageData;
 
@@ -72,7 +72,7 @@
         }
     };
 
-    $: $projectRegistrant.register();
+    $: $registerProjectCommand();
 </script>
 
 <div class="common-section u-flex u-gap-12">

@@ -1,16 +1,12 @@
 import { derived, writable } from 'svelte/store';
-
-// type Key = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k'
-// | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x'
-// | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K'
-// | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X'
-// | 'Y' | 'Z' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+import { debounce } from './debounce';
 
 export type Command = {
     keys: string[];
     /* Ctrl on Windows/Linux, Meta on Mac */
-    meta?: boolean;
+    ctrl?: boolean;
     shift?: boolean;
+    /* Alt on Windows/Linux, Option on Mac */
     alt?: boolean;
     callback: () => void;
     label?: string;
@@ -19,64 +15,37 @@ export type Command = {
 };
 
 type CommandCenterState = {
-    commandMap: Map<RegisterProxy, Command[]>;
+    commandMap: Map<string, Command[]>;
     enabled: boolean;
 };
 
-export const commandCenter = (function init() {
-    const store = writable<CommandCenterState>({
-        commandMap: new Map(),
-        enabled: true
-    });
-
-    return {
-        ...store
-    };
-})();
+export const commandCenter = writable<CommandCenterState>({
+    commandMap: new Map(),
+    enabled: true
+});
 
 export const commands = derived(commandCenter, ($commandCenter) => {
     return Array.from($commandCenter.commandMap.values()).flat();
 });
 
-function createRegisterProxy() {
-    return new Proxy(
-        {},
-        {
-            get(_obj, field, receiver) {
-                if (field !== 'register') return;
-                return (newCommands: Command[]) => {
-                    commandCenter.update((curr) => {
-                        curr.commandMap.set(receiver, newCommands);
-                        return curr;
-                    });
-                };
-            }
-        }
-    ) as { register: (newCommands: Command[]) => void };
-}
+export const registerCommand = {
+    subscribe(runner: (cb: (newCommands: Command[]) => void) => void) {
+        const uuid = crypto.randomUUID();
 
-export type RegisterProxy = ReturnType<typeof createRegisterProxy>;
-
-export const cmdRegistrant = {
-    subscribe(runner: (proxy: RegisterProxy) => void) {
-        const proxy = createRegisterProxy();
-        runner(proxy);
+        runner((newCommands: Command[]) => {
+            commandCenter.update((curr) => {
+                curr.commandMap.set(uuid, newCommands);
+                return curr;
+            });
+        });
 
         return () => {
             commandCenter.update((curr) => {
-                curr.commandMap.delete(proxy);
+                curr.commandMap.delete(uuid);
                 return curr;
             });
         };
     }
-};
-
-const debounce = (fn: () => void, ms: number) => {
-    let timeout: NodeJS.Timeout;
-    return () => {
-        clearTimeout(timeout);
-        timeout = setTimeout(fn, ms);
-    };
 };
 
 export const commandCenterKeyDownHandler = derived(commandCenter, ({ commandMap, enabled }) => {
@@ -92,7 +61,7 @@ export const commandCenterKeyDownHandler = derived(commandCenter, ({ commandMap,
         for (const command of commandsArr) {
             if (command.disabled || (!enabled && !command.forceEnable)) continue;
 
-            const { keys, meta, shift, alt, callback } = command;
+            const { keys, ctrl: meta, shift, alt, callback } = command;
 
             const isMetaPressed = meta ? (isMac ? event.metaKey : event.ctrlKey) : true;
             const isShiftPressed = shift ? event.shiftKey : true;

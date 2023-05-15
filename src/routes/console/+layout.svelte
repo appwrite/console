@@ -16,17 +16,17 @@
     import Create from './createOrganization.svelte';
 
     import { goto } from '$app/navigation';
-    import { cmdRegistrant, commandCenterKeyDownHandler } from '$lib/helpers/commandCenter';
+    import { registerCommand, commandCenterKeyDownHandler } from '$lib/helpers/commandCenter';
     import CommandCenter from './commandCenter.svelte';
 
-    $: $cmdRegistrant.register([
+    $: $registerCommand([
         {
             label: 'Go to Account',
             callback: () => {
                 goto('/console/account');
             },
             keys: ['a'],
-            meta: true,
+            ctrl: true,
             shift: true
         },
         {

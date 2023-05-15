@@ -5,7 +5,7 @@
     import { CardContainer, Empty, GridItem1, Heading, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { cmdRegistrant } from '$lib/helpers/commandCenter';
+    import { registerCommand } from '$lib/helpers/commandCenter';
     import { Container } from '$lib/layout';
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
@@ -46,7 +46,7 @@
         );
     }
 
-    $: $cmdRegistrant.register([
+    $: $registerCommand([
         ...data.projects.projects.map((project, i) => ({
             label: `Project ${project.name}`,
             callback: () => {
