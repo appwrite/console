@@ -8,6 +8,8 @@
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
     import { page } from '$app/stores';
+    import { CommandRegistrant } from '$lib/helpers/commandCenter';
+    import { goto } from '$app/navigation';
 
     export let data: PageData;
 
@@ -43,6 +45,25 @@
             (value, index, self) => index === self.findIndex((t) => t.name === value.name)
         );
     }
+
+    const { register } = CommandRegistrant();
+    $: register([
+        ...data.projects.projects.map((project, i) => ({
+            label: `Project ${project.name}`,
+            callback: () => {
+                goto(`/console/project-${project.$id}`);
+            },
+            keys: ['p', `${i + 1}`]
+        })),
+        {
+            label: 'Create project',
+            callback: () => {
+                showCreate = true;
+            },
+            keys: ['c'],
+            disabled: showCreate
+        }
+    ]);
 </script>
 
 <Container>
