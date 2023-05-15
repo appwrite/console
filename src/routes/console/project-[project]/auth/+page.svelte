@@ -1,31 +1,32 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import {
+        AvatarInitials,
+        Copy,
         Empty,
         EmptySearch,
-        Copy,
-        SearchQuery,
-        AvatarInitials,
-        PaginationWithLimit
+        PaginationWithLimit,
+        SearchQuery
     } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
-        TableHeader,
         TableBody,
-        TableCellHead,
         TableCell,
+        TableCellHead,
         TableCellText,
+        TableHeader,
         TableRowLink
     } from '$lib/elements/table';
-    import { Pill } from '$lib/elements';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { goto } from '$app/navigation';
-    import Create from './createUser.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { project, projectRegistrant } from '../store';
     import type { PageData } from './$types';
+    import Create from './createUser.svelte';
 
     export let data: PageData;
 
@@ -34,6 +35,25 @@
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
     }
+
+    const { register } = $projectRegistrant();
+    $: register([
+        {
+            label: 'Create user',
+            callback: () => {
+                showCreate = true;
+            },
+            keys: ['c'],
+            disabled: showCreate
+        },
+        {
+            label: 'Go to Overview',
+            callback: () => {
+                goto(`${base}/console/project-${$project.$id}/overview`);
+            },
+            keys: ['o']
+        }
+    ]);
 </script>
 
 <Container>

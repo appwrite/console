@@ -14,10 +14,12 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import { beforeNavigate } from '$app/navigation';
+    import { beforeNavigate, goto } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Create from './createFunction.svelte';
     import type { PageData } from './$types';
+    import { CommandRegistrant } from '$lib/helpers/commandCenter';
+    import { projectRegistrant } from '../store';
 
     export let data: PageData;
 
@@ -32,6 +34,16 @@
     beforeNavigate(() => {
         wizard.hide();
     });
+
+    const { register } = $projectRegistrant();
+    $: register([
+        {
+            label: 'Create function',
+            callback: openWizard,
+            keys: ['c'],
+            disabled: $wizard.show
+        }
+    ]);
 </script>
 
 <Container>

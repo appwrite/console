@@ -1,16 +1,17 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { Button } from '$lib/elements/forms';
-    import { Empty, PaginationWithLimit } from '$lib/components';
-    import { Container, GridHeader } from '$lib/layout';
     import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { Empty, PaginationWithLimit } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { Container, GridHeader } from '$lib/layout';
+    import type { Models } from '@appwrite.io/console';
+    import { projectRegistrant } from '../store';
+    import type { PageData } from './$types';
     import Create from './create.svelte';
     import Grid from './grid.svelte';
-    import Table from './table.svelte';
-    import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import { columns } from './store';
+    import Table from './table.svelte';
 
     export let data: PageData;
 
@@ -21,6 +22,18 @@
         showCreate = false;
         await goto(`${base}/console/project-${project}/databases/database-${event.detail.$id}`);
     }
+
+    const { register } = $projectRegistrant();
+    $: register([
+        {
+            label: 'Create database',
+            callback: () => {
+                showCreate = true;
+            },
+            keys: ['c'],
+            disabled: showCreate
+        }
+    ]);
 </script>
 
 <Container>

@@ -17,6 +17,7 @@
     import { tooltip } from '$lib/actions/tooltip';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import { projectRegistrant } from '../store';
 
     export let data: PageData;
 
@@ -28,6 +29,18 @@
         showCreate = false;
         await goto(`${base}/console/project-${project}/storage/bucket-${event.detail.$id}`);
     }
+
+    const { register } = $projectRegistrant();
+    $: register([
+        {
+            label: 'Create bucket',
+            callback: () => {
+                showCreate = true;
+            },
+            keys: ['c'],
+            disabled: showCreate
+        }
+    ]);
 </script>
 
 <Container>

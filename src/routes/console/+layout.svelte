@@ -15,6 +15,31 @@
     import { loading } from '../store';
     import Create from './createOrganization.svelte';
 
+    import { goto } from '$app/navigation';
+    import { commandCenterKeyDownHandler, CommandRegistrant } from '$lib/helpers/commandCenter';
+    import CommandCenter from './commandCenter.svelte';
+
+    const { register } = CommandRegistrant();
+    $: register([
+        {
+            label: 'Go to Account',
+            callback: () => {
+                goto('/console/account');
+            },
+            keys: ['a'],
+            meta: true,
+            shift: true
+        },
+        {
+            label: 'Go to Home',
+            callback: () => {
+                goto('/console');
+            },
+            keys: ['h'],
+            alt: true
+        }
+    ]);
+
     onMount(() => {
         loading.set(false);
 
@@ -45,6 +70,10 @@
         $log.func = null;
     }
 </script>
+
+<svelte:window on:keydown={$commandCenterKeyDownHandler} />
+
+<CommandCenter />
 
 <Shell
     showSideNavigation={$page.url.pathname !== '/console' &&

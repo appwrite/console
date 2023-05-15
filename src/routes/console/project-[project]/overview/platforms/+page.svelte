@@ -36,6 +36,9 @@
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
+    import { CommandRegistrant } from '$lib/helpers/commandCenter';
+    import { goto } from '$app/navigation';
+    import { project, projectRegistrant } from '../../store';
 
     export let data: PageData;
 
@@ -70,6 +73,9 @@
             return 'unknown';
         }
     };
+
+    const { register } = $projectRegistrant();
+    $: register();
 </script>
 
 <div class="common-section u-flex u-gap-12">
