@@ -14,7 +14,7 @@
 
     let name = '';
     let id: string = null;
-    let showCustomId = false;
+    let showCustomId = true;
 
     const create = async () => {
         try {
@@ -58,7 +58,7 @@
                     </span></Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Database" bind:id />
+            <CustomId bind:show={showCustomId} name="Database" bind:id autofocus={false} />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">

@@ -37,7 +37,12 @@
     }
 </script>
 
-<Modal warning={true} bind:show={showDelete} onSubmit={handleDelete}>
+<Modal
+    icon="exclamation"
+    state="warning"
+    bind:show={showDelete}
+    onSubmit={handleDelete}
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete Collection</svelte:fragment>
 
     <p data-private>

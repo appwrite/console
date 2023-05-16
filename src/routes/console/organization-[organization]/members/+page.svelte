@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { AvatarInitials, Heading, Limit, Pagination } from '$lib/components';
+    import { AvatarInitials, Heading, PaginationWithLimit } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -112,10 +112,12 @@
                 {/each}
             </TableBody>
         </TableScroll>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.members.total} name="Members" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.members.total} />
-        </div>
+
+        <PaginationWithLimit
+            name="Members"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.members.total} />
     {/if}
 </Container>
 

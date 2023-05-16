@@ -35,7 +35,7 @@
                 {@const isSelected = collectionId === collection.$id}
                 <li class="drop-list-item">
                     <a class="drop-button" class:is-selected={isSelected} {href}>
-                        <span class="text">{collection.name}</span>
+                        <span class="text" data-private>{collection.name}</span>
                     </a>
                 </li>
             {/each}

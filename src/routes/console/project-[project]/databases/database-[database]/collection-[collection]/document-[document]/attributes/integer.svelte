@@ -13,8 +13,9 @@
     {id}
     {label}
     {optionalText}
+    nullable
     required={attribute.required}
     min={attribute.min}
     max={attribute.max}
-    bind:value
-    step={attribute.type === 'double' ? 'any' : 1} />
+    step={attribute.type === 'double' ? 'any' : 1}
+    bind:value />

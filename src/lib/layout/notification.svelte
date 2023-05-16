@@ -4,6 +4,7 @@
     import type { Notification } from '../stores/notifications';
 
     export let type: Notification['type'] = 'info';
+    export let icon: Notification['icon'] = null;
     export let title: Notification['title'];
     export let buttons: Notification['buttons'];
 
@@ -26,10 +27,11 @@
     </button>
     <div class="alert-sticky-image">
         <span
-            class:icon-check-circle={type === 'success'}
-            class:icon-exclamation={type === 'warning'}
-            class:icon-exclamation-circle={type === 'error'}
+            class:icon-check-circle={type === 'success' && !icon}
+            class:icon-exclamation={type === 'warning' && !icon}
+            class:icon-exclamation-circle={type === 'error' && !icon}
             class:icon-info={type === 'info'}
+            class={icon ? `icon-${icon}` : ''}
             aria-hidden="true" />
     </div>
     <div class="alert-sticky-content">
@@ -41,7 +43,9 @@
     {#if buttons}
         <div class="alert-sticky-buttons u-flex">
             {#each buttons as button}
-                <button class="button is-text is-small" on:click={button.method}>
+                <button
+                    class="button is-text is-small"
+                    on:click|preventDefault|stopPropagation={button.method}>
                     <span class="text">{button.name}</span>
                 </button>
             {/each}

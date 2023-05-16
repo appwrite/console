@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Copy, EmptySearch, Heading, Limit, Pagination, Status } from '$lib/components';
+    import { EmptySearch, Heading, Id, PaginationWithLimit, Status } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -57,7 +57,7 @@
     {#if data.executions.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={90}>Execution ID</TableCellHead>
+                <TableCellHead width={150}>Execution ID</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
@@ -67,31 +67,26 @@
             <TableBody>
                 {#each data.executions.executions as execution}
                     <TableRow>
-                        <TableCell title="Execution ID">
-                            <Copy value={execution.$id}>
-                                <Pill button trim>
-                                    <span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text u-trim">{execution.$id}</span>
-                                </Pill>
-                            </Copy>
+                        <TableCell width={150} title="Execution ID">
+                            <Id value={execution.$id}>{execution.$id}</Id>
                         </TableCell>
-                        <TableCellText title="Created">
+                        <TableCellText width={140} title="Created">
                             {toLocaleDateTime(execution.$createdAt)}
                         </TableCellText>
-                        <TableCellText title="Status">
+                        <TableCellText width={110} title="Status">
                             <Status status={execution.status}>
                                 {execution.status}
                             </Status>
                         </TableCellText>
-                        <TableCellText title="Trigger">
+                        <TableCellText width={90} title="Trigger">
                             <Pill>
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
                         </TableCellText>
-                        <TableCellText title="Duration">
+                        <TableCellText width={80} title="Duration">
                             {calculateTime(execution.duration)}
                         </TableCellText>
-                        <TableCell>
+                        <TableCell width={50}>
                             <Button
                                 secondary
                                 event="view_logs"
@@ -103,17 +98,19 @@
                 {/each}
             </TableBody>
         </TableScroll>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <Limit limit={data.limit} sum={data.executions.total} name="Executions" />
-            <Pagination limit={data.limit} offset={data.offset} sum={data.executions.total} />
-        </div>
+
+        <PaginationWithLimit
+            name="Executions"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.executions.total} />
     {:else}
         <EmptySearch>
             <div class="u-text-center">
                 <p class="text u-line-height-1-5">
                     You have no execution logs. Create and activate a deployment to see it here.
                 </p>
-                <p class="text u-line-height-1-5">Need a hand? Check out our documentation</p>
+                <p class="text u-line-height-1-5">Need a hand? Learn more in our documentation</p>
             </div>
             <div class="u-flex u-gap-16">
                 <Button text external href="https://appwrite.io/docs/functions#execute">
