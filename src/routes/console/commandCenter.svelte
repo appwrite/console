@@ -2,6 +2,8 @@
     import Dialog from '$lib/components/dialog.svelte';
     import { commands, disableCommands, registerCommand } from '$lib/helpers/commandCenter';
     import { isMac } from '$lib/helpers/platform';
+    import { bounceOut, elasticOut, quadOut } from 'svelte/easing';
+    import { crossfade } from 'svelte/transition';
 
     let open = false;
     let search = '';
@@ -49,6 +51,11 @@
     }
 
     $: $disableCommands(open);
+
+    const [send, receive] = crossfade({
+        duration: 150,
+        easing: quadOut
+    });
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
@@ -86,6 +93,9 @@
                             {/if}
                         {/each}
                     </div>
+                    {#if selected === i}
+                        <div class="bg" in:send={{ key: 'bg' }} out:receive={{ key: 'bg' }} />
+                    {/if}
                 </li>
             {:else}
                 <li class="result">
@@ -103,13 +113,24 @@
     }
 
     .result {
-        border-radius: 0.75rem;
         padding: 0.5rem 0.75rem;
+        transition: 150ms;
+        position: relative;
     }
 
-    .result[data-selected] {
+    .result .bg {
+        position: absolute;
+        inset: 0;
         background-color: hsl(var(--color-neutral-200));
+        border-radius: 0.75rem;
+        translate: 0 -1px;
+
+        z-index: -1;
     }
+
+    /* .result[data-selected] {
+        background-color: hsl(var(--color-neutral-200));
+    } */
 
     .kbd {
         padding-inline: 0.25rem;
