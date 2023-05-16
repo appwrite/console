@@ -12,6 +12,7 @@
     import Grid from './grid.svelte';
     import { columns } from './store';
     import Table from './table.svelte';
+    import { commandCenter } from '$lib/helpers/commandCenter';
 
     export let data: PageData;
 
@@ -30,9 +31,12 @@
                 showCreate = true;
             },
             keys: ['c'],
+            ctrl: true,
             disabled: showCreate
         }
     ]);
+
+    $: $commandCenter.enabled = !showCreate;
 </script>
 
 <Container>
