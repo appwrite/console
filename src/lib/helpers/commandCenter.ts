@@ -81,6 +81,11 @@ export const commandCenterKeyDownHandler = derived(
         let recentKeyCodes: number[] = [];
 
         return (event: KeyboardEvent) => {
+            // ignore keypresses that come from input, textarea and select elements
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName)) {
+                return;
+            }
+
             recentKeyCodes.push(event.keyCode);
             debounce(() => (recentKeyCodes = []), 1000)();
 

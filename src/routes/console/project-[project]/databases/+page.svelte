@@ -4,7 +4,6 @@
     import { page } from '$app/stores';
     import { Empty, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { disableCommands } from '$lib/helpers/commandCenter';
     import { Container, GridHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { registerProjectCommand } from '../store';
@@ -34,8 +33,6 @@
             disabled: showCreate
         }
     ]);
-
-    $: $disableCommands(showCreate);
 </script>
 
 <Container>

@@ -5,7 +5,7 @@
     import { CardContainer, Empty, GridItem1, Heading, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { disableCommands, registerCommand } from '$lib/helpers/commandCenter';
+    import { registerCommand } from '$lib/helpers/commandCenter';
     import { Container } from '$lib/layout';
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
@@ -63,8 +63,6 @@
             disabled: showCreate
         }
     ]);
-
-    $: $disableCommands(showCreate);
 </script>
 
 <Container>
