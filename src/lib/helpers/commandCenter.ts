@@ -34,7 +34,7 @@ const commandsEnabled = derived(commandCenter, ($commandCenter) => {
     return Array.from($commandCenter.disabledMap.values()).every((disabled) => !disabled);
 });
 
-export const registerCommand = {
+export const registerCommands = {
     subscribe(runner: (cb: (newCommands: Command[]) => void) => void) {
         const uuid = crypto.randomUUID();
 

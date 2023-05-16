@@ -27,7 +27,7 @@
     import { project } from '../store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { registerCommand } from '$lib/helpers/commandCenter';
+    import { registerCommands } from '$lib/helpers/commandCenter';
 
     export let data: PageData;
 
@@ -37,7 +37,7 @@
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
     }
 
-    $: $registerCommand([
+    $: $registerCommands([
         {
             label: 'Create user',
             callback: () => {

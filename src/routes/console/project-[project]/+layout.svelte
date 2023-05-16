@@ -3,7 +3,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
-    import { registerCommand } from '$lib/helpers/commandCenter';
+    import { registerCommands } from '$lib/helpers/commandCenter';
     import { goto } from '$app/navigation';
 
     onMount(async () => {
@@ -16,7 +16,7 @@
         });
     });
 
-    $: $registerCommand([
+    $: $registerCommands([
         {
             label: 'Go to Overview',
             keys: ['g', 'o'],

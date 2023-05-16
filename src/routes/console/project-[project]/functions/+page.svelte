@@ -19,7 +19,7 @@
     import type { PageData } from './$types';
     import Create from './createFunction.svelte';
 
-    import { registerCommand } from '$lib/helpers/commandCenter';
+    import { registerCommands } from '$lib/helpers/commandCenter';
 
     export let data: PageData;
 
@@ -35,7 +35,7 @@
         wizard.hide();
     });
 
-    $: $registerCommand([
+    $: $registerCommands([
         {
             label: 'Create function',
             callback: openWizard,

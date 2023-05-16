@@ -12,7 +12,7 @@
     import Grid from './grid.svelte';
     import { columns } from './store';
     import Table from './table.svelte';
-    import { registerCommand } from '$lib/helpers/commandCenter';
+    import { registerCommands } from '$lib/helpers/commandCenter';
 
     export let data: PageData;
 
@@ -24,7 +24,7 @@
         await goto(`${base}/console/project-${project}/databases/database-${event.detail.$id}`);
     }
 
-    $: $registerCommand([
+    $: $registerCommands([
         {
             label: 'Create database',
             callback: () => {
