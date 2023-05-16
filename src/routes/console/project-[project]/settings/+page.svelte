@@ -90,11 +90,6 @@
         }
     }
 
-    $: {
-        // When project name is updated, finalize the updating flow
-        $project.name;
-    }
-
     async function serviceUpdate(service: Service) {
         try {
             await sdk.forConsole.projects.updateServiceStatus(
