@@ -34,8 +34,7 @@
             callback: () => {
                 goto('/console');
             },
-            keys: ['h'],
-            alt: true
+            keys: ['g', 'h']
         }
     ]);
 

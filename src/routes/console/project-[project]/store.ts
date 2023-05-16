@@ -7,51 +7,53 @@ import { derived, writable, type Readable } from 'svelte/store';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
 
-export const registerProjectCommand = derived([project, registerCommand], ([$project, $register]) => {
-    return (c: Command[] = []) =>
-            $register([
-                ...[
-                    {
-                        label: 'Go to Overview',
-                        keys: ['o'],
-                        callback: () => {
-                            goto(`/console/project-${$project.$id}`);
-                        }
-                    },
+export const registerProjectCommand = derived(
+    [project, registerCommand],
+    ([$project, $register]) => {
+        return (c: Command[] = []) => {
+            const projectCommands: Command[] = [
+                {
+                    label: 'Go to Overview',
+                    keys: ['g', 'o'],
 
-                    {
-                        label: 'Go to Auth',
-                        callback: () => {
-                            goto(`/console/project-${$project.$id}/auth`);
-                        },
-                        keys: ['a']
-                    },
-                    {
-                        label: 'Go to Databases',
-                        callback: () => {
-                            goto(`/console/project-${$project.$id}/databases`);
-                        },
-                        keys: ['d']
-                    },
-                    {
-                        label: 'Go to Functions',
-                        callback: () => {
-                            goto(`/console/project-${$project.$id}/functions`);
-                        },
-                        keys: ['f']
-                    },
-                    {
-                        label: 'Go to Storage',
-                        callback: () => {
-                            goto(`/console/project-${$project.$id}/storage`);
-                        },
-                        keys: ['s']
+                    callback: () => {
+                        goto(`/console/project-${$project.$id}`);
                     }
-                ],
-                ...(c ?? [])
-            ])
-    
-}) as Readable<(c?: Command[]) => void>;
+                },
+
+                {
+                    label: 'Go to Auth',
+                    callback: () => {
+                        goto(`/console/project-${$project.$id}/auth`);
+                    },
+                    keys: ['g', 'a']
+                },
+                {
+                    label: 'Go to Databases',
+                    callback: () => {
+                        goto(`/console/project-${$project.$id}/databases`);
+                    },
+                    keys: ['g', 'd']
+                },
+                {
+                    label: 'Go to Functions',
+                    callback: () => {
+                        goto(`/console/project-${$project.$id}/functions`);
+                    },
+                    keys: ['g', 'f']
+                },
+                {
+                    label: 'Go to Storage',
+                    callback: () => {
+                        goto(`/console/project-${$project.$id}/storage`);
+                    },
+                    keys: ['g', 's']
+                }
+            ];
+            return $register([...projectCommands, ...(c ?? [])]);
+        };
+    }
+) as Readable<(c?: Command[]) => void>;
 
 export const onboarding = derived(
     project,

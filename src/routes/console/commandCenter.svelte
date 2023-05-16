@@ -65,7 +65,7 @@
                     <span>
                         {command.label}
                     </span>
-                    <div class="u-flex u-gap-4">
+                    <div class="u-flex u-gap-4 u-cross-center">
                         {#if command.ctrl}
                             <kbd class="kbd"> {isMac() ? '⌘' : 'ctrl'} </kbd>
                         {/if}
@@ -75,10 +75,15 @@
                         {#if command.alt}
                             <kbd class="kbd"> {isMac() ? '⌥' : 'alt'} </kbd>
                         {/if}
-                        {#each command.keys as key}
+                        {#each command.keys as key, i}
+                            {@const hasNext = command.keys.length - 1 !== i}
+
                             <kbd class="kbd">
                                 {key.toUpperCase()}
                             </kbd>
+                            {#if hasNext}
+                                <span class="u-margin-inline-4" style:opacity={0.5}>then</span>
+                            {/if}
                         {/each}
                     </div>
                 </li>

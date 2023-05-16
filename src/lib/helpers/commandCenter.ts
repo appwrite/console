@@ -78,11 +78,11 @@ export const commandCenterKeyDownHandler = derived(
     [commandCenter, commandsEnabled],
     ([{ commandMap }, enabled]) => {
         const commandsArr = Array.from(commandMap.values()).flat();
-        const recentKeyCodes = new Set<number>();
+        let recentKeyCodes: number[] = [];
 
         return (event: KeyboardEvent) => {
-            recentKeyCodes.add(event.keyCode);
-            debounce(() => recentKeyCodes.clear(), 1000)();
+            recentKeyCodes.push(event.keyCode);
+            debounce(() => (recentKeyCodes = []), 1000)();
 
             for (const command of commandsArr) {
                 if (command.disabled || (!enabled && !command.forceEnable)) continue;
@@ -94,9 +94,7 @@ export const commandCenterKeyDownHandler = derived(
                 const isAltPressed = alt ? event.altKey : true;
 
                 const commandKeyCodes = keys.map((key) => key.toUpperCase().charCodeAt(0));
-                const allKeysPressed = commandKeyCodes.every((keyCode) =>
-                    recentKeyCodes.has(keyCode)
-                );
+                const allKeysPressed = recentKeyCodes.join('').includes(commandKeyCodes.join(''));
 
                 if (allKeysPressed && isMetaPressed && isShiftPressed && isAltPressed) {
                     event.preventDefault();
