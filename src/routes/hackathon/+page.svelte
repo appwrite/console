@@ -85,7 +85,7 @@
                 <span class=" u-uppercase eyebrow-heading-3">Grand winner</span>
             </div>
             <h4 class="u-flex u-cross-center u-gap-4 u-margin-block-start-20">
-                <span class="heading-level-4">5000</span><span class="heading-level-7">USD</span>
+                <span class="heading-level-4">5,000</span><span class="heading-level-7">USD</span>
             </h4>
 
             <div class="u-flex u-flex-vertical u-gap-8 u-margin-block-start-16">
@@ -98,7 +98,7 @@
                 <span class=" u-uppercase eyebrow-heading-3 u-bold">5 Runner-ups Each</span>
             </div>
             <h4 class="u-flex u-cross-center u-gap-4 u-margin-block-start-20">
-                <span class="heading-level-4">1000</span><span class="heading-level-7">USD</span>
+                <span class="heading-level-4">1,000</span><span class="heading-level-7">USD</span>
             </h4>
             <div class="u-flex u-flex-vertical u-gap-8 u-margin-block-start-16">
                 <p class="ht-text">+ Appwrite swag</p>
