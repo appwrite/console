@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { afterNavigate } from '$app/navigation';
     import Dialog from '$lib/components/dialog.svelte';
     import { commands, disableCommands, registerCommand } from '$lib/helpers/commandCenter';
     import { isMac } from '$lib/helpers/platform';
@@ -55,6 +56,11 @@
     const [send, receive] = crossfade({
         duration: 150,
         easing: quadOut
+    });
+
+    afterNavigate(() => {
+        open = false;
+        search = '';
     });
 </script>
 

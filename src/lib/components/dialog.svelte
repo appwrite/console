@@ -86,15 +86,18 @@
         padding: 0.5rem;
         position: fixed;
         inset: 0;
+
         background-color: hsl(var(--color-neutral-500) / 0.5);
         z-index: 9999;
-
-        display: grid;
-        place-items: center;
     }
 
     .card {
         min-width: 400px;
         padding: 0.5rem;
+
+        position: absolute;
+        top: clamp(128px, 20vh, 400px);
+        left: 50%;
+        translate: -50%;
     }
 </style>
