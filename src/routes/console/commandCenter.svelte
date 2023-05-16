@@ -27,6 +27,7 @@
     });
 
     function handleKeyDown(event: KeyboardEvent) {
+        if (!open) return;
         if (event.key === 'ArrowDown') {
             event.preventDefault();
             selected = selected === results.length - 1 ? 0 : selected + 1;
