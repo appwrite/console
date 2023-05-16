@@ -7,6 +7,7 @@
     export let error: string = null;
     export let closable = true;
     export let headerDivider = true;
+    export let animate = true;
 
     let dialog: HTMLDialogElement;
     let alert: HTMLElement;

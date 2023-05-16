@@ -1,6 +1,6 @@
 <script lang="ts">
     import Dialog from '$lib/components/dialog.svelte';
-    import { commands, commandCenter, registerCommand } from '$lib/helpers/commandCenter';
+    import { commands, disableCommands, registerCommand } from '$lib/helpers/commandCenter';
     import { isMac } from '$lib/helpers/platform';
 
     let open = false;
@@ -48,7 +48,7 @@
         selected = 0;
     }
 
-    $: $commandCenter.enabled = !open;
+    $: $disableCommands(open);
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
@@ -98,7 +98,7 @@
     }
 
     .result {
-        border-radius: 0.25rem;
+        border-radius: 0.75rem;
         padding: 0.5rem 0.75rem;
     }
 
