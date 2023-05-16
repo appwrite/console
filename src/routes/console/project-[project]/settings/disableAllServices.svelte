@@ -6,7 +6,7 @@
     export let handleDisableAll;
 </script>
 
-<Modal warning={true} bind:show onSubmit={handleDisableAll}>
+<Modal icon="exclamation" state="warning" bind:show onSubmit={handleDisableAll}>
     <svelte:fragment slot="header">Disable all services</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to disable all services? This will disable API requests to your
