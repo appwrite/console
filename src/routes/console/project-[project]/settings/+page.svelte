@@ -3,6 +3,7 @@
     import { onMount } from 'svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
+    import { organizationList } from '$lib/stores/organization';
     import { project } from '../store';
     import { services, type Service } from '$lib/stores/project-services';
     import { CardGrid, CopyInput, Box, Heading } from '$lib/components';
@@ -14,14 +15,19 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import Transfer from './transferProject.svelte';
 
     let name: string = null;
+    let teamId: string = null;
     let showDelete = false;
+    let showTransfer = false;
     const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
 
     onMount(async () => {
         name ??= $project.name;
+        teamId ??= $project.teamId;
     });
 
     async function updateName() {
@@ -134,7 +140,28 @@
                 </FormList>
             </svelte:fragment>
         </CardGrid>
+        <CardGrid>
+            <Heading tag="h6" size="7">Transfer project</Heading>
+            <p class="text">Transfer your project to another organization that you own.</p>
 
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputSelect
+                        id="organization"
+                        label="Available organizations"
+                        bind:value={teamId}
+                        options={$organizationList.teams.map((team) => ({
+                            value: team.$id,
+                            label: team.name
+                        }))} />
+                </FormList>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button disabled={teamId === $project.teamId} on:click={() => (showTransfer = true)}
+                    >Transfer</Button>
+            </svelte:fragment>
+        </CardGrid>
         <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Delete Project</Heading>
@@ -160,3 +187,9 @@
 </Container>
 
 <Delete bind:showDelete />
+{#if teamId}
+    <Transfer
+        bind:teamId
+        teamName={$organizationList.teams.find((t) => t.$id == teamId).name}
+        bind:show={showTransfer} />
+{/if}
