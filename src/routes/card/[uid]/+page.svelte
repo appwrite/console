@@ -29,7 +29,8 @@
     let cardIsFlipped = false;
     let showEmbedCode = false;
 
-    $: title = variant === 'owner' ? 'Welcome to the cloud' : 'Join the Appwrite Cloud';
+    $: title =
+        variant === 'owner' ? 'Welcome to Cloud Public Beta' : 'Join Appwrite Cloud Public Beta';
     $: shareableLink =
         typeof window !== 'undefined' ? `${window.location.origin}/card/${userId}` : '';
     $: embedCode = [
@@ -102,9 +103,9 @@
         <div class="content">
             <div>
                 {#if variant === 'owner'}
-                    <h4 class="eyebrow-heading-2">Share your card</h4>
+                    <h4 class="eyebrow-heading-3 is-only-desktop">Share your card</h4>
                 {:else if variant === 'external'}
-                    <h4 class="eyebrow-heading-2">Share card</h4>
+                    <h4 class="eyebrow-heading-3 is-only-desktop">Share card</h4>
                 {/if}
                 {#if variant === 'external'}
                     <a
@@ -237,7 +238,7 @@
         flex-grow: 1;
         position: relative;
 
-        grid-template-columns: 600px 400px;
+        grid-template-columns: 620px 400px;
         padding-block: 4rem;
         gap: max(4rem, 10vw);
         overflow: hidden;
@@ -394,7 +395,7 @@
                 align-items: stretch;
                 margin-block-start: 1rem;
                 padding-block-end: 2rem;
-                border-block-end: 1px solid var(--sep-clr);
+                // border-block-end: 1px solid var(--sep-clr);
             }
 
             .card-preview {
