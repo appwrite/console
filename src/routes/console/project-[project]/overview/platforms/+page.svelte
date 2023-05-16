@@ -72,7 +72,13 @@
         }
     };
 
-    $: $registerProjectCommand();
+    $: $registerProjectCommand([
+        {
+            label: 'Create Web App',
+            callback: () => addPlatform(Platform.Web),
+            keys: ['c']
+        }
+    ]);
 </script>
 
 <div class="common-section u-flex u-gap-12">

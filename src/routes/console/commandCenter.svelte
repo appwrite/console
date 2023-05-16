@@ -1,7 +1,10 @@
 <script lang="ts">
+    import { afterNavigate } from '$app/navigation';
     import Dialog from '$lib/components/dialog.svelte';
-    import { commands, commandCenter, registerCommand } from '$lib/helpers/commandCenter';
+    import { commands, disableCommands, registerCommand } from '$lib/helpers/commandCenter';
     import { isMac } from '$lib/helpers/platform';
+    import { quadOut } from 'svelte/easing';
+    import { crossfade } from 'svelte/transition';
 
     let open = false;
     let search = '';
@@ -30,10 +33,18 @@
         if (!open) return;
         if (event.key === 'ArrowDown') {
             event.preventDefault();
-            selected = selected === results.length - 1 ? 0 : selected + 1;
+            if (event.metaKey) {
+                selected = results.length - 1;
+            } else {
+                selected = selected === results.length - 1 ? results.length - 1 : selected + 1;
+            }
         } else if (event.key === 'ArrowUp') {
             event.preventDefault();
-            selected = selected === 0 ? results.length - 1 : selected - 1;
+            if (event.metaKey) {
+                selected = 0;
+            } else {
+                selected = selected === 0 ? 0 : selected - 1;
+            }
         } else if (event.key === 'Enter') {
             event.preventDefault();
             if (results[selected]) {
@@ -41,6 +52,12 @@
                 open = false;
                 search = '';
             }
+        } else if (event.key === 'Home') {
+            event.preventDefault();
+            selected = 0;
+        } else if (event.key === 'End') {
+            event.preventDefault();
+            selected = results.length - 1;
         }
     }
 
@@ -49,7 +66,17 @@
         selected = 0;
     }
 
-    $: $commandCenter.enabled = !open;
+    $: $disableCommands(open);
+
+    const [send, receive] = crossfade({
+        duration: 150,
+        easing: quadOut
+    });
+
+    afterNavigate(() => {
+        open = false;
+        search = '';
+    });
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
@@ -60,27 +87,35 @@
 
         <ul class="u-margin-block-start-16 u-flex u-flex-vertical u-gap-8">
             {#each results as command, i}
-                <li
-                    class="u-flex u-main-space-between result"
-                    data-selected={selected === i ? true : undefined}>
-                    <span>
-                        {command.label}
-                    </span>
-                    <div class="u-flex u-gap-4">
-                        {#if command.ctrl}
-                            <kbd class="kbd"> {isMac() ? '⌘' : 'ctrl'} </kbd>
-                        {/if}
-                        {#if command.shift}
-                            <kbd class="kbd"> {isMac() ? '⇧' : 'shift'} </kbd>
-                        {/if}
-                        {#if command.alt}
-                            <kbd class="kbd"> {isMac() ? '⌥' : 'alt'} </kbd>
-                        {/if}
-                        {#each command.keys as key}
-                            <kbd class="kbd">
-                                {key.toUpperCase()}
-                            </kbd>
-                        {/each}
+                <li class="result" data-selected={selected === i ? true : undefined}>
+                    {#if selected === i}
+                        <div class="bg" in:send={{ key: 'bg' }} out:receive={{ key: 'bg' }} />
+                    {/if}
+                    <div class="u-flex u-main-space-between content">
+                        <span>
+                            {command.label}
+                        </span>
+                        <div class="u-flex u-gap-4 u-cross-center">
+                            {#if command.ctrl}
+                                <kbd class="kbd"> {isMac() ? '⌘' : 'ctrl'} </kbd>
+                            {/if}
+                            {#if command.shift}
+                                <kbd class="kbd"> {isMac() ? '⇧' : 'shift'} </kbd>
+                            {/if}
+                            {#if command.alt}
+                                <kbd class="kbd"> {isMac() ? '⌥' : 'alt'} </kbd>
+                            {/if}
+                            {#each command.keys as key, i}
+                                {@const hasNext = command.keys.length - 1 !== i}
+
+                                <kbd class="kbd">
+                                    {key.toUpperCase()}
+                                </kbd>
+                                {#if hasNext}
+                                    <span class="u-margin-inline-4" style:opacity={0.5}>then</span>
+                                {/if}
+                            {/each}
+                        </div>
                     </div>
                 </li>
             {:else}
@@ -99,12 +134,30 @@
     }
 
     .result {
-        border-radius: 0.25rem;
         padding: 0.5rem 0.75rem;
+        transition: 150ms;
+        position: relative;
+
+        opacity: 0.65;
+        transition: 75ms cubic-bezier(0.5, 1, 0.89, 1);
     }
 
     .result[data-selected] {
+        opacity: 1;
+        transition: 150ms cubic-bezier(0.5, 1, 0.89, 1);
+    }
+
+    .result .content {
+        position: relative;
+        z-index: 10;
+    }
+
+    .result .bg {
+        position: absolute;
+        inset: 0;
         background-color: hsl(var(--color-neutral-200));
+        border-radius: 0.75rem;
+        translate: 0 -1px;
     }
 
     .kbd {
