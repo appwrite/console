@@ -46,22 +46,22 @@
     }
 </script>
 
-<div
-    class="interactive-text-output is-buttons-on-top"
-    style:min-inline-size="0"
-    style:display="inline-flex">
-    <span
-        style:white-space="nowrap"
-        class="text u-line-height-1-5"
-        style:overflow="hidden"
-        use:truncateText>
-        <slot />
-    </span>
-    <div class="interactive-text-output-buttons">
-        <Copy {value} {event}>
+<Copy {value} {event}>
+    <div
+        class="interactive-text-output is-buttons-on-top"
+        style:min-inline-size="0"
+        style:display="inline-flex">
+        <span
+            style:white-space="nowrap"
+            class="text u-line-height-1-5"
+            style:overflow="hidden"
+            use:truncateText>
+            <slot />
+        </span>
+        <div class="interactive-text-output-buttons">
             <button class="interactive-text-output-button is-hidden" aria-label="copy text">
                 <span class="icon-duplicate" aria-hidden="true" />
             </button>
-        </Copy>
+        </div>
     </div>
-</div>
+</Copy>
