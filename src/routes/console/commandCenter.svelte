@@ -3,7 +3,7 @@
     import Dialog from '$lib/components/dialog.svelte';
     import { commands, disableCommands, registerCommand } from '$lib/helpers/commandCenter';
     import { isMac } from '$lib/helpers/platform';
-    import { bounceOut, elasticOut, quadOut } from 'svelte/easing';
+    import { quadOut } from 'svelte/easing';
     import { crossfade } from 'svelte/transition';
 
     let open = false;
@@ -32,10 +32,18 @@
     function handleKeyDown(event: KeyboardEvent) {
         if (event.key === 'ArrowDown') {
             event.preventDefault();
-            selected = selected === results.length - 1 ? 0 : selected + 1;
+            if (event.metaKey) {
+                selected = results.length - 1;
+            } else {
+                selected = selected === results.length - 1 ? results.length - 1 : selected + 1;
+            }
         } else if (event.key === 'ArrowUp') {
             event.preventDefault();
-            selected = selected === 0 ? results.length - 1 : selected - 1;
+            if (event.metaKey) {
+                selected = 0;
+            } else {
+                selected = selected === 0 ? 0 : selected - 1;
+            }
         } else if (event.key === 'Enter') {
             event.preventDefault();
             if (results[selected]) {
@@ -43,6 +51,12 @@
                 open = false;
                 search = '';
             }
+        } else if (event.key === 'Home') {
+            event.preventDefault();
+            selected = 0;
+        } else if (event.key === 'End') {
+            event.preventDefault();
+            selected = results.length - 1;
         }
     }
 
@@ -122,6 +136,14 @@
         padding: 0.5rem 0.75rem;
         transition: 150ms;
         position: relative;
+
+        opacity: 0.65;
+        transition: 75ms cubic-bezier(0.5, 1, 0.89, 1);
+    }
+
+    .result[data-selected] {
+        opacity: 1;
+        transition: 150ms cubic-bezier(0.5, 1, 0.89, 1);
     }
 
     .result .content {
@@ -136,10 +158,6 @@
         border-radius: 0.75rem;
         translate: 0 -1px;
     }
-
-    /* .result[data-selected] {
-        background-color: hsl(var(--color-neutral-200));
-    } */
 
     .kbd {
         padding-inline: 0.25rem;
