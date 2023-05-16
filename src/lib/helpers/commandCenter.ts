@@ -74,6 +74,10 @@ export const disableCommands = {
     }
 };
 
+function isInputEvent(event: KeyboardEvent) {
+    return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
+}
+
 export const commandCenterKeyDownHandler = derived(
     [commandCenter, commandsEnabled],
     ([{ commandMap }, enabled]) => {
@@ -81,16 +85,15 @@ export const commandCenterKeyDownHandler = derived(
         let recentKeyCodes: number[] = [];
 
         return (event: KeyboardEvent) => {
-            // ignore keypresses that come from input, textarea and select elements
-            if (['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName)) {
-                return;
-            }
-
             recentKeyCodes.push(event.keyCode);
             debounce(() => (recentKeyCodes = []), 1000)();
 
             for (const command of commandsArr) {
-                if (command.disabled || (!enabled && !command.forceEnable)) continue;
+                if (!command.forceEnable) {
+                    if (command.disabled) continue;
+                    if (!enabled) continue;
+                    if (isInputEvent(event)) continue;
+                }
 
                 const { keys, ctrl: meta, shift, alt, callback } = command;
 

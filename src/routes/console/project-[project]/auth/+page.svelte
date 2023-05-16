@@ -24,9 +24,10 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
-    import { project, registerProjectCommand } from '../store';
+    import { project } from '../store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
+    import { registerCommand } from '$lib/helpers/commandCenter';
 
     export let data: PageData;
 
@@ -36,7 +37,7 @@
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
     }
 
-    $: $registerProjectCommand([
+    $: $registerCommand([
         {
             label: 'Create user',
             callback: () => {

@@ -9,7 +9,6 @@
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import Wizard from './keys/wizard.svelte';
-    import { registerProjectCommand } from '../store';
 
     export let projectId: string;
 
@@ -43,8 +42,6 @@
     $: onBoardIntro = $app.themeInUse === 'dark' ? OnboardDarkIntro : OnboardLightIntro;
     $: onBoardImage1 = $app.themeInUse === 'dark' ? OnboardDark1 : OnboardLight1;
     $: onBoardImage2 = $app.themeInUse === 'dark' ? OnboardDark2 : OnboardLight2;
-
-    $: $registerProjectCommand();
 </script>
 
 <div class="card">

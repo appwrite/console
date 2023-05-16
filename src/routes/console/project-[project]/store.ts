@@ -1,59 +1,9 @@
-import { goto } from '$app/navigation';
 import { page } from '$app/stores';
-import { registerCommand, type Command } from '$lib/helpers/commandCenter';
 import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
-import { derived, writable, type Readable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
-
-export const registerProjectCommand = derived(
-    [project, registerCommand],
-    ([$project, $register]) => {
-        return (c: Command[] = []) => {
-            const projectCommands: Command[] = [
-                {
-                    label: 'Go to Overview',
-                    keys: ['g', 'o'],
-
-                    callback: () => {
-                        goto(`/console/project-${$project.$id}`);
-                    }
-                },
-
-                {
-                    label: 'Go to Auth',
-                    callback: () => {
-                        goto(`/console/project-${$project.$id}/auth`);
-                    },
-                    keys: ['g', 'a']
-                },
-                {
-                    label: 'Go to Databases',
-                    callback: () => {
-                        goto(`/console/project-${$project.$id}/databases`);
-                    },
-                    keys: ['g', 'd']
-                },
-                {
-                    label: 'Go to Functions',
-                    callback: () => {
-                        goto(`/console/project-${$project.$id}/functions`);
-                    },
-                    keys: ['g', 'f']
-                },
-                {
-                    label: 'Go to Storage',
-                    callback: () => {
-                        goto(`/console/project-${$project.$id}/storage`);
-                    },
-                    keys: ['g', 's']
-                }
-            ];
-            return $register([...projectCommands, ...(c ?? [])]);
-        };
-    }
-) as Readable<(c?: Command[]) => void>;
 
 export const onboarding = derived(
     project,
