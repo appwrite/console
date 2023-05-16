@@ -66,36 +66,36 @@
 
         <ul class="u-margin-block-start-16 u-flex u-flex-vertical u-gap-8">
             {#each results as command, i}
-                <li
-                    class="u-flex u-main-space-between result"
-                    data-selected={selected === i ? true : undefined}>
-                    <span>
-                        {command.label}
-                    </span>
-                    <div class="u-flex u-gap-4 u-cross-center">
-                        {#if command.ctrl}
-                            <kbd class="kbd"> {isMac() ? '⌘' : 'ctrl'} </kbd>
-                        {/if}
-                        {#if command.shift}
-                            <kbd class="kbd"> {isMac() ? '⇧' : 'shift'} </kbd>
-                        {/if}
-                        {#if command.alt}
-                            <kbd class="kbd"> {isMac() ? '⌥' : 'alt'} </kbd>
-                        {/if}
-                        {#each command.keys as key, i}
-                            {@const hasNext = command.keys.length - 1 !== i}
-
-                            <kbd class="kbd">
-                                {key.toUpperCase()}
-                            </kbd>
-                            {#if hasNext}
-                                <span class="u-margin-inline-4" style:opacity={0.5}>then</span>
-                            {/if}
-                        {/each}
-                    </div>
+                <li class="result" data-selected={selected === i ? true : undefined}>
                     {#if selected === i}
                         <div class="bg" in:send={{ key: 'bg' }} out:receive={{ key: 'bg' }} />
                     {/if}
+                    <div class="u-flex u-main-space-between content">
+                        <span>
+                            {command.label}
+                        </span>
+                        <div class="u-flex u-gap-4 u-cross-center">
+                            {#if command.ctrl}
+                                <kbd class="kbd"> {isMac() ? '⌘' : 'ctrl'} </kbd>
+                            {/if}
+                            {#if command.shift}
+                                <kbd class="kbd"> {isMac() ? '⇧' : 'shift'} </kbd>
+                            {/if}
+                            {#if command.alt}
+                                <kbd class="kbd"> {isMac() ? '⌥' : 'alt'} </kbd>
+                            {/if}
+                            {#each command.keys as key, i}
+                                {@const hasNext = command.keys.length - 1 !== i}
+
+                                <kbd class="kbd">
+                                    {key.toUpperCase()}
+                                </kbd>
+                                {#if hasNext}
+                                    <span class="u-margin-inline-4" style:opacity={0.5}>then</span>
+                                {/if}
+                            {/each}
+                        </div>
+                    </div>
                 </li>
             {:else}
                 <li class="result">
@@ -118,14 +118,17 @@
         position: relative;
     }
 
+    .result .content {
+        position: relative;
+        z-index: 10;
+    }
+
     .result .bg {
         position: absolute;
         inset: 0;
         background-color: hsl(var(--color-neutral-200));
         border-radius: 0.75rem;
         translate: 0 -1px;
-
-        z-index: -1;
     }
 
     /* .result[data-selected] {

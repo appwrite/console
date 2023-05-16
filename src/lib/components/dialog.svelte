@@ -1,6 +1,7 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
     import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+    import { fade, scale } from 'svelte/transition';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
@@ -9,7 +10,7 @@
     export let headerDivider = true;
     export let animate = true;
 
-    let dialog: HTMLDialogElement;
+    let dialog: HTMLDivElement;
     let alert: HTMLElement;
 
     const dispatch = createEventDispatcher();
@@ -31,20 +32,14 @@
         }
     }
     function openModal() {
-        if (dialog && !dialog.open) {
-            dialog.showModal();
-            document.documentElement.classList.add('u-overflow-hidden');
-        }
+        document.documentElement.classList.add('u-overflow-hidden');
     }
 
     function closeModal() {
         if (closable) {
-            if (dialog && dialog.open) {
-                dispatch('close');
-                dialog.close();
-                show = false;
-                document.documentElement.classList.remove('u-overflow-hidden');
-            }
+            dispatch('close');
+            show = false;
+            document.documentElement.classList.remove('u-overflow-hidden');
         }
     }
 
@@ -71,20 +66,35 @@
 
 <svelte:window on:mousedown={handleBLur} on:keydown={handleKeydown} />
 
-<dialog
-    class="modal"
-    class:is-small={size === 'small'}
-    class:is-big={size === 'big'}
-    class:is-separate-header={headerDivider}
-    bind:this={dialog}
-    on:cancel|preventDefault>
-    {#if show}
-        <slot />
-    {/if}
-</dialog>
+{#if show}
+    <div
+        class="dialog"
+        class:is-small={size === 'small'}
+        class:is-big={size === 'big'}
+        class:is-separate-header={headerDivider}
+        on:cancel|preventDefault
+        bind:this={dialog}
+        transition:fade={{ duration: animate ? 150 : 0 }}>
+        <div class="card" transition:scale={{ duration: animate ? 150 : 0, start: 0.9 }}>
+            <slot />
+        </div>
+    </div>
+{/if}
 
 <style>
-    .modal {
+    .dialog {
+        padding: 0.5rem;
+        position: fixed;
+        inset: 0;
+        background-color: hsl(var(--color-neutral-500) / 0.5);
+        z-index: 9999;
+
+        display: grid;
+        place-items: center;
+    }
+
+    .card {
+        min-width: 400px;
         padding: 0.5rem;
     }
 </style>
