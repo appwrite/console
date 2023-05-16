@@ -40,7 +40,7 @@
         return { name, icon };
     };
 
-    function allServiceDisabled(project: Models.Projectj): boolean {
+    function allServiceDisabled(project: Models.Project): boolean {
         let disabled = true;
         services.load(project);
         $services.list.forEach((service) => {
