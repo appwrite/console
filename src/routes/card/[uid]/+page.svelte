@@ -46,8 +46,6 @@
             ``,
             `🌥️ Sign up now and claim your own card at ${shareableLink}`,
             ``,
-            `PS: Limited edition cloud hoodies up for grabs 🤩`,
-            ``,
             `#AppwriteCloud`
         ].join('\n')
     );
