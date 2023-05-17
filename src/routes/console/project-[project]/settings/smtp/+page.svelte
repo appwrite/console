@@ -74,7 +74,7 @@
 <Container>
     <Form onSubmit={updateSmtp}>
         <CardGrid>
-            <Heading tag="h6" size="7">SMTP Server</Heading>
+            <Heading tag="h6" size="7">SMTP server</Heading>
             <p class="text">
                 You can customize the email service by providing your own SMTP server. View your
                 email templates <a
@@ -87,7 +87,7 @@
                         type="switchbox"
                         id="enabled"
                         bind:value={enabled}
-                        label="Custom SMTP Server">
+                        label="Custom SMTP server">
                         Enabling this option allows customizing email templates and prevents emails
                         from being labeled as spam.
                     </InputChoice>
@@ -95,19 +95,19 @@
                     {#if enabled}
                         <InputText
                             id="senderEmail"
-                            label="Sender Email"
+                            label="Sender email"
                             bind:value={sender}
                             required
                             placeholder="user@example.io" />
                         <InputText
                             id="serverHost"
-                            label="Server Host"
+                            label="Server host"
                             bind:value={host}
                             required
-                            placeholder="smtp.sendgrid.net" />
+                            placeholder="smtp.server.com" />
                         <InputNumber
                             id="serverPort"
-                            label="Server Port"
+                            label="Server port"
                             bind:value={port}
                             required
                             placeholder="587" />
@@ -125,14 +125,14 @@
                             required
                             placeholder="Enter password" />
 
-                        <InputChoice id="tls" label="TLS Secure Protocol">
+                        <InputChoice id="tls" label="TLS secure protocol">
                             Enable if TLS is supported on your SMTP server.
                         </InputChoice>
                     {/if}
                 </FormList>
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <Button text disabled={!enabled}>Send test email</Button>
+                <!-- <Button text disabled={!enabled}>Send test email</Button> -->
                 <Button submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
