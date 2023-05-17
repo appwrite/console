@@ -7,7 +7,14 @@
     import { project } from '../store';
     import { services, type Service } from '$lib/stores/project-services';
     import { CardGrid, CopyInput, Box, Heading } from '$lib/components';
-    import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputText,
+        InputSwitch,
+        InputSelect
+    } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -15,7 +22,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import Transfer from './transferProject.svelte';
 
     let name: string = null;
