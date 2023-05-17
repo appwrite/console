@@ -164,8 +164,10 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={teamId === $project.teamId} on:click={() => (showTransfer = true)}
-                    >Transfer</Button>
+                <Button
+                    secondary
+                    disabled={teamId === $project.teamId}
+                    on:click={() => (showTransfer = true)}>Transfer</Button>
             </svelte:fragment>
         </CardGrid>
         <CardGrid danger>
