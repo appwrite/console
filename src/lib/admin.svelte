@@ -1,13 +1,30 @@
 <script lang="ts">
-    import { modeOverwrite, modeTier } from '$lib/stores/admin';
+    import { modeOverwrite, tierOverwrite } from '$lib/stores/admin';
     import { SecondaryTabsItem, SecondaryTabs } from './components';
     import { Button } from './elements/forms';
     import { feedback } from './stores/app';
 
     export let show = false;
+
+    let admin: HTMLDivElement;
+
+    function handleBLur(event: MouseEvent) {
+        if (show && !(event.target === admin || admin.contains(event.target as Node))) {
+            show = false;
+        }
+    }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (show && event.key === 'Escape') {
+            event.preventDefault();
+            show = false;
+        }
+    }
 </script>
 
-<div class="admin">
+<svelte:window on:mousedown={handleBLur} on:keydown={handleKeydown} />
+
+<div class="admin" bind:this={admin} on:blur={() => console.log('test')}>
     {#if show}
         <div class="box u-flex u-gap-24 u-flex-vertical">
             <div class="u-flex u-cross-center">
@@ -23,8 +40,8 @@
                     <span class="icon-x" aria-hidden="true" />
                 </button>
             </div>
-            <div>
-                <p>Mode:</p>
+            <div class="u-flex u-flex-vertical u-gap-8">
+                <h2 class="eyebrow-heading-3">Mode:</h2>
                 <SecondaryTabs>
                     <SecondaryTabsItem
                         disabled={$modeOverwrite === 'self-hosted'}
@@ -38,22 +55,22 @@
                     </SecondaryTabsItem>
                 </SecondaryTabs>
             </div>
-            <div>
-                <p>Tier:</p>
+            <div class="u-flex u-flex-vertical u-gap-8">
+                <h2 class="eyebrow-heading-3">Tier:</h2>
                 <SecondaryTabs>
                     <SecondaryTabsItem
-                        disabled={$modeTier === 'base'}
-                        on:click={() => modeTier.set('base')}>
+                        disabled={$tierOverwrite === 'base'}
+                        on:click={() => tierOverwrite.set('base')}>
                         Base
                     </SecondaryTabsItem>
                     <SecondaryTabsItem
-                        disabled={$modeTier === 'premium'}
-                        on:click={() => modeTier.set('premium')}>
+                        disabled={$tierOverwrite === 'premium'}
+                        on:click={() => tierOverwrite.set('premium')}>
                         Premium
                     </SecondaryTabsItem>
                     <SecondaryTabsItem
-                        disabled={$modeTier === 'enterprise'}
-                        on:click={() => modeTier.set('enterprise')}>
+                        disabled={$tierOverwrite === 'enterprise'}
+                        on:click={() => tierOverwrite.set('enterprise')}>
                         Enterprise
                     </SecondaryTabsItem>
                 </SecondaryTabs>
@@ -67,17 +84,26 @@
                 }}>Switch Feedback</Button>
         </div>
     {:else}
-        <Button round text secondary on:click={() => (show = true)}>
-            <span class="icon-beaker" />
-        </Button>
+        <div class="admin-btn">
+            <Button round text secondary on:click={() => (show = true)}>
+                <span class="icon-beaker" />
+            </Button>
+        </div>
     {/if}
 </div>
 
 <style lang="scss">
     .admin {
         position: fixed;
-        top: 50%;
+        top: 70%;
         right: 0;
         transform: translateY(-50%);
+        border-radius: 0.5rem 0 0 0.5rem;
+        z-index: 1000;
+
+        &-btn {
+            border: 1px solid hsl(var(--color-neutral-100));
+            border-radius: 0.5rem 0 0 0.5rem;
+        }
     }
 </style>
