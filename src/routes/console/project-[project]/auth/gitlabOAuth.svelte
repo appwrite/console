@@ -81,7 +81,7 @@
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
-                !(appId && clientSecret && endpoint)}
+                !(appId && clientSecret)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>
