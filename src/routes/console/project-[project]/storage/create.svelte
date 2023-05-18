@@ -4,8 +4,8 @@
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { ID } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -19,7 +19,7 @@
 
     const create = async () => {
         try {
-            const bucket = await sdkForProject.storage.createBucket(id ? id : ID.unique(), name);
+            const bucket = await sdk.forProject.storage.createBucket(id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', bucket);
             addNotification({
@@ -45,7 +45,7 @@
     }
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show={showCreate}>
+<Modal {error} onSubmit={create} size="big" bind:show={showCreate}>
     <svelte:fragment slot="header">Create Bucket</svelte:fragment>
     <FormList>
         <InputText

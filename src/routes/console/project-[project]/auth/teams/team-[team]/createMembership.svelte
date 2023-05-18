@@ -4,7 +4,7 @@
     import { Modal, Alert } from '$lib/components';
     import { Button, InputEmail, InputText, InputTags, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -15,16 +15,18 @@
     let name: string, email: string, roles: string[];
     let error: string;
 
-    const create = async () => {
+    async function create() {
         const url = `${$page.url.origin}/console/project-${$page.params.project}/auth/teams/team-${$page.params.team}/members`;
 
         try {
-            const user = await sdkForProject.teams.createMembership(
+            const user = await sdk.forProject.teams.createMembership(
                 teamId,
-                email,
                 roles,
                 url,
-                name
+                email || undefined,
+                undefined,
+                undefined,
+                name || undefined
             );
             addNotification({
                 type: 'success',
@@ -39,10 +41,10 @@
             error = e.message;
             trackError(e, Submit.MemberCreate);
         }
-    };
+    }
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show={showCreate}>
+<Modal {error} onSubmit={create} size="big" bind:show={showCreate}>
     <svelte:fragment slot="header">Create Membership</svelte:fragment>
     <FormList>
         <InputEmail

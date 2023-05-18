@@ -6,14 +6,14 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { bucket } from './store';
 
     export let showDelete = false;
 
     const deleteUser = async () => {
         try {
-            await sdkForProject.storage.deleteBucket($bucket.$id);
+            await sdk.forProject.storage.deleteBucket($bucket.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -31,9 +31,14 @@
     };
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteUser} warning>
+<Modal
+    bind:show={showDelete}
+    onSubmit={deleteUser}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete Bucket</svelte:fragment>
-    <p>Are you sure you want to delete <b>{$bucket.name}</b>?</p>
+    <p data-private>Are you sure you want to delete <b>{$bucket.name}</b>?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

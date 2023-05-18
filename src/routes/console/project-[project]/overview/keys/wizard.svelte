@@ -6,7 +6,7 @@
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import { key } from './wizard/store';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
     import { onDestroy } from 'svelte';
@@ -16,14 +16,14 @@
 
     async function onFinish() {
         try {
-            const { $id } = await sdkForConsole.projects.createKey(
+            const { $id } = await sdk.forConsole.projects.createKey(
                 $page.params.project,
                 $key.name,
                 $key.scopes,
-                $key.expire ?? undefined
+                $key.expire || undefined
             );
             if ($onboarding) {
-                invalidate(Dependencies.PROJECT);
+                await invalidate(Dependencies.PROJECT);
             }
             trackEvent(Submit.KeyCreate, {
                 scopes: $key.scopes

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -17,8 +17,7 @@
 
     let name: string = null;
     let showDelete = false;
-    let updating = false;
-    const endpoint = sdkForConsole.client.config.endpoint;
+    const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
 
     onMount(async () => {
@@ -26,10 +25,9 @@
     });
 
     async function updateName() {
-        updating = true;
         try {
-            await sdkForConsole.projects.update($project.$id, name);
-            invalidate(Dependencies.PROJECT);
+            await sdk.forConsole.projects.update($project.$id, name);
+            await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'
@@ -44,20 +42,14 @@
         }
     }
 
-    $: {
-        // When project name is updated, finalize the updating flow
-        $project.name;
-        updating = false;
-    }
-
     async function serviceUpdate(service: Service) {
         try {
-            await sdkForConsole.projects.updateServiceStatus(
+            await sdk.forConsole.projects.updateServiceStatus(
                 $project.$id,
                 service.method,
                 service.value
             );
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: `${service.label} service has been ${
@@ -82,7 +74,7 @@
 
 <Container>
     {#if $project}
-        <Form on:submit={updateName}>
+        <Form onSubmit={updateName}>
             <CardGrid>
                 <Heading tag="h6" size="7">API Credentials</Heading>
                 <p class="text">Access Appwrite services using your API Endpoint and Project ID.</p>
@@ -102,7 +94,7 @@
                 </svelte:fragment>
             </CardGrid>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Name</Heading>
+                <Heading tag="h6" size="7">Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <FormList>
@@ -116,14 +108,17 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={name === $project.name || updating} submit>Update</Button>
+                    <Button disabled={name === $project.name} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
         <CardGrid>
             <Heading tag="h6" size="7">Services</Heading>
-            <p class="text">Choose services you wish to enable or disable.</p>
+            <p class="text">
+                Choose services you wish to enable or disable for the client API. When disabled, the
+                services are not accessible to client SDKs but remain accessible to server SDKs.
+            </p>
             <svelte:fragment slot="aside">
                 <FormList>
                     <form class="form">

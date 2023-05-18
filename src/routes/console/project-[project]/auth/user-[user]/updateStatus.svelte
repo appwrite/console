@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
 
     let showVerifcationDropdown = false;
@@ -15,11 +15,11 @@
     async function updateVerificationEmail() {
         showVerifcationDropdown = false;
         try {
-            await sdkForProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
-            invalidate(Dependencies.USER);
+            await sdk.forProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.emailVerification ? 'unverified' : 'verified'
+                    !$user.emailVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
             });
@@ -35,8 +35,8 @@
     async function updateVerificationPhone() {
         showVerifcationDropdown = false;
         try {
-            await sdkForProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
-            invalidate(Dependencies.USER);
+            await sdk.forProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.phoneVerification ? 'unverified' : 'verified'
@@ -54,7 +54,7 @@
     }
     async function updateStatus() {
         try {
-            await sdkForProject.users.updateStatus($user.$id, !$user.status);
+            await sdk.forProject.users.updateStatus($user.$id, !$user.status);
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
@@ -74,7 +74,7 @@
 </script>
 
 <CardGrid>
-    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
+    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
         {#if $user.email || $user.phone}
             {#if $user.name}
                 <AvatarInitials size={48} name={$user.name} />
@@ -92,7 +92,7 @@
     </div>
     <svelte:fragment slot="aside">
         <div class="u-flex u-main-space-between">
-            <div>
+            <div data-private>
                 {#if $user.email}
                     <p class="title">{$user.email}</p>
                 {/if}

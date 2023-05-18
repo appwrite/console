@@ -27,17 +27,21 @@
         error = element.validationMessage;
     };
 
-    $: if (element && required && !value) {
-        element.setCustomValidity('This field is required');
+    const isNotEmpty = (value: string | number | boolean) => {
+        return typeof value === 'boolean' ? true : !!value;
+    };
+
+    $: if (required && !isNotEmpty(value)) {
+        element?.setCustomValidity('This field is required');
+    } else {
+        element?.setCustomValidity('');
     }
 
-    $: if (element && required && value) {
-        element.setCustomValidity('');
-    }
-
-    $: if (value) {
+    $: if (isNotEmpty(value)) {
         error = null;
     }
+
+    $: hasNullOption = options.some((option) => option.value === null);
 </script>
 
 <FormItem>
@@ -52,8 +56,9 @@
             {disabled}
             bind:this={element}
             bind:value
-            on:invalid={handleInvalid}>
-            {#if placeholder}
+            on:invalid={handleInvalid}
+            on:change>
+            {#if placeholder && !hasNullOption}
                 <option value={null} disabled selected hidden>{placeholder}</option>
             {/if}
             {#each options as option}

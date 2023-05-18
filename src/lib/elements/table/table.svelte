@@ -7,6 +7,7 @@
     class="table is-selected-columns-mobile"
     class:u-margin-block-start-32={!noMargin}
     class:is-remove-outer-styles={noStyles}
-    role="table">
+    role="table"
+    data-private>
     <slot />
 </div>

@@ -6,7 +6,7 @@
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { createTimeUnitPair } from '$lib/helpers/unit';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;
@@ -15,8 +15,8 @@
 
     async function updateSessionLength() {
         try {
-            await sdkForConsole.projects.updateAuthDuration(projectId, $baseValue);
-            invalidate(Dependencies.PROJECT);
+            await sdk.forConsole.projects.updateAuthDuration(projectId, $baseValue);
+            await invalidate(Dependencies.PROJECT);
 
             addNotification({
                 type: 'success',
@@ -34,7 +34,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Session Length</Heading>
+    <Heading tag="h2" size="7">Session Length</Heading>
 
     <p>
         If you reduce the limit, users who are currently logged in will be logged out of the

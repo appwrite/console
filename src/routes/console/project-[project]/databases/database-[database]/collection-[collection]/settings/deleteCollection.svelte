@@ -1,21 +1,23 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { collection } from '../store';
 
     export let showDelete = false;
 
     const databaseId = $page.params.database;
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         try {
-            await sdkForProject.databases.deleteCollection(databaseId, $collection.$id);
+            await sdk.forProject.databases.deleteCollection(databaseId, $collection.$id);
+            await invalidate(Dependencies.DATABASE);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -32,13 +34,18 @@
             });
             trackError(error, Submit.CollectionDelete);
         }
-    };
+    }
 </script>
 
-<Modal warning={true} bind:show={showDelete} on:submit={handleDelete}>
+<Modal
+    icon="exclamation"
+    state="warning"
+    bind:show={showDelete}
+    onSubmit={handleDelete}
+    headerDivider={false}>
     <svelte:fragment slot="header">Delete Collection</svelte:fragment>
 
-    <p>
+    <p data-private>
         Are you sure you want to delete <b>{$collection.name}</b>?
     </p>
     <svelte:fragment slot="footer">

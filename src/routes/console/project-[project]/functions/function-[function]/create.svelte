@@ -1,7 +1,7 @@
 <script lang="ts">
     import { InputChoice, Button, InputText, InputFile, FormList } from '$lib/elements/forms';
     import { Modal, Collapsible, CollapsibleItem, Tabs, Tab, Code } from '$lib/components';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher, onMount } from 'svelte';
     import { page } from '$app/stores';
     import GithubLight from '$lib/images/github-illustration-light.svg';
@@ -62,10 +62,10 @@
     function setCodeSnippets(lang: string) {
         return {
             Unix: {
-                code: `appwrite functions createDeployment \\ 
-    --functionId=${functionId} \\ 
-    --entrypoint='index.${lang}' \\ 
-    --code="." \\ 
+                code: `appwrite functions createDeployment \\
+    --functionId=${functionId} \\
+    --entrypoint='index.${lang}' \\
+    --code="." \\
     --activate=true`,
                 language: 'bash'
             },
@@ -91,7 +91,7 @@
 
     async function create() {
         try {
-            await sdkForProject.functions.createDeployment(
+            await sdk.forProject.functions.createDeployment(
                 functionId,
                 entrypoint,
                 files[0],
@@ -133,7 +133,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
+<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
     <svelte:fragment slot="header">Create Deployment</svelte:fragment>
     <Tabs>
         <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI} event="deploy_cli">
@@ -187,7 +187,7 @@
                 <img src={GithubLight} alt="github" />
             {/if}
             <div class="u-flex u-flex-vertical u-gap-24">
-                <h3 class="body-text-1">Coming Soon!</h3>
+                <h3 class="body-text-1 u-bold">Coming Soon!</h3>
                 <p>
                     Creating deployments will be easier than ever with our upcoming Git Integration.
                     Just set up a repository and we'll do the rest.

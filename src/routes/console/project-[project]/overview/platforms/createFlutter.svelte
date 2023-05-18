@@ -12,10 +12,10 @@
     import { onboarding } from '../../store';
 
     async function onFinish() {
-        if ($onboarding) {
-            invalidate(Dependencies.PROJECT);
-        }
-        invalidate(Dependencies.PLATFORMS);
+        await Promise.all([
+            $onboarding && invalidate(Dependencies.PROJECT),
+            invalidate(Dependencies.PLATFORMS)
+        ]);
         createPlatform.reset();
         wizard.hide();
     }

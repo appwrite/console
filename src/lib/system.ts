@@ -25,3 +25,5 @@ export const ENV = {
 
 export const MODE =
     get(modeOverwrite) ?? (VARS.CONSOLE_MODE === Mode.CLOUD ? Mode.CLOUD : Mode.SELF_HOSTED);
+export const isCloud = MODE === Mode.CLOUD;
+export const isSelfHosted = MODE === Mode.SELF_HOSTED;

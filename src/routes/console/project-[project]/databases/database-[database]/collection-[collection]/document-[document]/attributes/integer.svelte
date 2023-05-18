@@ -1,6 +1,6 @@
 <script lang="ts">
     import { InputNumber } from '$lib/elements/forms';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let id: string;
     export let label: string;
@@ -13,8 +13,9 @@
     {id}
     {label}
     {optionalText}
+    nullable
     required={attribute.required}
     min={attribute.min}
     max={attribute.max}
-    bind:value
-    step={attribute.type === 'double' ? 'any' : 1} />
+    step={attribute.type === 'double' ? 'any' : 1}
+    bind:value />

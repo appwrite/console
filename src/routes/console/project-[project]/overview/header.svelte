@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Copy } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
     import { project } from '../store';
 </script>
@@ -10,11 +9,6 @@
         <CoverTitle>
             {$project?.name}
         </CoverTitle>
-        <Copy value={$project.$id}>
-            <Pill button>
-                <span class="icon-duplicate" aria-hidden="true" />
-                Project ID
-            </Pill>
-        </Copy>
+        <Id value={$project.$id}>{$project.$id}</Id>
     </svelte:fragment>
 </Cover>

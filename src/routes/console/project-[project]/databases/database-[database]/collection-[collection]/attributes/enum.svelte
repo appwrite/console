@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitEnum(
         databaseId: string,
@@ -8,14 +8,29 @@
         key: string,
         data: Partial<Models.AttributeEnum>
     ) {
-        await sdkForProject.databases.createEnumAttribute(
+        await sdk.forProject.databases.createEnumAttribute(
             databaseId,
             collectionId,
             key,
             data.elements,
             data.required,
-            data.default ? data.default : undefined,
+            data.default,
             data.array
+        );
+    }
+
+    export async function updateEnum(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeEnum>
+    ) {
+        await sdk.forProject.databases.updateEnumAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.elements,
+            data.required,
+            data.default
         );
     }
 </script>
@@ -23,27 +38,26 @@
 <script lang="ts">
     import { InputChoice, InputSelect, InputTags } from '$lib/elements/forms';
 
-    export let selectedAttribute: Models.AttributeEnum;
+    export let editing = false;
     export let data: Partial<Models.AttributeEnum>;
-
-    $: options =
-        data.elements?.map((e) => ({
-            value: e,
-            label: e
-        })) ?? [];
-
-    $: if (selectedAttribute) {
-        ({
-            required: data.required,
-            array: data.array,
-            elements: data.elements,
-            default: data.default
-        } = selectedAttribute);
-    }
 
     $: if (data.required || data.array) {
         data.default = null;
     }
+
+    $: options = [
+        ...(data?.elements ?? []).map((element) => {
+            return {
+                label: element,
+                value: element
+            };
+        }),
+        !data.required &&
+            !data.array && {
+                label: 'NULL',
+                value: null
+            }
+    ].filter(Boolean);
 </script>
 
 <InputTags
@@ -51,25 +65,17 @@
     label="Elements"
     bind:tags={data.elements}
     placeholder="Add elements here"
-    readonly={!!selectedAttribute}
     required />
 <InputSelect
     id="default"
     label="Default value"
-    bind:options
-    bind:value={data.default}
-    disabled={!!selectedAttribute || data.required} />
-<InputChoice
-    id="required"
-    label="Required"
-    bind:value={data.required}
-    disabled={!!selectedAttribute || data.array}>
+    disabled={data.array || data.required}
+    placeholder="Select a value"
+    {options}
+    bind:value={data.default} />
+<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
-<InputChoice
-    id="array"
-    label="Array"
-    bind:value={data.array}
-    disabled={!!selectedAttribute || data.required}>
+<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
     Indicate whether this attribute should act as an array
 </InputChoice>

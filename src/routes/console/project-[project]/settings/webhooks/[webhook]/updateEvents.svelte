@@ -8,7 +8,7 @@
     import { TableCell, TableCellText, TableList } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { writable, type Writable } from 'svelte/store';
     import { webhook } from './store';
@@ -25,17 +25,17 @@
 
     async function updateEvents() {
         try {
-            await sdkForConsole.projects.updateWebhook(
+            await sdk.forConsole.projects.updateWebhook(
                 projectId,
                 $webhook.$id,
                 $webhook.name,
                 Array.from($eventSet),
                 $webhook.url,
                 $webhook.security,
-                $webhook.httpUser,
-                $webhook.httpPass
+                $webhook.httpUser || undefined,
+                $webhook.httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOK);
+            await invalidate(Dependencies.WEBHOOK);
             areEventsDisabled = true;
             addNotification({
                 type: 'success',
@@ -64,9 +64,9 @@
     }
 </script>
 
-<Form on:submit={updateEvents}>
+<Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Events</Heading>
+        <Heading tag="h6" size="7">Events</Heading>
         <p class="text">
             Set the events that will trigger your webhook. Maximum 100 events allowed.
         </p>

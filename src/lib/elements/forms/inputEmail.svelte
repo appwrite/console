@@ -1,13 +1,16 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { FormItem, Helper, Label } from '.';
+    import NullCheckbox from './nullCheckbox.svelte';
 
     export let label: string;
+    export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let id: string;
     export let value = '';
     export let placeholder = '';
     export let required = false;
+    export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
@@ -38,10 +41,21 @@
     $: if (value) {
         error = null;
     }
+
+    let prevValue = '';
+    function handleNullChange(e: CustomEvent<boolean>) {
+        const isNull = e.detail;
+        if (isNull) {
+            prevValue = value;
+            value = null;
+        } else {
+            value = prevValue;
+        }
+    }
 </script>
 
 <FormItem>
-    <Label {required} hide={!showLabel} for={id}>
+    <Label {required} {optionalText} hide={!showLabel} for={id}>
         {label}
     </Label>
 
@@ -58,6 +72,14 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
+        {#if nullable && !required}
+            <ul
+                class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
+                <li class="buttons-list-item">
+                    <NullCheckbox checked={value === null} on:change={handleNullChange} />
+                </li>
+            </ul>
+        {/if}
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

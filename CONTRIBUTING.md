@@ -10,30 +10,57 @@ If you are worried about or don’t know where to start, check out the next sect
 
 ```
 ├── src
-│   ├── lib                             // All non-route components, accessible over "import ... from '$lib'"
-│   │   ├── components                  // Re-usable components
-│   │   ├── elements                    // Re-usable elements
-│   │   ├── layout                      // Global components for the layout (Nav/Content/Container)
-│   │   └── stores                      // Global stores (state management)
-│   └─── routes
-│       ├── console                     // Routes that need authentication
-│       │   ├──[project]
-│       │   │   ├── database            // Database Service
-│       │   │   │   ├── [collection]    // Nested Route for the collection "/console/[PROJECT_ID]/database/[COLLECTION_ID]"
-│       │   │   │   ├── _create.svelte  // Component to Create collections
-│       │   │   │   └── index.svelte    // Entrypoint for "/console/[PROJECT_ID]/database"
-│       │   │   ├── storage             // Storage Service "/console/[PROJECT]/storage"
-│       │   │   └── auth                // Users Service "/console/[PROJECT]/auth"
-│       │   └──...
-│       ├── login.svelte                // Component for Login "/console/login"
-│       └── register.svelte             // Component for Register "/console/register"
-├── build // Compiled application
-└── static // Static assets
+│   ├── lib                                       // Reusable logic (accessible with '$lib')
+│   │   ├── actions                               // Svelte actions
+│   │   ├── charts                                // Chart components
+│   │   ├── components                            // Re-usable components
+│   │   ├── elements                              // Re-usable elements
+│   │   ├── helpers                               // Small functions used through out the console
+│   │   ├── images                                // Images used in the console
+│   │   ├── layout                                // Global components for the layout (Nav/Content/Container)
+│   │   ├── mock                                  // Mock components used for testing
+│   │   └── stores                                // Global stores (state management)
+│   └── routes
+│       └── console                               // Routes that need authentication
+│       │   └── project-[project]
+│       │   │   └── database                      // Database Service
+│       │   │   │   ├── +layout.svelte            // Layout head and other logic like realtime events is set here
+│       │   │   │   ├── +layout.ts                // Layout data is set here (Header, Breadcrumbs, ...)
+│       │   │   │   ├── +page.svelte              // Page displayed on "/console/project-[PROJECT_ID]/database"
+│       │   │   │   ├── +page.ts                  // Necessary data for the page is fetched here
+│       │   │   │   └── create.svelte             // Component to create databases
+│       │   │   └── ...                           // Other services
+│       │   └── ...
+│       └── ...                                   // Routes that don't need authentication
+├── build                                         // Compiled application
+└── static                                        // Static assets
 ```
 
 ## Development
 
-Once you've created a project and installed dependencies with `npm install`, create a `.env` file using `.env.example` as a template.
+### 1. Clone the repository with git
+
+```bash
+git clone https://github.com/appwrite/console.git appwrite-console
+```
+
+### 2. Install dependencies with npm
+
+Navigate to the Appwrite Console repository and install dependencies.
+
+```bash
+cd appwrite-console && npm install
+```
+
+### 3. Install and run Appwrite locally
+
+When you run the Appwrite Console locally, it needs to point to a backend as well. The easiest way to do this is to run an Appwrite instance locally.
+
+Follow the [install instructions](https://appwrite.io/docs/installation) in the Appwrite docs.
+
+### 4. Setup environment variables
+
+Add a `.env` file by copying the `.env.example` file as a template in the project's root directory.
 
 Finally, start a development server:
 

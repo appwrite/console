@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
 
     export async function submitFloat(
         databaseId: string,
@@ -8,15 +8,31 @@
         key: string,
         data: Partial<Models.AttributeFloat>
     ) {
-        await sdkForProject.databases.createFloatAttribute(
+        await sdk.forProject.databases.createFloatAttribute(
             databaseId,
             collectionId,
             key,
             data.required,
             data.min,
             data.max,
-            typeof data.default === 'number' ? data.default : undefined,
+            data.default,
             data.array
+        );
+    }
+
+    export async function updateFloat(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeFloat>
+    ) {
+        await sdk.forProject.databases.updateFloatAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.required,
+            data.min,
+            data.max,
+            data.default
         );
     }
 </script>
@@ -24,7 +40,7 @@
 <script lang="ts">
     import { InputNumber, InputChoice } from '$lib/elements/forms';
 
-    export let selectedAttribute: Models.AttributeFloat;
+    export let editing = false;
     export let data: Partial<Models.AttributeFloat> = {
         required: false,
         min: 0,
@@ -33,44 +49,38 @@
         array: false
     };
 
-    $: if (selectedAttribute) {
-        ({
-            required: data.required,
-            array: data.array,
-            min: data.min,
-            max: data.max
-        } = selectedAttribute);
-        data.default = selectedAttribute.default;
-    }
-
     $: if (data.required || data.array) {
         data.default = null;
     }
 </script>
 
-<InputNumber id="min" label="Min" bind:value={data.min} readonly={!!selectedAttribute} />
-<InputNumber id="max" label="Max" bind:value={data.max} readonly={!!selectedAttribute} />
-
+<InputNumber
+    id="min"
+    label="Min"
+    placeholder="Enter size"
+    bind:value={data.min}
+    step="any"
+    required={editing} />
+<InputNumber
+    id="max"
+    label="Max"
+    placeholder="Enter size"
+    bind:value={data.max}
+    step="any"
+    required={editing} />
 <InputNumber
     id="default"
     label="Default value"
+    placeholder="Enter value"
     min={data.min}
     max={data.max}
     bind:value={data.default}
     disabled={data.required || data.array}
-    readonly={!!selectedAttribute}
+    nullable={!data.required && !data.array}
     step="any" />
-<InputChoice
-    id="required"
-    label="Required"
-    bind:value={data.required}
-    disabled={!!selectedAttribute || data.array}>
+<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
-<InputChoice
-    id="array"
-    label="Array"
-    bind:value={data.array}
-    disabled={!!selectedAttribute || data.required}>
+<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
     Indicate whether this attribute should act as an array
 </InputChoice>
