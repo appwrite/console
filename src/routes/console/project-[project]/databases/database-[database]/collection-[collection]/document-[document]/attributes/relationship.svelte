@@ -57,20 +57,39 @@
     });
 
     async function getDocuments(search: string = null) {
+        const documentList = {
+            total: 0,
+            documents: []
+        };
+
+        if (value) {
+            if (isRelationshipToMany(attribute)) {
+                documentList.documents.concat($doc[attribute.key]);
+                documentList.total += $doc[attribute.key].length;
+            } else {
+                documentList.documents.push($doc[attribute.key]);
+                documentList.total += 1;
+            }
+        }
+
         if (search) {
             const documents = await sdk.forProject.databases.listDocuments(
                 databaseId,
                 attribute.relatedCollection,
-                [Query.search('$id', search), Query.orderDesc('$createdAt')]
+                [`startsWith("$id", "${search}")`, Query.orderDesc('$createdAt')]
             );
-            return documents;
+            documentList.documents.concat(documents.documents);
+            documentList.total += documents.total;
         } else {
             const documents = await sdk.forProject.databases.listDocuments(
                 databaseId,
                 attribute.relatedCollection
             );
-            return documents;
+            documentList.documents.concat(documents.documents);
+            documentList.total += documents.total;
         }
+
+        return documentList;
     }
 
     //Reactive statements
