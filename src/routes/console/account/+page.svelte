@@ -154,10 +154,10 @@
     </Form>
     <CardGrid danger>
         <div>
-            <Heading tag="h6" size="7">Delete Account</Heading>
+            <Heading tag="h6" size="7">Deactivate Account</Heading>
         </div>
         <p>
-            Your account will be permanently deleted and access will be lost to any of your teams
+            Your account will be permanently deactivated and access will be lost to any of your teams
             and data. This action is irreversible.
         </p>
         <svelte:fragment slot="aside">

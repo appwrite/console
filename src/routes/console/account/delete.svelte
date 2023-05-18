@@ -1,13 +1,15 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
+    import { Button, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdkForConsole } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
 
     export let showDelete = false;
+    let email: string = null;
 
     const deleteAccount = async () => {
         try {
@@ -30,10 +32,22 @@
 </script>
 
 <Modal bind:show={showDelete} on:submit={deleteAccount} warning>
-    <svelte:fragment slot="header">Delete Account</svelte:fragment>
-    <p>Are you sure you want to delete your account?</p>
+    <svelte:fragment slot="header">Deactivate Account</svelte:fragment>
+    <p>
+        Are you sure you want to deactivate your account? <b
+            >This action is irreversible, and you cannot create a new account again with this email.</b>
+    </p>
+    <FormList>
+        <InputText
+            label={`Enter "${$user.email}" to continue`}
+            placeholder="Enter email"
+            id="user-email"
+            autofocus
+            required
+            bind:value={email} />
+    </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button disabled={!email || email !== $user.email} secondary submit>Delete</Button>
     </svelte:fragment>
 </Modal>
