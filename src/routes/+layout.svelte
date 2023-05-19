@@ -8,7 +8,7 @@
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
-    import { ENV, isCloud } from '$lib/system';
+    import { ENV, VARS, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
     import LogRocket from 'logrocket';
     import { BrowserTracing } from '@sentry/tracing';
@@ -108,6 +108,8 @@
             }
         }
     }
+
+    $: console.log(VARS, ENV);
 </script>
 
 <Notifications />

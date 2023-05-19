@@ -61,12 +61,12 @@
                     <SecondaryTabsItem
                         disabled={$tierOverwrite === 'base'}
                         on:click={() => tierOverwrite.set('base')}>
-                        Base
+                        Free
                     </SecondaryTabsItem>
                     <SecondaryTabsItem
                         disabled={$tierOverwrite === 'premium'}
                         on:click={() => tierOverwrite.set('premium')}>
-                        Premium
+                        Pro
                     </SecondaryTabsItem>
                     <SecondaryTabsItem
                         disabled={$tierOverwrite === 'enterprise'}
@@ -75,13 +75,21 @@
                     </SecondaryTabsItem>
                 </SecondaryTabs>
             </div>
-            <Button
-                secondary
-                on:click={() => {
-                    $feedback.type === 'general'
-                        ? feedback.switchType('nps')
-                        : feedback.switchType('general');
-                }}>Switch Feedback</Button>
+            <div class="u-flex u-flex-vertical u-gap-8">
+                <h2 class="eyebrow-heading-3">Feedback:</h2>
+                <SecondaryTabs>
+                    <SecondaryTabsItem
+                        disabled={$feedback.type === 'general'}
+                        on:click={() => feedback.switchType('general')}>
+                        General
+                    </SecondaryTabsItem>
+                    <SecondaryTabsItem
+                        disabled={$feedback.type === 'nps'}
+                        on:click={() => feedback.switchType('nps')}>
+                        NPS
+                    </SecondaryTabsItem>
+                </SecondaryTabs>
+            </div>
         </div>
     {:else}
         <div class="admin-btn">
