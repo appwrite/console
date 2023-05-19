@@ -1,6 +1,5 @@
 import { modeOverwrite } from '$lib/stores/admin';
 import { get } from 'svelte/store';
-import { VITE_VERCEL_ENV } from '$env/static/private';
 
 export enum Mode {
     CLOUD = 'cloud',
@@ -13,7 +12,7 @@ export const VARS = {
         | string
         | undefined,
     CONSOLE_MODE: import.meta.env?.VITE_CONSOLE_MODE?.toString() as string | undefined,
-    VERCEL_ENV: VITE_VERCEL_ENV?.toString() as string | undefined,
+    VERCEL_ENV: import.meta.env?.VITE_VERCEL_ENV?.toString() as string | undefined,
     GOOGLE_ANALYTICS: import.meta.env?.VITE_GA_PROJECT?.toString() as string | undefined
 };
 
