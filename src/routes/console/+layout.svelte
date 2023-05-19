@@ -16,10 +16,22 @@
     import Create from './createOrganization.svelte';
 
     import { goto } from '$app/navigation';
-    import { registerCommands, commandCenterKeyDownHandler } from '$lib/helpers/commandCenter';
-    import CommandCenter from './commandCenter.svelte';
+
+    import { addSubPanel } from '$lib/commandCenter/subPanels';
+    import { registerCommands, CommandCenter } from '$lib/commandCenter';
+    import { AI } from '$lib/commandCenter/panels';
 
     $: $registerCommands([
+        {
+            label: 'Ask AI',
+            callback: () => {
+                addSubPanel({
+                    name: 'Ask AI',
+                    component: AI
+                });
+            },
+            keys: ['a', 'i']
+        },
         {
             label: 'Go to Account',
             callback: () => {
@@ -68,8 +80,6 @@
         $log.func = null;
     }
 </script>
-
-<svelte:window on:keydown={$commandCenterKeyDownHandler} />
 
 <CommandCenter />
 

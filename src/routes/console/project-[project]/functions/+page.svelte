@@ -19,7 +19,7 @@
     import type { PageData } from './$types';
     import Create from './createFunction.svelte';
 
-    import { registerCommands } from '$lib/helpers/commandCenter';
+    import { registerCommands } from '$lib/commandCenter';
 
     export let data: PageData;
 

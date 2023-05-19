@@ -1,27 +1,11 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
-    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
     import { fade, scale } from 'svelte/transition';
 
-    export let show = false;
-    export let size: 'small' | 'big' = null;
-    export let error: string = null;
-    export let closable = true;
-    export let headerDivider = true;
-    export let animate = true;
-
     let dialog: HTMLDivElement;
-    let alert: HTMLElement;
 
     const dispatch = createEventDispatcher();
-
-    onMount(() => {
-        if (show) openModal();
-    });
-
-    onDestroy(() => {
-        if (show) closeModal();
-    });
 
     function handleBLur(event: MouseEvent) {
         if (event.target === dialog) {
@@ -31,16 +15,9 @@
             closeModal();
         }
     }
-    function openModal() {
-        document.documentElement.classList.add('u-overflow-hidden');
-    }
 
     function closeModal() {
-        if (closable) {
-            dispatch('close');
-            show = false;
-            document.documentElement.classList.remove('u-overflow-hidden');
-        }
+        dispatch('close');
     }
 
     function handleKeydown(event: KeyboardEvent) {
@@ -52,34 +29,15 @@
             closeModal();
         }
     }
-
-    $: if (show) {
-        openModal();
-    } else {
-        closeModal();
-    }
-
-    $: if (error) {
-        alert?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-    }
 </script>
 
 <svelte:window on:mousedown={handleBLur} on:keydown={handleKeydown} />
 
-{#if show}
-    <div
-        class="dialog"
-        class:is-small={size === 'small'}
-        class:is-big={size === 'big'}
-        class:is-separate-header={headerDivider}
-        on:cancel|preventDefault
-        bind:this={dialog}
-        transition:fade={{ duration: animate ? 150 : 0 }}>
-        <div class="card" transition:scale={{ duration: animate ? 150 : 0, start: 0.9 }}>
-            <slot />
-        </div>
+<div class="dialog" bind:this={dialog} transition:fade={{ duration: 150 }}>
+    <div class="card" transition:scale={{ duration: 150, start: 0.9 }}>
+        <slot />
     </div>
-{/if}
+</div>
 
 <style>
     .dialog {

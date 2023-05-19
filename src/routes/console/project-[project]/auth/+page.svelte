@@ -27,7 +27,7 @@
     import { project } from '../store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { registerCommands } from '$lib/helpers/commandCenter';
+    import { registerCommands } from '$lib/commandCenter';
 
     export let data: PageData;
 

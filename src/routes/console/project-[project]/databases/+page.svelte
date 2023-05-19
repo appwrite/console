@@ -12,7 +12,7 @@
     import Grid from './grid.svelte';
     import { columns } from './store';
     import Table from './table.svelte';
-    import { registerCommands } from '$lib/helpers/commandCenter';
+    import { registerCommands } from '$lib/commandCenter';
 
     export let data: PageData;
 

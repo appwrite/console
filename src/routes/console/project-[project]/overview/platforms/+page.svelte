@@ -36,7 +36,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
-    import { registerCommands } from '$lib/helpers/commandCenter';
+    import { registerCommands } from '$lib/commandCenter';
 
     export let data: PageData;
 

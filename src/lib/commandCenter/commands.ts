@@ -1,7 +1,8 @@
+import { debounce } from '$lib/helpers/debounce';
+import { isMac } from '$lib/helpers/platform';
 import { derived, writable } from 'svelte/store';
-import { debounce } from './debounce';
-import { isMac } from './platform';
 
+// Store
 export type Command = {
     keys: string[];
     /* Ctrl on Windows/Linux, Meta on Mac */
@@ -15,73 +16,27 @@ export type Command = {
     forceEnable?: boolean;
 };
 
-type CommandCenterState = {
-    commandMap: Map<string, Command[]>;
-    disabledMap: Map<string, boolean>;
-};
+export const commandMap = writable<Map<string, Command[]>>(new Map());
+export const disabledMap = writable<Map<string, boolean>>(new Map());
 
-export const commandCenter = writable<CommandCenterState>({
-    commandMap: new Map(),
-    disabledMap: new Map()
+// Derived stores
+export const commands = derived(commandMap, ($commandMap) => {
+    return Array.from($commandMap.values()).flat();
 });
 
-export const commands = derived(commandCenter, ($commandCenter) => {
-    return Array.from($commandCenter.commandMap.values()).flat();
-});
-
-const commandsEnabled = derived(commandCenter, ($commandCenter) => {
+const commandsEnabled = derived(disabledMap, ($disabledMap) => {
     // If there's an item on the disabledMap that's true, then disable the command center
-    return Array.from($commandCenter.disabledMap.values()).every((disabled) => !disabled);
+    return Array.from($disabledMap.values()).every((disabled) => !disabled);
 });
-
-export const registerCommands = {
-    subscribe(runner: (cb: (newCommands: Command[]) => void) => void) {
-        const uuid = crypto.randomUUID();
-
-        runner((newCommands: Command[]) => {
-            commandCenter.update((curr) => {
-                curr.commandMap.set(uuid, newCommands);
-                return curr;
-            });
-        });
-
-        return () => {
-            commandCenter.update((curr) => {
-                curr.commandMap.delete(uuid);
-                return curr;
-            });
-        };
-    }
-};
-
-export const disableCommands = {
-    subscribe(runner: (cb: (disabled: boolean) => void) => void) {
-        const uuid = crypto.randomUUID();
-
-        runner((disabled: boolean) => {
-            commandCenter.update((curr) => {
-                curr.disabledMap.set(uuid, disabled);
-                return curr;
-            });
-        });
-
-        return () => {
-            commandCenter.update((curr) => {
-                curr.disabledMap.delete(uuid);
-                return curr;
-            });
-        };
-    }
-};
 
 function isInputEvent(event: KeyboardEvent) {
     return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
 }
 
 export const commandCenterKeyDownHandler = derived(
-    [commandCenter, commandsEnabled],
-    ([{ commandMap }, enabled]) => {
-        const commandsArr = Array.from(commandMap.values()).flat();
+    [commandMap, commandsEnabled],
+    ([$commandMap, enabled]) => {
+        const commandsArr = Array.from($commandMap.values()).flat();
         let recentKeyCodes: number[] = [];
 
         return (event: KeyboardEvent) => {
@@ -113,3 +68,44 @@ export const commandCenterKeyDownHandler = derived(
         };
     }
 );
+
+// Methods
+export const registerCommands = {
+    subscribe(runner: (cb: (newCommands: Command[]) => void) => void) {
+        const uuid = crypto.randomUUID();
+
+        runner((newCommands: Command[]) => {
+            commandMap.update((curr) => {
+                curr.set(uuid, newCommands);
+                return curr;
+            });
+        });
+
+        return () => {
+            commandMap.update((curr) => {
+                curr.delete(uuid);
+                return curr;
+            });
+        };
+    }
+};
+
+export const disableCommands = {
+    subscribe(runner: (cb: (disabled: boolean) => void) => void) {
+        const uuid = crypto.randomUUID();
+
+        runner((disabled: boolean) => {
+            disabledMap.update((curr) => {
+                curr.set(uuid, disabled);
+                return curr;
+            });
+        });
+
+        return () => {
+            disabledMap.update((curr) => {
+                curr.delete(uuid);
+                return curr;
+            });
+        };
+    }
+};

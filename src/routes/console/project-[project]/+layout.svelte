@@ -3,8 +3,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
-    import { registerCommands } from '$lib/helpers/commandCenter';
+
     import { goto } from '$app/navigation';
+    import { registerCommands } from '$lib/commandCenter';
 
     onMount(async () => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {

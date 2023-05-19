@@ -15,7 +15,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
-    import { registerCommands } from '$lib/helpers/commandCenter';
+    import { registerCommands } from '$lib/commandCenter';
     import type { PageData } from './$types';
     import Create from './create.svelte';
 

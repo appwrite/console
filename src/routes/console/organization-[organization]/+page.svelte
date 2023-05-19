@@ -2,10 +2,11 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { registerCommands } from '$lib/commandCenter';
     import { CardContainer, Empty, GridItem1, Heading, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { registerCommands } from '$lib/helpers/commandCenter';
+
     import { Container } from '$lib/layout';
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
