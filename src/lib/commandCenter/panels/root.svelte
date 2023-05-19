@@ -17,7 +17,7 @@
     });
 </script>
 
-<Template options={results}>
+<Template options={results} bind:search>
     <div slot="option" class="u-flex u-main-space-between content" let:option={command}>
         <span>
             {command.label}

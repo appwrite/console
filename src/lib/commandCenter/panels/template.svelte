@@ -4,11 +4,10 @@
  -->
 
 <script lang="ts">
-    import { popSubPanel, subPanels } from '../subPanels';
+    import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
 
-    import Dialog from '$lib/components/dialog.svelte';
     import { quadOut } from 'svelte/easing';
-    import { crossfade } from 'svelte/transition';
+    import { crossfade, scale } from 'svelte/transition';
 
     type BaseOption = { callback: () => void };
     type Option = $$Generic<BaseOption>;
@@ -17,33 +16,47 @@
 
     let selected = 0;
 
+    function triggerOption(option: Option) {
+        const prevPanels = $subPanels.length;
+        option.callback();
+        if (prevPanels === $subPanels.length) {
+            clearSubPanels();
+        }
+    }
+
     function handleKeyDown(event: KeyboardEvent) {
         if (!open) return;
-        if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            if (event.metaKey) {
-                selected = options.length - 1;
-            } else {
-                selected = selected === options.length - 1 ? options.length - 1 : selected + 1;
-            }
-        } else if (event.key === 'ArrowUp') {
-            event.preventDefault();
-            if (event.metaKey) {
+
+        if (options) {
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                if (event.metaKey) {
+                    selected = options.length - 1;
+                } else {
+                    selected = selected === options.length - 1 ? options.length - 1 : selected + 1;
+                }
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                if (event.metaKey) {
+                    selected = 0;
+                } else {
+                    selected = selected === 0 ? 0 : selected - 1;
+                }
+            } else if (event.key === 'Enter' && options[selected]) {
+                event.preventDefault();
+                triggerOption(options[selected]);
+            } else if (event.key === 'Home') {
+                event.preventDefault();
                 selected = 0;
-            } else {
-                selected = selected === 0 ? 0 : selected - 1;
+            } else if (event.key === 'End') {
+                event.preventDefault();
+                selected = options.length - 1;
             }
-        } else if (event.key === 'Enter') {
+        }
+
+        if (event.key === 'Escape') {
             event.preventDefault();
-            if (options[selected]) {
-                options[selected].callback();
-            }
-        } else if (event.key === 'Home') {
-            event.preventDefault();
-            selected = 0;
-        } else if (event.key === 'End') {
-            event.preventDefault();
-            selected = options.length - 1;
+            popSubPanel();
         }
     }
 
@@ -60,12 +73,13 @@
 
 <svelte:window on:keydown={handleKeyDown} />
 
-<Dialog on:close={popSubPanel}>
+<div class="card" in:scale={{ duration: 150, start: 0.9 }}>
     <div class="u-flex u-flex-vertical u-width-full-line">
-        {#if $subPanels.length}
-            aaa
-        {/if}
-        <input type="text" placeholder="type here..." autofocus bind:value={search} />
+        <div class="u-flex">
+            <slot name="search">
+                <input type="text" placeholder="type here..." autofocus bind:value={search} />
+            </slot>
+        </div>
 
         {#if options}
             <ul class="u-margin-block-start-16 u-flex u-flex-vertical u-gap-8">
@@ -77,9 +91,15 @@
                                 in:send|local={{ key: 'bg' }}
                                 out:receive|local={{ key: 'bg' }} />
                         {/if}
-                        <div class="option">
+                        <button
+                            class="option"
+                            on:click={() => {
+                                triggerOption(option);
+                            }}
+                            on:mouseover={() => (selected = i)}
+                            on:focus={() => (selected = i)}>
                             <slot name="option" {option} />
-                        </div>
+                        </button>
                     </li>
                 {:else}
                     <li class="result">
@@ -93,16 +113,25 @@
             <slot />
         {/if}
     </div>
-</Dialog>
+</div>
 
 <style>
+    .card {
+        min-width: 400px;
+        padding: 0.5rem;
+
+        position: absolute;
+        top: clamp(128px, 20vh, 400px);
+        left: 50%;
+        translate: -50%;
+    }
+
     input {
         border: none;
         background-color: transparent;
     }
 
     .result {
-        padding: 0.5rem 0.75rem;
         transition: 150ms;
         position: relative;
 
@@ -124,7 +153,11 @@
     }
 
     .result .option {
+        padding: 0.5rem 0.75rem;
         position: relative;
         z-index: 10;
+        width: 100%;
+
+        box-shadow: none !important;
     }
 </style>

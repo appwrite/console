@@ -4,6 +4,7 @@
     import { last } from '$lib/helpers/array';
     import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
     import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
+    import { fade } from 'svelte/transition';
 
     $: $registerCommands([
         {
@@ -32,13 +33,34 @@
         document.documentElement.classList.remove('u-overflow-hidden');
     }
 
+    let dialog: HTMLDivElement;
+
+    function handleBlur(event: MouseEvent) {
+        if (event.target === dialog) {
+            clearSubPanels();
+        }
+    }
+
     afterNavigate(() => {
         clearSubPanels();
     });
 </script>
 
-<svelte:window on:keydown={$commandCenterKeyDownHandler} />
+<svelte:window on:mousedown={handleBlur} on:keydown={$commandCenterKeyDownHandler} />
 
 {#if openSubPanel}
-    <svelte:component this={openSubPanel.component} />
+    <div class="dialog" bind:this={dialog} transition:fade={{ duration: 150 }}>
+        <svelte:component this={openSubPanel.component} />
+    </div>
 {/if}
+
+<style>
+    .dialog {
+        padding: 0.5rem;
+        position: fixed;
+        inset: 0;
+
+        background-color: hsl(var(--color-neutral-500) / 0.5);
+        z-index: 9999;
+    }
+</style>
