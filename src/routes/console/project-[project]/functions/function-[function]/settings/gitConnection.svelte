@@ -21,11 +21,20 @@
     async function selectInstallation(installation: Models.Installation) {
         try {
             selectedInstallation = installation;
-
-            repositories = await sdk.forProject.vcs.listRepositories(selectedInstallation.$id);
         } catch (e) {
             error = e.message;
         }
+    }
+
+    async function searchRepositories(searchQuery: string) {
+        repositories = await sdk.forProject.vcs.listRepositories(
+            selectedInstallation.$id,
+            searchQuery || undefined
+        );
+    }
+
+    $: if (selectedInstallation) {
+        searchRepositories(inputValue);
     }
 
     async function connectRepository(repository: Models.Repository) {
@@ -54,6 +63,7 @@
             error = e.message;
         }
     }
+    let inputValue = '';
 </script>
 
 <Modal size="big" bind:show onSubmit={() => {}} bind:error>
@@ -109,6 +119,7 @@
         <p>
             2. Select repository:
 
+            <input type="text" bind:value={inputValue} placeholder="Enter a string" />
             {#if repositories === null}
                 <p>Loading...</p>
             {:else if repositories.repositories.length > 0}
