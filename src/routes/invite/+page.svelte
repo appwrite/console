@@ -9,6 +9,7 @@
     import { onMount } from 'svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert } from '$lib/components';
+    import { _ } from 'svelte-i18n';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;
@@ -40,28 +41,29 @@
 </script>
 
 <svelte:head>
-    <title>Accept invite - Appwrite</title>
+    <title>{$_('accept_invite.title')} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
     <svelte:fragment slot="title">
         {#if !userId || !secret || !membershipId || !teamId}
-            Invalid invite
+            {$_('accept_invite.invalid_invite')}
         {:else}
-            Invite
+            {$_('accept_invite.invite')}
         {/if}
     </svelte:fragment>
     <svelte:fragment>
         {#if !userId || !secret || !membershipId || !teamId}
             <Alert type="warning">
-                <svelte:fragment slot="title">The invite link is not valid</svelte:fragment>
-                Please ask the project owner to send you a new invite.
+                <svelte:fragment slot="title"
+                    >{$_('accept_invite.warning_alert.title')}</svelte:fragment>
+                {$_('accept_invite.warning_alert.title')}
             </Alert>
             <div class="u-flex u-main-end u-margin-block-start-40">
-                <Button href={`${base}/register`}>Sign up to Appwrite</Button>
+                <Button href={`${base}/register`}>{$_('accept_invite.sign_up')}</Button>
             </div>
         {:else}
-            <p class="text">You have been invited to join a team project on Appwrite</p>
+            <p class="text">{$_('accept_invite.success_alert.title')}</p>
             <Form onSubmit={acceptInvite}>
                 <FormList>
                     <InputChoice
@@ -70,23 +72,25 @@
                         id="terms"
                         label="terms"
                         showLabel={false}>
-                        By accepting the invitation, you agree to the <a
+                        {$_('privacy_and_policy.main_text')}
+                        <a
                             class="link"
                             href="https://appwrite.io/policy/terms"
                             target="_blank"
-                            rel="noopener noreferrer">Terms and Conditions</a>
-                        and
+                            rel="noopener noreferrer"
+                            >{$_('privacy_and_policy.terms_and_condition')}</a>
+                        {$_('privacy_and_policy.and')}
                         <a
                             class="link"
                             href="https://appwrite.io/policy/privacy"
                             target="_blank"
                             rel="noopener noreferrer">
-                            Privacy Policy</a
+                            {$_('privacy_and_policy.privacy_policy')}</a
                         >.</InputChoice>
 
                     <div class="u-flex u-main-end u-gap-12">
-                        <Button secondary href={`${base}/login`}>Cancel</Button>
-                        <Button submit>Accept</Button>
+                        <Button secondary href={`${base}/login`}>{$_('globals.cancel')}</Button>
+                        <Button submit>{$_('globals.accept')}</Button>
                     </div>
                 </FormList>
             </Form>

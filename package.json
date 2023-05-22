@@ -4,7 +4,8 @@
         "node": ">=16"
     },
     "scripts": {
-        "dev": "vite dev",
+        "dev": "vite",
+        "vite": "vite dev",
         "build": "node build.js",
         "preview": "vite preview",
         "sync": "svelte-kit sync",
@@ -30,6 +31,7 @@
         "logrocket": "^3.0.1",
         "pretty-bytes": "^6.1.0",
         "prismjs": "^1.29.0",
+        "svelte-i18n": "^3.6.0",
         "tippy.js": "^6.3.7",
         "web-vitals": "^3.1.1"
     },

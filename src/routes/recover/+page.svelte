@@ -15,6 +15,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
+    import { _ } from 'svelte-i18n';
 
     let email: string;
     let userId: string;
@@ -63,33 +64,33 @@
 </script>
 
 <svelte:head>
-    <title>Recover - Appwrite</title>
+    <title>{$_('globals.recover')} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Password Recovery</svelte:fragment>
+    <svelte:fragment slot="title">{$_('password_recovery.title')}</svelte:fragment>
     <svelte:fragment>
         {#if userId && secret}
             <Form onSubmit={setPassword}>
                 <FormList>
                     <InputPassword
-                        label="New password"
-                        placeholder="Enter password"
+                        label={$_('password_recovery.field_inputs.new_password')}
+                        placeholder={$_('globals.placeholders.enter_password')}
                         id="password"
                         autofocus={true}
                         required={true}
                         showPasswordButton={true}
                         bind:value={password} />
                     <InputPassword
-                        label="Confirm password"
-                        placeholder="Confirm password"
+                        label={$_('password_recovery.field_inputs.cnf_password')}
+                        placeholder={$_('globals.placeholders.confirm_password')}
                         id="confirm-password"
                         required={true}
                         showPasswordButton={true}
                         bind:value={confirmPassword} />
 
                     <FormItem>
-                        <Button fullWidth submit>Update</Button>
+                        <Button fullWidth submit>{$_('globals.update')}</Button>
                     </FormItem>
                 </FormList>
             </Form>
@@ -98,14 +99,14 @@
                 <FormList>
                     <InputEmail
                         id="email"
-                        label="Email"
-                        placeholder="Email"
+                        label={$_('password_recovery.field_inputs.email')}
+                        placeholder={$_('globals.placeholders.email')}
                         autofocus={true}
                         required={true}
                         bind:value={email} />
 
                     <FormItem>
-                        <Button fullWidth submit>Recover</Button>
+                        <Button fullWidth submit>{$_('globals.recover')}</Button>
                     </FormItem>
                 </FormList>
             </Form>
@@ -113,10 +114,10 @@
     </svelte:fragment>
     <svelte:fragment slot="links">
         <li class="inline-links-item">
-            <a href={`${base}/login`}><span class="text">Sign in</span></a>
+            <a href={`${base}/login`}><span class="text">{$_('login.title')}</span></a>
         </li>
         <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
+            <a href={`${base}/register`}><span class="text">{$_('sign_up.title')}</span></a>
         </li>
     </svelte:fragment>
 </Unauthenticated>

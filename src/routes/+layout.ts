@@ -6,6 +6,15 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
+import { register, init, getLocaleFromNavigator } from 'svelte-i18n';
+
+register('en', () => import('$lib/translations/en.json'));
+register('de', () => import('$lib/translations/de.json'));
+
+init({
+    fallbackLocale: 'en',
+    initialLocale: getLocaleFromNavigator()
+});
 
 export const ssr = false;
 

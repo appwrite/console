@@ -21,6 +21,7 @@
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { isCloud } from '$lib/system';
+    import { _ } from 'svelte-i18n';
 
     let slug = $page.params.slug;
     let imgLight = LoginLight;
@@ -86,7 +87,7 @@
 </script>
 
 <svelte:head>
-    <title>Sign up - Appwrite</title>
+    <title>{$_('sign_up.title')} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated {imgLight} {imgDark}>
@@ -96,27 +97,27 @@
             <FormList>
                 <InputText
                     id="name"
-                    label="Name"
-                    placeholder="Your name"
+                    label={$_('sign_up.field_inputs.name')}
+                    placeholder={$_('globals.placeholders.your_name')}
                     autofocus={true}
                     bind:value={name} />
                 <InputEmail
                     id="email"
-                    label="Email"
-                    placeholder="Your email"
+                    label={$_('sign_up.field_inputs.email')}
+                    placeholder={$_('globals.placeholders.your_email')}
                     required={true}
                     bind:value={mail} />
                 <InputPassword
                     id="password"
-                    label="Password"
-                    placeholder="Your password"
+                    label={$_('sign_up.field_inputs.password')}
+                    placeholder={$_('globals.placeholders.your_password')}
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
                 <InputText
                     id="Code"
-                    label="Code"
-                    placeholder="Your code"
+                    label={$_('sign_up.field_inputs.code')}
+                    placeholder={$_('globals.placeholders.your_code')}
                     required={true}
                     bind:value={code} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
@@ -134,7 +135,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit>Sign up</Button>
+                    <Button fullWidth submit>{$_('sign_up.title')}</Button>
                 </FormItem>
             </FormList>
         </Form>
@@ -142,7 +143,8 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <span class="text">
-                Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
+                {$_('sign_up.already_registered')}
+                <a class="link" href={`${base}/login`}>{$_('login.title')}</a>
             </span>
         </li>
     </svelte:fragment>
