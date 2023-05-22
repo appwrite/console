@@ -28,6 +28,7 @@ export enum Dependencies {
     BUCKET = 'dependency:bucket',
     FILE = 'dependency:file',
     FILES = 'dependency:files',
+    INSTALLATIONS = 'dependency:installations',
     FUNCTION = 'dependency:function',
     FUNCTIONS = 'dependency:functions',
     VARIABLES = 'dependency:variables',

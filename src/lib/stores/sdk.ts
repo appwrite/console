@@ -11,7 +11,8 @@ import {
     Proxy,
     Storage,
     Teams,
-    Users
+    Users,
+    Vcs
 } from '@aw-labs/appwrite-console';
 
 const endpoint =
@@ -50,7 +51,8 @@ const sdkForProject = {
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
-    proxy: new Proxy(clientProject)
+    proxy: new Proxy(clientProject),
+    vcs: new Vcs(clientProject)
 };
 
 export { sdkForConsole, sdkForProject, setProject, endpoint };

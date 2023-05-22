@@ -39,6 +39,8 @@
     let buildCommand: string = null;
     let installCommand: string = null;
 
+    let showGitConnection = false;
+
     const eventSet: Writable<Set<string>> = writable(new Set());
     let showEvents = false;
     let areEventsDisabled = true;
@@ -68,7 +70,9 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.repositoryId
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -97,7 +101,9 @@
                 logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.repositoryId
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -126,7 +132,9 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.repositoryId
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -155,7 +163,9 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.repositoryId
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -184,7 +194,9 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.repositoryId
             );
             invalidate(Dependencies.FUNCTION);
 
@@ -214,7 +226,9 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.repositoryId
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -244,7 +258,9 @@
                 $func.logging,
                 entrypoint,
                 buildCommand,
-                installCommand
+                installCommand,
+                $func.vcsInstallationId,
+                $func.repositoryId
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -253,6 +269,37 @@
                 message: 'Deployment settings has been updated'
             });
             trackEvent('submit_function_update_deployment_settings');
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
+    async function disconnectVcs() {
+        try {
+            await sdkForProject.functions.update(
+                functionId,
+                $func.name,
+                $func.execute,
+                $func.events,
+                $func.schedule,
+                $func.timeout,
+                $func.enabled,
+                $func.logging,
+                $func.entrypoint,
+                $func.buildCommand,
+                $func.installCommand,
+                '',
+                ''
+            );
+            await invalidate(Dependencies.FUNCTION);
+            addNotification({
+                type: 'success',
+                message: 'Git has been disconnected'
+            });
+            trackEvent('submit_function_update_vcs_disconnect');
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -343,6 +390,38 @@
             </svelte:fragment>
         </CardGrid>
     </Form>
+
+    {#if $func.vcsInstallationId}
+        <Form on:submit={disconnectVcs}>
+            <CardGrid>
+                <Heading tag="h6" size="7">Git Integration</Heading>
+                <p>SOME TEXT</p>
+                <svelte:fragment slot="aside">
+                    <ul>
+                        <p>(Repo name, owner name, link to GitHub, ...)</p>
+                    </ul>
+                </svelte:fragment>
+                <svelte:fragment slot="actions">
+                    <Button on:click={disconnectVcs}>Disconnect</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+    {:else}
+        <Form on:submit={() => (showGitConnection = true)}>
+            <CardGrid>
+                <Heading tag="h6" size="7">Git Integration</Heading>
+                <p>SOME TEXT</p>
+                <svelte:fragment slot="aside">
+                    <ul>
+                        <p>(Some info about connecting to git)</p>
+                    </ul>
+                </svelte:fragment>
+                <svelte:fragment slot="actions">
+                    <Button on:click={() => (showGitConnection = true)}>Connect</Button>
+                </svelte:fragment>
+            </CardGrid>
+        </Form>
+    {/if}
 
     <Form on:submit={updateDeploymentSettings}>
         <CardGrid>
@@ -563,3 +642,7 @@
 
 <!-- <Upload bind:show={showVariablesUpload} on:uploaded={handleVariableCreated} /> -->
 <EventModal bind:show={showEvents} on:created={handleEvent} />
+
+{#if showGitConnection}
+    <GitConnection installations={data.installations} bind:show={showGitConnection} />
+{/if}

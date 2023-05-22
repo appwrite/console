@@ -23,6 +23,11 @@
             event: 'webhooks'
         },
         {
+            href: `${path}/git-installations`,
+            title: 'Git Installations',
+            event: 'vcs'
+        },
+        {
             href: `${path}/variables`,
             title: 'Global Variables',
             event: 'globalVariables'
