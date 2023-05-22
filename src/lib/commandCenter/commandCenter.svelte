@@ -1,10 +1,28 @@
+<script lang="ts" context="module">
+    type Context = Readable<{
+        isInitialPanel: boolean;
+        open: boolean;
+    }>;
+    type ReadableValue<T> = T extends Readable<infer U> ? U : never;
+
+    const contextKey = 'command-center';
+    export const getCommandCenterCtx = () => getContext<Context>(contextKey);
+    const setCommandCenterCtx = (value: ReadableValue<Context>) => {
+        const store = writable(value);
+        setContext(contextKey, store);
+        return store;
+    };
+</script>
+
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
-    import { Root } from './panels';
     import { last } from '$lib/helpers/array';
-    import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
-    import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
+    import { getContext, setContext } from 'svelte';
+    import { writable, type Readable } from 'svelte/store';
     import { fade } from 'svelte/transition';
+    import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
+    import { Root } from './panels';
+    import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
 
     $: $registerCommands([
         {
@@ -44,12 +62,24 @@
     afterNavigate(() => {
         clearSubPanels();
     });
+
+    const ctx = setCommandCenterCtx({
+        isInitialPanel: true,
+        open: false
+    });
+
+    $: if (!openSubPanel) {
+        $ctx.isInitialPanel = true;
+    }
+    $: $subPanels.length > 1 && ($ctx.isInitialPanel = false);
+
+    $: $ctx.open = !!openSubPanel;
 </script>
 
 <svelte:window on:mousedown={handleBlur} on:keydown={$commandCenterKeyDownHandler} />
 
 {#if openSubPanel}
-    <div class="dialog" bind:this={dialog} transition:fade={{ duration: 150 }}>
+    <div class="dialog" bind:this={dialog} transition:fade={{ duration: 100 }}>
         <svelte:component this={openSubPanel.component} />
     </div>
 {/if}

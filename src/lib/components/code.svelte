@@ -47,7 +47,6 @@
             </Copy>
         {/if}
     </div>
-
     <pre class={`language-${language}`} class:line-numbers={withLineNumbers}><code
             >{code}</code></pre>
 </section>

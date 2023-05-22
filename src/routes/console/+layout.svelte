@@ -46,7 +46,9 @@
             callback: () => {
                 goto('/console');
             },
-            keys: ['g', 'h']
+            keys: ['g', 'h'],
+            // Check if pathname not like /console/organization-6374c26ba90067a6315d
+            disabled: $page.url.pathname.includes('/console/organization-')
         }
     ]);
 

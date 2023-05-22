@@ -4,10 +4,12 @@
  -->
 
 <script lang="ts">
+    import { getCommandCenterCtx } from '../commandCenter.svelte';
+
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
 
     import { quadOut } from 'svelte/easing';
-    import { crossfade, scale } from 'svelte/transition';
+    import { crossfade } from 'svelte/transition';
 
     type BaseOption = { callback: () => void };
     type Option = $$Generic<BaseOption>;
@@ -69,11 +71,16 @@
         duration: 150,
         easing: quadOut
     });
+
+    const commandCenterCtx = getCommandCenterCtx();
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
 
-<div class="card" in:scale={{ duration: 150, start: 0.9 }}>
+<div
+    class="card"
+    class:press={!$commandCenterCtx.isInitialPanel}
+    class:scale-up={$commandCenterCtx.isInitialPanel && $commandCenterCtx.open}>
     <div class="u-flex u-flex-vertical u-width-full-line">
         <div class="u-flex">
             <slot name="search">
@@ -116,12 +123,45 @@
 </div>
 
 <style>
+    @keyframes press {
+        0% {
+            scale: 1;
+        }
+
+        30% {
+            scale: 0.985;
+        }
+
+        100% {
+            scale: 1;
+        }
+    }
+
+    .press {
+        animation: press 250ms ease;
+    }
+
+    @keyframes scale-up {
+        0% {
+            scale: 0.95;
+        }
+
+        100% {
+            scale: 1;
+        }
+    }
+
+    .scale-up {
+        animation: scale-up 150ms cubic-bezier(0.5, 1, 0.89, 1);
+    }
+
     .card {
-        min-width: 400px;
+        width: var(--command-panel-width, 400px);
+        max-width: 100%;
         padding: 0.5rem;
 
         position: absolute;
-        top: clamp(128px, 20vh, 400px);
+        top: clamp(128px, 15vh, 400px);
         left: 50%;
         translate: -50%;
     }
