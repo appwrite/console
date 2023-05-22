@@ -39,6 +39,7 @@
                 $page.data.function.schedule,
                 $page.data.function.timeout,
                 $page.data.function.enabled,
+                $page.data.function.logging,
                 $page.data.function.entrypoint,
                 $page.data.function.buildCommand,
                 $page.data.function.installCommand,
@@ -46,7 +47,7 @@
                 `${repository.id}`
             );
             show = false;
-            await invalidate(Dependencies.FUNCTIONS);
+            await invalidate(Dependencies.FUNCTION);
             goto(
                 `${base}/console/project-${$page.params.project}/functions/function-${functionId}`
             );
