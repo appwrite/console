@@ -23,6 +23,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import InputSwitch from '$lib/elements/forms/inputSwitch.svelte';
     import Variables from '$lib/components/environmentVariables/variables.svelte';
+    import GitConnection from './gitConnection.svelte';
 
     export let data: PageData;
 
