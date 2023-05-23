@@ -18,8 +18,8 @@
     "login": {
         "title": "Sign in",
         "field_inputs": {
-            "email": "E-Mail",
-            "password": "Passwort"
+            "email": "Email",
+            "password": "Password"
         }
     },
     "sign_up": {
@@ -36,7 +36,7 @@
         "title": "Password Recovery",
         "forgot_password": "Forgot Password",
         "field_inputs": {
-            "email": "E-Mail",
+            "email": "Email",
             "new_password": "New password",
             "cnf_password": "Confirm password"
         }

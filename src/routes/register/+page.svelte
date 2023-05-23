@@ -17,7 +17,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
-    import { _ } from 'svelte-i18n';
+    import { _ } from '$lib/i18n';
 
     let name: string, mail: string, pass: string;
     let terms = false;
@@ -40,30 +40,30 @@
 </script>
 
 <svelte:head>
-    <title>{$_('sign_up.title')} - Appwrite</title>
+    <title>{$_.t('sign_up.title')} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">{$_('sign_up.title')}</svelte:fragment>
+    <svelte:fragment slot="title">{$_.t('sign_up.title')}</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={register}>
             <FormList>
                 <InputText
                     id="name"
-                    label={$_('sign_up.field_inputs.name')}
-                    placeholder={$_('globals.placeholders.your_name')}
+                    label={$_.t('sign_up.field_inputs.name')}
+                    placeholder={$_.t('globals.placeholders.your_name')}
                     autofocus={true}
                     bind:value={name} />
                 <InputEmail
                     id="email"
-                    label={$_('sign_up.field_inputs.email')}
-                    placeholder={$_('globals.placeholders.your_email')}
+                    label={$_.t('sign_up.field_inputs.email')}
+                    placeholder={$_.t('globals.placeholders.your_email')}
                     required={true}
                     bind:value={mail} />
                 <InputPassword
                     id="password"
-                    label={$_('sign_up.field_inputs.password')}
-                    placeholder={$_('globals.placeholders.your_password')}
+                    label={$_.t('sign_up.field_inputs.password')}
+                    placeholder={$_.t('globals.placeholders.your_password')}
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
@@ -82,7 +82,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit>{$_('sign_up.title')}</Button>
+                    <Button fullWidth submit>{$_.t('sign_up.title')}</Button>
                 </FormItem>
             </FormList>
         </Form>
@@ -90,8 +90,8 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <span class="text">
-                {$_('sign_up.already_registered')}
-                <a class="link" href={`${base}/login`}>{$_('login.title')}</a>
+                {$_.t('sign_up.already_registered')}
+                <a class="link" href={`${base}/login`}>{$_.t('login.title')}</a>
             </span>
         </li>
     </svelte:fragment>

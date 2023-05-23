@@ -16,7 +16,6 @@
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
     import { loading } from './store';
-    import { isLoading, _ } from 'svelte-i18n';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -108,14 +107,18 @@
             }
         }
     }
+
+    // $: {
+    //     const getUserLanguage = window.navigator.language;
+    //     console.log(getUserLanguage);
+    // }
 </script>
 
 <Notifications />
 
-
 <slot />
 
-{#if $isLoading || $loading}
+{#if $loading}
     <Loading />
 {/if}
 
