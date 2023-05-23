@@ -34,8 +34,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice } from '$lib/elements/forms';
-    import Boolean from '../document-[document]/attributes/boolean.svelte';
+    import { InputChoice, InputSelect } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeBoolean> = {
@@ -49,18 +48,17 @@
     }
 </script>
 
-<Boolean
+<InputSelect
     id="default"
     label="Default value"
-    bind:value={data.default}
-    attribute={{
-        key: data.key,
-        required: data.required,
-        status: 'enabled',
-        type: 'boolean',
-        array: data.array
-    }}
-    disabled={data.array || data.required} />
+    placeholder="Select a value"
+    disabled={data.required || data.array}
+    options={[
+        { label: 'NULL', value: null },
+        { label: 'True', value: true },
+        { label: 'False', value: false }
+    ]}
+    bind:value={data.default} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
