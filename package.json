@@ -4,8 +4,7 @@
         "node": ">=16"
     },
     "scripts": {
-        "dev": "vite",
-        "vite": "vite dev",
+        "dev": "vite dev",
         "build": "node build.js",
         "preview": "vite preview",
         "sync": "svelte-kit sync",

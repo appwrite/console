@@ -112,9 +112,10 @@
 
 <Notifications />
 
-{#if !$isLoading}
-    <slot />
-{:else if $loading}
+
+<slot />
+
+{#if $isLoading || $loading}
     <Loading />
 {/if}
 
