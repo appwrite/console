@@ -20,13 +20,6 @@ export type FeedbackData = {
     value?: number;
 };
 
-export const feedbackData = writable<FeedbackData>({
-    message: '',
-    name: '',
-    email: '',
-    value: 0
-});
-
 export type FeedbackOption = {
     type: Feedback['type'];
     title: string;
@@ -50,6 +43,30 @@ export const feedbackOptions: FeedbackOption[] = [
 ];
 
 export const selectedFeedback = writable<FeedbackOption>();
+
+function createFeedbackDataStore() {
+    const { subscribe, update } = writable<FeedbackData>({
+        message: '',
+        name: '',
+        email: '',
+        value: 0
+    });
+    return {
+        subscribe,
+        update,
+        reset: () => {
+            update((feedbackData) => {
+                feedbackData.message = '';
+                feedbackData.name = '';
+                feedbackData.email = '';
+                feedbackData.value = 0;
+                return feedbackData;
+            });
+        }
+    };
+}
+
+export const feedbackData = createFeedbackDataStore();
 
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({

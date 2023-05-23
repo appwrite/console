@@ -22,13 +22,13 @@
                 type: 'success',
                 message: 'Feedback submitted successfully'
             });
+            feedback.toggleFeedback();
+            feedbackData.reset();
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-        } finally {
-            feedback.toggleFeedback();
         }
     }
 </script>
