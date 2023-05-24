@@ -40,7 +40,9 @@
         <CoverTitle href={`/console/project-${projectId}/functions`}>
             {$func?.name}
         </CoverTitle>
-        <Id value={$func?.$id} event="function">Function ID</Id>
+        {#if $func?.$id}
+            <Id value={$func.$id} event="function">{$func.$id}</Id>
+        {/if}
     </svelte:fragment>
 
     <Tabs>

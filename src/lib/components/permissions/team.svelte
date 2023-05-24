@@ -134,7 +134,7 @@
                         You have no teams. Create a team to see them here.
                     </p>
                     <p class="text u-line-height-1-5">
-                        Need a hand? Check out our <a
+                        Need a hand? Learn more in our <a
                             href="https://appwrite.io/docs/client/teams"
                             target="_blank"
                             rel="noopener noreferrer">
