@@ -67,7 +67,7 @@
 {/if}
 
 <div class="main-header-end">
-    <nav class="u-flex is-only-desktop">
+    <nav class="u-flex is-only-desktop u-cross-center">
         {#if $feedback.notification}
             <div class="u-flex u-cross-center">
                 <div class="pulse-notification" />

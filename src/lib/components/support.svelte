@@ -7,15 +7,14 @@
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '../../routes/console/supportWizard.svelte';
-    import { Mode, Tier } from '$lib/constants';
     import { isSupportOnline } from '../../routes/console/wizard/store';
-    const mode = import.meta.env.VITE_CONSOLE_MODE?.toString() || Mode.SELF_HOSTED;
-    const tier = import.meta.env.VITE_CONSOLE_TIER?.toString() || Tier.BASE;
+    import { isCloud, Tier } from '$lib/system';
+    const tier = import.meta.env.VITE_CONSOLE_TIER?.toString() || Tier.FREE;
 
     export let show = false;
 </script>
 
-{#if mode === 'cloud'}
+{#if isCloud}
     <section class="drop-section u-grid u-gap-24 u-padding-24">
         <div class="u-flex u-main-center">
             {#if isSupportOnline()}

@@ -3,6 +3,12 @@ export enum Mode {
     SELF_HOSTED = 'self-hosted'
 }
 
+export enum Tier {
+    FREE = 'free',
+    PRO = 'pro',
+    ENTERPRISE = 'enterprise'
+}
+
 export const VARS = {
     APPWRITE_ENDPOINT: import.meta.env?.VITE_APPWRITE_ENDPOINT?.toString() as string | undefined,
     GROWTH_ENDPOINT: import.meta.env?.VITE_APPWRITE_GROWTH_ENDPOINT?.toString() as
@@ -23,3 +29,5 @@ export const ENV = {
 export const MODE = VARS.CONSOLE_MODE === Mode.CLOUD ? Mode.CLOUD : Mode.SELF_HOSTED;
 export const isCloud = MODE === Mode.CLOUD;
 export const isSelfHosted = MODE === Mode.SELF_HOSTED;
+
+export const TIER = VARS;

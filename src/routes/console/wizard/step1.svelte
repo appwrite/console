@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
-    import { FormList, InputFile, InputTextarea } from '$lib/elements/forms';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { FormList, InputTextarea } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
@@ -9,12 +9,12 @@
     import Light from '$lib/images/support/support-wizard-light.svg';
     import Dark from '$lib/images/support/support-wizard-dark.svg';
     import { Pill } from '$lib/elements';
-    import { Collapsible, CollapsibleItem } from '$lib/components';
+    // import { Collapsible, CollapsibleItem } from '$lib/components';
     import { user } from '$lib/stores/user';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
-    let files: FileList;
+    // let files: FileList;
 
     async function beforeSubmit() {
         const response = await fetch('https://growth.appwrite.io/v1/support', {
@@ -31,8 +31,9 @@
                 customFields: [{ id: '41612', value: $supportData.category }]
             })
         });
-        trackEvent('submit_support_ticket');
+        trackEvent(Submit.SupportTicket);
         if (response.status !== 200) {
+            trackError(new Error(response.status.toString()), Submit.SupportTicket);
             addNotification({
                 message: 'There was an error submitting your feedback',
                 type: 'error'
@@ -71,7 +72,7 @@
                 required />
         </FormList>
     </div>
-    <div class="common-section">
+    <!-- <div class="common-section">
         <Collapsible>
             <CollapsibleItem>
                 <svelte:fragment slot="title">Want to attach a file? (optional)</svelte:fragment>
@@ -81,5 +82,5 @@
                 <InputFile bind:files label="Attach a file" />
             </CollapsibleItem>
         </Collapsible>
-    </div>
+    </div> -->
 </WizardStep>
