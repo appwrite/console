@@ -23,7 +23,7 @@
             name: 'GitHub',
             icon: 'github',
             redirect: () => {
-                sdkForProject.vcs.createGitHubInstallation();
+                sdkForProject.vcs.createGitHubInstallation(window.location.href);
             }
         }
     ];

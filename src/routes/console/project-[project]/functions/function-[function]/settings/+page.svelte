@@ -24,6 +24,7 @@
     import InputSwitch from '$lib/elements/forms/inputSwitch.svelte';
     import Variables from '$lib/components/environmentVariables/variables.svelte';
     import GitConnection from './gitConnection.svelte';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
     export let data: PageData;
 
@@ -39,6 +40,7 @@
     let entrypoint: string = null;
     let buildCommand: string = null;
     let installCommand: string = null;
+    let branch: string = null;
 
     let showGitConnection = false;
 
@@ -55,6 +57,7 @@
         entrypoint ??= $func.entrypoint;
         buildCommand ??= $func.buildCommand;
         installCommand ??= $func.installCommand;
+        branch ??= $func.branch;
         $eventSet = new Set($func.events);
     });
 
@@ -73,7 +76,8 @@
                 $func.buildCommand,
                 $func.installCommand,
                 $func.vcsInstallationId,
-                $func.repositoryId
+                $func.repositoryId,
+                $func.branch
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -104,7 +108,8 @@
                 $func.buildCommand,
                 $func.installCommand,
                 $func.vcsInstallationId,
-                $func.repositoryId
+                $func.repositoryId,
+                $func.branch
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -135,7 +140,8 @@
                 $func.buildCommand,
                 $func.installCommand,
                 $func.vcsInstallationId,
-                $func.repositoryId
+                $func.repositoryId,
+                $func.branch
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -166,7 +172,8 @@
                 $func.buildCommand,
                 $func.installCommand,
                 $func.vcsInstallationId,
-                $func.repositoryId
+                $func.repositoryId,
+                $func.branch
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -197,7 +204,8 @@
                 $func.buildCommand,
                 $func.installCommand,
                 $func.vcsInstallationId,
-                $func.repositoryId
+                $func.repositoryId,
+                $func.branch
             );
             invalidate(Dependencies.FUNCTION);
 
@@ -229,7 +237,8 @@
                 $func.buildCommand,
                 $func.installCommand,
                 $func.vcsInstallationId,
-                $func.repositoryId
+                $func.repositoryId,
+                $func.branch
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -261,7 +270,41 @@
                 buildCommand,
                 installCommand,
                 $func.vcsInstallationId,
-                $func.repositoryId
+                $func.repositoryId,
+                $func.branch
+            );
+
+            invalidate(Dependencies.FUNCTION);
+            addNotification({
+                type: 'success',
+                message: 'Deployment settings has been updated'
+            });
+            trackEvent('submit_function_update_deployment_settings');
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
+    async function updateBranch() {
+        try {
+            await sdkForProject.functions.update(
+                functionId,
+                $func.name,
+                $func.execute,
+                $func.events,
+                $func.schedule,
+                $func.timeout,
+                $func.enabled,
+                $func.logging,
+                $func.entrypoint,
+                $func.buildCommand,
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.repositoryId,
+                branch
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -292,6 +335,7 @@
                 $func.entrypoint,
                 $func.buildCommand,
                 $func.installCommand,
+                '',
                 '',
                 ''
             );
@@ -399,7 +443,18 @@
                 <p>SOME TEXT</p>
                 <svelte:fragment slot="aside">
                     <ul>
-                        <p>(Repo name, owner name, link to GitHub, ...)</p>
+                        <InputSelect
+                            options={(data?.branches?.branches ?? []).map((branch) => {
+                                return {
+                                    label: branch.name,
+                                    value: branch.name
+                                };
+                            })}
+                            bind:value={branch}
+                            id="branch"
+                            label="Branch" />
+
+                        <Button on:click={() => updateBranch()}>Update</Button>
                     </ul>
                 </svelte:fragment>
                 <svelte:fragment slot="actions">

@@ -5,13 +5,17 @@
     import { Empty, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     export let installations: Models.InstallationList;
     export let show = false;
     const functionId = $page.params.function;
     let selectedInstallation: Models.Installation = null;
+    let selectedRepository: Models.Repository = null;
+    let selectedBranchName: string = null;
     let repositories: Models.RepositoryList = null;
+    let branches: Models.BranchList = null;
     let error: string;
     async function selectInstallation(installation: Models.Installation) {
         try {
@@ -26,10 +30,22 @@
             searchQuery || undefined
         );
     }
+
     $: if (selectedInstallation) {
         searchRepositories(inputValue);
     }
-    async function connectRepository(repository: Models.Repository) {
+
+    async function selectRepository(repository: Models.Repository) {
+        selectedRepository = repository;
+        console.log(selectedRepository);
+
+        branches = await sdkForProject.vcs.listRepositoryBranches(
+            selectedInstallation.$id,
+            repository.id
+        );
+    }
+
+    async function connectRepository() {
         try {
             await sdkForProject.functions.update(
                 functionId,
@@ -44,7 +60,8 @@
                 $page.data.function.buildCommand,
                 $page.data.function.installCommand,
                 selectedInstallation.$id,
-                `${repository.id}`
+                selectedRepository.id,
+                selectedBranchName
             );
             show = false;
             await invalidate(Dependencies.FUNCTION);
@@ -55,6 +72,7 @@
             error = e.message;
         }
     }
+
     let inputValue = '';
 </script>
 
@@ -107,7 +125,7 @@
                 </div>
             </Empty>
         {/if}
-    {:else}
+    {:else if !selectedRepository}
         <p>
             2. Select repository:
 
@@ -139,8 +157,8 @@
                                         class="table-col"
                                         data-title="Enabled"
                                         style="--p-col-width:40">
-                                        <Button on:click={() => connectRepository(repository)}
-                                            >Connect</Button>
+                                        <Button on:click={() => selectRepository(repository)}
+                                            >Select</Button>
                                     </td>
                                 </tr>
                             {/each}
@@ -158,6 +176,27 @@
                         </div>
                     </div>
                 </Empty>
+            {/if}
+        </p>
+    {:else}
+        <p>
+            3. Select branch:
+
+            {#if branches === null}
+                <p>Loading...</p>
+            {:else}
+                <InputSelect
+                    options={branches.branches.map((branch) => {
+                        return {
+                            label: branch.name,
+                            value: branch.name
+                        };
+                    })}
+                    bind:value={selectedBranchName}
+                    id="branch"
+                    label="Branch" />
+
+                <Button on:click={() => connectRepository()}>Deploy Now</Button>
             {/if}
         </p>
     {/if}
