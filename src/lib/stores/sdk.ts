@@ -11,9 +11,7 @@ import {
     Projects,
     Storage,
     Teams,
-    Users,
-    Proxy,
-    Vcs
+    Users
 } from '@aw-labs/appwrite-console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
@@ -47,12 +45,9 @@ const sdkForProject = {
     health: new Health(clientProject),
     locale: new Locale(clientProject),
     project: new Project(clientProject),
-    projects: new Projects(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
-    users: new Users(clientProject),
-    proxy: new Proxy(clientProject),
-    vcs: new Vcs(clientProject)
+    users: new Users(clientProject)
 };
 
 export { sdkForConsole, sdkForProject, setProject };
