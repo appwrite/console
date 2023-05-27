@@ -41,6 +41,7 @@
 
 <main
     class:grid-with-side={showSideNavigation}
+    class:grid={!showSideNavigation}
     class:is-open={isOpen}
     class:u-hide={$wizard.show || $log.show}>
     <header class="main-header u-padding-inline-end-0">
@@ -53,11 +54,9 @@
         </button>
         <slot name="header" />
     </header>
-    {#if showSideNavigation}
-        <nav class="main-side">
-            <slot name="side" />
-        </nav>
-    {/if}
+    <nav class="main-side">
+        <slot name="side" />
+    </nav>
     <section class="main-content">
         {#if $page.data?.header}
             <svelte:component this={$page.data.header} />
@@ -65,17 +64,11 @@
 
         <slot />
     </section>
-    <slot name="footer" />
 </main>
 
-<style lang="scss">
-    main {
+<style>
+    .grid-with-side {
         min-height: 100vh;
-
-        &:not(.grid-with-side) {
-            display: flex;
-            flex-direction: column;
-        }
     }
 
     .main-side {

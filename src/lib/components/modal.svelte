@@ -81,7 +81,7 @@
         <form class="modal-form" role="form" on:submit|preventDefault>
             <header class="modal-header">
                 {#if warning}
-                    <div class="avatar is-warning is-medium">
+                    <div class="avatar is-color-orange is-medium">
                         <span class="icon-exclamation" aria-hidden="true" />
                     </div>
                 {/if}

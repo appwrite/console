@@ -37,7 +37,7 @@
         <Heading tag="h6" size="7">Update Name</Heading>
 
         <svelte:fragment slot="aside">
-            <ul data-private>
+            <ul>
                 <InputText
                     id="name"
                     label="Name"

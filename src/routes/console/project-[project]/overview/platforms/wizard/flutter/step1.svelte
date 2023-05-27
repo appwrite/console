@@ -132,7 +132,7 @@
                 button
                 on:click={() => (platform = Platform.Macos)}
                 selected={platform === Platform.Macos}>
-                macOS
+                Mac OS
             </Pill>
             <Pill
                 button

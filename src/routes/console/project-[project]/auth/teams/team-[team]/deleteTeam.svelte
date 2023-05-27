@@ -29,7 +29,8 @@
 
 <Modal bind:show={showDelete} on:submit={deleteTeam} warning>
     <svelte:fragment slot="header">Delete Team</svelte:fragment>
-    <p data-private>
+
+    <p>
         Are you sure you want to delete <b>{team.name}</b>?
     </p>
     <svelte:fragment slot="footer">

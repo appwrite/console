@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Card, SecondaryTabsItem, SecondaryTabs, Heading } from '$lib/components';
+    import { Card, DropListLink, DropTabs, Heading } from '$lib/components';
     import { total } from '$lib/layout/usage.svelte';
     import { BarChart } from '$lib/charts';
     import { page } from '$app/stores';
@@ -15,23 +15,23 @@
 <Container>
     <div class="u-flex u-main-space-between common-section">
         <Heading tag="h2" size="5">Functions</Heading>
-        <SecondaryTabs>
-            <SecondaryTabsItem
+        <DropTabs>
+            <DropListLink
                 href={`/console/project-${data.project.$id}/functions/function-${data.function.$id}/usage/24h`}
                 disabled={($page.params.period ?? '24h') === '24h'}>
                 24h
-            </SecondaryTabsItem>
-            <SecondaryTabsItem
+            </DropListLink>
+            <DropListLink
                 href={`/console/project-${data.project.$id}/functions/function-${data.function.$id}/usage/30d`}
                 disabled={$page.params.period === '30d'}>
                 30d
-            </SecondaryTabsItem>
-            <SecondaryTabsItem
+            </DropListLink>
+            <DropListLink
                 href={`/console/project-${data.project.$id}/functions/function-${data.function.$id}/usage/90d`}
                 disabled={$page.params.period === '90d'}>
                 90d
-            </SecondaryTabsItem>
-        </SecondaryTabs>
+            </DropListLink>
+        </DropTabs>
     </div>
     {#if count}
         <Card>

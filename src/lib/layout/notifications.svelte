@@ -26,12 +26,4 @@
         right: 24px;
         z-index: 1000;
     }
-
-    @media (max-width: 512px) {
-        section {
-            top: calc(var(--main-header-height) + 16px);
-            right: 16px;
-            left: 16px;
-        }
-    }
 </style>

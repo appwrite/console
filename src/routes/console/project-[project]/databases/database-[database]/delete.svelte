@@ -33,7 +33,7 @@
 
 <Modal warning={true} bind:show={showDelete} on:submit={handleDelete}>
     <svelte:fragment slot="header">Delete Database</svelte:fragment>
-    <p class="text" data-private>
+    <p class="text">
         Are you sure you want to delete <b>{$database.name}</b>?
     </p>
     <svelte:fragment slot="footer">

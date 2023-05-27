@@ -43,7 +43,7 @@
 
 <Modal warning={true} bind:show={showDelete} on:submit={handleDelete}>
     <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
-    <p data-private>
+    <p>
         Are you sure you want to delete <b>'{selectedAttribute?.key}' from {$collection?.name}</b>?
     </p>
     <svelte:fragment slot="footer">

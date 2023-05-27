@@ -71,7 +71,7 @@
 </script>
 
 <CardGrid>
-    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
+    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
         {#if $user.email || $user.phone}
             {#if $user.name}
                 <AvatarInitials size={48} name={$user.name} />
@@ -89,7 +89,7 @@
     </div>
     <svelte:fragment slot="aside">
         <div class="u-flex u-main-space-between">
-            <div data-private>
+            <div>
                 {#if $user.email}
                     <p class="title">{$user.email}</p>
                 {/if}

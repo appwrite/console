@@ -10,7 +10,7 @@
             <span class="icon-cheveron-left" aria-hidden="true" />
         </a>
     {/if}
-    <span class="text u-trim-1" data-private>
+    <span class="text u-trim-1">
         <slot />
     </span>
 </Heading>

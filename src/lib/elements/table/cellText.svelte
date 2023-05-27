@@ -10,7 +10,6 @@
     class:is-only-desktop={onlyDesktop}
     class:u-overflow-visible={showOverflow}
     data-title={title}
-    role="cell"
-    data-private>
+    role="cell">
     <Trim><slot /></Trim>
 </div>

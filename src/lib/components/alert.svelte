@@ -19,8 +19,7 @@
         {#if dismissible}
             <button
                 type="button"
-                class="button is-text is-only-icon"
-                style="--button-size:1.5rem;"
+                class="x-button"
                 aria-label="close alert box"
                 on:click={() => dispatch('dismiss')}>
                 <span class="icon-x" aria-hidden="true" />
@@ -32,15 +31,15 @@
             class:icon-exclamation={type === 'warning'}
             class:icon-exclamation-circle={type === 'error'}
             aria-hidden="true" />
-        <div class="alert-content" data-private>
+        <div class="content">
             {#if $$slots.title}
-                <h6 class="alert-title">
+                <h6 class="title">
                     <slot name="title" />
                 </h6>
             {/if}
-            <p class="alert-message"><slot /></p>
+            <p class="message"><slot /></p>
             {#if buttons?.length}
-                <div class="alert-buttons u-flex">
+                <div class="buttons u-flex">
                     {#each buttons as button}
                         <button class="button is-text" on:click={button.method}>
                             <span class="text">{button.name}</span>

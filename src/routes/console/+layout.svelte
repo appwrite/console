@@ -1,34 +1,21 @@
 <script lang="ts">
-    import { beforeNavigate, goto } from '$app/navigation';
-    import { page } from '$app/stores';
-    import { INTERVAL } from '$lib/constants';
-    import { Logs } from '$lib/layout';
-    import Footer from '$lib/layout/footer.svelte';
-    import Header from '$lib/layout/header.svelte';
-    import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
-    import { feedback } from '$lib/stores/app';
-    import { log } from '$lib/stores/logs';
+    import SideNavigation from '$lib/layout/navigation.svelte';
+    import Header from '$lib/layout/header.svelte';
     import { newOrgModal } from '$lib/stores/organization';
+    import Create from './createOrganization.svelte';
+    import { page } from '$app/stores';
+    import { beforeNavigate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
+    import { Logs } from '$lib/layout';
+    import { log } from '$lib/stores/logs';
     import { onMount } from 'svelte';
     import { loading } from '../store';
-    import Create from './createOrganization.svelte';
-    import { isCloud } from '$lib/system';
-    export let data;
+    import { feedback } from '$lib/stores/app';
+    import { INTERVAL } from '$lib/constants';
 
     onMount(() => {
         loading.set(false);
-
-        // Check if user already viewed cloud hackathon page
-        if (isCloud) {
-            const viewed = localStorage.getItem('cloud-hackathon-viewed');
-
-            if (viewed !== data.account.$id) {
-                localStorage.setItem('cloud-hackathon-viewed', data.account.$id);
-                goto('/hackathon');
-            }
-        }
 
         setInterval(() => {
             checkForFeedback(INTERVAL);
@@ -62,12 +49,15 @@
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
-        !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
-    <Header slot="header" />
-    <SideNavigation slot="side" />
+    <svelte:fragment slot="header">
+        <Header />
+    </svelte:fragment>
+    <svelte:fragment slot="side">
+        <SideNavigation />
+    </svelte:fragment>
     <slot />
-    <Footer slot="footer" />
+    <footer class="main-footer" />
 </Shell>
 
 {#if $wizard.show && $wizard.component}

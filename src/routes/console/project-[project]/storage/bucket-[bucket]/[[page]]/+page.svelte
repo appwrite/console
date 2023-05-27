@@ -96,7 +96,7 @@
                     {#if file.chunksTotal / file.chunksUploaded !== 1}
                         <TableRow>
                             <TableCell title="Name">
-                                <div class="u-flex u-gap-12 u-main-space-between u-cross-center">
+                                <div class="u-flex u-gap-12 u-main-space-between">
                                     <span class="avatar is-size-small is-color-empty" />
 
                                     <span class="text u-trim">{file.name}</span>
@@ -135,7 +135,7 @@
                         <TableRowLink
                             href={`${base}/console/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
                             <TableCell title="Name">
-                                <div class="u-flex u-gap-12 u-cross-center">
+                                <div class="u-flex u-gap-12">
                                     <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
                                     <span class="text u-trim">{file.name}</span>
                                 </div>

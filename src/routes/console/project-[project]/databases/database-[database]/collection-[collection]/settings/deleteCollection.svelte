@@ -37,7 +37,7 @@
 <Modal warning={true} bind:show={showDelete} on:submit={handleDelete}>
     <svelte:fragment slot="header">Delete Collection</svelte:fragment>
 
-    <p data-private>
+    <p>
         Are you sure you want to delete <b>{$collection.name}</b>?
     </p>
     <svelte:fragment slot="footer">

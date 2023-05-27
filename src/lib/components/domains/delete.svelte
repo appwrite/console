@@ -10,7 +10,6 @@
 
     export let showDelete = false;
     export let selectedRule: Models.ProxyRule = null;
-    export let project: Models.Project = null;
 
     const handleSubmit = async () => {
         try {
@@ -33,11 +32,7 @@
 
 <Modal bind:show={showDelete} on:submit={handleSubmit} warning>
     <svelte:fragment slot="header">Delete Domain</svelte:fragment>
-    {#if selectedRule}
-        <p data-private>
-            Are you sure you want to delete <b>{selectedRule.domain}</b> from '{project.name}'?
-        </p>
-    {/if}
+    <p>Are you sure you want to delete this domain?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

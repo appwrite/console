@@ -10,9 +10,6 @@ const config = {
         accessors: process.env.VITEST
     },
     kit: {
-        alias: {
-            $routes: './src/routes'
-        },
         adapter: adapter({
             fallback: 'index.html'
         }),
