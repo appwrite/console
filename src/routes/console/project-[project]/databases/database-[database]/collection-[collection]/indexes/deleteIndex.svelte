@@ -41,7 +41,7 @@
 <Modal warning={true} on:submit={handleDelete} bind:show={showDelete}>
     <svelte:fragment slot="header">Delete Index</svelte:fragment>
 
-    <p>
+    <p data-private>
         Are you sure you want to delete <b>'{selectedIndex.key}' from {$collection.name}</b>?
     </p>
     <svelte:fragment slot="footer">

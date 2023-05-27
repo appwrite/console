@@ -46,7 +46,7 @@
     <svelte:fragment slot="header">
         {isUser ? 'Leave Organization' : 'Delete Member'}
     </svelte:fragment>
-    <p>
+    <p data-private>
         {isUser
             ? `Are you sure you want to leave '${selectedMember?.teamName}'?`
             : `Are you sure you want to delete ${selectedMember?.userName} from '${selectedMember?.teamName}'?`}

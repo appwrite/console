@@ -1,13 +1,13 @@
+import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
 
-/** @type {import('vite').UserConfig} */
-const config = {
+const config = defineConfig({
     plugins: [sveltekit()],
     optimizeDeps: {
         include: ['echarts', 'prismjs']
     },
     ssr: {
-        noExternal: ['echarts', 'prismjs']
+        noExternal: ['echarts', 'prismjs', '@analytics/google-analytics', 'analytics']
     },
     define: {
         'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)
@@ -17,9 +17,16 @@ const config = {
     },
     server: {
         port: 3000
+    }
+});
+
+const testConfig = defineConfig({
+    resolve: {
+        // hotfix for https://github.com/vitest-dev/vitest/issues/2834
+        conditions: ['browser']
     },
     test: {
-        include: ['tests/**/*.test.ts'],
+        include: ['tests/unit/**/*.test.ts'],
         environment: 'jsdom',
         globals: true,
         threads: true,
@@ -28,6 +35,11 @@ const config = {
             inline: ['@analytics/type-utils']
         }
     }
-};
+});
 
-export default config;
+export default process.env.VITEST
+    ? {
+          ...config,
+          ...testConfig
+      }
+    : config;

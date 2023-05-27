@@ -34,7 +34,7 @@
 
 <Modal bind:show={showDelete} on:submit={deleteFile} warning>
     <svelte:fragment slot="header">Delete File</svelte:fragment>
-    <p>Are you sure you want to delete <b>{$file.name}</b>?</p>
+    <p data-private>Are you sure you want to delete <b>{$file.name}</b>?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

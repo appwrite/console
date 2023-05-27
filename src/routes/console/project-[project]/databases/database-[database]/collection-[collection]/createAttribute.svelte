@@ -53,6 +53,11 @@
         key = null;
         selectedOption = null;
         $option = null;
+        data = {
+            required: false,
+            array: false,
+            default: null
+        };
     }
 </script>
 

@@ -15,12 +15,8 @@
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
-    import LoginLight from '$lib/images/login/login-light-mode.svg';
-    import LoginDark from '$lib/images/login/login-dark-mode.svg';
-
-    let imgLight = LoginLight;
-    let imgDark = LoginDark;
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { ID } from '@aw-labs/appwrite-console';
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
@@ -28,18 +24,28 @@
     async function register() {
         try {
             disabled = true;
-            await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
+            await sdkForConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdkForConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
-            trackEvent('submit_account_create');
+            trackEvent(Submit.AccountCreate);
         } catch (error) {
             disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AccountCreate);
         }
+    }
+
+    function onGithubLogin() {
+        sdkForConsole.account.createOAuth2Session(
+            'github',
+            window.location.origin,
+            window.location.origin,
+            ['read:user', 'user:email']
+        );
     }
 </script>
 
@@ -47,7 +53,7 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated {imgLight} {imgDark}>
+<Unauthenticated>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form on:submit={register}>
@@ -56,20 +62,21 @@
                     id="name"
                     label="Name"
                     placeholder="Your name"
-                    autofocus={true}
+                    autofocus
+                    required
                     bind:value={name} />
                 <InputEmail
                     id="email"
                     label="Email"
                     placeholder="Your email"
-                    required={true}
+                    required
                     bind:value={mail} />
                 <InputPassword
                     id="password"
                     label="Password"
                     placeholder="Your password"
-                    required={true}
-                    showPasswordButton={true}
+                    required
+                    showPasswordButton
                     bind:value={pass} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <a
@@ -87,6 +94,13 @@
                     >.</InputChoice>
                 <FormItem>
                     <Button fullWidth submit {disabled}>Sign up</Button>
+                </FormItem>
+                <span class="with-separators eyebrow-heading-3">or</span>
+                <FormItem>
+                    <Button github fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true" />
+                        <span class="text">Sign up with GitHub</span>
+                    </Button>
                 </FormItem>
             </FormList>
         </Form>

@@ -32,7 +32,7 @@
 
 <Modal bind:show={showDelete} on:submit={handleSubmit} warning>
     <svelte:fragment slot="header">Delete Function</svelte:fragment>
-    <p>
+    <p data-private>
         Are you sure you want to delete this function and all associated deployments from your
         project?
     </p>
