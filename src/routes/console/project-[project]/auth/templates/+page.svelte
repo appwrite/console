@@ -74,6 +74,13 @@
 </script>
 
 <Container>
+    <div class="u-flex u-gap-8 u-cross-center">
+        <Heading tag="h2" size="5">Templates</Heading>
+        <div class="tag eyebrow-heading-3">
+            <span class="text u-x-small">Beta</span>
+        </div>
+    </div>
+
     {#if !$project.smtpEnabled}
         <Alert
             isStandalone
@@ -96,14 +103,7 @@
     {/if}
 
     <CardGrid>
-        <Heading size="7" tag="h2">
-            <div class="u-flex u-gap-8 u-cross-center">
-                Email templates
-                <div class="tag eyebrow-heading-3">
-                    <span class="text u-x-small">Beta</span>
-                </div>
-            </div>
-        </Heading>
+        <Heading size="7" tag="h3">Email templates</Heading>
         <p class="text">
             Use templates to send and process account management emails. <a
                 href="https://appwrite.io/docs"
@@ -169,14 +169,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading size="7" tag="h2">
-            <div class="u-flex u-gap-8 u-cross-center">
-                SMS templates
-                <div class="tag eyebrow-heading-3">
-                    <span class="text u-x-small">Beta</span>
-                </div>
-            </div>
-        </Heading>
+        <Heading size="7" tag="h3">SMS templates</Heading>
         <p class="text">
             Use templates to send and process account management mobile messages. <a
                 href="https://appwrite.io/docs"
