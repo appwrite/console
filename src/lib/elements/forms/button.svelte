@@ -16,6 +16,8 @@
     export let ariaLabel: string = null;
     export let noMargin = false;
     export let event: string = null;
+    let classes: string = undefined;
+    export { classes as class };
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -40,7 +42,7 @@
         {href}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
-        class="button"
+        class="button {classes}"
         class:is-disabled={disabled}
         class:is-only-icon={round}
         class:is-secondary={secondary}
@@ -56,7 +58,7 @@
         on:click
         on:click={track}
         disabled={internalDisabled}
-        class="button"
+        class="button {classes}"
         class:is-only-icon={round}
         class:is-secondary={secondary}
         class:is-danger={danger}
