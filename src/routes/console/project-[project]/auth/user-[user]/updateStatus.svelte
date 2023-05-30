@@ -19,7 +19,7 @@
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.emailVerification ? 'unverified' : 'verified'
+                    !$user.emailVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
             });
