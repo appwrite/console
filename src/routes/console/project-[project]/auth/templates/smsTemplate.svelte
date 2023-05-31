@@ -7,6 +7,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { deepEqual } from '$lib/helpers/object';
 
+    export let loading = false;
     const projectId = $page.params.project;
     let openResetModal = false;
 
@@ -25,6 +26,10 @@
                 $smsTemplate.locale,
                 $smsTemplate.message
             );
+
+            $baseSmsTemplate = {
+                ...$smsTemplate
+            };
             addNotification({
                 type: 'success',
                 message: `SMS ${$smsTemplate.type} template for ${$smsTemplate.locale} updated`
@@ -40,22 +45,32 @@
     $: isButtonDisabled = deepEqual($smsTemplate, $baseSmsTemplate);
 </script>
 
-<div class="box">
-    <Form onSubmit={saveSmsTemplate}>
-        <FormList gap={8}>
-            <InputTextarea
-                bind:value={$smsTemplate.message}
-                id="message"
-                label="Message"
-                placeholder="Enter your message" />
-        </FormList>
-
-        <div class="u-sep-block-start u-margin-block-start-24" />
-
-        <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
-            <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
-            <Button submit disabled={isButtonDisabled}>Update</Button>
+<div class="box u-position-relative">
+    {#if loading}
+        <div
+            class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
+            style="inset-inline-start: 0;">
+            <div class="loader" />
+            <p class="text">Loading template...</p>
         </div>
-    </Form>
+    {/if}
+    <div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
+        <Form onSubmit={saveSmsTemplate}>
+            <FormList gap={8}>
+                <InputTextarea
+                    bind:value={$smsTemplate.message}
+                    id="message"
+                    label="Message"
+                    placeholder="Enter your message" />
+            </FormList>
+
+            <div class="u-sep-block-start u-margin-block-start-24" />
+
+            <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
+                <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
+                <Button submit disabled={isButtonDisabled}>Update</Button>
+            </div>
+        </Form>
+    </div>
 </div>
 <ResetSms bind:show={openResetModal} />

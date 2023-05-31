@@ -62,13 +62,13 @@
 
     async function openEmail(type: string) {
         type === emailOpen ? (emailOpen = null) : (emailOpen = type);
-        $emailTemplate = await loadEmailTemplate(projectId, type, 'en-us');
+        $emailTemplate = await loadEmailTemplate(projectId, type, 'en');
         $baseEmailTemplate = { ...$emailTemplate };
     }
 
     async function openSms(type: string) {
         type === smsOpen ? (smsOpen = null) : (smsOpen = type);
-        $smsTemplate = await loadSmsTemplate(projectId, type, 'en-us');
+        $smsTemplate = await loadSmsTemplate(projectId, type, 'en');
         $baseSmsTemplate = { ...$smsTemplate };
     }
 </script>
@@ -82,24 +82,26 @@
     </div>
 
     {#if !$project.smtpEnabled}
-        <Alert
-            isStandalone
-            dismissible
-            type="info"
-            buttons={[
-                {
-                    name: 'Add SMTP server',
-                    method: () => {
-                        goto(base + '/console/project-' + $project.$id + '/settings/smtp');
+        <div class="u-margin-block-start-24">
+            <Alert
+                isStandalone
+                dismissible
+                type="info"
+                buttons={[
+                    {
+                        name: 'Add SMTP server',
+                        method: () => {
+                            goto(base + '/console/project-' + $project.$id + '/settings/smtp');
+                        }
                     }
-                }
-            ]}>
-            <svelte:fragment slot="title">
-                Custom SMTP server is required for customizing emails
-            </svelte:fragment>
-            Configure a custom SMTP server to enable custom email templates and prevent emails from being
-            labeled as spam.
-        </Alert>
+                ]}>
+                <svelte:fragment slot="title">
+                    Custom SMTP server is required for customizing emails
+                </svelte:fragment>
+                Configure a custom SMTP server to enable custom email templates and prevent emails from
+                being labeled as spam.
+            </Alert>
+        </div>
     {/if}
 
     <CardGrid>

@@ -1,13 +1,6 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
-    import {
-        Button,
-        Form,
-        FormList,
-        InputText,
-        InputSwitch,
-        InputChoice
-    } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputText, InputChoice } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { project } from '../../store';
     import { onMount } from 'svelte/internal';
@@ -19,6 +12,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
     import { base } from '$app/paths';
+    import { deepEqual } from '$lib/helpers/object';
 
     let enabled = false;
     let sender: string;
@@ -60,14 +54,34 @@
                 type: 'success',
                 message: 'SMTP server has been ' + (enabled ? 'enabled.' : 'disabled.')
             });
-            trackEvent(Submit.projectUpdateSMTP);
+            trackEvent(Submit.ProjectUpdateSMTP);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.projectUpdateSMTP);
+            trackError(error, Submit.ProjectUpdateSMTP);
         }
+    }
+
+    $: isButtonDisabled = deepEqual(
+        { enabled, sender, host, port, username, password },
+        {
+            enabled: $project.smtpEnabled,
+            sender: $project.smtpSender,
+            host: $project.smtpHost,
+            port: $project.smtpPort,
+            username: $project.smtpUsername,
+            password: $project.smtpPassword
+        }
+    );
+
+    $: if (!enabled) {
+        sender = undefined;
+        host = undefined;
+        port = undefined;
+        username = undefined;
+        password = undefined;
     }
 </script>
 
@@ -133,7 +147,7 @@
             </svelte:fragment>
             <svelte:fragment slot="actions">
                 <!-- <Button text disabled={!enabled}>Send test email</Button> -->
-                <Button submit>Update</Button>
+                <Button submit disabled={isButtonDisabled}>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>

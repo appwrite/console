@@ -2,6 +2,9 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
+    import { project } from '../../store';
+    import { loadEmailTemplate } from './+page.svelte';
+    import { baseEmailTemplate, emailTemplate } from './strote';
 
     export let show = false;
 
@@ -9,7 +12,17 @@
 
     async function reset() {
         try {
-            // await sdk.forConsole.projects.resetEmailTemplate()
+            await sdk.forConsole.projects.deleteEmailTemplate(
+                $project.$id,
+                $emailTemplate.type,
+                $emailTemplate.locale
+            );
+            $emailTemplate = await loadEmailTemplate(
+                $project.$id,
+                $emailTemplate.type,
+                $emailTemplate.locale
+            );
+            $baseEmailTemplate = { ...$emailTemplate };
             show = false;
         } catch (e) {
             error = e.message;
@@ -21,7 +34,7 @@
     icon="exclamation"
     state="warning"
     onSubmit={reset}
-    size="small"
+    size="big"
     {error}
     bind:show
     headerDivider={false}>

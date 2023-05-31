@@ -3,9 +3,9 @@
     import type { Models } from '@appwrite.io/console';
 
     export let localeCodes: Models.LocaleCode[];
-    export let value: string = 'en-us';
+    export let value = 'en';
 
-    let search: string = 'English';
+    let search = 'English';
 
     $: options =
         localeCodes

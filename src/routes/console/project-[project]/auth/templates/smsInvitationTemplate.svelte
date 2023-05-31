@@ -2,17 +2,18 @@
     import SmsTemplate from './smsTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { smsTemplate } from './strote';
+    import { baseSmsTemplate, smsTemplate } from './strote';
     import { page } from '$app/stores';
     import { loadSmsTemplate } from './+page.svelte';
     import { addNotification } from '$lib/stores/notifications';
+    import { Id } from '$lib/components';
 
     export let localeCodes: Models.LocaleCode[];
 
     const projectId = $page.params.project;
     let locale = 'en-us';
     let loading = false;
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
 
     async function onLocaleChange() {
         timeout = setTimeout(() => {
@@ -22,6 +23,7 @@
             const template = await loadSmsTemplate(projectId, 'invitation', locale);
             clearTimeout(timeout);
             smsTemplate.set(template);
+            $baseSmsTemplate = { ...$smsTemplate };
         } catch (error) {
             clearTimeout(timeout);
             addNotification({
@@ -36,5 +38,10 @@
 
 <div class="boxes-wrapper u-margin-block-start-16">
     <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
-    <SmsTemplate />
+    <SmsTemplate bind:loading>
+        <Id value={'{{team}}'}>{'{{team}}'}</Id>
+        <Id value={'{{user}}'}>{'{{user}}'}</Id>
+        <Id value={'{{project}}'}>{'{{project}}'}</Id>
+        <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
+    </SmsTemplate>
 </div>

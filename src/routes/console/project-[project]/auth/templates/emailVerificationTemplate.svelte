@@ -3,7 +3,7 @@
     import LocaleOptions from './localeOptions.svelte';
     import type { Models } from '@appwrite.io/console';
     import { loadEmailTemplate } from './+page.svelte';
-    import { emailTemplate } from './strote';
+    import { baseEmailTemplate, emailTemplate } from './strote';
     import { page } from '$app/stores';
     import { Id } from '$lib/components';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,9 +11,9 @@
     export let localeCodes: Models.LocaleCode[];
     const projectId = $page.params.project;
 
-    let locale = 'en-us';
+    let locale = 'en';
     let loading = false;
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
 
     async function onLocaleChange() {
         timeout = setTimeout(() => {
@@ -23,6 +23,7 @@
             const template = await loadEmailTemplate(projectId, 'verification', locale);
             clearTimeout(timeout);
             emailTemplate.set(template);
+            $baseEmailTemplate = { ...$emailTemplate };
         } catch (error) {
             clearTimeout(timeout);
             addNotification({
@@ -39,7 +40,9 @@
     <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
 
     <EmailTemplate bind:loading>
-        <Id value={'{{name}}'}>{'{{name}}'}</Id>
+        <Id value={'{{team}}'}>{'{{team}}'}</Id>
+        <Id value={'{{user}}'}>{'{{user}}'}</Id>
         <Id value={'{{project}}'}>{'{{project}}'}</Id>
+        <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
     </EmailTemplate>
 </div>

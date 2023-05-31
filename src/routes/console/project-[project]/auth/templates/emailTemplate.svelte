@@ -34,8 +34,12 @@
                 $emailTemplate.senderEmail,
                 $emailTemplate.subject,
                 $emailTemplate.message,
-                $emailTemplate.replyTo
+                $emailTemplate.replyTo ? $emailTemplate.replyTo : undefined
             );
+
+            $baseEmailTemplate = {
+                ...$emailTemplate
+            };
             addNotification({
                 type: 'success',
                 message: `Email ${$emailTemplate.type} template for ${$emailTemplate.locale} updated`
@@ -51,10 +55,11 @@
     $: isButtonDisabled = deepEqual($emailTemplate, $baseEmailTemplate);
 </script>
 
-<div class="box">
+<div class="box u-position-relative">
     {#if loading}
         <div
-            class="u-width-full-100 u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32">
+            class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
+            style="inset-inline-start: 0;">
             <div class="loader" />
             <p class="text">Loading template...</p>
         </div>
@@ -78,8 +83,9 @@
                         <p class="text">
                             Click to copy variables for the fields below. Learn more <a
                                 class="link"
-                                href="#">here</a
+                                href="/#">here</a
                             >.
+                            <!-- TODO: add link to docs -->
                         </p>
                         <div class="u-margin-block-start-16 u-flex u-gap-8">
                             <slot />

@@ -2,6 +2,9 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
+    import { project } from '../../store';
+    import { loadSmsTemplate } from './+page.svelte';
+    import { baseSmsTemplate, smsTemplate } from './strote';
 
     export let show = false;
 
@@ -9,7 +12,18 @@
 
     async function reset() {
         try {
-            // await sdk.forConsole.projects.resetSmsTemplate()
+            await sdk.forConsole.projects.deleteSmsTemplate(
+                $project.$id,
+                $smsTemplate.type,
+                $smsTemplate.locale
+            );
+
+            $smsTemplate = await loadSmsTemplate(
+                $project.$id,
+                $smsTemplate.type,
+                $smsTemplate.locale
+            );
+            $baseSmsTemplate = { ...$smsTemplate };
             show = false;
         } catch (e) {
             error = e.message;
@@ -21,7 +35,7 @@
     icon="exclamation"
     state="warning"
     onSubmit={reset}
-    size="small"
+    size="big"
     {error}
     bind:show
     headerDivider={false}>
