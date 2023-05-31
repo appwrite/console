@@ -15,6 +15,8 @@
     import { loading } from '../store';
     import Create from './createOrganization.svelte';
 
+    let isOpen = false;
+
     onMount(() => {
         loading.set(false);
 
@@ -47,12 +49,13 @@
 </script>
 
 <Shell
+    bind:isOpen
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <Header slot="header" />
-    <SideNavigation slot="side" />
+    <SideNavigation slot="side" bind:isOpen />
     <slot />
     <Footer slot="footer" />
 </Shell>

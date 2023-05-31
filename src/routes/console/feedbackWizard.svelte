@@ -7,12 +7,7 @@
     import Step2 from './wizardFeedback/step2.svelte';
 
     onDestroy(() => {
-        $feedbackData = {
-            message: '',
-            name: '',
-            email: '',
-            value: 0
-        };
+        feedbackData.reset();
     });
 
     const stepsComponents: WizardStepsType = new Map();
@@ -27,4 +22,8 @@
     });
 </script>
 
-<Wizard title="Feedback" steps={stepsComponents} finalAction="Close" />
+<Wizard
+    title="Feedback"
+    steps={stepsComponents}
+    finalAction="Close"
+    on:exit={() => console.log('test')} />

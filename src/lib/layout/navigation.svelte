@@ -9,6 +9,8 @@
     import { wizard } from '$lib/stores/wizard';
     import Create from '$routes/console/feedbackWizard.svelte';
 
+    export let isOpen = false;
+
     $: project = $page.params.project;
     $: projectPath = `${base}/console/project-${project}`;
 
@@ -32,6 +34,7 @@
     }
 
     function openWizard() {
+        isOpen = false;
         wizard.start(Create);
     }
 
