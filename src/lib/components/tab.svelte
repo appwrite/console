@@ -1,14 +1,31 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { trackEvent } from '$lib/actions/analytics';
     import { getElementDir } from '$lib/helpers/style';
+    import { waitUntil } from '$lib/helpers/waitUntil';
 
     export let selected = false;
     export let href: string = null;
     export let event: string = null;
 
-    function track() {
-        if (!event) return;
-        trackEvent(`click_select_tab_${event}`);
+    async function handleClick(e: Event) {
+        if (event) {
+            trackEvent(`click_select_tab_${event}`);
+        }
+
+        if (href) {
+            let el = e.target as HTMLElement;
+            if (el.tagName !== 'A') {
+                el = el.closest('a');
+            }
+
+            await goto(href);
+            await waitUntil(() => {
+                console.log('tickUntil', el);
+                return el.classList.contains('is-selected');
+            }, 1000);
+            el.focus();
+        }
     }
 
     const keysMap = {
@@ -70,7 +87,7 @@
             class="tabs-button"
             {href}
             class:is-selected={selected}
-            on:click={track}
+            on:click={handleClick}
             tabindex={selected ? 0 : -1}
             on:keydown={handleKeyDown}
             role="tab">
@@ -82,7 +99,7 @@
             class="tabs-button"
             class:is-selected={selected}
             on:click|preventDefault
-            on:click={track}
+            on:click={handleClick}
             tabindex={selected ? 0 : -1}
             on:keydown={handleKeyDown}
             role="tab">
