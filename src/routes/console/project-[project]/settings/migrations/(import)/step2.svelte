@@ -1,8 +1,82 @@
 <script lang="ts">
     import { EyebrowHeading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { deepMap } from '$lib/helpers/object';
+    import type { DeepKeys, WritableValue } from '$lib/helpers/types';
 
     import { WizardStep } from '$lib/layout';
+    import { writable } from 'svelte/store';
+
+    const formData = writable({
+        users: {
+            root: false,
+            teams: false
+        },
+        databases: {
+            root: false,
+            documents: false
+        },
+        functions: {
+            root: false,
+            env: false,
+            inactive: false
+        },
+        storage: {
+            root: false
+        }
+    });
+
+    type FormData = WritableValue<typeof formData>;
+    type FormKeys = DeepKeys<FormData>;
+
+    /**
+     *
+     * @param field {string} The field to update.
+     * Representes the path to the field in the formData object e.g. 'users.root'
+     */
+    function handleInputChange(field: FormKeys) {
+        return (event: Event) => {
+            const checked = (event.target as HTMLInputElement).checked;
+            // For each entry in formData, if the root is changed, change all children to the same value
+            // otherwise, if a child is changed to true, change the root to true
+
+            const [parent, child] = field.split('.');
+            if (child === 'root') {
+                formData.update((data) => {
+                    data[parent].root = checked;
+                    for (const key in data[parent]) {
+                        if (key !== 'root') {
+                            data[parent][key] = checked;
+                        }
+                    }
+                    return data;
+                });
+            } else if (checked) {
+                formData.update((data) => {
+                    data[parent].root = checked;
+                    return data;
+                });
+            }
+        };
+    }
+
+    function deselectAll() {
+        $formData = deepMap($formData, (v) => {
+            if (typeof v === 'boolean') {
+                return false;
+            }
+            return v;
+        });
+    }
+
+    function selectAll() {
+        $formData = deepMap($formData, (v) => {
+            if (typeof v === 'boolean') {
+                return true;
+            }
+            return v;
+        });
+    }
 </script>
 
 <WizardStep>
@@ -44,17 +118,20 @@
 
     <ul class="buttons-list u-margin-block-start-32 u-main-end">
         <li class="buttons-list-item">
-            <Button text>Deselect all</Button>
+            <Button text on:click={deselectAll}>Deselect all</Button>
         </li>
 
         <li class="buttons-list-item">
-            <Button text>Select all</Button>
+            <Button text on:click={selectAll}>Select all</Button>
         </li>
     </ul>
 
     <ul class="u-flex u-flex-vertical u-gap-32 u-margin-block-start-16">
         <li class="checkbox-field">
-            <input type="checkbox" />
+            <input
+                type="checkbox"
+                bind:checked={$formData.users.root}
+                on:change={handleInputChange('users.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Users</span>
                 <span class="inline-tag">300</span>
@@ -64,7 +141,10 @@
 
             <ul>
                 <li class="checkbox-field">
-                    <input type="checkbox" />
+                    <input
+                        type="checkbox"
+                        bind:checked={$formData.users.teams}
+                        on:change={handleInputChange('users.teams')} />
                     <div class="u-flex u-gap-4">
                         <span class="u-bold">Include teams</span>
                         <span class="inline-tag">4</span>
@@ -75,7 +155,10 @@
             </ul>
         </li>
         <li class="checkbox-field">
-            <input type="checkbox" />
+            <input
+                type="checkbox"
+                bind:checked={$formData.databases.root}
+                on:change={handleInputChange('databases.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Databases</span>
                 <span class="inline-tag">300</span>
@@ -85,7 +168,10 @@
 
             <ul>
                 <li class="checkbox-field">
-                    <input type="checkbox" />
+                    <input
+                        type="checkbox"
+                        bind:checked={$formData.databases.documents}
+                        on:change={handleInputChange('databases.documents')} />
                     <div class="u-flex u-gap-4">
                         <span class="u-bold">Include documents</span>
                         <span class="inline-tag">4</span>
@@ -96,7 +182,10 @@
             </ul>
         </li>
         <li class="checkbox-field">
-            <input type="checkbox" />
+            <input
+                type="checkbox"
+                bind:checked={$formData.functions.root}
+                on:change={handleInputChange('functions.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Functions</span>
                 <span class="inline-tag">30</span>
@@ -105,7 +194,10 @@
             <span>Import all functions and their active deployment</span>
             <ul>
                 <li class="checkbox-field">
-                    <input type="checkbox" />
+                    <input
+                        type="checkbox"
+                        bind:checked={$formData.functions.env}
+                        on:change={handleInputChange('functions.env')} />
                     <div class="u-flex u-gap-4">
                         <span class="u-bold">Include environment variables</span>
                     </div>
@@ -113,7 +205,10 @@
                     <span>Description here</span>
                 </li>
                 <li class="checkbox-field">
-                    <input type="checkbox" />
+                    <input
+                        type="checkbox"
+                        bind:checked={$formData.functions.inactive}
+                        on:change={handleInputChange('functions.inactive')} />
                     <div class="u-flex u-gap-4">
                         <span class="u-bold">Include inactive deployments</span>
                     </div>
@@ -123,7 +218,10 @@
             </ul>
         </li>
         <li class="checkbox-field">
-            <input type="checkbox" />
+            <input
+                type="checkbox"
+                bind:checked={$formData.storage.root}
+                on:change={handleInputChange('storage.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Storage</span>
                 <span class="inline-tag">30GB</span>
