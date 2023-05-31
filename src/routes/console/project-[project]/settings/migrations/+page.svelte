@@ -58,8 +58,10 @@
                         </div>
                     </li>
                 </ul>
-                <Arrow direction="down" />
-                <div class="avatar u-margin-block-start-16" style="--size: {48 / 16}rem">
+                <div class="u-margin-block-start-8">
+                    <Arrow direction="down" />
+                </div>
+                <div class="avatar u-margin-block-start-8" style="--size: {48 / 16}rem">
                     <span class="icon-cloud" />
                 </div>
                 <Button class="u-margin-block-start-20" secondary>Import data</Button>
@@ -92,7 +94,7 @@
                         </div>
                     {/if}
                 </div>
-                <Button class="u-margin-block-start-20" secondary>Import data</Button>
+                <Button class="u-margin-block-start-48" secondary>Export data</Button>
             </div>
         </svelte:fragment>
     </CardGrid>
