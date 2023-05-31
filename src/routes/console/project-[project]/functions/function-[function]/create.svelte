@@ -62,10 +62,10 @@
     function setCodeSnippets(lang: string) {
         return {
             Unix: {
-                code: `appwrite functions createDeployment \\ 
-    --functionId=${functionId} \\ 
-    --entrypoint='index.${lang}' \\ 
-    --code="." \\ 
+                code: `appwrite functions createDeployment \\
+    --functionId=${functionId} \\
+    --entrypoint='index.${lang}' \\
+    --code="." \\
     --activate=true`,
                 language: 'bash'
             },

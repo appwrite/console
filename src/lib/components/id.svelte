@@ -3,6 +3,7 @@
 
     export let value: string;
     export let event: string = null;
+    export let isCentered = true;
 
     function truncateText(node: HTMLElement) {
         const MAX_TRIES = 100;
@@ -46,22 +47,23 @@
     }
 </script>
 
-<div
-    class="interactive-text-output is-buttons-on-top u-text-center"
-    style:min-inline-size="0"
-    style:display="inline-flex">
-    <span
-        style:white-space="nowrap"
-        class="text u-line-height-1-5"
-        style:overflow="hidden"
-        use:truncateText>
-        <slot />
-    </span>
-    <div class="interactive-text-output-buttons">
-        <Copy {value} {event}>
+<Copy {value} {event}>
+    <div
+        class="interactive-text-output is-buttons-on-top"
+        class:u-text-center={isCentered}
+        style:min-inline-size="0"
+        style:display="inline-flex">
+        <span
+            style:white-space="nowrap"
+            class="text u-line-height-1-5"
+            style:overflow="hidden"
+            use:truncateText>
+            <slot />
+        </span>
+        <div class="interactive-text-output-buttons">
             <button class="interactive-text-output-button is-hidden" aria-label="copy text">
                 <span class="icon-duplicate" aria-hidden="true" />
             </button>
-        </Copy>
+        </div>
     </div>
-</div>
+</Copy>

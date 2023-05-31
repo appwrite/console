@@ -35,8 +35,12 @@
     </svelte:fragment>
     {#if method === Method.NPM}
         <p>
-            Use <a href="https://npmjs.org" target="_blank" rel="noopener noreferrer" class="link"
-                >NPM (node package manager)</a> from your command line to add Appwrite SDK to your project.
+            Use <a
+                href="https://npmjs.com/package/appwrite"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">NPM (node package manager)</a> from your command line to add Appwrite SDK
+            to your project.
         </p>
         <Code label="Bash" language="sh" code="npm install appwrite" withCopy />
         <p class="common-section">
