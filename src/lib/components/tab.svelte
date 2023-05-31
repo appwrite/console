@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { trackEvent } from '$lib/actions/analytics';
+    import { last } from '$lib/helpers/array';
     import { getElementDir } from '$lib/helpers/style';
     import { waitUntil } from '$lib/helpers/waitUntil';
 
@@ -42,9 +43,9 @@
     function handleKeyDown(e: KeyboardEvent) {
         const tabBtn = e.target as HTMLElement;
         const tabItem = tabBtn.closest('.tabs-item') as HTMLElement;
-        const tabsList = tabBtn.closest('.tabs-item').closest('.tabs') as HTMLElement;
-        const tabItems = tabsList.querySelectorAll('.tabs-item');
-        const currentIdx = Array.from(tabItems).indexOf(tabItem);
+        const tabsList = tabItem.closest('.tabs') as HTMLElement;
+        const tabItems = Array.from(tabsList.querySelectorAll('.tabs-item'));
+        const currentIdx = tabItems.indexOf(tabItem);
 
         const dir = getElementDir(tabsList);
 
@@ -57,9 +58,7 @@
             }
             case 'End': {
                 e.preventDefault();
-                const lastTabBtn = tabItems[tabItems.length - 1].querySelector(
-                    '.tabs-button'
-                ) as HTMLElement;
+                const lastTabBtn = last(tabItems).querySelector('.tabs-button') as HTMLElement;
                 lastTabBtn.focus();
                 break;
             }
