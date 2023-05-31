@@ -3,6 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { isSelfHosted } from '$lib/system';
+    import { openImportWizard } from './(import)';
 
     // This will be better implemented when we have i18n
     const strings = {
@@ -64,7 +65,9 @@
                 <div class="avatar u-margin-block-start-8" style="--size: {48 / 16}rem">
                     <span class="icon-cloud" />
                 </div>
-                <Button class="u-margin-block-start-20" secondary>Import data</Button>
+                <Button class="u-margin-block-start-20" secondary on:click={openImportWizard}>
+                    Import data
+                </Button>
             </div>
         </svelte:fragment>
     </CardGrid>
