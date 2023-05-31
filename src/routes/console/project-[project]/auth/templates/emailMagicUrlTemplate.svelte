@@ -13,10 +13,9 @@
 
     let locale = 'en';
     let loading = false;
-    let timeout: ReturnType<typeof setTimeout>;
 
     async function onLocaleChange() {
-        timeout = setTimeout(() => {
+        const timeout = setTimeout(() => {
             loading = true;
         }, 1);
         try {

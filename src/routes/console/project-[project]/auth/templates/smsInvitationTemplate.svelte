@@ -13,10 +13,9 @@
     const projectId = $page.params.project;
     let locale = 'en-us';
     let loading = false;
-    let timeout: ReturnType<typeof setTimeout>;
 
     async function onLocaleChange() {
-        timeout = setTimeout(() => {
+        const timeout = setTimeout(() => {
             loading = true;
         }, 1);
         try {
