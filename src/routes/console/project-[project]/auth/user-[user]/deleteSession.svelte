@@ -15,6 +15,7 @@
         try {
             await sdk.forProject.users.deleteSession($page.params.user, selectedSessionId);
             await invalidate(Dependencies.SESSIONS);
+            showDelete = false;
             addNotification({
                 type: 'success',
                 message: 'Session has been deleted'

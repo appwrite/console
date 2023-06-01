@@ -153,7 +153,7 @@
                         You have no users. Create a user to see them here.
                     </p>
                     <p class="text u-line-height-1-5">
-                        Need a hand? Check out our <a
+                        Need a hand? Learn more in our <a
                             href="https://appwrite.io/docs/server/users"
                             target="_blank"
                             rel="noopener noreferrer">

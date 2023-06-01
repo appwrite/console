@@ -84,7 +84,7 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid}
-            style:--amount-of-buttons={required ? 0 : 1.75} />
+            style:--amount-of-buttons={nullable && !required ? 1.75 : 0} />
         <ul
             class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
             {#if nullable && !required}

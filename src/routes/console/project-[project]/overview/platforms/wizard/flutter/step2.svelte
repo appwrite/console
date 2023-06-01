@@ -5,7 +5,7 @@
 
     const example1 = `dependencies:
   appwrite: ^${$versions['client-flutter']}`;
-    const example2 = `pub get appwrite`;
+    const example2 = `flutter pub add appwrite`;
 </script>
 
 <WizardStep>

@@ -7,7 +7,6 @@
     export let value: boolean;
     export let attribute: Models.AttributeBoolean;
     export let optionalText: string | undefined = undefined;
-    export let disabled = false;
 </script>
 
 <InputSelect
@@ -22,5 +21,4 @@
         { label: 'True', value: true },
         { label: 'False', value: false }
     ].filter(Boolean)}
-    bind:value
-    {disabled} />
+    bind:value />
