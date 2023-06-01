@@ -22,8 +22,4 @@
     });
 </script>
 
-<Wizard
-    title="Feedback"
-    steps={stepsComponents}
-    finalAction="Close"
-    on:exit={() => console.log('test')} />
+<Wizard title="Feedback" steps={stepsComponents} finalAction="Close" />
