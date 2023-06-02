@@ -29,6 +29,12 @@
 
     export let data: PageData;
 
+    // TODO: Remove this when the console SDK is updated
+    const users = data.users.users.map((user) => {
+        const labels: string[] = [];
+        return { labels, ...user };
+    });
+
     let showCreate = false;
     const projectId = $page.params.project;
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
@@ -49,10 +55,11 @@
                 <TableCellHead onlyDesktop>Identifiers</TableCellHead>
                 <TableCellHead onlyDesktop width={130}>Status</TableCellHead>
                 <TableCellHead onlyDesktop width={100}>ID</TableCellHead>
+                <TableCellHead onlyDesktop width={100}>Labels</TableCellHead>
                 <TableCellHead onlyDesktop>Joined</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each data.users.users as user}
+                {#each users as user}
                     <TableRowLink
                         href={`${base}/console/project-${projectId}/auth/user-${user.$id}`}>
                         <TableCell title="Name">
@@ -102,6 +109,9 @@
                                 </Pill>
                             </Copy>
                         </TableCell>
+                        <TableCellText onlyDesktop title="Labels">
+                            {user.labels.join(', ')}
+                        </TableCellText>
                         <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(user.registration)}
                         </TableCellText>
