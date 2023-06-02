@@ -14,8 +14,7 @@ export const load: PageLoad = async ({ params, parent, depends }) => {
         offset,
         deployments: await sdkForProject.functions.listDeployments(params.function, [
             Query.limit(PAGE_LIMIT),
-            Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.offset(offset)
         ])
     };
 };
