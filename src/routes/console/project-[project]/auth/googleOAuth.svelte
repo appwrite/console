@@ -58,8 +58,8 @@
             showPasswordButton
             bind:value={secret} />
         <Alert type="info">
-            To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration
-            and select web application as the application type.
+            To complete the setup, create an OAuth2 client ID with "Web application" as the
+            application type, then add this redirect URI to your {provider.name} configuration.
         </Alert>
         <div>
             <p>URI</p>
