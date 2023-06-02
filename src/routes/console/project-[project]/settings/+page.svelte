@@ -14,6 +14,25 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import type { PageData } from './$types';
+    import UpdateVariables from '../updateVariables.svelte';
+
+    export let data: PageData;
+
+    const sdkCreateVariable = async (key: string, value: string) => {
+        await sdk.forProject.projectApi.createVariable(key, value);
+        await invalidate(Dependencies.PROJECT_SETTINGS);
+    };
+
+    const sdkUpdateVariable = async (variableId: string, key: string, value: string) => {
+        await sdk.forProject.projectApi.updateVariable(variableId, key, value);
+        await invalidate(Dependencies.PROJECT_SETTINGS);
+    };
+
+    const sdkDeleteVariable = async (variableId: string) => {
+        await sdk.forProject.projectApi.deleteVariable(variableId);
+        await invalidate(Dependencies.PROJECT_SETTINGS);
+    };
 
     let name: string = null;
     let showDelete = false;
@@ -137,6 +156,14 @@
                 </FormList>
             </svelte:fragment>
         </CardGrid>
+
+        <UpdateVariables
+            {sdkCreateVariable}
+            {sdkUpdateVariable}
+            {sdkDeleteVariable}
+            isGlobal={true}
+            redeployMessage={`All functions have been redeployed.`}
+            variableList={data.variables} />
 
         <CardGrid danger>
             <div>

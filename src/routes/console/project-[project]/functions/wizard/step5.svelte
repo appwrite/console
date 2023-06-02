@@ -1,7 +1,7 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
     import { createFunction } from './store';
-    import Create from '../createVariable.svelte';
+    import Create from '../../createVariable.svelte';
     import { DropList, DropListItem, Secret, Empty, Output } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import {
@@ -45,7 +45,7 @@
 <WizardStep>
     <svelte:fragment slot="title">Variables</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Create a variable (or secret key) that will be passed to your function at runtime.
+        Create the environment variables or secret keys that will be passed to your function
     </svelte:fragment>
     {#if $createFunction.vars.length}
         <Table noStyles>

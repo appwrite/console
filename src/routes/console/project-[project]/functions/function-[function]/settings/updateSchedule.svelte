@@ -53,7 +53,8 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">
-                More details on Cron syntax here.</a>
+                More details on Cron syntax here</a
+            >.
         </p>
         <svelte:fragment slot="aside">
             <FormList>

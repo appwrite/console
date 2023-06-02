@@ -1,17 +1,15 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
     import { Modal } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
     import { Button, InputFile } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { parse } from 'dotenv';
-    import { variables } from './store';
 
+    export let redeployMessage: string;
     export let show = false;
-
-    const functionId = $page.params.function;
+    export let variableList: Models.VariableList;
+    export let sdkCreateVariable: (key: string, value: string) => Promise<any>;
+    export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
 
     let files: FileList;
     let error: string;
@@ -40,23 +38,20 @@
                 entries
                     .filter(([, value]) => !!value)
                     .map(([key, value]) => {
-                        const found = $variables.find((variable) => variable.key === key);
+                        const found = variableList.variables.find(
+                            (variable) => variable.key === key
+                        );
                         return found
-                            ? sdk.forProject.functions.updateVariable(
-                                  functionId,
-                                  found.$id,
-                                  key,
-                                  value
-                              )
-                            : sdk.forProject.functions.createVariable(functionId, key, value);
+                            ? sdkUpdateVariable(found.$id, key, value)
+                            : sdkCreateVariable(key, value);
                     })
             );
 
-            await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
-                message: 'Variables uploaded'
+                message: `Variables have been uploaded. ${redeployMessage}`
             });
+
             show = false;
         } catch (e) {
             error = e.message;
@@ -64,10 +59,10 @@
     }
 </script>
 
-<Modal bind:show onSubmit={handleSubmit} bind:error>
+<Modal headerDivider={false} bind:show onSubmit={handleSubmit} bind:error>
     <svelte:fragment slot="header">Upload Variables</svelte:fragment>
     <p>
-        Upload multiple variables via a .env file that will be passed to your function at runtime.
+        Upload multiple environment variables via a .env file that will be passed to your function.
     </p>
 
     <InputFile bind:files />
