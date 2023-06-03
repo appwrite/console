@@ -107,11 +107,6 @@
             }
         }
     }
-
-    // $: {
-    //     const getUserLanguage = window.navigator.language;
-    //     console.log(getUserLanguage);
-    // }
 </script>
 
 <Notifications />

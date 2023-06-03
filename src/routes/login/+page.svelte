@@ -14,7 +14,6 @@
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { _ } from '$lib/i18n';
 
     let mail: string, pass: string;
 
@@ -39,42 +38,41 @@
 </script>
 
 <svelte:head>
-    <title>{$_.t('login.title')} - Appwrite</title>
+    <title>Sign in - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">{$_.t('login.title')}</svelte:fragment>
+    <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>
             <FormList>
                 <InputEmail
                     id="email"
-                    label={$_.t('login.field_inputs.email')}
-                    placeholder={$_.t('globals.placeholders.email')}
+                    label="Email"
+                    placeholder="Email"
                     autofocus={true}
                     required={true}
                     bind:value={mail} />
                 <InputPassword
                     id="password"
-                    label={$_.t('login.field_inputs.password')}
-                    placeholder={$_.t('globals.placeholders.password')}
+                    label="Password"
+                    placeholder="Password"
                     required={true}
                     meter={false}
                     showPasswordButton={true}
                     bind:value={pass} />
                 <FormItem>
-                    <Button fullWidth submit>{$_.t('login.title')}</Button>
+                    <Button fullWidth submit>Sign in</Button>
                 </FormItem>
             </FormList>
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">
         <li class="inline-links-item">
-            <a href={`${base}/recover`}
-                ><span class="text">{$_.t('password_recovery.forgot_password')}?</span></a>
+            <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
         </li>
         <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">{$_.t('sign_up.title')}</span></a>
+            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
         </li>
     </svelte:fragment>
 </Unauthenticated>
