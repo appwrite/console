@@ -90,7 +90,7 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <span class="text">
-                {$_.t('sign_up.already_registered')}
+                {$LL.sign_up.already_registered()}
                 <a class="link" href={`${base}/login`}>{$LL.login.title()}</a>
             </span>
         </li>
