@@ -17,6 +17,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
+    import LL from '../../i18n/i18n-svelte';
 
     let name: string, mail: string, pass: string;
     let terms = false;
@@ -39,7 +40,7 @@
 </script>
 
 <svelte:head>
-    <title>Sign up - Appwrite</title>
+    <title>{$LL.sign_up.title()} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
@@ -49,20 +50,20 @@
             <FormList>
                 <InputText
                     id="name"
-                    label="Name"
-                    placeholder="Your name"
+                    label={$LL.sign_up.field_inputs.name()}
+                    placeholder={$LL.globals.placeholders.your_name()}
                     autofocus={true}
                     bind:value={name} />
                 <InputEmail
                     id="email"
-                    label="Email"
-                    placeholder="Your email"
+                    label={$LL.sign_up.field_inputs.email()}
+                    placeholder={$LL.globals.placeholders.your_email()}
                     required={true}
                     bind:value={mail} />
                 <InputPassword
                     id="password"
-                    label="Password"
-                    placeholder="Your password"
+                    label={$LL.sign_up.field_inputs.password()}
+                    placeholder={$LL.globals.placeholders.your_password()}
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
@@ -81,7 +82,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit>Sign up</Button>
+                    <Button fullWidth submit>{$LL.sign_up.title()}</Button>
                 </FormItem>
             </FormList>
         </Form>
@@ -89,7 +90,8 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <span class="text">
-                Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
+                {$_.t('sign_up.already_registered')}
+                <a class="link" href={`${base}/login`}>{$LL.login.title()}</a>
             </span>
         </li>
     </svelte:fragment>

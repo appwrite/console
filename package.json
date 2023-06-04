@@ -5,7 +5,11 @@
     },
     "scripts": {
         "dev": "npm-run-all --parallel vite typesafe-i18n",
+<<<<<<< HEAD
+        "vite": "vite dev",
+=======
         "vite": "vite",
+>>>>>>> 78eda2358c398774c986fd7a63b63ad4b9688911
         "build": "node build.js",
         "preview": "vite preview",
         "sync": "svelte-kit sync",

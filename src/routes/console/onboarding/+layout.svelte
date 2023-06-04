@@ -1,5 +1,9 @@
+<script>
+    import { _ } from '$lib/i18n';
+</script>
+
 <svelte:head>
-    <title>Onboarding - Appwrite</title>
+    <title>{$_.t('console.onboarding.header')} - Appwrite</title>
 </svelte:head>
 
 <slot />

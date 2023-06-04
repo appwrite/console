@@ -17,6 +17,13 @@
     import Loading from './loading.svelte';
     import { loading } from './store';
 
+    // typesafe-i18n
+    import { localStorageDetector } from 'typesafe-i18n/detectors';
+    import { locale, setLocale } from '../i18n/i18n-svelte';
+    import type { Locales } from '../i18n/i18n-types';
+    import { detectLocale } from '../i18n/i18n-util';
+    import { loadLocaleAsync } from '../i18n/i18n-util.async';
+
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
@@ -82,13 +89,41 @@
                 loading.set(false);
             }
         }
+
+        /**
+         * typesafe-i18n here
+         */
+
+        const detectedLocale = detectLocale(localStorageDetector);
+        await chooseLocale(detectedLocale);
+        // console.log($LL.startup());
+        localeToSelect = $locale;
     });
+
+    const chooseLocale = async (locale: Locales) => {
+        await loadLocaleAsync(locale);
+        setLocale(locale);
+    };
+
+    let localeToSelect: Locales;
+    $: localeToSelect && chooseLocale(localeToSelect);
+
+    $: $locale && localStorage.setItem('lang', window.navigator.language);
 
     afterNavigate((navigation) => {
         if (navigation.type !== 'enter' && navigation.from?.route?.id !== navigation.to.route.id) {
             trackPageView(navigation.to.route.id);
         }
     });
+
+    /*
+     *   setting up user language
+     */
+    $: {
+        const getUserLanguage = window.navigator.language;
+        console.log(getUserLanguage);
+        window.localStorage.setItem('getUserlanguage', getUserLanguage);
+    }
 
     $: {
         if (browser) {
