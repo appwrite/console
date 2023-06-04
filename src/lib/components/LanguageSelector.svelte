@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { _ } from '$lib/i18n';
     import { locale } from '../../i18n/i18n-svelte';
 
     let languages = [
@@ -12,7 +11,6 @@
     let selected;
 
     const onChangeValue = () => {
-        // alert(selected.value);
         $locale && localStorage.setItem('lang', selected.value);
         window.location.reload();
     };
