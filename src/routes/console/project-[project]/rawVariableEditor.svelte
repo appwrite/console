@@ -8,6 +8,7 @@
     import { parse } from 'dotenv';
 
     export let redeployMessage: string;
+    export let isGlobal: boolean;
     export let showEditor = false;
     export let variableList: Models.VariableList;
 
@@ -111,9 +112,10 @@
 </script>
 
 <Modal headerDivider={false} bind:show={showEditor} onSubmit={handleSubmit} size="big">
-    <svelte:fragment slot="header">Raw editor</svelte:fragment>
+    <svelte:fragment slot="header">Editor</svelte:fragment>
     <p>
-        Edit environment variables below or download as a <span class="inline-code">.{tab}</span> file.
+        Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
+        <span class="inline-code">.{tab}</span> file.
     </p>
 
     <div class="editor-border">

@@ -1,11 +1,13 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
+    import Alert from '$lib/components/alert.svelte';
     import { Button, InputFile } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { parse } from 'dotenv';
 
     export let redeployMessage: string;
+    export let isGlobal: boolean;
     export let show = false;
     export let variableList: Models.VariableList;
     export let sdkCreateVariable: (key: string, value: string) => Promise<any>;
@@ -60,10 +62,21 @@
 </script>
 
 <Modal headerDivider={false} bind:show onSubmit={handleSubmit} bind:error>
-    <svelte:fragment slot="header">Upload Variables</svelte:fragment>
-    <p>
-        Upload multiple environment variables via a .env file that will be passed to your function.
-    </p>
+    <svelte:fragment slot="header"
+        >Import {isGlobal ? 'global' : 'environment'} variables</svelte:fragment>
+    <div class="u-flex u-flex-vertical u-gap-24">
+        <p>
+            Upload multiple {isGlobal ? 'global' : 'environment'} variables via a .env file that will
+            be passed to {isGlobal ? 'all functions within your project' : 'your function'}.
+        </p>
+
+        {#if variableList.total > 0}
+            <Alert type="info">
+                Existing {isGlobal ? 'global' : 'environment'} variables will be updated. They will not
+                be deleted if they are not present in your .env file.
+            </Alert>
+        {/if}
+    </div>
 
     <InputFile bind:files />
 

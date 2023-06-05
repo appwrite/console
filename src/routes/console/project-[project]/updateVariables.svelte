@@ -145,7 +145,7 @@
             showPromoteModal = false;
 
             await invalidate(Dependencies.VARIABLES);
-            await invalidate(Dependencies.PROJECT_SETTINGS);
+            await invalidate(Dependencies.PROJECT_VARIABLES);
 
             addNotification({
                 type: 'success',
@@ -188,7 +188,7 @@
                 <li class="buttons-list-item">
                     <Button text on:click={() => (showEditorModal = true)}>
                         <span class="icon-code" />
-                        <span class="text">Raw editor</span>
+                        <span class="text">Editor</span>
                     </Button>
                 </li>
                 <li class="buttons-list-item">
@@ -334,6 +334,7 @@
 
 {#if showEditorModal}
     <RawVariableEditor
+        {isGlobal}
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {sdkDeleteVariable}
@@ -356,6 +357,7 @@
 
 {#if showVariablesUpload}
     <UploadVariables
+        {isGlobal}
         {redeployMessage}
         {sdkCreateVariable}
         {sdkUpdateVariable}
