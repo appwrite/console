@@ -1,9 +1,13 @@
 <script lang="ts">
     import { Arrow, CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { TableBody, TableCell, TableCellHead, TableHeader } from '$lib/elements/table';
+    import Table from '$lib/elements/table/table.svelte';
     import { Container } from '$lib/layout';
+    import { migrator } from '$lib/stores/migrator';
     import { isSelfHosted } from '$lib/system';
     import { openImportWizard } from './(import)';
+    import Details from './details.svelte';
 
     // This will be better implemented when we have i18n
     const strings = {
@@ -23,6 +27,8 @@
             }
         }
     }[isSelfHosted ? 'selfHosted' : 'cloud'];
+
+    let showDetails = false;
 </script>
 
 <Container>
@@ -33,42 +39,67 @@
             {strings.import}
         </p>
         <svelte:fragment slot="aside">
-            <div class="import-box">
-                <ul class="avatars-group">
-                    <li class="avatars-group-item">
-                        <div class="avatar">
-                            <img src="/logos/firebase.png" alt="Firebase" width="20" />
-                        </div>
-                    </li>
-
-                    <li class="avatars-group-item">
-                        <div class="avatar">
-                            <img src="/logos/supabase.png" alt="Supabase" width="20" />
-                        </div>
-                    </li>
-
-                    <li class="avatars-group-item">
-                        <div class="avatar">
-                            <img src="/logos/nhost.png" alt="nhost" width="20" />
-                        </div>
-                    </li>
-
-                    <li class="avatars-group-item">
-                        <div class="avatar">
-                            <img src="/logos/appwrite.png" alt="Appwrite" width="18" />
-                        </div>
-                    </li>
-                </ul>
-                <div class="u-margin-block-start-8">
-                    <Arrow direction="down" />
+            {#if $migrator.status !== 'idle'}
+                <div class="u-flex">
+                    <div style="margin-inline-start: auto;">
+                        <Button secondary on:click={openImportWizard}>Import data</Button>
+                    </div>
                 </div>
-                <div class="avatar u-margin-block-start-8" style="--size: {48 / 16}rem">
-                    <span class="icon-cloud" />
+
+                <Table noStyles>
+                    <TableHeader>
+                        <TableCellHead>Date</TableCellHead>
+                        <TableCellHead>Source</TableCellHead>
+                        <TableCellHead>Status</TableCellHead>
+                        <TableCellHead />
+                    </TableHeader>
+                    <TableBody>
+                        <TableCell title="Data">Today</TableCell>
+                        <TableCell title="Source">Heaven</TableCell>
+                        <TableCell title="Status">Awesome</TableCell>
+                        <TableCell title="">
+                            <Button secondary on:click={() => (showDetails = true)}>Details</Button>
+                        </TableCell>
+                    </TableBody>
+                </Table>
+            {:else}
+                <div class="import-box">
+                    <ul class="avatars-group">
+                        <li class="avatars-group-item">
+                            <div class="avatar">
+                                <img src="/logos/firebase.png" alt="Firebase" width="20" />
+                            </div>
+                        </li>
+
+                        <li class="avatars-group-item">
+                            <div class="avatar">
+                                <img src="/logos/supabase.png" alt="Supabase" width="20" />
+                            </div>
+                        </li>
+
+                        <li class="avatars-group-item">
+                            <div class="avatar">
+                                <img src="/logos/nhost.png" alt="nhost" width="20" />
+                            </div>
+                        </li>
+
+                        <li class="avatars-group-item">
+                            <div class="avatar">
+                                <img src="/logos/appwrite.png" alt="Appwrite" width="18" />
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="u-margin-block-start-8">
+                        <Arrow direction="down" />
+                    </div>
+                    <div class="avatar u-margin-block-start-8" style="--size: {48 / 16}rem">
+                        <span class="icon-cloud" />
+                    </div>
+                    <Button class="u-margin-block-start-20" secondary on:click={openImportWizard}>
+                        Import data
+                    </Button>
                 </div>
-                <Button class="u-margin-block-start-20" secondary on:click={openImportWizard}>
-                    Import data
-                </Button>
-            </div>
+            {/if}
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
@@ -102,6 +133,8 @@
         </svelte:fragment>
     </CardGrid>
 </Container>
+
+<Details bind:show={showDetails} />
 
 <style lang="scss">
     .import-box {

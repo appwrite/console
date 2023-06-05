@@ -3,6 +3,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { stats } from './store';
+    import { MigrationBox } from '$lib/components';
 
     onMount(async () => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -18,3 +19,4 @@
 <slot />
 
 <UploadBox />
+<MigrationBox />

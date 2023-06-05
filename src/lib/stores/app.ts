@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { VARS } from '$lib/system';
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 export type AppStore = {
     theme: 'light' | 'dark' | 'auto';
@@ -19,6 +19,12 @@ export const app = writable<AppStore>({
     theme: 'auto',
     themeInUse: 'light'
 });
+
+export const iconPath = derived(app, ($app) => {
+    return (name: string, type: 'color' | 'grayscale') => {
+        return `/icons/${$app.themeInUse}/${type}/${name}.svg`;
+    }
+})
 
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({
@@ -88,6 +94,7 @@ function createFeedbackStore() {
         }
     };
 }
+
 export const feedback = createFeedbackStore();
 
 if (browser) {

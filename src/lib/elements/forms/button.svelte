@@ -34,6 +34,20 @@
             from: 'button'
         });
     }
+
+    $: resolvedClasses = [
+        'button',
+        disabled && 'is-disabled',
+        round && 'is-only-icon',
+        secondary && 'is-secondary',
+        text && 'is-text',
+        danger && 'is-danger',
+        fullWidth && 'is-full-width',
+        noMargin && 'u-padding-inline-0',
+        classes
+    ]
+        .filter(Boolean)
+        .join(' ');
 </script>
 
 {#if href}
@@ -42,14 +56,7 @@
         {href}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
-        class="button {classes}"
-        class:is-disabled={disabled}
-        class:is-only-icon={round}
-        class:is-secondary={secondary}
-        class:is-text={text}
-        class:is-danger={danger}
-        class:is-full-width={fullWidth}
-        class:u-padding-inline-0={noMargin}
+        class={resolvedClasses}
         aria-label={ariaLabel}>
         <slot />
     </a>
@@ -58,14 +65,7 @@
         on:click
         on:click={track}
         disabled={internalDisabled}
-        class="button {classes}"
-        class:is-only-icon={round}
-        class:is-secondary={secondary}
-        class:is-danger={danger}
-        class:is-text={text}
-        class:is-full-width={fullWidth}
-        class:u-padding-inline-0={noMargin}
-        type={submit ? 'submit' : 'button'}
+        class={resolvedClasses}
         aria-label={ariaLabel}>
         <slot />
     </button>

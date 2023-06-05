@@ -25,7 +25,7 @@ type Data = {
 };
 
 const initialState = {
-    provider: 'appwrite',
+    provider: 'firebase',
     inputs: {
         appwrite: {},
         nhost: {},

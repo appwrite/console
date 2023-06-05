@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { FormList, InputText } from '$lib/elements/forms';
+    import SvgIcon from '$lib/components/svgIcon.svelte';
+    import { Button, FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { data, type Provider } from '.';
 
@@ -9,6 +10,8 @@
         supabase: 'Supabase',
         nhost: 'NHost'
     };
+
+    let showAuth = false;
 </script>
 
 <WizardStep>
@@ -51,6 +54,32 @@
                 placeholder="Enter API Key"
                 bind:value={$data.inputs.appwrite.apiKey} />
         </FormList>
+    {:else if $data.provider === 'firebase'}
+        <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
+            <p class="u-text-center u-bold">Sign in with Google to get started</p>
+            <Button secondary>
+                <SvgIcon name="google" />Sign in
+            </Button>
+        </div>
+
+        <button
+            class="tag u-margin-block-start-16"
+            type="button"
+            on:click={() => (showAuth = !showAuth)}
+            class:is-selected={showAuth}>
+            <span class="icon-lock-closed" aria-hidden="true" />
+            <span class="text">Manual authentication</span>
+        </button>
+
+        {#if showAuth}
+            <div class="u-margin-block-start-16">
+                <InputText
+                    id="credentials"
+                    label="Account credentials"
+                    required
+                    placeholder="TODO" />
+            </div>
+        {/if}
     {/if}
 </WizardStep>
 

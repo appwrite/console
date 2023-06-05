@@ -6,11 +6,13 @@
     import Step1 from './step1.svelte';
     import Step2 from './step2.svelte';
     import { wizard } from '$lib/stores/wizard';
+    import { sdk } from '$lib/stores/sdk';
 
     const onExit = () => {
         data.reset();
     };
     const onFinish = () => {
+        sdk.forConsole.projects;
         data.reset();
         wizard.hide();
     };
