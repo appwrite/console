@@ -23,6 +23,8 @@
     import CreateDeployment from '../create.svelte';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import Alert from '$lib/components/alert.svelte';
+    import { project } from '$routes/console/project-[project]/store';
 
     export let data: PageData;
 
@@ -43,7 +45,7 @@
         }
     });
 
-    function showLogs(execution: Models.Execution) {
+    function showLogs(execution: Models.Execution<any>) {
         $log.show = true;
         $log.func = $func;
         $log.data = execution;
@@ -52,8 +54,22 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Logs</Heading>
+        <Heading tag="h2" size="5">Executions</Heading>
     </div>
+    {#if !$func.logging}
+        <div class="common-section">
+            <Alert type="info" isInline={true}>
+                <svelte:fragment slot="title">Your execution logs are disabled</svelte:fragment>
+
+                To see the latest execution logs, enable them in your
+                <a
+                    href={`/console/project-${$project.$id}/functions/function-${$func.$id}/settings`}
+                    class="link">
+                    Function settings</a
+                >.
+            </Alert>
+        </div>
+    {/if}
     {#if data.executions.total}
         <TableScroll>
             <TableHeader>

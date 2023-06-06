@@ -13,6 +13,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
+    import UpdateLogging from './updateLogging.svelte';
 
     export let data;
 
@@ -35,6 +36,7 @@
 <Container>
     <ExecuteFunction />
     <UpdateName />
+    <UpdateLogging />
     <UpdatePermissions />
     <UpdateEvents />
     <UpdateSchedule />

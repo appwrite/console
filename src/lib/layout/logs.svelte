@@ -14,7 +14,9 @@
     let selectedTab: string;
     let rawData: string;
 
-    function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
+    function isDeployment(
+        data: Models.Deployment | Models.Execution<any>
+    ): data is Models.Deployment {
         if ('buildId' in data) {
             selectedTab = 'logs';
             rawData = `${sdk.forConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
@@ -22,7 +24,9 @@
         }
     }
 
-    function isExecution(data: Models.Deployment | Models.Execution): data is Models.Execution {
+    function isExecution(
+        data: Models.Deployment | Models.Execution<any>
+    ): data is Models.Execution<any> {
         if ('trigger' in data) {
             selectedTab = 'response';
             rawData = `${sdk.forConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;

@@ -5,16 +5,18 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputCron } from '$lib/elements/forms';
+    import InputSwitch from '$lib/elements/forms/inputSwitch.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { project } from '$routes/console/project-[project]/store';
     import { onMount } from 'svelte';
     import { func } from '../store';
 
     const functionId = $page.params.function;
-    let functionSchedule: string = null;
+    let functionLogging: boolean = null;
 
     onMount(async () => {
-        functionSchedule ??= $func.schedule;
+        functionLogging ??= $func.logging;
     });
 
     async function updateSchedule() {
@@ -24,15 +26,18 @@
                 $func.name,
                 $func.execute || undefined,
                 $func.events || undefined,
-                functionSchedule,
+                $func.schedule || undefined,
                 $func.timeout || undefined,
                 $func.enabled,
-                $func.logging
+                functionLogging
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
-                message: 'Cron Schedule has been updated'
+                message:
+                    $func.name +
+                    ' execution logs settings have been ' +
+                    (functionLogging ? 'enabled' : 'disabled')
             });
             trackEvent(Submit.FunctionUpdateSchedule);
         } catch (error) {
@@ -47,27 +52,28 @@
 
 <Form onSubmit={updateSchedule}>
     <CardGrid>
-        <Heading tag="h6" size="7">Schedule</Heading>
+        <Heading tag="h6" size="7">Execution logs</Heading>
         <p>
-            Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
-                href="https://en.wikipedia.org/wiki/Cron"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">
-                More details on Cron syntax here</a
-            >.
+            Enable or disable execution logs. We recommend disabling logs when transferring critical
+            data or for performance reasons.
         </p>
         <svelte:fragment slot="aside">
             <FormList>
-                <InputCron
-                    bind:value={functionSchedule}
-                    label="Schedule (Cron Syntax)"
-                    id="schedule" />
+                <InputSwitch label="Logs" id="logging" bind:value={functionLogging}>
+                    <svelte:fragment slot="description">
+                        <p>
+                            When enabled, all execution responses will be accessible in the <a
+                                href={`/console/project-${$project.$id}/functions/function-${$func.$id}/executions`}
+                                class="link">
+                                Executions</a> tab
+                        </p>
+                    </svelte:fragment>
+                </InputSwitch>
             </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={$func.schedule === functionSchedule} submit>Update</Button>
+            <Button disabled={$func.logging === functionLogging} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

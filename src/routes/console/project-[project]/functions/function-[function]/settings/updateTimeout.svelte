@@ -26,7 +26,8 @@
                 $func.events || undefined,
                 $func.schedule || undefined,
                 timeout,
-                $func.enabled
+                $func.enabled,
+                $func.logging
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
