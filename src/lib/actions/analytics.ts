@@ -171,6 +171,8 @@ export enum Submit {
     FunctionUpdateName = 'submit_function_update_name',
     FunctionUpdatePermissions = 'submit_function_update_permissions',
     FunctionUpdateSchedule = 'submit_function_update_schedule',
+    FunctionUpdateConfiguration = 'submit_function_update_configuration',
+    FunctionUpdateLogging = 'submit_function_update_logging',
     FunctionUpdateTimeout = 'submit_function_update_timeout',
     FunctionUpdateEvents = 'submit_function_update_events',
     DeploymentCreate = 'submit_deployment_create',

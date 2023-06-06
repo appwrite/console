@@ -4,7 +4,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputCron } from '$lib/elements/forms';
+    import { Button, Form, FormList } from '$lib/elements/forms';
     import InputSwitch from '$lib/elements/forms/inputSwitch.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -19,7 +19,7 @@
         functionLogging ??= $func.logging;
     });
 
-    async function updateSchedule() {
+    async function updateLogging() {
         try {
             await sdk.forProject.functions.update(
                 functionId,
@@ -39,18 +39,18 @@
                     ' execution logs settings have been ' +
                     (functionLogging ? 'enabled' : 'disabled')
             });
-            trackEvent(Submit.FunctionUpdateSchedule);
+            trackEvent(Submit.FunctionUpdateLogging);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.FunctionUpdateSchedule);
+            trackError(error, Submit.FunctionUpdateLogging);
         }
     }
 </script>
 
-<Form onSubmit={updateSchedule}>
+<Form onSubmit={updateLogging}>
     <CardGrid>
         <Heading tag="h6" size="7">Execution logs</Heading>
         <p>

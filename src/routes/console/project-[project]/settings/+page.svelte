@@ -5,7 +5,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
     import { services, type Service } from '$lib/stores/project-services';
-    import { CardGrid, CopyInput, Box, Heading } from '$lib/components';
+    import { CardGrid, CopyInput, Box, Heading, AvatarGroup } from '$lib/components';
     import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { invalidate } from '$app/navigation';
@@ -364,27 +364,14 @@
                     <article class="card-git card is-border-dashed is-no-shadow">
                         <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                             <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
-                                <ul class="avatars-group">
-                                    <li class="avatars-group-item">
-                                        <div class="avatar"><span class="icon-github" /></div>
-                                    </li>
-                                    <li class="avatars-group-item">
-                                        <div class="avatar"><span class="icon-gitlab" /></div>
-                                    </li>
-                                    <li class="avatars-group-item">
-                                        <div class="avatar"><span class="icon-bitBucket" /></div>
-                                    </li>
-                                </ul>
-
+                                <AvatarGroup icons={['github', 'gitlab', 'bitBucket']} />
                                 <span class="icon-arrow-narrow-down" />
 
                                 <div class="avatar"><span class="icon-server" /></div>
                             </div>
-                            <button
-                                on:click={() => (showGitIstall = true)}
-                                class="button is-secondary">
+                            <Button on:click={() => (showGitIstall = true)} secondary>
                                 <span class="text">Add Installation</span>
-                            </button>
+                            </Button>
                         </div>
                     </article>
                 {/if}

@@ -14,6 +14,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import UpdateLogging from './updateLogging.svelte';
+    import UpdateConfiguration from './updateConfiguration.svelte';
 
     export let data;
 
@@ -36,6 +37,7 @@
 <Container>
     <ExecuteFunction />
     <UpdateName />
+    <UpdateConfiguration />
     <UpdateLogging />
     <UpdatePermissions />
     <UpdateEvents />
