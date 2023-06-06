@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { migrator } from '$lib/stores/migrator';
-    import Loading from '$routes/loading.svelte';
 
     export let show = false;
 </script>
