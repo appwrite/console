@@ -4,6 +4,7 @@
     import { Heading } from '$lib/components';
     import { Account, Client } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import LL from '../../../i18n/i18n-svelte';
 
     const client = new Client();
     const account = new Account(client);
@@ -20,10 +21,10 @@
     });
 </script>
 
-<Heading tag="h1" size="1">Missing Redirect URL</Heading>
+<Heading tag="h1" size="1">{$LL.magicURL.title()}</Heading>
 <p>
-    Your Magic URL login flow is missing a proper redirect URL. Please check the
+    {$LL.magicURL.info()}
     <a href="https://appwrite.io/docs/client/account?sdk=web#createMagicURLSession"
-        >Magic URL docs</a>
-    and send request for new session with a valid redirect URL.
+        >{$LL.magicURL.magicDoc()}</a>
+    {$LL.magicURL.subInfo()}
 </p>
