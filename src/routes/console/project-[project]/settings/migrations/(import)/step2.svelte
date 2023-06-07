@@ -5,26 +5,8 @@
     import type { DeepKeys, WritableValue } from '$lib/helpers/types';
 
     import { WizardStep } from '$lib/layout';
-    import { writable } from 'svelte/store';
 
-    const formData = writable({
-        users: {
-            root: false,
-            teams: false
-        },
-        databases: {
-            root: false,
-            documents: false
-        },
-        functions: {
-            root: false,
-            env: false,
-            inactive: false
-        },
-        storage: {
-            root: false
-        }
-    });
+    import { formData } from '.';
 
     type FormData = WritableValue<typeof formData>;
     type FormKeys = DeepKeys<FormData>;

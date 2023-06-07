@@ -2,7 +2,7 @@
     import SvgIcon from '$lib/components/svgIcon.svelte';
     import { Button, FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { data, type Provider } from '.';
+    import { provider, type Provider } from '.';
 
     const providers: Record<Provider, string> = {
         appwrite: 'Appwrite',
@@ -24,7 +24,7 @@
                     class="is-small"
                     type="radio"
                     name="provider"
-                    bind:group={$data.provider}
+                    bind:group={$provider.provider}
                     value={key} />
                 <div class="content">
                     <img src="/logos/{key}.png" width="33" class="u-margin-inline-auto" alt="" />
@@ -34,27 +34,28 @@
         {/each}
     </div>
 
-    {#if $data.provider === 'appwrite'}
+    {#if $provider.provider === 'appwrite'}
         <FormList class="u-margin-block-start-24">
             <InputText
                 id="endpoint"
                 label="Endpoint"
                 required
                 placeholder="Enter endpoint"
-                bind:value={$data.inputs.appwrite.endpoint} />
+                bind:value={$provider.endpoint} />
             <InputText
                 id="project-id"
                 label="Project ID"
                 required
                 placeholder="Enter project ID"
-                bind:value={$data.inputs.appwrite.projectID} />
+                bind:value={$provider.projectID} />
             <InputText
                 id="api-key"
                 label="API Key"
+                required
                 placeholder="Enter API Key"
-                bind:value={$data.inputs.appwrite.apiKey} />
+                bind:value={$provider.apiKey} />
         </FormList>
-    {:else if $data.provider === 'firebase'}
+    {:else if $provider.provider === 'firebase'}
         <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
             <p class="u-text-center u-bold">Sign in with Google to get started</p>
             <Button secondary>

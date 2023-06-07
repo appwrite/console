@@ -66,7 +66,8 @@
         on:click={track}
         disabled={internalDisabled}
         class={resolvedClasses}
-        aria-label={ariaLabel}>
+        aria-label={ariaLabel}
+        type={submit === false ? 'button' : undefined}>
         <slot />
     </button>
 {/if}
