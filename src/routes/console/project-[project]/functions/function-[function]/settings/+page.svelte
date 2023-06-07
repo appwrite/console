@@ -24,7 +24,6 @@
     import InputSwitch from '$lib/elements/forms/inputSwitch.svelte';
     import Variables from '$lib/components/environmentVariables/variables.svelte';
     import GitConnection from './gitConnection.svelte';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
     export let data: PageData;
 
@@ -40,7 +39,6 @@
     let entrypoint: string = null;
     let buildCommand: string = null;
     let installCommand: string = null;
-    let branch: string = null;
 
     let showGitConnection = false;
 
@@ -57,7 +55,6 @@
         entrypoint ??= $func.entrypoint;
         buildCommand ??= $func.buildCommand;
         installCommand ??= $func.installCommand;
-        branch ??= $func.branch;
         $eventSet = new Set($func.events);
     });
 
@@ -74,10 +71,7 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand,
-                $func.vcsInstallationId,
-                $func.repositoryId,
-                $func.branch
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -106,10 +100,7 @@
                 logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand,
-                $func.vcsInstallationId,
-                $func.repositoryId,
-                $func.branch
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -138,10 +129,7 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand,
-                $func.vcsInstallationId,
-                $func.repositoryId,
-                $func.branch
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -170,10 +158,7 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand,
-                $func.vcsInstallationId,
-                $func.repositoryId,
-                $func.branch
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -202,10 +187,7 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand,
-                $func.vcsInstallationId,
-                $func.repositoryId,
-                $func.branch
+                $func.installCommand
             );
             invalidate(Dependencies.FUNCTION);
 
@@ -235,10 +217,7 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand,
-                $func.vcsInstallationId,
-                $func.repositoryId,
-                $func.branch
+                $func.installCommand
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -268,43 +247,7 @@
                 $func.logging,
                 entrypoint,
                 buildCommand,
-                installCommand,
-                $func.vcsInstallationId,
-                $func.repositoryId,
-                $func.branch
-            );
-
-            invalidate(Dependencies.FUNCTION);
-            addNotification({
-                type: 'success',
-                message: 'Deployment settings has been updated'
-            });
-            trackEvent('submit_function_update_deployment_settings');
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    }
-
-    async function updateBranch() {
-        try {
-            await sdkForProject.functions.update(
-                functionId,
-                $func.name,
-                $func.execute,
-                $func.events,
-                $func.schedule,
-                $func.timeout,
-                $func.enabled,
-                $func.logging,
-                $func.entrypoint,
-                $func.buildCommand,
-                $func.installCommand,
-                $func.vcsInstallationId,
-                $func.repositoryId,
-                branch
+                installCommand
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -443,18 +386,10 @@
                 <p>SOME TEXT</p>
                 <svelte:fragment slot="aside">
                     <ul>
-                        <InputSelect
-                            options={(data?.branches?.branches ?? []).map((branch) => {
-                                return {
-                                    label: branch.name,
-                                    value: branch.name
-                                };
-                            })}
-                            bind:value={branch}
-                            id="branch"
-                            label="Branch" />
-
-                        <Button on:click={() => updateBranch()}>Update</Button>
+                        <p>Branch: {$func.vcsBranch}</p>
+                        <p>Silent mode: {$func.vcsSilentMode ? 'yes' : 'no'}</p>
+                        <p>Root directory: {$func.vcsRootDirectory}</p>
+                        <p>Repository: {data.installation.organization}/{data.repository.name}</p>
                     </ul>
                 </svelte:fragment>
                 <svelte:fragment slot="actions">

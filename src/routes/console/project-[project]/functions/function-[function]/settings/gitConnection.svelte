@@ -5,7 +5,9 @@
     import { Empty, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import InputText from '$lib/elements/forms/inputText.svelte';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
     export let installations: Models.InstallationList;
@@ -14,6 +16,8 @@
     let selectedInstallation: Models.Installation = null;
     let selectedRepository: Models.Repository = null;
     let selectedBranchName: string = null;
+    let rootDirectory: string = null;
+    let silentMode = false;
     let repositories: Models.RepositoryList = null;
     let branches: Models.BranchList = null;
     let error: string;
@@ -37,7 +41,6 @@
 
     async function selectRepository(repository: Models.Repository) {
         selectedRepository = repository;
-        console.log(selectedRepository);
 
         branches = await sdkForProject.vcs.listRepositoryBranches(
             selectedInstallation.$id,
@@ -61,7 +64,9 @@
                 $page.data.function.installCommand,
                 selectedInstallation.$id,
                 selectedRepository.id,
-                selectedBranchName
+                selectedBranchName,
+                silentMode,
+                rootDirectory
             );
             show = false;
             await invalidate(Dependencies.FUNCTION);
@@ -195,6 +200,16 @@
                     bind:value={selectedBranchName}
                     id="branch"
                     label="Branch" />
+
+                <p>4. Enter root directory</p>
+                <InputText
+                    id="rootDirectory"
+                    bind:value={rootDirectory}
+                    label="Root directory"
+                    placeholder="." />
+
+                <p>5. Silent mode?</p>
+                <InputCheckbox id="silentMode" bind:value={silentMode} label="Silent mode?" />
 
                 <Button on:click={() => connectRepository()}>Deploy Now</Button>
             {/if}

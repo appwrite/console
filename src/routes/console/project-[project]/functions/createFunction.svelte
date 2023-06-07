@@ -27,8 +27,8 @@
             const response = await sdkForProject.functions.create(
                 $createFunction.id ?? 'unique()',
                 $createFunction.name,
-                $createFunction.execute,
                 $createFunction.runtime,
+                $createFunction.execute,
                 $createFunction.events,
                 $createFunction.schedule,
                 $createFunction.timeout

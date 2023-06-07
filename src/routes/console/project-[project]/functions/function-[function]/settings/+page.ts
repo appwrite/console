@@ -9,11 +9,14 @@ export const load: PageLoad = async ({ params, parent, depends }) => {
     return {
         variables: await sdkForProject.functions.listVariables(params.function),
         installations: await sdkForProject.vcs.listInstallations(),
-        branches: parentData.function.vcsInstallationId
-            ? await sdkForProject.vcs.listRepositoryBranches(
+        repository: parentData.function.vcsInstallationId
+            ? await sdkForProject.vcs.getRepository(
                   parentData.function.vcsInstallationId,
-                  parentData.function.repositoryId
+                  parentData.function.vcsRepositoryId
               )
+            : null,
+        installation: parentData.function.vcsInstallationId
+            ? await sdkForProject.vcs.getInstallation(parentData.function.vcsInstallationId)
             : null
     };
 };
