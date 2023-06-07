@@ -1,6 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
+import { Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.VARIABLES);
@@ -28,6 +29,7 @@ export const load: PageLoad = async ({ params, depends }) => {
 
     return {
         variables,
-        globalVariables
+        globalVariables,
+        installations: await sdk.forProject.vcs.listInstallations([Query.limit(10)])
     };
 };

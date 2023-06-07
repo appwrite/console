@@ -3,7 +3,7 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { sdk } from '$lib/stores/sdk';
 
-    export let showGitIstall: boolean;
+    export let showGitInstall: boolean;
 
     function connectGitHub() {
         sdk.forProject.vcs.createGitHubInstallation(
@@ -12,7 +12,7 @@
     }
 </script>
 
-<Modal headerDivider={false} bind:show={showGitIstall} size="big">
+<Modal headerDivider={false} bind:show={showGitInstall} size="big">
     <svelte:fragment slot="header">Connect to Git</svelte:fragment>
     <p>Select a provider to import an existing git repositories.</p>
 
@@ -32,6 +32,6 @@
     </div>
 
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showGitIstall = false)}>Cancel</Button>
+        <Button secondary on:click={() => (showGitInstall = false)}>Cancel</Button>
     </svelte:fragment>
 </Modal>

@@ -413,7 +413,7 @@
 <Delete bind:showDelete />
 
 {#if showGitIstall}
-    <GitInstallationModal bind:showGitIstall />
+    <GitInstallationModal bind:showGitInstall={showGitIstall} />
 {/if}
 
 {#if showGitDisconnect}

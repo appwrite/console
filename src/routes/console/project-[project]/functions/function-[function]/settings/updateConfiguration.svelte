@@ -7,15 +7,18 @@
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { func } from '../store';
-    import ConnectGitModal from './connectGitModal.svelte';
+    import GitInstallationModal from '$routes/console/project-[project]/settings/GitInstallationModal.svelte';
+    import GitConfigurationModal from './gitConfigurationModal.svelte';
 
+    export let installations: Models.InstallationList;
     const functionId = $page.params.function;
 
     let entrypoint: string;
     let installCmd: string;
     let buildCmd: string;
-    let showGitConnect = false;
+    let showGit = false;
 
     async function updateConfiguration() {
         try {
@@ -78,7 +81,7 @@
                                 <Button
                                     secondary
                                     on:click={() => {
-                                        showGitConnect = true;
+                                        showGit = true;
                                     }}>
                                     <span class="text">Connect Git</span>
                                 </Button>
@@ -108,4 +111,8 @@
     </CardGrid>
 </Form>
 
-<ConnectGitModal bind:show={showGitConnect} />
+{#if !installations.total && showGit}
+    <GitInstallationModal bind:showGitInstall={showGit} />
+{:else}
+    <GitConfigurationModal bind:show={showGit} {installations} />
+{/if}

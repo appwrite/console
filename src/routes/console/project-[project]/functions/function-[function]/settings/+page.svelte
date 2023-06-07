@@ -37,7 +37,7 @@
 <Container>
     <ExecuteFunction />
     <UpdateName />
-    <UpdateConfiguration />
+    <UpdateConfiguration installations={data.installations} />
     <UpdateLogging />
     <UpdatePermissions />
     <UpdateEvents />
