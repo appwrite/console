@@ -28,9 +28,11 @@
     mockImport();
 
     const getStatus = (status: string) => {
-        if (status === 'pending') {
-            return { text: 'Pending', icon: 'clock', iconColor: 'blue' };
+        if (status === 'failed') {
+            return { text: 'Failed', icon: 'clock', iconColor: 'blue' };
         }
+
+        return { text: 'Pending', icon: 'clock', iconColor: 'blue' };
     };
 </script>
 
