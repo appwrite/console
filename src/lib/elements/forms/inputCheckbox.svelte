@@ -3,6 +3,7 @@
 
     export let label: string;
     export let optionalText: string | undefined = undefined;
+    export let tooltip: string = null;
     export let showLabel = true;
     export let id: string;
     export let value = false;
@@ -27,7 +28,7 @@
 </script>
 
 <FormItem>
-    <Label {required} {optionalText} hide={!showLabel} for={id}>
+    <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
         {label}
     </Label>
 
