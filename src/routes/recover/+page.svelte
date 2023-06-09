@@ -15,7 +15,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import LL from '../../i18n/i18n-svelte';
+    import LL from '$lib/i18n/i18n-svelte';
 
     let email: string;
     let userId: string;

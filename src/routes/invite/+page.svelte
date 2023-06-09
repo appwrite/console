@@ -9,7 +9,7 @@
     import { onMount } from 'svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert } from '$lib/components';
-    import LL from '../../i18n/i18n-svelte';
+    import LL from '$lib/i18n/i18n-svelte';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;

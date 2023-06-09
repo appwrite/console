@@ -17,7 +17,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
-    import LL from '../../i18n/i18n-svelte';
+    import LL from '$lib/i18n/i18n-svelte';
 
     let name: string, mail: string, pass: string;
     let terms = false;

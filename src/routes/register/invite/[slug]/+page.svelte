@@ -21,7 +21,7 @@
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { isCloud } from '$lib/system';
-    import LL from '../../../../i18n/i18n-svelte';
+    import LL from '$lib/i18n/i18n-svelte';
 
     let slug = $page.params.slug;
     let imgLight = LoginLight;
