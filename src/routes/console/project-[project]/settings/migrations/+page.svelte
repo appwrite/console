@@ -1,6 +1,10 @@
 <script lang="ts">
     import { Arrow, CardGrid, Heading } from '$lib/components';
+    import Alert from '$lib/components/alert.svelte';
+    import Modal from '$lib/components/modal.svelte';
     import { Button } from '$lib/elements/forms';
+    import InputText from '$lib/elements/forms/inputText.svelte';
+    import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
     import {
         TableBody,
         TableCell,
@@ -20,6 +24,7 @@
 
     export let data;
     let showDetails = false;
+    let showCloudExport = false;
 
     const mockImport = async () => {
         console.log(await sdk.forProject.imports.list());
@@ -92,31 +97,15 @@
             <svelte:fragment slot="aside">
                 <div class="import-box">
                     <div class="u-flex u-cross-center u-gap-8">
-                        {#if isSelfHosted}
-                            <div class="avatar" style="--size: {48 / 16}rem">
-                                <span class="icon-server" />
-                            </div>
-                            <Arrow direction="right" />
-                            <div class="avatar" style="--size: {48 / 16}rem">
-                                <span class="icon-cloud" />
-                            </div>
-                        {:else}
-                            <div class="avatar" style="--size: {48 / 16}rem">
-                                <span class="icon-cloud" />
-                            </div>
-                            <Arrow direction="right" />
-                            <div class="avatar" style="--size: {48 / 16}rem">
-                                <span class="icon-server" />
-                            </div>
-                        {/if}
+                        <div class="avatar" style="--size: {48 / 16}rem">
+                            <span class="icon-server" />
+                        </div>
+                        <Arrow direction="right" />
+                        <div class="avatar" style="--size: {48 / 16}rem">
+                            <span class="icon-cloud" />
+                        </div>
                     </div>
-                    <Button class="u-margin-block-start-48" secondary>
-                        {#if isSelfHosted}
-                            Deploy to Cloud
-                        {:else}
-                            Export data
-                        {/if}
-                    </Button>
+                    <Button class="u-margin-block-start-48" secondary>Deploy to Cloud</Button>
                 </div>
             </svelte:fragment>
         </CardGrid>
@@ -215,36 +204,63 @@
             <svelte:fragment slot="aside">
                 <div class="import-box">
                     <div class="u-flex u-cross-center u-gap-8">
-                        {#if isSelfHosted}
-                            <div class="avatar" style="--size: {48 / 16}rem">
-                                <span class="icon-server" />
-                            </div>
-                            <Arrow direction="right" />
-                            <div class="avatar" style="--size: {48 / 16}rem">
-                                <span class="icon-cloud" />
-                            </div>
-                        {:else}
-                            <div class="avatar" style="--size: {48 / 16}rem">
-                                <span class="icon-cloud" />
-                            </div>
-                            <Arrow direction="right" />
-                            <div class="avatar" style="--size: {48 / 16}rem">
-                                <span class="icon-server" />
-                            </div>
-                        {/if}
+                        <div class="avatar" style="--size: {48 / 16}rem">
+                            <span class="icon-cloud" />
+                        </div>
+                        <Arrow direction="right" />
+                        <div class="avatar" style="--size: {48 / 16}rem">
+                            <span class="icon-server" />
+                        </div>
                     </div>
-                    <Button class="u-margin-block-start-48" secondary>
-                        {#if isSelfHosted}
-                            Deploy to Cloud
-                        {:else}
-                            Export data
-                        {/if}
-                    </Button>
+                    <Button
+                        class="u-margin-block-start-48"
+                        secondary
+                        on:click={() => (showCloudExport = true)}>Export data</Button>
                 </div>
             </svelte:fragment>
         </CardGrid>
     {/if}
 </Container>
+
+<Modal bind:show={showCloudExport}>
+    <svelte:fragment slot="header">Export to self-hosted instance</svelte:fragment>
+    <div class="modal-contents">
+        <Alert standalone>
+            <svelte:fragment slot="title">API key creation</svelte:fragment>
+            By initiating the transfer, an API key will be automatically generated in the background,
+            which you can delete after completion
+        </Alert>
+
+        <div class="u-margin-block-start-24">
+            <InputText
+                label="Endpoint self-hosted instance"
+                required
+                id="endpoint"
+                placeholder="https://[YOUR_APPWRITE_HOSTNAME]" />
+        </div>
+
+        <div class="box u-margin-block-start-24">
+            <p class="u-bold">
+                Share your feedback: why our self-hosted solution works better for you
+            </p>
+            <p class="u-margin-block-start-8">
+                We appreciate your continued support and we understand that our self-hosted solution
+                might better fit your needs. To help us improve our Cloud solution, please share why
+                it works better for you. Your feedback is important to us and we'll use it to make
+                our services better.
+            </p>
+            <div class="u-margin-block-start-24">
+                <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
+            </div>
+        </div>
+    </div>
+
+    <div class="u-flex u-gap-16 u-cross-center" slot="footer">
+        <span> You will be redirected to your self-hosted instance </span>
+
+        <Button on:click={() => (showCloudExport = false)}>Continue TODO: SUBMIT</Button>
+    </div>
+</Modal>
 
 <Details bind:show={showDetails} />
 
@@ -260,5 +276,9 @@
         height: 100%;
 
         padding: 1.5rem;
+    }
+
+    .modal-contents :global(.alert) {
+        grid-area: initial !important;
     }
 </style>
