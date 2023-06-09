@@ -4,6 +4,7 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent, depends }) => {
     const parentData = await parent();
+    depends(Dependencies.FUNCTION);
     depends(Dependencies.VARIABLES);
 
     return {
