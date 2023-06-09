@@ -96,19 +96,12 @@
 
         const detectedLocale = detectLocale(localStorageDetector);
         await chooseLocale(detectedLocale);
-        // console.log($LL.startup());
-        localeToSelect = $locale;
     });
 
     const chooseLocale = async (locale: Locales) => {
         await loadLocaleAsync(locale);
         setLocale(locale);
     };
-
-    let localeToSelect: Locales;
-    $: localeToSelect && chooseLocale(localeToSelect);
-
-    $: $locale && localStorage.setItem('lang', window.navigator.language);
 
     afterNavigate((navigation) => {
         if (navigation.type !== 'enter' && navigation.from?.route?.id !== navigation.to.route.id) {

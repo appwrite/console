@@ -1,25 +1,23 @@
 <script lang="ts">
-    import { locale } from '../../i18n/i18n-svelte';
+    import { locale, setLocale } from '../../i18n/i18n-svelte';
+    import type { Locales } from '../../i18n/i18n-types';
+    import { locales } from '../../i18n/i18n-util';
+    import { loadLocaleAsync } from '../../i18n/i18n-util.async';
 
-    let languages = [
-        { lng: 'select language', value: window.localStorage.getItem('getUserlanguage') },
-        { lng: 'english', value: 'en' },
-        { lng: 'german', value: 'de' },
-        { lng: 'italian', value: 'it' }
-    ];
-
-    let selected;
-
-    const onChangeValue = () => {
-        $locale && localStorage.setItem('lang', selected.value);
-        window.location.reload();
+    const chooseLocale = async (locale: Locales) => {
+        await loadLocaleAsync(locale);
+        setLocale(locale);
     };
+
+    let localeToSelect: Locales;
+    $: localeToSelect && chooseLocale(localeToSelect);
+
+    $: $locale && localStorage.setItem('lang', $locale);
 </script>
 
-<select bind:value={selected} on:change={onChangeValue}>
-    {#each languages as language}
-        <option value={language}>
-            {language.lng}
-        </option>
+<select bind:value={localeToSelect}>
+    <option value="" selected disabled>language selector</option>
+    {#each locales as locale}
+        <option value={locale}>{locale}</option>
     {/each}
 </select>
