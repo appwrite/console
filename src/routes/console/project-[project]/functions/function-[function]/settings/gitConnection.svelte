@@ -6,7 +6,6 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import InputText from '$lib/elements/forms/inputText.svelte';
     import { sdkForProject } from '$lib/stores/sdk';
     import type { Models } from '@aw-labs/appwrite-console';
@@ -19,7 +18,6 @@
     let rootDirectory: string = null;
     let silentMode = false;
     let repositories: Models.RepositoryList = null;
-    let branches: Models.BranchList = null;
     let error: string;
     async function selectInstallation(installation: Models.Installation) {
         try {
@@ -41,11 +39,6 @@
 
     async function selectRepository(repository: Models.Repository) {
         selectedRepository = repository;
-
-        branches = await sdkForProject.vcs.listRepositoryBranches(
-            selectedInstallation.$id,
-            repository.id
-        );
     }
 
     async function connectRepository() {
@@ -184,36 +177,26 @@
             {/if}
         </p>
     {:else}
-        <p>
-            3. Select branch:
+        <div>
+            <p>3. Enter branch:</p>
 
-            {#if branches === null}
-                <p>Loading...</p>
-            {:else}
-                <InputSelect
-                    options={branches.branches.map((branch) => {
-                        return {
-                            label: branch.name,
-                            value: branch.name
-                        };
-                    })}
-                    bind:value={selectedBranchName}
-                    id="branch"
-                    label="Branch" />
+            <InputText
+                id="branch"
+                bind:value={selectedBranchName}
+                label="Branch"
+                placeholder="main" />
+            <p>4. Enter root directory</p>
+            <InputText
+                id="rootDirectory"
+                bind:value={rootDirectory}
+                label="Root directory"
+                placeholder="." />
 
-                <p>4. Enter root directory</p>
-                <InputText
-                    id="rootDirectory"
-                    bind:value={rootDirectory}
-                    label="Root directory"
-                    placeholder="." />
+            <p>5. Silent mode?</p>
+            <InputCheckbox id="silentMode" bind:value={silentMode} label="Silent mode?" />
 
-                <p>5. Silent mode?</p>
-                <InputCheckbox id="silentMode" bind:value={silentMode} label="Silent mode?" />
-
-                <Button on:click={() => connectRepository()}>Deploy Now</Button>
-            {/if}
-        </p>
+            <Button on:click={() => connectRepository()}>Deploy Now</Button>
+        </div>
     {/if}
 
     <svelte:fragment slot="footer" />
