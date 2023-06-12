@@ -4,13 +4,23 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { AvatarGroup, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputChoice,
+        InputSelect,
+        InputText
+    } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { func } from '../store';
     import GitInstallationModal from '$routes/console/project-[project]/settings/GitInstallationModal.svelte';
     import GitConfigurationModal from './gitConfigurationModal.svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { onMount } from 'svelte';
+    import DisconnectRepo from './disconnectRepo.svelte';
 
     export let installations: Models.InstallationList;
     const functionId = $page.params.function;
@@ -19,6 +29,20 @@
     let installCmd: string;
     let buildCmd: string;
     let showGit = false;
+    let branchesList: Models.BranchList;
+    let selectedBranch: string;
+    let silentMode = false;
+    let selectedDir: string;
+    let showDisconnect = false;
+
+    onMount(() => {
+        entrypoint = $func?.entrypoint;
+        installCmd = $func?.installCommand;
+        buildCmd = $func?.buildCommand;
+        selectedBranch = $func?.vcsBranch;
+        silentMode = $func?.vcsSilentMode ?? false;
+        selectedDir = $func?.vcsRootDirectory;
+    });
 
     async function updateConfiguration() {
         try {
@@ -29,7 +53,16 @@
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled
+                $func.enabled,
+                $func.logging,
+                $func.entrypoint,
+                $func.buildCommand,
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.vcsRepositoryId,
+                selectedBranch,
+                silentMode,
+                selectedDir
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -45,6 +78,23 @@
             trackError(error, Submit.FunctionUpdateConfiguration);
         }
     }
+
+    async function getBranches(installation: string, repo: string) {
+        branchesList = await sdk.forProject.vcs.listRepositoryBranches(installation, repo);
+        selectedBranch = $func?.vcsBranch ?? branchesList.branches[0].name;
+    }
+
+    $: if ($func?.vcsInstallationId && $func?.vcsRepositoryId) {
+        getBranches($func.vcsInstallationId, $func.vcsRepositoryId);
+    }
+
+    $: isUpdateButtonEnabled =
+        entrypoint !== $func?.entrypoint ||
+        installCmd !== $func?.installCommand ||
+        buildCmd !== $func?.buildCommand ||
+        selectedBranch !== $func?.vcsBranch ||
+        silentMode !== $func?.vcsSilentMode ||
+        selectedDir !== $func?.vcsRootDirectory;
 </script>
 
 <Form onSubmit={updateConfiguration}>
@@ -66,8 +116,49 @@
             <Collapsible>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Git settings</svelte:fragment>
-                    {#if false}
-                        test
+                    {#if $func?.vcsInstallationId && $func?.vcsRepositoryId}
+                        <div class="box" style:--box-border-radius="var(--border-radius-small)">
+                            <div class="u-flex u-gap-16">
+                                <div class="avatar is-size-x-small">
+                                    <img src="" alt={$func.name} />
+                                </div>
+                                <div class="u-cross-child-center u-line-height-1-5">
+                                    <h6 class="u-bold u-trim-1">{$func?.vcsRepositoryId}</h6>
+                                    <p>Last updated: {toLocaleDateTime($func?.vcsRepositoryId)}</p>
+                                </div>
+                            </div>
+                            <div class="u-margin-block-start-24">
+                                <FormList>
+                                    <InputSelect
+                                        id="branch"
+                                        label="Branch"
+                                        options={branchesList?.branches?.map((branch) => {
+                                            return {
+                                                value: branch.name,
+                                                label: branch.name
+                                            };
+                                        }) ?? []}
+                                        bind:value={selectedBranch} />
+                                    <InputText
+                                        id="root"
+                                        label="Root directory"
+                                        bind:value={selectedDir} />
+                                    <InputChoice
+                                        id="silent"
+                                        label="Silent mode"
+                                        tooltip="Don't create comments when pushing to this repository"
+                                        bind:value={silentMode} />
+                                </FormList>
+                            </div>
+                            <div class="u-margin-block-start-24 u-flex u-gap-16 u-main-end">
+                                <Button text on:click={() => (showDisconnect = true)}
+                                    >Disconnect repository</Button>
+                                <Button secondary href={$func?.vcsBranch} external>
+                                    View in GitHub
+                                    <span class="icon-external-link" />
+                                </Button>
+                            </div>
+                        </div>
                     {:else}
                         <article class="card-git card is-border-dashed is-no-shadow">
                             <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
@@ -91,22 +182,24 @@
                 </CollapsibleItem>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Build settings</svelte:fragment>
-                    <InputText
-                        label="Install command"
-                        placeholder="Enter an install commad (e.g. 'npm install')"
-                        id="install"
-                        bind:value={installCmd} />
-                    <InputText
-                        label="Build command"
-                        placeholder="Enter a build commad (e.g. 'npm run build')"
-                        id="build"
-                        bind:value={buildCmd} />
+                    <FormList>
+                        <InputText
+                            label="Install command"
+                            placeholder="Enter an install commad (e.g. 'npm install')"
+                            id="install"
+                            bind:value={installCmd} />
+                        <InputText
+                            label="Build command"
+                            placeholder="Enter a build commad (e.g. 'npm run build')"
+                            id="build"
+                            bind:value={buildCmd} />
+                    </FormList>
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled submit>Update</Button>
+            <Button disabled={!isUpdateButtonEnabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
@@ -116,3 +209,5 @@
 {:else}
     <GitConfigurationModal bind:show={showGit} {installations} />
 {/if}
+
+<DisconnectRepo bind:show={showDisconnect} />

@@ -112,21 +112,34 @@
                 >.
             </p>
             {#if repositoriesList?.total}
-                {#each repositoriesList.repositories as repo}
-                    <ul class="u-flex u-gap-16 u-cross-center">
-                        <li>
-                            <label class="input-radio">
-                                <input
-                                    type="radio"
-                                    name={repo.name}
-                                    bind:group={selectedRepo}
-                                    value={repo.id} />
+                <ul class="table is-remove-outer-styles u-sep-block-start">
+                    {#each repositoriesList.repositories as repo}
+                        <li class="table-row">
+                            <label class="table-col u-cursor-pointer">
+                                <div class="u-flex u-cross-center u-gap-8">
+                                    <input
+                                        class="is-small u-margin-inline-end-8"
+                                        type="radio"
+                                        name={repo.name}
+                                        bind:group={selectedRepo}
+                                        value={repo.id} />
+                                    <div class="avatar is-size-x-small">
+                                        <img src="" alt={repo.name} />
+                                    </div>
+                                    <div class="u-flex u-gap-8">
+                                        <span class="text">{repo.name}</span>
+
+                                        <time
+                                            class="u-color-text-gray"
+                                            datetime="2011-11-18T14:54:39.929">
+                                            30m ago
+                                        </time>
+                                    </div>
+                                </div>
                             </label>
                         </li>
-
-                        <span class="text">{repo.name}</span>
-                    </ul>
-                {/each}
+                    {/each}
+                </ul>
                 <div class="u-flex u-margin-block-start-32 u-main-space-between">
                     <p class="text">Total results: {repositoriesList?.total}</p>
                     <PaginationInline
@@ -172,6 +185,11 @@
             loading...
         {:then}
             <Box>
+                <svelte:fragment slot="image">
+                    <div class="avatar is-size-x-small">
+                        <img src="" alt={$func.name} />
+                    </div>
+                </svelte:fragment>
                 <svelte:fragment slot="title">
                     <h6 class="u-bold u-trim-1">{selectedRepo}</h6>
                 </svelte:fragment>
@@ -192,7 +210,7 @@
             <InputChoice
                 id="silent"
                 label="Silent mode"
-                tooltip="I don't know 🤷"
+                tooltip="Don't create comments when pushing to this repository"
                 bind:value={silentMode} />
         {/await}
     {/if}
