@@ -59,5 +59,11 @@
         "terms_and_condition": "Geschäftsbedingungen",
         "and": "Und",
         "privacy_policy": "Datenschutz und Richtlinien"
+    },
+    "magicURL": {
+        "title": "Fehlende Weiterleitungs-URL",
+        "info": "Deinem Magic URL-Anmeldeablauf fehlt eine korrekte Weiterleitungs-URL. Bitte überprüfen Sie die",
+        "magicDoc": "Magische URL-Dokumente",
+        "subInfo": "und sende eine Anfrage für eine neue Sitzung mit einer gültigen Weiterleitungs-URL."
     }
 }

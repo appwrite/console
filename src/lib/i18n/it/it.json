@@ -74,9 +74,9 @@
         }
     },
     "magicURL": {
-        "title": "Missing Redirect URL",
-        "info": "Your Magic URL login flow is missing a proper redirect URL. Please check the",
-        "magicDoc": "Magic URL docs",
-        "subInfo": "and send request for new session with a valid redirect URL."
+        "title": "URL di reindirizzamento mancante",
+        "info": "Nel flusso di accesso di Magic URL manca un URL di reindirizzamento corretto. Si prega di controllare il",
+        "magicDoc": "Documenti URL magici",
+        "subInfo": "e invia la richiesta di una nuova sessione con un URL di reindirizzamento valido."
     }
 }

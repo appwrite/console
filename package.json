@@ -4,8 +4,9 @@
         "node": ">=16"
     },
     "scripts": {
-        "dev": "npm-run-all --parallel vite typesafe-i18n",
-        "vite": "vite dev",
+        "dev": "npm-run-all --parallel dev:*",
+        "dev:vite": "vite dev",
+        "dev:i18n": "typesafe-i18n",
         "build": "node build.js",
         "preview": "vite preview",
         "sync": "svelte-kit sync",
@@ -16,8 +17,7 @@
         "test": "vitest run",
         "test:ui": "vitest --ui",
         "test:watch": "vitest watch",
-        "e2e": "playwright test tests/e2e",
-        "typesafe-i18n": "typesafe-i18n"
+        "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
         "@analytics/google-analytics": "^1.0.5",

@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Cover, CoverTitle } from '$lib/layout';
-    import { _ } from '$lib/i18n';
+    import LL from '$lib/i18n/i18n-svelte';
 </script>
 
 <Cover size="large">
-    <CoverTitle>{$_.t('console.onboarding.title')}</CoverTitle>
+    <CoverTitle>{$LL.console.onboarding.title()}</CoverTitle>
 </Cover>

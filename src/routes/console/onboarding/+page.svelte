@@ -11,7 +11,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
-    import { _ } from '$lib/i18n';
+    import LL from '$lib/i18n/i18n-svelte';
 
     let name: string;
     let id: string;
@@ -44,7 +44,6 @@
     async function createOrganization() {
         return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
     }
-    
 </script>
 
 <Container overlapCover size="large">
@@ -53,15 +52,15 @@
             <FormList>
                 <InputText
                     id="name"
-                    label={$_.t('console.basic_keywords.project_name')}
-                    placeholder={$_.t('globals.placeholders.first_appwrite_project')}
+                    label={$LL.console.basic_keywords.project_name()}
+                    placeholder={$LL.globals.placeholders.first_appwrite_project()}
                     required
                     bind:value={name} />
                 {#if !showCustomId}
                     <div>
                         <Pill button on:click={() => (showCustomId = !showCustomId)}>
                             <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                                {$_.t('console.basic_keywords.project_id')}
+                                {$LL.console.basic_keywords.project_id}
                             </span>
                         </Pill>
                     </div>
@@ -69,7 +68,7 @@
                     <CustomId bind:show={showCustomId} name="Project" bind:id />
                 {/if}
                 <Button fullWidth submit disabled={name === ''} event="create_project">
-                    {$_.t('console.basic_keywords.create_project')}
+                    {$LL.console.basic_keywords.create_project()}
                 </Button>
             </FormList>
         </Form>
