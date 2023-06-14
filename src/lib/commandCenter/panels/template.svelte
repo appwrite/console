@@ -1,9 +1,9 @@
-<!-- 
-    This is the template for all panels used in the command center.
-    Use this component when you want to create a new panel.
- -->
-
 <script lang="ts">
+    // This is the template for all panels used in the command center.
+    // Use this component when you want to create a new panel.
+
+    import { tick } from 'svelte';
+
     import { getCommandCenterCtx } from '../commandCenter.svelte';
 
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
@@ -56,6 +56,17 @@
             }
         }
 
+        tick().then(() => {
+            const selectedEl = cardEl.querySelector('[data-selected]');
+
+            if (selectedEl) {
+                selectedEl.scrollIntoView({
+                    block: 'nearest',
+                    behavior: 'smooth'
+                });
+            }
+        });
+
         if (event.key === 'Escape') {
             event.preventDefault();
             popSubPanel();
@@ -73,23 +84,30 @@
     });
 
     const commandCenterCtx = getCommandCenterCtx();
+
+    let cardEl: HTMLElement;
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
 
 <div
     class="card"
+    bind:this={cardEl}
     class:press={!$commandCenterCtx.isInitialPanel}
     class:scale-up={$commandCenterCtx.isInitialPanel && $commandCenterCtx.open}>
-    <div class="u-flex u-flex-vertical u-width-full-line">
-        <div class="u-flex">
+    <div class="u-flex u-flex-vertical u-width-full-line u-overflow-hidden">
+        <div class="u-flex search-wrapper">
             <slot name="search">
-                <input type="text" placeholder="type here..." autofocus bind:value={search} />
+                <input
+                    type="text"
+                    placeholder="Search for commands..."
+                    autofocus
+                    bind:value={search} />
             </slot>
         </div>
 
         {#if options}
-            <ul class="u-margin-block-start-16 u-flex u-flex-vertical u-gap-8">
+            <ul class="options u-margin-block-start-16 u-flex u-flex-vertical u-gap-8">
                 {#each options as option, i}
                     <li class="result" data-selected={selected === i ? true : undefined}>
                         {#if selected === i}
@@ -119,10 +137,22 @@
         {:else}
             <slot />
         {/if}
+
+        <div
+            class="footer u-margin-block-start-16 u-flex u-flex u-cross-center u-main-space-between">
+            <slot name="footer">
+                <div class="u-flex u-cross-center u-gap-4">
+                    <kbd class="kbd">Enter</kbd> <span>to select and close</span>
+                </div>
+                <div class="u-flex u-cross-center u-gap-4">
+                    <kbd class="kbd">Esc</kbd> <span>to close</span>
+                </div>
+            </slot>
+        </div>
     </div>
 </div>
 
-<style>
+<style lang="scss">
     @keyframes press {
         0% {
             scale: 1;
@@ -156,14 +186,31 @@
     }
 
     .card {
-        width: var(--command-panel-width, 400px);
+        display: flex;
+        flex-direction: column;
+        width: var(--command-panel-width, 680px);
         max-width: 100%;
+        max-height: 450px;
+        overflow: hidden;
         padding: 0.5rem;
 
         position: absolute;
         top: clamp(128px, 15vh, 400px);
         left: 50%;
         translate: -50%;
+    }
+
+    .search-wrapper {
+        border-bottom: 1px solid hsl(var(--color-border));
+        font-size: 16px;
+        margin-inline: -0.5rem;
+        padding-inline: 0.5rem;
+    }
+
+    .options {
+        overflow-y: auto;
+        height: 100%;
+        flex-shrink: 1;
     }
 
     input {
@@ -177,27 +224,38 @@
 
         opacity: 0.65;
         transition: 75ms cubic-bezier(0.5, 1, 0.89, 1);
+        &[data-selected] {
+            opacity: 1;
+            transition: 150ms cubic-bezier(0.5, 1, 0.89, 1);
+        }
+
+        .bg {
+            position: absolute;
+            inset: 0;
+            background-color: hsl(var(--color-neutral-200));
+            border-radius: 0.75rem;
+            translate: 0 -1px;
+        }
+
+        .option {
+            padding: 0.5rem 0.75rem;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+
+            box-shadow: none !important;
+        }
     }
 
-    .result[data-selected] {
-        opacity: 1;
-        transition: 150ms cubic-bezier(0.5, 1, 0.89, 1);
-    }
+    .footer {
+        border-top: 1px solid hsl(var(--color-border));
+        margin-inline: -0.5rem;
+        padding-inline: 1rem;
+        padding-block-start: 0.5rem;
 
-    .result .bg {
-        position: absolute;
-        inset: 0;
-        background-color: hsl(var(--color-neutral-200));
-        border-radius: 0.75rem;
-        translate: 0 -1px;
-    }
-
-    .result .option {
-        padding: 0.5rem 0.75rem;
-        position: relative;
-        z-index: 10;
-        width: 100%;
-
-        box-shadow: none !important;
+        .kbd {
+            background-color: hsl(var(--color-neutral-150));
+            padding: 4.5px 3.5px;
+        }
     }
 </style>
