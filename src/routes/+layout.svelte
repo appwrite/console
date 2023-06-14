@@ -19,10 +19,10 @@
 
     // typesafe-i18n
     import { localStorageDetector } from 'typesafe-i18n/detectors';
-    import { setLocale } from '$lib/i18n/i18n-svelte';
-    import type { Locales } from '$lib/i18n/i18n-types';
-    import { detectLocale } from '$lib/i18n/i18n-util';
-    import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
+    import { setLocale } from '$i18n/i18n-svelte';
+    import type { Locales } from '$i18n/i18n-types';
+    import { detectLocale } from '$i18n/i18n-util';
+    import { loadLocaleAsync } from '$i18n/i18n-util.async';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;

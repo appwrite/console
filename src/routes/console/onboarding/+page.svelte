@@ -11,7 +11,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
-    import LL from '$lib/i18n/i18n-svelte';
+    import LL from '$i18n/i18n-svelte';
 
     let name: string;
     let id: string;

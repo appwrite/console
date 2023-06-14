@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { locale, setLocale } from '$lib/i18n/i18n-svelte';
-    import type { Locales } from '$lib/i18n/i18n-types';
-    import { locales } from '$lib/i18n/i18n-util';
-    import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
+    import { locale, setLocale } from '$i18n/i18n-svelte';
+    import type { Locales } from '$i18n/i18n-types';
+    import { locales } from '$i18n/i18n-util';
+    import { loadLocaleAsync } from '$i18n/i18n-util.async';
 
     const lang = [
         { value: 'de', lng: 'German' },

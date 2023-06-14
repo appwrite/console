@@ -15,7 +15,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { LanguageSelector } from '$lib/components';
-    import LL from '$lib/i18n/i18n-svelte';
+    import LL from '$i18n/i18n-svelte';
 
     let mail: string, pass: string;
 

@@ -11,7 +11,8 @@ const config = {
     },
     kit: {
         alias: {
-            $routes: './src/routes'
+            $routes: './src/routes',
+            $i18n: 'src/i18n'
         },
         adapter: adapter({
             fallback: 'index.html'
