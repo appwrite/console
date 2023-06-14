@@ -35,10 +35,11 @@
     import Create from '../create.svelte';
     import Activate from '../activate.svelte';
     import { browser } from '$app/environment';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdkForConsole, sdkForProject } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import Output from '$lib/components/output.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
+    import { onDestroy, onMount, tick } from 'svelte';
 
     export let data: PageData;
 
@@ -48,6 +49,32 @@
     let showActivate = false;
 
     let selectedDeployment: Models.Deployment = null;
+
+    let unsubscribe: { (): void };
+
+    onMount(() => {
+        unsubscribe = sdkForConsole.client.subscribe<any>('console', async (response) => {
+            if (response.events.includes('functions.*.deployments.*')) {
+                if ($log.data && $log.data.$id === response.payload.deploymentId) {
+                    $log.data = await sdkForProject.functions.getDeployment(
+                        $func.$id,
+                        $log.data.$id
+                    );
+
+                    await tick();
+
+                    document.querySelector('.code-panel-content').scrollTop =
+                        document.querySelector('.code-panel-content').scrollHeight;
+                }
+            }
+        });
+    });
+
+    onDestroy(() => {
+        if (unsubscribe) {
+            unsubscribe();
+        }
+    });
 
     const handleActivate = () => {
         invalidate(Dependencies.DEPLOYMENTS);

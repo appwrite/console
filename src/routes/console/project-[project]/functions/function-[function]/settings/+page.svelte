@@ -40,6 +40,12 @@
     let buildCommand: string = null;
     let installCommand: string = null;
 
+    let vcsInstallationId: string = null;
+    let vcsRepositoryId: string = null;
+    let vcsRootDirectory: string = null;
+    let vcsSilentMode: boolean = null;
+    let vcsBranch: string = null;
+
     let showGitConnection = false;
 
     const eventSet: Writable<Set<string>> = writable(new Set());
@@ -55,6 +61,11 @@
         entrypoint ??= $func.entrypoint;
         buildCommand ??= $func.buildCommand;
         installCommand ??= $func.installCommand;
+        vcsInstallationId ??= $func.vcsInstallationId;
+        vcsRepositoryId ??= $func.vcsRepositoryId;
+        vcsBranch ??= $func.vcsBranch;
+        vcsSilentMode ??= $func.vcsSilentMode;
+        vcsRootDirectory ??= $func.vcsRootDirectory;
         $eventSet = new Set($func.events);
     });
 
@@ -71,7 +82,12 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.vcsRepositoryId,
+                $func.vcsBranch,
+                $func.vcsSilentMode,
+                $func.vcsRootDirectory
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -100,7 +116,12 @@
                 logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.vcsRepositoryId,
+                $func.vcsBranch,
+                $func.vcsSilentMode,
+                $func.vcsRootDirectory
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -129,7 +150,12 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.vcsRepositoryId,
+                $func.vcsBranch,
+                $func.vcsSilentMode,
+                $func.vcsRootDirectory
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -158,7 +184,12 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.vcsRepositoryId,
+                $func.vcsBranch,
+                $func.vcsSilentMode,
+                $func.vcsRootDirectory
             );
             invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -187,7 +218,12 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.vcsRepositoryId,
+                $func.vcsBranch,
+                $func.vcsSilentMode,
+                $func.vcsRootDirectory
             );
             invalidate(Dependencies.FUNCTION);
 
@@ -217,7 +253,12 @@
                 $func.logging,
                 $func.entrypoint,
                 $func.buildCommand,
-                $func.installCommand
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.vcsRepositoryId,
+                $func.vcsBranch,
+                $func.vcsSilentMode,
+                $func.vcsRootDirectory
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -247,7 +288,12 @@
                 $func.logging,
                 entrypoint,
                 buildCommand,
-                installCommand
+                installCommand,
+                $func.vcsInstallationId,
+                $func.vcsRepositoryId,
+                $func.vcsBranch,
+                $func.vcsSilentMode,
+                $func.vcsRootDirectory
             );
 
             invalidate(Dependencies.FUNCTION);
@@ -266,6 +312,12 @@
 
     async function disconnectVcs() {
         try {
+            vcsInstallationId = '';
+            vcsRepositoryId = '';
+            vcsBranch = '';
+            vcsSilentMode = true;
+            vcsRootDirectory = '';
+
             await sdkForProject.functions.update(
                 functionId,
                 $func.name,
@@ -280,6 +332,8 @@
                 $func.installCommand,
                 '',
                 '',
+                '',
+                true,
                 ''
             );
             await invalidate(Dependencies.FUNCTION);
@@ -379,16 +433,16 @@
         </CardGrid>
     </Form>
 
-    {#if $func.vcsInstallationId}
+    {#if vcsInstallationId}
         <Form on:submit={disconnectVcs}>
             <CardGrid>
                 <Heading tag="h6" size="7">Git Integration</Heading>
                 <p>SOME TEXT</p>
                 <svelte:fragment slot="aside">
                     <ul>
-                        <p>Branch: {$func.vcsBranch}</p>
-                        <p>Silent mode: {$func.vcsSilentMode ? 'yes' : 'no'}</p>
-                        <p>Root directory: {$func.vcsRootDirectory}</p>
+                        <p>Branch: {vcsBranch}</p>
+                        <p>Silent mode: {vcsSilentMode ? 'yes' : 'no'}</p>
+                        <p>Root directory: {vcsRootDirectory}</p>
                         <p>Repository: {data.installation.organization}/{data.repository.name}</p>
                     </ul>
                 </svelte:fragment>
