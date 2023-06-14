@@ -11,14 +11,28 @@ type AppwriteInput = {
     apiKey?: string;
 };
 
-type NhostInput = {
-    provider: 'nhost';
-};
-type SupabaseInput = {
-    provider: 'supabase';
-};
 type FirebaseInput = {
     provider: 'firebase';
+};
+
+type SupabaseInput = {
+    provider: 'supabase';
+    host?: string;
+    port?: number;
+    username?: string;
+    password?: string;
+    endpoint?: string;
+    apiKey?: string;
+};
+
+type NhostInput = {
+    provider: 'nhost';
+    host?: string;
+    port?: number;
+    username?: string;
+    password?: string;
+    endpoint?: string;
+    apiKey?: string;
 };
 
 type ProviderInput = AppwriteInput | NhostInput | SupabaseInput | FirebaseInput;

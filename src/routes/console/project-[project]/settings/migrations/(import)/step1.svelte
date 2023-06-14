@@ -1,6 +1,6 @@
 <script lang="ts">
     import SvgIcon from '$lib/components/svgIcon.svelte';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, FormList, InputNumber, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { provider, type Provider } from '.';
 
@@ -81,6 +81,92 @@
                     placeholder="TODO" />
             </div>
         {/if}
+    {:else if $provider.provider === 'supabase'}
+        <FormList class="u-margin-block-start-24">
+            <p class="body-text-1 u-bold">Postgres credentials</p>
+
+            <InputText
+                id="host"
+                label="Host"
+                required
+                placeholder="Enter host"
+                bind:value={$provider.host} />
+            <InputNumber
+                id="port"
+                label="Port"
+                required
+                placeholder="Enter port"
+                bind:value={$provider.port} />
+            <InputText
+                id="username"
+                label="Username"
+                required
+                placeholder="Enter username"
+                bind:value={$provider.username} />
+            <InputText
+                id="password"
+                label="Password"
+                required
+                placeholder="Enter password"
+                bind:value={$provider.password} />
+            <p class="body-text-1 u-bold">Supabase credentials</p>
+
+            <InputText
+                id="endpoint"
+                label="Endpoint"
+                required
+                placeholder="Enter endpoint"
+                bind:value={$provider.endpoint} />
+            <InputText
+                id="api-key"
+                label="API Key"
+                required
+                placeholder="Enter API Key"
+                bind:value={$provider.apiKey} />
+        </FormList>
+    {:else if $provider.provider === 'nhost'}
+        <FormList class="u-margin-block-start-24">
+            <p class="body-text-1 u-bold">Postgres credentials</p>
+
+            <InputText
+                id="host"
+                label="Host"
+                required
+                placeholder="Enter host"
+                bind:value={$provider.host} />
+            <InputNumber
+                id="port"
+                label="Port"
+                required
+                placeholder="Enter port"
+                bind:value={$provider.port} />
+            <InputText
+                id="username"
+                label="Username"
+                required
+                placeholder="Enter username"
+                bind:value={$provider.username} />
+            <InputText
+                id="password"
+                label="Password"
+                required
+                placeholder="Enter password"
+                bind:value={$provider.password} />
+            <p class="body-text-1 u-bold">Supabase credentials</p>
+
+            <InputText
+                id="endpoint"
+                label="Endpoint"
+                required
+                placeholder="Enter endpoint"
+                bind:value={$provider.endpoint} />
+            <InputText
+                id="api-key"
+                label="API Key"
+                required
+                placeholder="Enter API Key"
+                bind:value={$provider.apiKey} />
+        </FormList>
     {/if}
 </WizardStep>
 
