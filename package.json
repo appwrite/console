@@ -7,7 +7,7 @@
         "dev": "npm-run-all --parallel dev:*",
         "dev:vite": "vite dev",
         "dev:i18n": "typesafe-i18n",
-        "build": "node build.js",
+        "build": "node build.js --parallel dev:*",
         "preview": "vite preview",
         "sync": "svelte-kit sync",
         "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings --threshold warning",
