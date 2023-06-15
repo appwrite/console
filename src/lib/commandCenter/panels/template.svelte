@@ -57,6 +57,7 @@
         }
 
         tick().then(() => {
+            if (!cardEl) return;
             const selectedEl = cardEl.querySelector('[data-selected]');
 
             if (selectedEl) {
@@ -138,17 +139,7 @@
             <slot />
         {/if}
 
-        <div
-            class="footer u-margin-block-start-16 u-flex u-flex u-cross-center u-main-space-between">
-            <slot name="footer">
-                <div class="u-flex u-cross-center u-gap-4">
-                    <kbd class="kbd">Enter</kbd> <span>to select and close</span>
-                </div>
-                <div class="u-flex u-cross-center u-gap-4">
-                    <kbd class="kbd">Esc</kbd> <span>to close</span>
-                </div>
-            </slot>
-        </div>
+        <slot name="footer" />
     </div>
 </div>
 
@@ -244,18 +235,6 @@
             width: 100%;
 
             box-shadow: none !important;
-        }
-    }
-
-    .footer {
-        border-top: 1px solid hsl(var(--color-border));
-        margin-inline: -0.5rem;
-        padding-inline: 1rem;
-        padding-block-start: 0.5rem;
-
-        .kbd {
-            background-color: hsl(var(--color-neutral-150));
-            padding: 4.5px 3.5px;
         }
     }
 </style>

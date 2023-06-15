@@ -23,7 +23,7 @@
                 answer = mockAnswer;
             } else {
                 const res = await fetch(
-                    'http://64.227.148.116:8080/?question=' + encodeURI(question),
+                    'http://64.227.148.116/chat?question=' + encodeURI(question),
                     {
                         headers: {
                             accept: 'application/json'
