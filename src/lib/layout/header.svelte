@@ -21,6 +21,9 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
+    import { isCloud } from '$lib/system';
+    import { wizard } from '$lib/stores/wizard';
+    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
@@ -46,6 +49,13 @@
         ) {
             showDropdown = false;
         }
+    }
+
+    function createOrg() {
+        showDropdown = false;
+        if (isCloud) {
+            wizard.start(CreateOrganizationCloud);
+        } else newOrgModal.set(true);
     }
 
     $: if (showDropdown) {
@@ -128,12 +138,7 @@
                         {/if}
                         <section class="drop-section">
                             <ul class="drop-list">
-                                <DropListItem
-                                    icon="plus"
-                                    on:click={() => {
-                                        showDropdown = false;
-                                        newOrgModal.set(true);
-                                    }}>
+                                <DropListItem icon="plus" on:click={createOrg}>
                                     New organization
                                 </DropListItem>
                                 <DropListLink

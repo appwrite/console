@@ -4,14 +4,18 @@
     import { GridItem1, Heading, Empty, CardContainer, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import Create from './createProject.svelte';
+    import Create from './createProjectCloud.svelte';
+    import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
     import { wizard } from '$lib/stores/wizard';
+    import { isCloud } from '$lib/system';
+    import { page } from '$app/stores';
 
     export let data: PageData;
 
     let addOrganization = false;
+    let showCreate = false;
 
     const getPlatformInfo = (platform: string) => {
         let name: string, icon: string;
@@ -43,15 +47,16 @@
         );
     }
 
-    function openWizard() {
-        wizard.start(Create);
+    function createProject() {
+        if (isCloud) wizard.start(Create);
+        else showCreate = true;
     }
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Projects</Heading>
-        <Button on:click={openWizard} event="create_project">
+        <Button on:click={createProject} event="create_project">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create project</span>
         </Button>
     </div>
@@ -61,7 +66,7 @@
             total={data.projects.total}
             offset={data.offset}
             event="project"
-            on:click={openWizard}>
+            on:click={createProject}>
             {#each data.projects.projects as project}
                 <GridItem1 href={`${base}/console/project-${project.$id}`}>
                     <svelte:fragment slot="eyebrow">
@@ -93,7 +98,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty single on:click={openWizard}>
+        <Empty single on:click={createProject}>
             <p>Create a new project</p>
         </Empty>
     {/if}
@@ -106,3 +111,4 @@
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
+<CreateProject bind:show={showCreate} teamId={$page.params.organization} />

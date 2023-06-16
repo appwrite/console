@@ -1,71 +1,67 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
-    import { createEventDispatcher, onDestroy } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
-    import Step1 from './wizard/step1.svelte';
-    import Step2 from './wizard/step2.svelte';
-    import { createProject } from './wizard/store';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { goto, invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Modal, CustomId } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { InputText, Button, FormList } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
-    import { Tier } from '$lib/system';
+    import { createEventDispatcher } from 'svelte';
 
-    const teamId = $page.params.organization;
+    export let show = false;
+    export let teamId: string;
+
     const dispatch = createEventDispatcher();
 
-    async function onFinish() {
-        await invalidate(Dependencies.FUNCTIONS);
-    }
+    let id: string;
+    let name: string;
+    let showCustomId = false;
+    let error: string;
 
     async function create() {
         try {
             const project = await sdk.forConsole.projects.create(
-                $createProject?.id ?? ID.unique(),
-                $createProject.name,
+                id ?? ID.unique(),
+                name,
                 teamId,
                 'default'
             );
             dispatch('created', project);
             trackEvent(Submit.ProjectCreate, {
-                customId: !!$createProject?.id,
+                customId: !!id,
                 teamId
             });
             addNotification({
                 type: 'success',
-                message: `${$createProject.name} has been created`
+                message: `${name} has been created`
             });
             await goto(`/console/project-${project.$id}`);
         } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.mesage
-            });
+            error = e.message;
             trackError(e, Submit.ProjectCreate);
         }
     }
-
-    onDestroy(() => {
-        $createProject = {
-            id: null,
-            name: null,
-            tier: Tier['PREMIUM'],
-            region: 'eu-central-1'
-        };
-    });
-
-    const stepsComponents: WizardStepsType = new Map();
-    stepsComponents.set(1, {
-        label: 'Project details',
-        component: Step1
-    });
-    stepsComponents.set(2, {
-        label: 'Select region',
-        component: Step2
-    });
 </script>
 
-<Wizard title="Create a Project" steps={stepsComponents} on:finish={create} on:exit={onFinish} />
+<Modal {error} onSubmit={create} size="big" bind:show>
+    <svelte:fragment slot="header">Create Project</svelte:fragment>
+    <FormList>
+        <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
+        {#if !showCustomId}
+            <div>
+                <Pill button on:click={() => (showCustomId = !showCustomId)}>
+                    <span class="icon-pencil" aria-hidden="true" /><span class="text">
+                        Project ID
+                    </span>
+                </Pill>
+            </div>
+        {:else}
+            <CustomId bind:show={showCustomId} name="Project" bind:id />
+        {/if}
+    </FormList>
+    <svelte:fragment slot="footer">
+        <Button secondary on:click={() => (show = false)}>Cancel</Button>
+        <Button submit>Create</Button>
+    </svelte:fragment>
+</Modal>

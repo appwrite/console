@@ -12,8 +12,18 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
+    import { isCloud } from '$lib/system';
+    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
     let showDropdown = false;
+
+    function createOrg() {
+        showDropdown = false;
+        if (isCloud) {
+            wizard.start(CreateOrganizationCloud);
+        } else newOrgModal.set(true);
+    }
 
     $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
@@ -75,7 +85,7 @@
             <svelte:fragment slot="other">
                 <section class="drop-section">
                     <ul class="drop-list">
-                        <DropListItem icon="plus" on:click={() => newOrgModal.set(true)}>
+                        <DropListItem icon="plus" on:click={createOrg}>
                             New Organization
                         </DropListItem>
                     </ul>
