@@ -164,15 +164,15 @@
     $: services.load($project);
 
     function getInstallationLink(installation: Models.Installation) {
-        if (installation.provider === 'GitHub') {
+        if (installation.provider === 'github') {
             return `https://github.com/${installation.organization}`;
         }
 
         return '';
     }
 
-    function getInstallationIcon(installation: Models.Installation) {
-        if (installation.provider === 'GitHub') {
+    function getProviderIcon(provider: string) {
+        if (provider === 'github') {
             return `icon-github`;
         }
 
@@ -279,8 +279,8 @@
                                                     class="u-flex u-main-start u-cross-center u-gap-8">
                                                     <div class="avatar">
                                                         <span
-                                                            class={getInstallationIcon(
-                                                                installation
+                                                            class={getProviderIcon(
+                                                                installation.provider
                                                             )} />
                                                     </div>
                                                     <div class="u-flex u-flex-vertical">

@@ -23,6 +23,7 @@
     import DisconnectRepo from './disconnectRepo.svelte';
 
     export let installations: Models.InstallationList;
+    export let repository: Models.Repository | null;
     const functionId = $page.params.function;
 
     let entrypoint: string;
@@ -44,6 +45,30 @@
         selectedDir = $func?.vcsRootDirectory;
     });
 
+    function getProviderIcon(provider: string) {
+        if (provider === 'github') {
+            return `icon-github`;
+        }
+
+        return '';
+    }
+
+    function getProviderName(provider: string) {
+        if (provider === 'github') {
+            return `GitHub`;
+        }
+
+        return '';
+    }
+
+    function getRepositoryLink(repository: Models.Repository) {
+        if (repository.provider === 'github') {
+            return `https://github.com/${repository.organization}/${repository.name}`;
+        }
+
+        return '';
+    }
+
     async function updateConfiguration() {
         try {
             await sdk.forProject.functions.update(
@@ -55,9 +80,9 @@
                 $func.timeout || undefined,
                 $func.enabled,
                 $func.logging,
-                $func.entrypoint,
-                $func.buildCommand,
-                $func.installCommand,
+                entrypoint,
+                buildCmd,
+                installCmd,
                 $func.vcsInstallationId,
                 $func.vcsRepositoryId,
                 selectedBranch,
@@ -81,6 +106,14 @@
 
     async function getBranches(installation: string, repo: string) {
         branchesList = await sdk.forProject.vcs.listRepositoryBranches(installation, repo);
+        branchesList.branches = branchesList.branches.sort((a, b) => {
+            if (a.name === 'main' || a.name === 'master') {
+                return -1;
+            }
+
+            return a.name > b.name ? -1 : 1;
+        });
+
         selectedBranch = $func?.vcsBranch ?? branchesList.branches[0].name;
     }
 
@@ -100,9 +133,9 @@
 <Form onSubmit={updateConfiguration}>
     <CardGrid>
         <Heading tag="h6" size="7">Configuration</Heading>
-        <!-- TODO: Add description -->
         <p class="text">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam, accusantium!
+            Connect a Git repository for automatic deployments, or set install and build commands
+            for your function.
         </p>
         <svelte:fragment slot="aside">
             <FormList>
@@ -110,21 +143,21 @@
                     required
                     label="Entrypoint"
                     id="Entrypoint"
-                    placeholder="index.js"
+                    placeholder="Enter an entrypoint (e.g. 'index.js')"
                     bind:value={entrypoint} />
             </FormList>
             <Collapsible>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Git settings</svelte:fragment>
-                    {#if $func?.vcsInstallationId && $func?.vcsRepositoryId}
+                    {#if repository}
                         <div class="box" style:--box-border-radius="var(--border-radius-small)">
                             <div class="u-flex u-gap-16">
                                 <div class="avatar is-size-x-small">
-                                    <img src="" alt={$func.name} />
+                                    <span class={getProviderIcon(repository.provider)} />
                                 </div>
                                 <div class="u-cross-child-center u-line-height-1-5">
-                                    <h6 class="u-bold u-trim-1">{$func?.vcsRepositoryId}</h6>
-                                    <p>Last updated: {toLocaleDateTime($func?.vcsRepositoryId)}</p>
+                                    <h6 class="u-bold u-trim-1">{repository.name}</h6>
+                                    <p>Last updated: {toLocaleDateTime(repository.pushedAt)}</p>
                                 </div>
                             </div>
                             <div class="u-margin-block-start-24">
@@ -153,8 +186,8 @@
                             <div class="u-margin-block-start-24 u-flex u-gap-16 u-main-end">
                                 <Button text on:click={() => (showDisconnect = true)}
                                     >Disconnect repository</Button>
-                                <Button secondary href={$func?.vcsBranch} external>
-                                    View in GitHub
+                                <Button secondary href={getRepositoryLink(repository)} external>
+                                    View on {getProviderName(repository.provider)}
                                     <span class="icon-external-link" />
                                 </Button>
                             </div>
@@ -207,7 +240,7 @@
 {#if !installations.total && showGit}
     <GitInstallationModal bind:showGitInstall={showGit} />
 {:else}
-    <GitConfigurationModal bind:show={showGit} {installations} />
+    <GitConfigurationModal bind:show={showGit} installationsList={installations} />
 {/if}
 
 <DisconnectRepo bind:show={showDisconnect} />

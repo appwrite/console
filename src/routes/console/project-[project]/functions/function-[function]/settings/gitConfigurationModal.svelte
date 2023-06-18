@@ -13,13 +13,13 @@
     import { invalidate } from '$app/navigation';
 
     export let show: boolean;
-    export let installations: Models.InstallationList;
+    export let installationsList: Models.InstallationList;
 
     const functionId = $page.params.function;
 
-    let selectedRepo: string;
+    let selectedRepoId: string;
+    let selectedInstallationId: string;
     let step = 1;
-    let installation: string;
     let search: string;
     let repositoriesList: Models.RepositoryList;
     let branchesList: Models.BranchList;
@@ -28,12 +28,27 @@
     let selectedDir: string;
     let silentMode = false;
 
-    let installationsOptions = installations.installations.map((installation) => {
+    $: selectedRepo =
+        (repositoriesList?.repositories ?? []).find((repo) => repo.id === selectedRepoId) ?? null;
+    $: selectedInstallation =
+        (installationsList?.installations ?? []).find(
+            (installation) => installation.$id === selectedInstallationId
+        ) ?? null;
+
+    let installationsOptions = installationsList.installations.map((installation) => {
         return {
             value: installation.$id,
-            label: installation.provider
+            label: installation.organization
         };
     });
+
+    function getProviderIcon(provider: string) {
+        if (provider === 'github') {
+            return `icon-github`;
+        }
+
+        return '';
+    }
 
     async function handleSubmit() {
         try {
@@ -49,8 +64,8 @@
                 $func.entrypoint,
                 $func.buildCommand,
                 $func.installCommand,
-                installation,
-                selectedRepo,
+                selectedInstallationId,
+                selectedRepoId,
                 selectedBranch,
                 silentMode,
                 selectedDir
@@ -72,12 +87,27 @@
     }
 
     async function getRepos() {
-        if (!show || !installation) return;
-        repositoriesList = await sdk.forProject.vcs.listRepositories(installation, search);
+        if (!show || !selectedInstallationId) return;
+        repositoriesList = await sdk.forProject.vcs.listRepositories(
+            selectedInstallationId,
+            search
+        );
     }
     async function getBranches() {
-        if (!show || !installation) return;
-        branchesList = await sdk.forProject.vcs.listRepositoryBranches(installation, selectedRepo);
+        if (!show || !selectedInstallationId) return;
+        branchesList = await sdk.forProject.vcs.listRepositoryBranches(
+            selectedInstallationId,
+            selectedRepoId
+        );
+
+        branchesList.branches = branchesList.branches.sort((a, b) => {
+            if (a.name === 'main' || a.name === 'master') {
+                return -1;
+            }
+
+            return a.name > b.name ? -1 : 1;
+        });
+
         selectedBranch = branchesList?.branches[0].name;
     }
 
@@ -94,15 +124,21 @@
     </p>
     {#if step === 1}
         {#await getRepos()}
-            loading...
+            Fetching repositories..
         {:then}
-            <InputSelect
-                options={installationsOptions}
-                id="installations"
-                label="installation"
-                showLabel={false}
-                bind:value={installation} />
-            <InputSearch placeholder="Search repositories" bind:value={search} />
+            <div class="u-flex u-gap-16">
+                <div class="u-width-full-line">
+                    <InputSelect
+                        options={installationsOptions}
+                        id="installations"
+                        label="installation"
+                        showLabel={false}
+                        bind:value={selectedInstallationId} />
+                </div>
+                <div class="u-width-full-line">
+                    <InputSearch placeholder="Search repositories" bind:value={search} />
+                </div>
+            </div>
 
             <p class="text">
                 Manage organization configuration in your <a
@@ -121,7 +157,7 @@
                                         class="is-small u-margin-inline-end-8"
                                         type="radio"
                                         name={repo.name}
-                                        bind:group={selectedRepo}
+                                        bind:group={selectedRepoId}
                                         value={repo.id} />
                                     <div class="avatar is-size-x-small">
                                         <img src="" alt={repo.name} />
@@ -132,7 +168,7 @@
                                         <time
                                             class="u-color-text-gray"
                                             datetime="2011-11-18T14:54:39.929">
-                                            30m ago
+                                            XXm ago
                                         </time>
                                     </div>
                                 </div>
@@ -182,23 +218,24 @@
         {/await}
     {:else}
         {#await getBranches()}
-            loading...
+            Fetching branches..
         {:then}
             <Box>
                 <svelte:fragment slot="image">
-                    <div class="avatar is-size-x-small">
-                        <img src="" alt={$func.name} />
+                    <div class="avatar">
+                        <span class={getProviderIcon(selectedInstallation.provider)} />
                     </div>
                 </svelte:fragment>
                 <svelte:fragment slot="title">
-                    <h6 class="u-bold u-trim-1">{selectedRepo}</h6>
+                    <h6 class="u-bold u-trim-1">{selectedRepo.name}</h6>
                 </svelte:fragment>
-                <p>Last updated: {toLocaleDateTime(selectedRepo)}</p>
+                <p>Last updated: {toLocaleDateTime(selectedRepo.pushedAt)}</p>
             </Box>
 
             <InputSelect
                 id="branch"
                 label="Branch"
+                required={true}
                 options={branchesList?.branches?.map((branch) => {
                     return {
                         value: branch.name,
@@ -210,7 +247,7 @@
             <InputChoice
                 id="silent"
                 label="Silent mode"
-                tooltip="Don't create comments when pushing to this repository"
+                tooltip="Don't create comments and checks when pushing to this repository"
                 bind:value={silentMode} />
         {/await}
     {/if}
@@ -218,7 +255,7 @@
     <svelte:fragment slot="footer">
         {#if step === 1}
             <Button secondary on:click={() => (show = false)}>Cancel</Button>
-            <Button secondary disabled={!selectedRepo} on:click={() => step++}>Next</Button>
+            <Button secondary disabled={!selectedRepoId} on:click={() => step++}>Next</Button>
         {:else}
             <Button secondary on:click={() => step--}>Back</Button>
             <Button submit>Deploy now</Button>

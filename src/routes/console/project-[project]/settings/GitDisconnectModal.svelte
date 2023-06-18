@@ -67,7 +67,7 @@
                     </div>
 
                     <p class="u-x-small" style="color: hsl(var(--color-neutral-70));">
-                        Last deployed: 12m ago
+                        Last deployed: XXm ago
                     </p>
                 </div>
             {/each}

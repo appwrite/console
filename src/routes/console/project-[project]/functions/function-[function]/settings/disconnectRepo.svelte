@@ -27,10 +27,10 @@
                 $func.buildCommand,
                 $func.installCommand,
                 $func.vcsInstallationId,
-                undefined,
-                undefined,
-                undefined,
-                undefined
+                '',
+                '',
+                true,
+                ''
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
