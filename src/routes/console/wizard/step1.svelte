@@ -3,9 +3,12 @@
     import { Pill } from '$lib/elements';
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
+    import { organizationList } from '$lib/stores/organization';
     import { createOrganization } from './store';
 
     let showCustomId = false;
+
+    $: anyOrgFree = $organizationList.teams?.find((org) => org?.tier === 'free');
 </script>
 
 <WizardStep>
@@ -45,25 +48,46 @@
     <ul
         class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16"
         style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
-        <li>
-            <LabelCard name="plan" bind:group={$createOrganization.tier} value="free">
-                <svelte:fragment slot="title">Free - $0/month</svelte:fragment>
-                For personal, passion projects.
-            </LabelCard>
-        </li>
+        {#if !anyOrgFree}
+            <li>
+                <LabelCard name="plan" bind:group={$createOrganization.tier} value="free">
+                    <svelte:fragment slot="custom">
+                        <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+                            <h4 class="body-text-2 u-bold">Free - $0/month</h4>
+                            <p class="u-color-text-gray u-small">For personal, passion projects.</p>
+                        </div>
+                    </svelte:fragment>
+                </LabelCard>
+            </li>
+        {/if}
         <li>
             <LabelCard name="plan" bind:group={$createOrganization.tier} value="starter">
-                <svelte:fragment slot="title"
-                    >Starter - $10/month per organization member</svelte:fragment>
-                For small organizations that want flexibility.
+                <svelte:fragment slot="custom">
+                    <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+                        <h4 class="body-text-2 u-bold">
+                            Starter - $10/month per organization member
+                        </h4>
+                        <p class="u-color-text-gray u-small">
+                            For small organizations that want flexibility.
+                        </p>
+                    </div>
+                    <Pill>14 DAY FREE TRIAL</Pill>
+                </svelte:fragment>
             </LabelCard>
         </li>
         <li>
             <LabelCard name="plan" bind:group={$createOrganization.tier} value="premium">
-                <svelte:fragment slot="title">
-                    Pro - $20/month per organization member + exta usage
+                <svelte:fragment slot="custom">
+                    <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+                        <h4 class="body-text-2 u-bold">
+                            Pro - $20/month per organization member + exta usage
+                        </h4>
+                        <p class="u-color-text-gray u-small">
+                            For organizations that need the ability scale easily.
+                        </p>
+                    </div>
+                    <Pill>14 DAY FREE TRIAL</Pill>
                 </svelte:fragment>
-                For organizations that need the ability scale easily.
             </LabelCard>
         </li>
     </ul>

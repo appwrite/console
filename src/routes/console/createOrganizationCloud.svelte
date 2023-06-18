@@ -47,20 +47,32 @@
         $createOrganization = {
             id: null,
             name: null,
-            tier: Tier['PREMIUM'],
-            region: 'eu-central-1'
+            tier: Tier['PREMIUM']
         };
     });
 
     const stepsComponents: WizardStepsType = new Map();
+
     stepsComponents.set(1, {
-        label: 'Project details',
+        label: 'Organization details',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Select region',
+        label: 'Payment details',
+        component: Step2
+    });
+    stepsComponents.set(3, {
+        label: 'Invite collaborators',
+        component: Step2
+    });
+    stepsComponents.set(4, {
+        label: 'Review & confirm',
         component: Step2
     });
 </script>
 
-<Wizard title="Create a Project" steps={stepsComponents} on:finish={create} on:exit={onFinish} />
+<Wizard
+    title="Create organization "
+    steps={stepsComponents}
+    on:finish={create}
+    on:exit={onFinish} />

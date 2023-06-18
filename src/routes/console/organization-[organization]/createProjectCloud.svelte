@@ -12,7 +12,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
     import { Tier } from '$lib/system';
-    import { createOrganization } from '../wizard/store';
+    import { createProject } from './wizard/store';
 
     const teamId = $page.params.organization;
     const dispatch = createEventDispatcher();
@@ -24,19 +24,19 @@
     async function create() {
         try {
             const project = await sdk.forConsole.projects.create(
-                $createOrganization?.id ?? ID.unique(),
-                $createOrganization.name,
+                $createProject?.id ?? ID.unique(),
+                $createProject.name,
                 teamId,
                 'default'
             );
             dispatch('created', project);
             trackEvent(Submit.ProjectCreate, {
-                customId: !!$createOrganization?.id,
+                customId: !!$createProject?.id,
                 teamId
             });
             addNotification({
                 type: 'success',
-                message: `${$createOrganization.name} has been created`
+                message: `${$createProject.name} has been created`
             });
             await goto(`/console/project-${project.$id}`);
         } catch (e) {
@@ -49,7 +49,7 @@
     }
 
     onDestroy(() => {
-        $createOrganization = {
+        $createProject = {
             id: null,
             name: null,
             tier: Tier['PREMIUM']
@@ -58,21 +58,13 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Organization details',
+        label: 'Project details',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Payment details',
-        component: Step2
-    });
-    stepsComponents.set(2, {
-        label: 'Invite collaborators',
-        component: Step2
-    });
-    stepsComponents.set(2, {
-        label: 'Review & confirm',
+        label: 'Select region',
         component: Step2
     });
 </script>
 
-<Wizard title="Create organization" steps={stepsComponents} on:finish={create} on:exit={onFinish} />
+<Wizard title="Create a project" steps={stepsComponents} on:finish={create} on:exit={onFinish} />

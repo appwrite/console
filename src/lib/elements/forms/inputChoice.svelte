@@ -8,6 +8,7 @@
     export let value = false;
     export let required = false;
     export let disabled = false;
+    export let tooltip: string = null;
 
     let element: HTMLInputElement;
     let error: string;
@@ -39,7 +40,20 @@
             on:invalid={handleInvalid} />
 
         <div class="choice-item-content">
-            <div class:u-hide={!showLabel} class="choice-item-title">{label}</div>
+            <div class:u-hide={!showLabel} class="choice-item-title">
+                {label}
+
+                {#if tooltip}
+                    <button class="tooltip" aria-label="variables info">
+                        <span class="icon-info" aria-hidden="true" />
+                        <span class="tooltip-popup" role="tooltip">
+                            <p class="text">
+                                {tooltip}
+                            </p>
+                        </span>
+                    </button>
+                {/if}
+            </div>
             {#if $$slots}
                 <p class="choice-item-paragraph"><slot /></p>
             {/if}

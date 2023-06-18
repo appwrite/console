@@ -15,6 +15,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { app } from '$lib/stores/app';
+    import { apperanceDark, apperanceLight } from '$lib/stores/billing';
 
     export let show = false;
 
@@ -25,59 +26,6 @@
 
     let clientSecret: string;
     let paymentMethod: PaymentMethod;
-
-    const apperanceLight = {
-        variables: {
-            colorPrimary: '#606a7b',
-            colorText: '#373B4D',
-            colorBackground: '#FFFFFF',
-            color: '#606a7b',
-            colorDanger: '#df1b41',
-            fontFamily: 'Inter, arial, sans-serif',
-            borderRadius: '4px'
-        },
-        rules: {
-            '.Input:hover': {
-                border: 'solid 1px #C4C6D7',
-                boxShadow: 'none'
-            },
-            '.Input:focus': {
-                border: 'solid 1px #C4C6D7',
-                boxShadow: 'none'
-            },
-            '.Input::placeholder': {
-                color: '#C4C6D7'
-            },
-            '.Input--invalid': {
-                border: 'solid 1px var(--colorDanger)',
-                boxShadow: 'none'
-            }
-        }
-    };
-    const apperanceDark = {
-        variables: {
-            colorPrimary: '#606a7b',
-            colorText: '#C5C7D8',
-            colorBackground: '#161622',
-            colorDanger: '#FF453A',
-            fontFamily: 'Inter, arial, sans-serif',
-            borderRadius: '4px'
-        },
-        rules: {
-            '.Input:hover': {
-                border: 'solid 1px #4F5769',
-                boxShadow: 'none'
-            },
-            '.Input:focus': {
-                border: 'solid 1px #4F5769',
-                boxShadow: 'none'
-            },
-            '.Input--invalid': {
-                border: 'solid 1px var(--colorDanger)',
-                boxShadow: 'none'
-            }
-        }
-    };
 
     onMount(async () => {
         stripe = await loadStripe(publicKey);
@@ -151,7 +99,7 @@
             <!-- Elements will create form elements here -->
         </div>
         <p class="text u-small">
-            You won’t be charged immediately. You will be charged for your plan on the first day of
+            You won't be charged immediately. You will be charged for your plan on the first day of
             each month using the payment method you've specified above.
         </p>
     </FormList>

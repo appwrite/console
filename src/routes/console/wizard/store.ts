@@ -5,8 +5,10 @@ export const createOrganization = writable<{
     id?: string;
     name: string;
     tier: Tier;
+    payment: string;
 }>({
     id: null,
     name: null,
-    tier: Tier['PREMIUM']
+    tier: Tier['PREMIUM'],
+    payment: null
 });
