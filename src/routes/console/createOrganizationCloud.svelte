@@ -47,7 +47,8 @@
         $createOrganization = {
             id: null,
             name: null,
-            tier: Tier['PREMIUM']
+            tier: Tier['PREMIUM'],
+            payment: null
         };
     });
 

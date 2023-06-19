@@ -1,13 +1,15 @@
 <script lang="ts">
-    import { FormList, InputRadio, InputText } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputRadio, InputText } from '$lib/elements/forms';
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createOrganization } from './store';
+    import { Collapsible, CollapsibleItem } from '$lib/components';
 
     let methods = [];
     let name: string;
+    let promo: string;
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods('TEST');
@@ -15,6 +17,14 @@
             $createOrganization.payment = methods[0].id;
         }
     });
+
+    async function redeem() {
+        try {
+            // await sdk.forConsole.billing.redeemPromoCode(promo);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 </script>
 
 <WizardStep>
@@ -55,6 +65,28 @@
                 {/if}
             </div>
         </div>
+
+        <Collapsible>
+            <CollapsibleItem>
+                <svelte:fragment slot="title">Add credit</svelte:fragment>
+                <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
+                <p class="text">
+                    Appwrite credit will automatically be applied to your next invoice.
+                </p>
+                <Form onSubmit={redeem}>
+                    <FormList>
+                        <InputText
+                            id="credit"
+                            label="Promo code"
+                            placeholder="APPWRITE123"
+                            bind:value={promo} />
+                        <Button secondary submit>Redeem</Button>
+                    </FormList>
+                </Form>
+            </CollapsibleItem>
+        </Collapsible>
+
+        <div class="u-sep-block-start" />
 
         <InputChoice type="switchbox" id="budget" label="Enable budget cap" tooltip="lorem ipsum">
             <p class="text">

@@ -41,18 +41,22 @@
 
         <div class="choice-item-content">
             <div class:u-hide={!showLabel} class="choice-item-title">
-                {label}
+                <div class="u-flex u-cross-child-center u-gap-4">
+                    <span>
+                        {label}
+                    </span>
 
-                {#if tooltip}
-                    <button class="tooltip" aria-label="variables info">
-                        <span class="icon-info" aria-hidden="true" />
-                        <span class="tooltip-popup" role="tooltip">
-                            <p class="text">
-                                {tooltip}
-                            </p>
-                        </span>
-                    </button>
-                {/if}
+                    {#if tooltip}
+                        <button class="tooltip" aria-label="variables info">
+                            <span class="icon-info" aria-hidden="true" />
+                            <span class="tooltip-popup" role="tooltip">
+                                <p class="text">
+                                    {tooltip}
+                                </p>
+                            </span>
+                        </button>
+                    {/if}
+                </div>
             </div>
             {#if $$slots}
                 <p class="choice-item-paragraph"><slot /></p>
