@@ -4,9 +4,9 @@ import { sdk } from '$lib/stores/sdk';
 export async function load({ depends }) {
     depends(Dependencies.MIGRATIONS);
 
-    // const { imports } = await sdk.forProject.imports.list();
+    const { migrations } = await sdk.forProject.migrations.list();
 
     return {
-        imports: []
+        migrations: []
     };
 }

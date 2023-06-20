@@ -17,7 +17,7 @@
     const onFinish = async () => {
         const resources = formDataToResources($formData);
         if ($provider.provider === 'appwrite') {
-            const res = await sdk.forProject.imports.importAppwrite(
+            const res = await sdk.forProject.migrations.importAppwrite(
                 resources,
                 $provider.endpoint,
                 $provider.projectID,

@@ -1,3 +1,8 @@
+import {
+    PUBLIC_MOCK_APIKEY,
+    PUBLIC_MOCK_ENDPOINT,
+    PUBLIC_MOCK_PROJECTID
+} from '$env/static/public';
 import { wizard } from '$lib/stores/wizard';
 import { writable } from 'svelte/store';
 import Wizard from './wizard.svelte';
@@ -40,9 +45,9 @@ type ProviderInput = AppwriteInput | NhostInput | SupabaseInput | FirebaseInput;
 const initialProvider: ProviderInput = { provider: 'appwrite' };
 const mockProvider: ProviderInput = {
     provider: 'appwrite',
-    endpoint: 'https://torsten.appwrite.org/v1',
-    apiKey: '34c94260f05d44325aefe025acb33fc1f814647e9fa87050b8751f1182f7cf4a8e2aed09e9b29477fafedb3d0c71e46478e8b9f0bcab3604ff927972deeaaf99272ab63cc30a087fc1e09a86a4d8e3363caf88b9e003e0e7321e6021f90fa147468e5caa1bb43e8fef5ca0d8b2e048272f37f7b1c001a19524b21bc41d9ac2bd',
-    projectID: '642c3cddd42da42e1bc6'
+    endpoint: PUBLIC_MOCK_ENDPOINT,
+    apiKey: PUBLIC_MOCK_APIKEY,
+    projectID: PUBLIC_MOCK_PROJECTID
 };
 export const provider = writable<ProviderInput>({ ...mockProvider });
 
