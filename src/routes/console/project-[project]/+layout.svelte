@@ -20,11 +20,11 @@
     $: $registerCommands([
         {
             label: 'Go to Overview',
-            keys: ['g', 'o'],
-
             callback: () => {
                 goto(`/console/project-${$project.$id}`);
-            }
+            },
+            keys: ['g', 'o'],
+            group: 'navigation'
         },
 
         {
@@ -32,28 +32,32 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/auth`);
             },
-            keys: ['g', 'a']
+            keys: ['g', 'a'],
+            group: 'navigation'
         },
         {
             label: 'Go to Databases',
             callback: () => {
                 goto(`/console/project-${$project.$id}/databases`);
             },
-            keys: ['g', 'd']
+            keys: ['g', 'd'],
+            group: 'navigation'
         },
         {
             label: 'Go to Functions',
             callback: () => {
                 goto(`/console/project-${$project.$id}/functions`);
             },
-            keys: ['g', 'f']
+            keys: ['g', 'f'],
+            group: 'navigation'
         },
         {
             label: 'Go to Storage',
             callback: () => {
                 goto(`/console/project-${$project.$id}/storage`);
             },
-            keys: ['g', 's']
+            keys: ['g', 's'],
+            group: 'navigation'
         }
     ]);
 </script>

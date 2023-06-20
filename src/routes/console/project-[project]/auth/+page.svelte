@@ -44,14 +44,16 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: showCreate
+            disabled: showCreate,
+            group: 'auth'
         },
         {
             label: 'Go to Overview',
             callback: () => {
                 goto(`${base}/console/project-${$project.$id}/overview`);
             },
-            keys: ['o']
+            keys: ['o'],
+            group: 'navigation'
         }
     ]);
 </script>

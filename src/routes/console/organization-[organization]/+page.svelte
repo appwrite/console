@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { registerCommands } from '$lib/commandCenter';
+    import { Command, registerCommands } from '$lib/commandCenter';
     import { CardContainer, Empty, GridItem1, Heading, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -48,12 +48,13 @@
     }
 
     $: $registerCommands([
-        ...data.projects.projects.map((project, i) => ({
+        ...data.projects.projects.map<Command>((project, i) => ({
             label: `Project ${project.name}`,
             callback: () => {
                 goto(`/console/project-${project.$id}`);
             },
-            keys: ['p', `${i + 1}`]
+            keys: ['p', `${i + 1}`],
+            group: 'project'
         })),
         {
             label: 'Create project',
@@ -61,7 +62,8 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: showCreate
+            disabled: showCreate,
+            group: 'project'
         }
     ]);
 </script>

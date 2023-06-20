@@ -39,7 +39,8 @@
             },
             keys: ['a'],
             ctrl: true,
-            shift: true
+            shift: true,
+            group: 'navigation'
         },
         {
             label: 'Go to Home',
@@ -48,7 +49,8 @@
             },
             keys: ['g', 'h'],
             // Check if pathname not like /console/organization-6374c26ba90067a6315d
-            disabled: $page.url.pathname.includes('/console/organization-')
+            disabled: $page.url.pathname.includes('/console/organization-'),
+            group: 'navigation'
         }
     ]);
 

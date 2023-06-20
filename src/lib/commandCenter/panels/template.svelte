@@ -1,4 +1,6 @@
 <script lang="ts">
+    import type { CommandGroup } from '../commands';
+
     // This is the template for all panels used in the command center.
     // Use this component when you want to create a new panel.
 
@@ -11,7 +13,7 @@
     import { quadOut } from 'svelte/easing';
     import { crossfade } from 'svelte/transition';
 
-    type BaseOption = { callback: () => void };
+    type BaseOption = { callback: () => void; group?: CommandGroup };
     type Option = $$Generic<BaseOption>;
     export let options: Option[] | null = null;
     export let search = '';
@@ -54,19 +56,19 @@
                 event.preventDefault();
                 selected = options.length - 1;
             }
+
+            tick().then(() => {
+                if (!cardEl) return;
+                const selectedEl = cardEl.querySelector('[data-selected]');
+
+                if (selectedEl) {
+                    selectedEl.scrollIntoView({
+                        block: 'nearest',
+                        behavior: 'smooth'
+                    });
+                }
+            });
         }
-
-        tick().then(() => {
-            if (!cardEl) return;
-            const selectedEl = cardEl.querySelector('[data-selected]');
-
-            if (selectedEl) {
-                selectedEl.scrollIntoView({
-                    block: 'nearest',
-                    behavior: 'smooth'
-                });
-            }
-        });
 
         if (event.key === 'Escape') {
             event.preventDefault();
@@ -87,6 +89,56 @@
     const commandCenterCtx = getCommandCenterCtx();
 
     let cardEl: HTMLElement;
+
+    type Group = { type: 'group'; name: string };
+    type IndexedOption = Option & { index: number };
+    function isGroup(item: Option | Group): item is Group {
+        return 'type' in item && item.type === 'group';
+    }
+    const getGroupsAndOptions = (options: Option[]) => {
+        if (!options) return null;
+
+        const groupedOptions = new Map<string, Option[]>();
+        groupedOptions.set('ungrouped', []);
+
+        for (const option of options) {
+            if (!option.group) {
+                groupedOptions.set('ungrouped', [...groupedOptions.get('ungrouped'), option]);
+            } else {
+                groupedOptions.set(option.group, [
+                    ...(groupedOptions.get(option.group) || []),
+                    option
+                ]);
+            }
+        }
+
+        // return a flat array of groups and indexed options
+        let optionIndex = 0;
+        const groupsAndOptions: (Group | IndexedOption)[] = [];
+        for (const [groupName, options] of groupedOptions) {
+            if (groupName !== 'ungrouped') {
+                groupsAndOptions.push({ type: 'group', name: groupName });
+            }
+
+            for (const option of options) {
+                groupsAndOptions.push({ ...option, index: optionIndex++ });
+            }
+        }
+
+        return groupsAndOptions;
+    };
+
+    $: groupsAndOptions = getGroupsAndOptions(options);
+
+    const getOptionClickHandler = (option: IndexedOption) => () => {
+        triggerOption(option);
+    };
+
+    const getOptionFocusHandler = (option: IndexedOption) => () => {
+        selected = option.index;
+    };
+
+    const castOption = (option: IndexedOption) => option as Option;
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
@@ -97,36 +149,41 @@
     class:press={!$commandCenterCtx.isInitialPanel}
     class:scale-up={$commandCenterCtx.isInitialPanel && $commandCenterCtx.open}>
     <div class="u-flex u-flex-vertical u-width-full-line u-overflow-hidden">
-        <div class="u-flex search-wrapper">
-            <slot name="search">
+        <slot name="search">
+            <div class="u-flex search-wrapper">
                 <input
                     type="text"
                     placeholder="Search for commands..."
                     autofocus
                     bind:value={search} />
-            </slot>
-        </div>
+            </div>
+        </slot>
 
-        {#if options}
+        {#if groupsAndOptions}
             <ul class="options u-margin-block-start-16 u-flex u-flex-vertical u-gap-8">
-                {#each options as option, i}
-                    <li class="result" data-selected={selected === i ? true : undefined}>
-                        {#if selected === i}
-                            <div
-                                class="bg"
-                                in:send|local={{ key: 'bg' }}
-                                out:receive|local={{ key: 'bg' }} />
-                        {/if}
-                        <button
-                            class="option"
-                            on:click={() => {
-                                triggerOption(option);
-                            }}
-                            on:mouseover={() => (selected = i)}
-                            on:focus={() => (selected = i)}>
-                            <slot name="option" {option} />
-                        </button>
-                    </li>
+                {#each groupsAndOptions as item}
+                    {@const isSelected = !isGroup(item) && item.index === selected}
+                    {#if isGroup(item)}
+                        <li class="group eyebrow-heading-3">
+                            {item.name}
+                        </li>
+                    {:else}
+                        <li class="result" data-selected={isSelected ? true : undefined}>
+                            {#if isSelected}
+                                <div
+                                    class="bg"
+                                    in:send|local={{ key: 'bg' }}
+                                    out:receive|local={{ key: 'bg' }} />
+                            {/if}
+                            <button
+                                class="option"
+                                on:click={getOptionClickHandler(item)}
+                                on:mouseover={getOptionFocusHandler(item)}
+                                on:focus={getOptionFocusHandler(item)}>
+                                <slot name="option" option={castOption(item)} />
+                            </button>
+                        </li>
+                    {/if}
                 {:else}
                     <li class="result">
                         <slot name="no-options">
@@ -207,6 +264,13 @@
     input {
         border: none;
         background-color: transparent;
+    }
+
+    .group {
+        color: hsl(var(--color-neutral-70));
+        margin-inline-start: 0.25rem;
+        position: relative;
+        z-index: 10;
     }
 
     .result {

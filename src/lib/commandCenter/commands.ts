@@ -3,6 +3,18 @@ import { isMac } from '$lib/helpers/platform';
 import { derived, writable } from 'svelte/store';
 
 // Store
+export type CommandGroup =
+    | 'ungrouped'
+    | 'navigation'
+    | 'project'
+    | 'auth'
+    | 'help'
+    | 'account'
+    | 'platforms'
+    | 'databases'
+    | 'functions'
+    | 'storage';
+
 export type Command = {
     keys: string[];
     /* Ctrl on Windows/Linux, Meta on Mac */
@@ -14,6 +26,7 @@ export type Command = {
     label?: string;
     disabled?: boolean;
     forceEnable?: boolean;
+    group?: CommandGroup;
 };
 
 export const commandMap = writable<Map<string, Command[]>>(new Map());
@@ -22,6 +35,20 @@ export const disabledMap = writable<Map<string, boolean>>(new Map());
 // Derived stores
 export const commands = derived(commandMap, ($commandMap) => {
     return Array.from($commandMap.values()).flat();
+});
+
+export const groupedCommands = derived(commands, ($commands) => {
+    const res = new Map<string, Command[]>();
+
+    for (const command of $commands) {
+        if (!command.group) {
+            res.set('ungrouped', [...(res.get('ungrouped') || []), command]);
+        } else {
+            res.set(command.group, [...(res.get(command.group) || []), command]);
+        }
+    }
+
+    return res;
 });
 
 const commandsEnabled = derived(disabledMap, ($disabledMap) => {
