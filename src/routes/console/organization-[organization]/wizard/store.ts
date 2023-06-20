@@ -9,6 +9,6 @@ export const createProject = writable<{
 }>({
     id: null,
     name: null,
-    tier: Tier['PREMIUM'],
+    tier: Tier['PRO'],
     region: 'eu-central-1'
 });

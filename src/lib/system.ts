@@ -5,7 +5,8 @@ export enum Mode {
 
 export enum Tier {
     BASE = 'base',
-    PREMIUM = 'premium',
+    STARTER = 'starter',
+    PRO = 'pro',
     ENTERPRISE = 'enterprise'
 }
 
@@ -33,9 +34,11 @@ export const isSelfHosted = MODE === Mode.SELF_HOSTED;
 export const TIER =
     VARS.CONSOLE_TIER === Tier.BASE
         ? Tier.BASE
-        : VARS.CONSOLE_TIER === Tier.PREMIUM
-        ? Tier.PREMIUM
+        : VARS.CONSOLE_TIER === Tier.PRO
+        ? Tier.PRO
         : Tier.ENTERPRISE;
 export const isFree = VARS.CONSOLE_TIER === Tier.BASE;
-export const isPremium = VARS.CONSOLE_TIER === Tier.PREMIUM;
+export const isStarter = VARS.CONSOLE_TIER === Tier.STARTER;
+export const isPro = VARS.CONSOLE_TIER === Tier.PRO;
 export const isEnterprise = VARS.CONSOLE_TIER === Tier.ENTERPRISE;
+export const isPaid = VARS.CONSOLE_TIER === Tier.STARTER || VARS.CONSOLE_TIER === Tier.PRO;

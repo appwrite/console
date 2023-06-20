@@ -5,6 +5,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
+    import Step3 from './wizard/step3.svelte';
+    import Step4 from './wizard/step4.svelte';
     import { createOrganization } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { goto, invalidate } from '$app/navigation';
@@ -47,8 +49,9 @@
         $createOrganization = {
             id: null,
             name: null,
-            tier: Tier['PREMIUM'],
-            payment: null
+            tier: Tier['PRO'],
+            payment: null,
+            collaborators: []
         };
     });
 
@@ -64,11 +67,11 @@
     });
     stepsComponents.set(3, {
         label: 'Invite collaborators',
-        component: Step2
+        component: Step3
     });
     stepsComponents.set(4, {
         label: 'Review & confirm',
-        component: Step2
+        component: Step4
     });
 </script>
 

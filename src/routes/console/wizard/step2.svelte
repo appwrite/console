@@ -1,15 +1,25 @@
 <script lang="ts">
-    import { Button, Form, FormList, InputRadio, InputText } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputNumber,
+        InputRadio,
+        InputText
+    } from '$lib/elements/forms';
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createOrganization } from './store';
     import { Collapsible, CollapsibleItem } from '$lib/components';
+    import UsageRates from './usageRates.svelte';
 
     let methods = [];
     let name: string;
     let promo: string;
+    let budgetEnabled = false;
+    let showRates = false;
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods('TEST');
@@ -88,15 +98,29 @@
 
         <div class="u-sep-block-start" />
 
-        <InputChoice type="switchbox" id="budget" label="Enable budget cap" tooltip="lorem ipsum">
+        <InputChoice
+            type="switchbox"
+            id="budget"
+            label="Enable budget cap"
+            tooltip="If enabled, you will be notified by email when your project spend reaches 75% of the cap you set. Update your budget cap alerts in Organization Settings."
+            bind:value={budgetEnabled}>
             <p class="text">
-                Restrict your resource usage by setting a budget cap. <a
+                Restrict your resource usage by setting a budget cap. <button
                     class="link"
-                    href="http://#"
-                    target="_blank"
-                    rel="noopener noreferrer">Learn more about usage rates</a
+                    type="button"
+                    on:click={() => (showRates = true)}>
+                    Learn more about usage rates</button
                 >.
             </p>
         </InputChoice>
+        {#if budgetEnabled}
+            <InputNumber
+                id="budget"
+                label="Budget cap"
+                placeholder="0"
+                bind:value={$createOrganization.budget} />
+        {/if}
     </FormList>
 </WizardStep>
+
+<UsageRates bind:show={showRates} />

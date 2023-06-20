@@ -52,7 +52,7 @@
         $createProject = {
             id: null,
             name: null,
-            tier: Tier['PREMIUM']
+            tier: Tier['PRO']
         };
     });
 

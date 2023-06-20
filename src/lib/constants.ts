@@ -255,3 +255,34 @@ export const eventServices: Array<EventService> = [
         ]
     }
 ];
+
+export const usageRates = {
+    free: [
+        { resource: 'Organization members', limit: '1', rate: 'lorem' },
+        { resource: 'Bandwidth', limit: '1', rate: 'lorem' },
+        { resource: 'Storage', limit: '1', rate: 'lorem' },
+        { resource: 'Function executions', limit: '1', rate: 'lorem' },
+        { resource: 'Active users', limit: '1', rate: 'lorem' },
+        { resource: 'Concurrent connections', limit: '1', rate: 'lorem' }
+    ],
+    starter: [
+        { resource: 'Organization members', limit: '1', rate: 'lorem' },
+        { resource: 'Bandwidth', limit: '1', rate: 'lorem' },
+        { resource: 'Storage', limit: '1', rate: 'lorem' },
+        { resource: 'Function executions', limit: '1', rate: 'lorem' },
+        { resource: 'Active users', limit: '1', rate: 'lorem' },
+        { resource: 'Concurrent connections', limit: '1', rate: 'lorem' }
+    ],
+    pro: [
+        { resource: 'Organization members', limit: 'Unlimited', rate: '20$/member' },
+        { resource: 'Bandwidth', limit: '1TB', rate: '$0.04/GB' },
+        { resource: 'Storage', limit: '150GB', rate: '$0.025/GB' },
+        { resource: 'Function executions', limit: '3500000 executions', rate: '$2/1M executions' },
+        { resource: 'Active users', limit: '200000', rate: '$0.0012/users' },
+        {
+            resource: 'Concurrent connections',
+            limit: '750 connections',
+            rate: '$5/1000 connections'
+        }
+    ]
+};
