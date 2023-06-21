@@ -9,27 +9,59 @@
     import { Query } from '@appwrite.io/console';
     import { goto } from '$app/navigation';
     import { project } from '$routes/console/project-[project]/store';
+    import { database } from '$routes/console/project-[project]/databases/database-[database]/store';
+    import { debounce } from '$lib/helpers/debounce';
 
     let search = '';
 
     let searchResults: Omit<Command, 'keys'>[] = [];
-    async function executeSearch(s: string) {
+    const executeSearch = debounce(async (s: string) => {
+        const newResults: typeof searchResults = [];
         const { databases } = await sdk.forProject.databases.list([Query.limit(20)]);
-        console.log(databases.filter((db) => db.name.includes(s)));
-        searchResults = databases
-            .filter((db) => db.name.includes(s))
-            .map((db) => {
-                return {
-                    label: db.name,
-                    callback: () => {
-                        goto(`/console/project-${$project.$id}/databases/${db.$id}`);
-                    },
-                    group: 'databases'
-                };
-            });
-    }
+        newResults.push(
+            ...databases
+                .filter((db) => db.name.includes(s))
+                .map((db) => {
+                    return {
+                        label: `Go to ${db.name} database`,
+                        callback: () => {
+                            goto(`/console/project-${$project.$id}/databases/database-${db.$id}`);
+                        },
+                        group: 'databases'
+                    } as const;
+                })
+        );
 
-    $: executeSearch(search);
+        if ($database?.$id) {
+            const { collections } = await sdk.forProject.databases.listCollections($database.$id, [
+                Query.limit(20)
+            ]);
+            newResults.push(
+                ...collections
+                    .filter((collection) => collection.name.includes(s))
+                    .map((collection) => {
+                        return {
+                            label: `Go to ${collection.name} collection`,
+                            callback: () => {
+                                goto(
+                                    `/console/project-${$project.$id}/databases/database-${$database.$id}/collection-${collection.$id}`
+                                );
+                            },
+                            group: 'databases'
+                        } as const;
+                    })
+            );
+        }
+
+        searchResults = [...newResults];
+    }, 500);
+
+    $: {
+        if (search) {
+            searchResults = [];
+            executeSearch(search);
+        } else searchResults = [];
+    }
 
     $: results = [
         ...$commands.filter((command) => {
@@ -40,7 +72,7 @@
             );
         }),
         ...searchResults
-    ];
+    ] as Array<Command | Omit<Command, 'keys'>>;
 </script>
 
 <Template options={results} bind:search>
@@ -58,7 +90,7 @@
             {#if command.alt}
                 <kbd class="kbd"> {isMac() ? '⌥' : 'alt'} </kbd>
             {/if}
-            {#if commands.keys}
+            {#if 'keys' in command}
                 {#each command.keys as key, i}
                     {@const hasNext = command.keys.length - 1 !== i}
 
