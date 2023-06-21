@@ -37,6 +37,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
+    import { addNotification } from '$lib/stores/notifications';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import Alert from '$lib/components/alert.svelte';
 
     export let data: PageData;
 
@@ -73,6 +76,30 @@
             }
         });
     }
+
+    async function redeploy(deployment: Models.Deployment) {
+        try {
+            await sdk.forProject.functions.createBuild(
+                $func.$id,
+                deployment.$id,
+                deployment.buildId
+            );
+            addNotification({
+                type: 'success',
+                message: `${$func.name} has been redeployed.`
+            });
+            trackEvent(Submit.FunctionRedeploy);
+
+            invalidate(Dependencies.DEPLOYMENTS);
+            invalidate(Dependencies.FUNCTION);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.FunctionRedeploy);
+        }
+    }
 </script>
 
 <Container>
@@ -87,6 +114,14 @@
         <div class="common-section">
             <Heading tag="h3" size="7">Active</Heading>
         </div>
+        {#if activeDeployment && !$func.live}
+            <div class="u-margin-block-start-8">
+                <Alert isInline={true} type="warning">
+                    Some configuration options are not live yet. Redeploy your function to apply
+                    latest changes.
+                </Alert>
+            </div>
+        {/if}
         {#if activeDeployment}
             <CardGrid>
                 <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
@@ -133,13 +168,21 @@
                     <Button
                         text
                         on:click={() => {
+                            redeploy(activeDeployment);
+                        }}>Redeploy</Button>
+                    <Button
+                        text
+                        on:click={() => {
                             $log.show = true;
                             $log.func = $func;
                             $log.data = activeDeployment;
                         }}>
                         Build logs
                     </Button>
-                    <Button secondary on:click={() => execute.set($func)}>Execute now</Button>
+                    <a target="_blank" href={'http://' + data.domain.rules[0].domain}>
+                        <Button secondary>HTTP Execute</Button>
+                    </a>
+                    <Button secondary on:click={() => execute.set($func)}>Advanced Execute</Button>
                 </svelte:fragment>
             </CardGrid>
         {:else}
@@ -207,14 +250,25 @@
                                         </button>
                                         <svelte:fragment slot="list">
                                             <DropListItem
-                                                icon="lightning-bolt"
+                                                icon="refresh"
                                                 on:click={() => {
-                                                    selectedDeployment = deployment;
-                                                    showActivate = true;
+                                                    redeploy(deployment);
                                                     showDropdown = [];
                                                 }}>
-                                                Activate
+                                                Retry
                                             </DropListItem>
+
+                                            {#if deployment.status === 'ready'}
+                                                <DropListItem
+                                                    icon="lightning-bolt"
+                                                    on:click={() => {
+                                                        selectedDeployment = deployment;
+                                                        showActivate = true;
+                                                        showDropdown = [];
+                                                    }}>
+                                                    Activate
+                                                </DropListItem>
+                                            {/if}
                                             <DropListItem
                                                 icon="terminal"
                                                 on:click={() => {

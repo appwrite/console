@@ -31,6 +31,13 @@
             bind:value={$createFunction.name}
             required />
 
+        <InputText
+            label="Entrypoint"
+            id="entrypoint"
+            placeholder="Entrypoint"
+            bind:value={$createFunction.entrypoint}
+            required />
+
         <InputSelect
             label="Runtime"
             id="runtime"

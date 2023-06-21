@@ -31,6 +31,7 @@
                 $createFunction.name,
                 $createFunction.runtime,
                 $createFunction.execute || undefined,
+                $createFunction.entrypoint || undefined,
                 $createFunction.events || undefined,
                 $createFunction.schedule || undefined,
                 $createFunction.timeout || undefined
@@ -62,6 +63,7 @@
     onDestroy(() => {
         $createFunction = {
             id: null,
+            entrypoint: null,
             name: null,
             execute: [],
             runtime: null,

@@ -36,7 +36,6 @@
     export let globalVariableList: Models.VariableList | undefined = undefined;
 
     export let isGlobal: boolean;
-    export let redeployMessage: string;
     export let sdkCreateVariable: (key: string, value: string) => Promise<any>;
     export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
     export let sdkDeleteVariable: (variableId: string) => Promise<any>;
@@ -74,7 +73,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `Variable has been created. ${redeployMessage}`
+                message: `Variable has been created.`
             });
             trackEvent(Submit.VariableCreate);
         } catch (error) {
@@ -94,7 +93,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `Variable has been updated. ${redeployMessage}`
+                message: `Variable has been updated.`
             });
             trackEvent(Submit.VariableUpdate);
         } catch (error) {
@@ -111,7 +110,7 @@
             await sdkDeleteVariable(variable.$id);
             addNotification({
                 type: 'success',
-                message: `Variable has been deleted. ${redeployMessage}`
+                message: `Variable has been deleted.`
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {
@@ -144,14 +143,13 @@
             selectedVar = null;
             showPromoteModal = false;
 
+            await invalidate(Dependencies.FUNCTION);
             await invalidate(Dependencies.VARIABLES);
             await invalidate(Dependencies.PROJECT_VARIABLES);
 
             addNotification({
                 type: 'success',
-                message: `Variable has been ${
-                    isConflicting ? 'overwritten' : 'promoted'
-                }. ${redeployMessage}`
+                message: `Variable has been ${isConflicting ? 'overwritten' : 'promoted'}.`
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {
@@ -338,7 +336,6 @@
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {sdkDeleteVariable}
-        {redeployMessage}
         {variableList}
         bind:showEditor={showEditorModal} />
 {/if}
@@ -358,7 +355,6 @@
 {#if showVariablesUpload}
     <UploadVariables
         {isGlobal}
-        {redeployMessage}
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {variableList}

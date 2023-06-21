@@ -7,7 +7,6 @@
     import type { Models } from '@appwrite.io/console';
     import { parse } from 'dotenv';
 
-    export let redeployMessage: string;
     export let isGlobal: boolean;
     export let showEditor = false;
     export let variableList: Models.VariableList;
@@ -73,7 +72,7 @@
 
             addNotification({
                 type: 'success',
-                message: `Variables have been updated. ${redeployMessage}`
+                message: `Variables have been updated.`
             });
 
             trackEvent(Submit.VariableEditor);

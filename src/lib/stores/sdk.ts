@@ -14,7 +14,8 @@ import {
     Teams,
     Users,
     Project as ProjectApi,
-    Vcs
+    Vcs,
+    Proxy
 } from '@appwrite.io/console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
@@ -37,7 +38,8 @@ const sdkForProject = {
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
-    vcs: new Vcs(clientProject)
+    vcs: new Vcs(clientProject),
+    proxy: new Proxy(clientProject)
 };
 
 export const sdk = {

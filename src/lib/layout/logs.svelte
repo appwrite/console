@@ -28,7 +28,7 @@
         data: Models.Deployment | Models.Execution<any>
     ): data is Models.Execution<any> {
         if ('trigger' in data) {
-            selectedTab = 'response';
+            selectedTab = 'logs';
             rawData = `${sdk.forConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
             return true;
         }
@@ -169,11 +169,6 @@
                 <div class="tabs u-margin-block-start-48 u-sep-block-end">
                     <Tabs>
                         <Tab
-                            selected={selectedTab === 'response'}
-                            on:click={() => (selectedTab = 'response')}>
-                            Response
-                        </Tab>
-                        <Tab
                             selected={selectedTab === 'logs'}
                             on:click={() => (selectedTab = 'logs')}>
                             Logs
@@ -200,15 +195,11 @@
                         </header>
                         {#if selectedTab === 'logs'}
                             <code class="code-panel-content">
-                                {$log.data.stdout ? $log.data.stdout : 'No logs recorded'}
+                                {$log.data.logs ? $log.data.logs : 'No logs recorded'}
                             </code>
                         {:else if selectedTab === 'errors'}
                             <code class="code-panel-content">
-                                {$log.data.stderr ? $log.data.stderr : 'No errors recorded'}
-                            </code>
-                        {:else}
-                            <code class="code-panel-content">
-                                {$log.data.response ? $log.data.response : 'No response recorded'}
+                                {$log.data.errors ? $log.data.errors : 'No errors recorded'}
                             </code>
                         {/if}
                     </section>

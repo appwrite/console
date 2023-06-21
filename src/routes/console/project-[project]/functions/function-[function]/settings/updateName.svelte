@@ -23,11 +23,19 @@
                 functionId,
                 functionName,
                 $func.execute || undefined,
+                $func.entrypoint || undefined,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
                 $func.enabled,
-                $func.logging
+                $func.logging,
+                $func.buildCommand,
+                $func.installCommand,
+                $func.vcsInstallationId,
+                $func.vcsRepositoryId,
+                $func.vcsBranch,
+                $func.vcsSilentMode,
+                $func.vcsRootDirectory
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
