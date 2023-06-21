@@ -44,7 +44,6 @@
     <FormList>
         <div class:boxes-wrapper={methods?.length}>
             {#each methods as method}
-                <div class="box">test</div>
                 <InputRadio
                     id="payment-method"
                     label="Payment method"

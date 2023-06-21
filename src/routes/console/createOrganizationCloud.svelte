@@ -78,5 +78,6 @@
 <Wizard
     title="Create organization "
     steps={stepsComponents}
+    finalAction="Start trial"
     on:finish={create}
     on:exit={onFinish} />

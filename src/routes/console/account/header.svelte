@@ -34,6 +34,12 @@
             title: 'Organizations',
             event: 'organizations',
             hasChildren: true
+        },
+        {
+            href: `${path}/payments`,
+            title: 'Payments details',
+            event: 'payments',
+            hasChildren: true
         }
     ];
 

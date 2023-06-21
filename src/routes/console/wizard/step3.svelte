@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Alert } from '$lib/components';
-    import { Button, FormList, InputEmail } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputEmail } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -44,7 +44,8 @@
 
     <Alert type="info">
         {#if $createOrganization.tier === 'pro'}
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto, quasi?
+            You can add unlimited organization members on the Pro plan for $20 each. Each member
+            added will receive an email invite to your organization on completion.
         {:else if $createOrganization.tier === 'starter'}
             You can add up to three organization members with the Starter plan for $10 each. Each
             member added will receive an email invite to your organization on completion.
@@ -54,45 +55,55 @@
         {/if}
     </Alert>
 
-    <FormList>
-        <InputEmail
-            label="Email address"
-            id="email"
-            placeholder="Email address"
-            bind:value={email}
-            required />
-        <Button secondary on:click={addCollaborator}>Add</Button>
-    </FormList>
+    <div class="u-margin-block-start-24">
+        <Form onSubmit={addCollaborator}>
+            <FormList>
+                <InputEmail
+                    label="Email address"
+                    id="email"
+                    placeholder="Email address"
+                    bind:value={email}
+                    required />
+                <Button secondary submit>Add</Button>
+            </FormList>
+        </Form>
+    </div>
 
     {#if $createOrganization?.collaborators?.length}
-        <Table noStyles>
-            <TableHeader>
-                <TableCellHead>Collaborator</TableCellHead>
-                <TableCellHead>Cost</TableCellHead>
-                <TableCellHead>Admin</TableCellHead>
-                <TableCellHead />
-            </TableHeader>
-            <TableBody>
-                {#each $createOrganization.collaborators as collaborator}
-                    <TableRow>
-                        <TableCellText title="collaborator">{collaborator.email}</TableCellText>
-                        <TableCellText title="cost">PRICE</TableCellText>
-                        <TableCell>
-                            <input type="checkbox" name="role" id={collaborator.email} />
-                        </TableCell>
-                        <TableCell>
-                            <button
-                                type="button"
-                                class="button is-text is-only-icon"
-                                style="--button-size:1.5rem;"
-                                aria-label="remove collaborator"
-                                on:click={removeCollaborator(collaborator.email)}>
-                                <span class="icon-x" aria-hidden="true" />
-                            </button>
-                        </TableCell>
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </Table>
+        <div class="u-margin-block-start-24">
+            <Table noStyles noMargin>
+                <TableHeader>
+                    <TableCellHead>Collaborator</TableCellHead>
+                    <TableCellHead>Cost</TableCellHead>
+                    <TableCellHead>Admin</TableCellHead>
+                    <TableCellHead width={40} />
+                </TableHeader>
+                <TableBody>
+                    {#each $createOrganization.collaborators as collaborator}
+                        <TableRow>
+                            <TableCellText title="collaborator">{collaborator.email}</TableCellText>
+                            <TableCellText title="cost">PRICE</TableCellText>
+                            <TableCell>
+                                <input
+                                    type="checkbox"
+                                    name="role"
+                                    id={collaborator.email}
+                                    bind:checked={collaborator.role} />
+                            </TableCell>
+                            <TableCell>
+                                <button
+                                    type="button"
+                                    class="button is-text is-only-icon"
+                                    style="--button-size:1.5rem;"
+                                    aria-label="remove collaborator"
+                                    on:click={() => removeCollaborator(collaborator.email)}>
+                                    <span class="icon-x" aria-hidden="true" />
+                                </button>
+                            </TableCell>
+                        </TableRow>
+                    {/each}
+                </TableBody>
+            </Table>
+        </div>
     {/if}
 </WizardStep>
