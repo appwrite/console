@@ -2,19 +2,45 @@
     This is the root command panel. It precedes all other command panels.
  -->
 <script lang="ts">
-    import { commands } from '../commands';
+    import { commands, type Command } from '../commands';
     import { isMac } from '$lib/helpers/platform';
     import Template from './template.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { Query } from '@appwrite.io/console';
+    import { goto } from '$app/navigation';
+    import { project } from '$routes/console/project-[project]/store';
 
     let search = '';
 
-    $: results = $commands.filter((command) => {
-        return (
-            !command.disabled &&
-            command.label &&
-            command.label.toLowerCase().includes(search.toLowerCase())
-        );
-    });
+    let searchResults: Omit<Command, 'keys'>[] = [];
+    async function executeSearch(s: string) {
+        const { databases } = await sdk.forProject.databases.list([Query.limit(20)]);
+        console.log(databases.filter((db) => db.name.includes(s)));
+        searchResults = databases
+            .filter((db) => db.name.includes(s))
+            .map((db) => {
+                return {
+                    label: db.name,
+                    callback: () => {
+                        goto(`/console/project-${$project.$id}/databases/${db.$id}`);
+                    },
+                    group: 'databases'
+                };
+            });
+    }
+
+    $: executeSearch(search);
+
+    $: results = [
+        ...$commands.filter((command) => {
+            return (
+                !command.disabled &&
+                command.label &&
+                command.label.toLowerCase().includes(search.toLowerCase())
+            );
+        }),
+        ...searchResults
+    ];
 </script>
 
 <Template options={results} bind:search>
@@ -32,16 +58,18 @@
             {#if command.alt}
                 <kbd class="kbd"> {isMac() ? '⌥' : 'alt'} </kbd>
             {/if}
-            {#each command.keys as key, i}
-                {@const hasNext = command.keys.length - 1 !== i}
+            {#if commands.keys}
+                {#each command.keys as key, i}
+                    {@const hasNext = command.keys.length - 1 !== i}
 
-                <kbd class="kbd">
-                    {key.toUpperCase()}
-                </kbd>
-                {#if hasNext}
-                    <span class="u-margin-inline-4" style:opacity={0.5}>then</span>
-                {/if}
-            {/each}
+                    <kbd class="kbd">
+                        {key.toUpperCase()}
+                    </kbd>
+                    {#if hasNext}
+                        <span class="u-margin-inline-4" style:opacity={0.5}>then</span>
+                    {/if}
+                {/each}
+            {/if}
         </div>
     </div>
     <svelte:fragment slot="no-options">No commands found</svelte:fragment>
