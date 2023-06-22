@@ -10,7 +10,10 @@
 <CardGrid>
     <Heading tag="h2" size="6">Payment Methods</Heading>
 
-    <p class="text">View or update your organization payment methods here.</p>
+    <p class="text">
+        View or update your payment methods. These can be applied to any organizations you have
+        created.
+    </p>
     <svelte:fragment slot="aside">
         {#if $paymentMethods.total > 0}
             {#each $paymentMethods.paymentMethods as paymentMethod}

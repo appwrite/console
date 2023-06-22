@@ -1,9 +1,13 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
 
     let credit = 0;
     let coupon: string = null;
+    let selectedOrganization: string = null;
+
+    export let organizations: Models.TeamList<Models.Preferences>;
 
     async function redeem() {
         const response = await fetch('/v1/billing/credit', {
@@ -21,21 +25,35 @@
             credit = data.sum;
         }
     }
+
+    $: options = organizations.teams?.map((t) => {
+        return {
+            label: t.name,
+            value: t.$id
+        };
+    });
 </script>
 
 <CardGrid>
     <Heading tag="h2" size="6">Available Credit</Heading>
 
-    <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
+    <p class="text">
+        Apply Appwrite credit to your organizations. Once applied, credit will be automatically
+        added to your next invoice.
+    </p>
     <svelte:fragment slot="aside">
-        <p class="text u-bold">Credit balance: <span class="u-success">{credit}</span></p>
-
         <FormList>
             <InputText
                 placeholder="Coupon code"
                 id="coupon"
                 label="Add credit"
                 bind:value={coupon} />
+            <InputSelect
+                id="organizations"
+                label="Select organizations"
+                placeholder="Select organizations"
+                bind:value={selectedOrganization}
+                {options} />
         </FormList>
     </svelte:fragment>
 
