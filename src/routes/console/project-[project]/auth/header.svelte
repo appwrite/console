@@ -3,36 +3,37 @@
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     const path = `/console/project-${projectId}/auth`;
     const tabs = [
         {
             href: path,
-            title: 'Users',
+            title: $LL.console.navbar.header.users(),
             hasChildren: true,
             event: 'users'
         },
         {
             href: `${path}/teams`,
-            title: 'Teams',
+            title: $LL.console.navbar.header.teams(),
             hasChildren: true,
             event: 'teams'
         },
         {
             href: `${path}/usage`,
-            title: 'Usage',
+            title: $LL.console.navbar.header.usage(),
             hasChildren: true,
             event: 'usage'
         },
         {
             href: `${path}/security`,
-            title: 'Security',
+            title: $LL.console.navbar.header.security(),
             event: 'security'
         },
         {
             href: `${path}/settings`,
-            title: 'Settings',
+            title: $LL.console.navbar.header.settings(),
             event: 'settings'
         }
     ];
@@ -40,7 +41,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Auth</CoverTitle>
+        <CoverTitle>{$LL.console.title.auth()}</CoverTitle>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}

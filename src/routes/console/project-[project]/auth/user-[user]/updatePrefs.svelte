@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -56,7 +57,7 @@
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">User Preferences</Heading>
+        <Heading tag="h6" size="7">{$LL.console.title.userData.userPref()}</Heading>
         <p>
             You can update your user preferences by storing information on the user's objects so
             they can easily be shared across devices and sessions.
@@ -68,22 +69,25 @@
                         {#each prefs as [key, value], index}
                             <li class="form-item is-multiple">
                                 <div class="form-item-part u-stretch">
-                                    <label class="label" for={`key-${index}`}>Key</label>
+                                    <label class="label" for={`key-${index}`}
+                                        >{$LL.console.forms.userData.update.userPref.key.label()}
+                                    </label>
                                     <div class="input-text-wrapper">
                                         <input
                                             id={`key-${key}`}
-                                            placeholder="Enter key"
+                                            placeholder={$LL.console.forms.userData.update.userPref.key.placeholder()}
                                             type="text"
                                             class="input-text"
                                             bind:value={key} />
                                     </div>
                                 </div>
                                 <div class="form-item-part u-stretch">
-                                    <label class="label" for={`value-${index}`}> Value </label>
+                                    <label class="label" for={`value-${index}`}
+                                        >{$LL.console.forms.userData.update.userPref.value.label()}</label>
                                     <div class="input-text-wrapper">
                                         <input
                                             id={`value-${value}`}
-                                            placeholder="Enter value"
+                                            placeholder={$LL.console.forms.userData.update.userPref.value.placeholder()}
                                             type="text"
                                             class="input-text"
                                             bind:value />
@@ -123,13 +127,13 @@
                         }
                     }}>
                     <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add Preference</span>
+                    <span class="text">{$LL.console.button.submit.addPrefs()}</span>
                 </Button>
             </form>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={arePrefsDisabled} submit>Update</Button>
+            <Button disabled={arePrefsDisabled} submit>{$LL.console.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

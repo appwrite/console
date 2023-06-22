@@ -14,6 +14,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let showCreate = false;
 
@@ -59,20 +60,28 @@
 </script>
 
 <Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="header">Create User</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.title.createUser()}</svelte:fragment>
     <FormList>
         <InputText
             id="name"
-            label="Name"
-            placeholder="Enter name"
+            label={$LL.console.forms.createUser.inputs.name.label()}
+            placeholder={$LL.console.forms.createUser.inputs.name.placeholder()}
             autofocus={true}
             bind:value={name} />
-        <InputEmail id="email" label="Email" placeholder="Enter email" bind:value={mail} />
-        <InputPhone id="phone" label="Phone" placeholder="Enter phone" bind:value={phone} />
+        <InputEmail
+            id="email"
+            label={$LL.console.forms.createUser.inputs.email.label()}
+            placeholder={$LL.console.forms.createUser.inputs.email.placeholder()}
+            bind:value={mail} />
+        <InputPhone
+            id="phone"
+            label={$LL.console.forms.createUser.inputs.phone.label()}
+            placeholder={$LL.console.forms.createUser.inputs.phone.placeholder()}
+            bind:value={phone} />
         <InputPassword
             id="password"
-            label="Password"
-            placeholder="Enter password"
+            label={$LL.console.forms.createUser.inputs.password.label()}
+            placeholder={$LL.console.forms.createUser.inputs.password.placeholder()}
             showPasswordButton={true}
             bind:value={pass} />
 
@@ -80,7 +89,7 @@
             <div>
                 <Pill button on:click={() => (showDropdown = !showDropdown)}>
                     <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        User ID
+                        {$LL.console.button.pill.userId()}
                     </span>
                 </Pill>
             </div>
@@ -89,7 +98,7 @@
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button text on:click={() => (showCreate = false)}>{$LL.console.button.cancel()}</Button>
+        <Button submit>{$LL.console.button.submit.create()}</Button>
     </svelte:fragment>
 </Modal>

@@ -65,5 +65,138 @@
         "info": "Deinem Magic URL-Anmeldeablauf fehlt eine korrekte Weiterleitungs-URL. Bitte überprüfen Sie die",
         "magicDoc": "Magische URL-Dokumente",
         "subInfo": "und sende eine Anfrage für eine neue Sitzung mit einer gültigen Weiterleitungs-URL."
+    },
+    "console": {
+        "onboarding": {
+            "header": "Onboarding",
+            "title": "Let's create your first project"
+        },
+        "basic_keywords": {
+            "project": "Project",
+            "project_name": "Project name",
+            "project_id": "Project ID",
+            "create_project": "Create Project"
+        },
+
+        "title": {
+            "auth": "Auth",
+            "createUser": "Benutzer erstellen",
+            "user": "Benutzer",
+            "userData": {
+                "name": "Name",
+                "email": "E-Mail",
+                "phone": "Telefon",
+                "password": "Passwort",
+                "userPref": "Benutzereinstellungen",
+                "deleteUser": "Benutzer löschen"
+            }
+        },
+        "forms": {
+            "createUser": {
+                "inputs": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Namen eingeben"
+                    },
+                    "email": {
+                        "label": "E-Mail",
+                        "placeholder": "E-Mail-Adresse eingeben"
+                    },
+                    "phone": {
+                        "label": "Telefon",
+                        "placeholder": "Telefonnummer eingeben"
+                    },
+                    "password": {
+                        "label": "Passwort",
+                        "placeholder": "Passwort eingeben"
+                    }
+                }
+            },
+            "userData": {
+                "update": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Namen eingeben"
+                    },
+                    "email": {
+                        "label": "E-Mail",
+                        "placeholder": "E-Mail-Adresse eingeben"
+                    },
+                    "phone": {
+                        "label": "Telefon",
+                        "placeholder": "Telefonnummer eingeben"
+                    },
+                    "password": {
+                        "label": "Neues Passwort",
+                        "placeholder": "Neues Passwort eingeben"
+                    },
+                    "userPref": {
+                        "key": {
+                            "label": "Schlüssel",
+                            "placeholder": "Eingabetaste"
+                        },
+                        "value": {
+                            "label": "Wert",
+                            "placeholder": "Wert eingeben"
+                        }
+                    }
+                }
+            }
+        },
+        "button": {
+            "createUser": "Benutzer erstellen",
+            "clearSearch": "Suche löschen",
+            "cancel": "Abbrechen",
+            "submit": {
+                "create": "Erstellen",
+                "update": "Aktualisieren",
+                "addPrefs": "Präferenz hinzufügen"
+            },
+            "pill": {
+                "userId": "Benutzer-ID"
+            }
+        },
+        "table": {
+            "header": {
+                "name": "Name",
+                "identifiers": "Identifikatoren",
+                "status": "Status",
+                "id": "ID",
+                "joined": "Beigetreten"
+            },
+            "pill": {
+                "verify": "verifiziert",
+                "emailVerify": "bestätigte E-Mail",
+                "phoneVerify": "bestätigtes Telefon",
+                "unverify": "nicht verifiziert",
+                "block": "blockiert",
+                "userId": "Benutzer-ID"
+            }
+        },
+        "texts": {
+            "emptySearch": {
+                "phraseOne": "Leider konnten wir nichts finden",
+                "phraseTwo": "Es gibt keine Benutzer, die Ihrer Suche entsprechen."
+            }
+        },
+        "navbar": {
+            "header": {
+                "users": "Benutzer",
+                "teams": "Teams",
+                "usage": "Nutzung",
+                "security": "Sicherheity",
+                "settings": "Einstellungen"
+            },
+            "userHeader": {
+                "overview": "Übersicht",
+                "membership": "Mitgliedschaften",
+                "sessions": "Sitzungen",
+                "activity": "Aktivität"
+            }
+        }
     }
 }
+
+
+
+

@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     let userName: string = null;
     onMount(async () => {
@@ -35,21 +36,22 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
+        <Heading tag="h6" size="7">{$LL.console.title.userData.name()}</Heading>
 
         <svelte:fragment slot="aside">
             <ul data-private>
                 <InputText
                     id="name"
-                    label="Name"
-                    placeholder="Enter name"
+                    label={$LL.console.forms.userData.update.name.label()}
+                    placeholder={$LL.console.forms.userData.update.name.placeholder()}
                     autocomplete={false}
                     bind:value={userName} />
             </ul>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={userName === $user.name} submit>Update</Button>
+            <Button disabled={userName === $user.name} submit
+                >{$LL.console.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

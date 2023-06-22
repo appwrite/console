@@ -61,6 +61,13 @@
         "and": "e",
         "privacy_policy": "Privacy e politica"
     },
+
+    "magicURL": {
+        "title": "URL di reindirizzamento mancante",
+        "info": "Nel flusso di accesso di Magic URL manca un URL di reindirizzamento corretto. Si prega di controllare il",
+        "magicDoc": "Documenti URL magici",
+        "subInfo": "e invia la richiesta di una nuova sessione con un URL di reindirizzamento valido."
+    },
     "console": {
         "onboarding": {
             "header": "Onboarding",
@@ -71,12 +78,122 @@
             "project_name": "Nome progetto",
             "project_id": "ID progetto",
             "create_project": "Crea progetto"
+        },
+        "title": {
+            "auth": "Aut",
+            "createUser": "Crea utente",
+            "user": "Utente",
+            "userData": {
+                "name": "Nome",
+                "email": "E-mail",
+                "phone": "Telefono",
+                "password": "Password",
+                "userPref": "Preferenze utente",
+                "deleteUser": "Elimina utente"
+            }
+        },
+        "forms": {
+            "createUser": {
+                "inputs": {
+                    "name": {
+                        "label": "Nome",
+                        "placeholder": "Inserisci il nome"
+                    },
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "Inserisci email"
+                    },
+                    "phone": {
+                        "label": "Telefono",
+                        "placeholder": "Inserisci phone"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Inserisci password"
+                    }
+                }
+            },
+            "userData": {
+                "update": {
+                    "name": {
+                        "label": "Nome",
+                        "placeholder": "Inserisci il nome"
+                    },
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "Inserisci email"
+                    },
+                    "phone": {
+                        "label": "Telefono",
+                        "placeholder": "Inserisci phone"
+                    },
+                    "password": {
+                        "label": "Nuova password",
+                        "placeholder": "Inserisci Nuova password"
+                    },
+                    "userPref": {
+                        "key": {
+                            "label": "Chiave",
+                            "placeholder": "Inserisci Chiave"
+                        },
+                        "value": {
+                            "label": "Valore",
+                            "placeholder": "Inserisci Valore"
+                        }
+                    }
+                }
+            }
+        },
+        "button": {
+            "createUser": "Crea utente",
+            "clearSearch": "Cancella ricerca",
+            "cancel": "Annulla",
+            "submit": {
+                "create": "Crea",
+                "update": "Aggiorna",
+                "addPrefs": "Aggiungi preferenza"
+            },
+            "pill": {
+                "userId": "ID utente"
+            }
+        },
+        "table": {
+            "header": {
+                "name": "Nome",
+                "identifiers": "Identificatori",
+                "status": "Stato",
+                "id": "ID",
+                "joined": "Unito"
+            },
+            "pill": {
+                "verify": "verificato",
+                "emailVerify": "E-mail verificato",
+                "phoneVerify": "Telefono verificato",
+                "unverify": "non verificato",
+                "block": "bloccato",
+                "userId": "ID utente"
+            }
+        },
+        "texts": {
+            "emptySearch": {
+                "phraseOne": "Spiacenti, non siamo riusciti a trovare",
+                "phraseTwo": "Non ci sono utenti che corrispondono alla tua ricerca."
+            }
+        },
+        "navbar": {
+            "header": {
+                "users": "Utenti",
+                "teams": "Squadre",
+                "usage": "Utilizzo",
+                "security": "Sicurezza",
+                "settings": "Impostazioni"
+            },
+            "userHeader": {
+                "overview": "Panoramica",
+                "membership": "Abbonamenti",
+                "sessions": "Sessioni",
+                "activity": "Attività"
+            }
         }
-    },
-    "magicURL": {
-        "title": "URL di reindirizzamento mancante",
-        "info": "Nel flusso di accesso di Magic URL manca un URL di reindirizzamento corretto. Si prega di controllare il",
-        "magicDoc": "Documenti URL magici",
-        "subInfo": "e invia la richiesta di una nuova sessione con un URL di reindirizzamento valido."
     }
 }

@@ -75,7 +75,7 @@
                 <FormList>
                     <InputPassword
                         label={$LL.password_recovery.field_inputs.new_password()}
-                        placeholder={$LL.globals.placeholders.enter_password()}
+                        placeholder={$LL.globals.placeholders.enter_password()} 
                         id="password"
                         autofocus={true}
                         required={true}

@@ -11,7 +11,7 @@
 
     let appId: string = null;
     let enabled: boolean = null;
-    let clientSecret: string = null;
+    let clientSecret: string = null; 
     let tenantID: string = null;
     let error: string;
 

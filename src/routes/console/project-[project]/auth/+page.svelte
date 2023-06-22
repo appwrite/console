@@ -26,11 +26,13 @@
     import Create from './createUser.svelte';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
     let showCreate = false;
     const projectId = $page.params.project;
+
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
     }
@@ -39,17 +41,21 @@
 <Container>
     <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
         <Button on:click={() => (showCreate = true)} event="create_user">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">{$LL.console.button.createUser()}</span>
         </Button>
     </SearchQuery>
+
     {#if data.users.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead onlyDesktop>Identifiers</TableCellHead>
-                <TableCellHead onlyDesktop width={130}>Status</TableCellHead>
-                <TableCellHead onlyDesktop width={100}>ID</TableCellHead>
-                <TableCellHead onlyDesktop>Joined</TableCellHead>
+                <TableCellHead>{$LL.console.table.header.name()}</TableCellHead>
+                <TableCellHead onlyDesktop>{$LL.console.table.header.identifiers()}</TableCellHead>
+                <TableCellHead onlyDesktop width={130}
+                    >{$LL.console.table.header.status()}</TableCellHead>
+                <TableCellHead onlyDesktop width={100}
+                    >{$LL.console.table.header.id()}</TableCellHead>
+                <TableCellHead onlyDesktop>{$LL.console.table.header.joined()}</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.users.users as user}
@@ -83,22 +89,22 @@
                             {#if user.status}
                                 <Pill success={user.emailVerification || user.phoneVerification}>
                                     {user.emailVerification && user.phoneVerification
-                                        ? 'verified'
+                                        ? `${$LL.console.table.pill.verify()}`
                                         : user.emailVerification
-                                        ? 'verified email'
+                                        ? `${$LL.console.table.pill.emialVerify()}`
                                         : user.phoneVerification
-                                        ? 'verified phone'
-                                        : 'unverified'}
+                                        ? `${$LL.console.table.pill.phoneVerify()}`
+                                        : `${$LL.console.table.pill.unverify()}`}
                                 </Pill>
                             {:else}
-                                <Pill danger>blocked</Pill>
+                                <Pill danger>{$LL.console.table.pill.block()}</Pill>
                             {/if}
                         </TableCell>
                         <TableCell onlyDesktop showOverflow title="ID">
                             <Copy value={user.$id} event="user">
                                 <Pill button>
                                     <span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text">User ID</span>
+                                    <span class="text">{$LL.console.table.pill.userId()}</span>
                                 </Pill>
                             </Copy>
                         </TableCell>
@@ -118,10 +124,11 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no users that match your search.</p>
+                <b>{$LL.console.texts.emptySearch.phraseOne()} '{data.search}'</b>
+                <p>{$LL.console.texts.emptySearch.phraseTwo()}.</p>
             </div>
-            <Button href={`/console/project-${projectId}/auth`} secondary>Clear Search</Button>
+            <Button href={`/console/project-${projectId}/auth`} secondary
+                >{$LL.console.button.clearSearch()}</Button>
         </EmptySearch>
     {:else}
         <Empty
