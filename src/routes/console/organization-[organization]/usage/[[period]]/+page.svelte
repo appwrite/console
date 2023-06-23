@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Heading, ProjectUsage } from '$lib/components';
+    import { CardGrid, Heading, ProgressBarBig, ProjectUsage } from '$lib/components';
     import type { PageData } from './$types';
 
     export let data: PageData;
@@ -26,4 +26,16 @@
             <ProjectUsage title={project?.name} data={project?.projectUsage} />
         {/each}
     </ul>
+
+    <CardGrid>
+        <Heading tag="h6" size="7">Function executions</Heading>
+
+        <p class="text">
+            Calculated for all functions that are executed in all projects in your organization.
+        </p>
+
+        <svelte:fragment slot="aside">
+            <ProgressBarBig unit="executions" max={750000} used={125000} />
+        </svelte:fragment>
+    </CardGrid>
 </Container>
