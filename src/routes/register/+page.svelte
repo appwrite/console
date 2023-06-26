@@ -40,30 +40,30 @@
 </script>
 
 <svelte:head>
-    <title>{$LL.sign_up.title()} - Appwrite</title>
+    <title>{$LL.register.title()} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Sign up</svelte:fragment>
+    <svelte:fragment slot="title">{$LL.register.title()}</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={register}>
             <FormList>
                 <InputText
                     id="name"
-                    label={$LL.sign_up.field_inputs.name()}
-                    placeholder={$LL.globals.placeholders.your_name()}
+                    label={$LL.register.forms.register.inputs.name.label()}
+                    placeholder={$LL.register.forms.register.inputs.name.placeholder()}
                     autofocus={true}
                     bind:value={name} />
                 <InputEmail
                     id="email"
-                    label={$LL.sign_up.field_inputs.email()}
-                    placeholder={$LL.globals.placeholders.your_email()}
+                    label={$LL.register.forms.register.inputs.email.label()}
+                    placeholder={$LL.register.forms.register.inputs.email.placeholder()}
                     required={true}
                     bind:value={mail} />
                 <InputPassword
                     id="password"
-                    label={$LL.sign_up.field_inputs.password()}
-                    placeholder={$LL.globals.placeholders.your_password()}
+                    label={$LL.register.forms.register.inputs.password.label()}
+                    placeholder={$LL.register.forms.register.inputs.password.placeholder()}
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
@@ -82,7 +82,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit>{$LL.sign_up.title()}</Button>
+                    <Button fullWidth submit>{$LL.register.button.register()}</Button>
                 </FormItem>
             </FormList>
         </Form>
@@ -90,8 +90,8 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <span class="text">
-                {$LL.sign_up.already_registered()}
-                <a class="link" href={`${base}/login`}>{$LL.login.title()}</a>
+                {$LL.register.texts.registery()}
+                <a class="link" href={`${base}/login`}>{$LL.register.links.login()}</a>
             </span>
         </li>
     </svelte:fragment>

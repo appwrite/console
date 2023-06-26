@@ -50,21 +50,21 @@
             <FormList>
                 <InputEmail
                     id="email"
-                    label={$LL.login.field_inputs.email()}
-                    placeholder={$LL.globals.placeholders.email()}
+                    label={$LL.login.forms.login.inputs.email.label()}
+                    placeholder={$LL.login.forms.login.inputs.email.placeholder()}
                     autofocus={true}
                     required={true}
                     bind:value={mail} />
                 <InputPassword
                     id="password"
-                    label={$LL.login.field_inputs.password()}
-                    placeholder={$LL.globals.placeholders.password()}
+                    label={$LL.login.forms.login.inputs.password.label()}
+                    placeholder={$LL.login.forms.login.inputs.password.placeholder()}
                     required={true}
                     meter={false}
                     showPasswordButton={true}
                     bind:value={pass} />
                 <FormItem>
-                    <Button fullWidth submit>{$LL.login.title()}</Button>
+                    <Button fullWidth submit>{$LL.login.button.submit.login()}</Button>
                 </FormItem>
             </FormList>
         </Form>
@@ -72,10 +72,10 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <a href={`${base}/recover`}
-                ><span class="text">{$LL.password_recovery.forgot_password()}?</span></a>
+                ><span class="text">{$LL.login.links.recovery()}?</span></a>
         </li>
         <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">{$LL.sign_up.title()}</span></a>
+            <a href={`${base}/register`}><span class="text">{$LL.login.links.register()}</span></a>
         </li>
         <li class="inline-links-item">
             <LanguageSelector />

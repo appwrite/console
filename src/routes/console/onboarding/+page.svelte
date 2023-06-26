@@ -11,7 +11,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
-    import LL from '$i18n/i18n-svelte';
+    // import LL from '$i18n/i18n-svelte';
 
     let name: string;
     let id: string;
@@ -52,15 +52,15 @@
             <FormList>
                 <InputText
                     id="name"
-                    label={$LL.console.basic_keywords.project_name()}
-                    placeholder={$LL.globals.placeholders.first_appwrite_project()}
+                    label="Project name"
+                    placeholder="First Appwrite Project"
                     required
                     bind:value={name} />
                 {#if !showCustomId}
                     <div>
                         <Pill button on:click={() => (showCustomId = !showCustomId)}>
                             <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                                {$LL.console.basic_keywords.project_id}
+                                Project ID
                             </span>
                         </Pill>
                     </div>
@@ -68,7 +68,7 @@
                     <CustomId bind:show={showCustomId} name="Project" bind:id />
                 {/if}
                 <Button fullWidth submit disabled={name === ''} event="create_project">
-                    {$LL.console.basic_keywords.create_project()}
+                    Create Project
                 </Button>
             </FormList>
         </Form>

@@ -41,29 +41,29 @@
 </script>
 
 <svelte:head>
-    <title>{$LL.accept_invite.title()} - Appwrite</title>
+    <title>{$LL.invite.title.pageHeader()} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
     <svelte:fragment slot="title">
         {#if !userId || !secret || !membershipId || !teamId}
-            {$LL.accept_invite.invalid_invite()}
+            {$LL.invite.title.invalidInvite()}
         {:else}
-            {$LL.accept_invite.invite()}
+            {$LL.invite.title.invite()}
         {/if}
     </svelte:fragment>
     <svelte:fragment>
         {#if !userId || !secret || !membershipId || !teamId}
             <Alert type="warning">
                 <svelte:fragment slot="title"
-                    >{$LL.accept_invite.warning_alert.title()}</svelte:fragment>
-                {$LL.accept_invite.warning_alert.title()}
+                    >{$LL.invite.alerts.warningAlert.phraseOne()}</svelte:fragment>
+                {$LL.invite.alerts.warningAlert.phraseTwo()}
             </Alert>
             <div class="u-flex u-main-end u-margin-block-start-40">
-                <Button href={`${base}/register`}>{$LL.accept_invite.sign_up()}</Button>
+                <Button href={`${base}/register`}>{$LL.invite.button.accept.register()}</Button>
             </div>
         {:else}
-            <p class="text">{$LL.accept_invite.success_alert.title()}</p>
+            <p class="text">{$LL.invite.alerts.successAlert()}</p>
             <Form onSubmit={acceptInvite}>
                 <FormList>
                     <InputChoice
@@ -72,25 +72,26 @@
                         id="terms"
                         label="terms"
                         showLabel={false}>
-                        {$LL.privacy_and_policy.main_text()}
+                        By accepting the invitation, you agree to the
                         <a
                             class="link"
                             href="https://appwrite.io/policy/terms"
                             target="_blank"
                             rel="noopener noreferrer">
-                            {$LL.privacy_and_policy.terms_and_condition()}</a>
-                        {$LL.privacy_and_policy.and()}
+                            Terms and Conditions</a>
+                        and
                         <a
                             class="link"
                             href="https://appwrite.io/policy/privacy"
                             target="_blank"
                             rel="noopener noreferrer">
-                            {$LL.privacy_and_policy.privacy_policy()}</a
+                            Privacy and Policy</a
                         >.</InputChoice>
 
                     <div class="u-flex u-main-end u-gap-12">
-                        <Button secondary href={`${base}/login`}>{$LL.globals.cancel()}</Button>
-                        <Button submit>{$LL.globals.accept()}</Button>
+                        <Button secondary href={`${base}/login`}
+                            >{$LL.invite.button.submit.cancel()}</Button>
+                        <Button submit>{$LL.invite.button.submit.accept()}</Button>
                     </div>
                 </FormList>
             </Form>
