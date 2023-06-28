@@ -1,84 +1,140 @@
 {
-    "globals": {
-        "placeholders": {
-            "email": "E-mail",
-            "password": "Password",
-            "enter_password": "Inserisci password",
-            "confirm_password": "Conferma password",
-            "your_name": "Il tuo nome",
-            "your_email": "La tua email",
-            "your_password": "La tua password",
-            "your_code": "Il tuo codice",
-            "first_appwrite_project": "Primo progetto Appwrite"
-        },
-        "update": "Aggiorna",
-        "recover": "Recupera",
-        "accept": "Accetta",
-        "cancel": "Annulla"
-    },
     "login": {
         "title": "Accedi",
-        "field_inputs": {
-            "email": "E-mail",
-            "password": "Password"
+        "forms": {
+            "login": {
+                "inputs": {
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "E-mail"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Password"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "login": "Accedi"
+            }
+        },
+        "links": {
+            "recovery": "Password dimenticata",
+            "register": "Iscriviti"
         }
     },
-    "sign_up": {
+    "register": {
         "title": "Iscriviti",
-        "field_inputs": {
-            "name": "Nome",
-            "email": "E-mail",
-            "password": "Password",
-            "code": "codice"
+        "forms": {
+            "register": {
+                "inputs": {
+                    "name": {
+                        "label": "Nome",
+                        "placeholder": "Il tuo nome"
+                    },
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "La tua e-mail"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "La tua password"
+                    }
+                }
+            },
+            "invite": {
+                "inputs": {
+                    "name": {
+                        "label": "Nome",
+                        "placeholder": "Il tuo nome"
+                    },
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "La tua e-mail"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "La tua password"
+                    },
+                    "code": {
+                        "label": "Codice",
+                        "placeholder": "Il tuo codice"
+                    }
+                }
+            }
         },
-        "already_registered": "Hai già un account?"
-    },
-    "password_recovery": {
-        "title": "Recupero password",
-        "forgot_password": "Password dimenticata",
-        "field_inputs": {
-            "email": "E-mail",
-            "new_password": "Nuova password",
-            "cnf_password": "Conferma password"
+        "button": {
+            "submit": {
+                "register": "Iscriviti"
+            }
+        },
+        "links": {
+            "login": "Accedi"
+        },
+        "texts": {
+            "registery": "Hai già un account?"
         }
     },
-    "accept_invite": {
-        "title": "Accetta invito",
-        "invalid_invite": "Invito non valido",
-        "invite": "Invita",
-        "sign_up": "Iscriviti ad Appwrite",
-        "warning_alert": {
-            "title": "Il link di invito non è valido",
-            "sub_title": "Chiedi al proprietario del progetto di inviarti un nuovo invito."
+    "recover": {
+        "title": {
+            "pageHeader": "Recupera",
+            "pageTitle": "Recupero password"
         },
-        "success_alert": {
-            "title": "Sei stato invitato a partecipare a un progetto di gruppo su Appwrite"
+        "forms": {
+            "resetPassword": {
+                "inputs": {
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "E-mail"
+                    },
+                    "password": {
+                        "label": "Nuova password",
+                        "placeholder": "Inserisci password"
+                    },
+                    "cnfPassword": {
+                        "label": "Conferma password",
+                        "placeholder": "Conferma password"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "update": "Update",
+                "recover": "Recupera"
+            }
+        },
+        "links": {
+            "register": "Iscriviti",
+            "login": "Accedi"
         }
     },
-    "privacy_and_policy": {
-        "main_text": "Accettando l'invito, accetti il",
-        "terms_and_condition": "Termini e condizioni",
-        "and": "e",
-        "privacy_policy": "Privacy e politica"
-    },
-
-    "magicURL": {
-        "title": "URL di reindirizzamento mancante",
-        "info": "Nel flusso di accesso di Magic URL manca un URL di reindirizzamento corretto. Si prega di controllare il",
-        "magicDoc": "Documenti URL magici",
-        "subInfo": "e invia la richiesta di una nuova sessione con un URL di reindirizzamento valido."
+    "invite": {
+        "title": {
+            "pageHeader": "Accetta invito",
+            "invalidInvite": "Invito non valido",
+            "invite": "Invita"
+        },
+        "alerts": {
+            "warningAlert": {
+                "phraseOne": "Il link di invito non è valido",
+                "phraseTwo": "Chiedi al proprietario del progetto di inviarti un nuovo invito."
+            },
+            "successAlert": "Sei stato invitato a partecipare a un progetto di gruppo su Appwrite"
+        },
+        "button": {
+            "submit": {
+                "cancel": "Annulla",
+                "accept": "Accetta"
+            },
+            "accept": {
+                "register": "Iscriviti ad Appwrite"
+            }
+        }
     },
     "console": {
-        "onboarding": {
-            "header": "Onboarding",
-            "title": "Let's create your first project"
-        },
-        "basic_keywords": {
-            "project": "Progetto",
-            "project_name": "Nome progetto",
-            "project_id": "ID progetto",
-            "create_project": "Crea progetto"
-        },
         "title": {
             "auth": "Aut",
             "createUser": "Crea utente",
