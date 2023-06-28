@@ -59,7 +59,7 @@
         /**
          * Handle initial load.
          */
-        if (!$page.url.pathname.startsWith('/auth')) {
+        if (!$page.url.pathname.startsWith('/auth') && !$page.url.pathname.startsWith('/git')) {
             const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
             if ($user) {
                 if (
