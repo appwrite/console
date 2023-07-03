@@ -16,15 +16,31 @@
 
     const onFinish = async () => {
         const resources = formDataToResources($formData);
-        if ($provider.provider === 'appwrite') {
-            const res = await sdk.forProject.imports.importAppwrite(
-                resources,
-                $provider.endpoint,
-                $provider.projectID,
-                $provider.apiKey
-            );
-            console.log(res);
-            invalidate(Dependencies.MIGRATIONS);
+        switch ($provider.provider) {
+            case 'appwrite': {
+                const res = await sdk.forProject.migrations.migrationAppwrite(
+                    resources,
+                    $provider.endpoint,
+                    $provider.projectID,
+                    $provider.apiKey
+                );
+                console.log(res);
+                invalidate(Dependencies.MIGRATIONS);
+                break;
+            }
+            case 'supabase': {
+                const res = await sdk.forProject.migrations.migrationSupabase(
+                    resources,
+                    $provider.endpoint,
+                    $provider.apiKey,
+                    $provider.host,
+                    $provider.username,
+                    $provider.password,
+                    $provider.port
+                );
+                console.log(res);
+                invalidate(Dependencies.MIGRATIONS);
+            }
         }
         resetImportStores();
         wizard.hide();

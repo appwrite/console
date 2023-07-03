@@ -23,8 +23,8 @@ export const app = writable<AppStore>({
 export const iconPath = derived(app, ($app) => {
     return (name: string, type: 'color' | 'grayscale') => {
         return `/icons/${$app.themeInUse}/${type}/${name}.svg`;
-    }
-})
+    };
+});
 
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({

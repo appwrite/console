@@ -18,13 +18,13 @@ const config = {
         }),
         paths: {
             base: ''
-        },
+        }
     },
     vitePlugin: {
         experimental: {
-            inspector: true,
+            inspector: true
         }
-     },
+    }
 };
 
 export default config;

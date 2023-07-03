@@ -26,11 +26,11 @@
     let showDetails = false;
     let showCloudExport = false;
 
-    const mockImport = async () => {
-        console.log(await sdk.forProject.imports.list());
+    const mockMigrate = async () => {
+        console.log(await sdk.forProject.migrations.list());
     };
 
-    mockImport();
+    mockMigrate();
 
     const getStatus = (status: string) => {
         if (status === 'failed') {
@@ -116,7 +116,7 @@
                 Import data from other products or from a different Appwrite instance
             </p>
             <svelte:fragment slot="aside">
-                {#if data.imports.length}
+                {#if data.migrations.length}
                     <div class="u-flex">
                         <div style="margin-inline-start: auto;">
                             <Button secondary on:click={openImportWizard}>Import data</Button>
@@ -131,7 +131,7 @@
                             <TableCellHead />
                         </TableHeader>
                         <TableBody>
-                            {#each data.imports as entry}
+                            {#each data.migrations as entry}
                                 <TableRow>
                                     {@const source = capitalize(JSON.parse(entry.source).type)}
                                     {@const status = getStatus(entry.status)}
