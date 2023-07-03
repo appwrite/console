@@ -26,11 +26,11 @@
     let showDetails = false;
     let showCloudExport = false;
 
-    const mockImport = async () => {
+    const mockMigrate = async () => {
         console.log(await sdk.forProject.migrations.list());
     };
 
-    mockImport();
+    mockMigrate();
 
     const getStatus = (status: string) => {
         if (status === 'failed') {

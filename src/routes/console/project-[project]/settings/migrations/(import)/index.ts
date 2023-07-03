@@ -73,48 +73,48 @@ type FormData = typeof initialFormData;
 export const formData = writable({ ...initialFormData });
 
 type Resource =
-    | 'user'
-    | 'team'
-    | 'teammembership'
-    | 'file'
-    | 'bucket'
-    | 'function'
-    | 'envvar'
-    | 'deployment'
-    | 'database'
-    | 'collection'
-    | 'index'
-    | 'attribute'
-    | 'document';
+    | 'User'
+    | 'Team'
+    | 'Membership'
+    | 'File'
+    | 'Bucket'
+    | 'Function'
+    | 'EnvVar'
+    | 'Deployment'
+    | 'Database'
+    | 'Collection'
+    | 'Index'
+    | 'Attribute'
+    | 'Document';
 
 export const formDataToResources = (formData: FormData): Resource[] => {
     const resources: Resource[] = [];
     if (formData.users.root) {
-        resources.push('user');
+        resources.push('User');
     }
     if (formData.users.teams) {
-        resources.push('team');
-        resources.push('teammembership');
+        resources.push('Team');
+        resources.push('Membership');
     }
     if (formData.databases.root) {
-        resources.push('database');
+        resources.push('Database');
     }
     if (formData.databases.documents) {
-        resources.push('collection');
-        resources.push('document');
+        resources.push('Collection');
+        resources.push('Document');
     }
     if (formData.functions.root) {
-        resources.push('function');
+        resources.push('Function');
     }
     if (formData.functions.env) {
-        resources.push('envvar');
+        resources.push('EnvVar');
     }
     if (formData.functions.inactive) {
-        resources.push('deployment');
+        resources.push('Deployment');
     }
     if (formData.storage.root) {
-        resources.push('bucket');
-        resources.push('file');
+        resources.push('Bucket');
+        resources.push('File');
     }
 
     return resources;
