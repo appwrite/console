@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputChoice, Button, InputText, InputFile, FormList } from '$lib/elements/forms';
+    import { InputChoice, Button, InputFile, FormList } from '$lib/elements/forms';
     import { Modal, Collapsible, CollapsibleItem, Tabs, Tab, Code } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher, onMount } from 'svelte';
@@ -20,7 +20,6 @@
         Manual
     }
     let mode: Mode = Mode.CLI;
-    let entrypoint: string;
     let active = false;
     let files: FileList;
     let lang = 'js';
@@ -91,15 +90,9 @@
 
     async function create() {
         try {
-            await sdk.forProject.functions.createDeployment(
-                functionId,
-                entrypoint,
-                files[0],
-                active
-            );
+            await sdk.forProject.functions.createDeployment(functionId, files[0], active);
             await invalidate(Dependencies.DEPLOYMENTS);
             files = undefined;
-            entrypoint = null;
             active = false;
             showCreate = false;
             dispatch('created');
@@ -127,7 +120,6 @@
 
     $: if (!showCreate) {
         files = undefined;
-        entrypoint = null;
         active = false;
         error = null;
     }
@@ -196,12 +188,6 @@
         </div>
     {:else if mode === Mode.Manual}
         <FormList>
-            <InputText
-                label="Entrypoint"
-                placeholder={`main.${lang}`}
-                id="entrypoint"
-                bind:value={entrypoint}
-                required />
             <InputFile
                 label="Gzipped code (tar.gz)"
                 allowedFileExtensions={['gz']}
