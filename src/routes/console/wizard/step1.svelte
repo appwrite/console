@@ -3,6 +3,7 @@
     import { Pill } from '$lib/elements';
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
+    import { tierFree, tierPro, tierStarter } from '$lib/stores/billing';
     import { organizationList } from '$lib/stores/organization';
     import { createOrganization } from './store';
 
@@ -53,8 +54,10 @@
                 <LabelCard name="plan" bind:group={$createOrganization.tier} value="free">
                     <svelte:fragment slot="custom">
                         <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
-                            <h4 class="body-text-2 u-bold">Free - $0/month</h4>
-                            <p class="u-color-text-gray u-small">For personal, passion projects.</p>
+                            <h4 class="body-text-2 u-bold">
+                                {tierFree.name} - ${tierFree.price}/month
+                            </h4>
+                            <p class="u-color-text-gray u-small">{tierFree.description}</p>
                         </div>
                     </svelte:fragment>
                 </LabelCard>
@@ -65,10 +68,10 @@
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
-                            Starter - $10/month per organization member
+                            {tierStarter.name} - ${tierStarter.price}/month per organization member
                         </h4>
                         <p class="u-color-text-gray u-small">
-                            For small organizations that want flexibility.
+                            {tierStarter.description}
                         </p>
                     </div>
                     <Pill>14 DAY FREE TRIAL</Pill>
@@ -80,10 +83,11 @@
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
-                            Pro - $20/month per organization member + exta usage
+                            {tierPro.name} - ${tierPro.price}/month per organization member + exta
+                            usage
                         </h4>
                         <p class="u-color-text-gray u-small">
-                            For organizations that need the ability scale easily.
+                            {tierPro.description}
                         </p>
                     </div>
                     <Pill>14 DAY FREE TRIAL</Pill>

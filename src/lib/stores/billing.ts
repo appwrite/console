@@ -32,6 +32,22 @@ export class Billing {
         );
     }
 
+    async getPlan(organizationId: string): Promise<string> {
+        const path = `/organizations/${organizationId}/plan`;
+        const params = {
+            organizationId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async updatePlan(
         organizationId: string,
         billingPlan: string,
@@ -231,6 +247,24 @@ export class Billing {
         return await this.client.call('patch', uri, { 'content-type': 'application/json' }, params);
     }
 }
+
+export const tierFree = {
+    price: 0,
+    name: 'Free',
+    description: 'For personal, passion projects.'
+};
+
+export const tierStarter = {
+    price: 10,
+    name: 'Starter',
+    description: 'For small organizations that want flexibility.'
+};
+
+export const tierPro = {
+    price: 20,
+    name: 'Pro',
+    description: 'For organizations that need the ability scale easily.'
+};
 
 export const apperanceLight = {
     variables: {

@@ -23,9 +23,11 @@
 
     async function create() {
         try {
-            const org = await sdk.forConsole.teams.create(
+            const org = await sdk.forConsole.billing.createOrganization(
                 $createOrganization.id ?? ID.unique(),
-                $createOrganization.name
+                $createOrganization.name,
+                $createOrganization.tier,
+                $createOrganization.payment
             );
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
