@@ -40,7 +40,8 @@
             label: 'Create function',
             callback: openWizard,
             keys: ['c'],
-            disabled: $wizard.show
+            disabled: $wizard.show,
+            icon: 'plus'
         }
     ]);
 </script>

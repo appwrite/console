@@ -77,9 +77,12 @@
 
 <Template options={results} bind:search>
     <div slot="option" class="u-flex u-main-space-between content" let:option={command}>
-        <span>
-            {command.label}
-        </span>
+        <div class="u-flex u-gap-8 u-cross-center">
+            <i class="icon-{command.icon ?? 'arrow-sm-right'}" />
+            <span>
+                {command.label}
+            </span>
+        </div>
         <div class="u-flex u-gap-4 u-cross-center">
             {#if command.ctrl}
                 <kbd class="kbd"> {isMac() ? '⌘' : 'ctrl'} </kbd>

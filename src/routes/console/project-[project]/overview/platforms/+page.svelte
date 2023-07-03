@@ -76,7 +76,8 @@
         {
             label: 'Create Web App',
             callback: () => addPlatform(Platform.Web),
-            keys: ['c']
+            keys: ['c'],
+            icon: 'plus'
         }
     ]);
 </script>

@@ -30,7 +30,8 @@
                     component: AI
                 });
             },
-            keys: ['a', 'i']
+            keys: ['a', 'i'],
+            icon: 'light-bulb'
         },
         {
             label: 'Go to Account',

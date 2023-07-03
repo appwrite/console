@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Command, registerCommands } from '$lib/commandCenter';
+    import { type Command, registerCommands } from '$lib/commandCenter';
     import { CardContainer, Empty, GridItem1, Heading, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -63,7 +63,8 @@
             },
             keys: ['c'],
             disabled: showCreate,
-            group: 'project'
+            group: 'project',
+            icon: 'plus'
         }
     ]);
 </script>

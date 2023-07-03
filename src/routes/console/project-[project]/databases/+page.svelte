@@ -31,7 +31,8 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: showCreate
+            disabled: showCreate,
+            icon: 'plus'
         }
     ]);
 </script>

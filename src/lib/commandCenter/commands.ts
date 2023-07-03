@@ -27,6 +27,7 @@ export type Command = {
     disabled?: boolean;
     forceEnable?: boolean;
     group?: CommandGroup;
+    icon?: string;
 };
 
 export const commandMap = writable<Map<string, Command[]>>(new Map());

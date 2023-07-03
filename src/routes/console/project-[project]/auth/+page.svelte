@@ -45,7 +45,8 @@
             },
             keys: ['c'],
             disabled: showCreate,
-            group: 'auth'
+            group: 'auth',
+            icon: 'plus'
         },
         {
             label: 'Go to Overview',
