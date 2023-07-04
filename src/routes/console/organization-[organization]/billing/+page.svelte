@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
+    import BudgetCap from './budgetCap.svelte';
     import AvailableCredit from './availableCredit.svelte';
     import BillingAddress from './billingAddress.svelte';
     import PaymentHistory from './paymentHistory.svelte';
@@ -16,6 +17,7 @@
     <PaymentMethods bind:showPayment />
     <BillingAddress />
     <AvailableCredit />
+    <BudgetCap />
 </Container>
 
 {#if showPayment}
