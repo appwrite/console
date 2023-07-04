@@ -45,8 +45,9 @@
         <svelte:fragment slot="aside">
             {#if $organization?.tier !== 'pro'}
                 <Alert type="info">
-                    <svelte:fragment slot="title"
-                        >Budget caps are a Pro plan feature</svelte:fragment>
+                    <svelte:fragment slot="title">
+                        Budget caps are a Pro plan feature
+                    </svelte:fragment>
                     Upgrade to a Pro plan to set a budget cap for your organization. For more information
                     on what you can do with a Pro plan,
                     <button type="button" class="link" on:click={() => (showRates = true)}
