@@ -51,7 +51,7 @@
         style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
         {#if !anyOrgFree}
             <li>
-                <LabelCard name="plan" bind:group={$createOrganization.tier} value="tier-0">
+                <LabelCard name="plan" bind:group={$createOrganization.billingPlan} value="tier-0">
                     <svelte:fragment slot="custom">
                         <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                             <h4 class="body-text-2 u-bold">
@@ -64,7 +64,7 @@
             </li>
         {/if}
         <li>
-            <LabelCard name="plan" bind:group={$createOrganization.tier} value="tier-1">
+            <LabelCard name="plan" bind:group={$createOrganization.billingPlan} value="tier-1">
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
@@ -79,7 +79,7 @@
             </LabelCard>
         </li>
         <li>
-            <LabelCard name="plan" bind:group={$createOrganization.tier} value="tier-2">
+            <LabelCard name="plan" bind:group={$createOrganization.billingPlan} value="tier-2">
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">

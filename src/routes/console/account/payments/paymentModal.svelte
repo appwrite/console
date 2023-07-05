@@ -64,7 +64,7 @@
             paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
             const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
             if (setupIntent && setupIntent.status === 'succeeded') {
-                await sdk.forConsole.billing.updatePaymentMethod(
+                await sdk.forConsole.billing.updateOrganizationPaymentMethod(
                     $organization.$id,
                     paymentMethod.$id,
                     setupIntent.payment_method as string
