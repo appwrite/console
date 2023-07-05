@@ -1,3 +1,8 @@
+import {
+    PUBLIC_MOCK_APIKEY,
+    PUBLIC_MOCK_ENDPOINT,
+    PUBLIC_MOCK_PROJECTID
+} from '$env/static/public';
 import { wizard } from '$lib/stores/wizard';
 import { writable } from 'svelte/store';
 import Wizard from './wizard.svelte';
@@ -21,6 +26,8 @@ type SupabaseInput = {
     port?: number;
     username?: string;
     password?: string;
+    endpoint?: string;
+    apiKey?: string;
 };
 
 type NhostInput = {
@@ -29,22 +36,20 @@ type NhostInput = {
     port?: number;
     username?: string;
     password?: string;
+    endpoint?: string;
+    apiKey?: string;
 };
 
 type ProviderInput = AppwriteInput | NhostInput | SupabaseInput | FirebaseInput;
 
-const initialProvider: ProviderInput = { provider: '' };
+const initialProvider: ProviderInput = { provider: 'appwrite' };
 const mockProvider: ProviderInput = {
-    provider: '',
-    endpoint: '',
-    apiKey: '',
-    projectID: '',
-    host: '',
-    port: '',
-    username: '',
-    password: ''
+    provider: 'appwrite',
+    endpoint: PUBLIC_MOCK_ENDPOINT,
+    apiKey: PUBLIC_MOCK_APIKEY,
+    projectID: PUBLIC_MOCK_PROJECTID
 };
-export const provider = writable<ProviderInput>({ ...initialProvider });
+export const provider = writable<ProviderInput>({ ...mockProvider });
 
 const initialFormData = {
     users: {
