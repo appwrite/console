@@ -210,42 +210,6 @@ export class Billing {
             params
         );
     }
-
-    async updatePaymentMethodOld(
-        teamId: string,
-        paymentMethodId: string,
-        providerMethodId: string
-    ) {
-        const path = `/teams/${teamId}/payment-methods/${paymentMethodId}`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'PUT',
-            uri,
-            { 'content-type': 'application/json' },
-            {
-                providerMethodId
-            }
-        );
-    }
-
-    async updateProjectPlan(projectId: string, billingPlan: string) {
-        const path = `/project/${projectId}/plan`;
-        const params: Payload = {
-            billingPlan
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('patch', uri, { 'content-type': 'application/json' }, params);
-    }
-
-    async updateProjectBudget(projectId: string, budget: number, alertLimit: number) {
-        const path = `/project/${projectId}/budget`;
-        const params: Payload = {
-            budget,
-            alertLimit
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('patch', uri, { 'content-type': 'application/json' }, params);
-    }
 }
 
 export const tierFree = {

@@ -1,4 +1,3 @@
-import { Tier } from '$lib/system';
 import { writable } from 'svelte/store';
 
 export type Collborator = {
@@ -6,17 +5,19 @@ export type Collborator = {
     role: string;
 };
 
+export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
+
 export const createOrganization = writable<{
     id?: string;
     name: string;
-    tier: Tier;
+    billingPlan: Tier;
     payment: string;
     budget?: number;
     collaborators?: Collborator[];
 }>({
     id: null,
     name: null,
-    tier: Tier['PRO'],
+    billingPlan: 'tier-2',
     payment: null,
     collaborators: []
 });

@@ -43,10 +43,10 @@
     </svelte:fragment>
 
     <Alert type="info">
-        {#if $createOrganization.tier === 'pro'}
+        {#if $createOrganization.tier === 'tier-2'}
             You can add unlimited organization members on the Pro plan for $20 each. Each member
             added will receive an email invite to your organization on completion.
-        {:else if $createOrganization.tier === 'starter'}
+        {:else if $createOrganization.tier === 'tier-1'}
             You can add up to three organization members with the Starter plan for $10 each. Each
             member added will receive an email invite to your organization on completion.
         {:else}

@@ -11,7 +11,6 @@
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
-    import { Tier } from '$lib/system';
     import { createProject } from './wizard/store';
 
     const teamId = $page.params.organization;
@@ -52,7 +51,7 @@
         $createProject = {
             id: null,
             name: null,
-            tier: Tier['PRO']
+            region: 'eu-central-1'
         };
     });
 

@@ -2,6 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { AvatarGroup, DropList, DropListItem, DropListLink, Tab, Tabs } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
@@ -15,6 +16,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
+    import Android from '../project-[project]/overview/platforms/[platform]/android.svelte';
 
     let showDropdown = false;
 
@@ -72,7 +74,12 @@
                 class="button is-text u-padding-inline-0"
                 on:click={() => (showDropdown = !showDropdown)}>
                 <h1 class="heading-level-4 u-flex u-cross-center u-gap-8">
-                    <span class="text"> {$organization.name}</span>
+                    <span class="u-flex u-cross-center u-gap-8">
+                        {$organization.name}
+                        {#if isCloud && $organization?.billingPlan === 'tier-0'}
+                            <Pill>FREE</Pill>
+                        {/if}
+                    </span>
                     <span
                         class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}
                         aria-hidden="true" />

@@ -20,7 +20,7 @@
     <BillingAddress />
     <AvailableCredit /> -->
     <BudgetCap />
-    {#if $organization?.tier !== 'pro'}
+    {#if $organization?.billingPlan !== 'tier-2'}
         <BudgetAlert />
     {/if}
 </Container>

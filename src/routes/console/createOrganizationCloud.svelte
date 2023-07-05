@@ -13,7 +13,6 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
-    import { Tier } from '$lib/system';
 
     const dispatch = createEventDispatcher();
 
@@ -26,7 +25,7 @@
             const org = await sdk.forConsole.billing.createOrganization(
                 $createOrganization.id ?? ID.unique(),
                 $createOrganization.name,
-                $createOrganization.tier,
+                $createOrganization.billingPlan,
                 $createOrganization.payment
             );
             await invalidate(Dependencies.ACCOUNT);
@@ -51,7 +50,7 @@
         $createOrganization = {
             id: null,
             name: null,
-            tier: Tier['PRO'],
+            billingPlan: 'tier-2',
             payment: null,
             collaborators: []
         };

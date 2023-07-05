@@ -43,7 +43,7 @@
                 class="link">Learn more about usage rates.</a>
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization?.tier !== 'pro'}
+            {#if $organization?.billingPlan !== 'tier-2'}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Budget caps are a Pro plan feature

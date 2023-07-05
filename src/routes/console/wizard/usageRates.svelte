@@ -29,7 +29,7 @@
             <TableCellHead>Rate</TableCellHead>
         </TableHeader>
         <TableBody>
-            {#each usageRates[$createOrganization.tier] as usage}
+            {#each usageRates[$createOrganization.billingPlan] as usage}
                 <TableRow>
                     <TableCellText title="resource">{usage.resource}</TableCellText>
                     <TableCellText title="limit">{usage.limit}</TableCellText>
