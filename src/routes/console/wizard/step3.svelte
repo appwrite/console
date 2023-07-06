@@ -63,8 +63,9 @@
                     id="email"
                     placeholder="Email address"
                     bind:value={email}
-                    required />
-                <Button secondary submit>Add</Button>
+                    required>
+                    <Button secondary submit>Add</Button>
+                </InputEmail>
             </FormList>
         </Form>
     </div>

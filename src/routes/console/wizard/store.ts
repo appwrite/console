@@ -11,13 +11,13 @@ export const createOrganization = writable<{
     id?: string;
     name: string;
     billingPlan: Tier;
-    payment: string;
-    budget?: number;
+    paymentMethodId: string;
+    billingBudget?: number;
     collaborators?: Collborator[];
 }>({
     id: null,
     name: null,
     billingPlan: 'tier-2',
-    payment: null,
+    paymentMethodId: null,
     collaborators: []
 });

@@ -26,7 +26,7 @@
                 $createOrganization.id ?? ID.unique(),
                 $createOrganization.name,
                 $createOrganization.billingPlan,
-                $createOrganization.payment
+                $createOrganization.paymentMethodId
             );
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
@@ -51,7 +51,7 @@
             id: null,
             name: null,
             billingPlan: 'tier-2',
-            payment: null,
+            paymentMethodId: null,
             collaborators: []
         };
     });

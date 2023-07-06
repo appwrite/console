@@ -14,25 +14,43 @@
     import { createOrganization } from './store';
     import { Collapsible, CollapsibleItem } from '$lib/components';
     import UsageRates from './usageRates.svelte';
+    import { addNotification } from '$lib/stores/notifications';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     let methods = [];
     let name: string;
     let promo: string;
+    let redeemedCodes = [];
     let budgetEnabled = false;
     let showRates = false;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods('TEST');
+        methods = await sdk.forConsole.billing.listPaymentMethods();
         if (methods.length) {
-            $createOrganization.payment = methods[0].id;
+            $createOrganization.paymentMethodId = methods[0].id;
         }
     });
 
+    async function removeCode() {
+        console.log('test');
+    }
     async function redeem() {
         try {
-            // await sdk.forConsole.billing.redeemPromoCode(promo);
-        } catch (e) {
-            console.log(e);
+            // await sdk.forConsole.billing.addCredit(promo);
+            redeemedCodes.push(promo);
+            redeemedCodes = redeemedCodes;
+            promo = '';
+            addNotification({
+                type: 'success',
+                message: 'Coupon redeemed successfully'
+            });
+            trackEvent(Submit.CouponRedeemed, { code: promo });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error
+            });
+            trackError(error, Submit.CouponRedeemed);
         }
     }
 </script>
@@ -43,14 +61,16 @@
 
     <FormList>
         <div class:boxes-wrapper={methods?.length}>
-            {#each methods as method}
-                <InputRadio
-                    id="payment-method"
-                    label="Payment method"
-                    value={method.id}
-                    name={method.id}
-                    group="payment" />
-            {/each}
+            {#if methods.length}
+                {#each methods as method}
+                    <InputRadio
+                        id="payment-method"
+                        label="Payment method"
+                        value={method.id}
+                        name={method.id}
+                        group="payment" />
+                {/each}
+            {/if}
 
             <div class="box">
                 <InputRadio
@@ -58,8 +78,8 @@
                     label="Add new payment method"
                     value={null}
                     name="test"
-                    group={$createOrganization.payment} />
-                {#if $createOrganization.payment === null}
+                    group={$createOrganization.paymentMethodId} />
+                {#if $createOrganization.paymentMethodId === null}
                     <InputText
                         id="name"
                         label="Cardholder name"
@@ -88,10 +108,33 @@
                             id="credit"
                             label="Promo code"
                             placeholder="APPWRITE123"
-                            bind:value={promo} />
-                        <Button secondary submit>Redeem</Button>
+                            bind:value={promo}>
+                            <Button secondary submit>Redeem</Button>
+                        </InputText>
                     </FormList>
                 </Form>
+                {#if redeemedCodes?.length}
+                    <div class="u-flex u-margin-block-start-8">
+                        <div class="tags">
+                            <ul class="tags-list">
+                                {#each redeemedCodes as code}
+                                    <li class="tags-item">
+                                        <div class="input-tag">
+                                            <span class="tag-text">{code}</span>
+                                            <button
+                                                type="button"
+                                                class="input-tag-delete-button"
+                                                aria-label={`delete ${code} tag`}
+                                                on:click={() => removeCode(code)}>
+                                                <span class="icon-x" aria-hidden="true" />
+                                            </button>
+                                        </div>
+                                    </li>
+                                {/each}
+                            </ul>
+                        </div>
+                    </div>
+                {/if}
             </CollapsibleItem>
         </Collapsible>
 
@@ -117,7 +160,7 @@
                 id="budget"
                 label="Budget cap"
                 placeholder="0"
-                bind:value={$createOrganization.budget} />
+                bind:value={$createOrganization.billingBudget} />
         {/if}
     </FormList>
 </WizardStep>

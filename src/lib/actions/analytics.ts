@@ -211,5 +211,6 @@ export enum Submit {
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',
-    BudgetCapUpdate = 'submit_budget_cap_update'
+    BudgetCapUpdate = 'submit_budget_cap_update',
+    CouponRedeemed = 'submit_coupon_redeemed'
 }

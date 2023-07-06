@@ -24,19 +24,31 @@
     </div>
     <div class="u-margin-block-start-32">
         <p class="body-text-1 u-bold">Payment</p>
-        <p class="text">{$createOrganization.payment}</p>
+        <p class="text">{$createOrganization.paymentMethodId}</p>
     </div>
 
-    <div class="box u-margin-block-start-32">
-        <p class="text">{$createOrganization.tier} plan</p>
-        <p class="text">Invited members</p>
-        <p class="text">Credit added</p>
+    <div class="box u-margin-block-start-32 u-flex u-flex-vertical u-gap-8">
+        <span class="u-flex u-main-space-between">
+            <p class="text">{$createOrganization.billingPlan} plan</p>
+            <p class="text">PRICE</p>
+        </span>
+        <span class="u-flex u-main-space-between">
+            <p class="text">Invited members</p>
+            <p class="text">PRICE</p>
+        </span>
+        <span class="u-flex u-main-space-between">
+            <p class="text">Credit added</p>
+            <p class="text">PRICE</p>
+        </span>
         <div class="u-sep-block-start" />
-        <p class="text">Estimated total</p>
+        <span class="u-flex u-main-space-between">
+            <p class="text">Estimated total</p>
+            <p class="text">TOTAL</p>
+        </span>
 
         <p class="text">
             This amount and any extra usage fees will be charged on a recurring 30 day billing cycle
-            after your trial period ends on DATE
+            after your trial period ends on <b>DATE </b>
         </p>
     </div>
 </WizardStep>
