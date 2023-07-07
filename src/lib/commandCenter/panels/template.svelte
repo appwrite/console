@@ -12,6 +12,7 @@
 
     import { quadOut } from 'svelte/easing';
     import { crossfade } from 'svelte/transition';
+    import Breadcrumbs from '$lib/layout/breadcrumbs.svelte';
 
     type BaseOption = { callback: () => void; group?: CommandGroup };
     type Option = $$Generic<BaseOption>;
@@ -139,6 +140,19 @@
     };
 
     const castOption = (option: IndexedOption) => option as Option;
+
+    $: breadcrumbs = $subPanels.slice(1).map((panel) => panel.name);
+
+    const handleCrumbClick = (index: number) => {
+        if (index === breadcrumbs.length - 1) {
+            popSubPanel();
+        } else {
+            const numCrumbsToPop = breadcrumbs.length - index - 1;
+            for (let i = 0; i < numCrumbsToPop; i++) {
+                popSubPanel();
+            }
+        }
+    };
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
@@ -149,15 +163,21 @@
     class:press={!$commandCenterCtx.isInitialPanel}
     class:scale-up={$commandCenterCtx.isInitialPanel && $commandCenterCtx.open}>
     <div class="u-flex u-flex-vertical u-width-full-line u-overflow-hidden">
-        <slot name="search">
-            <div class="u-flex search-wrapper">
-                <input
-                    type="text"
-                    placeholder="Search for commands..."
-                    autofocus
-                    bind:value={search} />
-            </div>
-        </slot>
+        <div class="u-flex u-gap-4 u-cross-center u-width-full-line">
+            {#each breadcrumbs as crumb, i}
+                <button class="crumb" on:click={() => handleCrumbClick(i)}>{crumb}</button>
+            {/each}
+
+            <slot name="search">
+                <div class="u-flex search-wrapper u-width-full-line">
+                    <input
+                        type="text"
+                        placeholder="Search for commands..."
+                        autofocus
+                        bind:value={search} />
+                </div>
+            </slot>
+        </div>
 
         {#if groupsAndOptions}
             <ul class="options u-margin-block-start-16 u-flex u-flex-vertical u-gap-8">
@@ -195,7 +215,8 @@
         {:else}
             <slot />
         {/if}
-
+    </div>
+    <div class="footer">
         <slot name="footer" />
     </div>
 </div>
@@ -246,13 +267,17 @@
         top: clamp(128px, 15vh, 400px);
         left: 50%;
         translate: -50%;
+
+        border-radius: 0.5rem;
+        border: 1px solid var(--dark-neutrals-150, #373b4d);
+        background: rgba(27, 27, 40, 0.8);
+        box-shadow: 0px 16px 32px 0px #14141f;
+        backdrop-filter: blur(6px);
     }
 
     .search-wrapper {
         border-bottom: 1px solid hsl(var(--color-border));
         font-size: 16px;
-        margin-inline: -0.5rem;
-        padding-inline: 0.5rem;
     }
 
     .options {
@@ -300,5 +325,29 @@
 
             box-shadow: none !important;
         }
+    }
+
+    .footer {
+        background: linear-gradient(180deg, #1b1b28 0%, #282a3b 100%);
+        margin: -0.5rem;
+        padding: 0.5rem;
+    }
+
+    .crumb {
+        display: flex;
+        padding: 0.09375rem 0.25rem;
+        align-items: center;
+        gap: 0.125rem;
+
+        border-radius: 0.25rem;
+        background: var(--dark-neutrals-150, #373b4d);
+
+        color: var(--light-neutrals-30, #e8e9f0);
+        text-align: center;
+        font-family: Inter;
+        font-size: 0.75rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
     }
 </style>

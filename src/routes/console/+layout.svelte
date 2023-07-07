@@ -26,7 +26,7 @@
             label: 'Ask AI',
             callback: () => {
                 addSubPanel({
-                    name: 'Ask AI',
+                    name: 'AI',
                     component: AI
                 });
             },
