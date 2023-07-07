@@ -16,6 +16,17 @@
     import UsageRates from './usageRates.svelte';
     import type { PaymentList } from '$lib/stores/billing';
     import { paymentMethods } from '../account/payments/store';
+    import {
+        loadStripe,
+        type Stripe,
+        type StripeElements,
+        type PaymentMethod
+    } from '@stripe/stripe-js';
+    import { organization } from '$lib/stores/organization';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { app } from '$lib/stores/app';
+    import { apperanceDark, apperanceLight, publicStripeKey } from '$lib/stores/billing';
 
     let methods: PaymentList;
     let name: string;
@@ -24,11 +35,18 @@
     let budgetEnabled = false;
     let showRates = false;
 
+    let error: string;
+    let elements: StripeElements;
+    let stripe: Stripe;
+    let clientSecret: string;
+    let paymentMethod: PaymentMethod;
+    let isStripeInitialized = false;
+
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
         if (methods?.total) {
             $createOrganization.paymentMethodId = methods[0].id;
-        }
+        } else if (!isStripeInitialized) initialize();
     });
 
     async function removeCode() {
@@ -40,9 +58,68 @@
         redeemedCodes = redeemedCodes;
         promo = '';
     }
+
+    async function initialize() {
+        stripe = await loadStripe(publicStripeKey);
+        isStripeInitialized = true;
+
+        try {
+            clientSecret = $paymentMethods?.paymentMethods[0]?.clientSecret;
+            if (!clientSecret) {
+                paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+            }
+            const options = {
+                clientSecret: clientSecret ? clientSecret : paymentMethod.clientSecret,
+                appearance: $app.themeInUse === 'dark' ? apperanceDark : apperanceLight
+            };
+            console.log(clientSecret);
+            // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
+            elements = stripe.elements(options);
+            createForm();
+        } catch (e) {
+            error = e.message;
+        }
+    }
+
+    async function createForm() {
+        const paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
+    }
+
+    async function handleSubmit() {
+        try {
+            await stripe.confirmSetup({
+                elements,
+                confirmParams: {
+                    return_url: 'http://localhost:3000'
+                },
+                redirect: 'if_required'
+            });
+            paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
+            const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
+            if (setupIntent && setupIntent.status === 'succeeded') {
+                await sdk.forConsole.billing.setOrganizationPaymentMethod(
+                    $organization.$id,
+                    paymentMethod.$id
+                );
+                await invalidate(Dependencies.PAYMENT_METHODS);
+                console.log('test');
+                // const paymentElement = elements.getElement('payment');
+                // paymentElement.destroy();
+            } else console.log('test2');
+        } catch (e) {
+            error = e.message;
+            console.log(e);
+            // trackError(StripeError, Submit.ProjectCreate);
+        }
+    }
+
+    $: if ($createOrganization.paymentMethodId === null && !isStripeInitialized) {
+        initialize();
+    }
 </script>
 
-<WizardStep>
+<WizardStep beforeSubmit={handleSubmit}>
     <svelte:fragment slot="title">Payment details</svelte:fragment>
     <svelte:fragment slot="subtitle">Add a payment method to your organization.</svelte:fragment>
 
@@ -71,17 +148,19 @@
                         group={$createOrganization.paymentMethodId} />
                 {/if}
                 {#if $createOrganization.paymentMethodId === null}
-                    <InputText
-                        id="name"
-                        label="Cardholder name"
-                        placeholder="Cardholder name"
-                        bind:value={name}
-                        required
-                        autofocus={true} />
+                    <FormList>
+                        <InputText
+                            id="name"
+                            label="Cardholder name"
+                            placeholder="Cardholder name"
+                            bind:value={name}
+                            required
+                            autofocus={true} />
 
-                    <div id="payment-element">
-                        <!-- Elements will create form elements here -->
-                    </div>
+                        <div id="payment-element">
+                            <!-- Elements will create form elements here -->
+                        </div>
+                    </FormList>
                 {/if}
             </div>
         </div>

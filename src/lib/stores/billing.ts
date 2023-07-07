@@ -1,7 +1,8 @@
 import type { Client } from '@appwrite.io/console';
 import type { Organization } from './organization';
+import type { PaymentMethod } from '@stripe/stripe-js';
 
-export type PaymentMethod = {
+export type PaymentMethodData = {
     $id: string;
     providerMethodId: string;
     expiryMonth: number;
@@ -12,7 +13,7 @@ export type PaymentMethod = {
 };
 
 export type PaymentList = {
-    paymentMethods: PaymentMethod[];
+    paymentMethods: PaymentMethodData[];
     total: number;
 };
 
@@ -103,7 +104,7 @@ export class Billing {
         );
     }
 
-    async updateOrganizationPaymentMethod(organizationId: string, paymentMethodId: string) {
+    async setOrganizationPaymentMethod(organizationId: string, paymentMethodId: string) {
         const path = `/organizations/${organizationId}/payment-method`;
         const params = {
             organizationId,
@@ -120,7 +121,7 @@ export class Billing {
         );
     }
 
-    async updateOrganizationPaymentMethodBackup(organizationId: string, paymentMethodId: string) {
+    async setOrganizationPaymentMethodBackup(organizationId: string, paymentMethodId: string) {
         const path = `/organizations/${organizationId}/payment-method/backup`;
         const params = {
             organizationId,
@@ -228,7 +229,7 @@ export class Billing {
         );
     }
 
-    async getPaymentMethod(paymentMethodId: string): Promise<PaymentMethod> {
+    async getPaymentMethod(paymentMethodId: string): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId
@@ -260,7 +261,7 @@ export class Billing {
     async updatePaymentMethod(
         paymentMethodId: string,
         providerMethodId: string
-    ): Promise<PaymentMethod> {
+    ): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId,
@@ -277,7 +278,7 @@ export class Billing {
         );
     }
 
-    async deletePaymentMethod(paymentMethodId: string): Promise<PaymentMethod> {
+    async deletePaymentMethod(paymentMethodId: string): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId
@@ -292,7 +293,7 @@ export class Billing {
             params
         );
     }
-    async setDefaultPaymentMethod(paymentMethodId: string): Promise<PaymentMethod> {
+    async setDefaultPaymentMethod(paymentMethodId: string): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}/default`;
         const params = {
             paymentMethodId
@@ -308,7 +309,7 @@ export class Billing {
         );
     }
 
-    async addCredit(organizationId: string, couponId: string): Promise<PaymentMethod> {
+    async addCredit(organizationId: string, couponId: string): Promise<PaymentMethodData> {
         const path = `/accouorganizations/${organizationId}nt/credits`;
         const params = {
             couponId
@@ -323,7 +324,7 @@ export class Billing {
             params
         );
     }
-    async listCredits(organizationId: string, queries = []): Promise<PaymentMethod> {
+    async listCredits(organizationId: string, queries = []): Promise<PaymentMethodData> {
         const path = `/organizations/${organizationId}/credits`;
         const params = {
             queries
@@ -339,7 +340,7 @@ export class Billing {
         );
     }
 
-    async getCredit(organizationId: string, creditId: string): Promise<PaymentMethod> {
+    async getCredit(organizationId: string, creditId: string): Promise<PaymentMethodData> {
         const path = `/organizations/${organizationId}/credits/${creditId}`;
         const params = {
             creditId
@@ -375,6 +376,10 @@ export class Billing {
     //     );
     // }
 }
+
+export const publicStripeKey = import.meta.env?.VITE_STRIPE_PUBLIC_KEY?.toString() as
+    | string
+    | undefined;
 
 export const tierFree = {
     price: 0,

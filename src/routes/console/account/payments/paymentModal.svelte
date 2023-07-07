@@ -2,7 +2,7 @@
     // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
-    import { paymentMethods, publicKey } from './store';
+    import { paymentMethods } from './store';
     import {
         loadStripe,
         type Stripe,
@@ -15,7 +15,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { app } from '$lib/stores/app';
-    import { apperanceDark, apperanceLight } from '$lib/stores/billing';
+    import { apperanceDark, apperanceLight, publicStripeKey } from '$lib/stores/billing';
 
     export let show = false;
 
@@ -28,11 +28,11 @@
     let paymentMethod: PaymentMethod;
 
     onMount(async () => {
-        stripe = await loadStripe(publicKey);
+        stripe = await loadStripe(publicStripeKey);
         try {
             clientSecret = $paymentMethods?.paymentMethods[0]?.clientSecret;
             if (!clientSecret) {
-                paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
+                paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
             }
             const options = {
                 clientSecret: clientSecret ? clientSecret : paymentMethod.clientSecret,
@@ -64,10 +64,9 @@
             paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
             const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
             if (setupIntent && setupIntent.status === 'succeeded') {
-                await sdk.forConsole.billing.updateOrganizationPaymentMethod(
+                await sdk.forConsole.billing.setOrganizationPaymentMethod(
                     $organization.$id,
-                    paymentMethod.$id,
-                    setupIntent.payment_method as string
+                    paymentMethod.$id
                 );
                 await invalidate(Dependencies.PAYMENT_METHODS);
                 show = false;
