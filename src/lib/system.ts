@@ -10,7 +10,8 @@ export const VARS = {
         | undefined,
     CONSOLE_MODE: import.meta.env?.VITE_CONSOLE_MODE?.toString() as string | undefined,
     VERCEL_ENV: import.meta.env?.VITE_VERCEL_ENV?.toString() as string | undefined,
-    GOOGLE_ANALYTICS: import.meta.env?.VITE_GA_PROJECT?.toString() as string | undefined
+    GOOGLE_ANALYTICS: import.meta.env?.VITE_GA_PROJECT?.toString() as string | undefined,
+    AI_ENDPOINT: import.meta.env?.VITE_AI_ENDPOINT?.toString() as string | undefined
 };
 
 export const ENV = {
