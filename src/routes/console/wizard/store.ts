@@ -14,6 +14,7 @@ export const createOrganization = writable<{
     paymentMethodId: string;
     billingBudget?: number;
     collaborators?: Collborator[];
+    promoCodes?: string[];
 }>({
     id: null,
     name: null,

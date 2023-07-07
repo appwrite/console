@@ -14,8 +14,6 @@
     import { createOrganization } from './store';
     import { Collapsible, CollapsibleItem } from '$lib/components';
     import UsageRates from './usageRates.svelte';
-    import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     let methods = [];
     let name: string;
@@ -32,26 +30,13 @@
     });
 
     async function removeCode() {
-        console.log('test');
+        redeemedCodes = redeemedCodes.filter((code) => code !== promo);
+        promo = '';
     }
     async function redeem() {
-        try {
-            // await sdk.forConsole.billing.addCredit(promo);
-            redeemedCodes.push(promo);
-            redeemedCodes = redeemedCodes;
-            promo = '';
-            addNotification({
-                type: 'success',
-                message: 'Coupon redeemed successfully'
-            });
-            trackEvent(Submit.CouponRedeemed, { code: promo });
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error
-            });
-            trackError(error, Submit.CouponRedeemed);
-        }
+        redeemedCodes.push(promo);
+        redeemedCodes = redeemedCodes;
+        promo = '';
     }
 </script>
 

@@ -1,5 +1,6 @@
-import type { Client, Payload } from '@appwrite.io/console';
+import type { Client } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
+import type { Organization } from './organization';
 
 export class Billing {
     client: Client;
@@ -13,7 +14,7 @@ export class Billing {
         name: string,
         billingPlan: string,
         paymentMethodId: string
-    ): Promise<string> {
+    ): Promise<Organization> {
         const path = `/organization`;
         const params = {
             organizationId,
@@ -293,8 +294,8 @@ export class Billing {
         );
     }
 
-    async addCredit(couponId: string): Promise<PaymentMethod> {
-        const path = `/account/credits`;
+    async addCredit(organizationId: string, couponId: string): Promise<PaymentMethod> {
+        const path = `/accouorganizations/${organizationId}nt/credits`;
         const params = {
             couponId
         };
@@ -308,8 +309,8 @@ export class Billing {
             params
         );
     }
-    async listCredits(queries = []): Promise<PaymentMethod> {
-        const path = `/account/credits`;
+    async listCredits(organizationId: string, queries = []): Promise<PaymentMethod> {
+        const path = `/organizations/${organizationId}/credits`;
         const params = {
             queries
         };
@@ -324,8 +325,8 @@ export class Billing {
         );
     }
 
-    async getCredit(creditId: string): Promise<PaymentMethod> {
-        const path = `/account/credits/${creditId}`;
+    async getCredit(organizationId: string, creditId: string): Promise<PaymentMethod> {
+        const path = `/organizations/${organizationId}/credits/${creditId}`;
         const params = {
             creditId
         };

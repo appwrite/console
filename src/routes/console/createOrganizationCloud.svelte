@@ -13,6 +13,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
+    import { page } from '$app/stores';
 
     const dispatch = createEventDispatcher();
 
@@ -28,6 +29,33 @@
                 $createOrganization.billingPlan,
                 $createOrganization.paymentMethodId
             );
+
+            //Add credit
+            if ($createOrganization?.promoCodes?.length) {
+                $createOrganization.promoCodes.forEach(async (code) => {
+                    await sdk.forConsole.billing.addCredit(org.$id, code);
+                });
+            }
+            //Add budget
+            if ($createOrganization?.billingBudget) {
+                await sdk.forConsole.billing.updateBudget(
+                    org.$id,
+                    $createOrganization.billingBudget,
+                    [75]
+                );
+            }
+            //Add collaborators
+            if ($createOrganization?.collaborators?.length) {
+                $createOrganization.collaborators.forEach(async (collaborator) => {
+                    await sdk.forConsole.teams.createMembership(
+                        org.$id,
+                        [collaborator.role],
+                        `${$page.url.origin}/console/organization-${org.$id}`,
+                        collaborator.email
+                    );
+                });
+            }
+
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
             await goto(`/console/organization-${org.$id}`);
