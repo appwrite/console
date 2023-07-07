@@ -14,8 +14,10 @@
     import { createOrganization } from './store';
     import { Collapsible, CollapsibleItem } from '$lib/components';
     import UsageRates from './usageRates.svelte';
+    import type { PaymentList } from '$lib/stores/billing';
+    import { paymentMethods } from '../account/payments/store';
 
-    let methods = [];
+    let methods: PaymentList;
     let name: string;
     let promo: string;
     let redeemedCodes = [];
@@ -24,7 +26,7 @@
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
-        if (methods.length) {
+        if (methods?.total) {
             $createOrganization.paymentMethodId = methods[0].id;
         }
     });
@@ -45,25 +47,29 @@
     <svelte:fragment slot="subtitle">Add a payment method to your organization.</svelte:fragment>
 
     <FormList>
-        <div class:boxes-wrapper={methods?.length}>
-            {#if methods.length}
-                {#each methods as method}
-                    <InputRadio
-                        id="payment-method"
-                        label="Payment method"
-                        value={method.id}
-                        name={method.id}
-                        group="payment" />
+        <div class:boxes-wrapper={methods?.total}>
+            {#if methods?.total}
+                {#each methods.paymentMethods as method}
+                    <div class="box">
+                        <InputRadio
+                            id={`payment-method-${method.last4}`}
+                            label={`${method.brand} ending in ${method.last4}`}
+                            value={method.$id}
+                            name="payment"
+                            group={$createOrganization.paymentMethodId} />
+                    </div>
                 {/each}
             {/if}
 
             <div class="box">
-                <InputRadio
-                    id="payment-method"
-                    label="Add new payment method"
-                    value={null}
-                    name="test"
-                    group={$createOrganization.paymentMethodId} />
+                {#if methods?.total}
+                    <InputRadio
+                        id="payment-method"
+                        label="Add new payment method"
+                        value={null}
+                        name="payment"
+                        group={$createOrganization.paymentMethodId} />
+                {/if}
                 {#if $createOrganization.paymentMethodId === null}
                     <InputText
                         id="name"

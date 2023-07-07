@@ -1,6 +1,20 @@
 import type { Client } from '@appwrite.io/console';
-import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Organization } from './organization';
+
+export type PaymentMethod = {
+    $id: string;
+    providerMethodId: string;
+    expiryMonth: number;
+    expiryYear: number;
+    last4: string;
+    country: string;
+    brand: string;
+};
+
+export type PaymentList = {
+    paymentMethods: PaymentMethod[];
+    total: number;
+};
 
 export class Billing {
     client: Client;
@@ -198,7 +212,7 @@ export class Billing {
 
     //ACCOUNT
 
-    async listPaymentMethods(queries: [] = []): Promise<PaymentMethod> {
+    async listPaymentMethods(queries: [] = []): Promise<PaymentList> {
         const path = `/account/payment-methods`;
         const params = {
             queries
