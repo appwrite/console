@@ -1,8 +1,19 @@
 <script lang="ts">
-    import { CardGrid, Empty, Heading } from '$lib/components';
+    import { CardGrid, DropList, DropListItem, Empty, Heading } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
+    import {
+        Table,
+        TableBody,
+        TableCell,
+        TableCellHead,
+        TableHeader,
+        TableRow
+    } from '$lib/elements/table';
     import { paymentMethods } from './store';
+
     export let showPayment = false;
+    let showDropdown = [];
 
     console.log($paymentMethods);
 </script>
@@ -16,13 +27,71 @@
     </p>
     <svelte:fragment slot="aside">
         {#if $paymentMethods.total > 0}
-            {#each $paymentMethods.paymentMethods as paymentMethod}
-                <p>
-                    {paymentMethod.brand}
-                    {paymentMethod.last4}, expiring: {paymentMethod.expiryMonth}/{paymentMethod.expiryYear}
-                    {#if paymentMethod.default} <span class="icon-check-circle" /> {/if}
-                </p>
-            {/each}
+            <Table noMargin noStyles>
+                <TableHeader>
+                    <TableCellHead>Payment methods</TableCellHead>
+                    <TableCellHead width={220} />
+                    <TableCellHead width={50} />
+                </TableHeader>
+                <TableBody>
+                    {#each $paymentMethods.paymentMethods as paymentMethod, i}
+                        <TableRow>
+                            <TableCell>
+                                <p class="text u-bold">
+                                    {paymentMethod.brand} ending in {paymentMethod.last4}
+                                    <span>{paymentMethod.brand}</span>
+                                </p>
+                                <p class="text">
+                                    Expires {paymentMethod.expiryMonth}/{paymentMethod.expiryYear}
+                                </p>
+                            </TableCell>
+                            <TableCell>
+                                {#if paymentMethod.default}
+                                    <Pill>
+                                        <span class="icon-info" /> default payment method
+                                    </Pill>
+                                {/if}
+                                {#if paymentMethod.backup}
+                                    <Pill>
+                                        <span class="icon-info" /> backup payment method
+                                    </Pill>
+                                {/if}
+                            </TableCell>
+                            <TableCell showOverflow>
+                                <DropList
+                                    bind:show={showDropdown[i]}
+                                    placement="bottom-start"
+                                    noArrow>
+                                    <Button
+                                        round
+                                        text
+                                        on:click={() => {
+                                            showDropdown[i] = !showDropdown[i];
+                                        }}>
+                                        <span class="icon-dots-horizontal" />
+                                    </Button>
+                                    <svelte:fragment slot="list">
+                                        <DropListItem
+                                            icon="pencil"
+                                            on:click={() => {
+                                                console.log('test');
+                                            }}>
+                                            Edit
+                                        </DropListItem>
+                                        <DropListItem
+                                            icon="trash"
+                                            on:click={() => {
+                                                console.log('test');
+                                            }}>
+                                            Delete
+                                        </DropListItem>
+                                    </svelte:fragment>
+                                </DropList>
+                            </TableCell>
+                        </TableRow>
+                    {/each}
+                </TableBody>
+            </Table>
             <Button text noMargin on:click={() => (showPayment = true)}>
                 <span class="icon-plus" />
                 <span class="text">Add a payment method</span>

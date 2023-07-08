@@ -1,13 +1,11 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
-    import type { Models } from '@appwrite.io/console';
+    import { organizationList } from '$lib/stores/organization';
 
     let credit = 0;
     let coupon: string = null;
     let selectedOrganization: string = null;
-
-    export let organizations: Models.TeamList<Models.Preferences>;
 
     async function redeem() {
         const response = await fetch('/v1/billing/credit', {
@@ -26,7 +24,7 @@
         }
     }
 
-    $: options = organizations.teams?.map((t) => {
+    $: options = $organizationList.teams?.map((t) => {
         return {
             label: t.name,
             value: t.$id

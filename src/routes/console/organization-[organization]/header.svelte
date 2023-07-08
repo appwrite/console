@@ -16,7 +16,6 @@
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
-    import Android from '../project-[project]/overview/platforms/[platform]/android.svelte';
 
     let showDropdown = false;
 
@@ -30,7 +29,8 @@
     $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `/console/organization-${organizationId}`;
-    $: tabs = [
+
+    const permanentTabs = [
         {
             href: path,
             title: 'Projects',
@@ -53,18 +53,23 @@
             event: 'usage',
             title: 'Usage',
             hasChildren: true
-        },
-        {
-            href: `${path}/billing`,
-            event: 'billing',
-            title: 'Billing'
-        },
-        {
-            href: `${path}/invoices`,
-            event: 'invoices',
-            title: 'Invoices'
         }
     ];
+    $: tabs = isCloud
+        ? [
+              ...permanentTabs,
+              {
+                  href: `${path}/billing`,
+                  event: 'billing',
+                  title: 'Billing'
+              },
+              {
+                  href: `${path}/invoices`,
+                  event: 'invoices',
+                  title: 'Invoices'
+              }
+          ]
+        : permanentTabs;
 </script>
 
 <Cover>

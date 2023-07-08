@@ -310,7 +310,7 @@ export class Billing {
     }
 
     async addCredit(organizationId: string, couponId: string): Promise<PaymentMethodData> {
-        const path = `/accouorganizations/${organizationId}nt/credits`;
+        const path = `/organizations/${organizationId}/credits`;
         const params = {
             couponId
         };
