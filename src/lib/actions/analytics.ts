@@ -212,5 +212,11 @@ export enum Submit {
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',
     BudgetCapUpdate = 'submit_budget_cap_update',
-    CouponRedeemed = 'submit_coupon_redeemed'
+    CouponRedeemed = 'submit_coupon_redeemed',
+    PaymentMethodCreated = 'submit_payment_method_created',
+    PaymentMethodUpdated = 'submit_payment_method_updated',
+    PaymentMethodDeleted = 'submit_payment_method_deleted',
+    BillingAddressDeleted = 'submit_billing_address_deleted',
+    BillingAddressCreated = 'submit_billing_address_created',
+    BillingAddressUpdated = 'submit_billing_address_updated'
 }

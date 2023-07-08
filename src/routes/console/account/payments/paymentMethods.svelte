@@ -10,10 +10,13 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
+    import DeletePayment from './deletePayment.svelte';
     import { paymentMethods } from './store';
 
     export let showPayment = false;
     let showDropdown = [];
+    let selectedMethod: string;
+    let showDelete = false;
 
     console.log($paymentMethods);
 </script>
@@ -81,7 +84,9 @@
                                         <DropListItem
                                             icon="trash"
                                             on:click={() => {
-                                                console.log('test');
+                                                selectedMethod = paymentMethod.$id;
+                                                showDelete = true;
+                                                showDropdown[i] = false;
                                             }}>
                                             Delete
                                         </DropListItem>
@@ -103,3 +108,7 @@
         {/if}
     </svelte:fragment>
 </CardGrid>
+
+{#if selectedMethod}
+    <DeletePayment method={selectedMethod} bind:showDelete />
+{/if}
