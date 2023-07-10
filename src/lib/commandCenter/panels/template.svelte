@@ -12,12 +12,12 @@
 
     import { quadOut } from 'svelte/easing';
     import { crossfade } from 'svelte/transition';
-    import Breadcrumbs from '$lib/layout/breadcrumbs.svelte';
 
     type BaseOption = { callback: () => void; group?: CommandGroup };
     type Option = $$Generic<BaseOption>;
     export let options: Option[] | null = null;
     export let search = '';
+    export let fullheight = false;
 
     let selected = 0;
 
@@ -159,17 +159,21 @@
 
 <div
     class="card"
+    class:fullheight
     bind:this={cardEl}
     class:press={!$commandCenterCtx.isInitialPanel}
     class:scale-up={$commandCenterCtx.isInitialPanel && $commandCenterCtx.open}>
     <div class="u-flex u-flex-vertical u-width-full-line u-overflow-hidden">
-        <div class="u-flex u-gap-4 u-cross-center u-width-full-line">
+        <div class="search-wrapper">
             {#each breadcrumbs as crumb, i}
-                <button class="crumb" on:click={() => handleCrumbClick(i)}>{crumb}</button>
+                <button class="crumb" on:click={() => handleCrumbClick(i)}>
+                    <span>{crumb}</span>
+                    <i class="icon-x" />
+                </button>
             {/each}
 
             <slot name="search">
-                <div class="u-flex search-wrapper u-width-full-line">
+                <div class="u-flex default-search u-width-full-line">
                     <input
                         type="text"
                         placeholder="Search for commands..."
@@ -179,42 +183,44 @@
             </slot>
         </div>
 
-        {#if groupsAndOptions}
-            <ul class="options u-margin-block-start-16 u-flex u-flex-vertical u-gap-8">
-                {#each groupsAndOptions as item}
-                    {@const isSelected = !isGroup(item) && item.index === selected}
-                    {#if isGroup(item)}
-                        <li class="group eyebrow-heading-3">
-                            {item.name}
-                        </li>
+        <div class="content">
+            {#if groupsAndOptions}
+                <ul class="options">
+                    {#each groupsAndOptions as item}
+                        {@const isSelected = !isGroup(item) && item.index === selected}
+                        {#if isGroup(item)}
+                            <li class="group eyebrow-heading-3">
+                                {item.name}
+                            </li>
+                        {:else}
+                            <li class="result" data-selected={isSelected ? true : undefined}>
+                                {#if isSelected}
+                                    <div
+                                        class="bg"
+                                        in:send|local={{ key: 'bg' }}
+                                        out:receive|local={{ key: 'bg' }} />
+                                {/if}
+                                <button
+                                    class="option"
+                                    on:click={getOptionClickHandler(item)}
+                                    on:mouseover={getOptionFocusHandler(item)}
+                                    on:focus={getOptionFocusHandler(item)}>
+                                    <slot name="option" option={castOption(item)} />
+                                </button>
+                            </li>
+                        {/if}
                     {:else}
-                        <li class="result" data-selected={isSelected ? true : undefined}>
-                            {#if isSelected}
-                                <div
-                                    class="bg"
-                                    in:send|local={{ key: 'bg' }}
-                                    out:receive|local={{ key: 'bg' }} />
-                            {/if}
-                            <button
-                                class="option"
-                                on:click={getOptionClickHandler(item)}
-                                on:mouseover={getOptionFocusHandler(item)}
-                                on:focus={getOptionFocusHandler(item)}>
-                                <slot name="option" option={castOption(item)} />
-                            </button>
+                        <li class="result">
+                            <slot name="no-options">
+                                <span class="text">No options found</span>
+                            </slot>
                         </li>
-                    {/if}
-                {:else}
-                    <li class="result">
-                        <slot name="no-options">
-                            <span class="text">No options found</span>
-                        </slot>
-                    </li>
-                {/each}
-            </ul>
-        {:else}
-            <slot />
-        {/if}
+                    {/each}
+                </ul>
+            {:else}
+                <slot />
+            {/if}
+        </div>
     </div>
     <div class="footer">
         <slot name="footer" />
@@ -257,11 +263,11 @@
     .card {
         display: flex;
         flex-direction: column;
-        width: var(--command-panel-width, 680px);
+        width: var(--command-panel-width, 42.5rem);
         max-width: 100%;
-        max-height: 450px;
+        max-height: 32rem;
         overflow: hidden;
-        padding: 0.5rem;
+        padding: 0;
 
         position: absolute;
         top: clamp(128px, 15vh, 400px);
@@ -273,71 +279,42 @@
         background: rgba(27, 27, 40, 0.8);
         box-shadow: 0px 16px 32px 0px #14141f;
         backdrop-filter: blur(6px);
+
+        &.fullheight {
+            height: 32rem;
+        }
+
+        :global(.kbd) {
+            background-color: hsl(var(--color-neutral-150));
+            padding-inline: 0.25rem;
+        }
     }
 
     .search-wrapper {
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+        width: 100%;
+
         border-bottom: 1px solid hsl(var(--color-border));
         font-size: 16px;
-    }
+        padding: 1rem;
 
-    .options {
-        overflow-y: auto;
-        height: 100%;
-        flex-shrink: 1;
-    }
-
-    input {
-        border: none;
-        background-color: transparent;
-    }
-
-    .group {
-        color: hsl(var(--color-neutral-70));
-        margin-inline-start: 0.25rem;
-        position: relative;
-        z-index: 10;
-    }
-
-    .result {
-        transition: 150ms;
-        position: relative;
-
-        opacity: 0.65;
-        transition: 75ms cubic-bezier(0.5, 1, 0.89, 1);
-        &[data-selected] {
-            opacity: 1;
-            transition: 150ms cubic-bezier(0.5, 1, 0.89, 1);
+        .default-search {
+            input {
+                margin: -1rem;
+                padding: 1rem;
+                border: none;
+                background-color: transparent;
+            }
         }
-
-        .bg {
-            position: absolute;
-            inset: 0;
-            background-color: hsl(var(--color-neutral-200));
-            border-radius: 0.75rem;
-            translate: 0 -1px;
-        }
-
-        .option {
-            padding: 0.5rem 0.75rem;
-            position: relative;
-            z-index: 10;
-            width: 100%;
-
-            box-shadow: none !important;
-        }
-    }
-
-    .footer {
-        background: linear-gradient(180deg, #1b1b28 0%, #282a3b 100%);
-        margin: -0.5rem;
-        padding: 0.5rem;
     }
 
     .crumb {
         display: flex;
         padding: 0.09375rem 0.25rem;
         align-items: center;
-        gap: 0.125rem;
+        gap: 0.25rem;
 
         border-radius: 0.25rem;
         background: var(--dark-neutrals-150, #373b4d);
@@ -349,5 +326,69 @@
         font-style: normal;
         font-weight: 400;
         line-height: normal;
+
+        white-space: nowrap;
+
+        &:hover {
+            opacity: 0.75;
+        }
+
+        i {
+            font-size: 10px;
+        }
+    }
+
+    .options {
+        overflow-y: auto;
+        height: 100%;
+        flex-shrink: 1;
+
+        padding: 1rem;
+
+        .group {
+            color: hsl(var(--color-neutral-70));
+            margin-inline-start: 0.25rem;
+            margin-block-start: 1rem;
+            margin-block-end: 0.25rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .result {
+            transition: 150ms;
+            position: relative;
+
+            opacity: 0.65;
+            transition: 75ms cubic-bezier(0.5, 1, 0.89, 1);
+            &[data-selected] {
+                opacity: 1;
+                transition: 150ms cubic-bezier(0.5, 1, 0.89, 1);
+            }
+
+            .bg {
+                position: absolute;
+                inset: 0;
+                background-color: hsl(var(--color-neutral-200));
+                border-radius: 0.75rem;
+                translate: 0 -1px;
+            }
+
+            .option {
+                padding: 0.5rem 0.75rem;
+                position: relative;
+                z-index: 10;
+                width: 100%;
+
+                box-shadow: none !important;
+            }
+        }
+    }
+
+    .footer {
+        background: linear-gradient(180deg, #1b1b28 0%, #282a3b 100%);
+        border-top: 1px solid hsl(var(--color-border));
+
+        // margin: -1rem;
+        padding: 0.5rem 1rem;
     }
 </style>

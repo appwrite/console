@@ -108,9 +108,7 @@
         </div>
     </div>
     <svelte:fragment slot="no-options">No commands found</svelte:fragment>
-    <div
-        slot="footer"
-        class="footer u-margin-block-start-16 u-flex u-flex u-cross-center u-main-space-between">
+    <div slot="footer" class="footer u-flex u-flex u-cross-center u-main-space-between">
         <div class="u-flex u-cross-center u-gap-4">
             <kbd class="kbd">Enter</kbd> <span>to select and close</span>
         </div>
@@ -119,21 +117,3 @@
         </div>
     </div>
 </Template>
-
-<style lang="scss">
-    .kbd {
-        padding-inline: 0.25rem;
-    }
-
-    .footer {
-        border-top: 1px solid hsl(var(--color-border));
-        margin-inline: -0.5rem;
-        padding-inline: 1rem;
-        padding-block-start: 0.5rem;
-
-        .kbd {
-            background-color: hsl(var(--color-neutral-150));
-            padding: 4.5px 3.5px;
-        }
-    }
-</style>
