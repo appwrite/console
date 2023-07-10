@@ -1,9 +1,9 @@
 <script lang="ts">
-    // import LL from '$i18n/i18n-svelte';
+    import LL from '$i18n/i18n-svelte';
 </script>
 
 <svelte:head>
-    <title>Onboarding - Appwrite</title>
+    <title>{$LL.console.onboarding.title.onboarding()} - Appwrite</title>
 </svelte:head>
 
 <slot />

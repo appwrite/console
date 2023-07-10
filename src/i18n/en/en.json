@@ -345,7 +345,32 @@
                 }
             }
         },
-        "onboarding": {},
+        "onboarding": {
+            "title": {
+                "onboarding": "Onboarding",
+                "coverTitle": "Let's create your first project"
+            },
+            "forms": {
+                "createProject": {
+                    "inputs": {
+                        "name": {
+                            "label": "Project name",
+                            "placeholder": "First Appwrite Project"
+                        }
+                    }
+                }
+            },
+            "button": {
+                "submit": {
+                    "create": "Create Project"
+                }
+            },
+            "table": {
+                "pill": {
+                    "projectId": "Project ID"
+                }
+            }
+        },
         "organization": {},
         "project": {}
     }
