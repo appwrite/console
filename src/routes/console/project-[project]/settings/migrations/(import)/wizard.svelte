@@ -18,7 +18,7 @@
         const resources = formDataToResources($formData);
         switch ($provider.provider) {
             case 'appwrite': {
-                const res = await sdk.forProject.migrations.migrationAppwrite(
+                const res = await sdk.forProject.migrations.migrateAppwrite(
                     resources,
                     $provider.endpoint,
                     $provider.projectID,
@@ -29,7 +29,7 @@
                 break;
             }
             case 'supabase': {
-                const res = await sdk.forProject.migrations.migrationSupabase(
+                const res = await sdk.forProject.migrations.migrateSupabase(
                     resources,
                     $provider.endpoint,
                     $provider.apiKey,
@@ -40,6 +40,31 @@
                 );
                 console.log(res);
                 invalidate(Dependencies.MIGRATIONS);
+                break;
+            }
+            case 'firebase': {
+                const res = await sdk.forProject.migrations.migrateFirebase(
+                    resources,
+                    $provider.serviceAccount
+                );
+                console.log(res);
+                invalidate(Dependencies.MIGRATIONS);
+                break;
+            }
+            case 'nhost': {
+                const res = await sdk.forProject.migrations.migrateNHost(
+                    resources,
+                    $provider.subdomain,
+                    $provider.region,
+                    $provider.adminSecret,
+                    $provider.database,
+                    $provider.username,
+                    $provider.password,
+                    $provider.port
+                );
+                console.log(res);
+                invalidate(Dependencies.MIGRATIONS);
+                break;
             }
         }
         resetImportStores();

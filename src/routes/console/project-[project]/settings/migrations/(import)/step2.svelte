@@ -2,11 +2,13 @@
     import { EyebrowHeading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
+    import { sdk } from '$lib/stores/sdk';
     import type { DeepKeys, WritableValue } from '$lib/helpers/types';
 
     import { WizardStep } from '$lib/layout';
+    import { onMount } from 'svelte';
 
-    import { formData } from '.';
+    import { formData, formDataToResources, provider } from '.';
 
     type FormData = WritableValue<typeof formData>;
     type FormKeys = DeepKeys<FormData>;
@@ -59,6 +61,24 @@
             return v;
         });
     }
+
+    let report: any;
+
+    onMount(async () => {
+        const resources = formDataToResources($formData);
+
+        switch ($provider.provider) {
+            case 'appwrite': {
+                const res = await sdk.forProject.migrations.generateAppwriteReport(
+                    resources,
+                    $provider.endpoint,
+                    $provider.projectID,
+                    $provider.apiKey
+                );
+                report = res;
+            }
+        }
+    });
 </script>
 
 <WizardStep>
@@ -116,7 +136,9 @@
                 on:change={handleInputChange('users.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Users</span>
-                <span class="inline-tag">300</span>
+                {#if report}
+                    <span class="inline-tag">{report.user}</span>
+                {/if}
             </div>
             <div />
             <span>Import all users</span>
@@ -129,7 +151,9 @@
                         on:change={handleInputChange('users.teams')} />
                     <div class="u-flex u-gap-4">
                         <span class="u-bold">Include teams</span>
-                        <span class="inline-tag">4</span>
+                        {#if report}
+                            <span class="inline-tag">{report.team}</span>
+                        {/if}
                     </div>
                     <div />
                     <span>Import all teams and the team memberships of your users</span>
@@ -143,7 +167,9 @@
                 on:change={handleInputChange('databases.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Databases</span>
-                <span class="inline-tag">300</span>
+                {#if report}
+                    <span class="inline-tag">{report.database}</span>
+                {/if}
             </div>
             <div />
             <span>Import all databases, including collections, indexes and attributes</span>
@@ -156,7 +182,9 @@
                         on:change={handleInputChange('databases.documents')} />
                     <div class="u-flex u-gap-4">
                         <span class="u-bold">Include documents</span>
-                        <span class="inline-tag">4</span>
+                        {#if report}
+                            <span class="inline-tag">{report.document}</span>
+                        {/if}
                     </div>
                     <div />
                     <span>Import all of your documents</span>
@@ -170,7 +198,9 @@
                 on:change={handleInputChange('functions.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Functions</span>
-                <span class="inline-tag">30</span>
+                {#if report}
+                    <span class="inline-tag">{report.function}</span>
+                {/if}
             </div>
             <div />
             <span>Import all functions and their active deployment</span>
@@ -184,7 +214,7 @@
                         <span class="u-bold">Include environment variables</span>
                     </div>
                     <div />
-                    <span>Description here</span>
+                    <span>Import all environment variables</span>
                 </li>
                 <li class="checkbox-field">
                     <input
@@ -195,7 +225,7 @@
                         <span class="u-bold">Include inactive deployments</span>
                     </div>
                     <div />
-                    <span>Description here</span>
+                    <span>Import all deployments that are not currently active</span>
                 </li>
             </ul>
         </li>
@@ -206,10 +236,16 @@
                 on:change={handleInputChange('storage.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Storage</span>
-                <span class="inline-tag">30GB</span>
+                {#if report}
+                    <span class="inline-tag">{report.size.toFixed(2)}MB</span>
+                {/if}
             </div>
             <div />
-            <span>Import all buckets (2) and files (3000)</span>
+            {#if report}
+                <span>Import all buckets ({report.bucket}) and files ({report.file})</span>
+            {:else}
+                <span>Import all buckets and files</span>
+            {/if}
         </li>
     </ul>
 </WizardStep>
