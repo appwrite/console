@@ -5,5 +5,5 @@
             "destination": "/"
         }
     ],
-    "installCommand": "pnpm install"
+    "installCommand": "npm install --legacy-peer-deps"
 }
