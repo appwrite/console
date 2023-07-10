@@ -30,7 +30,7 @@ export class Billing {
         billingPlan: string,
         paymentMethodId: string
     ): Promise<Organization> {
-        const path = `/organization`;
+        const path = `/organizations`;
         const params = {
             organizationId,
             name,
