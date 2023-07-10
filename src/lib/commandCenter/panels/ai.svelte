@@ -91,14 +91,16 @@
                     <img src={CoolerAppwrite} alt="Appwrite logo" />
                 </div>
                 <div class="answer">
-                    {#if $isLoading}
+                    {#if $isLoading && !$completion}
                         <p>...</p>
                     {:else}
                         {#each answer as part}
                             {#if part.type === 'text'}
                                 <p>{part.value}</p>
                             {:else if part.type === 'code'}
-                                <Code language={part.language} code={part.value} />
+                                {#key part.value}
+                                    <Code language={part.language} code={part.value} />
+                                {/key}
                             {/if}
                         {/each}
                     {/if}
@@ -187,6 +189,7 @@
 
             p {
                 white-space: pre-wrap;
+                word-break: break-all;
             }
         }
 
