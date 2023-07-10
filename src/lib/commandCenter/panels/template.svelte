@@ -163,65 +163,64 @@
     bind:this={cardEl}
     class:press={!$commandCenterCtx.isInitialPanel}
     class:scale-up={$commandCenterCtx.isInitialPanel && $commandCenterCtx.open}>
-    <div class="u-flex u-flex-vertical u-width-full-line u-overflow-hidden">
-        <div class="search-wrapper">
-            {#each breadcrumbs as crumb, i}
-                <button class="crumb" on:click={() => handleCrumbClick(i)}>
-                    <span>{crumb}</span>
-                    <i class="icon-x" />
-                </button>
-            {/each}
+    <div class="search-wrapper">
+        {#each breadcrumbs as crumb, i}
+            <button class="crumb" on:click={() => handleCrumbClick(i)}>
+                <span>{crumb}</span>
+                <i class="icon-x" />
+            </button>
+        {/each}
 
-            <slot name="search">
-                <div class="u-flex default-search u-width-full-line">
-                    <input
-                        type="text"
-                        placeholder="Search for commands..."
-                        autofocus
-                        bind:value={search} />
-                </div>
-            </slot>
-        </div>
-
-        <div class="content">
-            {#if groupsAndOptions}
-                <ul class="options">
-                    {#each groupsAndOptions as item}
-                        {@const isSelected = !isGroup(item) && item.index === selected}
-                        {#if isGroup(item)}
-                            <li class="group eyebrow-heading-3">
-                                {item.name}
-                            </li>
-                        {:else}
-                            <li class="result" data-selected={isSelected ? true : undefined}>
-                                {#if isSelected}
-                                    <div
-                                        class="bg"
-                                        in:send|local={{ key: 'bg' }}
-                                        out:receive|local={{ key: 'bg' }} />
-                                {/if}
-                                <button
-                                    class="option"
-                                    on:click={getOptionClickHandler(item)}
-                                    on:mouseover={getOptionFocusHandler(item)}
-                                    on:focus={getOptionFocusHandler(item)}>
-                                    <slot name="option" option={castOption(item)} />
-                                </button>
-                            </li>
-                        {/if}
-                    {:else}
-                        <li class="result">
-                            <slot name="no-options">
-                                <span class="text">No options found</span>
-                            </slot>
-                        </li>
-                    {/each}
-                </ul>
-            {:else}
-                <slot />
-            {/if}
-        </div>
+        <slot name="search">
+            <div class="u-flex default-search u-width-full-line">
+                <input
+                    type="text"
+                    placeholder="Search for commands..."
+                    autofocus
+                    bind:value={search} />
+            </div>
+        </slot>
     </div>
+
+    <div class="content">
+        {#if groupsAndOptions}
+            <ul class="options">
+                {#each groupsAndOptions as item}
+                    {@const isSelected = !isGroup(item) && item.index === selected}
+                    {#if isGroup(item)}
+                        <li class="group eyebrow-heading-3">
+                            {item.name}
+                        </li>
+                    {:else}
+                        <li class="result" data-selected={isSelected ? true : undefined}>
+                            {#if isSelected}
+                                <div
+                                    class="bg"
+                                    in:send|local={{ key: 'bg' }}
+                                    out:receive|local={{ key: 'bg' }} />
+                            {/if}
+                            <button
+                                class="option"
+                                on:click={getOptionClickHandler(item)}
+                                on:mouseover={getOptionFocusHandler(item)}
+                                on:focus={getOptionFocusHandler(item)}>
+                                <slot name="option" option={castOption(item)} />
+                            </button>
+                        </li>
+                    {/if}
+                {:else}
+                    <li class="result">
+                        <slot name="no-options">
+                            <span class="text">No options found</span>
+                        </slot>
+                    </li>
+                {/each}
+            </ul>
+        {:else}
+            <slot />
+        {/if}
+    </div>
+
     <div class="footer">
         <slot name="footer" />
     </div>
@@ -338,48 +337,49 @@
         }
     }
 
-    .options {
+    .content {
         overflow-y: auto;
-        height: 100%;
-        flex-shrink: 1;
+        flex-grow: 1;
 
-        padding: 1rem;
+        .options {
+            padding: 1rem;
 
-        .group {
-            color: hsl(var(--color-neutral-70));
-            margin-inline-start: 0.25rem;
-            margin-block-start: 1rem;
-            margin-block-end: 0.25rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        .result {
-            transition: 150ms;
-            position: relative;
-
-            opacity: 0.65;
-            transition: 75ms cubic-bezier(0.5, 1, 0.89, 1);
-            &[data-selected] {
-                opacity: 1;
-                transition: 150ms cubic-bezier(0.5, 1, 0.89, 1);
-            }
-
-            .bg {
-                position: absolute;
-                inset: 0;
-                background-color: hsl(var(--color-neutral-200));
-                border-radius: 0.75rem;
-                translate: 0 -1px;
-            }
-
-            .option {
-                padding: 0.5rem 0.75rem;
+            .group {
+                color: hsl(var(--color-neutral-70));
+                margin-inline-start: 0.25rem;
+                margin-block-start: 1rem;
+                margin-block-end: 0.25rem;
                 position: relative;
                 z-index: 10;
-                width: 100%;
+            }
 
-                box-shadow: none !important;
+            .result {
+                transition: 150ms;
+                position: relative;
+
+                opacity: 0.65;
+                transition: 75ms cubic-bezier(0.5, 1, 0.89, 1);
+                &[data-selected] {
+                    opacity: 1;
+                    transition: 150ms cubic-bezier(0.5, 1, 0.89, 1);
+                }
+
+                .bg {
+                    position: absolute;
+                    inset: 0;
+                    background-color: hsl(var(--color-neutral-200));
+                    border-radius: 0.75rem;
+                    translate: 0 -1px;
+                }
+
+                .option {
+                    padding: 0.5rem 0.75rem;
+                    position: relative;
+                    z-index: 10;
+                    width: 100%;
+
+                    box-shadow: none !important;
+                }
             }
         }
     }
