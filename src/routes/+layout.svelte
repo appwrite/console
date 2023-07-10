@@ -20,7 +20,6 @@
     // typesafe-i18n
     import { localStorageDetector } from 'typesafe-i18n/detectors';
     import { setLocale } from '$i18n/i18n-svelte';
-    import type { Locales } from '$i18n/i18n-types';
     import { detectLocale } from '$i18n/i18n-util';
     import { loadLocaleAsync } from '$i18n/i18n-util.async';
 
@@ -90,18 +89,10 @@
             }
         }
 
-        /**
-         * typesafe-i18n here
-         */
-
         const detectedLocale = detectLocale(localStorageDetector);
-        await chooseLocale(detectedLocale);
+        await loadLocaleAsync(detectedLocale);
+        setLocale(detectedLocale);
     });
-
-    const chooseLocale = async (locale: Locales) => {
-        await loadLocaleAsync(locale);
-        setLocale(locale);
-    };
 
     afterNavigate((navigation) => {
         if (navigation.type !== 'enter' && navigation.from?.route?.id !== navigation.to.route.id) {
