@@ -13,6 +13,7 @@
     import CreateOrganization from '../../createOrganization.svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -26,11 +27,11 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Organizations</Heading>
+        <Heading tag="h2" size="5">{$LL.console.account.title.organization()}</Heading>
 
         <Button on:click={() => (addOrganization = true)} event="create_organization">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create organization</span>
+            <span class="text">{$LL.console.account.button.createOrg()}</span>
         </Button>
     </div>
 
@@ -44,7 +45,8 @@
                 {@const avatarList = getMemberships(organization.$id)}
                 <GridItem1 href={`${base}/console/organization-${organization.$id}`}>
                     <svelte:fragment slot="eyebrow">
-                        {organization?.total ? organization?.total : 'No'} members
+                        {organization?.total ? organization?.total : 'No'}
+                        {$LL.console.account.texts.members()}
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {organization.name}
@@ -57,12 +59,12 @@
                 </GridItem1>
             {/each}
             <svelte:fragment slot="empty">
-                <p>Create a new organization</p>
+                <p>{$LL.console.account.texts.createOrg()}</p>
             </svelte:fragment>
         </CardContainer>
     {:else}
         <Empty single on:click={() => (addOrganization = true)}>
-            <p>Create a new organization</p>
+            <p>{$LL.console.account.texts.createOrg()}</p>
         </Empty>
     {/if}
 

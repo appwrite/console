@@ -250,6 +250,103 @@
                 "sessions": "Sessions",
                 "activity": "Activity"
             }
-        }
+        },
+
+        "account": {
+            "title": {
+                "user": "User",
+                "organizations": "Organizations",
+                "deleteAccount": "Delete Account"
+            },
+            "forms": {
+                "updateName": {
+                    "title": "Name",
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Enter name"
+                        }
+                    }
+                },
+                "updateEmail": {
+                    "title": "Email",
+                    "inputs": {
+                        "email": {
+                            "label": "Email",
+                            "placeholder": "Enter email"
+                        },
+                        "password": {
+                            "label": "Password",
+                            "placeholder": "Enter password"
+                        }
+                    }
+                },
+                "updatePassword": {
+                    "title": "Password",
+                    "inputs": {
+                        "oldPassword": {
+                            "label": "Old Password",
+                            "placeholder": "Enter password"
+                        },
+                        "newPassword": {
+                            "label": "New Password",
+                            "placeholder": "Enter password"
+                        }
+                    },
+                    "texts": {
+                        "forgotPassword": "Forgot your password?",
+                        "recoverPassword": "Recover your password"
+                    }
+                }
+            },
+            "button": {
+                "submit": {
+                    "update": "Update",
+                    "cancel": "Cancel",
+                    "delete": "Delete"
+                },
+                "logout": "Logout",
+                "documentation": "Documentation",
+                "createOrg": "Create organization",
+                "logoutAllSessions": "Logout all sessions"
+            },
+            "texts": {
+                "members": "members",
+                "createOrg": "Create a new organization",
+                "noSession": "No sessions available",
+                "totalResult": "Total results:",
+                "deleteWarning": "Are you sure you want to delete your account?",
+                "deleteAccount": " Your account will be permanently deleted and access will be lost to any of your teams and data. This action is irreversible."
+            },
+            "navbar": {
+                "header": {
+                    "overview": "Overview",
+                    "sessions": "Sessions",
+                    "activity": "Activity",
+                    "organization": "Organizations"
+                }
+            },
+            "table": {
+                "header": {
+                    "client": "Client",
+                    "location": "Location",
+                    "ip": "IP"
+                },
+                "trim": {
+                    "on": "on"
+                },
+                "texts": {
+                    "unknown": "Unknown"
+                },
+                "pill": {
+                    "alert": {
+                        "current": "current session"
+                    }
+                }
+            }
+        },
+        "onboarding": {},
+        "organization": {},
+        "project": {}
     }
 }

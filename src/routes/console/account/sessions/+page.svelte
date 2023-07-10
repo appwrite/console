@@ -19,6 +19,7 @@
     import type { PageData } from './$types';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -45,19 +46,21 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Sessions</Heading>
+        <Heading tag="h2" size="5">{$LL.console.account.title.sessions()}</Heading>
 
         <Button secondary on:click={logoutAll}>
-            <span class="text">Logout all sessions</span>
+            <span class="text">{$LL.console.account.button.logoutAllSessions()}</span>
         </Button>
     </div>
 
     {#if data.sessions.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={250}>Client</TableCellHead>
-                <TableCellHead width={70}>Location</TableCellHead>
-                <TableCellHead width={90}>IP</TableCellHead>
+                <TableCellHead width={250}
+                    >{$LL.console.account.table.header.client()}</TableCellHead>
+                <TableCellHead width={70}
+                    >{$LL.console.account.table.header.location()}</TableCellHead>
+                <TableCellHead width={90}>{$LL.console.account.table.header.ip()}</TableCellHead>
                 <TableCellHead width={60} />
             </TableHeader>
             <TableBody>
@@ -76,18 +79,22 @@
                                     <Trim>
                                         {session.clientName}
                                         {session.clientVersion}
-                                        on {session.osName}
+                                        {$LL.console.account.table.trim.on()}
+                                        {session.osName}
                                         {session.osVersion}
                                     </Trim>
                                 {:else}
                                     <span class="avatar is-color-empty" />
-                                    <p class="text u-trim">Unknown</p>
+                                    <p class="text u-trim">
+                                        {$LL.console.account.table.texts.unknown()}
+                                    </p>
                                 {/if}
                                 <div class="is-only-desktop">
                                     <Pill>{session.provider}</Pill>
                                 </div>
                                 {#if session.current}
-                                    <Pill success>current session</Pill>
+                                    <Pill success
+                                        >{$LL.console.account.table.pill.alert.current()}</Pill>
                                 {/if}
                             </div>
                         </TableCell>
@@ -95,12 +102,13 @@
                             {#if session.countryCode !== '--'}
                                 {session.countryName}
                             {:else}
-                                Unknown
+                                {$LL.console.account.table.texts.unknown()}
                             {/if}
                         </TableCellText>
                         <TableCellText title="IP">{session.ip}</TableCellText>
                         <TableCell title="Client">
-                            <Button secondary on:click={() => logout(session)}>Logout</Button>
+                            <Button secondary on:click={() => logout(session)}
+                                >{$LL.console.account.button.logout()}</Button>
                         </TableCell>
                     </TableRow>
                 {/each}
@@ -110,20 +118,20 @@
         <Empty>
             <div class="u-flex u-flex-vertical u-cross-center">
                 <div class="common-section">
-                    <p>No sessions available</p>
+                    <p>{$LL.console.account.texts.noSession()}</p>
                 </div>
                 <div class="common-section">
                     <Button
                         external
                         secondary
                         href="https://appwrite.io/docs/client/account#accountCreateEmailSession">
-                        Documentation
+                        {$LL.console.account.button.documentation()}
                     </Button>
                 </div>
             </div>
         </Empty>
     {/if}
     <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {data.sessions.total}</p>
+        <p class="text">{$LL.console.account.texts.totalResult()} {data.sessions.total}</p>
     </div>
 </Container>
