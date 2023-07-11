@@ -71,6 +71,12 @@ function isInputEvent(event: KeyboardEvent) {
     return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
 }
 
+function getCommandRank(command: KeyedCommand) {
+    const { keys, ctrl: meta, shift, alt } = command;
+    const modifiers = [meta, shift, alt].filter(Boolean).length;
+    return keys.length + modifiers * 10;
+}
+
 function hasDisputing(command: KeyedCommand, allCommands: Command[]) {
     return allCommands.some((otherCommand) => {
         if (command === otherCommand) {
@@ -81,7 +87,14 @@ function hasDisputing(command: KeyedCommand, allCommands: Command[]) {
         }
         const keysString = command.keys.join('+');
         const otherKeysString = otherCommand.keys.join('+');
-        return keysString.includes(otherKeysString) || otherKeysString.includes(keysString);
+
+        const cmdRank = getCommandRank(command);
+        const otherCmdRank = getCommandRank(otherCommand);
+
+        return (
+            (keysString.includes(otherKeysString) || otherKeysString.includes(keysString)) &&
+            cmdRank <= otherCmdRank
+        );
     });
 }
 
@@ -105,9 +118,7 @@ export const commandCenterKeyDownHandler = derived(
             // Each key is worth 1 point, each modifier is worth 10 points.
             // The command with the highest score wins.
             const rankedCommands = validCommands.map((command) => {
-                const { keys, ctrl: meta, shift, alt } = command;
-                const modifiers = [meta, shift, alt].filter(Boolean).length;
-                return { command, score: keys.length + modifiers * 10 };
+                return { command, score: getCommandRank(command) };
             });
 
             const highestScore = Math.max(...rankedCommands.map(({ score }) => score));
@@ -138,7 +149,6 @@ export const commandCenterKeyDownHandler = derived(
         const rankAndExecute = debounce(() => {
             const command = getHighestPriorityCommand();
             command.callback();
-
             reset.immediate();
         }, 200);
 
