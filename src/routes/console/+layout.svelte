@@ -38,18 +38,16 @@
             callback: () => {
                 goto('/console/account');
             },
-            keys: ['g', 'i'],
+            keys: ['i'],
             group: 'navigation'
         },
         {
-            label: 'Go to Home',
+            label: 'Create new Organization',
             callback: () => {
-                goto('/console');
+                newOrgModal.set(true);
             },
-            keys: ['g', 'h'],
-            // Check if pathname not like /console/organization-6374c26ba90067a6315d
-            disabled: $page.url.pathname.includes('/console/organization-'),
-            group: 'navigation'
+            keys: ['c', 'o'],
+            group: 'organizations'
         }
     ]);
 

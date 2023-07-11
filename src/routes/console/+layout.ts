@@ -8,7 +8,7 @@ export const load: LayoutLoad = async () => {
 
     return {
         version: data?.version ?? null,
-        promised: {
+        streamed: {
             // We nest these so that layout doesn't have to wait for these promises to load
         }
     };

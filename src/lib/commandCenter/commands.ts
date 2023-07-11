@@ -7,7 +7,7 @@ export type CommandGroup =
     | 'ungrouped'
     | 'navigation'
     | 'projects'
-    | 'project'
+    | 'organizations'
     | 'auth'
     | 'help'
     | 'account'
@@ -16,13 +16,7 @@ export type CommandGroup =
     | 'functions'
     | 'storage';
 
-export type Command = {
-    keys?: string[];
-    /* Ctrl on Windows/Linux, Meta on Mac */
-    ctrl?: boolean;
-    shift?: boolean;
-    /* Alt on Windows/Linux, Option on Mac */
-    alt?: boolean;
+type BaseCommand = {
     callback: () => void;
     label?: string;
     disabled?: boolean;
@@ -30,6 +24,21 @@ export type Command = {
     group?: CommandGroup;
     icon?: string;
 };
+
+type KeyedCommand = BaseCommand & {
+    keys: string[];
+    /* Ctrl on Windows/Linux, Meta on Mac */
+    ctrl?: boolean;
+    shift?: boolean;
+    /* Alt on Windows/Linux, Option on Mac */
+    alt?: boolean;
+};
+
+function isKeyedCommand(command: Command): command is KeyedCommand {
+    return 'keys' in command;
+}
+
+export type Command = KeyedCommand | BaseCommand;
 
 export const commandMap = writable<Map<string, Command[]>>(new Map());
 export const disabledMap = writable<Map<string, boolean>>(new Map());
@@ -67,19 +76,73 @@ export const commandCenterKeyDownHandler = derived(
     ([$commandMap, enabled]) => {
         const commandsArr = Array.from($commandMap.values()).flat();
         let recentKeyCodes: number[] = [];
+        let validCommands: KeyedCommand[] = [];
+
+        const reset = debounce(() => {
+            recentKeyCodes = [];
+            validCommands = [];
+        }, 2000);
+
+        const getHighestPriorityCommand = () => {
+            if (validCommands.length === 1) {
+                return validCommands[0];
+            }
+            // Rank commands by how many keys and modifiers they have.
+            // Each key is worth 1 point, each modifier is worth 10 points.
+            // The command with the highest score wins.
+            const rankedCommands = validCommands.map((command) => {
+                const { keys, ctrl: meta, shift, alt } = command;
+                const modifiers = [meta, shift, alt].filter(Boolean).length;
+                return { command, score: keys.length + modifiers * 10 };
+            });
+
+            const highestScore = Math.max(...rankedCommands.map(({ score }) => score));
+            const highestScoreCommands = rankedCommands.filter(
+                ({ score }) => score === highestScore
+            );
+
+            if (highestScoreCommands.length === 1) {
+                return highestScoreCommands[0].command;
+            }
+
+            // If there's still a tie, the command with the most modifiers wins.
+            // And if even that's a tie, the first command wins.
+            const mostModifiers = Math.max(
+                ...highestScoreCommands.map(({ command }) => {
+                    const { ctrl: meta, shift, alt } = command;
+                    return [meta, shift, alt].filter(Boolean).length;
+                })
+            );
+            const mostModifiersCommands = highestScoreCommands.filter(({ command }) => {
+                const { ctrl: meta, shift, alt } = command;
+                return [meta, shift, alt].filter(Boolean).length === mostModifiers;
+            });
+
+            return mostModifiersCommands[0].command;
+        };
+
+        const execute = debounce(() => {
+            console.log('Executing command center command', { validCommands, recentKeyCodes });
+
+            const command = getHighestPriorityCommand();
+            command.callback();
+
+            reset.immediate();
+        }, 200);
 
         return (event: KeyboardEvent) => {
             recentKeyCodes.push(event.keyCode);
-            debounce(() => (recentKeyCodes = []), 1000)();
+            reset();
 
             for (const command of commandsArr) {
+                if (!isKeyedCommand(command)) continue;
                 if (!command.forceEnable) {
                     if (command.disabled) continue;
                     if (!enabled) continue;
                     if (isInputEvent(event)) continue;
                 }
 
-                const { keys, ctrl: meta, shift, alt, callback } = command;
+                const { keys, ctrl: meta, shift, alt } = command;
 
                 const isMetaPressed = meta ? (isMac() ? event.metaKey : event.ctrlKey) : true;
                 const isShiftPressed = shift ? event.shiftKey : true;
@@ -90,8 +153,8 @@ export const commandCenterKeyDownHandler = derived(
 
                 if (allKeysPressed && isMetaPressed && isShiftPressed && isAltPressed) {
                     event.preventDefault();
-                    callback();
-                    return;
+                    validCommands.push(command);
+                    execute();
                 }
             }
         };

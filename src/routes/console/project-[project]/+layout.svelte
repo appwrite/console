@@ -23,7 +23,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}`);
             },
-            keys: ['g', 'o'],
+            keys: ['o'],
             group: 'navigation'
         },
 
@@ -32,7 +32,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/auth`);
             },
-            keys: ['g', 'a'],
+            keys: ['a'],
             group: 'navigation'
         },
         {
@@ -40,7 +40,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/databases`);
             },
-            keys: ['g', 'd'],
+            keys: ['d'],
             group: 'navigation'
         },
         {
@@ -48,7 +48,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/functions`);
             },
-            keys: ['g', 'f'],
+            keys: ['f'],
             group: 'navigation'
         },
         {
@@ -56,7 +56,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/storage`);
             },
-            keys: ['g', 's'],
+            keys: ['s'],
             group: 'navigation'
         },
         {
@@ -64,7 +64,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings`);
             },
-            keys: ['g', 'p'],
+            keys: ['p'],
             group: 'navigation'
         }
     ]);
