@@ -156,7 +156,7 @@
 
     const castOption = (option: IndexedOption) => option as Option;
 
-    $: breadcrumbs = $subPanels.slice(1).map((panel) => panel.name);
+    $: breadcrumbs = $subPanels.filter((panel) => panel.name !== 'root').map((panel) => panel.name);
 
     const handleCrumbClick = (index: number) => {
         if (index === breadcrumbs.length - 1) {

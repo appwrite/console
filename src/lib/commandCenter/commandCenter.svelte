@@ -31,7 +31,7 @@
                     clearSubPanels();
                 } else {
                     addSubPanel({
-                        name: 'commandPanel',
+                        name: 'root',
                         component: Root
                     });
                 }
