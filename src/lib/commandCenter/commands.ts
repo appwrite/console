@@ -71,6 +71,20 @@ function isInputEvent(event: KeyboardEvent) {
     return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
 }
 
+function hasDisputing(command: KeyedCommand, allCommands: Command[]) {
+    return allCommands.some((otherCommand) => {
+        if (command === otherCommand) {
+            return false;
+        }
+        if (!isKeyedCommand(otherCommand)) {
+            return false;
+        }
+        const keysString = command.keys.join('+');
+        const otherKeysString = otherCommand.keys.join('+');
+        return keysString.includes(otherKeysString) || otherKeysString.includes(keysString);
+    });
+}
+
 export const commandCenterKeyDownHandler = derived(
     [commandMap, commandsEnabled],
     ([$commandMap, enabled]) => {
@@ -121,14 +135,22 @@ export const commandCenterKeyDownHandler = derived(
             return mostModifiersCommands[0].command;
         };
 
-        const execute = debounce(() => {
-            console.log('Executing command center command', { validCommands, recentKeyCodes });
-
+        const rankAndExecute = debounce(() => {
             const command = getHighestPriorityCommand();
             command.callback();
 
             reset.immediate();
         }, 200);
+
+        const execute = (command: KeyedCommand) => {
+            if (hasDisputing(command, commandsArr)) {
+                validCommands.push(command);
+                rankAndExecute();
+            } else {
+                command.callback();
+                reset.immediate();
+            }
+        };
 
         return (event: KeyboardEvent) => {
             recentKeyCodes.push(event.keyCode);
@@ -153,8 +175,7 @@ export const commandCenterKeyDownHandler = derived(
 
                 if (allKeysPressed && isMetaPressed && isShiftPressed && isAltPressed) {
                     event.preventDefault();
-                    validCommands.push(command);
-                    execute();
+                    execute(command);
                 }
             }
         };
