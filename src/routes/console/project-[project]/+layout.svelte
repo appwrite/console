@@ -58,6 +58,14 @@
             },
             keys: ['g', 's'],
             group: 'navigation'
+        },
+        {
+            label: 'Go to Settings',
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings`);
+            },
+            keys: ['g', 'p'],
+            group: 'navigation'
         }
     ]);
 </script>

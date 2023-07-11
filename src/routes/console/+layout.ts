@@ -1,4 +1,5 @@
 import { sdk } from '$lib/stores/sdk';
+
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async () => {
@@ -6,6 +7,9 @@ export const load: LayoutLoad = async () => {
     const data = await response.json();
 
     return {
-        version: data?.version ?? null
+        version: data?.version ?? null,
+        promised: {
+            // We nest these so that layout doesn't have to wait for these promises to load
+        }
     };
 };

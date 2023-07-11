@@ -6,6 +6,7 @@ import { derived, writable } from 'svelte/store';
 export type CommandGroup =
     | 'ungrouped'
     | 'navigation'
+    | 'projects'
     | 'project'
     | 'auth'
     | 'help'
@@ -16,7 +17,7 @@ export type CommandGroup =
     | 'storage';
 
 export type Command = {
-    keys: string[];
+    keys?: string[];
     /* Ctrl on Windows/Linux, Meta on Mac */
     ctrl?: boolean;
     shift?: boolean;

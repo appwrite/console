@@ -1,4 +1,4 @@
-import AI from './ai.svelte';
-import Root from './root.svelte';
-import Template from './template.svelte';
-export { AI, Root, Template };
+export { default as AI } from './ai.svelte';
+export { default as Root } from './root.svelte';
+export { default as Template } from './template.svelte';
+export { default as Projects } from './projects.svelte';

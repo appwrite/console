@@ -17,9 +17,9 @@
 
     import { goto } from '$app/navigation';
 
-    import { addSubPanel } from '$lib/commandCenter/subPanels';
-    import { registerCommands, CommandCenter } from '$lib/commandCenter';
+    import { CommandCenter, registerCommands } from '$lib/commandCenter';
     import { AI } from '$lib/commandCenter/panels';
+    import { addSubPanel } from '$lib/commandCenter/subPanels';
 
     $: $registerCommands([
         {
@@ -38,9 +38,7 @@
             callback: () => {
                 goto('/console/account');
             },
-            keys: ['a'],
-            ctrl: true,
-            shift: true,
+            keys: ['g', 'i'],
             group: 'navigation'
         },
         {

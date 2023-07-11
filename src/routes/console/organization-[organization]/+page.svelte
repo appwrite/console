@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { type Command, registerCommands } from '$lib/commandCenter';
+    import { addSubPanel, registerCommands } from '$lib/commandCenter';
+    import { Projects } from '$lib/commandCenter/panels';
     import { CardContainer, Empty, GridItem1, Heading, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -48,14 +48,17 @@
     }
 
     $: $registerCommands([
-        ...data.projects.projects.map<Command>((project, i) => ({
-            label: `Project ${project.name}`,
+        {
+            label: 'Find a project',
             callback: () => {
-                goto(`/console/project-${project.$id}`);
+                addSubPanel({
+                    name: 'Projects',
+                    component: Projects
+                });
             },
-            keys: ['p', `${i + 1}`],
-            group: 'project'
-        })),
+            group: 'project',
+            icon: 'search'
+        },
         {
             label: 'Create project',
             callback: () => {

@@ -75,7 +75,7 @@
     ] as Array<Command | Omit<Command, 'keys'>>;
 </script>
 
-<Template options={results} bind:search>
+<Template options={results} bind:search searchPlaceholder="Search for commands or content...">
     <div slot="option" class="u-flex u-main-space-between content" let:option={command}>
         <div class="u-flex u-gap-8 u-cross-center">
             <i class="icon-{command.icon ?? 'arrow-sm-right'}" />
@@ -85,13 +85,13 @@
         </div>
         <div class="u-flex u-gap-4 u-cross-center">
             {#if command.ctrl}
-                <kbd class="kbd"> {isMac() ? '⌘' : 'ctrl'} </kbd>
+                <kbd class="kbd"> {isMac() ? '⌘' : 'Ctrl'} </kbd>
             {/if}
             {#if command.shift}
-                <kbd class="kbd"> {isMac() ? '⇧' : 'shift'} </kbd>
+                <kbd class="kbd"> {isMac() ? '⇧' : 'Shift'} </kbd>
             {/if}
             {#if command.alt}
-                <kbd class="kbd"> {isMac() ? '⌥' : 'alt'} </kbd>
+                <kbd class="kbd"> {isMac() ? '⌥' : 'Alt'} </kbd>
             {/if}
             {#if 'keys' in command}
                 {#each command.keys as key, i}
@@ -108,12 +108,4 @@
         </div>
     </div>
     <svelte:fragment slot="no-options">No commands found</svelte:fragment>
-    <div slot="footer" class="footer u-flex u-flex u-cross-center u-main-space-between">
-        <div class="u-flex u-cross-center u-gap-4">
-            <kbd class="kbd">Enter</kbd> <span>to select and close</span>
-        </div>
-        <div class="u-flex u-cross-center u-gap-4">
-            <kbd class="kbd">Esc</kbd> <span>to close</span>
-        </div>
-    </div>
 </Template>

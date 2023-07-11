@@ -36,7 +36,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
-    import { registerCommands } from '$lib/commandCenter';
 
     export let data: PageData;
 
@@ -72,14 +71,14 @@
         }
     };
 
-    $: $registerCommands([
-        {
-            label: 'Create Web App',
-            callback: () => addPlatform(Platform.Web),
-            keys: ['c'],
-            icon: 'plus'
-        }
-    ]);
+    // $: $registerCommands([
+    //     {
+    //         label: 'Create Web App',
+    //         callback: () => addPlatform(Platform.Web),
+    //         keys: ['c'],
+    //         icon: 'plus'
+    //     }
+    // ]);
 </script>
 
 <div class="common-section u-flex u-gap-12">

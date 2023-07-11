@@ -17,9 +17,11 @@
     type Option = $$Generic<BaseOption>;
     export let options: Option[] | null = null;
     export let search = '';
+    export let searchPlaceholder = 'Search...';
     export let fullheight = false;
 
     let selected = 0;
+    let contentEl: HTMLElement;
 
     function triggerOption(option: Option) {
         const prevPanels = $subPanels.length;
@@ -60,9 +62,22 @@
 
             tick().then(() => {
                 if (!cardEl) return;
-                const selectedEl = cardEl.querySelector('[data-selected]');
 
-                if (selectedEl) {
+                const resultEls = Array.from(contentEl.querySelectorAll('.result'));
+                const selectedEl = contentEl.querySelector('[data-selected]');
+                const selectedIdx = resultEls.indexOf(selectedEl);
+
+                if (selectedIdx === 0) {
+                    contentEl.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                } else if (selectedIdx === resultEls.length - 1) {
+                    contentEl.scrollTo({
+                        top: contentEl.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                } else if (selectedEl) {
                     selectedEl.scrollIntoView({
                         block: 'nearest',
                         behavior: 'smooth'
@@ -83,7 +98,7 @@
     }
 
     const [send, receive] = crossfade({
-        duration: 150,
+        duration: 100,
         easing: quadOut
     });
 
@@ -173,16 +188,13 @@
 
         <slot name="search">
             <div class="u-flex default-search u-width-full-line">
-                <input
-                    type="text"
-                    placeholder="Search for commands..."
-                    autofocus
-                    bind:value={search} />
+                <!--  svelte-ignore a11y-autofocus -->
+                <input type="text" placeholder={searchPlaceholder} autofocus bind:value={search} />
             </div>
         </slot>
     </div>
 
-    <div class="content">
+    <div class="content" bind:this={contentEl}>
         {#if groupsAndOptions}
             <ul class="options">
                 {#each groupsAndOptions as item}
@@ -222,7 +234,17 @@
     </div>
 
     <div class="footer">
-        <slot name="footer" />
+        <slot name="footer">
+            <div class=" u-flex u-flex u-cross-center u-main-space-between">
+                <div class="u-flex u-cross-center u-gap-4">
+                    <kbd class="kbd">Enter</kbd> <span>to select</span>
+                </div>
+                <div class="u-flex u-cross-center u-gap-4">
+                    <kbd class="kbd">Esc</kbd>
+                    <span>to {$subPanels.length > 1 ? 'go back' : 'close'}</span>
+                </div>
+            </div>
+        </slot>
     </div>
 </div>
 
@@ -347,22 +369,17 @@
             .group {
                 color: hsl(var(--color-neutral-70));
                 margin-inline-start: 0.25rem;
-                margin-block-start: 1rem;
                 margin-block-end: 0.25rem;
                 position: relative;
                 z-index: 10;
+
+                &:not(:first-child) {
+                    margin-block-start: 1rem;
+                }
             }
 
             .result {
-                transition: 150ms;
                 position: relative;
-
-                opacity: 0.65;
-                transition: 75ms cubic-bezier(0.5, 1, 0.89, 1);
-                &[data-selected] {
-                    opacity: 1;
-                    transition: 150ms cubic-bezier(0.5, 1, 0.89, 1);
-                }
 
                 .bg {
                     position: absolute;
