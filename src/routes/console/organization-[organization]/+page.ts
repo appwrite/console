@@ -17,6 +17,13 @@ export const load: PageLoad = async ({ params, url, route }) => {
             Query.limit(limit),
             Query.equal('teamId', params.organization),
             Query.orderDesc('$createdAt')
-        ])
+        ]),
+        streamed: {
+            // We nest these so that layout doesn't have to wait for these promises to load
+            projects: sdk.forConsole.projects.list([
+                Query.equal('teamId', params.organization),
+                Query.orderDesc('$createdAt')
+            ])
+        }
     };
 };

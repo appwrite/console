@@ -56,6 +56,7 @@
                     component: Projects
                 });
             },
+            keys: ['f'],
             group: 'project',
             icon: 'search'
         },

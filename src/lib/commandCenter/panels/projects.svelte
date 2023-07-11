@@ -9,8 +9,12 @@
 
     let search = '';
 
-    $: projects = $page.data.projects as Models.ProjectList;
-    $: filteredProjects = projects.projects
+    let projects = [] as Models.ProjectList['projects'];
+    $page.data.streamed.projects.then((data) => {
+        projects = data.projects;
+    });
+
+    $: filteredProjects = projects
         .filter((project) => project.name.toLowerCase().includes(search.toLowerCase()))
         .map((project) => {
             return {
