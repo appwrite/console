@@ -49,9 +49,13 @@
                 } else {
                     selected = selected === 0 ? 0 : selected - 1;
                 }
-            } else if (event.key === 'Enter' && options[selected]) {
+            } else if (event.key === 'Enter') {
+                const option = groupsAndOptions.find(
+                    (item) => 'index' in item && item.index === selected
+                ) as IndexedOption;
+                if (!option) return;
                 event.preventDefault();
-                triggerOption(options[selected]);
+                triggerOption(option);
             } else if (event.key === 'Home') {
                 event.preventDefault();
                 selected = 0;

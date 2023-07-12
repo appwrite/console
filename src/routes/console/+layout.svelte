@@ -18,7 +18,7 @@
     import { goto } from '$app/navigation';
 
     import { CommandCenter, registerCommands } from '$lib/commandCenter';
-    import { AI } from '$lib/commandCenter/panels';
+    import { AI, Organizations } from '$lib/commandCenter/panels';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
 
     $: $registerCommands([
@@ -42,12 +42,39 @@
             group: 'navigation'
         },
         {
+            label: 'Find an Organization',
+            callback: () => {
+                addSubPanel({
+                    name: 'Find a Organization',
+                    component: Organizations
+                });
+            },
+            group: 'organizations',
+            icon: 'search'
+        },
+        {
             label: 'Create new Organization',
             callback: () => {
                 newOrgModal.set(true);
             },
             keys: ['c', 'o'],
             group: 'organizations'
+        },
+        {
+            label: 'Go to Home',
+            callback: () => {
+                goto('/console');
+            },
+            keys: ['h'],
+            group: 'navigation'
+        },
+        {
+            label: 'Open documentation',
+            callback: () => {
+                window.open('https://appwrite.io/docs', '_blank');
+            },
+            group: 'help',
+            icon: 'book-open'
         }
     ]);
 

@@ -82,11 +82,11 @@
 
     const resetKeys = debounce(() => {
         keys = [];
-    }, 2000);
+    }, 1000);
 
     const handleKeydown = (e) => {
         $commandCenterKeyDownHandler(e);
-        keys = [...keys, e.key];
+        keys = [...keys, e.key].slice(-5);
         console.log(keys);
         resetKeys();
     };
@@ -102,8 +102,8 @@
 
 {#if dev}
     <div class="debug-keys" use:portal>
-        {#each keys as key}
-            <kbd class="kbd" transition:fade|local>
+        {#each keys as key, i (i)}
+            <kbd class="kbd" transition:fade|local={{ duration: 150 }}>
                 {key.length === 1 ? key.toUpperCase() : key}
             </kbd>
         {/each}
@@ -126,7 +126,7 @@
         left: 50%;
         transform: translateX(-50%);
         padding: 0.5rem;
-        background-color: hsl(var(--color-neutral-500) / 0.5);
+        // background-color: hsl(var(--color-neutral-500) / 0.5);
         z-index: 9999;
 
         display: flex;

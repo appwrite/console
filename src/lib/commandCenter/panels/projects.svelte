@@ -1,6 +1,3 @@
-<!-- 
-    This is the root command panel. It precedes all other command panels.
- -->
 <script lang="ts">
     import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';

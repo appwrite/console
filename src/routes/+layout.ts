@@ -11,6 +11,7 @@ export const ssr = false;
 
 export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
+
     try {
         const account = await sdk.forConsole.account.get();
 
