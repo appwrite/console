@@ -2,14 +2,14 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import { Box, CardGrid, Heading, Modal } from '$lib/components';
     import { Button, FormList, InputPassword, InputText } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../store';
 
-    export let showDelete = false;
-
+    let showDelete = false;
     let password: string = null;
     let name: string = null;
 
@@ -32,6 +32,28 @@
         }
     };
 </script>
+
+<CardGrid danger>
+    <div>
+        <Heading tag="h6" size="7">Delete Project</Heading>
+    </div>
+    <p>
+        The project will be permanently deleted, including all the metadata, resources and stats
+        within it. This action is irreversible.
+    </p>
+    <svelte:fragment slot="aside">
+        <Box>
+            <svelte:fragment slot="title">
+                <h6 class="u-bold u-trim-1">{$project.name}</h6>
+            </svelte:fragment>
+            <p>Last update: {toLocaleDateTime($project.$updatedAt)}</p>
+        </Box>
+    </svelte:fragment>
+
+    <svelte:fragment slot="actions">
+        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+    </svelte:fragment>
+</CardGrid>
 
 <Modal
     bind:show={showDelete}
