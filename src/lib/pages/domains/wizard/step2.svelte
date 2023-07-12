@@ -6,14 +6,19 @@
     import { domain } from './store';
     import CNameTable from './cnameTable.svelte';
 
+    let retrying = false;
+
     async function retry() {
         try {
+            retrying = true;
             $domain = await sdk.forProject.proxy.updateRuleVerification($domain.$id);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+        } finally {
+            retrying = false;
         }
     }
 </script>
@@ -30,7 +35,13 @@
                         aria-hidden="true"
                         style="color: hsl(var(--color-danger-100))" />
                     <p class="u-stretch">Verification failed</p>
-                    <Button secondary on:click={retry}>Retry</Button>
+                    <Button secondary on:click={retry} disabled={retrying}>
+                        {#if retrying}
+                            <div class="loader" style="color: hsl(var(--color-neutral-50))" />
+                        {:else}
+                            Retry
+                        {/if}
+                    </Button>
                 </div>
                 <div class="u-margin-block-start-24">
                     <p>

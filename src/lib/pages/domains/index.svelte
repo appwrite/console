@@ -16,6 +16,10 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
+    import { Button } from '$lib/elements/forms';
+    import { onMount } from 'svelte';
+    import { dependencyStore, typeStore } from './wizard/store';
+    import { toLocaleDate } from '$lib/helpers/date';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -25,10 +29,6 @@
     import type { Models } from '@appwrite.io/console';
     import Create from './create.svelte';
     import Delete from './delete.svelte';
-    import { Button } from '$lib/elements/forms';
-    import { onMount } from 'svelte';
-    import { dependencyStore, typeStore } from './wizard/store';
-    import { toLocaleDate } from '$lib/helpers/date';
 
     export let rules: Models.ProxyRuleList;
     export let type: ProxyTypes;
@@ -37,7 +37,6 @@
     let showDomainsDropdown = [];
     let showDelete = false;
     let selectedDomain: Models.ProxyRule;
-    let isVerifying = {};
 
     onMount(() => {
         typeStore.set(type);
@@ -51,12 +50,6 @@
     async function refreshDomain(domain: Models.ProxyRule) {
         const domainId = domain.$id;
         try {
-            isVerifying[domainId] = true;
-
-            if (domain.status === 'created') {
-                await invalidate(dependency);
-                return;
-            }
             await sdk.forProject.proxy.updateRuleVerification(domainId);
             await invalidate(dependency);
             trackEvent(Submit.DomainUpdateVerification);
@@ -66,8 +59,6 @@
                 type: 'error'
             });
             trackError(error, Submit.DomainUpdateVerification);
-        } finally {
-            isVerifying[domainId] = false;
         }
     }
 </script>
@@ -112,7 +103,7 @@
                                     aria-hidden="true"
                                     style="color: hsl(var(--color-danger-100))" />
                                 <span class="u-text">Failed</span>
-                                <Button text>
+                                <Button text on:click={() => refreshDomain(domain)}>
                                     <span class="link">Retry</span>
                                 </Button>
                             </div>
