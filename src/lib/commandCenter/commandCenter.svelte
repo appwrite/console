@@ -23,6 +23,9 @@
     import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
     import { Root } from './panels';
     import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
+    import { dev } from '$app/environment';
+    import { debounce } from '$lib/helpers/debounce';
+    import { portal } from '$lib/actions/portal';
 
     $: $registerCommands([
         {
@@ -74,9 +77,22 @@
     $: $subPanels.length > 1 && ($ctx.isInitialPanel = false);
 
     $: $ctx.open = !!openSubPanel;
+
+    let keys: string[] = [];
+
+    const resetKeys = debounce(() => {
+        keys = [];
+    }, 2000);
+
+    const handleKeydown = (e) => {
+        $commandCenterKeyDownHandler(e);
+        keys = [...keys, e.key];
+        console.log(keys);
+        resetKeys();
+    };
 </script>
 
-<svelte:window on:mousedown={handleBlur} on:keydown={$commandCenterKeyDownHandler} />
+<svelte:window on:mousedown={handleBlur} on:keydown={handleKeydown} />
 
 {#if openSubPanel}
     <div class="dialog" bind:this={dialog} transition:fade={{ duration: 100 }}>
@@ -84,7 +100,17 @@
     </div>
 {/if}
 
-<style>
+{#if dev}
+    <div class="debug-keys" use:portal>
+        {#each keys as key}
+            <kbd class="kbd" transition:fade|local>
+                {key.length === 1 ? key.toUpperCase() : key}
+            </kbd>
+        {/each}
+    </div>
+{/if}
+
+<style lang="scss">
     .dialog {
         padding: 0.5rem;
         position: fixed;
@@ -92,5 +118,25 @@
 
         background-color: hsl(var(--color-neutral-500) / 0.5);
         z-index: 9999;
+    }
+
+    .debug-keys {
+        position: fixed;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.5rem;
+        background-color: hsl(var(--color-neutral-500) / 0.5);
+        z-index: 9999;
+
+        display: flex;
+        gap: 1rem;
+
+        font-size: 2rem;
+
+        .kbd {
+            padding-inline: 0.5rem;
+            padding-block: 1.5rem;
+        }
     }
 </style>

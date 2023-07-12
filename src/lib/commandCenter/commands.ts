@@ -111,6 +111,8 @@ export const commandCenterKeyDownHandler = derived(
         }, 2000);
 
         const getHighestPriorityCommand = () => {
+            if (!validCommands.length) return;
+
             if (validCommands.length === 1) {
                 return validCommands[0];
             }
@@ -143,7 +145,7 @@ export const commandCenterKeyDownHandler = derived(
                 return [meta, shift, alt].filter(Boolean).length === mostModifiers;
             });
 
-            return mostModifiersCommands[0].command;
+            return mostModifiersCommands[0]?.command;
         };
 
         const rankAndExecute = debounce(() => {
