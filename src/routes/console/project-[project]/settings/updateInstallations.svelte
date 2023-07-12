@@ -34,6 +34,12 @@
     let showInstallationDropdown: boolean[] = [];
     let selectedInstallation: Models.Installation;
 
+    enum ProviderNames {
+        github = 'GitHub',
+        gitlab = 'GitLab',
+        bitBucket = 'BitBucket'
+    }
+
     function getInstallationLink(installation: Models.Installation) {
         switch (installation.provider) {
             case 'github':
@@ -145,7 +151,9 @@
                                                             showInstallationDropdown[i] = false;
                                                             configureGitHub();
                                                         }}>
-                                                        Configure {installation.provider}
+                                                        Configure {ProviderNames[
+                                                            installation.provider
+                                                        ]}
                                                     </DropListItem>
                                                     <DropListItem
                                                         icon="x-circle"
