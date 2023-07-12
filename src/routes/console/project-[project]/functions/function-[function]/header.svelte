@@ -28,6 +28,11 @@
             hasChildren: true
         },
         {
+            href: `${path}/domains`,
+            title: 'Domains',
+            event: 'domains'
+        },
+        {
             href: `${path}/settings`,
             event: 'settings',
             title: 'Settings'

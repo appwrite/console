@@ -1,21 +1,21 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { project } from '../../store';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import type { Dependencies } from '$lib/constants';
 
     export let showDelete = false;
-    export let selectedDomain: Models.Domain;
+    export let selectedDomain: Models.ProxyRule;
+    export let dependency: Dependencies;
 
     async function deleteDomain() {
         try {
-            await sdk.forConsole.projects.deleteDomain($project.$id, selectedDomain.$id);
-            await invalidate(Dependencies.DOMAINS);
+            await sdk.forProject.proxy.deleteRule(selectedDomain.$id);
+            await invalidate(dependency);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -41,7 +41,7 @@
     <svelte:fragment slot="header">Delete Domain</svelte:fragment>
     {#if selectedDomain}
         <p data-private>
-            Are you sure you want to delete <b>{selectedDomain.domain}</b> from '{$project.name}'?
+            Are you sure you want to delete <b>{selectedDomain.domain}</b>?
         </p>
     {/if}
     <svelte:fragment slot="footer">

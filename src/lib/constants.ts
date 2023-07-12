@@ -25,6 +25,7 @@ export enum Dependencies {
     FILE = 'dependency:file',
     FILES = 'dependency:files',
     FUNCTION = 'dependency:function',
+    FUNCTION_DOMAINS = 'dependency:function_domains',
     FUNCTIONS = 'dependency:functions',
     VARIABLES = 'dependency:variables',
     DEPLOYMENTS = 'dependency:deployments',

@@ -18,7 +18,7 @@
     $: cnameValue = $domain.domain.replace('.' + registerable, '');
 </script>
 
-<Table noStyles noMargin>
+<Table noMargin>
     <TableHeader>
         <TableCellHead>Type</TableCellHead>
         <TableCellHead>Name</TableCellHead>

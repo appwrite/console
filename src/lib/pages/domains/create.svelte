@@ -3,16 +3,19 @@
     import { beforeNavigate, invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { domain } from './wizard/store';
+    import { dependencyStore, domain } from './wizard/store';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
-    import Step3 from './wizard/step3.svelte';
-    import Step4 from './wizard/step4.svelte';
-    import { onDestroy } from 'svelte';
-    import { Dependencies } from '$lib/constants';
+    import { onMount } from 'svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
-    onDestroy(() => {
+    onMount(() => {
         domain.set({ $id: '', domain: '' });
+
+        return sdk.forConsole.client.subscribe<Models.ProxyRule>('console', (data) => {
+            domain.set(data.payload);
+        });
     });
 
     beforeNavigate(() => {
@@ -20,29 +23,18 @@
     });
 
     async function onFinish() {
-        await invalidate(Dependencies.DOMAINS);
+        await invalidate($dependencyStore);
         wizard.hide();
     }
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Add your domain',
+        label: 'Add domain',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Add a CNAME Record',
-        component: Step2,
-        optional: true
-    });
-    stepsComponents.set(3, {
-        label: 'Verify domain',
-        component: Step3,
-        optional: true
-    });
-    stepsComponents.set(4, {
-        label: 'SSL Certificate',
-        component: Step4,
-        optional: true
+        label: 'Configuration',
+        component: Step2
     });
 </script>
 

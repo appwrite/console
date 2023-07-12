@@ -3,19 +3,23 @@
     import { FormList, InputDomain } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { project } from '../../../store';
-    import { domain } from './store';
+    import { func } from '$routes/console/project-[project]/functions/function-[function]/store';
+    import { ProxyTypes } from '../index.svelte';
+    import { domain, typeStore } from './store';
 
-    const projectId = $project.$id;
-    const createDomain = async () => {
+    async function createDomain() {
         if ($domain.$id) {
-            await sdk.forConsole.projects.deleteDomain(projectId, $domain.$id);
+            await sdk.forProject.proxy.deleteRule($domain.$id);
         }
 
-        const { $id } = await sdk.forConsole.projects.createDomain(projectId, $domain.domain);
-        $domain.$id = $id;
+        $domain = await sdk.forProject.proxy.createRule(
+            $domain.domain,
+            $typeStore,
+            $typeStore === ProxyTypes.FUNCTION ? $func.$id : undefined
+        );
+
         trackEvent(Submit.DomainCreate);
-    };
+    }
 </script>
 
 <WizardStep beforeSubmit={createDomain}>
@@ -27,7 +31,7 @@
     <FormList>
         <InputDomain
             id="domain"
-            label="Custom Domain"
+            label="Domain"
             placeholder="appwrite.example.com"
             autocomplete={false}
             required
