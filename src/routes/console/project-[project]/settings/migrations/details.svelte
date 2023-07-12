@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
 
     export let details: Models.Migration | null = null;
@@ -9,7 +10,7 @@
         [resource in 'Database' | 'Collection' | 'Function' | 'Users']?: StatusCounter;
     };
     type StatusCounter = {
-        [statusType in 'PENDING' | 'SUCCESS' | 'ERROR' | 'SKIP' | 'PROCESSING' | 'WARNING']: number;
+        [statusType in 'pending' | 'success' | 'error' | 'skip' | 'processing' | 'warning']: number;
     };
 
     $: statusCounters = JSON.parse(
@@ -18,51 +19,70 @@
 
     const hasError = (counter: StatusCounter) => {
         if (!counter) return false;
-        return counter.ERROR > 0 || counter.WARNING > 0;
+        return counter.error > 0 || counter.warning > 0;
     };
 
     const isLoading = (counter: StatusCounter) => {
         if (!counter) return false;
-        return counter.PENDING > 0 || counter.PROCESSING > 0;
+        return counter.pending > 0 || counter.processing > 0;
     };
 
     const hasSucceeded = (counter: StatusCounter) => {
         if (!counter) return false;
-        return counter.SUCCESS > 0;
+        return counter.success > 0;
     };
+
+    const totalItems = (counter: StatusCounter) => {
+        if (!counter) return 0;
+        return Object.values(counter).reduce((acc, curr) => acc + curr, 0);
+    };
+
+    $: parsedSource = JSON.parse(details?.source || '{}');
 </script>
 
 <Modal bind:show on:close={() => (details = null)} size="big">
     <svelte:fragment slot="header">
         {#if details.status === 'failed'}
-            Resolve import issues
+            Resolve migration issues
         {:else}
             Migration details
         {/if}
     </svelte:fragment>
     {#if details}
-        <div class="box">
-            {#each ['Database', 'Collection', 'Function', 'Users'] as entity}
-                <div class="u-flex u-cross-center u-gap-16">
-                    <div class="icon-wrapper">
-                        {#if hasError(statusCounters[entity])}
-                            <i class="icon-exclamation" />
-                        {:else if isLoading(statusCounters[entity])}
-                            <span class="loader" />
-                        {:else if hasSucceeded(statusCounters[entity])}
-                            <i class="icon-check" />
-                        {:else}
-                            <i class="icon-question-mark-circle" />
-                        {/if}
-                    </div>
-
-                    <div>
-                        <span>{entity}</span>
-                        <span class="inline-tag">2</span>
-                    </div>
-                </div>
-            {/each}
+        <div class="box meta">
+            <span>Date</span>
+            <span>{toLocaleDateTime(details.$createdAt)}</span>
+            <span>Source</span>
+            <span>{parsedSource.type}</span>
+            <span>Project ID</span>
+            <span>{parsedSource.projectId}</span>
         </div>
+
+        {#if Object.keys(statusCounters).length}
+            <div class="box">
+                {#each Object.keys(statusCounters) as entity}
+                    {@const entityCounter = statusCounters[entity]}
+                    <div class="u-flex u-cross-center u-gap-16">
+                        <div class="icon-wrapper">
+                            {#if hasError(entityCounter)}
+                                <i class="icon-exclamation" />
+                            {:else if isLoading(entityCounter)}
+                                <span class="loader" />
+                            {:else if hasSucceeded(entityCounter)}
+                                <i class="icon-check" />
+                            {:else}
+                                <i class="icon-clock" />
+                            {/if}
+                        </div>
+
+                        <div>
+                            <span class="u-capitalize">{entity}</span>
+                            <span class="inline-tag">{totalItems(entityCounter)}</span>
+                        </div>
+                    </div>
+                {/each}
+            </div>
+        {/if}
     {/if}
 </Modal>
 
@@ -76,6 +96,17 @@
             &:not(:last-child) {
                 border-bottom: 1px solid hsl(var(--color-border));
             }
+        }
+    }
+
+    .meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        padding: 1.5rem;
+
+        :nth-child(2n) {
+            font-weight: 600;
         }
     }
 

@@ -16,7 +16,6 @@
     import { isSameDay, toLocaleDate } from '$lib/helpers/date';
     import { capitalize } from '$lib/helpers/string';
     import { Container } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
     import { openImportWizard } from './(import)';
     import Details from './details.svelte';
@@ -25,15 +24,11 @@
     let details: (typeof data.migrations)[number] | null = null;
     let showCloudExport = false;
 
-    const mockMigrate = async () => {
-        console.log(await sdk.forProject.migrations.list());
-    };
-
-    mockMigrate();
-
     const getStatus = (status: string) => {
         if (status === 'failed') {
             return { text: 'Failed', icon: 'exclamation', iconColor: 'danger' };
+        } else if (status === 'completed') {
+            return { text: 'Completed', icon: 'check', iconColor: 'success' };
         }
 
         return { text: 'Pending', icon: 'clock', iconColor: 'blue' };

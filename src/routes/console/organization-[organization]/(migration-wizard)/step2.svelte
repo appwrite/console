@@ -8,7 +8,7 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
 
-    import { formData, provider } from '.';
+    import { formData } from '.';
     import { migrationFormToResources } from '$lib/stores/migration';
 
     type FormData = WritableValue<typeof formData>;

@@ -4,18 +4,19 @@
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { onDestroy } from 'svelte';
-    import { formData, formDataToResources, provider, resetImportStores } from '.';
+    import { formData, provider, resetImportStores } from '.';
     import Step1 from './step1.svelte';
     import Step2 from './step2.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { migrationFormToResources } from '$lib/stores/migration';
 
     const onExit = () => {
         resetImportStores();
     };
 
     const onFinish = async () => {
-        const resources = formDataToResources($formData);
+        const resources = migrationFormToResources($formData);
         switch ($provider.provider) {
             case 'appwrite': {
                 const res = await sdk.forProject.migrations.migrateAppwrite(
@@ -24,7 +25,7 @@
                     $provider.projectID,
                     $provider.apiKey
                 );
-                console.log(res);
+                console.log('appwrite', res);
                 invalidate(Dependencies.MIGRATIONS);
                 break;
             }
@@ -38,7 +39,7 @@
                     $provider.password,
                     $provider.port
                 );
-                console.log(res);
+                console.log('Supabase', res);
                 invalidate(Dependencies.MIGRATIONS);
                 break;
             }
@@ -47,7 +48,7 @@
                     resources,
                     $provider.serviceAccount
                 );
-                console.log(res);
+                console.log('Firebase', res);
                 invalidate(Dependencies.MIGRATIONS);
                 break;
             }
@@ -62,7 +63,7 @@
                     $provider.password,
                     $provider.port
                 );
-                console.log(res);
+                console.log('nhost', res);
                 invalidate(Dependencies.MIGRATIONS);
                 break;
             }

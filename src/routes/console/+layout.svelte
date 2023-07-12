@@ -14,6 +14,7 @@
     import { onMount } from 'svelte';
     import { loading } from '../store';
     import Create from './createOrganization.svelte';
+    import { requestedMigration } from '../store';
 
     onMount(() => {
         loading.set(false);
@@ -43,6 +44,14 @@
     $: if (!$log.show) {
         $log.data = null;
         $log.func = null;
+    }
+
+    $: {
+        if ($requestedMigration) {
+            console.log('hey fuckface');
+        } else {
+            console.log('banana');
+        }
     }
 </script>
 

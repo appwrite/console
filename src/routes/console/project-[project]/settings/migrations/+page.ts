@@ -6,6 +6,8 @@ export async function load({ depends }) {
 
     const { migrations } = await sdk.forProject.migrations.list();
 
+    console.log(migrations);
+
     return {
         migrations
     };
