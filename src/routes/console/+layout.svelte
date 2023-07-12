@@ -45,14 +45,6 @@
         $log.data = null;
         $log.func = null;
     }
-
-    $: {
-        if ($requestedMigration) {
-            console.log('hey fuckface');
-        } else {
-            console.log('banana');
-        }
-    }
 </script>
 
 <Shell

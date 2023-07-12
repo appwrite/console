@@ -2,14 +2,13 @@
     import { EyebrowHeading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
-    import { sdk } from '$lib/stores/sdk';
     import type { DeepKeys, WritableValue } from '$lib/helpers/types';
 
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
 
-    import { formData } from '.';
     import { migrationFormToResources } from '$lib/stores/migration';
+    import { formData } from '.';
 
     type FormData = WritableValue<typeof formData>;
     type FormKeys = DeepKeys<FormData>;
@@ -68,17 +67,17 @@
     onMount(async () => {
         const resources = migrationFormToResources($formData);
 
-        switch ($provider.provider) {
-            case 'appwrite': {
-                const res = await sdk.forProject.migrations.generateAppwriteReport(
-                    resources,
-                    $provider.endpoint,
-                    $provider.projectID,
-                    $provider.apiKey
-                );
-                report = res;
-            }
-        }
+        // switch ($provider.provider) {
+        //     case 'appwrite': {
+        //         const res = await sdk.forProject.migrations.generateAppwriteReport(
+        //             resources,
+        //             $provider.endpoint,
+        //             $provider.projectID,
+        //             $provider.apiKey
+        //         );
+        //         report = res;
+        //     }
+        // }
     });
 </script>
 

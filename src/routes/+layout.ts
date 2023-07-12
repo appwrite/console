@@ -16,6 +16,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
     if (url.searchParams.has('migrate')) {
         requestedMigration.set(true);
     }
+
     try {
         const account = await sdk.forConsole.account.get();
 

@@ -50,3 +50,15 @@ export function deepMap<T extends object, U extends object = T>(
 
     return result;
 }
+
+export function parseIfString(value: unknown): any {
+    if (typeof value === 'string') {
+        try {
+            return JSON.parse(value);
+        } catch {
+            return value;
+        }
+    }
+
+    return value;
+}

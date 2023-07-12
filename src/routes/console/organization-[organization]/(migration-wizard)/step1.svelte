@@ -1,206 +1,72 @@
 <script lang="ts">
-    import SvgIcon from '$lib/components/svgIcon.svelte';
-    import { Button, FormList, InputNumber, InputText } from '$lib/elements/forms';
+    import { page } from '$app/stores';
+    import { InputSelect } from '$lib/elements/forms';
+    import InputText from '$lib/elements/forms/inputText.svelte';
     import { WizardStep } from '$lib/layout';
-    import { provider, type Provider } from '.';
+    import type { Models } from '@appwrite.io/console';
 
-    const providers: Record<Provider, string> = {
-        appwrite: 'Appwrite',
-        firebase: 'Firebase',
-        supabase: 'Supabase',
-        nhost: 'NHost'
-    };
+    const projects = $page.data.allProjects as Models.ProjectList;
+    const hasProjects = projects.total > 0;
 
-    let showAuth = false;
+    let projectType = 'existing';
+
+    let selectedProject: string = null;
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Choose provider</svelte:fragment>
-    <div class="cards">
-        {#each Object.entries(providers) as [key, value]}
-            <label
-                class="card is-allow-focus u-height-100-percent u-flex u-flex-vertical u-cursor-pointer">
-                <input
-                    class="is-small"
-                    type="radio"
-                    name="provider"
-                    bind:group={$provider.provider}
-                    value={key} />
-                <div class="content">
-                    <img src="/logos/{key}.png" width="33" class="u-margin-inline-auto" alt="" />
-                    <p>{value}</p>
-                </div>
+    <svelte:fragment slot="title">
+        {hasProjects ? 'Select project' : 'Create project'}
+    </svelte:fragment>
+    <div class="radios">
+        <div class="u-flex u-gap-8">
+            <input
+                type="radio"
+                name="project_type"
+                id="project_type--existing"
+                bind:group={projectType}
+                value="existing" />
+            <label for="project_type--existing">
+                <p class="u-bold">Existing project</p>
+                <p>Import data to an existing project</p>
             </label>
-        {/each}
+        </div>
+        <div class="u-flex u-gap-8">
+            <input
+                type="radio"
+                name="project_type"
+                id="project_type--new"
+                bind:group={projectType}
+                value="new" />
+            <label for="project_type--new">
+                <p class="u-bold">Create new project</p>
+                <span>Import data to a new project</span>
+            </label>
+        </div>
     </div>
 
-    {#if $provider.provider === 'appwrite'}
-        <FormList class="u-margin-block-start-24">
+    <div class="u-margin-block-start-24">
+        {#if projectType === 'existing'}
+            <InputSelect
+                id="project"
+                bind:value={selectedProject}
+                label="Select a project"
+                options={projects.projects.map((p) => ({
+                    label: p.name,
+                    value: p.$id
+                }))} />
+        {:else}
             <InputText
-                id="endpoint"
-                label="Endpoint"
-                required
-                placeholder="Enter endpoint"
-                bind:value={$provider.endpoint} />
-            <InputText
-                id="project-id"
-                label="Project ID"
-                required
-                placeholder="Enter project ID"
-                bind:value={$provider.projectID} />
-            <InputText
-                id="api-key"
-                label="API Key"
-                required
-                placeholder="Enter API Key"
-                bind:value={$provider.apiKey} />
-        </FormList>
-    {:else if $provider.provider === 'firebase'}
-        <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
-            <p class="u-text-center u-bold">Sign in with Google to get started</p>
-            <Button secondary>
-                <SvgIcon name="google" />Sign in
-            </Button>
-        </div>
-
-        <button
-            class="tag u-margin-block-start-16"
-            type="button"
-            on:click={() => (showAuth = !showAuth)}
-            class:is-selected={showAuth}>
-            <span class="icon-lock-closed" aria-hidden="true" />
-            <span class="text">Manual authentication</span>
-        </button>
-
-        {#if showAuth}
-            <div class="u-margin-block-start-16">
-                <InputText
-                    id="credentials"
-                    label="Account credentials"
-                    required
-                    placeholder="TODO" />
-            </div>
+                label="Project name"
+                placeholder="Enter project name"
+                id="project_name"
+                required />
         {/if}
-    {:else if $provider.provider === 'supabase'}
-        <FormList class="u-margin-block-start-24">
-            <p class="body-text-1 u-bold">Postgres credentials</p>
-
-            <InputText
-                id="host"
-                label="Host"
-                required
-                placeholder="Enter host"
-                bind:value={$provider.host} />
-            <InputNumber
-                id="port"
-                label="Port"
-                required
-                placeholder="Enter port"
-                bind:value={$provider.port} />
-            <InputText
-                id="username"
-                label="Username"
-                required
-                placeholder="Enter username"
-                bind:value={$provider.username} />
-            <InputText
-                id="password"
-                label="Password"
-                required
-                placeholder="Enter password"
-                bind:value={$provider.password} />
-            <p class="body-text-1 u-bold">Supabase credentials</p>
-
-            <InputText
-                id="endpoint"
-                label="Endpoint"
-                required
-                placeholder="Enter endpoint"
-                bind:value={$provider.endpoint} />
-            <InputText
-                id="api-key"
-                label="API Key"
-                required
-                placeholder="Enter API Key"
-                bind:value={$provider.apiKey} />
-        </FormList>
-    {:else if $provider.provider === 'nhost'}
-        <FormList class="u-margin-block-start-24">
-            <InputText
-                id="region"
-                label="Region"
-                required
-                placeholder="Enter region"
-                bind:value={$provider.region} />
-            <InputText
-                id="subdomain"
-                label="Subdomain"
-                required
-                placeholder="Enter subdomain"
-                bind:value={$provider.subdomain} />
-            <InputText
-                id="database"
-                label="Database"
-                required
-                placeholder="Enter database"
-                bind:value={$provider.database} />
-            <InputNumber
-                id="port"
-                label="Port"
-                required
-                placeholder="Enter port"
-                bind:value={$provider.port} />
-            <InputText
-                id="username"
-                label="Username"
-                required
-                placeholder="Enter username"
-                bind:value={$provider.username} />
-            <InputText
-                id="password"
-                label="Password"
-                required
-                placeholder="Enter password"
-                bind:value={$provider.password} />
-            <InputText
-                id="adminSecret"
-                label="Admin secret"
-                required
-                placeholder="Enter admin secret"
-                bind:value={$provider.adminSecret} />
-        </FormList>
-    {/if}
+    </div>
 </WizardStep>
 
 <style lang="scss">
-    .cards {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .card {
-        --card-padding: 2.5rem 0.5rem;
-        --card-border-radius: var(--border-radius-small);
-        display: block;
-
-        position: relative;
-
-        input {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-        }
-
-        .content {
-            width: 9.125rem;
-            height: 4rem;
-
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            text-align: center;
-        }
+    .radios {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
     }
 </style>

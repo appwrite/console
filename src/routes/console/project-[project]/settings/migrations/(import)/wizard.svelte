@@ -10,6 +10,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { migrationFormToResources } from '$lib/stores/migration';
+    import { started } from '../stores';
 
     const onExit = () => {
         resetImportStores();
@@ -70,6 +71,7 @@
         }
         resetImportStores();
         wizard.hide();
+        started.set(performance.now());
     };
 
     onDestroy(onExit);

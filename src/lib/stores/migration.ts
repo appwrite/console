@@ -61,6 +61,8 @@ export const migrationFormToResources = (formData: MigrationFormData): Resource[
     }
     if (formData.databases.documents) {
         resources.push('collection');
+        resources.push('attribute');
+        resources.push('index');
         resources.push('document');
     }
     if (formData.functions.root) {

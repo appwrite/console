@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { parseIfString } from '$lib/helpers/object';
     import type { Models } from '@appwrite.io/console';
 
     export let details: Models.Migration | null = null;
@@ -13,7 +14,7 @@
         [statusType in 'pending' | 'success' | 'error' | 'skip' | 'processing' | 'warning']: number;
     };
 
-    $: statusCounters = JSON.parse(
+    $: statusCounters = parseIfString(
         (details?.statusCounters as unknown as string) || '{}'
     ) as StatusCounters;
 
@@ -37,7 +38,7 @@
         return Object.values(counter).reduce((acc, curr) => acc + curr, 0);
     };
 
-    $: parsedSource = JSON.parse(details?.source || '{}');
+    $: parsedSource = parseIfString(details?.source || '{}');
 </script>
 
 <Modal bind:show on:close={() => (details = null)} size="big">

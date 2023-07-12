@@ -17,8 +17,13 @@
     import { capitalize } from '$lib/helpers/string';
     import { Container } from '$lib/layout';
     import { isSelfHosted } from '$lib/system';
+    import { onMount } from 'svelte';
     import { openImportWizard } from './(import)';
     import Details from './details.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { parseIfString } from '$lib/helpers/object';
 
     export let data;
     let details: (typeof data.migrations)[number] | null = null;
@@ -33,6 +38,14 @@
 
         return { text: 'Pending', icon: 'clock', iconColor: 'blue' };
     };
+
+    onMount(async () => {
+        return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
+            if (response.events.includes('migrations.*')) {
+                invalidate(Dependencies.MIGRATIONS);
+            }
+        });
+    });
 </script>
 
 <Container>
@@ -59,7 +72,7 @@
                     <TableBody>
                         {#each data.migrations as entry}
                             <TableRow>
-                                {@const source = capitalize(JSON.parse(entry.source).type)}
+                                {@const source = capitalize(parseIfString(entry.source).type)}
                                 {@const status = getStatus(entry.status)}
                                 <TableCell title="Data">
                                     {isSameDay(new Date(), new Date(entry.$createdAt))
