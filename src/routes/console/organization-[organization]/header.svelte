@@ -12,6 +12,7 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
+    import LL from '$i18n/i18n-svelte';
 
     let showDropdown = false;
 
@@ -21,20 +22,20 @@
     $: tabs = [
         {
             href: path,
-            title: 'Projects',
+            title: $LL.console.organization.navbar.header.projects(),
             event: 'projects',
             hasChildren: true
         },
         {
             href: `${path}/members`,
-            title: 'Members',
+            title: $LL.console.organization.navbar.header.members(),
             event: 'members',
             hasChildren: true
         },
         {
             href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings'
+            title: $LL.console.organization.navbar.header.settings(),
+            event: 'settings'
         }
     ];
 </script>
@@ -65,7 +66,7 @@
                 <section class="drop-section">
                     <ul class="drop-list">
                         <DropListItem icon="plus" on:click={() => newOrgModal.set(true)}>
-                            New Organization
+                            {$LL.console.organization.texts.dropDown()}
                         </DropListItem>
                     </ul>
                 </section></svelte:fragment>
@@ -77,7 +78,7 @@
                 </a>
                 <Button secondary on:click={() => newMemberModal.set(true)}>
                     <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Invite</span>
+                    <span class="text">{$LL.console.organization.button.invite()}</span>
                 </Button>
             </div>
         </div>

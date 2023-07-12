@@ -9,6 +9,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     export let showCreate = false;
 
@@ -50,23 +51,25 @@
 </script>
 
 <Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="header">Invite Member</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{$LL.console.organization.forms.createMember.title()}</svelte:fragment>
     <FormList>
         <InputEmail
             required
             id="email"
-            label="Email"
-            placeholder="Enter email"
+            label={$LL.console.organization.forms.createMember.inputs.email.label()}
+            placeholder={$LL.console.organization.forms.createMember.inputs.email.placeholder()}
             autofocus={true}
             bind:value={email} />
         <InputText
             id="member-name"
-            label="Name (optional)"
-            placeholder="Enter name"
+            label={$LL.console.organization.forms.createMember.inputs.name.label()}
+            placeholder={$LL.console.organization.forms.createMember.inputs.name.placeholder()}
             bind:value={name} />
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Send invite</Button>
+        <Button secondary on:click={() => (showCreate = false)}
+            >{$LL.console.organization.button.submit.cancel()}</Button>
+        <Button submit>{$LL.console.organization.button.submit.send()}</Button>
     </svelte:fragment>
 </Modal>

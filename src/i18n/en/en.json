@@ -371,7 +371,89 @@
                 }
             }
         },
-        "organization": {},
+        "organization": {
+            "title": {
+                "organizations": "Organizations",
+                "projects": "Projects",
+                "members": "Members"
+            },
+            "forms": {
+                "updateName": {
+                    "title": "Name",
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Enter name"
+                        }
+                    }
+                },
+                "createMember": {
+                    "title": "Invite Member",
+                    "inputs": {
+                        "email": {
+                            "label": "Email",
+                            "placeholder": "Enter email"
+                        },
+                        "name": {
+                            "label": "Name (optional)",
+                            "placeholder": "Enter name"
+                        }
+                    }
+                },
+                "createProject": {
+                    "title": "Create Project",
+                    "inputs": {
+                        "name": {
+                            "label": "Name"
+                        }
+                    }
+                },
+                "deleteOrg": {
+                    "title": "Delete Organization",
+                    "texts": {
+                        "phraseOne": "Are you sure you want to delete",
+                        "phraseTwo": "? All projects",
+                        "phraseThree": "and data associated with this organization will be deleted. This action is irreversible.",
+                        "orgSettings": "The organization will be permanently deleted, including all projects and data associated with this organization. This action is irreversible."
+                    }
+                }
+            },
+            "table": {
+                "header": {
+                    "name": "Name",
+                    "email": "Email"
+                },
+                "pill": {
+                    "projectId": "Project ID",
+                    "pending": "Pending"
+                }
+            },
+            "button": {
+                "submit": {
+                    "create": "Create",
+                    "createProject": "Create Project",
+                    "send": "Send invite",
+                    "update": "Update",
+                    "cancel": "Cancel",
+                    "delete": "Delete"
+                },
+                "invite": "Invite",
+                "resend": "Resend"
+            },
+            "texts": {
+                "dropDown": "New Organization",
+                "apps": "apps",
+                "members": "members",
+                "createProject": "Create a new project"
+            },
+            "navbar": {
+                "header": {
+                    "projects": "Projects",
+                    "members": "Members",
+                    "settings": "Settings"
+                }
+            }
+        },
         "project": {}
     }
 }
