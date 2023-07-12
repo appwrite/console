@@ -6,8 +6,7 @@
 </script>
 
 <script lang="ts">
-    import { Empty, Heading } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { DropList, DropListItem, Empty, Heading } from '$lib/components';
     import {
         TableBody,
         TableCell,
@@ -29,12 +28,13 @@
     import { Button } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { dependencyStore, typeStore } from './wizard/store';
+    import { toLocaleDate } from '$lib/helpers/date';
 
     export let rules: Models.ProxyRuleList;
     export let type: ProxyTypes;
     export let dependency: Dependencies;
 
-    const target = window?.location.hostname ?? '';
+    let showDomainsDropdown = [];
     let showDelete = false;
     let selectedDomain: Models.ProxyRule;
     let isVerifying = {};
@@ -84,63 +84,110 @@
 {#if rules.total}
     <TableScroll>
         <TableHeader>
-            <TableCellHead width={150}>Domain Name</TableCellHead>
-            <TableCellHead width={100} />
-            <TableCellHead width={60}>Type</TableCellHead>
-            <TableCellHead width={90}>Name</TableCellHead>
-            <TableCellHead width={90}>Value</TableCellHead>
+            <TableCellHead>Name</TableCellHead>
+            <TableCellHead width={180}>Verification Status</TableCellHead>
+            <TableCellHead>Certificate Status</TableCellHead>
             <TableCellHead width={40} />
         </TableHeader>
         <TableBody>
-            {#each rules.rules as domain}
+            {#each rules.rules as domain, i}
                 <TableRow>
                     <TableCellText title="Domain">
-                        {domain.domain}
+                        <a
+                            href={`https://${domain.domain}`}
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            {domain.domain}
+                            <span
+                                class="icon-external-link"
+                                aria-hidden="true"
+                                style="color: hsl(var(--color-neutral-50))" />
+                        </a>
                     </TableCellText>
                     <TableCellText title="Status">
-                        <Pill
-                            warning={domain.status !== 'verified'}
-                            success={domain.status === 'verified'}>
-                            {domain.status}
-                        </Pill>
+                        {#if domain.status === 'created'}
+                            <div class="u-flex u-gap-8 u-cross-center">
+                                <span
+                                    class="icon-x-circle"
+                                    aria-hidden="true"
+                                    style="color: hsl(var(--color-danger-100))" />
+                                <span class="u-text">Failed</span>
+                                <Button text>
+                                    <span class="link">Retry</span>
+                                </Button>
+                            </div>
+                        {:else}
+                            <div class="u-flex u-gap-8 u-cross-center">
+                                <span
+                                    class="icon-check-circle"
+                                    aria-hidden="true"
+                                    style="color: hsl(var(--color-success-100))" />
+                                <p class="u-stretch">Verified</p>
+                            </div>
+                        {/if}
                     </TableCellText>
-                    <TableCellText title="Type">CNAME</TableCellText>
                     <TableCellText title="Name">
-                        {domain.domain}
+                        {#if domain.status === 'unverified'}
+                            <div class="u-flex u-gap-8 u-cross-center">
+                                <span
+                                    class="icon-x-circle"
+                                    aria-hidden="true"
+                                    style="color: hsl(var(--color-danger-100))" />
+                                <p class="u-stretch">Failed</p>
+                            </div>
+                        {:else if domain.status === 'verified'}
+                            <div class="u-flex u-gap-8 u-cross-center">
+                                <span
+                                    class="icon-check-circle"
+                                    aria-hidden="true"
+                                    style="color: hsl(var(--color-success-100))" />
+                                <span>Generated</span>
+                                <span style="color: hsl(var(--color-neutral-70));">
+                                    Auto-renewal: {toLocaleDate(domain.renewAt)}
+                                </span>
+                            </div>
+                        {:else}
+                            <div class="u-flex u-gap-8 u-cross-center">
+                                <span
+                                    class="icon-clock"
+                                    aria-hidden="true"
+                                    style="color: hsl(var(--color-neutral-50))" />
+                                <p class="u-stretch">Waiting to run</p>
+                            </div>
+                        {/if}
                     </TableCellText>
-                    <TableCellText title="Name">
-                        {target}
-                    </TableCellText>
-                    <TableCell title="Actions">
-                        <div class="u-flex u-gap-8 u-cross-center u-main-end">
-                            {#if isVerifying[domain.$id]}
-                                <!-- TODO: remove inline styles -->
-                                <div
-                                    class="loader"
-                                    style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem" />
-                            {:else if domain.status === 'created'}
-                                <!-- TODO: remove inline styles -->
-                                <button
-                                    class="button is-text is-only-icon u-padding-inline-0"
-                                    style="--p-button-size: var(--button-size, 2.0rem);"
-                                    aria-label="Verify item"
-                                    on:click={() => refreshDomain(domain)}>
-                                    <span class="icon-refresh" aria-hidden="true" />
-                                </button>
-                            {/if}
-                            <!-- TODO: remove inline styles -->
-                            <button
-                                class="button tooltip is-text is-only-icon u-padding-inline-0"
-                                style="--p-button-size: var(--button-size, 2.0rem);"
-                                aria-label="Delete item"
-                                on:click={async () => {
-                                    showDelete = true;
-                                    selectedDomain = domain;
-                                }}>
-                                <span class="icon-trash" aria-hidden="true" />
-                                <span class="tooltip-popup is-bottom" role="tooltip"> Delete </span>
-                            </button>
-                        </div>
+                    <TableCell>
+                        <DropList
+                            bind:show={showDomainsDropdown[i]}
+                            placement="bottom-start"
+                            noArrow>
+                            <Button
+                                text
+                                round
+                                ariaLabel="more options"
+                                on:click={() => (showDomainsDropdown[i] = !showDomainsDropdown[i])}>
+                                <span class="icon-dots-horizontal" aria-hidden="true" />
+                            </Button>
+                            <svelte:fragment slot="list">
+                                <DropListItem
+                                    icon="refresh"
+                                    on:click={() => {
+                                        refreshDomain(domain);
+                                        showDomainsDropdown[i] = false;
+                                    }}>
+                                    Retry
+                                </DropListItem>
+                                <DropListItem
+                                    icon="trash"
+                                    on:click={() => {
+                                        selectedDomain = domain;
+                                        showDelete = true;
+                                        showDomainsDropdown[i] = false;
+                                    }}>
+                                    Delete
+                                </DropListItem>
+                            </svelte:fragment>
+                        </DropList>
                     </TableCell>
                 </TableRow>
             {/each}

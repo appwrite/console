@@ -3,8 +3,8 @@
     import { WizardStep } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import CNameTable from './cnameTable.svelte';
     import { domain } from './store';
+    import CNameTable from './cnameTable.svelte';
 
     async function retry() {
         try {
@@ -24,7 +24,7 @@
     <div class="boxes-wrapper u-margin-block-start-24">
         <div class="box">
             {#if $domain.status === 'created'}
-                <div class="u-flex u-gap-16 u-cross-center">
+                <div class="u-flex u-gap-8 u-cross-center">
                     <span
                         class="icon-exclamation-circle"
                         aria-hidden="true"
@@ -43,7 +43,7 @@
                     <CNameTable />
                 </div>
             {:else}
-                <div class="u-flex u-gap-16 u-cross-center">
+                <div class="u-flex u-gap-8 u-cross-center">
                     <span
                         class="icon-check"
                         aria-hidden="true"
@@ -53,7 +53,7 @@
             {/if}
         </div>
         <div class="box">
-            <div class="u-flex u-gap-16 u-cross-center">
+            <div class="u-flex u-gap-8 u-cross-center">
                 {#if $domain.status === 'verifying'}
                     <div
                         class="loader"
