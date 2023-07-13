@@ -19,6 +19,11 @@ const config = {
         paths: {
             base: ''
         }
+    },
+    vitePlugin: {
+        experimental: {
+            inspector: true
+        }
     }
 };
 

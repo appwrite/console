@@ -15,7 +15,8 @@
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
-    import { loading } from './store';
+    import { loading, requestedMigration } from './store';
+    import { openMigrationWizard } from './console/organization-[organization]/(migration-wizard)';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;

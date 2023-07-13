@@ -4,6 +4,7 @@
 
     export let dismissible = false;
     export let type: 'info' | 'success' | 'warning' | 'error' = 'info';
+    export let standalone = false;
     export let buttons: Buttons[] = [];
 
     const dispatch = createEventDispatcher();
@@ -14,7 +15,8 @@
     class:is-success={type === 'success'}
     class:is-warning={type === 'warning'}
     class:is-danger={type === 'error'}
-    class:is-info={type === 'info'}>
+    class:is-info={type === 'info'}
+    class:is-standalone={standalone}>
     <div class="alert-grid">
         {#if dismissible}
             <button

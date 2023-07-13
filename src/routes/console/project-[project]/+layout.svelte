@@ -7,6 +7,8 @@
     import { goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
 
+    import { MigrationBox } from '$lib/components';
+
     onMount(async () => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
             if (response.events.includes('stats.connections')) {
@@ -73,3 +75,4 @@
 <slot />
 
 <UploadBox />
+<MigrationBox />

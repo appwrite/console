@@ -36,3 +36,29 @@ export function deepEqual<T>(obj1: T, obj2: T): boolean {
 
     return true;
 }
+
+export function deepMap<T extends object, U extends object = T>(
+    obj: T,
+    fn: (value: unknown, key: unknown, obj: T) => unknown
+): U {
+    const entries = objectEntries(obj);
+    const result = {} as U;
+
+    for (const [key, value] of entries) {
+        result[key] = typeof value === 'object' ? deepMap(value, fn) : fn(value, key, obj);
+    }
+
+    return result;
+}
+
+export function parseIfString(value: unknown): any {
+    if (typeof value === 'string') {
+        try {
+            return JSON.parse(value);
+        } catch {
+            return value;
+        }
+    }
+
+    return value;
+}

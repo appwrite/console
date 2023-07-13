@@ -21,6 +21,11 @@
             href: `${path}/webhooks`,
             title: 'Webhooks',
             event: 'webhooks'
+        },
+        {
+            href: `${path}/migrations`,
+            title: 'Migrations',
+            event: 'migrations'
         }
     ];
 </script>
