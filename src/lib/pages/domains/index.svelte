@@ -6,7 +6,7 @@
 </script>
 
 <script lang="ts">
-    import { DropList, DropListItem, Empty, Heading } from '$lib/components';
+    import { DropList, DropListItem, Empty, Heading, Modal } from '$lib/components';
     import {
         TableBody,
         TableCell,
@@ -20,15 +20,12 @@
     import { onMount } from 'svelte';
     import { dependencyStore, typeStore } from './wizard/store';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
-    import { invalidate } from '$app/navigation';
     import type { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import Create from './create.svelte';
     import Delete from './delete.svelte';
+    import Retry from './wizard/retry.svelte';
 
     export let rules: Models.ProxyRuleList;
     export let type: ProxyTypes;
@@ -36,30 +33,26 @@
 
     let showDomainsDropdown = [];
     let showDelete = false;
+    let showRetry = false;
     let selectedDomain: Models.ProxyRule;
+    let retryError = null;
 
     onMount(() => {
         typeStore.set(type);
         dependencyStore.set(dependency);
     });
 
-    const openWizard = () => {
+    function openWizard() {
         wizard.start(Create);
-    };
+    }
 
-    async function refreshDomain(domain: Models.ProxyRule) {
-        const domainId = domain.$id;
-        try {
-            await sdk.forProject.proxy.updateRuleVerification(domainId);
-            await invalidate(dependency);
-            trackEvent(Submit.DomainUpdateVerification);
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-            trackError(error, Submit.DomainUpdateVerification);
+    function openRetry(domain: Models.ProxyRule, index?: number) {
+        retryError = null;
+        if (index !== undefined) {
+            showDomainsDropdown[index] = false;
         }
+        selectedDomain = domain;
+        showRetry = true;
     }
 </script>
 
@@ -103,7 +96,7 @@
                                     aria-hidden="true"
                                     style="color: hsl(var(--color-danger-100))" />
                                 <span class="u-text">Failed</span>
-                                <Button text on:click={() => refreshDomain(domain)}>
+                                <Button text on:click={() => openRetry(domain)}>
                                     <span class="link">Retry</span>
                                 </Button>
                             </div>
@@ -160,12 +153,7 @@
                                 <span class="icon-dots-horizontal" aria-hidden="true" />
                             </Button>
                             <svelte:fragment slot="list">
-                                <DropListItem
-                                    icon="refresh"
-                                    on:click={() => {
-                                        refreshDomain(domain);
-                                        showDomainsDropdown[i] = false;
-                                    }}>
+                                <DropListItem icon="refresh" on:click={() => openRetry(domain, i)}>
                                     Retry
                                 </DropListItem>
                                 <DropListItem
@@ -193,3 +181,12 @@
 {/if}
 
 <Delete bind:showDelete bind:selectedDomain {dependency} />
+<Modal bind:show={showRetry} headerDivider={false} bind:error={retryError}>
+    <svelte:fragment slot="header">Retry verification</svelte:fragment>
+    {#if selectedDomain}
+        <Retry on:error={(e) => (retryError = e.detail)} />
+    {/if}
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showRetry = false)}>Close</Button>
+    </svelte:fragment>
+</Modal>

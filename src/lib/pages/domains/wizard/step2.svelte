@@ -1,25 +1,15 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
     import { domain } from './store';
-    import CNameTable from './cnameTable.svelte';
+    import Retry from './retry.svelte';
+    import { addNotification } from '$lib/stores/notifications';
 
-    let retrying = false;
-
-    async function retry() {
-        try {
-            retrying = true;
-            $domain = await sdk.forProject.proxy.updateRuleVerification($domain.$id);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        } finally {
-            retrying = false;
-        }
+    function onRetryError(event: CustomEvent<string>) {
+        addNotification({
+            title: 'Error',
+            message: event.detail,
+            type: 'error'
+        });
     }
 </script>
 
@@ -29,30 +19,7 @@
     <div class="boxes-wrapper u-margin-block-start-24">
         <div class="box">
             {#if $domain.status === 'created'}
-                <div class="u-flex u-gap-8 u-cross-center">
-                    <span
-                        class="icon-exclamation-circle"
-                        aria-hidden="true"
-                        style="color: hsl(var(--color-danger-100))" />
-                    <p class="u-stretch">Verification failed</p>
-                    <Button secondary on:click={retry} disabled={retrying}>
-                        {#if retrying}
-                            <div class="loader" style="color: hsl(var(--color-neutral-50))" />
-                        {:else}
-                            Retry
-                        {/if}
-                    </Button>
-                </div>
-                <div class="u-margin-block-start-24">
-                    <p>
-                        In order to continue, set the following record on your DNS provider. Find a
-                        list of domain providers and their DNS settings in our documentation.
-                        Changes may take time to be effective.
-                    </p>
-                </div>
-                <div class="u-margin-block-start-24">
-                    <CNameTable />
-                </div>
+                <Retry on:error={onRetryError} />
             {:else}
                 <div class="u-flex u-gap-8 u-cross-center">
                     <span
