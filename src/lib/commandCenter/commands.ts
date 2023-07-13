@@ -1,8 +1,8 @@
 import { debounce } from '$lib/helpers/debounce';
 import { isMac } from '$lib/helpers/platform';
-import { derived, writable } from 'svelte/store';
+import { derived, writable, type Updater } from 'svelte/store';
 
-// Store
+// Stores
 export type CommandGroup =
     | 'ungrouped'
     | 'navigation'
@@ -14,7 +14,9 @@ export type CommandGroup =
     | 'platforms'
     | 'databases'
     | 'functions'
-    | 'storage';
+    | 'storage'
+    | 'domains'
+    | 'webhooks';
 
 type BaseCommand = {
     callback: () => void;
@@ -23,6 +25,7 @@ type BaseCommand = {
     forceEnable?: boolean;
     group?: CommandGroup;
     icon?: string;
+    rank?: number;
 };
 
 type KeyedCommand = BaseCommand & {
@@ -43,23 +46,26 @@ export type Command = KeyedCommand | BaseCommand;
 export const commandMap = writable<Map<string, Command[]>>(new Map());
 export const disabledMap = writable<Map<string, boolean>>(new Map());
 
+type CommandGroupRanks = Record<CommandGroup, number>;
+export const commandGroupRanks = writable<CommandGroupRanks>({
+    ungrouped: 9999,
+    domains: 20,
+    webhooks: 10,
+    navigation: 1,
+    projects: 0,
+    account: 0,
+    organizations: 0,
+    auth: 0,
+    platforms: 0,
+    databases: 0,
+    functions: 0,
+    storage: 0,
+    help: -1
+});
+
 // Derived stores
 export const commands = derived(commandMap, ($commandMap) => {
     return Array.from($commandMap.values()).flat();
-});
-
-export const groupedCommands = derived(commands, ($commands) => {
-    const res = new Map<string, Command[]>();
-
-    for (const command of $commands) {
-        if (!command.group) {
-            res.set('ungrouped', [...(res.get('ungrouped') || []), command]);
-        } else {
-            res.set(command.group, [...(res.get(command.group) || []), command]);
-        }
-    }
-
-    return res;
 });
 
 const commandsEnabled = derived(disabledMap, ($disabledMap) => {
@@ -233,4 +239,16 @@ export const disableCommands = {
             });
         };
     }
+};
+
+export const updateCommandGroupRanks = (updater: Updater<CommandGroupRanks>) => {
+    let prevRanks: CommandGroupRanks;
+    commandGroupRanks.update((prev) => {
+        prevRanks = prev;
+        return updater(prev);
+    });
+
+    return () => {
+        commandGroupRanks.set(prevRanks);
+    };
 };

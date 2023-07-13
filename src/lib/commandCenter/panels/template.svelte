@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { CommandGroup } from '../commands';
+    import { commandGroupRanks, type CommandGroup } from '../commands';
 
     // This is the template for all panels used in the command center.
     // Use this component when you want to create a new panel.
@@ -13,7 +13,7 @@
     import { quadOut } from 'svelte/easing';
     import { crossfade } from 'svelte/transition';
 
-    type BaseOption = { callback: () => void; group?: CommandGroup };
+    type BaseOption = { callback: () => void; group?: CommandGroup; rank?: number };
     type Option = $$Generic<BaseOption>;
     export let options: Option[] | null = null;
     export let search = '';
@@ -118,7 +118,7 @@
     const getGroupsAndOptions = (options: Option[]) => {
         if (!options) return null;
 
-        const groupedOptions = new Map<string, Option[]>();
+        const groupedOptions = new Map<CommandGroup, Option[]>();
         groupedOptions.set('ungrouped', []);
 
         for (const option of options) {
@@ -132,10 +132,40 @@
             }
         }
 
+        // Organize groups
+        const sortedOptions = [...groupedOptions.entries()]
+            .sort(([a], [b]) => {
+                const aRank = $commandGroupRanks[a] || 0;
+                const bRank = $commandGroupRanks[b] || 0;
+                if (aRank < bRank) {
+                    return 1;
+                } else if (aRank > bRank) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            })
+            .map(([groupName, options]) => {
+                return [
+                    groupName,
+                    options.sort((a, b) => {
+                        const aRank = a.rank || 0;
+                        const bRank = b.rank || 0;
+                        if (aRank < bRank) {
+                            return 1;
+                        } else if (aRank > bRank) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    })
+                ] as [CommandGroup, Option[]];
+            });
+
         // return a flat array of groups and indexed options
         let optionIndex = 0;
         const groupsAndOptions: (Group | IndexedOption)[] = [];
-        for (const [groupName, options] of groupedOptions) {
+        for (const [groupName, options] of sortedOptions) {
             if (groupName !== 'ungrouped') {
                 groupsAndOptions.push({ type: 'group', name: groupName });
             }

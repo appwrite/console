@@ -12,7 +12,6 @@ type CastSubPanel = Omit<SubPanel, 'component'> & {
 
 export const subPanels = writable<Array<SubPanel>>([]);
 
-//
 export function addSubPanel(subPanel: CastSubPanel) {
     subPanels.update((curr) => {
         curr.push(subPanel as SubPanel);
