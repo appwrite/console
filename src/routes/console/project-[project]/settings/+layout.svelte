@@ -1,9 +1,10 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { registerCommands } from '$lib/commandCenter';
+    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { project } from '../store';
     import { openCreateDomainWizard } from './domains/+page.svelte';
+    import { openWebhooksWizard } from './webhooks/+page.svelte';
 
     $: $registerCommands([
         {
@@ -14,6 +15,26 @@
                 openCreateDomainWizard();
             },
             group: 'domains'
+        },
+        {
+            label: 'Create webhook',
+            icon: 'plus',
+            keys: $page.url.pathname.includes('webhooks') ? ['c'] : ['c', 'w'],
+            callback: () => {
+                openWebhooksWizard();
+            },
+            group: 'webhooks'
+        },
+        {
+            label: 'Go to Settings Overview',
+
+            keys: ['g', 'o'],
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings`);
+            },
+            disabled: $page.url.pathname.endsWith('settings'),
+            group: 'navigation',
+            rank: 30
         },
         {
             label: 'Go to Custom domains',
@@ -36,17 +57,14 @@
             group: 'navigation',
 
             rank: 10
-        },
-        {
-            label: 'Create webhook',
-            icon: 'plus',
-            keys: $page.url.pathname.includes('webhooks') ? ['c'] : ['c', 'w'],
-            callback: () => {
-                goto('./settings/webhooks?create');
-            },
-            group: 'webhooks'
         }
     ]);
+
+    $: $updateCommandGroupRanks((prev) => ({
+        ...prev,
+        domains: 20,
+        webhooks: 10
+    }));
 </script>
 
 <svelte:head>

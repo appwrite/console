@@ -46,23 +46,6 @@ export type Command = KeyedCommand | BaseCommand;
 export const commandMap = writable<Map<string, Command[]>>(new Map());
 export const disabledMap = writable<Map<string, boolean>>(new Map());
 
-type CommandGroupRanks = Record<CommandGroup, number>;
-export const commandGroupRanks = writable<CommandGroupRanks>({
-    ungrouped: 9999,
-    domains: 20,
-    webhooks: 10,
-    navigation: 1,
-    projects: 0,
-    account: 0,
-    organizations: 0,
-    auth: 0,
-    platforms: 0,
-    databases: 0,
-    functions: 0,
-    storage: 0,
-    help: -1
-});
-
 // Derived stores
 export const commands = derived(commandMap, ($commandMap) => {
     return Array.from($commandMap.values()).flat();
@@ -241,14 +224,47 @@ export const disableCommands = {
     }
 };
 
-export const updateCommandGroupRanks = (updater: Updater<CommandGroupRanks>) => {
-    let prevRanks: CommandGroupRanks;
-    commandGroupRanks.update((prev) => {
-        prevRanks = prev;
-        return updater(prev);
-    });
+type CommandGroupRanks = Record<CommandGroup, number>;
 
-    return () => {
-        commandGroupRanks.set(prevRanks);
-    };
+type CommandGroupRankTransformations = Map<string, Updater<CommandGroupRanks>>;
+const groupRankTransformations = writable<CommandGroupRankTransformations>(new Map());
+export const updateCommandGroupRanks = {
+    subscribe(runner: (cb: (updater: Updater<CommandGroupRanks>) => void) => void) {
+        const uuid = crypto.randomUUID();
+
+        runner((updater: Updater<CommandGroupRanks>) => {
+            groupRankTransformations.update((curr) => {
+                curr.set(uuid, updater);
+                return curr;
+            });
+        });
+
+        return () => {
+            groupRankTransformations.update((curr) => {
+                curr.delete(uuid);
+                return curr;
+            });
+        };
+    }
 };
+
+export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTransformations) => {
+    const initialRanks: CommandGroupRanks = {
+        ungrouped: 9999,
+        domains: 0,
+        webhooks: 0,
+        navigation: 1,
+        projects: 0,
+        account: 0,
+        organizations: 0,
+        auth: 0,
+        platforms: 0,
+        databases: 0,
+        functions: 0,
+        storage: 0,
+        help: -1
+    };
+
+    const transformations = Array.from($groupRankTransformations.values());
+    return transformations.reduce((prev, curr) => curr(prev), initialRanks);
+});

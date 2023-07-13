@@ -85,10 +85,11 @@
     }, 1000);
 
     const handleKeydown = (e) => {
+        if (!$subPanels.length) {
+            keys = [...keys, e.key].slice(-5);
+            resetKeys();
+        }
         $commandCenterKeyDownHandler(e);
-        keys = [...keys, e.key].slice(-5);
-        console.log(keys);
-        resetKeys();
     };
 </script>
 
