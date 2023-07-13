@@ -10,7 +10,6 @@
     const dispatch = createEventDispatcher();
 
     async function retry() {
-        console.log('retry');
         try {
             retrying = true;
             $domain = await sdk.forProject.proxy.updateRuleVerification($domain.$id);
