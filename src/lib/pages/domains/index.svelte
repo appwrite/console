@@ -18,7 +18,7 @@
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { dependencyStore, typeStore } from './wizard/store';
+    import { dependencyStore, domain, typeStore } from './wizard/store';
     import { toLocaleDate } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import type { Dependencies } from '$lib/constants';
@@ -46,12 +46,12 @@
         wizard.start(Create);
     }
 
-    function openRetry(domain: Models.ProxyRule, index?: number) {
+    function openRetry(rule: Models.ProxyRule, index?: number) {
         retryError = null;
         if (index !== undefined) {
             showDomainsDropdown[index] = false;
         }
-        selectedDomain = domain;
+        domain.set(rule);
         showRetry = true;
     }
 </script>
@@ -183,9 +183,7 @@
 <Delete bind:showDelete bind:selectedDomain {dependency} />
 <Modal bind:show={showRetry} headerDivider={false} bind:error={retryError}>
     <svelte:fragment slot="header">Retry verification</svelte:fragment>
-    {#if selectedDomain}
-        <Retry on:error={(e) => (retryError = e.detail)} />
-    {/if}
+    <Retry on:error={(e) => (retryError = e.detail)} />
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showRetry = false)}>Close</Button>
     </svelte:fragment>
