@@ -9,19 +9,20 @@
 
     export let provider: Provider;
 
-    let appId: string = null;
+    const projectId = $page.params.project;
+
     let enabled: boolean = null;
-    let clientSecret: string = null;
-    let endpoint: string = null;
-    let error: string;
+    let appId: string = null;
+    let secret: string = null;
 
     onMount(() => {
-        appId ??= provider.appId;
         enabled ??= provider.enabled;
-        if (provider.secret) ({ clientSecret, endpoint } = JSON.parse(provider.secret));
+        appId ??= provider.appId;
+        secret ??= provider.secret;
     });
 
-    const projectId = $page.params.project;
+    let error: string;
+
     const update = async () => {
         const result = await updateOAuth({ projectId, provider, secret, appId, enabled });
 
@@ -31,9 +32,6 @@
             provider = null;
         }
     };
-
-    $: secret =
-        clientSecret && endpoint ? JSON.stringify({ clientSecret, endpoint }) : provider.secret;
 </script>
 
 <Modal {error} size="big" show onSubmit={update} on:close>
@@ -58,14 +56,10 @@
             placeholder="Enter App Secret"
             minlength={0}
             showPasswordButton
-            bind:value={clientSecret} />
-        <InputText
-            id="endpoint"
-            label="Endpoint (optional)"
-            placeholder="Your endpoint"
-            bind:value={endpoint} />
+            bind:value={secret} />
         <Alert type="info">
-            To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
+            To complete the setup, create an OAuth2 client ID with "Web application" as the
+            application type, then add this redirect URI to your {provider.name} configuration.
         </Alert>
         <div>
             <p>URI</p>
@@ -78,10 +72,11 @@
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={(secret === provider.secret &&
-                enabled === provider.enabled &&
-                appId === provider.appId) ||
-                !(appId && clientSecret)}
+            disabled={!appId ||
+                !secret ||
+                (appId === provider.appId &&
+                    secret === provider.secret &&
+                    enabled === provider.enabled)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

@@ -6,13 +6,13 @@
     import { Button } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import {
-        Table,
         TableBody,
         TableRowLink,
         TableCellHead,
         TableCell,
         TableCellText,
-        TableHeader
+        TableHeader,
+        TableScroll
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { wizard } from '$lib/stores/wizard';
@@ -46,10 +46,10 @@
     </div>
 
     {#if data.webhooks.total}
-        <Table>
+        <TableScroll>
             <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead>POST URL</TableCellHead>
+                <TableCellHead width={200}>Name</TableCellHead>
+                <TableCellHead width={180}>POST URL</TableCellHead>
                 <TableCellHead width={80}>Events</TableCellHead>
             </TableHeader>
             <TableBody>
@@ -57,7 +57,7 @@
                     <TableRowLink
                         href={`${base}/console/project-${projectId}/settings/webhooks/${webhook.$id}`}>
                         <TableCell title="Name">
-                            <div class="u-flex u-main-space-between">
+                            <div class="u-flex u-main-space-between u-cross-center">
                                 {webhook.name}
                                 {#if webhook.security === false}
                                     <Pill>SLL/TLS disabled</Pill>
@@ -69,7 +69,7 @@
                     </TableRowLink>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
     {:else}
         <Empty
             single
