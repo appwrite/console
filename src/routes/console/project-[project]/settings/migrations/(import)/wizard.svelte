@@ -11,6 +11,7 @@
     import { Dependencies } from '$lib/constants';
     import { migrationFormToResources } from '$lib/stores/migration';
     import { started } from '../stores';
+    import { showMigrationBox } from '$lib/components/migrationBox.svelte';
 
     const onExit = () => {
         resetImportStores();
@@ -61,8 +62,7 @@
                     $provider.adminSecret,
                     $provider.database,
                     $provider.username,
-                    $provider.password,
-                    $provider.port
+                    $provider.password
                 );
                 console.log('nhost', res);
                 invalidate(Dependencies.MIGRATIONS);
@@ -72,6 +72,8 @@
         resetImportStores();
         wizard.hide();
         started.set(performance.now());
+
+        showMigrationBox.set(true);
     };
 
     onDestroy(onExit);

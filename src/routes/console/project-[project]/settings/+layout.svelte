@@ -34,7 +34,7 @@
             },
             disabled: $page.url.pathname.endsWith('settings'),
             group: 'navigation',
-            rank: 30
+            rank: 40
         },
         {
             label: 'Go to Custom domains',
@@ -45,7 +45,7 @@
             },
             disabled: $page.url.pathname.includes('domains'),
             group: 'navigation',
-            rank: 20
+            rank: 30
         },
         {
             label: 'Go to Webhooks',
@@ -54,6 +54,17 @@
                 goto(`/console/project-${$project.$id}/settings/webhooks`);
             },
             disabled: $page.url.pathname.includes('webhooks'),
+            group: 'navigation',
+
+            rank: 20
+        },
+        {
+            label: 'Go to Migrations',
+            keys: ['g', 'm'],
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/migrations`);
+            },
+            disabled: $page.url.pathname.includes('migrations'),
             group: 'navigation',
 
             rank: 10

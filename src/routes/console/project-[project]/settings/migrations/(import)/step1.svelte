@@ -2,7 +2,8 @@
     import SvgIcon from '$lib/components/svgIcon.svelte';
     import { Button, FormList, InputNumber, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { provider, type Provider } from '.';
+    import type { Provider } from '$lib/stores/migration';
+    import { provider } from '.';
 
     const providers: Record<Provider, string> = {
         appwrite: 'Appwrite',
@@ -144,12 +145,6 @@
                 required
                 placeholder="Enter database"
                 bind:value={$provider.database} />
-            <InputNumber
-                id="port"
-                label="Port"
-                required
-                placeholder="Enter port"
-                bind:value={$provider.port} />
             <InputText
                 id="username"
                 label="Username"

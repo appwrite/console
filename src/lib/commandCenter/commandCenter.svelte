@@ -86,7 +86,7 @@
 
     const handleKeydown = (e) => {
         if (!$subPanels.length) {
-            keys = [...keys, e.key].slice(-5);
+            keys = [...keys, e.key].slice(-10);
             resetKeys();
         }
         $commandCenterKeyDownHandler(e);

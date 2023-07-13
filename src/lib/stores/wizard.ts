@@ -7,6 +7,7 @@ export type WizardStore = {
     media?: string;
     component?: typeof SvelteComponent;
     interceptor?: () => Promise<void>;
+    nextDisabled: boolean;
 };
 
 function createWizardStore() {
@@ -14,7 +15,8 @@ function createWizardStore() {
         show: false,
         component: null,
         interceptor: null,
-        media: null
+        media: null,
+        nextDisabled: false
     });
 
     return {
@@ -31,7 +33,12 @@ function createWizardStore() {
         setInterceptor: (callback: WizardStore['interceptor']) => {
             update((n) => {
                 n.interceptor = callback;
-
+                return n;
+            });
+        },
+        setNextDisabled: (disabled: boolean) => {
+            update((n) => {
+                n.nextDisabled = disabled;
                 return n;
             });
         },

@@ -1,4 +1,7 @@
+import { excludeArray } from '$lib/helpers/array';
 import { writable } from 'svelte/store';
+
+export type Provider = 'appwrite' | 'nhost' | 'supabase' | 'firebase';
 
 const initialFormData = {
     users: {
@@ -32,20 +35,39 @@ export const createMigrationFormStore = () => {
     };
 };
 
-type Resource =
-    | 'user'
-    | 'team'
-    | 'membership'
-    | 'file'
-    | 'bucket'
-    | 'function'
-    | 'envVar'
-    | 'deployment'
-    | 'database'
-    | 'collection'
-    | 'index'
-    | 'attribute'
-    | 'document';
+const resources = [
+    'user',
+    'team',
+    'membership',
+    'file',
+    'bucket',
+    'function',
+    'envVar',
+    'deployment',
+    'database',
+    'collection',
+    'index',
+    'attribute',
+    'document'
+] as const;
+
+type Resource = (typeof resources)[number];
+
+export const providerResources: Record<Provider, Resource[]> = {
+    appwrite: [...resources],
+    supabase: [
+        'user',
+        'database',
+        'collection',
+        'attribute',
+        'index',
+        'document',
+        'bucket',
+        'file'
+    ],
+    nhost: ['user', 'database', 'collection', 'attribute', 'index', 'document', 'bucket', 'file'],
+    firebase: []
+};
 
 export const migrationFormToResources = (formData: MigrationFormData): Resource[] => {
     const resources: Resource[] = [];

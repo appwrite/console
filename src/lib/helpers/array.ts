@@ -76,3 +76,10 @@ export function last<T>(array: readonly T[]): T;
 export function last<T>(array: readonly T[]): T | undefined {
     return at(array, -1);
 }
+
+export function excludeArray<T, E extends T>(
+    array: readonly T[],
+    exclude: readonly E[]
+): Exclude<T, E>[] {
+    return array.filter((item) => !exclude.includes(item as E)) as Exclude<T, E>[];
+}
