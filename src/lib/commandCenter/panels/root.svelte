@@ -73,6 +73,18 @@
         }),
         ...searchResults
     ] as Array<Command | Omit<Command, 'keys'>>;
+
+    const hasCtrl = (command: Command) => {
+        return 'ctrl' in command && command.ctrl;
+    };
+
+    const hasShift = (command: Command) => {
+        return 'shift' in command && command.shift;
+    };
+
+    const hasAlt = (command: Command) => {
+        return 'alt' in command && command.alt;
+    };
 </script>
 
 <Template options={results} bind:search searchPlaceholder="Search for commands or content...">
@@ -84,13 +96,13 @@
             </span>
         </div>
         <div class="u-flex u-gap-4 u-cross-center">
-            {#if command.ctrl}
+            {#if hasCtrl(command)}
                 <kbd class="kbd"> {isMac() ? '⌘' : 'Ctrl'} </kbd>
             {/if}
-            {#if command.shift}
+            {#if hasShift(command)}
                 <kbd class="kbd"> {isMac() ? '⇧' : 'Shift'} </kbd>
             {/if}
-            {#if command.alt}
+            {#if hasAlt(command)}
                 <kbd class="kbd"> {isMac() ? '⌥' : 'Alt'} </kbd>
             {/if}
             {#if 'keys' in command}

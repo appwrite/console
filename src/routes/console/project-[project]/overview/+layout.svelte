@@ -35,6 +35,9 @@
     import Bandwith from './bandwith.svelte';
     import Requests from './requests.svelte';
     import Onboard from './onboard.svelte';
+    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { Platforms } from '$lib/commandCenter/panels';
+    import { createApiKey } from './keys/+page.svelte';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -55,6 +58,34 @@
         period = newPeriod;
         usage.load(projectId, period);
     }
+
+    $: $registerCommands([
+        {
+            label: 'Add platform',
+            callback() {
+                addSubPanel({
+                    component: Platforms,
+                    name: 'Platforms'
+                });
+            },
+            icon: 'plus',
+            group: 'integrations'
+        },
+        {
+            label: 'Create API Key',
+            icon: 'plus',
+            callback() {
+                createApiKey();
+            },
+            keys: ['c', 'k'],
+            group: 'integrations'
+        }
+    ]);
+
+    $: $updateCommandGroupRanks((prev) => ({
+        ...prev,
+        integrations: 10
+    }));
 </script>
 
 <svelte:head>

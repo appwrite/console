@@ -32,7 +32,9 @@
             },
             keys: ['c'],
             disabled: showCreate,
-            icon: 'plus'
+            icon: 'plus',
+            group: 'databases',
+            rank: 10
         }
     ]);
 </script>
