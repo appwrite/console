@@ -36,13 +36,13 @@
 
 <Form onSubmit={updateEmail}>
     <CardGrid>
-        <Heading tag="h6" size="7">{$LL.console.title.userData.email()}</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.userData.email()}</Heading>
         <svelte:fragment slot="aside">
             <ul>
                 <InputEmail
                     id="email"
-                    label={$LL.console.forms.userData.update.email.label()}
-                    placeholder={$LL.console.forms.userData.update.email.placeholder()}
+                    label={$LL.console.project.forms.userData.update.email.label()}
+                    placeholder={$LL.console.project.forms.userData.update.email.placeholder()}
                     autocomplete={false}
                     bind:value={userEmail} />
             </ul>
@@ -50,7 +50,7 @@
 
         <svelte:fragment slot="actions">
             <Button disabled={userEmail === $user.email} submit
-                >{$LL.console.button.submit.update()}</Button>
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

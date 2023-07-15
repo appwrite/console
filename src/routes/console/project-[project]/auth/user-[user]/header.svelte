@@ -12,22 +12,22 @@
     const tabs = [
         {
             href: path,
-            title: $LL.console.navbar.userHeader.overview(),
+            title: $LL.console.project.navbar.userHeader.overview(),
             event: 'overview'
         },
         {
             href: `${path}/memberships`,
-            title: $LL.console.navbar.userHeader.membership(),
+            title: $LL.console.project.navbar.userHeader.membership(),
             event: 'memberships'
         },
         {
             href: `${path}/sessions`,
-            title: $LL.console.navbar.userHeader.sessions(),
+            title: $LL.console.project.navbar.userHeader.sessions(),
             event: 'sessions'
         },
         {
             href: `${path}/activity`,
-            title: $LL.console.navbar.userHeader.activity(),
+            title: $LL.console.project.navbar.userHeader.activity(),
             event: 'activity',
             hasChildren: true
         }

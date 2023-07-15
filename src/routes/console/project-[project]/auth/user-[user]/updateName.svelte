@@ -36,14 +36,14 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">{$LL.console.title.userData.name()}</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.userData.name()}</Heading>
 
         <svelte:fragment slot="aside">
             <ul data-private>
                 <InputText
                     id="name"
-                    label={$LL.console.forms.userData.update.name.label()}
-                    placeholder={$LL.console.forms.userData.update.name.placeholder()}
+                    label={$LL.console.project.forms.userData.update.name.label()}
+                    placeholder={$LL.console.project.forms.userData.update.name.placeholder()}
                     autocomplete={false}
                     bind:value={userName} />
             </ul>
@@ -51,7 +51,7 @@
 
         <svelte:fragment slot="actions">
             <Button disabled={userName === $user.name} submit
-                >{$LL.console.button.submit.update()}</Button>
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

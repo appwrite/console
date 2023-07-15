@@ -42,20 +42,20 @@
     <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
         <Button on:click={() => (showCreate = true)} event="create_user">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">{$LL.console.button.createUser()}</span>
+            <span class="text">{$LL.console.project.button.createUser()}</span>
         </Button>
     </SearchQuery>
 
     {#if data.users.total}
         <Table>
             <TableHeader>
-                <TableCellHead>{$LL.console.table.header.name()}</TableCellHead>
-                <TableCellHead onlyDesktop>{$LL.console.table.header.identifiers()}</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.name()}</TableCellHead>
+                <TableCellHead onlyDesktop>{$LL.console.project.table.header.identifiers()}</TableCellHead>
                 <TableCellHead onlyDesktop width={130}
-                    >{$LL.console.table.header.status()}</TableCellHead>
+                    >{$LL.console.project.table.header.status()}</TableCellHead>
                 <TableCellHead onlyDesktop width={100}
-                    >{$LL.console.table.header.id()}</TableCellHead>
-                <TableCellHead onlyDesktop>{$LL.console.table.header.joined()}</TableCellHead>
+                    >{$LL.console.project.table.header.id()}</TableCellHead>
+                <TableCellHead onlyDesktop>{$LL.console.project.table.header.joined()}</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.users.users as user}
@@ -89,22 +89,22 @@
                             {#if user.status}
                                 <Pill success={user.emailVerification || user.phoneVerification}>
                                     {user.emailVerification && user.phoneVerification
-                                        ? `${$LL.console.table.pill.verify()}`
+                                        ? `${$LL.console.project.table.pill.verify()}`
                                         : user.emailVerification
-                                        ? `${$LL.console.table.pill.emialVerify()}`
+                                        ? `${$LL.console.project.table.pill.emialVerify()}`
                                         : user.phoneVerification
-                                        ? `${$LL.console.table.pill.phoneVerify()}`
-                                        : `${$LL.console.table.pill.unverify()}`}
+                                        ? `${$LL.console.project.table.pill.phoneVerify()}`
+                                        : `${$LL.console.project.table.pill.unverify()}`}
                                 </Pill>
                             {:else}
-                                <Pill danger>{$LL.console.table.pill.block()}</Pill>
+                                <Pill danger>{$LL.console.project.table.pill.block()}</Pill>
                             {/if}
                         </TableCell>
                         <TableCell onlyDesktop showOverflow title="ID">
                             <Copy value={user.$id} event="user">
                                 <Pill button>
                                     <span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text">{$LL.console.table.pill.userId()}</span>
+                                    <span class="text">{$LL.console.project.table.pill.userId()}</span>
                                 </Pill>
                             </Copy>
                         </TableCell>
@@ -124,11 +124,11 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>{$LL.console.texts.emptySearch.phraseOne()} '{data.search}'</b>
-                <p>{$LL.console.texts.emptySearch.phraseTwo()}.</p>
+                <b>{$LL.console.project.texts.emptySearch.phraseOne()} '{data.search}'</b>
+                <p>{$LL.console.project.texts.emptySearch.phraseTwo()}.</p>
             </div>
             <Button href={`/console/project-${projectId}/auth`} secondary
-                >{$LL.console.button.clearSearch()}</Button>
+                >{$LL.console.project.button.clearSearch()}</Button>
         </EmptySearch>
     {:else}
         <Empty

@@ -10,30 +10,30 @@
     const tabs = [
         {
             href: path,
-            title: $LL.console.navbar.header.users(),
+            title: $LL.console.project.navbar.header.users(),
             hasChildren: true,
             event: 'users'
         },
         {
             href: `${path}/teams`,
-            title: $LL.console.navbar.header.teams(),
+            title: $LL.console.project.navbar.header.teams(),
             hasChildren: true,
             event: 'teams'
         },
         {
             href: `${path}/usage`,
-            title: $LL.console.navbar.header.usage(),
+            title: $LL.console.project.navbar.header.usage(),
             hasChildren: true,
             event: 'usage'
         },
         {
             href: `${path}/security`,
-            title: $LL.console.navbar.header.security(),
+            title: $LL.console.project.navbar.header.security(),
             event: 'security'
         },
         {
             href: `${path}/settings`,
-            title: $LL.console.navbar.header.settings(),
+            title: $LL.console.project.navbar.header.settings(),
             event: 'settings'
         }
     ];
@@ -41,7 +41,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>{$LL.console.title.auth()}</CoverTitle>
+        <CoverTitle>{$LL.console.project.title.auth()}</CoverTitle>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}

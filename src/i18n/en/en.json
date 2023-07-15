@@ -135,120 +135,27 @@
         }
     },
     "console": {
-        "title": {
-            "auth": "Auth",
-            "createUser": "Create User",
-            "user": "User",
-            "userData": {
-                "name": "Name",
-                "email": "Email",
-                "phone": "Phone",
-                "password": "Password",
-                "userPref": "User Preferences",
-                "deleteUser": "Delete User"
-            }
-        },
         "forms": {
-            "createUser": {
+            "createOrg": {
+                "title": "Create New Organization",
                 "inputs": {
                     "name": {
                         "label": "Name",
                         "placeholder": "Enter name"
-                    },
-                    "email": {
-                        "label": "Email",
-                        "placeholder": "Enter email"
-                    },
-                    "phone": {
-                        "label": "Phone",
-                        "placeholder": "Enter phone"
-                    },
-                    "password": {
-                        "label": "Password",
-                        "placeholder": "Enter password"
-                    }
-                }
-            },
-            "userData": {
-                "update": {
-                    "name": {
-                        "label": "Name",
-                        "placeholder": "Enter name"
-                    },
-                    "email": {
-                        "label": "Email",
-                        "placeholder": "Enter email"
-                    },
-                    "phone": {
-                        "label": "Phone",
-                        "placeholder": "Enter phone"
-                    },
-                    "password": {
-                        "label": "New Password",
-                        "placeholder": "Enter New password"
-                    },
-                    "userPref": {
-                        "key": {
-                            "label": "Key",
-                            "placeholder": "Enter key"
-                        },
-                        "value": {
-                            "label": "Value",
-                            "placeholder": "Enter value"
-                        }
                     }
                 }
             }
         },
         "button": {
-            "createUser": "Create user",
-            "clearSearch": "Clear Search",
             "cancel": "Cancel",
+            "backToConsole": "Back to the console",
             "submit": {
-                "create": "Create",
-                "update": "Update",
-                "addPrefs": "Add Preference"
-            },
-            "pill": {
-                "userId": "User ID"
+                "create": "Create"
             }
         },
         "table": {
-            "header": {
-                "name": "Name",
-                "identifiers": "Identifiers",
-                "status": "Status",
-                "id": "ID",
-                "joined": "Joined"
-            },
             "pill": {
-                "verify": "verified",
-                "emailVerify": "verified email",
-                "phoneVerify": "verified phone",
-                "unverify": "unverified",
-                "block": "blocked",
-                "userId": "User ID"
-            }
-        },
-        "texts": {
-            "emptySearch": {
-                "phraseOne": "Sorry, we couldn't find",
-                "phraseTwo": "There are no users that match your search."
-            }
-        },
-        "navbar": {
-            "header": {
-                "users": "Users",
-                "teams": "Teams",
-                "usage": "Usage",
-                "security": "Security",
-                "settings": "Settings"
-            },
-            "userHeader": {
-                "overview": "Overview",
-                "membership": "Memberships",
-                "sessions": "Sessions",
-                "activity": "Activity"
+                "orgId": "Organization ID"
             }
         },
 
@@ -454,6 +361,123 @@
                 }
             }
         },
-        "project": {}
+        "project": {
+            "title": {
+                "auth": "Auth",
+                "createUser": "Create User",
+                "user": "User",
+                "userData": {
+                    "name": "Name",
+                    "email": "Email",
+                    "phone": "Phone",
+                    "password": "Password",
+                    "userPref": "User Preferences",
+                    "deleteUser": "Delete User"
+                }
+            },
+            "forms": {
+                "createUser": {
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Enter name"
+                        },
+                        "email": {
+                            "label": "Email",
+                            "placeholder": "Enter email"
+                        },
+                        "phone": {
+                            "label": "Phone",
+                            "placeholder": "Enter phone"
+                        },
+                        "password": {
+                            "label": "Password",
+                            "placeholder": "Enter password"
+                        }
+                    }
+                },
+                "userData": {
+                    "update": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Enter name"
+                        },
+                        "email": {
+                            "label": "Email",
+                            "placeholder": "Enter email"
+                        },
+                        "phone": {
+                            "label": "Phone",
+                            "placeholder": "Enter phone"
+                        },
+                        "password": {
+                            "label": "New Password",
+                            "placeholder": "Enter New password"
+                        },
+                        "userPref": {
+                            "key": {
+                                "label": "Key",
+                                "placeholder": "Enter key"
+                            },
+                            "value": {
+                                "label": "Value",
+                                "placeholder": "Enter value"
+                            }
+                        }
+                    }
+                }
+            },
+            "button": {
+                "createUser": "Create user",
+                "clearSearch": "Clear Search",
+                "cancel": "Cancel",
+                "submit": {
+                    "create": "Create",
+                    "update": "Update",
+                    "addPrefs": "Add Preference"
+                },
+                "pill": {
+                    "userId": "User ID"
+                }
+            },
+            "table": {
+                "header": {
+                    "name": "Name",
+                    "identifiers": "Identifiers",
+                    "status": "Status",
+                    "id": "ID",
+                    "joined": "Joined"
+                },
+                "pill": {
+                    "verify": "verified",
+                    "emailVerify": "verified email",
+                    "phoneVerify": "verified phone",
+                    "unverify": "unverified",
+                    "block": "blocked",
+                    "userId": "User ID"
+                }
+            },
+            "texts": {
+                "emptySearch": {
+                    "phraseOne": "Sorry, we couldn't find",
+                    "phraseTwo": "There are no users that match your search."
+                }
+            },
+            "navbar": {
+                "header": {
+                    "users": "Users",
+                    "teams": "Teams",
+                    "usage": "Usage",
+                    "security": "Security",
+                    "settings": "Settings"
+                },
+                "userHeader": {
+                    "overview": "Overview",
+                    "membership": "Memberships",
+                    "sessions": "Sessions",
+                    "activity": "Activity"
+                }
+            }
+        }
     }
 }

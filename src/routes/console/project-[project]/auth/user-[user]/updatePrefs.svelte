@@ -57,7 +57,7 @@
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">{$LL.console.title.userData.userPref()}</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.userData.userPref()}</Heading>
         <p>
             You can update your user preferences by storing information on the user's objects so
             they can easily be shared across devices and sessions.
@@ -70,12 +70,12 @@
                             <li class="form-item is-multiple">
                                 <div class="form-item-part u-stretch">
                                     <label class="label" for={`key-${index}`}
-                                        >{$LL.console.forms.userData.update.userPref.key.label()}
+                                        >{$LL.console.project.forms.userData.update.userPref.key.label()}
                                     </label>
                                     <div class="input-text-wrapper">
                                         <input
                                             id={`key-${key}`}
-                                            placeholder={$LL.console.forms.userData.update.userPref.key.placeholder()}
+                                            placeholder={$LL.console.project.forms.userData.update.userPref.key.placeholder()}
                                             type="text"
                                             class="input-text"
                                             bind:value={key} />
@@ -83,11 +83,11 @@
                                 </div>
                                 <div class="form-item-part u-stretch">
                                     <label class="label" for={`value-${index}`}
-                                        >{$LL.console.forms.userData.update.userPref.value.label()}</label>
+                                        >{$LL.console.project.forms.userData.update.userPref.value.label()}</label>
                                     <div class="input-text-wrapper">
                                         <input
                                             id={`value-${value}`}
-                                            placeholder={$LL.console.forms.userData.update.userPref.value.placeholder()}
+                                            placeholder={$LL.console.project.forms.userData.update.userPref.value.placeholder()}
                                             type="text"
                                             class="input-text"
                                             bind:value />
@@ -127,13 +127,13 @@
                         }
                     }}>
                     <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">{$LL.console.button.submit.addPrefs()}</span>
+                    <span class="text">{$LL.console.project.button.submit.addPrefs()}</span>
                 </Button>
             </form>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={arePrefsDisabled} submit>{$LL.console.button.submit.update()}</Button>
+            <Button disabled={arePrefsDisabled} submit>{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

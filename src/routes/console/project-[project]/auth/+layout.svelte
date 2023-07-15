@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-    <title>{$LL.console.title.auth()} - Appwrite</title>
+    <title>{$LL.console.project.title.auth()} - Appwrite</title>
 </svelte:head>
 
 <slot />

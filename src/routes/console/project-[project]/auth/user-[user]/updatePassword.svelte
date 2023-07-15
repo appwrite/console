@@ -31,7 +31,7 @@
 <Form onSubmit={updatePassword}>
     <CardGrid>
         <div>
-            <Heading tag="h6" size="7">{$LL.console.title.userData.password()}</Heading>
+            <Heading tag="h6" size="7">{$LL.console.project.title.userData.password()}</Heading>
         </div>
 
         <p>
@@ -41,8 +41,8 @@
             <ul>
                 <InputPassword
                     id="newPassword"
-                    label={$LL.console.forms.userData.update.password.label()}
-                    placeholder={$LL.console.forms.userData.update.password.placeholder()}
+                    label={$LL.console.project.forms.userData.update.password.label()}
+                    placeholder={$LL.console.project.forms.userData.update.password.placeholder()}
                     autocomplete={false}
                     meter={false}
                     showPasswordButton={true}
@@ -51,7 +51,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={!newPassword} submit>{$LL.console.button.submit.update()}</Button>
+            <Button disabled={!newPassword} submit>{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

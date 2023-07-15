@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-    <title>{$LL.console.title.user()} - Appwrite</title>
+    <title>{$LL.console.project.title.user()} - Appwrite</title>
 </svelte:head>
 
 <slot />
