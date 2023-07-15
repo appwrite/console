@@ -10,6 +10,7 @@
     import { onMount } from 'svelte';
     import Delete from '../deleteOrganization.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     let name: string;
     let showDelete = false;
@@ -43,32 +44,34 @@
     {#if $organization}
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
+                <Heading tag="h6" size="7"
+                    >{$LL.console.organization.forms.updateName.title()}</Heading>
 
                 <svelte:fragment slot="aside">
                     <ul>
                         <InputText
                             id="name"
-                            label="Name"
-                            placeholder="Enter name"
+                            label={$LL.console.organization.forms.updateName.inputs.name.label()}
+                            placeholder={$LL.console.organization.forms.updateName.inputs.name.placeholder()}
                             autocomplete={false}
                             bind:value={name} />
                     </ul>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={name === $organization.name || !name} submit>Update</Button>
+                    <Button disabled={name === $organization.name || !name} submit
+                        >{$LL.console.organization.button.submit.update()}</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
         <CardGrid danger>
             <div>
-                <Heading tag="h6" size="7">Delete Organization</Heading>
+                <Heading tag="h6" size="7"
+                    >{$LL.console.organization.forms.deleteOrg.title()}</Heading>
             </div>
             <p>
-                The organization will be permanently deleted, including all projects and data
-                associated with this organization. This action is irreversible.
+                {$LL.console.organization.forms.deleteOrg.texts.orgSettings()}
             </p>
             <svelte:fragment slot="aside">
                 <Box>
@@ -78,12 +81,13 @@
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$organization.name}</h6>
                     </svelte:fragment>
-                    <p>{$organization.total} members</p>
+                    <p>{$organization.total}{' '}{$LL.console.organization.texts.members()}</p>
                 </Box>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button secondary on:click={() => (showDelete = true)}
+                    >{$LL.console.organization.button.submit.delete()}</Button>
             </svelte:fragment>
         </CardGrid>
     {/if}

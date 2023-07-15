@@ -9,6 +9,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     export let show = false;
 
@@ -43,12 +44,12 @@
 </script>
 
 <Modal {error} onSubmit={create} size="big" bind:show>
-    <svelte:fragment slot="header">Create New Organization</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.forms.createOrg.title()}</svelte:fragment>
     <FormList>
         <InputText
             id="organization-name"
-            label="Name"
-            placeholder="Enter name"
+            label={$LL.console.forms.createOrg.inputs.name.label()}
+            placeholder={$LL.console.forms.createOrg.inputs.name.placeholder()}
             bind:value={name}
             autofocus={true}
             required />
@@ -56,7 +57,7 @@
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
                     <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Organization ID
+                        {$LL.console.table.pill.orgId()}
                     </span>
                 </Pill>
             </div>
@@ -65,7 +66,8 @@
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button secondary on:click={() => (show = false)}
+            >{$LL.console.button.cancel()}</Button>
+        <Button submit>{$LL.console.button.submit.create()}</Button>
     </svelte:fragment>
 </Modal>

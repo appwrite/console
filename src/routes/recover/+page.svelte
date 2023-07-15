@@ -15,6 +15,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
+    import LL from '$i18n/i18n-svelte';
 
     let email: string;
     let userId: string;
@@ -63,33 +64,33 @@
 </script>
 
 <svelte:head>
-    <title>Recover - Appwrite</title>
+    <title>{$LL.recover.title.pageHeader()} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Password Recovery</svelte:fragment>
+    <svelte:fragment slot="title">{$LL.recover.title.pageTitle()}</svelte:fragment>
     <svelte:fragment>
         {#if userId && secret}
             <Form onSubmit={setPassword}>
                 <FormList>
                     <InputPassword
-                        label="New password"
-                        placeholder="Enter password"
+                        label={$LL.recover.forms.resetPassword.inputs.password.label()}
+                        placeholder={$LL.recover.forms.resetPassword.inputs.password.placeholder()}
                         id="password"
                         autofocus={true}
                         required={true}
                         showPasswordButton={true}
                         bind:value={password} />
                     <InputPassword
-                        label="Confirm password"
-                        placeholder="Confirm password"
+                        label={$LL.recover.forms.resetPassword.inputs.cnfPassword.label()}
+                        placeholder={$LL.recover.forms.resetPassword.inputs.cnfPassword.placeholder()}
                         id="confirm-password"
                         required={true}
                         showPasswordButton={true}
                         bind:value={confirmPassword} />
 
                     <FormItem>
-                        <Button fullWidth submit>Update</Button>
+                        <Button fullWidth submit>{$LL.recover.button.submit.update()}</Button>
                     </FormItem>
                 </FormList>
             </Form>
@@ -98,14 +99,14 @@
                 <FormList>
                     <InputEmail
                         id="email"
-                        label="Email"
-                        placeholder="Email"
+                        label={$LL.recover.forms.resetPassword.inputs.email.label()}
+                        placeholder={$LL.recover.forms.resetPassword.inputs.email.placeholder()}
                         autofocus={true}
                         required={true}
                         bind:value={email} />
 
                     <FormItem>
-                        <Button fullWidth submit>Recover</Button>
+                        <Button fullWidth submit>{$LL.recover.button.submit.recover()}</Button>
                     </FormItem>
                 </FormList>
             </Form>
@@ -113,10 +114,11 @@
     </svelte:fragment>
     <svelte:fragment slot="links">
         <li class="inline-links-item">
-            <a href={`${base}/login`}><span class="text">Sign in</span></a>
+            <a href={`${base}/login`}><span class="text">{$LL.recover.links.login()}</span></a>
         </li>
         <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
+            <a href={`${base}/register`}
+                ><span class="text">{$LL.recover.links.register()}</span></a>
         </li>
     </svelte:fragment>
 </Unauthenticated>

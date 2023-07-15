@@ -11,6 +11,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     let name: string = null,
         email: string = null,
@@ -82,35 +83,40 @@
 <Container>
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
+            <Heading tag="h6" size="7">{$LL.console.account.forms.updateName.title()}</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
-                    <InputText id="name" label="Name" placeholder="Enter name" bind:value={name} />
+                    <InputText
+                        id="name"
+                        label={$LL.console.account.forms.updateName.inputs.name.label()}
+                        placeholder={$LL.console.account.forms.updateName.inputs.name.placeholder()}
+                        bind:value={name} />
                 </ul>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={name === $user.name || !name} submit>Update</Button>
+                <Button disabled={name === $user.name || !name} submit
+                    >{$LL.console.account.button.submit.update()}</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
     <Form onSubmit={updateEmail}>
         <CardGrid>
-            <Heading tag="h6" size="7">Email</Heading>
+            <Heading tag="h6" size="7">{$LL.console.account.forms.updateEmail.title()}</Heading>
 
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputText
                         id="email"
-                        label="Email"
-                        placeholder="Enter email"
+                        label={$LL.console.account.forms.updateEmail.inputs.email.label()}
+                        placeholder={$LL.console.account.forms.updateEmail.inputs.email.placeholder()}
                         bind:value={email} />
                     {#if email !== $user.email && email}
                         <InputPassword
                             id="emailPassword"
-                            label="Password"
-                            placeholder="Enter password"
+                            label={$LL.console.account.forms.updateEmail.inputs.password.label()}
+                            placeholder={$LL.console.account.forms.updateEmail.inputs.password.placeholder()}
                             showPasswordButton={true}
                             bind:value={emailPassword} />
                     {/if}
@@ -119,47 +125,48 @@
 
             <svelte:fragment slot="actions">
                 <Button disabled={email === $user.email || !email || !emailPassword} submit
-                    >Update</Button>
+                    >{$LL.console.account.button.submit.update()}</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
     <Form onSubmit={updatePassword}>
         <CardGrid>
-            <Heading tag="h6" size="7">Password</Heading>
+            <Heading tag="h6" size="7">{$LL.console.account.forms.updatePassword.title()}</Heading>
             <p class="text">
-                Forgot your password? <a class="link" href={`${base}/recover`}
-                    >Recover your password</a>
+                {$LL.console.account.forms.updatePassword.texts.forgotPassword()}
+                <a class="link" href={`${base}/recover`}
+                    >{$LL.console.account.forms.updatePassword.texts.recoverPassword()}</a>
             </p>
 
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputPassword
                         id="oldPassword"
-                        label="Old password"
-                        placeholder="Enter password"
+                        label={$LL.console.account.forms.updatePassword.inputs.oldPassword.label()}
+                        placeholder={$LL.console.account.forms.updatePassword.inputs.oldPassword.placeholder()}
                         showPasswordButton={true}
                         bind:value={oldPassword} />
                     <InputPassword
                         id="newPassword"
-                        label="New password"
-                        placeholder="Enter password"
+                        label={$LL.console.account.forms.updatePassword.inputs.newPassword.label()}
+                        placeholder={$LL.console.account.forms.updatePassword.inputs.newPassword.placeholder()}
                         showPasswordButton={true}
                         bind:value={newPassword} />
                 </FormList>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={!newPassword || !oldPassword} submit>Update</Button>
+                <Button disabled={!newPassword || !oldPassword} submit
+                    >{$LL.console.account.button.submit.update()}</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
     <CardGrid danger>
         <div>
-            <Heading tag="h6" size="7">Delete Account</Heading>
+            <Heading tag="h6" size="7">{$LL.console.account.title.deleteAccount()}</Heading>
         </div>
         <p>
-            Your account will be permanently deleted and access will be lost to any of your teams
-            and data. This action is irreversible.
+            {$LL.console.account.texts.deleteAccount()}
         </p>
         <svelte:fragment slot="aside">
             <Box>
@@ -173,7 +180,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)}
+                >{$LL.console.account.button.submit.delete()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

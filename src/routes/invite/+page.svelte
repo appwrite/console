@@ -9,6 +9,7 @@
     import { onMount } from 'svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert } from '$lib/components';
+    import LL from '$i18n/i18n-svelte';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;
@@ -40,28 +41,29 @@
 </script>
 
 <svelte:head>
-    <title>Accept invite - Appwrite</title>
+    <title>{$LL.invite.title.pageHeader()} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
     <svelte:fragment slot="title">
         {#if !userId || !secret || !membershipId || !teamId}
-            Invalid invite
+            {$LL.invite.title.invalidInvite()}
         {:else}
-            Invite
+            {$LL.invite.title.invite()}
         {/if}
     </svelte:fragment>
     <svelte:fragment>
         {#if !userId || !secret || !membershipId || !teamId}
             <Alert type="warning">
-                <svelte:fragment slot="title">The invite link is not valid</svelte:fragment>
-                Please ask the project owner to send you a new invite.
+                <svelte:fragment slot="title"
+                    >{$LL.invite.alerts.warningAlert.phraseOne()}</svelte:fragment>
+                {$LL.invite.alerts.warningAlert.phraseTwo()}
             </Alert>
             <div class="u-flex u-main-end u-margin-block-start-40">
-                <Button href={`${base}/register`}>Sign up to Appwrite</Button>
+                <Button href={`${base}/register`}>{$LL.invite.button.accept.register()}</Button>
             </div>
         {:else}
-            <p class="text">You have been invited to join a team project on Appwrite</p>
+            <p class="text">{$LL.invite.alerts.successAlert()}</p>
             <Form onSubmit={acceptInvite}>
                 <FormList>
                     <InputChoice
@@ -70,23 +72,26 @@
                         id="terms"
                         label="terms"
                         showLabel={false}>
-                        By accepting the invitation, you agree to the <a
+                        By accepting the invitation, you agree to the
+                        <a
                             class="link"
                             href="https://appwrite.io/policy/terms"
                             target="_blank"
-                            rel="noopener noreferrer">Terms and Conditions</a>
+                            rel="noopener noreferrer">
+                            Terms and Conditions</a>
                         and
                         <a
                             class="link"
                             href="https://appwrite.io/policy/privacy"
                             target="_blank"
                             rel="noopener noreferrer">
-                            Privacy Policy</a
+                            Privacy and Policy</a
                         >.</InputChoice>
 
                     <div class="u-flex u-main-end u-gap-12">
-                        <Button secondary href={`${base}/login`}>Cancel</Button>
-                        <Button submit>Accept</Button>
+                        <Button secondary href={`${base}/login`}
+                            >{$LL.invite.button.submit.cancel()}</Button>
+                        <Button submit>{$LL.invite.button.submit.accept()}</Button>
                     </div>
                 </FormList>
             </Form>

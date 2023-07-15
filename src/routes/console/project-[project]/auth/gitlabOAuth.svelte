@@ -22,6 +22,7 @@
     });
 
     const projectId = $page.params.project;
+    
     const update = async () => {
         const result = await updateOAuth({ projectId, provider, secret, appId, enabled });
 

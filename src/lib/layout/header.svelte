@@ -5,7 +5,8 @@
         DropList,
         DropListItem,
         DropListLink,
-        FeedbackGeneral
+        FeedbackGeneral,
+        LanguageSelector
     } from '$lib/components';
     import { app, feedback } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
@@ -91,6 +92,9 @@
             class="button is-small is-text">
             <span class="text">Support</span>
         </a>
+
+        <LanguageSelector />
+        
     </nav>
     <nav class="u-flex u-height-100-percent u-sep-inline-start">
         {#if $user}

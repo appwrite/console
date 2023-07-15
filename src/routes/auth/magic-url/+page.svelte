@@ -4,6 +4,7 @@
     import { Heading } from '$lib/components';
     import { Account, Client } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import LL from '$i18n/i18n-svelte';
 
     const client = new Client();
     const account = new Account(client);

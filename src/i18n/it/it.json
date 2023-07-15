@@ -1,0 +1,255 @@
+{
+    "login": {
+        "title": "Accedi",
+        "forms": {
+            "login": {
+                "inputs": {
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "E-mail"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Password"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "login": "Accedi"
+            }
+        },
+        "links": {
+            "recovery": "Password dimenticata",
+            "register": "Iscriviti"
+        }
+    },
+    "register": {
+        "title": "Iscriviti",
+        "forms": {
+            "register": {
+                "inputs": {
+                    "name": {
+                        "label": "Nome",
+                        "placeholder": "Il tuo nome"
+                    },
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "La tua e-mail"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "La tua password"
+                    }
+                }
+            },
+            "invite": {
+                "inputs": {
+                    "name": {
+                        "label": "Nome",
+                        "placeholder": "Il tuo nome"
+                    },
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "La tua e-mail"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "La tua password"
+                    },
+                    "code": {
+                        "label": "Codice",
+                        "placeholder": "Il tuo codice"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "register": "Iscriviti"
+            }
+        },
+        "links": {
+            "login": "Accedi"
+        },
+        "texts": {
+            "registery": "Hai già un account?"
+        }
+    },
+    "recover": {
+        "title": {
+            "pageHeader": "Recupera",
+            "pageTitle": "Recupero password"
+        },
+        "forms": {
+            "resetPassword": {
+                "inputs": {
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "E-mail"
+                    },
+                    "password": {
+                        "label": "Nuova password",
+                        "placeholder": "Inserisci password"
+                    },
+                    "cnfPassword": {
+                        "label": "Conferma password",
+                        "placeholder": "Conferma password"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "update": "Update",
+                "recover": "Recupera"
+            }
+        },
+        "links": {
+            "register": "Iscriviti",
+            "login": "Accedi"
+        }
+    },
+    "invite": {
+        "title": {
+            "pageHeader": "Accetta invito",
+            "invalidInvite": "Invito non valido",
+            "invite": "Invita"
+        },
+        "alerts": {
+            "warningAlert": {
+                "phraseOne": "Il link di invito non è valido",
+                "phraseTwo": "Chiedi al proprietario del progetto di inviarti un nuovo invito."
+            },
+            "successAlert": "Sei stato invitato a partecipare a un progetto di gruppo su Appwrite"
+        },
+        "button": {
+            "submit": {
+                "cancel": "Annulla",
+                "accept": "Accetta"
+            },
+            "accept": {
+                "register": "Iscriviti ad Appwrite"
+            }
+        }
+    },
+    "console": {
+        "title": {
+            "auth": "Aut",
+            "createUser": "Crea utente",
+            "user": "Utente",
+            "userData": {
+                "name": "Nome",
+                "email": "E-mail",
+                "phone": "Telefono",
+                "password": "Password",
+                "userPref": "Preferenze utente",
+                "deleteUser": "Elimina utente"
+            }
+        },
+        "forms": {
+            "createUser": {
+                "inputs": {
+                    "name": {
+                        "label": "Nome",
+                        "placeholder": "Inserisci il nome"
+                    },
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "Inserisci email"
+                    },
+                    "phone": {
+                        "label": "Telefono",
+                        "placeholder": "Inserisci phone"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Inserisci password"
+                    }
+                }
+            },
+            "userData": {
+                "update": {
+                    "name": {
+                        "label": "Nome",
+                        "placeholder": "Inserisci il nome"
+                    },
+                    "email": {
+                        "label": "E-mail",
+                        "placeholder": "Inserisci email"
+                    },
+                    "phone": {
+                        "label": "Telefono",
+                        "placeholder": "Inserisci phone"
+                    },
+                    "password": {
+                        "label": "Nuova password",
+                        "placeholder": "Inserisci Nuova password"
+                    },
+                    "userPref": {
+                        "key": {
+                            "label": "Chiave",
+                            "placeholder": "Inserisci Chiave"
+                        },
+                        "value": {
+                            "label": "Valore",
+                            "placeholder": "Inserisci Valore"
+                        }
+                    }
+                }
+            }
+        },
+        "button": {
+            "createUser": "Crea utente",
+            "clearSearch": "Cancella ricerca",
+            "cancel": "Annulla",
+            "submit": {
+                "create": "Crea",
+                "update": "Aggiorna",
+                "addPrefs": "Aggiungi preferenza"
+            },
+            "pill": {
+                "userId": "ID utente"
+            }
+        },
+        "table": {
+            "header": {
+                "name": "Nome",
+                "identifiers": "Identificatori",
+                "status": "Stato",
+                "id": "ID",
+                "joined": "Unito"
+            },
+            "pill": {
+                "verify": "verificato",
+                "emailVerify": "E-mail verificato",
+                "phoneVerify": "Telefono verificato",
+                "unverify": "non verificato",
+                "block": "bloccato",
+                "userId": "ID utente"
+            }
+        },
+        "texts": {
+            "emptySearch": {
+                "phraseOne": "Spiacenti, non siamo riusciti a trovare",
+                "phraseTwo": "Non ci sono utenti che corrispondono alla tua ricerca."
+            }
+        },
+        "navbar": {
+            "header": {
+                "users": "Utenti",
+                "teams": "Squadre",
+                "usage": "Utilizzo",
+                "security": "Sicurezza",
+                "settings": "Impostazioni"
+            },
+            "userHeader": {
+                "overview": "Panoramica",
+                "membership": "Abbonamenti",
+                "sessions": "Sessioni",
+                "activity": "Attività"
+            }
+        }
+    }
+}

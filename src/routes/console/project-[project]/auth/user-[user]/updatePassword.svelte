@@ -5,6 +5,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     let newPassword: string = null;
 
@@ -30,7 +31,7 @@
 <Form onSubmit={updatePassword}>
     <CardGrid>
         <div>
-            <Heading tag="h6" size="7">Password</Heading>
+            <Heading tag="h6" size="7">{$LL.console.project.title.userData.password()}</Heading>
         </div>
 
         <p>
@@ -40,8 +41,8 @@
             <ul>
                 <InputPassword
                     id="newPassword"
-                    label="New Password"
-                    placeholder="Enter new password"
+                    label={$LL.console.project.forms.userData.update.password.label()}
+                    placeholder={$LL.console.project.forms.userData.update.password.placeholder()}
                     autocomplete={false}
                     meter={false}
                     showPasswordButton={true}
@@ -50,7 +51,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={!newPassword} submit>Update</Button>
+            <Button disabled={!newPassword} submit>{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

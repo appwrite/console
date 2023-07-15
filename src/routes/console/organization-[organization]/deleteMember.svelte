@@ -9,6 +9,7 @@
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -58,7 +59,8 @@
             : `Are you sure you want to delete ${selectedMember?.userName} from '${selectedMember?.teamName}'?`}
     </p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.organization.button.submit.cancel()}</Button>
         <Button secondary submit>{isUser ? 'Leave' : 'Delete'}</Button>
     </svelte:fragment>
 </Modal>

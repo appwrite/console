@@ -9,29 +9,30 @@
     import { Cover, CoverTitle } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
+    import LL from '$i18n/i18n-svelte';
 
     const path = `/console/account`;
 
     $: tabs = [
         {
             href: path,
-            title: 'Overview',
+            title: $LL.console.account.navbar.header.overview(),
             event: 'overview'
         },
         {
             href: `${path}/sessions`,
-            title: 'Sessions',
+            title: $LL.console.account.navbar.header.sessions(),
             event: 'sessions'
         },
         {
             href: `${path}/activity`,
-            title: 'Activity',
+            title: $LL.console.account.navbar.header.activity(),
             event: 'activity',
             hasChildren: true
         },
         {
             href: `${path}/organizations`,
-            title: 'Organizations',
+            title: $LL.console.account.navbar.header.organization(),
             event: 'organizations',
             hasChildren: true
         }
@@ -50,7 +51,7 @@
             {$user.name}
         </CoverTitle>
         <div class="u-margin-inline-start-auto">
-            <Button secondary on:click={logout}>Logout</Button>
+            <Button secondary on:click={logout}>{$LL.console.account.button.logout()}</Button>
         </div>
     </svelte:fragment>
     <Tabs>

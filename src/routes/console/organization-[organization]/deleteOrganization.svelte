@@ -42,13 +42,16 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Organization</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{$LL.console.organization.forms.deleteOrg.title()}</svelte:fragment>
     <p>
-        Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})
-        and data associated with this organization will be deleted. This action is irreversible.
+        {$LL.console.organization.forms.deleteOrg.texts.phraseOne()}{' '}<b>{$organization.name}</b
+        >{$LL.console.organization.forms.deleteOrg.texts.phraseTwo()}{' '}({$organization.total}){' '}
+        {$LL.console.organization.forms.deleteOrg.texts.phraseThree()}
     </p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.organization.button.submit.cancel()}</Button>
+        <Button secondary submit>{$LL.console.organization.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

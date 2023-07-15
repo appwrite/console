@@ -1,0 +1,483 @@
+{
+    "login": {
+        "title": "Sign in",
+        "forms": {
+            "login": {
+                "inputs": {
+                    "email": {
+                        "label": "Email",
+                        "placeholder": "Email"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Password"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "login": "Sign in"
+            }
+        },
+        "links": {
+            "recovery": "Forgot Password",
+            "register": "Sign up"
+        }
+    },
+    "register": {
+        "title": "Sign up",
+        "forms": {
+            "register": {
+                "inputs": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Your name"
+                    },
+                    "email": {
+                        "label": "Email",
+                        "placeholder": "Your email"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Your password"
+                    }
+                }
+            },
+            "invite": {
+                "inputs": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Your name"
+                    },
+                    "email": {
+                        "label": "Email",
+                        "placeholder": "Your email"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Your password"
+                    },
+                    "code": {
+                        "label": "Code",
+                        "placeholder": "Your code"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "register": "Sign up"
+            }
+        },
+        "links": {
+            "login": "Sign in"
+        },
+        "texts": {
+            "registery": "Already got an account?"
+        }
+    },
+    "recover": {
+        "title": {
+            "pageHeader": "Recover",
+            "pageTitle": "Password Recovery"
+        },
+        "forms": {
+            "resetPassword": {
+                "inputs": {
+                    "email": {
+                        "label": "Email",
+                        "placeholder": "Email"
+                    },
+                    "password": {
+                        "label": "New password",
+                        "placeholder": "Enter password"
+                    },
+                    "cnfPassword": {
+                        "label": "Confirm password",
+                        "placeholder": "Confirm password"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "update": "Update",
+                "recover": "Recover"
+            }
+        },
+        "links": {
+            "register": "Sign up",
+            "login": "Sign in"
+        }
+    },
+    "invite": {
+        "title": {
+            "pageHeader": "Accept invite",
+            "invalidInvite": "Invalid invite",
+            "invite": "Invite"
+        },
+        "alerts": {
+            "warningAlert": {
+                "phraseOne": "The invite link is not valid",
+                "phraseTwo": "Please ask the project owner to send you a new invite."
+            },
+            "successAlert": "You have been invited to join a team project on Appwrite"
+        },
+        "button": {
+            "submit": {
+                "cancel": "Cancel",
+                "accept": "Accept"
+            },
+            "accept": {
+                "register": "Sign up to Appwrite"
+            }
+        }
+    },
+    "console": {
+        "forms": {
+            "createOrg": {
+                "title": "Create New Organization",
+                "inputs": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Enter name"
+                    }
+                }
+            }
+        },
+        "button": {
+            "cancel": "Cancel",
+            "backToConsole": "Back to the console",
+            "submit": {
+                "create": "Create"
+            }
+        },
+        "table": {
+            "pill": {
+                "orgId": "Organization ID"
+            }
+        },
+
+        "account": {
+            "title": {
+                "user": "User",
+                "organizations": "Organizations",
+                "deleteAccount": "Delete Account"
+            },
+            "forms": {
+                "updateName": {
+                    "title": "Name",
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Enter name"
+                        }
+                    }
+                },
+                "updateEmail": {
+                    "title": "Email",
+                    "inputs": {
+                        "email": {
+                            "label": "Email",
+                            "placeholder": "Enter email"
+                        },
+                        "password": {
+                            "label": "Password",
+                            "placeholder": "Enter password"
+                        }
+                    }
+                },
+                "updatePassword": {
+                    "title": "Password",
+                    "inputs": {
+                        "oldPassword": {
+                            "label": "Old Password",
+                            "placeholder": "Enter password"
+                        },
+                        "newPassword": {
+                            "label": "New Password",
+                            "placeholder": "Enter password"
+                        }
+                    },
+                    "texts": {
+                        "forgotPassword": "Forgot your password?",
+                        "recoverPassword": "Recover your password"
+                    }
+                }
+            },
+            "button": {
+                "submit": {
+                    "update": "Update",
+                    "cancel": "Cancel",
+                    "delete": "Delete"
+                },
+                "logout": "Logout",
+                "documentation": "Documentation",
+                "createOrg": "Create organization",
+                "logoutAllSessions": "Logout all sessions"
+            },
+            "texts": {
+                "members": "members",
+                "createOrg": "Create a new organization",
+                "noSession": "No sessions available",
+                "totalResult": "Total results:",
+                "deleteWarning": "Are you sure you want to delete your account?",
+                "deleteAccount": " Your account will be permanently deleted and access will be lost to any of your teams and data. This action is irreversible."
+            },
+            "navbar": {
+                "header": {
+                    "overview": "Overview",
+                    "sessions": "Sessions",
+                    "activity": "Activity",
+                    "organization": "Organizations"
+                }
+            },
+            "table": {
+                "header": {
+                    "client": "Client",
+                    "location": "Location",
+                    "ip": "IP"
+                },
+                "trim": {
+                    "on": "on"
+                },
+                "texts": {
+                    "unknown": "Unknown"
+                },
+                "pill": {
+                    "alert": {
+                        "current": "current session"
+                    }
+                }
+            }
+        },
+        "onboarding": {
+            "title": {
+                "onboarding": "Onboarding",
+                "coverTitle": "Let's create your first project"
+            },
+            "forms": {
+                "createProject": {
+                    "inputs": {
+                        "name": {
+                            "label": "Project name",
+                            "placeholder": "First Appwrite Project"
+                        }
+                    }
+                }
+            },
+            "button": {
+                "submit": {
+                    "create": "Create Project"
+                }
+            },
+            "table": {
+                "pill": {
+                    "projectId": "Project ID"
+                }
+            }
+        },
+        "organization": {
+            "title": {
+                "organizations": "Organizations",
+                "projects": "Projects",
+                "members": "Members"
+            },
+            "forms": {
+                "updateName": {
+                    "title": "Name",
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Enter name"
+                        }
+                    }
+                },
+                "createMember": {
+                    "title": "Invite Member",
+                    "inputs": {
+                        "email": {
+                            "label": "Email",
+                            "placeholder": "Enter email"
+                        },
+                        "name": {
+                            "label": "Name (optional)",
+                            "placeholder": "Enter name"
+                        }
+                    }
+                },
+                "createProject": {
+                    "title": "Create Project",
+                    "inputs": {
+                        "name": {
+                            "label": "Name"
+                        }
+                    }
+                },
+                "deleteOrg": {
+                    "title": "Delete Organization",
+                    "texts": {
+                        "phraseOne": "Are you sure you want to delete",
+                        "phraseTwo": "? All projects",
+                        "phraseThree": "and data associated with this organization will be deleted. This action is irreversible.",
+                        "orgSettings": "The organization will be permanently deleted, including all projects and data associated with this organization. This action is irreversible."
+                    }
+                }
+            },
+            "table": {
+                "header": {
+                    "name": "Name",
+                    "email": "Email"
+                },
+                "pill": {
+                    "projectId": "Project ID",
+                    "pending": "Pending"
+                }
+            },
+            "button": {
+                "submit": {
+                    "create": "Create",
+                    "createProject": "Create Project",
+                    "send": "Send invite",
+                    "update": "Update",
+                    "cancel": "Cancel",
+                    "delete": "Delete"
+                },
+                "invite": "Invite",
+                "resend": "Resend"
+            },
+            "texts": {
+                "dropDown": "New Organization",
+                "apps": "apps",
+                "members": "members",
+                "createProject": "Create a new project"
+            },
+            "navbar": {
+                "header": {
+                    "projects": "Projects",
+                    "members": "Members",
+                    "settings": "Settings"
+                }
+            }
+        },
+        "project": {
+            "title": {
+                "auth": "Auth",
+                "createUser": "Create User",
+                "user": "User",
+                "userData": {
+                    "name": "Name",
+                    "email": "Email",
+                    "phone": "Phone",
+                    "password": "Password",
+                    "userPref": "User Preferences",
+                    "deleteUser": "Delete User"
+                }
+            },
+            "forms": {
+                "createUser": {
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Enter name"
+                        },
+                        "email": {
+                            "label": "Email",
+                            "placeholder": "Enter email"
+                        },
+                        "phone": {
+                            "label": "Phone",
+                            "placeholder": "Enter phone"
+                        },
+                        "password": {
+                            "label": "Password",
+                            "placeholder": "Enter password"
+                        }
+                    }
+                },
+                "userData": {
+                    "update": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Enter name"
+                        },
+                        "email": {
+                            "label": "Email",
+                            "placeholder": "Enter email"
+                        },
+                        "phone": {
+                            "label": "Phone",
+                            "placeholder": "Enter phone"
+                        },
+                        "password": {
+                            "label": "New Password",
+                            "placeholder": "Enter New password"
+                        },
+                        "userPref": {
+                            "key": {
+                                "label": "Key",
+                                "placeholder": "Enter key"
+                            },
+                            "value": {
+                                "label": "Value",
+                                "placeholder": "Enter value"
+                            }
+                        }
+                    }
+                }
+            },
+            "button": {
+                "createUser": "Create user",
+                "clearSearch": "Clear Search",
+                "cancel": "Cancel",
+                "submit": {
+                    "create": "Create",
+                    "update": "Update",
+                    "addPrefs": "Add Preference"
+                },
+                "pill": {
+                    "userId": "User ID"
+                }
+            },
+            "table": {
+                "header": {
+                    "name": "Name",
+                    "identifiers": "Identifiers",
+                    "status": "Status",
+                    "id": "ID",
+                    "joined": "Joined"
+                },
+                "pill": {
+                    "verify": "verified",
+                    "emailVerify": "verified email",
+                    "phoneVerify": "verified phone",
+                    "unverify": "unverified",
+                    "block": "blocked",
+                    "userId": "User ID"
+                }
+            },
+            "texts": {
+                "emptySearch": {
+                    "phraseOne": "Sorry, we couldn't find",
+                    "phraseTwo": "There are no users that match your search."
+                }
+            },
+            "navbar": {
+                "header": {
+                    "users": "Users",
+                    "teams": "Teams",
+                    "usage": "Usage",
+                    "security": "Security",
+                    "settings": "Settings"
+                },
+                "userHeader": {
+                    "overview": "Overview",
+                    "membership": "Memberships",
+                    "sessions": "Sessions",
+                    "activity": "Activity"
+                }
+            }
+        }
+    }
+}

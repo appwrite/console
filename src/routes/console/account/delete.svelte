@@ -6,6 +6,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import LL from '$i18n/i18n-svelte';
 
     export let showDelete = false;
 
@@ -35,10 +36,11 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Account</svelte:fragment>
-    <p>Are you sure you want to delete your account?</p>
+    <svelte:fragment slot="header">{$LL.console.account.title.deleteAccount()}</svelte:fragment>
+    <p>{$LL.console.account.texts.deleteWarning()}</p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.account.button.submit.cancel()}</Button>
+        <Button secondary submit>{$LL.console.account.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

@@ -22,6 +22,7 @@
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from '../deleteMember.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -58,18 +59,20 @@
 <Container>
     {#if data.organizationMembers.total}
         <div class="u-flex u-gap-12 common-section u-main-space-between">
-            <Heading tag="h2" size="5">Members</Heading>
+            <Heading tag="h2" size="5">{$LL.console.organization.title.members()}</Heading>
 
             <Button on:click={() => newMemberModal.set(true)} event="invite">
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Invite</span>
+                <span class="text">{$LL.console.organization.button.invite()}</span>
             </Button>
         </div>
 
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={140}>Name</TableCellHead>
-                <TableCellHead width={120}>Email</TableCellHead>
+                <TableCellHead width={140}
+                    >{$LL.console.organization.table.header.name()}</TableCellHead>
+                <TableCellHead width={120}
+                    >{$LL.console.organization.table.header.email()}</TableCellHead>
                 <TableCellHead width={90} />
                 <TableCellHead width={30} />
             </TableHeader>
@@ -83,7 +86,8 @@
                                     {member.userName ? member.userName : 'n/a'}
                                 </span>
                                 {#if member.invited && !member.joined}
-                                    <Pill warning>Pending</Pill>
+                                    <Pill warning
+                                        >{$LL.console.organization.table.pill.pending()}</Pill>
                                 {/if}
                             </div>
                         </TableCell>
@@ -93,7 +97,8 @@
                                 <Button
                                     secondary
                                     event="invite_resend"
-                                    on:click={() => resend(member)}>Resend</Button>
+                                    on:click={() => resend(member)}
+                                    >{$LL.console.organization.button.resend()}</Button>
                             {/if}
                         </TableCell>
                         <TableCell>

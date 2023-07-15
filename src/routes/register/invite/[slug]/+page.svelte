@@ -21,6 +21,7 @@
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { isCloud } from '$lib/system';
+    import LL from '$i18n/i18n-svelte';
 
     let slug = $page.params.slug;
     let imgLight = LoginLight;
@@ -86,7 +87,7 @@
 </script>
 
 <svelte:head>
-    <title>Sign up - Appwrite</title>
+    <title>{$LL.register.title()} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated {imgLight} {imgDark}>
@@ -96,27 +97,27 @@
             <FormList>
                 <InputText
                     id="name"
-                    label="Name"
-                    placeholder="Your name"
+                    label={$LL.register.forms.invite.inputs.name.label()}
+                    placeholder={$LL.register.forms.invite.inputs.name.placeholder()}
                     autofocus={true}
                     bind:value={name} />
                 <InputEmail
                     id="email"
-                    label="Email"
-                    placeholder="Your email"
+                    label={$LL.register.forms.invite.inputs.email.label()}
+                    placeholder={$LL.register.forms.invite.inputs.email.placeholder()}
                     required={true}
                     bind:value={mail} />
                 <InputPassword
                     id="password"
-                    label="Password"
-                    placeholder="Your password"
+                    label={$LL.register.forms.invite.inputs.password.label()}
+                    placeholder={$LL.register.forms.invite.inputs.password.placeholder()}
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
                 <InputText
                     id="Code"
-                    label="Code"
-                    placeholder="Your code"
+                    label={$LL.register.forms.invite.inputs.code.label()}
+                    placeholder={$LL.register.forms.invite.inputs.code.placeholder()}
                     required={true}
                     bind:value={code} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
@@ -134,7 +135,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit>Sign up</Button>
+                    <Button fullWidth submit>{$LL.register.button.register()}</Button>
                 </FormItem>
             </FormList>
         </Form>
@@ -142,7 +143,8 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <span class="text">
-                Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
+                {$LL.register.texts.registery()}<a class="link" href={`${base}/login`}
+                    >{$LL.register.links.login()}</a>
             </span>
         </li>
     </svelte:fragment>

@@ -4,8 +4,10 @@
         "node": ">=16"
     },
     "scripts": {
-        "dev": "vite dev",
-        "build": "node build.js",
+        "dev": "npm-run-all --parallel dev:*",
+        "dev:vite": "vite dev",
+        "dev:i18n": "typesafe-i18n",
+        "build": "node build.js --parallel dev:i18n",
         "preview": "vite preview",
         "sync": "svelte-kit sync",
         "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings --threshold warning",
@@ -28,9 +30,11 @@
         "dotenv": "^16.0.3",
         "echarts": "^5.4.1",
         "logrocket": "^3.0.1",
+        "npm-run-all": "^4.1.5",
         "pretty-bytes": "^6.1.0",
         "prismjs": "^1.29.0",
         "tippy.js": "^6.3.7",
+        "typesafe-i18n": "^5.24.3",
         "web-vitals": "^3.1.1"
     },
     "devDependencies": {

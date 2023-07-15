@@ -1,5 +1,7 @@
 import { fileURLToPath } from 'url';
 import { build, loadEnv } from 'vite';
+import { execSync } from 'child_process';
+
 import kleur from 'kleur';
 
 const { bold, yellow } = kleur;

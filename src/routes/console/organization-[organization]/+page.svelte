@@ -8,6 +8,7 @@
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
     import { page } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -47,9 +48,10 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Projects</Heading>
+        <Heading tag="h2" size="5">{$LL.console.organization.title.project()}</Heading>
         <Button on:click={() => (showCreate = true)} event="create_project">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create project</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">{$LL.console.organization.button.submit.createProject()}</span>
         </Button>
     </div>
 
@@ -62,7 +64,9 @@
             {#each data.projects.projects as project}
                 <GridItem1 href={`${base}/console/project-${project.$id}`}>
                     <svelte:fragment slot="eyebrow">
-                        {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
+                        {project?.platforms?.length ? project?.platforms?.length : 'No'}
+                        {' '}
+                        {$LL.console.organization.texts.apps()}
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
@@ -86,12 +90,12 @@
                 </GridItem1>
             {/each}
             <svelte:fragment slot="empty">
-                <p>Create a new project</p>
+                <p>{$LL.console.organization.texts.createProject()}</p>
             </svelte:fragment>
         </CardContainer>
     {:else}
         <Empty single on:click={() => (showCreate = true)}>
-            <p>Create a new project</p>
+            <p>{$LL.console.organization.texts.createProject()}</p>
         </Empty>
     {/if}
 

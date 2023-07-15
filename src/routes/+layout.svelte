@@ -17,6 +17,12 @@
     import Loading from './loading.svelte';
     import { loading } from './store';
 
+    // typesafe-i18n
+    import { localStorageDetector } from 'typesafe-i18n/detectors';
+    import { setLocale } from '$i18n/i18n-svelte';
+    import { detectLocale } from '$i18n/i18n-util';
+    import { loadLocaleAsync } from '$i18n/i18n-util.async';
+
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
@@ -82,6 +88,10 @@
                 loading.set(false);
             }
         }
+
+        const detectedLocale = detectLocale(localStorageDetector);
+        await loadLocaleAsync(detectedLocale);
+        setLocale(detectedLocale);
     });
 
     afterNavigate((navigation) => {

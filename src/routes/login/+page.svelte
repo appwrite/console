@@ -14,6 +14,8 @@
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { LanguageSelector } from '$lib/components';
+    import LL from '$i18n/i18n-svelte';
 
     let mail: string, pass: string;
 
@@ -38,41 +40,45 @@
 </script>
 
 <svelte:head>
-    <title>Sign in - Appwrite</title>
+    <title>{$LL.login.title()} - Appwrite</title>
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Sign in</svelte:fragment>
+    <svelte:fragment slot="title">{$LL.login.title()}</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>
             <FormList>
                 <InputEmail
                     id="email"
-                    label="Email"
-                    placeholder="Email"
+                    label={$LL.login.forms.login.inputs.email.label()}
+                    placeholder={$LL.login.forms.login.inputs.email.placeholder()}
                     autofocus={true}
                     required={true}
                     bind:value={mail} />
                 <InputPassword
                     id="password"
-                    label="Password"
-                    placeholder="Password"
+                    label={$LL.login.forms.login.inputs.password.label()}
+                    placeholder={$LL.login.forms.login.inputs.password.placeholder()}
                     required={true}
                     meter={false}
                     showPasswordButton={true}
                     bind:value={pass} />
                 <FormItem>
-                    <Button fullWidth submit>Sign in</Button>
+                    <Button fullWidth submit>{$LL.login.button.submit.login()}</Button>
                 </FormItem>
             </FormList>
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">
         <li class="inline-links-item">
-            <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
+            <a href={`${base}/recover`}
+                ><span class="text">{$LL.login.links.recovery()}?</span></a>
         </li>
         <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
+            <a href={`${base}/register`}><span class="text">{$LL.login.links.register()}</span></a>
+        </li>
+        <li class="inline-links-item">
+            <LanguageSelector />
         </li>
     </svelte:fragment>
 </Unauthenticated>

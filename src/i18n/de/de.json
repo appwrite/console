@@ -1,0 +1,259 @@
+{
+    "login": {
+        "title": "Anmelden",
+        "forms": {
+            "login": {
+                "inputs": {
+                    "email": {
+                        "label": "E-Mail",
+                        "placeholder": "E-Mail"
+                    },
+                    "password": {
+                        "label": "Passwort",
+                        "placeholder": "Passwort"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "login": "Anmelden"
+            }
+        },
+        "links": {
+            "recovery": "Passwort vergessen",
+            "register": "Anmeldung"
+        }
+    },
+
+    "register": {
+        "title": "Anmeldung",
+        "forms": {
+            "register": {
+                "inputs": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Ihr Name"
+                    },
+                    "email": {
+                        "label": "E-Mail",
+                        "placeholder": "Ihr E-Mail-Adresse"
+                    },
+                    "password": {
+                        "label": "Passwort",
+                        "placeholder": "Ihr Passwort"
+                    }
+                }
+            },
+            "invite": {
+                "inputs": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Ihr Name"
+                    },
+                    "email": {
+                        "label": "E-Mail",
+                        "placeholder": "Ihr E-Mail-Adresse"
+                    },
+                    "password": {
+                        "label": "Passwort",
+                        "placeholder": "Ihr Passwort"
+                    },
+                    "code": {
+                        "label": "Code",
+                        "placeholder": "Ihr Code"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "register": "Anmeldung"
+            }
+        },
+        "links": {
+            "login": "Anmelden"
+        },
+        "texts": {
+            "registery": "Sie haben bereits ein Konto?"
+        }
+    },
+
+    "recover": {
+        "title": {
+            "pageHeader": "genesen",
+            "pageTitle": "Passwort-Wiederherstellung"
+        },
+        "forms": {
+            "resetPassword": {
+                "inputs": {
+                    "email": {
+                        "label": "E-Mail",
+                        "placeholder": "E-Mail"
+                    },
+                    "password": {
+                        "label": "Neues Kennwort",
+                        "placeholder": "Passwort eingeben"
+                    },
+                    "cnfPassword": {
+                        "label": "Passwort bestätigen",
+                        "placeholder": "Passwort bestätigen"
+                    }
+                }
+            }
+        },
+        "button": {
+            "submit": {
+                "update": "aktualisieren",
+                "recover": "genesen"
+            }
+        },
+        "links": {
+            "register": "Anmeldung",
+            "login": "Anmelden"
+        }
+    },
+
+    "invite": {
+        "title": {
+            "pageHeader": "Einladung annehmen",
+            "invalidInvite": "Ungültige Einladung",
+            "invite": "einladen"
+        },
+        "alerts": {
+            "warningAlert": {
+                "phraseOne": "Der Einladungslink ist ungültig",
+                "phraseTwo": "Bitten Sie den Projektinhaber, Ihnen eine neue Einladung zu senden."
+            },
+            "successAlert": "Sie wurden eingeladen, an einem Teamprojekt auf Appwrite teilzunehmen"
+        },
+        "button": {
+            "submit": {
+                "cancel": "stornieren",
+                "accept": "akzeptieren"
+            },
+            "accept": {
+                "register": "Melden Sie sich bei Appwrite an"
+            }
+        }
+    },
+
+    "console": {
+        "title": {
+            "auth": "Auth",
+            "createUser": "Benutzer erstellen",
+            "user": "Benutzer",
+            "userData": {
+                "name": "Name",
+                "email": "E-Mail",
+                "phone": "Telefon",
+                "password": "Passwort",
+                "userPref": "Benutzereinstellungen",
+                "deleteUser": "Benutzer löschen"
+            }
+        },
+        "forms": {
+            "createUser": {
+                "inputs": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Namen eingeben"
+                    },
+                    "email": {
+                        "label": "E-Mail",
+                        "placeholder": "E-Mail-Adresse eingeben"
+                    },
+                    "phone": {
+                        "label": "Telefon",
+                        "placeholder": "Telefonnummer eingeben"
+                    },
+                    "password": {
+                        "label": "Passwort",
+                        "placeholder": "Passwort eingeben"
+                    }
+                }
+            },
+            "userData": {
+                "update": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Namen eingeben"
+                    },
+                    "email": {
+                        "label": "E-Mail",
+                        "placeholder": "E-Mail-Adresse eingeben"
+                    },
+                    "phone": {
+                        "label": "Telefon",
+                        "placeholder": "Telefonnummer eingeben"
+                    },
+                    "password": {
+                        "label": "Neues Passwort",
+                        "placeholder": "Neues Passwort eingeben"
+                    },
+                    "userPref": {
+                        "key": {
+                            "label": "Schlüssel",
+                            "placeholder": "Eingabetaste"
+                        },
+                        "value": {
+                            "label": "Wert",
+                            "placeholder": "Wert eingeben"
+                        }
+                    }
+                }
+            }
+        },
+        "button": {
+            "createUser": "Benutzer erstellen",
+            "clearSearch": "Suche löschen",
+            "cancel": "Abbrechen",
+            "submit": {
+                "create": "Erstellen",
+                "update": "Aktualisieren",
+                "addPrefs": "Präferenz hinzufügen"
+            },
+            "pill": {
+                "userId": "Benutzer-ID"
+            }
+        },
+        "table": {
+            "header": {
+                "name": "Name",
+                "identifiers": "Identifikatoren",
+                "status": "Status",
+                "id": "ID",
+                "joined": "Beigetreten"
+            },
+            "pill": {
+                "verify": "verifiziert",
+                "emailVerify": "bestätigte E-Mail",
+                "phoneVerify": "bestätigtes Telefon",
+                "unverify": "nicht verifiziert",
+                "block": "blockiert",
+                "userId": "Benutzer-ID"
+            }
+        },
+        "texts": {
+            "emptySearch": {
+                "phraseOne": "Leider konnten wir nichts finden",
+                "phraseTwo": "Es gibt keine Benutzer, die Ihrer Suche entsprechen."
+            }
+        },
+        "navbar": {
+            "header": {
+                "users": "Benutzer",
+                "teams": "Teams",
+                "usage": "Nutzung",
+                "security": "Sicherheity",
+                "settings": "Einstellungen"
+            },
+            "userHeader": {
+                "overview": "Übersicht",
+                "membership": "Mitgliedschaften",
+                "sessions": "Sitzungen",
+                "activity": "Aktivität"
+            }
+        }
+    }
+}
