@@ -21,6 +21,9 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
+    import { Pill } from '$lib/elements';
+    import { wizard } from '$lib/stores/wizard';
+    import ConnectExisting from '$lib/wizards/functions/connectExisting.svelte';
 
     export let installations: Models.InstallationList;
     export let repository: Models.Repository | null;
@@ -43,30 +46,34 @@
         selectedBranch = $func?.vcsBranch;
         silentMode = $func?.vcsSilentMode ?? false;
         selectedDir = $func?.vcsRootDirectory;
+
+        if ($page.url.searchParams.has('github-installed')) {
+            wizard.start(ConnectExisting);
+        }
     });
 
-    function getProviderIcon(provider: string) {
-        if (provider === 'github') {
-            return `icon-github`;
-        }
-
-        return '';
+    enum ProviderNames {
+        github = 'GitHub',
+        gitlab = 'GitLab',
+        bitBucket = 'BitBucket'
     }
 
-    function getProviderName(provider: string) {
-        if (provider === 'github') {
-            return `GitHub`;
+    function getProviderIcon(provider: string) {
+        switch (provider) {
+            case 'github':
+                return 'icon-github';
+            default:
+                return '';
         }
-
-        return '';
     }
 
     function getRepositoryLink(repository: Models.Repository) {
-        if (repository.provider === 'github') {
-            return `https://github.com/${repository.organization}/${repository.name}`;
+        switch (repository.provider) {
+            case 'github':
+                return `https://github.com/${repository.organization}/${repository.name}`;
+            default:
+                return '';
         }
-
-        return '';
     }
 
     async function updateConfiguration() {
@@ -148,7 +155,12 @@
             </FormList>
             <Collapsible>
                 <CollapsibleItem>
-                    <svelte:fragment slot="title">Git settings</svelte:fragment>
+                    <svelte:fragment slot="title">
+                        <span class="u-margin-inline-end-16">Git settings</span>
+                        {#if !repository}
+                            <Pill>NOT CONNECTED</Pill>
+                        {/if}
+                    </svelte:fragment>
                     {#if repository}
                         <div class="box" style:--box-border-radius="var(--border-radius-small)">
                             <div class="u-flex u-gap-16">
@@ -187,7 +199,8 @@
                                 <Button text on:click={() => (showDisconnect = true)}
                                     >Disconnect repository</Button>
                                 <Button secondary href={getRepositoryLink(repository)} external>
-                                    View on {getProviderName(repository.provider)}
+                                    View on {ProviderNames[repository.provider] ??
+                                        'unknown provider'}
                                     <span class="icon-external-link" />
                                 </Button>
                             </div>
@@ -202,11 +215,7 @@
 
                                     <div class="avatar"><span class="icon-server" /></div>
                                 </div>
-                                <Button
-                                    secondary
-                                    on:click={() => {
-                                        showGit = true;
-                                    }}>
+                                <Button secondary on:click={() => wizard.start(ConnectExisting)}>
                                     <span class="text">Connect Git</span>
                                 </Button>
                             </div>

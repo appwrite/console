@@ -5,6 +5,7 @@ import { Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);
+    depends(Dependencies.FUNCTION_INSTALLATIONS);
 
     const data = await parent();
 
