@@ -45,7 +45,7 @@
     $: parsedSource = parseIfString(details?.source || '{}');
 </script>
 
-<Modal bind:show on:close={() => (details = null)} size="big">
+<Modal bind:show on:close={() => (migrationId = null)} size="big">
     <svelte:fragment slot="header">
         {#if details.status === 'failed'}
             Resolve migration issues
