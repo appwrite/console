@@ -23,7 +23,7 @@
             },
             keys: ['g', 'u'],
             disabled: $page.url.pathname.includes('usage'),
-            icon: 'plus',
+
             group: 'databases'
         }
     ]);

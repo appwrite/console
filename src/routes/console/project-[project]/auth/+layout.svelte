@@ -8,6 +8,34 @@
 
     $: $registerCommands([
         {
+            label: 'Create user',
+            callback: async () => {
+                if (!$page.url.pathname.endsWith('auth')) {
+                    await goto(`/console/project-${$project.$id}/auth`);
+                }
+                showCreateUser.set(true);
+            },
+            keys: $page.url.pathname.endsWith('auth') ? ['c'] : ['c', 'u'],
+
+            group: 'auth',
+            icon: 'plus',
+            rank: $page.url.pathname.endsWith('auth') ? 10 : 0
+        },
+        {
+            label: 'Create team',
+            callback: async () => {
+                if (!$page.url.pathname.endsWith('teams')) {
+                    await goto(`/console/project-${$project.$id}/auth/teams`);
+                }
+                showCreateTeam.set(true);
+            },
+            keys: $page.url.pathname.endsWith('teams') ? ['c'] : ['c', 't'],
+
+            group: 'auth',
+            icon: 'plus',
+            rank: $page.url.pathname.endsWith('teams') ? 10 : 0
+        },
+        {
             label: 'Go to teams',
             keys: ['g', 't'],
             callback() {
@@ -42,34 +70,6 @@
             },
             group: 'auth',
             disabled: $page.url.pathname.endsWith('settings')
-        },
-        {
-            label: 'Create user',
-            callback: async () => {
-                if (!$page.url.pathname.endsWith('auth')) {
-                    await goto(`/console/project-${$project.$id}/auth`);
-                }
-                showCreateUser.set(true);
-            },
-            keys: $page.url.pathname.endsWith('auth') ? ['c'] : ['c', 'u'],
-
-            group: 'auth',
-            icon: 'plus',
-            rank: $page.url.pathname.endsWith('auth') ? 10 : 0
-        },
-        {
-            label: 'Create team',
-            callback: async () => {
-                if (!$page.url.pathname.endsWith('teams')) {
-                    await goto(`/console/project-${$project.$id}/auth/teams`);
-                }
-                showCreateTeam.set(true);
-            },
-            keys: $page.url.pathname.endsWith('teams') ? ['c'] : ['c', 't'],
-
-            group: 'auth',
-            icon: 'plus',
-            rank: $page.url.pathname.endsWith('teams') ? 10 : 0
         }
     ]);
 
