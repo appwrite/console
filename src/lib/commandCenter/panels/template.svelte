@@ -320,7 +320,7 @@
         flex-direction: column;
         width: var(--command-panel-width, 42.5rem);
         max-width: 100%;
-        max-height: 32rem;
+        max-height: var(--command-panel-max-height, 32rem);
         overflow: hidden;
         padding: 0;
 
@@ -336,7 +336,7 @@
         backdrop-filter: blur(6px);
 
         &.fullheight {
-            height: 32rem;
+            height: var(--command-panel-max-height, 32rem);
         }
 
         :global(.kbd) {

@@ -79,7 +79,7 @@
     $: answer = parseCompletion($completion);
 </script>
 
-<Template fullheight>
+<Template fullheight --command-panel-max-height="40rem">
     <div slot="search" />
 
     <div class="content">

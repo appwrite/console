@@ -45,7 +45,8 @@
                 addSubPanel(OrganizationsPanel);
             },
             group: 'organizations',
-            icon: 'search'
+            icon: 'search',
+            keys: ['f', 'o']
         },
         {
             label: 'Create new Organization',

@@ -28,6 +28,9 @@
 
     $: percentage = (function getPercentage() {
         if (!migration) return 0;
+        if (migration.status === 'failed') return 100;
+        if (migration.status === 'completed') return 100;
+
         const statusCounters = parseIfString(migration.statusCounters) as Record<string, Counter>;
         const totalCounter: TotalCounter = Object.values(statusCounters).reduce(
             (curr, acc) => {
