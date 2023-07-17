@@ -75,20 +75,20 @@
                                 {calculateTime($log.data.duration)}
                             </time>
                         </li>
-                        <li class="text">
+                        <!-- <li class="text">
                             <b>Cold-start duration:</b>
                             <time> ?? </time>
-                        </li>
+                        </li> -->
                         <li class="text">
                             <b>Created at:</b>
                             <time>
                                 {toLocaleDateTime($log.data.$createdAt)}
                             </time>
                         </li>
-                        <li class="text">
+                        <!-- <li class="text">
                             <b>Host:</b>
                             <span> ??</span>
-                        </li>
+                        </li> -->
                     </ul>
                     <div class="status u-margin-inline-start-auto">
                         <Status status={$log.data.status}>{$log.data.status}</Status>
