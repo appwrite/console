@@ -167,7 +167,7 @@
                                             </p>
                                         </Alert>
                                     {/if}
-                                {:else if (selectedRequest = 'headers')}
+                                {:else if selectedRequest === 'headers'}
                                     {#if $log.data.headers?.headers?.length}
                                         <TableList>
                                             {#each $log.data.headers.headers as params}
@@ -200,7 +200,7 @@
                                             </p>
                                         </Alert>
                                     {/if}
-                                {:else if (selectedRequest = 'body')}
+                                {:else if selectedRequest === 'body'}
                                     {#if $log.data.headers?.body?.length}
                                         <Code withCopy noMargin code={$log.data.body} lang="sh" />
                                     {:else}
@@ -221,7 +221,8 @@
                                                 >.
                                             </p>
                                         </Alert>
-                                    {/if}{/if}
+                                    {/if}
+                                {/if}
                             </div>
                             <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16">
                                 <Heading tag="h3" size="6">Response</Heading>
