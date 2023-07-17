@@ -4,7 +4,6 @@
     export let value: string | number | boolean;
     export let disabled = false;
     export let padding = 1;
-    export let icon: string = null;
     export let fullHeight = true;
     export let borderRadius: 'xsmall' | 'small' | 'medium' | 'large' = 'small';
 

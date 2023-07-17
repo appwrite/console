@@ -88,7 +88,7 @@
                                 <input
                                     type="checkbox"
                                     name="role"
-                                    id={collaborator.email}
+                                    id={`${collaborator.email}`}
                                     bind:checked={collaborator.role} />
                             </TableCell>
                             <TableCell>

@@ -1,18 +1,10 @@
 <script lang="ts">
-    import {
-        Button,
-        Form,
-        FormList,
-        InputNumber,
-        InputRadio,
-        InputText
-    } from '$lib/elements/forms';
+    import { FormList, InputNumber, InputRadio, InputText } from '$lib/elements/forms';
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createOrganization } from './store';
-    import { Collapsible, CollapsibleItem } from '$lib/components';
     import UsageRates from './usageRates.svelte';
     import type { PaymentList } from '$lib/stores/billing';
     import { paymentMethods } from '../account/payments/store';
@@ -30,12 +22,10 @@
 
     let methods: PaymentList;
     let name: string;
-    let promo: string;
-    let redeemedCodes = [];
     let budgetEnabled = false;
     let showRates = false;
 
-    let error: string;
+    // let error: string;
     let elements: StripeElements;
     let stripe: Stripe;
     let clientSecret: string;
@@ -48,16 +38,6 @@
             $createOrganization.paymentMethodId = methods[0].id;
         } else if (!isStripeInitialized) initialize();
     });
-
-    async function removeCode() {
-        redeemedCodes = redeemedCodes.filter((code) => code !== promo);
-        promo = '';
-    }
-    async function redeem() {
-        redeemedCodes.push(promo);
-        redeemedCodes = redeemedCodes;
-        promo = '';
-    }
 
     async function initialize() {
         stripe = await loadStripe(publicStripeKey);
@@ -95,7 +75,7 @@
                 },
                 redirect: 'if_required'
             });
-            paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
+            paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
             const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
             if (setupIntent && setupIntent.status === 'succeeded') {
                 await sdk.forConsole.billing.setOrganizationPaymentMethod(
@@ -164,51 +144,6 @@
                 {/if}
             </div>
         </div>
-
-        <Collapsible>
-            <CollapsibleItem>
-                <svelte:fragment slot="title">Add credit</svelte:fragment>
-                <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
-                <p class="text">
-                    Appwrite credit will automatically be applied to your next invoice.
-                </p>
-                <Form onSubmit={redeem}>
-                    <FormList>
-                        <InputText
-                            id="credit"
-                            label="Promo code"
-                            placeholder="APPWRITE123"
-                            bind:value={promo}>
-                            <Button secondary submit>Redeem</Button>
-                        </InputText>
-                    </FormList>
-                </Form>
-                {#if redeemedCodes?.length}
-                    <div class="u-flex u-margin-block-start-8">
-                        <div class="tags">
-                            <ul class="tags-list">
-                                {#each redeemedCodes as code}
-                                    <li class="tags-item">
-                                        <div class="input-tag">
-                                            <span class="tag-text">{code}</span>
-                                            <button
-                                                type="button"
-                                                class="input-tag-delete-button"
-                                                aria-label={`delete ${code} tag`}
-                                                on:click={() => removeCode(code)}>
-                                                <span class="icon-x" aria-hidden="true" />
-                                            </button>
-                                        </div>
-                                    </li>
-                                {/each}
-                            </ul>
-                        </div>
-                    </div>
-                {/if}
-            </CollapsibleItem>
-        </Collapsible>
-
-        <div class="u-sep-block-start" />
 
         <InputChoice
             type="switchbox"

@@ -30,12 +30,6 @@
                 $createOrganization.paymentMethodId
             );
 
-            //Add credit
-            if ($createOrganization?.promoCodes?.length) {
-                $createOrganization.promoCodes.forEach(async (code) => {
-                    await sdk.forConsole.billing.addCredit(org.$id, code);
-                });
-            }
             //Add budget
             if ($createOrganization?.billingBudget) {
                 await sdk.forConsole.billing.updateBudget(

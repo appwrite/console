@@ -1,7 +1,6 @@
 import type { Client } from '@appwrite.io/console';
 import type { Organization } from './organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
-import type { P } from 'vitest/dist/types-fafda418';
 
 export type PaymentMethodData = {
     $id: string;
@@ -441,16 +440,15 @@ export const tierFree = {
     description: 'For personal, passion projects.'
 };
 
-export const tierStarter = {
-    price: 10,
-    name: 'Starter',
-    description: 'For small organizations that want flexibility.'
-};
-
 export const tierPro = {
-    price: 20,
+    price: 15,
     name: 'Pro',
-    description: 'For organizations that need the ability scale easily.'
+    description: 'For pro developers and production projects that need the ability to scale.'
+};
+export const tierScale = {
+    price: 685,
+    name: 'Scale',
+    description: 'For scaling teams that need dedicated support.'
 };
 
 export const apperanceLight = {

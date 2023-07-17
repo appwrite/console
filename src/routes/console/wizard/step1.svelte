@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { tierFree, tierPro, tierStarter } from '$lib/stores/billing';
+    import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organizationList } from '$lib/stores/organization';
     import { createOrganization } from './store';
 
@@ -63,15 +63,17 @@
                 </LabelCard>
             </li>
         {/if}
+
         <li>
-            <LabelCard name="plan" bind:group={$createOrganization.billingPlan} value="tier-1">
+            <LabelCard name="plan" bind:group={$createOrganization.billingPlan} value="tier-2">
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
-                            {tierStarter.name} - ${tierStarter.price}/month per organization member
+                            {tierPro.name} - ${tierPro.price}/month per organization member + exta
+                            usage
                         </h4>
                         <p class="u-color-text-gray u-small">
-                            {tierStarter.description}
+                            {tierPro.description}
                         </p>
                     </div>
                     <Pill>14 DAY FREE TRIAL</Pill>
@@ -83,11 +85,10 @@
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
-                            {tierPro.name} - ${tierPro.price}/month per organization member + exta
-                            usage
+                            {tierScale.name} - ${tierScale.price}/month + exta usage
                         </h4>
                         <p class="u-color-text-gray u-small">
-                            {tierPro.description}
+                            {tierScale.description}
                         </p>
                     </div>
                     <Pill>14 DAY FREE TRIAL</Pill>

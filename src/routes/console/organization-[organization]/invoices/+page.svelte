@@ -3,7 +3,6 @@
     import {
         DropList,
         DropListItem,
-        DropListLink,
         EmptySearch,
         Heading,
         PaginationInline

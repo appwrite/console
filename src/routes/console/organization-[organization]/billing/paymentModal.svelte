@@ -2,7 +2,7 @@
     // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
-    import { paymentMethods, publicKey } from './store';
+    import { paymentMethods } from './store';
     import {
         loadStripe,
         type Stripe,
@@ -15,7 +15,12 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { app } from '$lib/stores/app';
-    import { apperanceDark, apperanceLight } from '$lib/stores/billing';
+    import {
+        apperanceDark,
+        apperanceLight,
+        publicStripeKey,
+        type PaymentList
+    } from '$lib/stores/billing';
 
     export let show = false;
 
@@ -26,13 +31,24 @@
 
     let clientSecret: string;
     let paymentMethod: PaymentMethod;
+    let isStripeInitialized = false;
+    let methods: PaymentList;
 
     onMount(async () => {
-        stripe = await loadStripe(publicKey);
+        methods = await sdk.forConsole.billing.listPaymentMethods();
+        if (methods?.total) {
+            $organization.paymentMethodId = methods[0].id;
+        } else if (!isStripeInitialized) initialize();
+    });
+
+    async function initialize() {
+        stripe = await loadStripe(publicStripeKey);
+        isStripeInitialized = true;
+
         try {
             clientSecret = $paymentMethods?.paymentMethods[0]?.clientSecret;
             if (!clientSecret) {
-                paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
+                paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
             }
             const options = {
                 clientSecret: clientSecret ? clientSecret : paymentMethod.clientSecret,
@@ -45,7 +61,7 @@
         } catch (e) {
             error = e.message;
         }
-    });
+    }
 
     async function createForm() {
         const paymentElement = elements.create('payment');
@@ -61,16 +77,14 @@
                 },
                 redirect: 'if_required'
             });
-            paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
+            paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
             const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
             if (setupIntent && setupIntent.status === 'succeeded') {
                 await sdk.forConsole.billing.setOrganizationPaymentMethod(
                     $organization.$id,
-                    paymentMethod.$id,
-                    setupIntent.payment_method as string
+                    paymentMethod.$id
                 );
                 await invalidate(Dependencies.PAYMENT_METHODS);
-                show = false;
                 console.log('test');
                 // const paymentElement = elements.getElement('payment');
                 // paymentElement.destroy();
@@ -80,6 +94,10 @@
             console.log(e);
             // trackError(StripeError, Submit.ProjectCreate);
         }
+    }
+
+    $: if ($organization.paymentMethodId === null && !isStripeInitialized) {
+        initialize();
     }
 </script>
 
