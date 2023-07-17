@@ -6,6 +6,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { updateOAuth } from './updateOAuth';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
 
@@ -38,30 +39,48 @@
 </script>
 
 <Modal {error} onSubmit={update} size="big" show on:close>
-    <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{provider.name}{' '}{$LL.console.project.title.oAuth2()}</svelte:fragment>
     <FormList>
         <p>
-            To use {provider.name} authentication in your application, first fill in this form. For more
-            info you can
+            {$LL.console.project.texts.oAuthProvider.textOne()}{' '}{provider.name}{' '}{$LL.console.project.texts.oAuthProvider.phraseOne()}
             <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer">
-                visit the docs.
+                {$LL.console.project.links.oAuthProvider.visitDoc()}
             </a>
         </p>
-        <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
+        <InputSwitch
+            id="state"
+            bind:value={enabled}
+            label={enabled
+                ? $LL.console.forms.inputSwitch.enable()
+                : $LL.console.forms.inputSwitch.disabled()} />
         <InputText
             id="bundleID"
-            label="Bundle ID"
+            label={$LL.console.project.forms.inputs.appleAuth.bundleID.label()}
             autofocus={true}
-            placeholder="com.company.appname"
+            placeholder={$LL.console.project.forms.inputs.appleAuth.bundleID.placeholder()}
             bind:value={appId} />
-        <InputText id="keyID" label="Key ID" placeholder="SHAB13ROFN" bind:value={keyID} />
-        <InputText id="teamID" label="Team ID" placeholder="ELA2CD3AED" bind:value={teamID} />
-        <InputTextarea id="p8" label="P8 File" placeholder="" bind:value={p8} />
+        <InputText
+            id="keyID"
+            label={$LL.console.project.forms.inputs.appleAuth.keyID.label()}
+            placeholder={$LL.console.project.forms.inputs.appleAuth.keyID.placeholder()}
+            bind:value={keyID} />
+        <InputText
+            id="teamID"
+            label={$LL.console.project.forms.inputs.appleAuth.teamID.label()}
+            placeholder={$LL.console.project.forms.inputs.appleAuth.teamID.placeholder()}
+            bind:value={teamID} />
+        <InputTextarea
+            id="p8"
+            label={$LL.console.project.forms.inputs.appleAuth.p8.label()}
+            placeholder=""
+            bind:value={p8} />
         <Alert type="info">
-            To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
+            {$LL.console.project.alert.oAuthProvider.fieldOne()}{' '}{provider.name}{' '}
+            {$LL.console.project.alert.oAuthProvider.fieldTwo()}
         </Alert>
         <div>
-            <p>URI</p>
+            <p>{$LL.console.project.texts.oAuthProvider.uri()}</p>
             <CopyInput
                 value={`${
                     sdk.forConsole.client.config.endpoint
@@ -69,12 +88,13 @@
         </div>
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (provider = null)}>Cancel</Button>
+        <Button secondary on:click={() => (provider = null)}
+            >{$LL.console.project.button.cancel()}</Button>
         <Button
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
                 !(appId && keyID && teamID && p8)}
-            submit>Update</Button>
+            submit>{$LL.console.project.button.submit.update()}</Button>
     </svelte:fragment>
 </Modal>

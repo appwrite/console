@@ -144,6 +144,10 @@
                         "placeholder": "Enter name"
                     }
                 }
+            },
+            "inputSwitch": {
+                "enable": "enable",
+                "disabled": "disabled"
             }
         },
         "button": {
@@ -365,7 +369,9 @@
             "title": {
                 "auth": "Auth",
                 "createUser": "Create User",
+                "createTeam": "Create Team",
                 "user": "User",
+                "oAuth2": "OAuth2 Settings",
                 "userData": {
                     "name": "Name",
                     "email": "Email",
@@ -393,6 +399,14 @@
                         "password": {
                             "label": "Password",
                             "placeholder": "Enter password"
+                        }
+                    }
+                },
+                "createTeam": {
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Enter name"
                         }
                     }
                 },
@@ -425,6 +439,98 @@
                             }
                         }
                     }
+                },
+                "oAuthProvider": {
+                    "inputs": {
+                        "appleAuth": {
+                            "bundleId": {
+                                "label": "Bundle ID",
+                                "placeholder": "com.company.appname"
+                            },
+                            "keyId": {
+                                "label": "Key ID",
+                                "placeholder": "SHAB13ROFN"
+                            },
+                            "teamId": {
+                                "label": "Team ID",
+                                "placeholder": "ELA2CD3AED"
+                            },
+                            "p8": {
+                                "label": "P8 File",
+                                "placeholder": ""
+                            }
+                        },
+                        "auth0Auth": {
+                            "clientId": {
+                                "label": "Client ID",
+                                "placeholder": "Enter ID"
+                            },
+                            "secret": {
+                                "label": "Client Secret",
+                                "placeholder": "Enter Client Secret"
+                            },
+                            "domain": {
+                                "label": "Auth0 Domain",
+                                "placeholder": "Your Auth0 domain"
+                            }
+                        },
+                        "githubAuth": {
+                            "appId": {
+                                "label": "App ID",
+                                "placeholder": "Enter ID"
+                            },
+                            "secret": {
+                                "label": "App Secret",
+                                "placeholder": "Enter App Secret"
+                            },
+                            "endpoint": {
+                                "label": "Endpoint (optional)",
+                                "placeholder": "Your endpoint"
+                            }
+                        },
+                        "mainAuth": {
+                            "appId": {
+                                "label": "App ID",
+                                "placeholder": "Enter ID"
+                            },
+                            "secret": {
+                                "label": "App Secret",
+                                "placeholder": "Enter App Secret"
+                            }
+                        },
+                        "microsoftAuth": {
+                            "appId": {
+                                "label": "Application (client) ID",
+                                "placeholder": "Enter ID"
+                            },
+                            "secret": {
+                                "label": "Client Secret",
+                                "placeholder": "Enter Client Secret"
+                            },
+                            "tenant": {
+                                "label": "Target Tenant",
+                                "placeholder": "'common','organizations','consumers' or your TenantID"
+                            }
+                        },
+                        "oktaAuth": {
+                            "appId": {
+                                "label": "Client ID",
+                                "placeholder": "Enter ID"
+                            },
+                            "secret": {
+                                "label": "Client Secret",
+                                "placeholder": "Enter Client Secret"
+                            },
+                            "domain": {
+                                "label": "Okta Domain",
+                                "placeholder": "dev-1337.okta.com"
+                            },
+                            "serverId": {
+                                "label": "Authorization Server ID",
+                                "placeholder": "default"
+                            }
+                        }
+                    }
                 }
             },
             "button": {
@@ -454,13 +560,19 @@
                     "phoneVerify": "verified phone",
                     "unverify": "unverified",
                     "block": "blocked",
-                    "userId": "User ID"
+                    "userId": "User ID",
+                    "teamId": "Team ID"
                 }
             },
             "texts": {
                 "emptySearch": {
                     "phraseOne": "Sorry, we couldn't find",
                     "phraseTwo": "There are no users that match your search."
+                },
+                "oAuthProvider": {
+                    "uri": "URI",
+                    "textOne": "To use",
+                    "phraseOne": "authentication in your application, first fill in this form. For more info you can"
                 }
             },
             "navbar": {
@@ -476,6 +588,17 @@
                     "membership": "Memberships",
                     "sessions": "Sessions",
                     "activity": "Activity"
+                }
+            },
+            "links": {
+                "oAuthProvider": {
+                    "visitDoc": "visit the docs."
+                }
+            },
+            "alert": {
+                "oAuthProvider": {
+                    "fieldOne": "To complete set up, add this OAuth2 redirect URI to your",
+                    "fieldTwo": "app configuration."
                 }
             }
         }

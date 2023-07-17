@@ -6,6 +6,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { updateOAuth } from './updateOAuth';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
 
@@ -43,44 +44,51 @@
 </script>
 
 <Modal {error} onSubmit={update} size="big" show on:close>
-    <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{provider.name}{' '}{$LL.console.project.title.oAuth2()}</svelte:fragment>
     <FormList>
         <p>
-            To use {provider.name} authentication in your application, first fill in this form. For more
-            info you can
-            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
-                >visit the docs.</a>
+            {$LL.console.project.texts.oAuthProvider.textOne()}{' '}{provider.name}{' '}{$LL.console.project.texts.oAuthProvider.phraseOne()}
+            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer">
+                {$LL.console.project.links.oAuthProvider.visitDoc()}
+            </a>
         </p>
-        <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
+        <InputSwitch
+            id="state"
+            bind:value={enabled}
+            label={enabled
+                ? $LL.console.forms.inputSwitch.enable()
+                : $LL.console.forms.inputSwitch.disabled()} />
         <InputText
             id="appID"
-            label="Client ID"
+            label={$LL.console.project.forms.oAuthProvider.inputs.oktaAuth.appId.label()}
+            placeholder={$LL.console.project.forms.oAuthProvider.inputs.oktaAuth.appId.placeholder()}
             autofocus={true}
-            placeholder="Enter ID"
             bind:value={appId} />
         <InputPassword
             id="secret"
-            label="Client Secret"
-            placeholder="Enter Client Secret"
+            label={$LL.console.project.forms.oAuthProvider.inputs.oktaAuth.secret.label()}
+            placeholder={$LL.console.project.forms.oAuthProvider.inputs.oktaAuth.secret.placeholder()}
             minlength={0}
             showPasswordButton
             bind:value={clientSecret} />
         <InputText
             id="domain"
-            label="Okta Domain"
-            placeholder="dev-1337.okta.com"
+            label={$LL.console.project.forms.oAuthProvider.inputs.oktaAuth.domain.label()}
+            placeholder={$LL.console.project.forms.oAuthProvider.inputs.oktaAuth.domain.placeholder()}
             bind:value={oktaDomain} />
         <InputText
             id="serverID"
-            label="Authorization Server ID"
-            placeholder="default"
+            label={$LL.console.project.forms.oAuthProvider.inputs.oktaAuth.serverId.label()}
+            placeholder={$LL.console.project.forms.oAuthProvider.inputs.oktaAuth.serverId.placeholder()}
             bind:value={authorizationServerId} />
 
         <Alert type="info">
-            To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
+            {$LL.console.project.alert.oAuthProvider.fieldOne()}{' '}{provider.name}{' '}
+            {$LL.console.project.alert.oAuthProvider.fieldTwo()}
         </Alert>
         <div>
-            <p>URI</p>
+            <p>{$LL.console.project.texts.oAuthProvider.uri()}</p>
             <CopyInput
                 value={`${
                     sdk.forConsole.client.config.endpoint
@@ -88,12 +96,13 @@
         </div>
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (provider = null)}>Cancel</Button>
+        <Button secondary on:click={() => (provider = null)}
+            >{$LL.console.project.button.cancel()}</Button>
         <Button
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
                 !(appId && clientSecret && oktaDomain && authorizationServerId)}
-            submit>Update</Button>
+            submit>{$LL.console.project.button.submit.update()}</Button>
     </svelte:fragment>
 </Modal>

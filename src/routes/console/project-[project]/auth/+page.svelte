@@ -50,12 +50,14 @@
         <Table>
             <TableHeader>
                 <TableCellHead>{$LL.console.project.table.header.name()}</TableCellHead>
-                <TableCellHead onlyDesktop>{$LL.console.project.table.header.identifiers()}</TableCellHead>
+                <TableCellHead onlyDesktop
+                    >{$LL.console.project.table.header.identifiers()}</TableCellHead>
                 <TableCellHead onlyDesktop width={130}
                     >{$LL.console.project.table.header.status()}</TableCellHead>
                 <TableCellHead onlyDesktop width={100}
                     >{$LL.console.project.table.header.id()}</TableCellHead>
-                <TableCellHead onlyDesktop>{$LL.console.project.table.header.joined()}</TableCellHead>
+                <TableCellHead onlyDesktop
+                    >{$LL.console.project.table.header.joined()}</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.users.users as user}
@@ -104,7 +106,8 @@
                             <Copy value={user.$id} event="user">
                                 <Pill button>
                                     <span class="icon-duplicate" aria-hidden="true" />
-                                    <span class="text">{$LL.console.project.table.pill.userId()}</span>
+                                    <span class="text"
+                                        >{$LL.console.project.table.pill.userId()}</span>
                                 </Pill>
                             </Copy>
                         </TableCell>

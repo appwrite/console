@@ -6,12 +6,13 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { updateOAuth } from './updateOAuth';
+    import LL from '$i18n/i18n-svelte';
 
     export let provider: Provider;
 
     let appId: string = null;
     let enabled: boolean = null;
-    let clientSecret: string = null; 
+    let clientSecret: string = null;
     let tenantID: string = null;
     let error: string;
 
@@ -38,39 +39,45 @@
 </script>
 
 <Modal {error} onSubmit={update} size="big" show on:close>
-    <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{provider.name}{' '}{$LL.console.project.title.oAuth2()}</svelte:fragment>
     <FormList>
         <p>
-            To use {provider.name} authentication in your application, first fill in this form. For more
-            info you can
+            {$LL.console.project.texts.oAuthProvider.textOne()}{' '}{provider.name}{' '}{$LL.console.project.texts.oAuthProvider.phraseOne()}
             <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer">
-                visit the docs.
+                {$LL.console.project.links.oAuthProvider.visitDoc()}
             </a>
         </p>
-        <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
+        <InputSwitch
+            id="state"
+            bind:value={enabled}
+            label={enabled
+                ? $LL.console.forms.inputSwitch.enable()
+                : $LL.console.forms.inputSwitch.disabled()} />
         <InputText
             id="appID"
-            label="Application (client) ID"
+            label={$LL.console.project.forms.oAuthProvider.inputs.microsoftAuth.appId.label()}
             autofocus={true}
-            placeholder="Enter ID"
+            placeholder={$LL.console.project.forms.oAuthProvider.inputs.microsoftAuth.appId.placeholder()}
             bind:value={appId} />
         <InputPassword
             id="secret"
-            label="Client Secret"
-            placeholder="Enter Client Secret"
+            label={$LL.console.project.forms.oAuthProvider.inputs.microsoftAuth.secret.label()}
+            placeholder={$LL.console.project.forms.oAuthProvider.inputs.microsoftAuth.secret.placeholder()}
             showPasswordButton
             minlength={0}
             bind:value={clientSecret} />
         <InputText
             id="tenant"
-            label="Target Tenant"
-            placeholder="'common','organizations','consumers' or your TenantID"
+            label={$LL.console.project.forms.oAuthProvider.inputs.microsoftAuth.tenant.label()}
+            placeholder={$LL.console.project.forms.oAuthProvider.inputs.microsoftAuth.tenant.placeholder()}
             bind:value={tenantID} />
         <Alert type="info">
-            To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
+            {$LL.console.project.alert.oAuthProvider.fieldOne()}{' '}{provider.name}{' '}
+            {$LL.console.project.alert.oAuthProvider.fieldTwo()}
         </Alert>
         <div>
-            <p>URI</p>
+            <p>{$LL.console.project.texts.oAuthProvider.uri()}</p>
             <CopyInput
                 value={`${
                     sdk.forConsole.client.config.endpoint
@@ -78,12 +85,13 @@
         </div>
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (provider = null)}>Cancel</Button>
+        <Button secondary on:click={() => (provider = null)}
+            >{$LL.console.project.button.cancel()}</Button>
         <Button
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
                 !(appId && clientSecret && tenantID)}
-            submit>Update</Button>
+            submit>{$LL.console.project.button.submit.update()}</Button>
     </svelte:fragment>
 </Modal>
