@@ -62,6 +62,7 @@
     $: $registerCommands([
         {
             label: 'Add platform',
+            keys: ['a', 'p'],
             callback() {
                 addSubPanel(PlatformsPanel);
             },

@@ -1,3 +1,7 @@
+<script lang="ts" context="module">
+    export let showCreateUser = writable(false);
+</script>
+
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
@@ -24,44 +28,21 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
-    import { project } from '../store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { registerCommands } from '$lib/commandCenter';
+    import { writable } from 'svelte/store';
 
     export let data: PageData;
 
-    let showCreate = false;
     const projectId = $page.params.project;
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
     }
-
-    $: $registerCommands([
-        {
-            label: 'Create user',
-            callback: () => {
-                showCreate = true;
-            },
-            keys: ['c'],
-            disabled: showCreate,
-            group: 'auth',
-            icon: 'plus'
-        },
-        {
-            label: 'Go to Overview',
-            callback: () => {
-                goto(`${base}/console/project-${$project.$id}/overview`);
-            },
-            keys: ['o'],
-            group: 'navigation'
-        }
-    ]);
 </script>
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-        <Button on:click={() => (showCreate = true)} event="create_user">
+        <Button on:click={() => ($showCreateUser = true)} event="create_user">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
         </Button>
     </SearchQuery>
@@ -151,8 +132,8 @@
             single
             href="https://appwrite.io/docs/server/users"
             target="user"
-            on:click={() => (showCreate = true)} />
+            on:click={() => showCreateUser.set(true)} />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={userCreated} />
+<Create bind:showCreate={$showCreateUser} on:created={userCreated} />
