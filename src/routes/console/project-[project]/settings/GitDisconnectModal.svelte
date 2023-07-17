@@ -10,6 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { Avatar } from '$lib/components';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     export let showGitDisconnect: boolean;
     export let selectedInstallation: Models.Installation;
@@ -67,7 +68,7 @@
                     </div>
 
                     <p class="u-x-small" style="color: hsl(var(--color-neutral-70));">
-                        Last deployed: XXm ago
+                        Last deployed: {toLocaleDateTime(func.$updatedAt)}
                     </p>
                 </div>
             {/each}

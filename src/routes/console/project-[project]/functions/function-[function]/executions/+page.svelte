@@ -74,25 +74,29 @@
         <TableScroll>
             <TableHeader>
                 <TableCellHead width={150}>Execution ID</TableCellHead>
-                <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
+                <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
                 <TableCellHead width={80}>Duration</TableCellHead>
-                <TableCellHead width={50} />
             </TableHeader>
             <TableBody>
                 {#each data.executions.executions as execution}
-                    <TableRow>
+                    <TableRow on:click={() => showLogs(execution)}>
                         <TableCell width={150} title="Execution ID">
                             <Id value={execution.$id}>{execution.$id}</Id>
                         </TableCell>
+                        <TableCellText width={110} title="Status">
+                            {@const status = execution.status}
+                            <Pill
+                                danger={status === 'failed'}
+                                warning={status === 'pending'}
+                                success={status === 'completed' || status === 'ready'}
+                                info={status === 'processing' || status === 'building'}>
+                                <span class="text u-trim">{execution.status}</span>
+                            </Pill>
+                        </TableCellText>
                         <TableCellText width={140} title="Created">
                             {toLocaleDateTime(execution.$createdAt)}
-                        </TableCellText>
-                        <TableCellText width={110} title="Status">
-                            <Status status={execution.status}>
-                                {execution.status}
-                            </Status>
                         </TableCellText>
                         <TableCellText width={90} title="Trigger">
                             <Pill>
@@ -102,14 +106,6 @@
                         <TableCellText width={80} title="Duration">
                             {calculateTime(execution.duration)}
                         </TableCellText>
-                        <TableCell width={50}>
-                            <Button
-                                secondary
-                                event="view_logs"
-                                on:click={() => showLogs(execution)}>
-                                Logs
-                            </Button>
-                        </TableCell>
                     </TableRow>
                 {/each}
             </TableBody>

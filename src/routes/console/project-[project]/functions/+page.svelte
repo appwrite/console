@@ -20,6 +20,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import CreateManual from '$lib/wizards/functions/createManual.svelte';
     import CreateGit from '$lib/wizards/functions/createGit.svelte';
+    import CreateStarter from '$lib/wizards/functions/createStarter.svelte';
 
     export let data;
 
@@ -52,6 +53,8 @@
             <svelte:fragment slot="list">
                 <DropListItem on:click={() => wizard.start(CreateManual)}>Manual</DropListItem>
                 <DropListItem on:click={() => wizard.start(CreateGit)}>Git</DropListItem>
+                <DropListItem on:click={() => wizard.start(CreateStarter)}
+                    >Starter template</DropListItem>
             </svelte:fragment>
         </DropList>
     </div>
