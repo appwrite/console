@@ -10,13 +10,12 @@
     import { user } from '$lib/stores/user';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
-    import LogRocket from 'logrocket';
     import { BrowserTracing } from '@sentry/tracing';
+    import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
-    import { loading, requestedMigration } from './store';
-    import { openMigrationWizard } from './console/organization-[organization]/(migration-wizard)';
+    import { loading } from './store';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;

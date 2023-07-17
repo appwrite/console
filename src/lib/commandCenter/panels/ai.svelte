@@ -15,12 +15,10 @@
     });
 
     const examples = [
-        'How can I integrate Appwrite with my frontend application?',
         'How to add platform in the console?',
         'How can I manage users, permissions, and access control in Appwrite?',
         'How can I set up database collections and documents in Appwrite?',
         'How do I configure and manage server-side functions in Appwrite?',
-        'How can I access the audit logs in the console?',
         'How to add custom domain in the console?'
     ];
 

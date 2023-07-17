@@ -2,6 +2,8 @@
     import { Alert, Modal } from '$lib/components';
     import { Button, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
+    import { sdk } from '$lib/stores/sdk';
+    import { project } from '../../store';
 
     export let show = false;
     let submitted = false;
@@ -39,7 +41,7 @@
         return endpoint;
     };
 
-    const onSubmit = (e: SubmitEvent) => {
+    const onSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
         submitted = true;
 
@@ -56,10 +58,39 @@
         }
 
         const currEndpoint = getCurrentEndpoint();
-        // URI encode the current endpoint, so that it can be passed as a query string
-        const encodedCurrEndpoint = encodeURIComponent(currEndpoint);
+        // Create API key
+        const { secret } = await sdk.forConsole.projects.createKey(
+            $project.$id,
+            `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
 
-        const dest = `${removeTrailingSlash(endpoint)}/?migrate=${encodedCurrEndpoint}`;
+            [
+                'users.read',
+                'teams.read',
+                'databases.read',
+                'collections.read',
+                'attributes.read',
+                'indexes.read',
+                'documents.read',
+                'files.read',
+                'buckets.read',
+                'functions.read',
+                'execution.read',
+                'locale.read',
+                'avatars.read',
+                'health.read'
+            ],
+            undefined
+        );
+
+        const migrationData = {
+            endpoint: currEndpoint,
+            projectId: $project.$id,
+            apiKey: secret
+        };
+
+        const dest = `${removeTrailingSlash(endpoint)}/?migrate=${encodeURIComponent(
+            JSON.stringify(migrationData)
+        )}`;
         window.location.href = dest;
     };
 </script>

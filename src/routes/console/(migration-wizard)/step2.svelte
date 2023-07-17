@@ -1,11 +1,11 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
 
-    import ResourceForm from '$routes/console/(migration-wizard)/resource-form.svelte';
     import { formData, provider } from '.';
+    import ResourceForm from './resource-form.svelte';
 </script>
 
 <WizardStep>
     <svelte:fragment slot="title">Select data</svelte:fragment>
-    <ResourceForm {formData} {provider} />
+    <ResourceForm {provider} {formData} />
 </WizardStep>

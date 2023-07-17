@@ -21,6 +21,7 @@
     import { CommandCenter, registerCommands } from '$lib/commandCenter';
     import { AI, Organizations } from '$lib/commandCenter/panels';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
+    import { openMigrationWizard } from './(migration-wizard)';
 
     $: $registerCommands([
         {
@@ -107,6 +108,10 @@
     $: if (!$log.show) {
         $log.data = null;
         $log.func = null;
+    }
+
+    $: if ($requestedMigration) {
+        openMigrationWizard();
     }
 </script>
 

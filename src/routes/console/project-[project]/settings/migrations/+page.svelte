@@ -21,7 +21,7 @@
     import { openImportWizard } from './(import)';
     import Details from './details.svelte';
     import ExportModal from './exportModal.svelte';
-    import { registerCommands } from '$lib/commandCenter';
+    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
 
     export let data;
     let details: (typeof data.migrations)[number] | null = null;
@@ -48,17 +48,24 @@
     $: $registerCommands([
         {
             label: 'Import data',
-            icon: 'upload',
+            icon: 'download',
             keys: ['i', 'd'],
-            callback: openImportWizard
+            callback: openImportWizard,
+            group: 'migrations'
         },
         {
             label: 'Export data',
-            icon: 'download',
+            icon: 'upload',
             keys: ['e', 'd'],
-            callback: () => (showExport = true)
+            callback: () => (showExport = true),
+            group: 'migrations'
         }
     ]);
+
+    $: $updateCommandGroupRanks((prev) => ({
+        ...prev,
+        migrations: 100
+    }));
 </script>
 
 <Container>

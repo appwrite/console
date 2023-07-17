@@ -17,7 +17,8 @@ export type CommandGroup =
     | 'storage'
     | 'domains'
     | 'webhooks'
-    | 'integrations';
+    | 'integrations'
+    | 'migrations';
 
 type BaseCommand = {
     callback: () => void;
@@ -264,6 +265,7 @@ export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTr
         functions: 0,
         storage: 0,
         integrations: 0,
+        migrations: 0,
         help: -1
     };
 

@@ -4,9 +4,12 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { migrationFormToResources } from '$lib/stores/migration';
     import { onDestroy } from 'svelte';
-    import { formData } from '.';
+    import { formData, provider } from '.';
     import Step1 from './step1.svelte';
     import Step2 from './step2.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const onExit = () => {
         formData.reset();
@@ -14,8 +17,16 @@
 
     const onFinish = async () => {
         const resources = migrationFormToResources($formData);
-        console.log('resources', resources);
-        // wizard.hide();
+        if ($provider.provider !== 'appwrite') return;
+
+        const res = await sdk.forProject.migrations.migrateAppwrite(
+            resources,
+            $provider.endpoint,
+            $provider.projectID,
+            $provider.apiKey
+        );
+        console.log('appwrite', res);
+        invalidate(Dependencies.MIGRATIONS);
     };
 
     onDestroy(onExit);
