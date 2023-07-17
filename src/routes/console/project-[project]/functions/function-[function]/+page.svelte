@@ -5,10 +5,10 @@
         DropList,
         DropListItem,
         Empty,
-        Status,
         Heading,
         PaginationWithLimit,
-        Id
+        Id,
+        Alert
     } from '$lib/components';
     import {
         TableHeader,
@@ -19,19 +19,18 @@
         TableCellText,
         TableScroll
     } from '$lib/elements/table';
-    import { execute, func } from './store';
+    import { func } from './store';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { timeFromNow } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
-    import Create from './create.svelte';
     import Activate from './activate.svelte';
     import { browser } from '$app/environment';
     import { sdk } from '$lib/stores/sdk';
@@ -39,7 +38,8 @@
     import { timer } from '$lib/actions/timer';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import Alert from '$lib/components/alert.svelte';
+    import { Pill } from '$lib/elements';
+    import Create from './create.svelte';
 
     export let data: PageData;
 
@@ -105,10 +105,7 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Deployments</Heading>
-        <Button on:click={() => (showCreate = true)} event="create_deployment">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create deployment</span>
-        </Button>
+        <Create bind:showCreate />
     </div>
     {#if data.deployments.total}
         <div class="common-section">
@@ -116,7 +113,7 @@
         </div>
         {#if activeDeployment && !$func.live}
             <div class="u-margin-block-start-8">
-                <Alert isInline={true} type="warning">
+                <Alert isInline type="warning">
                     Some configuration options are not live yet. Redeploy your function to apply
                     latest changes.
                 </Alert>
@@ -134,12 +131,10 @@
                     </div>
                     <div>
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <p><b>Function ID: </b></p>
-                            <Id value={$func.$id}><b>{$func.$id}</b></Id>
+                            <p><b>Deployment ID</b></p>
                         </div>
 
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <p>Deployment ID:</p>
                             <Id value={$func.deployment}>
                                 {$func.deployment}
                             </Id>
@@ -147,29 +142,28 @@
                     </div>
                 </div>
                 <svelte:fragment slot="aside">
+                    {@const status = activeDeployment.status}
+                    {@const fileSize = humanFileSize(activeDeployment.size)}
                     <div class="u-flex u-main-space-between">
                         <div>
-                            <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
-                            <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
-                            <p>Entrypoint: {activeDeployment?.entrypoint}</p>
+                            <p><b>Build time:</b> {calculateTime(activeDeployment.buildTime)}</p>
+                            <p><b>Created:</b> {timeFromNow(activeDeployment.$createdAt)}</p>
+                            <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
+                            <p><b>Source:</b> <span>Git</span></p>
                         </div>
                         <div class="u-flex u-flex-vertical u-cross-end">
-                            <Status status={activeDeployment.status}>
-                                {activeDeployment.status}
-                            </Status>
-                            <p class="text">
-                                {calculateTime(activeDeployment.buildTime)}
-                            </p>
+                            <Pill
+                                danger={status === 'failed'}
+                                warning={status === 'pending'}
+                                success={status === 'completed' || status === 'ready'}
+                                info={status === 'processing' || status === 'building'}>
+                                <span class="text u-trim">{activeDeployment.status}</span>
+                            </Pill>
                         </div>
                     </div>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button
-                        text
-                        on:click={() => {
-                            redeploy(activeDeployment);
-                        }}>Redeploy</Button>
                     <Button
                         text
                         on:click={() => {
@@ -179,10 +173,10 @@
                         }}>
                         Build logs
                     </Button>
-                    <a target="_blank" href={'http://' + data.domain.rules[0].domain}>
-                        <Button secondary>HTTP Execute</Button>
-                    </a>
-                    <Button secondary on:click={() => execute.set($func)}>Advanced Execute</Button>
+                    <Button text on:click={() => redeploy(activeDeployment)}>Redeploy</Button>
+                    <Button secondary external href={'http://' + data.domain.rules[0].domain}>
+                        Execute now
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         {:else}
@@ -200,8 +194,9 @@
             <TableScroll>
                 <TableHeader>
                     <TableCellHead width={150}>Deployment ID</TableCellHead>
-                    <TableCellHead width={140}>Created</TableCellHead>
                     <TableCellHead width={100}>Status</TableCellHead>
+                    <TableCellHead width={70}>Source</TableCellHead>
+                    <TableCellHead width={180}>Created</TableCellHead>
                     <TableCellHead width={100}>Build Time</TableCellHead>
                     <TableCellHead width={70}>Size</TableCellHead>
                     <TableCellHead width={25} />
@@ -209,19 +204,24 @@
                 <TableBody>
                     {#each data.deployments.deployments as deployment, index}
                         {#if deployment.$id !== $func.deployment}
+                            {@const status = deployment.status}
                             <TableRow>
                                 <TableCell width={150} title="Deployment ID">
                                     <Id value={deployment.$id}>{deployment.$id}</Id>
                                 </TableCell>
-                                <TableCellText width={140} title="Created">
-                                    {toLocaleDateTime(deployment.$createdAt)}
-                                </TableCellText>
-
                                 <TableCell width={100} title="Status">
-                                    <Status status={deployment.status}>
-                                        {deployment.status}
-                                    </Status>
+                                    <Pill
+                                        danger={status === 'failed'}
+                                        warning={status === 'pending'}
+                                        success={status === 'completed' || status === 'ready'}
+                                        info={status === 'processing' || status === 'building'}>
+                                        <span class="text u-trim">{status}</span>
+                                    </Pill>
                                 </TableCell>
+                                <TableCellText width={70} title="Source">Git</TableCellText>
+                                <TableCellText width={140} title="Created">
+                                    {timeFromNow(deployment.$createdAt)}
+                                </TableCellText>
 
                                 <TableCellText width={100} title="Build Time">
                                     {#if ['processing', 'building'].includes(deployment.status)}
@@ -312,9 +312,7 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create {target}`}>Documentation</Button>
-                    <Button secondary on:click={() => (showCreate = true)}>
-                        Create deployment
-                    </Button>
+                    <Create />
                 </div>
             </Empty>
         {/if}
@@ -329,8 +327,6 @@
 
     <PaginationWithLimit name="Deployments" limit={data.limit} offset={data.offset} total={sum} />
 </Container>
-
-<Create bind:showCreate />
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />

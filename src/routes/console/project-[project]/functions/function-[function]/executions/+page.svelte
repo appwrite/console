@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { EmptySearch, Heading, Id, PaginationWithLimit, Status } from '$lib/components';
+    import { Alert, EmptySearch, Heading, Id, PaginationWithLimit } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -20,15 +20,15 @@
     import { sdk } from '$lib/stores/sdk';
     import { onDestroy, onMount } from 'svelte';
     import { func } from '../store';
-    import CreateDeployment from '../create.svelte';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
-    import Alert from '$lib/components/alert.svelte';
     import { project } from '$routes/console/project-[project]/store';
+    import Create from '../create.svelte';
 
     export let data: PageData;
 
     let showCreate = false;
+
     let unsubscribe: { (): void };
 
     onMount(() => {
@@ -128,10 +128,8 @@
                 <Button text external href="https://appwrite.io/docs/functions#execute">
                     Documentation
                 </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create deployment</Button>
+                <Create bind:showCreate />
             </div>
         </EmptySearch>
     {/if}
 </Container>
-
-<CreateDeployment bind:showCreate />

@@ -25,6 +25,7 @@
         "@sentry/svelte": "^7.44.2",
         "@sentry/tracing": "^7.44.2",
         "analytics": "^0.8.1",
+        "dayjs": "^1.11.9",
         "dotenv": "^16.0.3",
         "echarts": "^5.4.1",
         "logrocket": "^3.0.1",
