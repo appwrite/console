@@ -18,3 +18,14 @@ export const installations = derived(
     page,
     ($page) => $page.data.installations as Models.InstallationList
 );
+
+export const createFunction = writable<Partial<Models.Function>>({
+    $id: null,
+    name: null,
+    entrypoint: null,
+    execute: [],
+    runtime: null,
+    buildCommand: null
+});
+
+export const createFunctionDeployment = writable<FileList>();

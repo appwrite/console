@@ -1,15 +1,13 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
-import { Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);
-    depends(Dependencies.FUNCTION_INSTALLATIONS);
 
     const data = await parent();
 
-    const [repository, globalVariables, variables, installations] = await Promise.all([
+    const [repository, globalVariables, variables] = await Promise.all([
         (async () => {
             if (data.function.vcsInstallationId && data.function.vcsRepositoryId) {
                 return await sdk.forProject.vcs.getRepository(
@@ -21,8 +19,7 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
             }
         })(),
         sdk.forProject.projectApi.listVariables(),
-        sdk.forProject.functions.listVariables(params.function),
-        sdk.forProject.vcs.listInstallations([Query.limit(10)])
+        sdk.forProject.functions.listVariables(params.function)
     ]);
 
     // Conflicting variables first
@@ -46,7 +43,6 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
     return {
         variables,
         globalVariables,
-        installations,
         repository
     };
 };

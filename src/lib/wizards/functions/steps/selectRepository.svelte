@@ -40,7 +40,9 @@
 
         return detection;
     }
-    $: hasInstallations = $installations.total > 0;
+
+    $: hasInstallations = $installations?.total > 0;
+    $: console.log(hasInstallations);
     async function beforeSubmit() {
         if (!hasInstallations) {
             throw new Error('Please connect a Git provider');
@@ -124,18 +126,19 @@
                                             on:change={() => repository.set(repo)}
                                             value={repo.id} />
                                         {#await loadDetection(selectedInstallation, repo.id)}
-                                            <div class="avatar is-size-x-small is-color-empty" />
+                                            <div class="avatar is-size-x-small">
+                                                <div class="loader u-margin-16" />
+                                            </div>
                                         {:then detection}
-                                            {#if detection.runtime}
-                                                <div class="avatar is-size-x-small">
+                                            <div
+                                                class="avatar is-size-x-small"
+                                                class:is-color-empty={!detection.runtime}>
+                                                {#if detection.runtime}
                                                     <img
                                                         src={`${base}/icons/${$app.themeInUse}/color/${detection.runtime}.svg`}
                                                         alt={repo.name} />
-                                                </div>
-                                            {:else}
-                                                <div
-                                                    class="avatar is-size-x-small is-color-empty" />
-                                            {/if}
+                                                {/if}
+                                            </div>
                                         {/await}
                                         <div class="u-flex u-gap-8">
                                             <span class="text">{repo.name}</span>

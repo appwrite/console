@@ -7,7 +7,9 @@
         GridItem1,
         Heading,
         PaginationWithLimit,
-        Id
+        Id,
+        DropList,
+        DropListItem
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
@@ -16,17 +18,18 @@
     import { wizard } from '$lib/stores/wizard';
     import { beforeNavigate } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import Create from './createFunction.svelte';
-    import type { PageData } from './$types';
+    import CreateManual from '$lib/wizards/functions/createManual.svelte';
+    import CreateGit from '$lib/wizards/functions/createGit.svelte';
 
-    export let data: PageData;
+    export let data;
 
     let offset = 0;
+    let showCreateDropdown = false;
 
     const project = $page.params.project;
 
     function openWizard() {
-        wizard.start(Create);
+        wizard.start(CreateManual);
     }
 
     beforeNavigate(() => {
@@ -37,9 +40,20 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Functions</Heading>
-        <Button on:click={openWizard} event="create_function">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create function</span>
-        </Button>
+        <DropList bind:show={showCreateDropdown} scrollable>
+            <slot>
+                <Button
+                    on:click={() => (showCreateDropdown = !showCreateDropdown)}
+                    event="create_attribute">
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create function</span>
+                </Button>
+            </slot>
+            <svelte:fragment slot="list">
+                <DropListItem on:click={() => wizard.start(CreateManual)}>Manual</DropListItem>
+                <DropListItem on:click={() => wizard.start(CreateGit)}>Git</DropListItem>
+            </svelte:fragment>
+        </DropList>
     </div>
 
     {#if data.functions.total}

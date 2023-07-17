@@ -246,7 +246,7 @@
     </CardGrid>
 </Form>
 
-{#if !installations.total && showGit}
+{#if !installations?.total && showGit}
     <GitInstallationModal bind:showGitInstall={showGit} />
 {:else}
     <GitConfigurationModal bind:show={showGit} installationsList={installations} />

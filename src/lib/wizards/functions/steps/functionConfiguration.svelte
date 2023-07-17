@@ -1,68 +1,72 @@
 <script lang="ts">
+    import { Collapsible, CollapsibleItem, CustomId } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { FormList, InputSelect, InputText } from '$lib/elements/forms';
+    import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
     import { WizardStep } from '$lib/layout';
-    import { Button } from '$lib/elements/forms';
-    import { Empty } from '$lib/components';
-    import { createFunction } from './store';
-    import { EventModal } from '$lib/components';
-    import { TableList, TableCellText, TableCell } from '$lib/elements/table';
+    import { onMount } from 'svelte';
+    import { createFunction } from '../store';
+    import { sdk } from '$lib/stores/sdk';
+    let showCustomId = false;
 
-    let showCreate = false;
+    let options = [];
 
-    let eventSet = new Set<string>();
-
-    function handleCreated(event: CustomEvent) {
-        eventSet.add(event.detail);
-        $createFunction.events = Array.from(eventSet);
-    }
+    onMount(async () => {
+        let runtimes = await sdk.forProject.functions.listRuntimes();
+        options = runtimes.runtimes.map((runtime) => ({
+            label: `${runtime.name} - ${runtime.version}`,
+            value: runtime.$id
+        }));
+    });
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Events</svelte:fragment>
-    <svelte:fragment slot="subtitle">
-        Set the events that will trigger your function. Maximum 100 events allowed.
-    </svelte:fragment>
+    <svelte:fragment slot="title">Function configuration</svelte:fragment>
+    <svelte:fragment slot="subtitle"
+        >Set your deployment configuration and any build commands here.</svelte:fragment>
+    <FormList>
+        <InputText
+            label="Name"
+            id="name"
+            placeholder="Function name"
+            bind:value={$createFunction.name}
+            required />
+        {#if !showCustomId}
+            <div>
+                <Pill button on:click={() => (showCustomId = !showCustomId)}>
+                    <span class="icon-pencil" aria-hidden="true" />
+                    <span class="text">Function ID </span>
+                </Pill>
+            </div>
+        {:else}
+            <CustomId bind:show={showCustomId} name="Function" bind:id={$createFunction.$id} />
+        {/if}
+        <InputSelect
+            label="Runtime"
+            id="runtime"
+            placeholder="Select runtime"
+            bind:value={$createFunction.runtime}
+            {options}
+            required />
 
-    {#if $createFunction?.events?.length}
-        <TableList>
-            {#each $createFunction.events as event}
-                <li class="table-row">
-                    <TableCellText title="id">
-                        {event}
-                    </TableCellText>
-                    <TableCell showOverflow title="options" width={40}>
-                        <button
-                            class="button is-text is-only-icon"
-                            aria-label="delete id"
-                            on:click|preventDefault={() => {
-                                eventSet.delete(event);
-                                $createFunction.events = Array.from(eventSet);
-                            }}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
-                    </TableCell>
-                </li>
-            {/each}
-        </TableList>
-        <div class="u-flex u-margin-block-start-16">
-            <Button text noMargin on:click={() => (showCreate = !showCreate)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="u-text">Add event</span>
-            </Button>
-        </div>
-    {:else}
-        <Empty on:click={() => (showCreate = !showCreate)}>Add an event to get started</Empty>
-    {/if}
+        <InputText
+            label="Entrypoint"
+            id="entrypoint"
+            placeholder="Entrypoint"
+            bind:value={$createFunction.entrypoint}
+            required />
+        <Collapsible>
+            <CollapsibleItem>
+                <svelte:fragment slot="title">Build commands</svelte:fragment>
+                <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
+                <FormList>
+                    <InputTextarea
+                        label="Commands"
+                        placeholder="Enter a build commad (e.g. 'npm run build')"
+                        id="build"
+                        bind:value={$createFunction.buildCommand} />
+                </FormList>
+            </CollapsibleItem>
+        </Collapsible>
+    </FormList>
 </WizardStep>
-
-{#if showCreate}
-    <EventModal bind:show={showCreate} on:created={handleCreated}>
-        <p class="text">
-            Select events in your Appwrite project that will trigger your function. <a
-                href="https://appwrite.io/docs/events"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">Learn more about Appwrite Events</a
-            >.
-        </p>
-    </EventModal>
-{/if}
