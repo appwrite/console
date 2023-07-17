@@ -111,10 +111,11 @@
         }
     });
 
-    $: {
-        wizard.setNextDisabled(!report);
-    }
+    // $: {
+    //     wizard.setNextDisabled(!report);
+    // }
 
+    $: console.log(report);
     $: resources = providerResources[$provider.provider];
 </script>
 

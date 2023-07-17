@@ -68,7 +68,9 @@
                             {#if hasError(entityCounter)}
                                 <i class="icon-exclamation" />
                             {:else if isLoading(entityCounter)}
-                                <span class="loader" />
+                                <div class="u-flex">
+                                    <span class="loader" />
+                                </div>
                             {:else if hasSucceeded(entityCounter)}
                                 <i class="icon-check" />
                             {:else}

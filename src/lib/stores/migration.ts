@@ -102,6 +102,9 @@ export const migrationFormToResources = (formData: MigrationFormData): Resource[
 };
 
 import {
+    PUBLIC_MOCK_APIKEY,
+    PUBLIC_MOCK_ENDPOINT,
+    PUBLIC_MOCK_PROJECTID,
     PUBLIC_NHOST_TEST_DATABASE,
     PUBLIC_NHOST_TEST_PASSWORD,
     PUBLIC_NHOST_TEST_REGION,
@@ -145,12 +148,12 @@ type NhostInput = {
 export type ProviderInput = AppwriteInput | NhostInput | SupabaseInput | FirebaseInput;
 export type Provider = ProviderInput['provider'];
 
-// const mockProvider: ProviderInput = {
-//     provider: 'appwrite',
-//     endpoint: PUBLIC_MOCK_ENDPOINT,
-//     apiKey: PUBLIC_MOCK_APIKEY,
-//     projectID: PUBLIC_MOCK_PROJECTID
-// };
+const mockProvider: ProviderInput = {
+    provider: 'appwrite',
+    endpoint: PUBLIC_MOCK_ENDPOINT,
+    apiKey: PUBLIC_MOCK_APIKEY,
+    projectID: PUBLIC_MOCK_PROJECTID
+};
 // const mockProvider: ProviderInput = {
 //     provider: 'supabase',
 //     endpoint: PUBLIC_SUPABASE_TEST_ENDPOINT,
@@ -160,15 +163,15 @@ export type Provider = ProviderInput['provider'];
 //     username: PUBLIC_SUPABASE_TEST_USERNAME,
 //     password: PUBLIC_SUPABASE_TEST_PASSWORD
 // };
-const mockProvider: ProviderInput = {
-    provider: 'nhost',
-    subdomain: PUBLIC_NHOST_TEST_SUBDOMAIN,
-    region: PUBLIC_NHOST_TEST_REGION,
-    adminSecret: PUBLIC_NHOST_TEST_SECRET,
-    database: PUBLIC_NHOST_TEST_DATABASE,
-    username: PUBLIC_NHOST_TEST_USERNAME,
-    password: PUBLIC_NHOST_TEST_PASSWORD
-};
+// const mockProvider: ProviderInput = {
+//     provider: 'nhost',
+//     subdomain: PUBLIC_NHOST_TEST_SUBDOMAIN,
+//     region: PUBLIC_NHOST_TEST_REGION,
+//     adminSecret: PUBLIC_NHOST_TEST_SECRET,
+//     database: PUBLIC_NHOST_TEST_DATABASE,
+//     username: PUBLIC_NHOST_TEST_USERNAME,
+//     password: PUBLIC_NHOST_TEST_PASSWORD
+// };
 
 const initialProvider: ProviderInput = { provider: 'appwrite' };
 export const createMigrationProviderStore = () => {
