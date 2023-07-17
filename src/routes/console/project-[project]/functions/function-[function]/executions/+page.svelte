@@ -10,7 +10,7 @@
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRow,
+        TableRowButton,
         TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -58,7 +58,7 @@
     </div>
     {#if !$func.logging}
         <div class="common-section">
-            <Alert type="info" isInline={true}>
+            <Alert type="info" isInline>
                 <svelte:fragment slot="title">Your execution logs are disabled</svelte:fragment>
 
                 To see the latest execution logs, enable them in your
@@ -81,7 +81,7 @@
             </TableHeader>
             <TableBody>
                 {#each data.executions.executions as execution}
-                    <TableRow on:click={() => showLogs(execution)}>
+                    <TableRowButton on:click={() => showLogs(execution)}>
                         <TableCell width={150} title="Execution ID">
                             <Id value={execution.$id}>{execution.$id}</Id>
                         </TableCell>
@@ -106,7 +106,7 @@
                         <TableCellText width={80} title="Duration">
                             {calculateTime(execution.duration)}
                         </TableCellText>
-                    </TableRow>
+                    </TableRowButton>
                 {/each}
             </TableBody>
         </TableScroll>
