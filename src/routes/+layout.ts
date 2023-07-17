@@ -14,7 +14,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
 
     if (url.searchParams.has('migrate')) {
-        requestedMigration.set(true);
+        requestedMigration.set(url.searchParams.get('migrate'));
     }
 
     try {

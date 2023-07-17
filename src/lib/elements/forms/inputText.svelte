@@ -8,6 +8,7 @@
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let id: string;
+    export let name: string = id;
     export let value = '';
     export let placeholder = '';
     export let required = false;
@@ -29,6 +30,7 @@
     });
 
     const handleInvalid = (event: Event) => {
+        console.log('Invalid');
         event.preventDefault();
 
         if (element.validity.valueMissing) {
@@ -39,8 +41,11 @@
         error = element.validationMessage;
     };
 
-    $: if (value) {
-        error = null;
+    $: {
+        value;
+        if (element?.validity?.valid) {
+            error = null;
+        }
     }
 
     let prevValue = '';
@@ -56,6 +61,10 @@
 
     $: showTextCounter = !!maxlength;
     $: showNullCheckbox = nullable && !required;
+
+    type $$Events = {
+        input: Event & { target: HTMLInputElement };
+    };
 </script>
 
 <FormItem>
@@ -66,6 +75,7 @@
     <div class="input-text-wrapper">
         <input
             {id}
+            {name}
             {placeholder}
             {disabled}
             {readonly}
@@ -77,7 +87,8 @@
             bind:value
             class:u-padding-inline-end-56={typeof maxlength === 'number'}
             bind:this={element}
-            on:invalid={handleInvalid} />
+            on:invalid={handleInvalid}
+            on:input />
         {#if showTextCounter || showNullCheckbox}
             <ul
                 class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">

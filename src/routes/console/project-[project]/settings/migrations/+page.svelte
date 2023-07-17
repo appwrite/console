@@ -1,10 +1,8 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
     import { Arrow, CardGrid, Heading } from '$lib/components';
-    import Alert from '$lib/components/alert.svelte';
-    import Modal from '$lib/components/modal.svelte';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import InputText from '$lib/elements/forms/inputText.svelte';
-    import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
     import {
         TableBody,
         TableCell,
@@ -14,20 +12,20 @@
     } from '$lib/elements/table';
     import Table from '$lib/elements/table/table.svelte';
     import { isSameDay, toLocaleDate } from '$lib/helpers/date';
+    import { parseIfString } from '$lib/helpers/object';
     import { capitalize } from '$lib/helpers/string';
     import { Container } from '$lib/layout';
+    import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
     import { onMount } from 'svelte';
     import { openImportWizard } from './(import)';
     import Details from './details.svelte';
-    import { sdk } from '$lib/stores/sdk';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { parseIfString } from '$lib/helpers/object';
+    import ExportModal from './exportModal.svelte';
+    import { registerCommands } from '$lib/commandCenter';
 
     export let data;
     let details: (typeof data.migrations)[number] | null = null;
-    let showCloudExport = false;
+    let showExport = false;
 
     const getStatus = (status: string) => {
         if (status === 'failed') {
@@ -46,6 +44,21 @@
             }
         });
     });
+
+    $: $registerCommands([
+        {
+            label: 'Import data',
+            icon: 'upload',
+            keys: ['i', 'd'],
+            callback: openImportWizard
+        },
+        {
+            label: 'Export data',
+            icon: 'download',
+            keys: ['e', 'd'],
+            callback: () => (showExport = true)
+        }
+    ]);
 </script>
 
 <Container>
@@ -173,52 +186,14 @@
                     <Button
                         class="u-margin-block-start-48"
                         secondary
-                        on:click={() => (showCloudExport = true)}>Export data</Button>
+                        on:click={() => (showExport = true)}>Export data</Button>
                 </div>
             </svelte:fragment>
         </CardGrid>
     {/if}
 </Container>
 
-<Modal bind:show={showCloudExport}>
-    <svelte:fragment slot="header">Export to self-hosted instance</svelte:fragment>
-    <div class="modal-contents">
-        <Alert standalone>
-            <svelte:fragment slot="title">API key creation</svelte:fragment>
-            By initiating the transfer, an API key will be automatically generated in the background,
-            which you can delete after completion
-        </Alert>
-
-        <div class="u-margin-block-start-24">
-            <InputText
-                label="Endpoint self-hosted instance"
-                required
-                id="endpoint"
-                placeholder="https://[YOUR_APPWRITE_HOSTNAME]" />
-        </div>
-
-        <div class="box u-margin-block-start-24">
-            <p class="u-bold">
-                Share your feedback: why our self-hosted solution works better for you
-            </p>
-            <p class="u-margin-block-start-8">
-                We appreciate your continued support and we understand that our self-hosted solution
-                might better fit your needs. To help us improve our Cloud solution, please share why
-                it works better for you. Your feedback is important to us and we'll use it to make
-                our services better.
-            </p>
-            <div class="u-margin-block-start-24">
-                <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
-            </div>
-        </div>
-    </div>
-
-    <div class="u-flex u-gap-16 u-cross-center" slot="footer">
-        <span> You will be redirected to your self-hosted instance </span>
-
-        <Button on:click={() => (showCloudExport = false)}>Continue TODO: SUBMIT</Button>
-    </div>
-</Modal>
+<ExportModal bind:show={showExport} />
 
 <Details bind:details />
 
@@ -228,15 +203,10 @@
         place-items: center;
 
         border: 1px dashed hsl(var(--color-border));
-        /* border-color: red; */
         border-radius: 1rem;
 
         height: 100%;
 
         padding: 1.5rem;
-    }
-
-    .modal-contents :global(.alert) {
-        grid-area: initial !important;
     }
 </style>

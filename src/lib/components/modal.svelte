@@ -11,7 +11,7 @@
     export let error: string = null;
     export let closable = true;
     export let headerDivider = true;
-    export let onSubmit: () => Promise<void> | void = function () {
+    export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
 

@@ -80,7 +80,7 @@
                 <div class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                     <span>{percentage}%</span>
                 </div>
-                <div class="progress-bar-container" style="--graph-size:50%" />
+                <div class="progress-bar-container" style="--graph-size:{percentage}%" />
                 <span>Importing users...</span>
             </section>
         </div>
