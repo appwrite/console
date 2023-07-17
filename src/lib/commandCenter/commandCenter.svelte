@@ -17,26 +17,23 @@
         if (get(subPanels).length > 0) {
             clearSubPanels();
         } else {
-            addSubPanel({
-                name: 'root',
-                component: Root
-            });
+            addSubPanel(RootPanel);
         }
     };
 </script>
 
 <script lang="ts">
+    import { dev } from '$app/environment';
     import { afterNavigate } from '$app/navigation';
+    import { portal } from '$lib/actions/portal';
     import { last } from '$lib/helpers/array';
+    import { debounce } from '$lib/helpers/debounce';
     import { getContext, setContext } from 'svelte';
-    import { writable, type Readable, get } from 'svelte/store';
+    import { get, writable, type Readable } from 'svelte/store';
     import { fade } from 'svelte/transition';
     import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
-    import { Root } from './panels';
+    import { RootPanel } from './panels';
     import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
-    import { dev } from '$app/environment';
-    import { debounce } from '$lib/helpers/debounce';
-    import { portal } from '$lib/actions/portal';
 
     $: $registerCommands([
         {
@@ -86,7 +83,12 @@
         keys = [];
     }, 1000);
 
+    function isInputEvent(event: KeyboardEvent) {
+        return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
+    }
+
     const handleKeydown = (e) => {
+        if (isInputEvent(e)) return;
         if (!$subPanels.length) {
             keys = [...keys, e.key].slice(-10);
             resetKeys();

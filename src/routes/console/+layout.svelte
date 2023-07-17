@@ -12,14 +12,13 @@
     import { newOrgModal } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
-    import { loading } from '../store';
+    import { loading, requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
-    import { requestedMigration } from '../store';
 
     import { goto } from '$app/navigation';
 
     import { CommandCenter, registerCommands } from '$lib/commandCenter';
-    import { AI, Organizations } from '$lib/commandCenter/panels';
+    import { AIPanel, OrganizationsPanel } from '$lib/commandCenter/panels';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { openMigrationWizard } from './(migration-wizard)';
 
@@ -27,10 +26,7 @@
         {
             label: 'Ask AI',
             callback: () => {
-                addSubPanel({
-                    name: 'Ask the AI',
-                    component: AI
-                });
+                addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
             icon: 'light-bulb'
@@ -46,10 +42,7 @@
         {
             label: 'Find an Organization',
             callback: () => {
-                addSubPanel({
-                    name: 'Find a Organization',
-                    component: Organizations
-                });
+                addSubPanel(OrganizationsPanel);
             },
             group: 'organizations',
             icon: 'search'

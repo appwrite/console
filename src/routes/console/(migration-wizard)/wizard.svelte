@@ -1,18 +1,19 @@
 <script lang="ts">
-    import { goto, invalidate, invalidateAll } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { goto, invalidateAll } from '$app/navigation';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Wizard from '$lib/layout/wizard.svelte';
     import { migrationFormToResources } from '$lib/stores/migration';
     import { getSdkForProject } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
     import { onDestroy } from 'svelte';
     import { formData, provider, selectedProject } from '.';
     import Step1 from './step1.svelte';
     import Step2 from './step2.svelte';
-    import { wizard } from '$lib/stores/wizard';
+    import { requestedMigration } from '$routes/store';
 
     const onExit = () => {
         formData.reset();
+        requestedMigration.set(null);
     };
 
     const onFinish = async () => {

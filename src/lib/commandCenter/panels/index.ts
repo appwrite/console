@@ -1,7 +1,38 @@
-export { default as AI } from './ai.svelte';
-export { default as Root } from './root.svelte';
+import type { SubPanel } from '../subPanels';
 export { default as Template } from './template.svelte';
-export { default as Projects } from './projects.svelte';
-export { default as Organizations } from './organizations.svelte';
-export { default as Platforms } from './platforms.svelte';
-export { default as Databases } from './databases.svelte';
+
+import Root from './root.svelte';
+export const RootPanel: SubPanel = {
+    name: 'root',
+    component: Root
+};
+
+import AI from './ai.svelte';
+export const AIPanel: SubPanel = {
+    name: 'Ask the AI',
+    component: AI
+};
+
+import Projects from './projects.svelte';
+export const ProjectsPanel: SubPanel = {
+    name: 'Projects',
+    component: Projects
+};
+
+import Organizations from './organizations.svelte';
+export const OrganizationsPanel: SubPanel = {
+    name: 'Organizations',
+    component: Organizations
+};
+
+import Platforms from './platforms.svelte';
+export const PlatformsPanel: SubPanel = {
+    name: 'Platforms',
+    component: Platforms
+};
+
+import Databases from './databases.svelte';
+export const DatabasesPanel: SubPanel = {
+    name: 'Databases',
+    component: Databases
+};

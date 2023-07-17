@@ -2,17 +2,14 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { Databases } from '$lib/commandCenter/panels';
+    import { DatabasesPanel } from '$lib/commandCenter/panels';
     import { project } from '../store';
 
     $: $registerCommands([
         {
             label: 'Find databases',
             callback: () => {
-                addSubPanel({
-                    component: Databases,
-                    name: 'Databases'
-                });
+                addSubPanel(DatabasesPanel);
             },
             keys: ['f', 'd'],
             icon: 'search',

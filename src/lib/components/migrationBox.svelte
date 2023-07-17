@@ -7,7 +7,7 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
-    export const showMigrationBox = writable(true);
+    export const showMigrationBox = writable(false);
 </script>
 
 <script lang="ts">

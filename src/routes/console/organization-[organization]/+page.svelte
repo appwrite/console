@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { addSubPanel, registerCommands } from '$lib/commandCenter';
-    import { Projects } from '$lib/commandCenter/panels';
+    import { ProjectsPanel } from '$lib/commandCenter/panels';
     import { CardContainer, Empty, GridItem1, Heading, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -51,13 +51,10 @@
         {
             label: 'Find a project',
             callback: () => {
-                addSubPanel({
-                    name: 'Projects',
-                    component: Projects
-                });
+                addSubPanel(ProjectsPanel);
             },
             keys: ['f'],
-            group: 'project',
+            group: 'projects',
             icon: 'search'
         },
         {
@@ -67,7 +64,7 @@
             },
             keys: ['c'],
             disabled: showCreate,
-            group: 'project',
+            group: 'projects',
             icon: 'plus'
         }
     ]);
