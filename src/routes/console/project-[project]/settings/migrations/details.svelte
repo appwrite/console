@@ -4,7 +4,11 @@
     import { parseIfString } from '$lib/helpers/object';
     import type { Models } from '@appwrite.io/console';
 
-    export let details: Models.Migration | null = null;
+    export let migrations: Models.Migration[] = [];
+    export let migrationId: string = null;
+
+    $: details = migrations.find((migration) => migration.$id === migrationId);
+
     $: show = !!details;
 
     type StatusCounters = {

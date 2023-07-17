@@ -1,5 +1,11 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import {
+        PUBLIC_MOCK_APIKEY,
+        PUBLIC_MOCK_ENDPOINT,
+        PUBLIC_MOCK_PROJECTID
+    } from '$env/static/public';
+    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { Arrow, CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -16,21 +22,15 @@
     import { capitalize } from '$lib/helpers/string';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { isCloud, isSelfHosted } from '$lib/system';
+    import { isSelfHosted } from '$lib/system';
     import { onMount } from 'svelte';
+    import { project } from '../../store';
     import { openImportWizard } from './(import)';
     import Details from './details.svelte';
     import ExportModal from './exportModal.svelte';
-    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { project } from '../../store';
-    import {
-        PUBLIC_MOCK_APIKEY,
-        PUBLIC_MOCK_ENDPOINT,
-        PUBLIC_MOCK_PROJECTID
-    } from '$env/static/public';
 
     export let data;
-    let details: (typeof data.migrations)[number] | null = null;
+    let details: string | null = null;
     let showExport = false;
 
     const getStatus = (status: string) => {
@@ -179,7 +179,7 @@
                                     </div>
                                 </TableCell>
                                 <TableCell title="">
-                                    <Button secondary on:click={() => (details = entry)}
+                                    <Button secondary on:click={() => (details = entry.$id)}
                                         >Details</Button>
                                 </TableCell>
                             </TableRow>
@@ -273,7 +273,7 @@
 
 <ExportModal bind:show={showExport} />
 
-<Details bind:details />
+<Details bind:migrationId={details} migrations={data.migrations} />
 
 <style lang="scss">
     .import-box {
