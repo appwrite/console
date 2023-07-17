@@ -154,7 +154,7 @@ export class Billing {
     async listInvoices(
         organizationId: string,
         queries: string[] = [],
-        search: string = ''
+        search = ''
     ): Promise<InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {

@@ -6,7 +6,7 @@
     import PaymentMethods from './paymentMethods.svelte';
     import PaymentModal from './paymentModal.svelte';
 
-    export let data;
+    // export let data;
     let showPayment = false;
 </script>
 
