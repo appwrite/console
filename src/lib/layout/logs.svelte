@@ -1,7 +1,7 @@
 <script lang="ts">
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Heading, Id, Status, Tab, Tabs } from '../components';
+    import { Alert, Code, Heading, Id, Status, Tab, Tabs } from '../components';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
@@ -9,6 +9,7 @@
     import { calculateTime } from '$lib/helpers/timeConversion';
     import type { Models } from '@appwrite.io/console';
     import { header } from '$lib/stores/layout';
+    import { TableCellText, TableList } from '$lib/elements/table';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -133,8 +134,94 @@
                                         </Tab>
                                     </Tabs>
                                 </div>
-
-                                test
+                                {#if selectedRequest === 'parameters'}
+                                    {#if $log.data.headers?.parameters?.length}
+                                        <TableList>
+                                            {#each $log.data.headers.parameters as params}
+                                                <li class="table-row">
+                                                    <TableCellText title="name">
+                                                        {params.name}
+                                                    </TableCellText>
+                                                    <TableCellText title="value">
+                                                        {params.value}
+                                                    </TableCellText>
+                                                </li>
+                                            {/each}
+                                        </TableList>
+                                    {:else}
+                                        <Alert type="info">
+                                            <svelte:fragment slot="title">
+                                                Parameters data is not stored in function executions
+                                            </svelte:fragment>
+                                            <p class="text">
+                                                Logging parameters data might compromise privacy and
+                                                security. To log them intentionally, use <b
+                                                    >context.log(context.req.headers)</b>
+                                                in your function and make them available in Logs tab.
+                                                <a
+                                                    href="http://#"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="link">Learn more</a
+                                                >.
+                                            </p>
+                                        </Alert>
+                                    {/if}
+                                {:else if (selectedRequest = 'headers')}
+                                    {#if $log.data.headers?.headers?.length}
+                                        <TableList>
+                                            {#each $log.data.headers.headers as params}
+                                                <li class="table-row">
+                                                    <TableCellText title="name">
+                                                        {params.name}
+                                                    </TableCellText>
+                                                    <TableCellText title="value">
+                                                        {params.value}
+                                                    </TableCellText>
+                                                </li>
+                                            {/each}
+                                        </TableList>
+                                    {:else}
+                                        <Alert type="info">
+                                            <svelte:fragment slot="title">
+                                                Header data is not stored in function executions
+                                            </svelte:fragment>
+                                            <p class="text">
+                                                Logging header data might compromise privacy and
+                                                security. To log them intentionally, use <b
+                                                    >context.log(context.req.headers)</b>
+                                                in your function and make them available in Logs tab.
+                                                <a
+                                                    href="http://#"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="link">Learn more</a
+                                                >.
+                                            </p>
+                                        </Alert>
+                                    {/if}
+                                {:else if (selectedRequest = 'body')}
+                                    {#if $log.data.headers?.body?.length}
+                                        <Code withCopy noMargin code={$log.data.body} lang="sh" />
+                                    {:else}
+                                        <Alert type="info">
+                                            <svelte:fragment slot="title">
+                                                Body data is not stored in function executions
+                                            </svelte:fragment>
+                                            <p class="text">
+                                                Logging body data might compromise privacy and
+                                                security. To log them intentionally, use <b
+                                                    >context.log()</b>
+                                                in your function and make them available in Logs tab.
+                                                <a
+                                                    href="http://#"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="link">Learn more</a
+                                                >.
+                                            </p>
+                                        </Alert>
+                                    {/if}{/if}
                             </div>
                             <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16">
                                 <Heading tag="h3" size="6">Response</Heading>
@@ -162,6 +249,59 @@
                                         </Tab>
                                     </Tabs>
                                 </div>
+                                {#if selectedResponse === 'logs'}
+                                    <Code withCopy noMargin code={$log.data.logs} lang="sh" />
+                                {:else if selectedResponse === 'errors'}
+                                    <Code withCopy noMargin code={$log.data.errors} lang="sh" />
+                                {:else if selectedResponse === 'headers'}
+                                    {#if $log.data.headers?.length}
+                                        <Code
+                                            withCopy
+                                            noMargin
+                                            code={$log.data.headers}
+                                            lang="sh" />
+                                    {:else}
+                                        <Alert type="info">
+                                            <svelte:fragment slot="title">
+                                                Header data is not stored in function executions
+                                            </svelte:fragment>
+                                            <p class="text">
+                                                Logging header data might compromise privacy and
+                                                security. To log them intentionally, use <b
+                                                    >context.log()</b>
+                                                in your function and make them available in Logs tab.
+                                                <a
+                                                    href="http://#"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="link">Learn more</a
+                                                >.
+                                            </p>
+                                        </Alert>
+                                    {/if}
+                                {:else if selectedResponse === 'body'}
+                                    {#if $log.data.body?.length}
+                                        <Code withCopy noMargin code={$log.data.body} lang="sh" />
+                                    {:else}
+                                        <Alert type="info">
+                                            <svelte:fragment slot="title">
+                                                Body data is not stored in function executions
+                                            </svelte:fragment>
+                                            <p class="text">
+                                                Logging body data might compromise privacy and
+                                                security. To log them intentionally, use <b
+                                                    >context.log()</b>
+                                                in your function and make them available in Logs tab.
+                                                <a
+                                                    href="http://#"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="link">Learn more</a
+                                                >.
+                                            </p>
+                                        </Alert>
+                                    {/if}
+                                {/if}
                             </div>
                         </div>
                     </section>
