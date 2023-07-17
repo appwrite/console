@@ -1,3 +1,5 @@
+import { sdk } from '$lib/stores/sdk';
+import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
@@ -63,9 +65,9 @@ const MOCKDATA = [
 ];
 
 export const load: PageLoad = async ({ params }) => {
-    try {
-        return { usageData: MOCKDATA };
-    } catch (e) {
-        throw error(e.code, e.message);
-    }
+    const usage = await sdk.forConsole.billing.listUsage(params.organization);
+    console.log(usage);
+    return {
+        usage
+    };
 };

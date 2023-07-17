@@ -29,8 +29,7 @@
     $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `/console/organization-${organizationId}`;
-
-    const permanentTabs = [
+    $: permanentTabs = [
         {
             href: path,
             title: 'Projects',
@@ -47,17 +46,17 @@
             href: `${path}/settings`,
             event: 'settings',
             title: 'Settings'
-        },
-        {
-            href: `${path}/usage`,
-            event: 'usage',
-            title: 'Usage',
-            hasChildren: true
         }
     ];
     $: tabs = isCloud
         ? [
               ...permanentTabs,
+              {
+                  href: `${path}/usage`,
+                  event: 'usage',
+                  title: 'Usage',
+                  hasChildren: true
+              },
               {
                   href: `${path}/billing`,
                   event: 'billing',

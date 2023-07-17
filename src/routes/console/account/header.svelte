@@ -13,7 +13,7 @@
 
     const path = `/console/account`;
 
-    const permanentTabs = [
+    $: permanentTabs = [
         {
             href: path,
             title: 'Overview',

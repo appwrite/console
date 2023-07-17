@@ -1,6 +1,7 @@
 import type { Client } from '@appwrite.io/console';
 import type { Organization } from './organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
+import type { P } from 'vitest/dist/types-fafda418';
 
 export type PaymentMethodData = {
     $id: string;
@@ -17,6 +18,19 @@ export type PaymentList = {
     total: number;
 };
 
+export type Invoice = {
+    $id: string;
+    amount: number;
+    currency: string;
+    date: number;
+    status: string;
+    paymentMethod: PaymentMethodData;
+};
+
+export type InvoiceList = {
+    invoices: Invoice[];
+    total: number;
+};
 export class Billing {
     client: Client;
 
@@ -140,10 +154,10 @@ export class Billing {
 
     async listInvoices(
         organizationId: string,
-        queries: [] = [],
+        queries: string[] = [],
         search: string = ''
-    ): Promise<string> {
-        const path = `/organizations/${organizationId}/plan`;
+    ): Promise<InvoiceList> {
+        const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
             queries,
@@ -160,7 +174,7 @@ export class Billing {
         );
     }
 
-    async getInvoice(organizationId: string, invoiceId: string) {
+    async getInvoice(organizationId: string, invoiceId: string): Promise<Invoice> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}`;
         const params = {
             organizationId,
@@ -177,7 +191,7 @@ export class Billing {
         );
     }
 
-    async getInvoiceView(organizationId: string, invoiceId: string) {
+    async getInvoiceView(organizationId: string, invoiceId: string): Promise<URL> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}/view`;
         const params = {
             organizationId,
@@ -194,11 +208,51 @@ export class Billing {
         );
     }
 
-    async downloadInvoice(organizationId: string, invoiceId: string) {
+    async downloadInvoice(organizationId: string, invoiceId: string): Promise<URL> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}/download`;
         const params = {
             organizationId,
             invoiceId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async listUsage(
+        organizationId: string,
+        queries: string[] = []
+    ): Promise<Record<string, unknown>> {
+        const path = `/organizations/${organizationId}/aggregations`;
+        const params = {
+            organizationId,
+            queries
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getUsage(
+        organizationId: string,
+        aggregationId: string
+    ): Promise<Record<string, unknown>> {
+        const path = `/organizations/${organizationId}/aggregations/${aggregationId}`;
+        const params = {
+            organizationId,
+            aggregationId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import {
         DropList,
         DropListItem,
@@ -8,6 +9,7 @@
         PaginationInline
     } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms/index.js';
     import {
         TableBody,
         TableCell,
@@ -18,18 +20,28 @@
         TableScroll
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
+    import { sdk } from '$lib/stores/sdk.js';
 
     export let data;
     export let offset = 0;
 
     let showDropdown = [];
+    let selectedInvoice: string;
+
+    async function download() {
+        sdk.forConsole.billing.downloadInvoice($page.params.organization, selectedInvoice);
+    }
+
+    async function view() {
+        sdk.forConsole.billing.getInvoiceView($page.params.organization, selectedInvoice);
+    }
 </script>
 
 <Container>
     <div class="common-section">
         <Heading tag="h2" size="5">Invoices</Heading>
     </div>
-    {#if data.invoices?.total}
+    {#if data?.invoices?.total}
         <TableScroll>
             <TableHeader>
                 <TableCellHead width={100}>Date</TableCellHead>
@@ -39,33 +51,39 @@
                 <TableCellHead width={40} />
             </TableHeader>
             <TableBody>
-                <!-- {#each data.invoices?.invoices as invoice, i} -->
-                {#each [] as invoice, i}
+                {#each data.invoices?.invoices as invoice, i}
                     <TableRow>
                         <TableCellText title="date">test</TableCellText>
                         <TableCell title="status">
                             <Pill>test</Pill>
                         </TableCell>
-                        <TableCellText title="due">$1BILLION</TableCellText>
+                        <TableCellText title="due">{invoice}</TableCellText>
                         <TableCellText title="invoice number">test</TableCellText>
                         <TableCell showOverflow>
                             <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>
-                                <button
-                                    class="button is-only-icon is-text"
-                                    aria-label="More options"
-                                    on:click|preventDefault={() => {
+                                <Button
+                                    round
+                                    text
+                                    ariaLabel="More options"
+                                    on:click={() => {
                                         showDropdown[i] = !showDropdown[i];
                                     }}>
                                     <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
+                                </Button>
                                 <svelte:fragment slot="list">
-                                    <DropListLink icon="external-link" href="#/">
+                                    <DropListItem
+                                        icon="external-link"
+                                        on:click={() => {
+                                            selectedInvoice = invoice.$id;
+                                            view();
+                                        }}>
                                         View invoice
-                                    </DropListLink>
+                                    </DropListItem>
                                     <DropListItem
                                         icon="download"
                                         on:click={() => {
-                                            console.log('test');
+                                            selectedInvoice = invoice.$id;
+                                            download();
                                         }}>Download PDF</DropListItem>
                                 </svelte:fragment>
                             </DropList>

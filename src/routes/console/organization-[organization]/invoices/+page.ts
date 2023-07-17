@@ -1,21 +1,23 @@
 import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { getPage, pageToOffset } from '$lib/helpers/load';
+import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 import { PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, url }) => {
+export const load: PageLoad = async ({ params, url, route }) => {
     const page = getPage(url);
-    // const limit = getLimit(url, route, CARD_LIMIT);
+    const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, PAGE_LIMIT);
 
+    const invoices = await sdk.forConsole.billing.listInvoices(params.organization, [
+        Query.offset(offset),
+        Query.limit(limit),
+        Query.orderDesc('$createdAt')
+    ]);
+
+    console.log(invoices);
     return {
         offset,
-        invoices: await sdk.forConsole.projects.list([
-            Query.offset(offset),
-            Query.limit(PAGE_LIMIT),
-            Query.equal('teamId', params.organization),
-            Query.orderDesc('$createdAt')
-        ])
+        invoices
     };
 };
