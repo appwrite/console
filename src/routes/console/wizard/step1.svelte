@@ -4,12 +4,14 @@
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
-    import { organizationList } from '$lib/stores/organization';
+    import { organizationList, type Organization } from '$lib/stores/organization';
     import { createOrganization } from './store';
 
     let showCustomId = false;
 
-    $: anyOrgFree = $organizationList.teams?.find((org) => org?.billingPlan === 'tier-0');
+    $: anyOrgFree = $organizationList.teams?.find(
+        (org) => (org as Organization)?.billingPlan === 'tier-0'
+    );
 </script>
 
 <WizardStep>

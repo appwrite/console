@@ -16,7 +16,7 @@
     import { sdk } from '$lib/stores/sdk';
     import UsageRates from '$routes/console/wizard/usageRates.svelte';
 
-    export let budget: number;
+    let budget: number;
     let showRates = false;
     let search: string;
     let selectedAlert: number;

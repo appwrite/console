@@ -1,6 +1,5 @@
 import type { Client } from '@appwrite.io/console';
 import type { Organization } from './organization';
-import type { PaymentMethod } from '@stripe/stripe-js';
 
 export type PaymentMethodData = {
     $id: string;
@@ -10,6 +9,7 @@ export type PaymentMethodData = {
     last4: string;
     country: string;
     brand: string;
+    clientSecret?: string;
 };
 
 export type PaymentList = {
@@ -298,7 +298,7 @@ export class Billing {
         );
     }
 
-    async createPaymentMethod(): Promise<PaymentMethod> {
+    async createPaymentMethod(): Promise<PaymentMethodData> {
         const path = `/account/payment-methods`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);

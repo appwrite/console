@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 export type Collborator = {
     email: string;
     role: string;
+    isAdmin?: boolean;
 };
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';

@@ -8,6 +8,5 @@ export const load: PageLoad = async ({ parent, depends }) => {
 
     return {
         paymentMethods: await sdk.forConsole.billing.listPaymentMethods()
-        // budget: await sdk.forConsole.billing.(params.organization)
     };
 };

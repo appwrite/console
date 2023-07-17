@@ -16,7 +16,7 @@
     </div>
     <PaymentMethods bind:showPayment />
     <BillingAddress />
-    <AvailableCredit organizations={data.organizations} />
+    <AvailableCredit />
 </Container>
 
 {#if showPayment}

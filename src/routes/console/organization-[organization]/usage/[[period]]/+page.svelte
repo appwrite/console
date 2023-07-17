@@ -1,9 +1,8 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, ProgressBarBig, ProjectUsage } from '$lib/components';
-    import type { PageData } from './$types';
 
-    export let data: PageData;
+    export let data;
 </script>
 
 <Container>
@@ -22,7 +21,8 @@
     <ul
         class="grid-box common-section u-margin-block-start-32"
         style="--grid-gap:1.5rem; --grid-item-size:25rem;'}">
-        {#each data?.usageData as project}
+        <!-- TODO: show correct data -->
+        {#each [] as project}
             <ProjectUsage title={project?.name} data={project?.projectUsage} />
         {/each}
     </ul>

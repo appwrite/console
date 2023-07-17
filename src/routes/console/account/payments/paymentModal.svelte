@@ -3,19 +3,19 @@
     import { Modal } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { paymentMethods } from './store';
-    import {
-        loadStripe,
-        type Stripe,
-        type StripeElements,
-        type PaymentMethod
-    } from '@stripe/stripe-js';
+    import { loadStripe, type Stripe, type StripeElements } from '@stripe/stripe-js';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { app } from '$lib/stores/app';
-    import { apperanceDark, apperanceLight, publicStripeKey } from '$lib/stores/billing';
+    import {
+        apperanceDark,
+        apperanceLight,
+        publicStripeKey,
+        type PaymentMethodData
+    } from '$lib/stores/billing';
 
     export let show = false;
 
@@ -25,7 +25,7 @@
     let stripe: Stripe;
 
     let clientSecret: string;
-    let paymentMethod: PaymentMethod;
+    let paymentMethod: PaymentMethodData;
 
     onMount(async () => {
         stripe = await loadStripe(publicStripeKey);
@@ -61,7 +61,7 @@
                 },
                 redirect: 'if_required'
             });
-            paymentMethod = await sdk.forConsole.billing.createPaymentMethod($organization.$id);
+            paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
             const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
             if (setupIntent && setupIntent.status === 'succeeded') {
                 await sdk.forConsole.billing.setOrganizationPaymentMethod(

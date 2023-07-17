@@ -3,7 +3,7 @@
     import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { organizationList } from '$lib/stores/organization';
 
-    let credit = 0;
+    // let credit = 0;
     let coupon: string = null;
     let selectedOrganization: string = null;
 
@@ -20,7 +20,8 @@
 
         if (response.ok) {
             const data = await response.json();
-            credit = data.sum;
+            console.log(data);
+            // credit = data.sum;
         }
     }
 

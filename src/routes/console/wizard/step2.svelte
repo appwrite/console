@@ -6,14 +6,9 @@
     import { onMount } from 'svelte';
     import { createOrganization } from './store';
     import UsageRates from './usageRates.svelte';
-    import type { PaymentList } from '$lib/stores/billing';
+    import type { PaymentList, PaymentMethodData } from '$lib/stores/billing';
     import { paymentMethods } from '../account/payments/store';
-    import {
-        loadStripe,
-        type Stripe,
-        type StripeElements,
-        type PaymentMethod
-    } from '@stripe/stripe-js';
+    import { loadStripe, type Stripe, type StripeElements } from '@stripe/stripe-js';
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -29,7 +24,7 @@
     let elements: StripeElements;
     let stripe: Stripe;
     let clientSecret: string;
-    let paymentMethod: PaymentMethod;
+    let paymentMethod: PaymentMethodData;
     let isStripeInitialized = false;
 
     onMount(async () => {
@@ -57,7 +52,8 @@
             elements = stripe.elements(options);
             createForm();
         } catch (e) {
-            error = e.message;
+            // error = e.message;
+            console.log(e);
         }
     }
 
@@ -88,7 +84,6 @@
                 // paymentElement.destroy();
             } else console.log('test2');
         } catch (e) {
-            error = e.message;
             console.log(e);
             // trackError(StripeError, Submit.ProjectCreate);
         }

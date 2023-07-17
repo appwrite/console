@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Alert } from '$lib/components';
-    import { Button, Form, FormList, InputEmail } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputCheckbox, InputEmail } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -22,7 +22,8 @@
             ...$createOrganization.collaborators,
             {
                 email,
-                role: 'member'
+                role: 'member',
+                isAdmin: false
             }
         ];
         email = '';
@@ -85,11 +86,11 @@
                             <TableCellText title="collaborator">{collaborator.email}</TableCellText>
                             <TableCellText title="cost">PRICE</TableCellText>
                             <TableCell>
-                                <input
-                                    type="checkbox"
-                                    name="role"
-                                    id={`${collaborator.email}`}
-                                    bind:checked={collaborator.role} />
+                                <InputCheckbox
+                                    label="Admin"
+                                    showLabel={false}
+                                    id={collaborator.email}
+                                    bind:value={collaborator.isAdmin} />
                             </TableCell>
                             <TableCell>
                                 <button
