@@ -62,7 +62,6 @@
         const { secret } = await sdk.forConsole.projects.createKey(
             $project.$id,
             `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
-
             [
                 'users.read',
                 'teams.read',

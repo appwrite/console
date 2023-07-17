@@ -22,6 +22,12 @@
     import Details from './details.svelte';
     import ExportModal from './exportModal.svelte';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { project } from '../../store';
+    import {
+        PUBLIC_MOCK_APIKEY,
+        PUBLIC_MOCK_ENDPOINT,
+        PUBLIC_MOCK_PROJECTID
+    } from '$env/static/public';
 
     export let data;
     let details: (typeof data.migrations)[number] | null = null;
@@ -66,6 +72,62 @@
         ...prev,
         migrations: 100
     }));
+
+    const getCurrentEndpoint = () => {
+        // Remove subpaths and query strings from the current URL. Add a /v1 suffix
+        const url = new URL(window.location.href);
+        url.pathname = '';
+        url.search = '';
+        url.hash = '';
+        url.pathname = '/v1';
+        return url.toString();
+    };
+
+    const deployToCloud = async () => {
+        const currEndpoint = getCurrentEndpoint();
+        // Create API key
+        const { secret } = await sdk.forConsole.projects.createKey(
+            $project.$id,
+            `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
+            [
+                'users.read',
+                'teams.read',
+                'databases.read',
+                'collections.read',
+                'attributes.read',
+                'indexes.read',
+                'documents.read',
+                'files.read',
+                'buckets.read',
+                'functions.read',
+                'execution.read',
+                'locale.read',
+                'avatars.read',
+                'health.read'
+            ],
+            undefined
+        );
+
+        // const migrationData = {
+        //     endpoint: currEndpoint,
+        //     projectId: $project.$id,
+        //     apiKey: secret
+        // };
+
+        const migrationData = {
+            endpoint: PUBLIC_MOCK_ENDPOINT,
+            projectId: PUBLIC_MOCK_PROJECTID,
+            apiKey: PUBLIC_MOCK_APIKEY
+        };
+
+        window.location.href = `http://localhost:3000/?migrate=${encodeURIComponent(
+            JSON.stringify(migrationData)
+        )}`;
+
+        // window.location.href = `https://cloud.appwrite.io/?migrate=${encodeURIComponent(
+        //     JSON.stringify(migrationData)
+        // )}`;
+    };
 </script>
 
 <Container>
@@ -171,7 +233,8 @@
                             <span class="icon-cloud" />
                         </div>
                     </div>
-                    <Button class="u-margin-block-start-48" secondary>Deploy to Cloud</Button>
+                    <Button class="u-margin-block-start-48" secondary on:click={deployToCloud}
+                        >Deploy to Cloud</Button>
                 </div>
             </svelte:fragment>
         </CardGrid>
