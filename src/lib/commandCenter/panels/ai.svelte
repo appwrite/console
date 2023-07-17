@@ -79,11 +79,31 @@
     $: answer = parseCompletion($completion);
 </script>
 
-<Template fullheight --command-panel-max-height="40rem">
+<Template
+    options={$isLoading || answer
+        ? undefined
+        : examples.map((e) => {
+              return {
+                  label: e,
+                  callback: () => {
+                      $input = e;
+                      complete($input);
+                  },
+                  group: 'Examples'
+              };
+          })}
+    clearOnCallback={false}
+    fullheight
+    --command-panel-max-height="40rem">
     <div slot="search" />
 
-    <div class="content">
-        {#if $isLoading || answer}
+    <div slot="option" let:option class="u-flex u-cross-center u-gap-8">
+        <i class="icon-question-mark-circle" />
+        <span>{option.label}</span>
+    </div>
+
+    {#if $isLoading || answer}
+        <div class="content">
             <div class="u-flex u-gap-8">
                 <div class="logo">
                     <img src={CoolerAppwrite} alt="Appwrite logo" />
@@ -104,25 +124,8 @@
                     {/if}
                 </div>
             </div>
-        {:else}
-            <h2 class="eyebrow-heading-3">Examples</h2>
-            <ul class="examples">
-                {#each examples as example}
-                    <li>
-                        <button
-                            class="u-flex u-cross-center u-gap-8"
-                            on:click={() => {
-                                $input = example;
-                                complete($input);
-                            }}>
-                            <i class="icon-question-mark-circle" />
-                            <span>{example}</span>
-                        </button>
-                    </li>
-                {/each}
-            </ul>
-        {/if}
-    </div>
+        </div>
+    {/if}
 
     <div class="footer" slot="footer">
         <div class="u-flex u-cross-center u-gap-4">

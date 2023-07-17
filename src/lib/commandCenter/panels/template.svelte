@@ -13,12 +13,13 @@
     import { quadOut } from 'svelte/easing';
     import { crossfade } from 'svelte/transition';
 
-    type BaseOption = { callback: () => void; group?: CommandGroup; rank?: number };
+    type BaseOption = { callback: () => void; group?: string; rank?: number };
     type Option = $$Generic<BaseOption>;
     export let options: Option[] | null = null;
     export let search = '';
     export let searchPlaceholder = 'Search...';
     export let fullheight = false;
+    export let clearOnCallback = true;
 
     let selected = 0;
     let contentEl: HTMLElement;
@@ -26,7 +27,7 @@
     function triggerOption(option: Option) {
         const prevPanels = $subPanels.length;
         option.callback();
-        if (prevPanels === $subPanels.length) {
+        if (prevPanels === $subPanels.length && clearOnCallback) {
             clearSubPanels();
         }
     }
@@ -118,7 +119,7 @@
     const getGroupsAndOptions = (options: Option[]) => {
         if (!options) return null;
 
-        const groupedOptions = new Map<CommandGroup, Option[]>();
+        const groupedOptions = new Map<string, Option[]>();
         groupedOptions.set('ungrouped', []);
 
         for (const option of options) {
