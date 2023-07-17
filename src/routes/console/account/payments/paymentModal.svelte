@@ -10,12 +10,8 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { app } from '$lib/stores/app';
-    import {
-        apperanceDark,
-        apperanceLight,
-        publicStripeKey,
-        type PaymentMethodData
-    } from '$lib/stores/billing';
+    import { apperanceDark, apperanceLight, type PaymentMethodData } from '$lib/stores/billing';
+    import { VARS } from '$lib/system';
 
     export let show = false;
 
@@ -28,7 +24,7 @@
     let paymentMethod: PaymentMethodData;
 
     onMount(async () => {
-        stripe = await loadStripe(publicStripeKey);
+        stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
         try {
             clientSecret = $paymentMethods?.paymentMethods[0]?.clientSecret;
             if (!clientSecret) {

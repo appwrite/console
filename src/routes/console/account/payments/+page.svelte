@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Heading } from '$lib/components';
     import { Container } from '$lib/layout';
+    import { hasStripePublicKey, isCloud } from '$lib/system';
     import AvailableCredit from './availableCredit.svelte';
     import BillingAddress from './billingAddress.svelte';
     import PaymentMethods from './paymentMethods.svelte';
@@ -19,6 +20,6 @@
     <AvailableCredit />
 </Container>
 
-{#if showPayment}
+{#if showPayment && isCloud && hasStripePublicKey}
     <PaymentModal bind:show={showPayment} />
 {/if}

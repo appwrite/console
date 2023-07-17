@@ -13,7 +13,8 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { app } from '$lib/stores/app';
-    import { apperanceDark, apperanceLight, publicStripeKey } from '$lib/stores/billing';
+    import { apperanceDark, apperanceLight } from '$lib/stores/billing';
+    import { VARS, hasStripePublicKey } from '$lib/system';
 
     let methods: PaymentList;
     let name: string;
@@ -35,7 +36,8 @@
     });
 
     async function initialize() {
-        stripe = await loadStripe(publicStripeKey);
+        if (!hasStripePublicKey) return;
+        stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
         isStripeInitialized = true;
 
         try {

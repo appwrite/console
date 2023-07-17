@@ -430,10 +430,6 @@ export class Billing {
     // }
 }
 
-export const publicStripeKey = import.meta.env?.VITE_STRIPE_PUBLIC_KEY?.toString() as
-    | string
-    | undefined;
-
 export const tierFree = {
     price: 0,
     name: 'Free',
