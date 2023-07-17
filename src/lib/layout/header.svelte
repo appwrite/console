@@ -21,6 +21,7 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
+    import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
@@ -91,6 +92,9 @@
             class="button is-small is-text">
             <span class="text">Support</span>
         </a>
+        <button class="button is-text is-small" on:click={toggleCommandCenter}>
+            <i class="icon-search" />
+        </button>
     </nav>
     <nav class="u-flex u-height-100-percent u-sep-inline-start">
         {#if $user}

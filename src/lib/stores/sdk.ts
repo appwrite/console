@@ -38,6 +38,14 @@ const sdkForProject = {
     migrations: new Migrations(clientProject)
 };
 
+export const getSdkForProject = (projectId: string) => {
+    if (projectId && projectId !== clientProject.config.project) {
+        clientProject.setProject(projectId);
+    }
+
+    return sdkForProject;
+};
+
 export const sdk = {
     forConsole: {
         client: clientConsole,
@@ -53,10 +61,6 @@ export const sdk = {
     },
     get forProject() {
         const projectId = getProjectId();
-        if (projectId && projectId !== clientProject.config.project) {
-            clientProject.setProject(projectId);
-        }
-
-        return sdkForProject;
+        return getSdkForProject(projectId);
     }
 };

@@ -4,13 +4,12 @@
     import InputText from '$lib/elements/forms/inputText.svelte';
     import { WizardStep } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
+    import { selectedProject } from '.';
 
     const projects = $page.data.allProjects as Models.ProjectList;
     const hasProjects = projects.total > 0;
 
     let projectType = 'existing';
-
-    let selectedProject: string = null;
 </script>
 
 <WizardStep>
@@ -48,7 +47,7 @@
         {#if projectType === 'existing'}
             <InputSelect
                 id="project"
-                bind:value={selectedProject}
+                bind:value={$selectedProject}
                 label="Select a project"
                 options={projects.projects.map((p) => ({
                     label: p.name,

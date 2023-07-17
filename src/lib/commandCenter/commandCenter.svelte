@@ -12,13 +12,24 @@
         setContext(contextKey, store);
         return store;
     };
+
+    export const toggleCommandCenter = () => {
+        if (get(subPanels).length > 0) {
+            clearSubPanels();
+        } else {
+            addSubPanel({
+                name: 'root',
+                component: Root
+            });
+        }
+    };
 </script>
 
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
     import { last } from '$lib/helpers/array';
     import { getContext, setContext } from 'svelte';
-    import { writable, type Readable } from 'svelte/store';
+    import { writable, type Readable, get } from 'svelte/store';
     import { fade } from 'svelte/transition';
     import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
     import { Root } from './panels';
@@ -29,16 +40,7 @@
 
     $: $registerCommands([
         {
-            callback: () => {
-                if ($subPanels.length > 0) {
-                    clearSubPanels();
-                } else {
-                    addSubPanel({
-                        name: 'root',
-                        component: Root
-                    });
-                }
-            },
+            callback: toggleCommandCenter,
             keys: ['k'],
             ctrl: true,
             forceEnable: true
