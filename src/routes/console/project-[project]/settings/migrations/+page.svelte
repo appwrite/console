@@ -16,7 +16,7 @@
     import { capitalize } from '$lib/helpers/string';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { isSelfHosted } from '$lib/system';
+    import { isCloud, isSelfHosted } from '$lib/system';
     import { onMount } from 'svelte';
     import { openImportWizard } from './(import)';
     import Details from './details.svelte';
@@ -59,13 +59,21 @@
             callback: openImportWizard,
             group: 'migrations'
         },
-        {
-            label: 'Export data',
-            icon: 'upload',
-            keys: ['e', 'd'],
-            callback: () => (showExport = true),
-            group: 'migrations'
-        }
+        isSelfHosted
+            ? {
+                  label: 'Deploy to cloud',
+                  icon: 'cloud',
+                  keys: ['d', 'c'],
+                  callback: deployToCloud,
+                  group: 'migrations'
+              }
+            : {
+                  label: 'Export data',
+                  icon: 'upload',
+                  keys: ['e', 'd'],
+                  callback: () => (showExport = true),
+                  group: 'migrations'
+              }
     ]);
 
     $: $updateCommandGroupRanks((prev) => ({

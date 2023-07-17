@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { goto, invalidate, invalidateAll } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Wizard from '$lib/layout/wizard.svelte';
     import { migrationFormToResources } from '$lib/stores/migration';
+    import { getSdkForProject } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
-    import { formData, provider } from '.';
+    import { formData, provider, selectedProject } from '.';
     import Step1 from './step1.svelte';
     import Step2 from './step2.svelte';
-    import { sdk } from '$lib/stores/sdk';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { wizard } from '$lib/stores/wizard';
 
     const onExit = () => {
         formData.reset();
@@ -19,23 +19,24 @@
         const resources = migrationFormToResources($formData);
         if ($provider.provider !== 'appwrite') return;
 
-        const res = await sdk.forProject.migrations.migrateAppwrite(
+        await getSdkForProject($selectedProject).migrations.migrateAppwrite(
             resources,
             $provider.endpoint,
             $provider.projectID,
             $provider.apiKey
         );
-        console.log('appwrite', res);
-        invalidate(Dependencies.MIGRATIONS);
+
+        await invalidateAll();
+        wizard.hide();
+
+        goto(`/console/project-${$selectedProject}/settings/migrations`);
     };
 
     onDestroy(onExit);
 
-    const hasProjects = $page.data.allProjects.total > 0;
-
     const steps: WizardStepsType = new Map();
     steps.set(1, {
-        label: hasProjects ? 'Select project' : 'Create project',
+        label: 'Select project',
         component: Step1
     });
     steps.set(2, {

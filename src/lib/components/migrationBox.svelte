@@ -39,11 +39,11 @@
             { done: 0, processing: 0 } as TotalCounter
         );
 
-        console.log({ statusCounters, totalCounter });
-
-        return Math.round(
+        const res = Math.round(
             (totalCounter.done / (totalCounter.done + totalCounter.processing)) * 100
         );
+
+        return Number.isNaN(res) ? 0 : res;
     })();
 
     const fetchMigrations = debounce(async () => {
