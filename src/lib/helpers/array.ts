@@ -83,3 +83,8 @@ export function excludeArray<T, E extends T>(
 ): Exclude<T, E>[] {
     return array.filter((item) => !exclude.includes(item as E)) as Exclude<T, E>[];
 }
+
+// Function that, given an array, checks if it includes all the elements of another array
+export function includesAll<T>(arr1: T[], arr2: T[]): boolean {
+    return arr2.every((elem) => arr1.includes(elem));
+}

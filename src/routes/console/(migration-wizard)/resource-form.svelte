@@ -10,7 +10,8 @@
     import {
         createMigrationFormStore,
         createMigrationProviderStore,
-        providerResources
+        providerResources,
+        resourcesToMigrationForm
     } from '$lib/stores/migration';
     import { wizard } from '$lib/stores/wizard';
 
@@ -61,12 +62,7 @@
     }
 
     function selectAll() {
-        $formData = deepMap($formData, (v) => {
-            if (typeof v === 'boolean') {
-                return true;
-            }
-            return v;
-        });
+        $formData = resourcesToMigrationForm(resources);
     }
 
     let report: any;

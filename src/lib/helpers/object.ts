@@ -37,15 +37,23 @@ export function deepEqual<T>(obj1: T, obj2: T): boolean {
     return true;
 }
 
-export function deepMap<T extends object, U extends object = T>(
-    obj: T,
-    fn: (value: unknown, key: unknown, obj: T) => unknown
+export type DeepObj<T> = {
+    [K in keyof T]: T[K] extends object ? DeepObj<T[K]> : T[K];
+};
+export function deepMap<T, U>(
+    obj: DeepObj<T>,
+    fn: (value: T, key: string, parentKey?: string) => unknown,
+    parentKey?: string
 ): U {
     const entries = objectEntries(obj);
     const result = {} as U;
 
     for (const [key, value] of entries) {
-        result[key] = typeof value === 'object' ? deepMap(value, fn) : fn(value, key, obj);
+        if (typeof value === 'object' && value !== null) {
+            result[key as any] = deepMap(value as any, fn, key as string) as any;
+        } else {
+            result[key as any] = fn(value as any, key as any, parentKey);
+        }
     }
 
     return result;
