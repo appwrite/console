@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { Box, CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -15,14 +16,6 @@
             : $organization?.billingPlan === 'tier-1'
             ? tierPro
             : tierFree;
-
-    // async function getInvoice() {
-    //     const invoiceList = await sdk.forConsole.billing.listInvoices($organization.$id);
-    //     return await sdk.forConsole.billing.getInvoiceView(
-    //         $organization.$id,
-    //         invoiceList.invoices[0].$id
-    //     );
-    // }
 </script>
 
 <CardGrid>
@@ -54,12 +47,13 @@
                     $organization.billingNextInvoiceDate
                 )}
             </p>
-            <!-- <a class="link" href="/">View invoice</a> -->
         </div>
     </svelte:fragment>
     <svelte:fragment slot="actions">
+        <!-- TODO: add change plan method -->
         <Button text>Change plan</Button>
-        <Button secondary>View estimated usage</Button>
+        <Button secondary href={`${base}/console/organization-${$organization.$id}/usage`}
+            >View estimated usage</Button>
     </svelte:fragment>
 </CardGrid>
 

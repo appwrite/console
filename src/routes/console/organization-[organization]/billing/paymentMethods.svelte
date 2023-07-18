@@ -1,7 +1,7 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
-    import { Submit, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, DropList, DropListItem, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
@@ -26,7 +26,8 @@
                 type: 'success',
                 message: `A new payment method has been added to ${$organization.name}`
             });
-            invalidate(Dependencies.ORG_PAYMENT_METHODS);
+            trackEvent(Submit.OrganizationPaymentAdded);
+            invalidate(Dependencies.ORGANIZATION);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -46,7 +47,7 @@
                 type: 'success',
                 message: `A new payment method has been added to ${$organization.name}`
             });
-            invalidate(Dependencies.ORG_PAYMENT_METHODS);
+            invalidate(Dependencies.ORGANIZATION);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -87,7 +88,7 @@
                                     </DropListItem>
                                 {/each}
                             {/if}
-                            <DropListItem>Add new billing address</DropListItem>
+                            <DropListItem>Add new payment method</DropListItem>
                         </svelte:fragment>
                     </DropList>
                 </div>
@@ -119,7 +120,7 @@
                                     </DropListItem>
                                 {/each}
                             {/if}
-                            <DropListItem>Add new billing address</DropListItem>
+                            <DropListItem>Add new payment method</DropListItem>
                         </svelte:fragment>
                     </DropList>
                 </div>

@@ -3,17 +3,19 @@
     import { organization } from '$lib/stores/organization';
     import BudgetAlert from './budgetAlert.svelte';
     import BudgetCap from './budgetCap.svelte';
-    import PaymentSummary from './paymentSummary.svelte';
+    import PlanSummary from './planSummary.svelte';
     import BillingAddress from './billingAddress.svelte';
     import PaymentMethods from './paymentMethods.svelte';
+    import AvailableCredit from './availableCredit.svelte';
 </script>
 
 <Container>
-    <PaymentSummary />
+    <PlanSummary />
     <PaymentMethods />
     <BillingAddress />
     <BudgetCap />
     {#if $organization?.billingPlan === 'tier-2'}
         <BudgetAlert />
     {/if}
+    <AvailableCredit />
 </Container>

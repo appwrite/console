@@ -2,7 +2,6 @@
     import { Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import AvailableCredit from './availableCredit.svelte';
     import BillingAddress from './billingAddress.svelte';
     import PaymentMethods from './paymentMethods.svelte';
     import PaymentModal from './paymentModal.svelte';
@@ -17,7 +16,6 @@
     </div>
     <PaymentMethods bind:showPayment />
     <BillingAddress />
-    <AvailableCredit />
 </Container>
 
 {#if showPayment && isCloud && hasStripePublicKey}

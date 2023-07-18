@@ -3,7 +3,7 @@ export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 
 export enum Dependencies {
-    ORG_PAYMENT_METHODS = 'dependency:orgPaymentMethods',
+    CREDIT = 'dependency:credit',
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     PROJECT = 'dependency:project',

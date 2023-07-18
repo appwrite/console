@@ -25,8 +25,8 @@
 <Modal bind:show size="big" headerDivider={false}>
     <svelte:fragment slot="header">Usage rates</svelte:fragment>
     <p>
-        Usage on the Pro plan will be charged at the end of each billing period at the following
-        rates. Next billing period: {toLocaleDate(nextDate)}
+        Usage on the Pro plan and Scale plan will be charged at the end of each billing period at
+        the following rates. Next billing period: {toLocaleDate(nextDate)}
     </p>
 
     <Table noStyles>
