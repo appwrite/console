@@ -1,6 +1,6 @@
 <script lang="ts">
     import SvgIcon from '$lib/components/svgIcon.svelte';
-    import { Button, FormList, InputNumber, InputText } from '$lib/elements/forms';
+    import { Button, FormList, InputNumber, InputPassword, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import type { Provider } from '$lib/stores/migration';
     import { provider } from '.';
@@ -49,11 +49,12 @@
                 required
                 placeholder="Enter project ID"
                 bind:value={$provider.projectID} />
-            <InputText
+            <InputPassword
                 id="api-key"
                 label="API Key"
                 required
                 placeholder="Enter API Key"
+                showPasswordButton
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'firebase'}
@@ -104,11 +105,12 @@
                 required
                 placeholder="Enter username"
                 bind:value={$provider.username} />
-            <InputText
+            <InputPassword
                 id="password"
                 label="Password"
                 required
                 placeholder="Enter password"
+                showPasswordButton
                 bind:value={$provider.password} />
             <p class="body-text-1 u-bold">Supabase credentials</p>
 
@@ -118,11 +120,12 @@
                 required
                 placeholder="Enter endpoint"
                 bind:value={$provider.endpoint} />
-            <InputText
+            <InputPassword
                 id="api-key"
                 label="API Key"
                 required
                 placeholder="Enter API Key"
+                showPasswordButton
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'nhost'}
@@ -151,17 +154,19 @@
                 required
                 placeholder="Enter username"
                 bind:value={$provider.username} />
-            <InputText
+            <InputPassword
                 id="password"
                 label="Password"
                 required
                 placeholder="Enter password"
+                showPasswordButton
                 bind:value={$provider.password} />
-            <InputText
+            <InputPassword
                 id="adminSecret"
                 label="Admin secret"
                 required
                 placeholder="Enter admin secret"
+                showPasswordButton
                 bind:value={$provider.adminSecret} />
         </FormList>
     {/if}
