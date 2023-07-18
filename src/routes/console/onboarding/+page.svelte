@@ -10,6 +10,7 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
 
     let name: string;
@@ -41,7 +42,14 @@
     }
 
     async function createOrganization() {
-        return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
+        if (isCloud) {
+            return await sdk.forConsole.billing.createOrganization(
+                ID.unique(),
+                'Personal Projects',
+                'tier-0',
+                null
+            );
+        } else return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
     }
 </script>
 

@@ -3,6 +3,7 @@ export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 
 export enum Dependencies {
+    ORG_PAYMENT_METHODS = 'dependency:orgPaymentMethods',
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     PROJECT = 'dependency:project',
@@ -257,7 +258,7 @@ export const eventServices: Array<EventService> = [
 ];
 
 export const usageRates = {
-    free: [
+    'tier-0': [
         { resource: 'Organization members', limit: '1', rate: 'lorem' },
         { resource: 'Bandwidth', limit: '1', rate: 'lorem' },
         { resource: 'Storage', limit: '1', rate: 'lorem' },
@@ -265,7 +266,7 @@ export const usageRates = {
         { resource: 'Active users', limit: '1', rate: 'lorem' },
         { resource: 'Concurrent connections', limit: '1', rate: 'lorem' }
     ],
-    starter: [
+    'tier-1': [
         { resource: 'Organization members', limit: '1', rate: 'lorem' },
         { resource: 'Bandwidth', limit: '1', rate: 'lorem' },
         { resource: 'Storage', limit: '1', rate: 'lorem' },
@@ -273,7 +274,7 @@ export const usageRates = {
         { resource: 'Active users', limit: '1', rate: 'lorem' },
         { resource: 'Concurrent connections', limit: '1', rate: 'lorem' }
     ],
-    pro: [
+    'tier-2': [
         { resource: 'Organization members', limit: 'Unlimited', rate: '20$/member' },
         { resource: 'Bandwidth', limit: '1TB', rate: '$0.04/GB' },
         { resource: 'Storage', limit: '150GB', rate: '$0.025/GB' },

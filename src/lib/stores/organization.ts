@@ -8,8 +8,8 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     budgetAlert: number[];
     paymentMethodId: string;
     backupPaymentMethodId: string;
-    billingCurrentInvoiceDate: Date;
-    billingNextInvoiceDate: Date;
+    billingCurrentInvoiceDate: string;
+    billingNextInvoiceDate: string;
 };
 
 export const newOrgModal = writable<boolean>(false);

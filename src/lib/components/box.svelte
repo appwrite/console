@@ -5,5 +5,8 @@
             <slot name="title" />
             <slot />
         </div>
+        {#if $$slots?.end}
+            <div class="u-margin-inline-start-auto"><slot name="end" /></div>
+        {/if}
     </div>
 </div>

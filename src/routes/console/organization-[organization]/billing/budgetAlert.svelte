@@ -118,4 +118,4 @@
     </CardGrid>
 </Form>
 
-<UsageRates bind:show={showRates} />
+<UsageRates bind:show={showRates} tier={$organization?.billingPlan} />

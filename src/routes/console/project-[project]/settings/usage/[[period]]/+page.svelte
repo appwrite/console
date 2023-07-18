@@ -7,7 +7,7 @@
 
     export let data;
 
-    $: requests = data.response.requests;
+    $: requests = data.requests;
     // $: network = data.response.network;
     // $: executions = data.response.executions;
     // $: documents = data.response.documents;

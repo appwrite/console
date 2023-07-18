@@ -218,5 +218,7 @@ export enum Submit {
     PaymentMethodDeleted = 'submit_payment_method_deleted',
     BillingAddressDeleted = 'submit_billing_address_deleted',
     BillingAddressCreated = 'submit_billing_address_created',
-    BillingAddressUpdated = 'submit_billing_address_updated'
+    BillingAddressUpdated = 'submit_billing_address_updated',
+    OrganizationPaymentAdded = 'submit_organization_payment_added',
+    OrganizationBackupPaymentAdded = 'submit_organization_backup_payment_added'
 }

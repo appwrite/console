@@ -14,7 +14,7 @@ import {
     Teams,
     Users
 } from '@appwrite.io/console';
-import { Billing } from './billing';
+import { Billing } from '../sdk/billing';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 

@@ -6,7 +6,7 @@
     import { onMount } from 'svelte';
     import { createOrganization } from './store';
     import UsageRates from './usageRates.svelte';
-    import type { PaymentList, PaymentMethodData } from '$lib/stores/billing';
+    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { paymentMethods } from '../account/payments/store';
     import { loadStripe, type Stripe, type StripeElements } from '@stripe/stripe-js';
     import { organization } from '$lib/stores/organization';
@@ -167,4 +167,4 @@
     </FormList>
 </WizardStep>
 
-<UsageRates bind:show={showRates} />
+<UsageRates bind:show={showRates} tier={$createOrganization?.billingPlan} />

@@ -68,9 +68,9 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button submit>Update</Button>
+            <Button disabled={$organization?.billingPlan !== 'tier-2'} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
 
-<UsageRates bind:show={showRates} />
+<UsageRates bind:show={showRates} tier={$organization?.billingPlan} />

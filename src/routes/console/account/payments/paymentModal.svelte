@@ -10,7 +10,8 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { app } from '$lib/stores/app';
-    import { apperanceDark, apperanceLight, type PaymentMethodData } from '$lib/stores/billing';
+    import { apperanceDark, apperanceLight } from '$lib/stores/billing';
+    import type { PaymentMethodData } from '$lib/sdk/billing';
     import { VARS } from '$lib/system';
 
     export let show = false;

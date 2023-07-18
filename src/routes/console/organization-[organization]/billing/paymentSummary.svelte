@@ -1,24 +1,66 @@
 <script lang="ts">
     import { Box, CardGrid, Heading } from '$lib/components';
-    import { VARS } from '$lib/system';
+    import { Button } from '$lib/elements/forms';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    // import { sdk } from '$lib/stores/sdk';
+    import UsageRates from '$routes/console/wizard/usageRates.svelte';
+
+    let showPricing = false;
+
+    $: currentTier =
+        $organization.billingPlan === 'tier-2'
+            ? tierScale
+            : $organization?.billingPlan === 'tier-1'
+            ? tierPro
+            : tierFree;
+
+    // async function getInvoice() {
+    //     const invoiceList = await sdk.forConsole.billing.listInvoices($organization.$id);
+    //     return await sdk.forConsole.billing.getInvoiceView(
+    //         $organization.$id,
+    //         invoiceList.invoices[0].$id
+    //     );
+    // }
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Payment Summary</Heading>
+    <Heading tag="h2" size="6">Plan summary</Heading>
 
-    <p class="text">An overview of your upcoming payments.</p>
+    <p class="text">
+        Your current project plan. For more information on Appwrite plans, <button
+            type="button"
+            class="link"
+            on:click|preventDefault={() => (showPricing = true)}>
+            view our pricing guide.
+        </button>
+    </p>
     <svelte:fragment slot="aside">
         <Box>
             <svelte:fragment slot="title">
-                <h6 class="u-bold u-trim-1">PLACEHOLDER PLAN</h6>
+                <h6 class="u-bold u-trim-1">
+                    {currentTier.name}
+                </h6>
             </svelte:fragment>
-            <p class="u-trim-1">X projects</p>
+
+            <svelte:fragment slot="end">
+                <p class="text">${currentTier.price}</p>
+            </svelte:fragment>
         </Box>
-        {#if VARS.CONSOLE_TIER && VARS.CONSOLE_TIER !== 'base'}
-            <div class="u-flex">
-                <p class="u-bold">Next billing data</p>
-                <p class="text u-margin-inline-start-auto">XX DATE</p>
-            </div>
-        {/if}
+        <div class="u-flex u-main-space-between u-cross-center">
+            <p class="text">
+                Billing period: {toLocaleDate($organization.billingCurrentInvoiceDate)} - {toLocaleDate(
+                    $organization.billingNextInvoiceDate
+                )}
+            </p>
+            <!-- <a class="link" href="/">View invoice</a> -->
+        </div>
+    </svelte:fragment>
+    <svelte:fragment slot="actions">
+        <Button text>Change plan</Button>
+        <Button secondary>View estimated usage</Button>
     </svelte:fragment>
 </CardGrid>
+
+<UsageRates bind:show={showPricing} tier={$organization?.billingPlan} />
