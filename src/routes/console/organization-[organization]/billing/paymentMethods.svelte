@@ -69,66 +69,75 @@
     </p>
     <svelte:fragment slot="aside">
         <h4 class="u-bold body-text-2">Default</h4>
-        <article class="card u-grid u-cross-center u-width-full-line dashed">
-            <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                <div class="common-section">
-                    <DropList bind:show={showDropdown} placement="bottom-end">
-                        <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
-                            <i class="icon-plus" />
-                        </Button>
-                        <svelte:fragment slot="list">
-                            {#if $paymentMethods.total}
-                                {#each $paymentMethods.paymentMethods as paymentMethod}
-                                    <DropListItem
-                                        on:click={() => addPaymentMethod(paymentMethod?.$id)}>
-                                        <p class="text">
-                                            Card ending in {paymentMethod.last4}
-                                            <span>{paymentMethod.brand}</span>
-                                        </p>
-                                    </DropListItem>
-                                {/each}
-                            {/if}
-                            <DropListItem>Add new payment method</DropListItem>
-                        </svelte:fragment>
-                    </DropList>
+        {#if $organization?.paymentMethodId}
+            <div class="box">test</div>
+        {:else}
+            <article class="card u-grid u-cross-center u-width-full-line dashed">
+                <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                    <div class="common-section">
+                        <DropList bind:show={showDropdown} placement="bottom-end">
+                            <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
+                                <i class="icon-plus" />
+                            </Button>
+                            <svelte:fragment slot="list">
+                                {#if $paymentMethods.total}
+                                    {#each $paymentMethods.paymentMethods.filter((o) => o.$id !== $organization.backupPaymentMethodId) as paymentMethod}
+                                        <DropListItem
+                                            on:click={() => addPaymentMethod(paymentMethod?.$id)}>
+                                            <p class="text">
+                                                Card ending in {paymentMethod.last4}
+                                                <span>{paymentMethod.brand}</span>
+                                            </p>
+                                        </DropListItem>
+                                    {/each}
+                                {/if}
+                                <DropListItem>Add new payment method</DropListItem>
+                            </svelte:fragment>
+                        </DropList>
+                    </div>
+                    <div class="common-section">
+                        <span class="text"> Add a payment method </span>
+                    </div>
                 </div>
-                <div class="common-section">
-                    <span class="text"> Add a payment method </span>
-                </div>
-            </div>
-        </article>
+            </article>
+        {/if}
         <h4 class="u-bold body-text-2">Backup</h4>
-        <article class="card u-grid u-cross-center u-width-full-line dashed">
-            <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                <div class="common-section">
-                    <DropList bind:show={showDropdownBackup} placement="bottom-end">
-                        <Button
-                            secondary
-                            round
-                            on:click={() => (showDropdownBackup = !showDropdownBackup)}>
-                            <i class="icon-plus" />
-                        </Button>
-                        <svelte:fragment slot="list">
-                            {#if $paymentMethods.total}
-                                {#each $paymentMethods.paymentMethods as paymentMethod}
-                                    <DropListItem
-                                        on:click={() => addBackupPaymentMethod(paymentMethod?.$id)}>
-                                        <p class="text">
-                                            Card ending in {paymentMethod.last4}
-                                            <span>{paymentMethod.brand}</span>
-                                        </p>
-                                    </DropListItem>
-                                {/each}
-                            {/if}
-                            <DropListItem>Add new payment method</DropListItem>
-                        </svelte:fragment>
-                    </DropList>
+        {#if $organization?.backupPaymentMethodId}
+            test
+        {:else}
+            <article class="card u-grid u-cross-center u-width-full-line dashed">
+                <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                    <div class="common-section">
+                        <DropList bind:show={showDropdownBackup} placement="bottom-end">
+                            <Button
+                                secondary
+                                round
+                                on:click={() => (showDropdownBackup = !showDropdownBackup)}>
+                                <i class="icon-plus" />
+                            </Button>
+                            <svelte:fragment slot="list">
+                                {#if $paymentMethods.total}
+                                    {#each $paymentMethods.paymentMethods.filter((o) => o.$id !== $organization?.paymentMethodId) as paymentMethod}
+                                        <DropListItem
+                                            on:click={() =>
+                                                addBackupPaymentMethod(paymentMethod?.$id)}>
+                                            <p class="text">
+                                                Card ending in {paymentMethod.last4}
+                                                <span>{paymentMethod.brand}</span>
+                                            </p>
+                                        </DropListItem>
+                                    {/each}
+                                {/if}
+                                <DropListItem>Add new payment method</DropListItem>
+                            </svelte:fragment>
+                        </DropList>
+                    </div>
+                    <div class="common-section">
+                        <span class="text"> Add a backup payment method </span>
+                    </div>
                 </div>
-                <div class="common-section">
-                    <span class="text"> Add a backup payment method </span>
-                </div>
-            </div>
-        </article>
+            </article>
+        {/if}
     </svelte:fragment>
 </CardGrid>
 
