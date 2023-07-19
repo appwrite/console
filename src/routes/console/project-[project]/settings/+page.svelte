@@ -22,6 +22,8 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import EnableAllServices from './enableAllServices.svelte';
+    import DisableAllServices from './disableAllServices.svelte';
     import Transfer from './transferProject.svelte';
 
     let name: string = null;
@@ -30,6 +32,8 @@
     let showTransfer = false;
     const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
+    let showDisableAll = false;
+    let showEnableAll = false;
 
     onMount(async () => {
         name ??= $project.name;
@@ -51,6 +55,50 @@
                 message: error.message
             });
             trackError(error, Submit.ProjectUpdateName);
+        }
+    }
+
+    async function toggleAllServices(status: boolean) {
+        if (status && !showEnableAll) {
+            showEnableAll = true;
+            return;
+        }
+        if (!status && !showDisableAll) {
+            showDisableAll = true;
+            return;
+        }
+
+        try {
+            const path = '/projects/' + $project.$id + '/service/all';
+            await sdk.forConsole.client.call(
+                'PATCH',
+                new URL(sdk.forConsole.client.config.endpoint + path),
+                {
+                    'content-type': 'application/json'
+                },
+                {
+                    status: status
+                }
+            );
+            invalidate(Dependencies.PROJECT);
+            addNotification({
+                type: 'success',
+                message:
+                    'All services for ' +
+                    $project.name +
+                    ' has been ' +
+                    (status ? 'enabled.' : 'disabled.')
+            });
+            trackEvent(Submit.ProjectService);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.ProjectService);
+        } finally {
+            showDisableAll = false;
+            showEnableAll = false;
         }
     }
 
@@ -132,8 +180,18 @@
                 services are not accessible to client SDKs but remain accessible to server SDKs.
             </p>
             <svelte:fragment slot="aside">
+                <ul class="buttons-list u-main-end">
+                    <li class="buttons-list-item">
+                        <Button text={true} on:click={() => toggleAllServices(true)}
+                            >Enable all</Button>
+                    </li>
+                    <li class="buttons-list-item">
+                        <Button text={true} on:click={() => toggleAllServices(false)}
+                            >Disable all</Button>
+                    </li>
+                </ul>
                 <FormList>
-                    <form class="form">
+                    <form class="form card-separator">
                         <ul class="form-list is-multiple">
                             {#each $services.list as service}
                                 <InputSwitch
@@ -198,6 +256,8 @@
 </Container>
 
 <Delete bind:showDelete />
+<DisableAllServices handleDisableAll={() => toggleAllServices(false)} bind:show={showDisableAll} />
+<EnableAllServices handleEnableAll={() => toggleAllServices(true)} bind:show={showEnableAll} />
 {#if teamId}
     <Transfer
         bind:teamId
