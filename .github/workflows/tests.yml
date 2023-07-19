@@ -22,11 +22,11 @@ jobs:
             #   run: npm audit --audit-level low
             - name: Install dependencies
               run: npm ci
-            - name: Build Console
-              run: npm run build
             - name: Svelte Diagnostics
               run: npm run check
             - name: Linter
               run: npm run lint
             - name: Unit Tests
               run: npm test
+            - name: Build Console
+              run: npm run build
