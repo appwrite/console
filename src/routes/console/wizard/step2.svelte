@@ -7,7 +7,6 @@
     import { createOrganization } from './store';
     import UsageRates from './usageRates.svelte';
     import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
-    import { paymentMethods } from '../account/payments/store';
     import { loadStripe, type Stripe, type StripeElements } from '@stripe/stripe-js';
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
@@ -30,9 +29,14 @@
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
+        console.log(methods);
         if (methods?.total) {
-            $createOrganization.paymentMethodId = methods[0].id;
-        } else if (!isStripeInitialized) initialize();
+            clientSecret = methods.paymentMethods[0]?.clientSecret;
+
+            $createOrganization.paymentMethodId = methods.paymentMethods[0].$id;
+        } else if (!isStripeInitialized) {
+            initialize();
+        }
     });
 
     async function initialize() {
@@ -41,7 +45,7 @@
         isStripeInitialized = true;
 
         try {
-            clientSecret = $paymentMethods?.paymentMethods[0]?.clientSecret;
+            clientSecret = methods.paymentMethods[0]?.clientSecret;
             if (!clientSecret) {
                 paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
             }
@@ -73,7 +77,9 @@
                 },
                 redirect: 'if_required'
             });
+            console.log(clientSecret);
             if (!clientSecret) {
+                console.log('test2');
                 paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
             }
             const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
@@ -96,6 +102,12 @@
     $: if ($createOrganization.paymentMethodId === null && !isStripeInitialized) {
         initialize();
     }
+
+    $: if ($createOrganization.paymentMethodId) {
+        isStripeInitialized = false;
+    }
+
+    $: console.log($createOrganization.paymentMethodId);
 </script>
 
 <WizardStep beforeSubmit={handleSubmit}>
@@ -112,7 +124,7 @@
                             label={`${method.brand} ending in ${method.last4}`}
                             value={method.$id}
                             name="payment"
-                            group={$createOrganization.paymentMethodId} />
+                            bind:group={$createOrganization.paymentMethodId} />
                     </div>
                 {/each}
             {/if}
@@ -124,7 +136,7 @@
                         label="Add new payment method"
                         value={null}
                         name="payment"
-                        group={$createOrganization.paymentMethodId} />
+                        bind:group={$createOrganization.paymentMethodId} />
                 {/if}
                 {#if $createOrganization.paymentMethodId === null}
                     <FormList>

@@ -14,10 +14,14 @@
     const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
 
     async function fetchCard() {
-        const card = await sdk.forConsole.billing.getPaymentMethod(
-            $createOrganization.paymentMethodId
-        );
-        return card ? card : null;
+        try {
+            const card = await sdk.forConsole.billing.getPaymentMethod(
+                $createOrganization.paymentMethodId
+            );
+            return card;
+        } catch (error) {
+            console.log(error);
+        }
     }
 </script>
 
@@ -42,7 +46,9 @@
     <div class="u-margin-block-start-32">
         <p class="body-text-1 u-bold">Payment</p>
         {#await fetchCard()}
-            <div class="loader is-small" />
+            <div class="u-flex u-margin-block-start-4">
+                <div class="loader is-small" />
+            </div>
         {:then card}
             <p class="text">Card ending in {card.last4} {card.brand}</p>
         {/await}

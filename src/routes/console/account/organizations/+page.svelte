@@ -28,7 +28,7 @@
     function isCloudOrg(
         data: Partial<Models.TeamList<Models.Preferences>> | Organization
     ): data is Organization {
-        return isCloud ? true : false;
+        return isCloud && 'billingPlan' in data ? true : false;
     }
 
     let addOrganization = false;

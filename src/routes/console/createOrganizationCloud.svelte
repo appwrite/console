@@ -43,9 +43,9 @@
                 $createOrganization.collaborators.forEach(async (collaborator) => {
                     await sdk.forConsole.teams.createMembership(
                         org.$id,
-                        [collaborator.role],
+                        ['collaborator'],
                         `${$page.url.origin}/console/organization-${org.$id}`,
-                        collaborator.email
+                        collaborator
                     );
                 });
             }
