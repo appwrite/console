@@ -14,7 +14,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import UsageRates from '$routes/console/wizard/usageRates.svelte';
+    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
 
     let budget: number;
     let showRates = false;

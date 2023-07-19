@@ -7,7 +7,7 @@
     import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     // import { sdk } from '$lib/stores/sdk';
-    import UsageRates from '$routes/console/wizard/usageRates.svelte';
+    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
 
     let showPricing = false;
 

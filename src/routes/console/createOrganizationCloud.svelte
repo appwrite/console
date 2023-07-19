@@ -3,11 +3,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher, onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import Step1 from './wizard/step1.svelte';
-    import Step2 from './wizard/step2.svelte';
-    import Step3 from './wizard/step3.svelte';
-    import Step4 from './wizard/step4.svelte';
-    import { createOrganization } from './wizard/store';
+    import Step1 from './wizard/cloudOrganization/step1.svelte';
+    import Step2 from './wizard/cloudOrganization/step2.svelte';
+    import Step3 from './wizard/cloudOrganization/step3.svelte';
+    import Step4 from './wizard/cloudOrganization/step4.svelte';
+    import { createOrganization } from './wizard/cloudOrganization/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
