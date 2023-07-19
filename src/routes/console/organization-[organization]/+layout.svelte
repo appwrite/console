@@ -14,6 +14,7 @@
     });
 
     function checkForTrialEnding() {
+        if (localStorage.getItem('trialEndingNotification') === 'true') return;
         if ($organization?.billingTrialDays === 5) {
             const expirationDate = new Date(
                 new Date().getTime() + 5 * 24 * 60 * 60 * 1000
@@ -26,6 +27,7 @@
                     expirationDate
                 )}</b>`
             });
+            localStorage.setItem('trialEndingNotification', 'true');
         }
     }
 </script>
