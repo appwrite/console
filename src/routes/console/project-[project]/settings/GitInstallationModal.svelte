@@ -17,7 +17,7 @@
     <p>Select a provider to import an existing git repositories.</p>
 
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
-        <Button on:click={() => connectGitHub()} fullWidth secondary>
+        <Button on:click={connectGitHub} fullWidth secondary>
             <span class="icon-github" aria-hidden="true" />
             <span class="text">Continue with GitHub</span>
         </Button>
@@ -27,7 +27,7 @@
         </Button>
         <Button disabled fullWidth secondary>
             <span class="icon-bitBucket" aria-hidden="true" />
-            <span class="text">BitBucket (comong soon)</span>
+            <span class="text">BitBucket (coming soon)</span>
         </Button>
     </div>
 

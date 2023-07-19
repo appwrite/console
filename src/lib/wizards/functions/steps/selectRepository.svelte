@@ -200,7 +200,7 @@
             </Button>
             <Button disabled fullWidth secondary>
                 <span class="icon-bitBucket" aria-hidden="true" />
-                <span class="text">BitBucket (comong soon)</span>
+                <span class="text">BitBucket (coming soon)</span>
             </Button>
         </div>
     {/if}
