@@ -36,7 +36,6 @@
                 <h6 class="u-bold u-trim-1">
                     {currentTier.name}
                 </h6>
-                <Pill>FREE TRIAL</Pill>
                 {#if $organization.billingPlan !== 'tier-0' && $organization.billingTrialDays}
                     <Pill>FREE TRIAL</Pill>
                 {/if}
