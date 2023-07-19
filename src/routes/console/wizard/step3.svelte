@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Alert } from '$lib/components';
-    import { Button, Form, FormList, InputCheckbox, InputEmail } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputEmail } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -17,21 +17,14 @@
 
     function addCollaborator() {
         if (!email) return;
-        if ($createOrganization.collaborators.find((c) => c.email === email)) return;
-        $createOrganization.collaborators = [
-            ...$createOrganization.collaborators,
-            {
-                email,
-                role: 'member',
-                isAdmin: false
-            }
-        ];
+        $createOrganization.collaborators.push(email);
+        $createOrganization = $createOrganization;
         email = '';
     }
 
     function removeCollaborator(email: string) {
         $createOrganization.collaborators = $createOrganization.collaborators.filter(
-            (c) => c.email !== email
+            (collaborator) => collaborator !== email
         );
     }
 </script>
@@ -45,14 +38,11 @@
 
     <Alert type="info">
         {#if $createOrganization.billingPlan === 'tier-2'}
-            You can add unlimited organization members on the Pro plan for $20 each. Each member
+            You can add unlimited organization members on the Scale plan at no cost. Each member
             added will receive an email invite to your organization on completion.
         {:else if $createOrganization.billingPlan === 'tier-1'}
-            You can add up to three organization members with the Starter plan for $10 each. Each
-            member added will receive an email invite to your organization on completion.
-        {:else}
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi quae aut dignissimos
-            quod. Aut, omnis!
+            You can add unlimited organization members on the Pro plan for $15 each. Each member
+            added will receive an email invite to your organization on completion.
         {/if}
     </Alert>
 
@@ -76,29 +66,25 @@
             <Table noStyles noMargin>
                 <TableHeader>
                     <TableCellHead>Collaborator</TableCellHead>
-                    <TableCellHead>Cost</TableCellHead>
-                    <TableCellHead>Admin</TableCellHead>
+                    {#if $createOrganization.billingPlan === 'tier-1'}
+                        <TableCellHead width={80}>Cost</TableCellHead>
+                    {/if}
                     <TableCellHead width={40} />
                 </TableHeader>
                 <TableBody>
                     {#each $createOrganization.collaborators as collaborator}
                         <TableRow>
-                            <TableCellText title="collaborator">{collaborator.email}</TableCellText>
-                            <TableCellText title="cost">PRICE</TableCellText>
-                            <TableCell>
-                                <InputCheckbox
-                                    label="Admin"
-                                    showLabel={false}
-                                    id={collaborator.email}
-                                    bind:value={collaborator.isAdmin} />
-                            </TableCell>
+                            <TableCellText title="collaborator">{collaborator}</TableCellText>
+                            {#if $createOrganization.billingPlan === 'tier-1'}
+                                <TableCellText title="cost">15$</TableCellText>
+                            {/if}
                             <TableCell>
                                 <button
                                     type="button"
                                     class="button is-text is-only-icon"
                                     style="--button-size:1.5rem;"
                                     aria-label="remove collaborator"
-                                    on:click={() => removeCollaborator(collaborator.email)}>
+                                    on:click={() => removeCollaborator(collaborator)}>
                                     <span class="icon-x" aria-hidden="true" />
                                 </button>
                             </TableCell>

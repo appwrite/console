@@ -73,7 +73,9 @@
                 },
                 redirect: 'if_required'
             });
-            paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+            if (!clientSecret) {
+                paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+            }
             const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
             if (setupIntent && setupIntent.status === 'succeeded') {
                 await sdk.forConsole.billing.setOrganizationPaymentMethod(

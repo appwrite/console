@@ -1,23 +1,41 @@
 import { page } from '$app/stores';
 import { derived } from 'svelte/store';
 
+export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
+
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods);
+
+export function tierToPlan(tier: Tier) {
+    switch (tier) {
+        case 'tier-0':
+            return tierFree;
+        case 'tier-1':
+            return tierPro;
+        case 'tier-2':
+            return tierScale;
+        default:
+            return tierFree;
+    }
+}
 
 export const tierFree = {
     price: 0,
     name: 'Free',
-    description: 'For personal, passion projects.'
+    description: 'For personal, passion projects.',
+    collaboratorPrice: undefined
 };
 
 export const tierPro = {
     price: 15,
     name: 'Pro',
-    description: 'For pro developers and production projects that need the ability to scale.'
+    description: 'For pro developers and production projects that need the ability to scale.',
+    collaboratorPrice: 15
 };
 export const tierScale = {
     price: 685,
     name: 'Scale',
-    description: 'For scaling teams that need dedicated support.'
+    description: 'For scaling teams that need dedicated support.',
+    collaboratorPrice: 0
 };
 
 export const apperanceLight = {

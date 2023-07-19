@@ -1,13 +1,30 @@
 <script lang="ts">
     import { Pill } from '$lib/elements';
+    import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
+    import { tierToPlan } from '$lib/stores/billing';
+    import { sdk } from '$lib/stores/sdk';
     import { createOrganization } from './store';
+
+    const plan = tierToPlan($createOrganization.billingPlan);
+    const collaboratorsNumber = $createOrganization?.collaborators?.length ?? 0;
+    const totalExpences = plan.price + plan.collaboratorPrice * collaboratorsNumber;
+
+    const today = new Date();
+    const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
+
+    async function fetchCard() {
+        const card = await sdk.forConsole.billing.getPaymentMethod(
+            $createOrganization.paymentMethodId
+        );
+        return card ? card : null;
+    }
 </script>
 
 <WizardStep>
     <svelte:fragment slot="title">Confirm your details</svelte:fragment>
-    <svelte:fragment slot="subtitle"
-        >Confirm the details of your new organization and start your free trial.
+    <svelte:fragment slot="subtitle">
+        Confirm the details of your new organization and start your free trial.
     </svelte:fragment>
 
     <p class="body-text-1 u-bold">Organization name</p>
@@ -20,35 +37,35 @@
 
     <div class="u-margin-block-start-32">
         <p class="body-text-1 u-bold">Organization members</p>
-        <p class="text">{$createOrganization?.collaborators?.length ?? 0} invited</p>
+        <p class="text">{collaboratorsNumber} invited</p>
     </div>
     <div class="u-margin-block-start-32">
         <p class="body-text-1 u-bold">Payment</p>
-        <p class="text">{$createOrganization.paymentMethodId}</p>
+        {#await fetchCard()}
+            <div class="loader is-small" />
+        {:then card}
+            <p class="text">Card ending in {card.last4} {card.brand}</p>
+        {/await}
     </div>
 
-    <div class="box u-margin-block-start-32 u-flex u-flex-vertical u-gap-8">
+    <div class="box u-margin-block-start-32 u-flex u-flex-vertical u-gap-16">
         <span class="u-flex u-main-space-between">
-            <p class="text">{$createOrganization.billingPlan} plan</p>
-            <p class="text">PRICE</p>
+            <p class="text">{plan.name} plan</p>
+            <p class="text">${plan.price}</p>
         </span>
         <span class="u-flex u-main-space-between">
             <p class="text">Invited members</p>
-            <p class="text">PRICE</p>
-        </span>
-        <span class="u-flex u-main-space-between">
-            <p class="text">Credit added</p>
-            <p class="text">PRICE</p>
+            <p class="text">${plan.collaboratorPrice * collaboratorsNumber}</p>
         </span>
         <div class="u-sep-block-start" />
         <span class="u-flex u-main-space-between">
             <p class="text">Estimated total</p>
-            <p class="text">TOTAL</p>
+            <p class="text">${totalExpences}</p>
         </span>
 
-        <p class="text">
+        <p class="text u-margin-block-start-16">
             This amount and any extra usage fees will be charged on a recurring 30 day billing cycle
-            after your trial period ends on <b>DATE </b>
+            after your trial period ends on <b>{toLocaleDate(billingPayDate.toString())}</b>.
         </p>
     </div>
 </WizardStep>
