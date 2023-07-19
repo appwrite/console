@@ -221,5 +221,7 @@ export enum Submit {
     BillingAddressUpdated = 'submit_billing_address_updated',
     OrganizationPaymentAdded = 'submit_organization_payment_added',
     OrganizationBackupPaymentAdded = 'submit_organization_backup_payment_added',
+    OrganizationPaymentRemoved = 'submit_organization_payment_removed',
+    OrganizationBackupPaymentRemoved = 'submit_organization_backup_payment_removed',
     PromoCodeRedeemed = 'submit_promo_code_redeemed'
 }

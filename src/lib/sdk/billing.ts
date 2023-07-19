@@ -10,6 +10,7 @@ export type PaymentMethodData = {
     country: string;
     brand: string;
     clientSecret?: string;
+    name?: string;
 };
 
 export type PaymentList = {

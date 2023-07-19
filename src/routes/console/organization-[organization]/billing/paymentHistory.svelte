@@ -78,6 +78,7 @@
                                     <Button
                                         round
                                         text
+                                        noMargin
                                         ariaLabel="More options"
                                         on:click={() => {
                                             showDropdown[i] = !showDropdown[i];

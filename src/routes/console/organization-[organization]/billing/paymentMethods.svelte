@@ -2,7 +2,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, DropList, DropListItem, Heading } from '$lib/components';
+    import { CardGrid, CreditCardInfo, DropList, DropListItem, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
@@ -10,11 +10,28 @@
     import PaymentModal from '$routes/console/account/payments/paymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import { paymentMethods } from '$lib/stores/billing';
+    import { onMount } from 'svelte';
+    import type { PaymentMethodData } from '$lib/sdk/billing';
 
     export let showDropdown = false;
     export let showDropdownBackup = false;
 
     let showPayment = false;
+    let defaultPaymentMethod: PaymentMethodData;
+    let backupPaymentMethod: PaymentMethodData;
+
+    onMount(async () => {
+        if ($organization.paymentMethodId) {
+            defaultPaymentMethod = await sdk.forConsole.billing.getPaymentMethod(
+                $organization.paymentMethodId
+            );
+        }
+        if ($organization.backupPaymentMethodId) {
+            backupPaymentMethod = await sdk.forConsole.billing.getPaymentMethod(
+                $organization.backupPaymentMethodId
+            );
+        }
+    });
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
@@ -57,7 +74,46 @@
         }
     }
 
-    console.log($paymentMethods);
+    // async function removeDefaultMethod(){
+    //     try {
+    //         await sdk.forConsole.billing.remove(
+    //             $organization.$id,
+    //             $organization.paymentMethodId
+    //         );
+    //         addNotification({
+    //             type: 'success',
+    //             message: `The payment method has been removed from ${$organization.name}`
+    //         });
+    //         trackEvent(Submit.OrganizationPaymentRemoved);
+    //         invalidate(Dependencies.ORGANIZATION);
+    //     } catch (error) {
+    //         addNotification({
+    //             type: 'error',
+    //             message: error.message
+    //         });
+    //         trackError(error, Submit.OrganizationPaymentRemoved);
+    //     }
+    // }
+    // async function removeBackuptMethod(){
+    //     try {
+    //         await sdk.forConsole.billing.remove(
+    //             $organization.$id,
+    //             $organization.paymentMethodId
+    //         );
+    //         addNotification({
+    //             type: 'success',
+    //             message: `The payment method has been removed from ${$organization.name}`
+    //         });
+    //         trackEvent(Submit.OrganizationBackupPaymentRemoved);
+    //         invalidate(Dependencies.ORGANIZATION);
+    //     } catch (error) {
+    //         addNotification({
+    //             type: 'error',
+    //             message: error.message
+    //         });
+    //         trackError(error, Submit.OrganizationBackupPaymentRemoved);
+    //     }
+    // }
 </script>
 
 <CardGrid>
@@ -70,7 +126,9 @@
     <svelte:fragment slot="aside">
         <h4 class="u-bold body-text-2">Default</h4>
         {#if $organization?.paymentMethodId}
-            <div class="box">test</div>
+            <CreditCardInfo
+                paymentMethod={defaultPaymentMethod}
+                isDeleteDisabled={!$organization?.backupPaymentMethodId} />
         {:else}
             <article class="card u-grid u-cross-center u-width-full-line dashed">
                 <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -103,7 +161,7 @@
         {/if}
         <h4 class="u-bold body-text-2">Backup</h4>
         {#if $organization?.backupPaymentMethodId}
-            test
+            <CreditCardInfo paymentMethod={backupPaymentMethod} />
         {:else}
             <article class="card u-grid u-cross-center u-width-full-line dashed">
                 <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
