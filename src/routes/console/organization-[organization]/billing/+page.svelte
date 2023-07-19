@@ -7,10 +7,12 @@
     import BillingAddress from './billingAddress.svelte';
     import PaymentMethods from './paymentMethods.svelte';
     import AvailableCredit from './availableCredit.svelte';
+    import PaymentHistory from './paymentHistory.svelte';
 </script>
 
 <Container>
     <PlanSummary />
+    <PaymentHistory />
     <PaymentMethods />
     <BillingAddress />
     <BudgetCap />

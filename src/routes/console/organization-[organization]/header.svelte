@@ -61,11 +61,6 @@
                   href: `${path}/billing`,
                   event: 'billing',
                   title: 'Billing'
-              },
-              {
-                  href: `${path}/invoices`,
-                  event: 'invoices',
-                  title: 'Invoices'
               }
           ]
         : permanentTabs;

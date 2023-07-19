@@ -19,11 +19,16 @@ export type PaymentList = {
 
 export type Invoice = {
     $id: string;
+    $createdAt: Date;
+    $updatedAt: Date;
+    teamId: string;
+    aggregationId: string;
     amount: number;
     currency: string;
     date: number;
+    from: string;
+    to: string;
     status: string;
-    paymentMethod: PaymentMethodData;
 };
 
 export type InvoiceList = {

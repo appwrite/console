@@ -2,7 +2,7 @@
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, ProgressBarBig, ProjectUsage } from '$lib/components';
 
-    export let data;
+    // export let data;
 </script>
 
 <Container>

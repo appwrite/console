@@ -4,6 +4,7 @@ export const INTERVAL = 5 * 60000; // default interval to check for feedback
 
 export enum Dependencies {
     CREDIT = 'dependency:credit',
+    INVOICES = 'dependency:invoices',
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     PROJECT = 'dependency:project',
