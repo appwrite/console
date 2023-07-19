@@ -1,9 +1,9 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
     import { onDestroy } from 'svelte';
-    import { isSupportOnline, supportData } from './wizard/store';
-    import Step1 from './wizard/step1.svelte';
-    import Step2 from './wizard/step2.svelte';
+    import { isSupportOnline, supportData } from './wizard/support/store';
+    import Step1 from './wizard/support/step1.svelte';
+    import Step2 from './wizard/support/step2.svelte';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
 
     onDestroy(() => {

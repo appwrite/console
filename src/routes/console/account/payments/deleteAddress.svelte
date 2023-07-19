@@ -8,7 +8,7 @@
     // import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
-    export let selectedAddress: string;
+    // export let selectedAddress: string;
 
     async function handleDelete() {
         try {

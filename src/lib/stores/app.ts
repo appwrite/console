@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { VARS } from '$lib/system';
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 export type AppStore = {
     theme: 'light' | 'dark' | 'auto';
@@ -15,21 +15,10 @@ export type Feedback = {
     show: boolean;
 };
 
-export enum Tier {
-    FREE = 'free',
-    PRO = 'pro',
-    ENTERPRISE = 'enterprise'
-}
-
 export const app = writable<AppStore>({
     theme: 'auto',
     themeInUse: 'light'
 });
-
-//TODO: once billing is enabled on organization load/update, update the tier
-export const tier = writable<Tier>(Tier.FREE);
-export const isFreeTier = get(tier) === Tier.FREE;
-export const isPaidTier = get(tier) === Tier.PRO || get(tier) === Tier.ENTERPRISE;
 
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({

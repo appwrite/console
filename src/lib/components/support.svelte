@@ -4,11 +4,12 @@
     import SupportOfflineDark from '$lib/images/support/support-offline-dark.png';
     import SupportOnlineLight from '$lib/images/support/support-online-light.png';
     import SupportOnlineDark from '$lib/images/support/support-online-dark.png';
-    import { app, isFreeTier } from '$lib/stores/app';
+    import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '../../routes/console/supportWizard.svelte';
-    import { isSupportOnline } from '../../routes/console/wizard/store';
+    import { isSupportOnline } from '../../routes/console/wizard/support/store';
     import { isCloud } from '$lib/system';
+    import { organization } from '$lib/stores/organization';
 
     export let show = false;
 </script>
@@ -34,7 +35,7 @@
                 Get personalized support from the Appwrite team from <b>09:00 - 17:00 UTC</b>
             </p>
         </div>
-        {#if isFreeTier}
+        {#if $organization?.billingPlan === 'tier-0'}
             <Button fullWidth href="https://appwrite.io/billing">
                 <span class="text">Get Premium support</span>
             </Button>
