@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $project.$id;
     let passwordHistory = $project.authPasswordHistory < 1 ? 5 : $project.authPasswordHistory;
@@ -39,27 +40,26 @@
 
 <Form onSubmit={updatePasswordHistoryLimit}>
     <CardGrid>
-        <Heading tag="h2" size="7">Password History</Heading>
+        <Heading tag="h2" size="7">{$LL.console.project.title.security.passwordHistory()}</Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch
                     bind:value={passwordHistoryEnabled}
                     id="passwordHisotryEnabled"
-                    label="Password History" />
+                    label={$LL.console.project.forms.security.inputs.passwordHistory.label()} />
             </FormList>
             <p class="text">
-                Enabling this option prevents users from reusing recent passwords by comparing the
-                new password with their password history.
+                {$LL.console.project.texts.security.passwordHistory.phaseOne()}
             </p>
             <p class="text">
-                Set the maximum number of passwords saved per user. Maximum 20 passwords.
+                {$LL.console.project.texts.security.passwordHistory.phaseTwo()}
             </p>
             <FormList>
                 <InputNumber
                     max={20}
                     min={1}
                     id="max-session"
-                    label="Limit"
+                    label={$LL.console.project.forms.security.inputs.maxSession.label()}
                     disabled={!passwordHistoryEnabled}
                     bind:value={passwordHistory} />
             </FormList>
@@ -70,7 +70,7 @@
                 disabled={(passwordHistory === $project.authPasswordHistory ||
                     $project.authPasswordHistory === 0) &&
                     initialPasswordHistoryEnabled === passwordHistoryEnabled}
-                submit>Update</Button>
+                submit>{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -7,6 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $project.$id;
     let passwordDictionary = $project.authPasswordDictionary ?? false;
@@ -35,28 +36,28 @@
 
 <Form onSubmit={updatePasswordDictionary}>
     <CardGrid>
-        <Heading tag="h2" size="7">Password Dictionary</Heading>
+        <Heading tag="h2" size="7"
+            >{$LL.console.project.title.security.passwordDictionary()}</Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch
                     bind:value={passwordDictionary}
                     id="passwordDictionary"
-                    label="Password Dictionary" />
+                    label={$LL.console.project.forms.security.inputs.passwordDictionary.label()} />
             </FormList>
             <p class="text">
-                Enabling this option prevent users from setting insecure passwords by comparing the
-                user's password with the <a
+                {$LL.console.project.texts.security.passwordDictionary()}<a
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link"
                     href="https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/10k-most-common.txt"
-                    >10k most commonly used passwords.</a>
+                    >{$LL.console.project.links.passwordDictionary()}</a>
             </p>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
             <Button disabled={passwordDictionary === $project.authPasswordDictionary} submit
-                >Update</Button>
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

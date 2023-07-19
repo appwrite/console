@@ -7,6 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $project.$id;
 
@@ -34,16 +35,20 @@
 
 <Form onSubmit={updateSessionsLimit}>
     <CardGrid>
-        <Heading tag="h2" size="7">Sessions Limit</Heading>
-        <p>Maximum number of active sessions allowed per user.</p>
+        <Heading tag="h2" size="7">{$LL.console.project.title.security.sessionLimit()}</Heading>
+        <p>{$LL.console.project.texts.security.sessionLimit()}</p>
         <svelte:fragment slot="aside">
             <ul>
-                <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
+                <InputNumber
+                    id="max-session"
+                    label={$LL.console.project.forms.security.inputs.maxSession.label()}
+                    bind:value={maxSessions} />
             </ul>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={maxSessions === $project.authSessionsLimit} submit>Update</Button>
+            <Button disabled={maxSessions === $project.authSessionsLimit} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

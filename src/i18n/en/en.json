@@ -379,6 +379,17 @@
                     "password": "Password",
                     "userPref": "User Preferences",
                     "deleteUser": "Delete User"
+                },
+                "security": {
+                    "passwordDictionary": "Password Dictionary",
+                    "passwordHistory": "Password History",
+                    "sessionLength": "Session Length",
+                    "sessionLimit": "Session Limit",
+                    "usersLimit": "Users Limit"
+                },
+                "settings": {
+                    "authMethods": "Auth Methods",
+                    "oauth2Providers": "OAuth2 Providers"
                 }
             },
             "forms": {
@@ -531,6 +542,25 @@
                             }
                         }
                     }
+                },
+                "security": {
+                    "inputs": {
+                        "passwordDictionary": {
+                            "label": "Password Dictionary"
+                        },
+                        "passwordHistory": {
+                            "label": "Password History"
+                        },
+                        "maxSession": {
+                            "label": "Limit"
+                        },
+                        "sessionLength": {
+                            "label": "Length"
+                        },
+                        "sessionPeriod": {
+                            "label": "Time Period"
+                        }
+                    }
                 }
             },
             "button": {
@@ -561,7 +591,8 @@
                     "unverify": "unverified",
                     "block": "blocked",
                     "userId": "User ID",
-                    "teamId": "Team ID"
+                    "teamId": "Team ID",
+                    "recommended": "recommended"
                 }
             },
             "texts": {
@@ -573,7 +604,20 @@
                     "uri": "URI",
                     "textOne": "To use",
                     "phraseOne": "authentication in your application, first fill in this form. For more info you can"
-                }
+                },
+                "security": {
+                    "passwordDictionary": "Enabling this option prevent users from setting insecure passwords by comparing the user's password with the",
+                    "passwordHistory": {
+                        "phraseOne": "Enabling this option prevents users from reusing recent passwords by comparing the new password with their password history.",
+                        "phraseTwo": "Set the maximum number of passwords saved per user. Maximum 20 passwords."
+                    },
+                    "sessionLength": "If you reduce the limit, users who are currently logged in will be logged out of the application.",
+                    "sessionLimit": "Maximum number of active sessions allowed per user.",
+                    "usersLimit": "Limit new users from signing up for your project, regardless of authentication method. You scan still create users and team memberships from your Appwrite console.",
+                    "limited": "limited",
+                    "unlimited": "unlimited"
+                },
+                "settings": "Enable the authentication methods you wish to use."
             },
             "navbar": {
                 "header": {
@@ -593,7 +637,8 @@
             "links": {
                 "oAuthProvider": {
                     "visitDoc": "visit the docs."
-                }
+                },
+                "passwordDictionary": "10k most commonly used passwords."
             },
             "alert": {
                 "oAuthProvider": {

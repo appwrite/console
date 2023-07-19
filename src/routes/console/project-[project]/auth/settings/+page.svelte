@@ -12,6 +12,7 @@
     import { page } from '$app/stores';
     import type { Provider } from '$lib/stores/oauth-providers';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
 
@@ -47,8 +48,8 @@
 {#if $authMethods && $OAuthProviders}
     <Container>
         <CardGrid>
-            <Heading tag="h2" size="7">Auth Methods</Heading>
-            <p>Enable the authentication methods you wish to use.</p>
+            <Heading tag="h2" size="7">{$LL.console.project.title.settings.authMethods()}</Heading>
+            <p>{$LL.console.project.texts.settings()}</p>
             <svelte:fragment slot="aside">
                 <form class="form">
                     <ul class="form-list is-multiple">
@@ -64,7 +65,9 @@
             </svelte:fragment>
         </CardGrid>
         <section class="common-section">
-            <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
+            <h2 class="heading-level-6 common-section">
+                {$LL.console.project.title.settings.oauth2Providers()}
+            </h2>
             <ul class="grid-box common-section">
                 {#each $OAuthProviders.providers
                     .filter((p) => p.name !== 'Mock')

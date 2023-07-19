@@ -9,6 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $project.$id;
 
@@ -46,10 +47,9 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Users Limit</Heading>
+    <Heading tag="h2" size="7">{$LL.console.project.title.security.usersLimit()}</Heading>
     <p>
-        Limit new users from signing up for your project, regardless of authentication method. You
-        can still create users and team memberships from your Appwrite console.
+        {$LL.console.project.texts.security.usersLimit()}
     </p>
 
     <svelte:fragment slot="aside">
@@ -65,9 +65,11 @@
                         bind:group={isLimited}
                         value={false} />
                     <div class="choice-item-content u-cross-child-center">
-                        <div class="choice-item-title">Unlimited</div>
+                        <div class="choice-item-title">
+                            {$LL.console.project.texts.security.unlimited()}
+                        </div>
                     </div>
-                    <Pill>recommended</Pill>
+                    <Pill>{$LL.console.project.table.pill.recommended()}</Pill>
                 </label>
             </li>
             <li class="form-item is-multiple">
@@ -81,7 +83,9 @@
                             bind:group={isLimited}
                             value={true} />
                         <div class="choice-item-content">
-                            <div class="choice-item-title">Limited</div>
+                            <div class="choice-item-title">
+                                {$LL.console.project.texts.security.limited()}
+                            </div>
                         </div>
                     </label>
                 </div>
@@ -107,6 +111,7 @@
             disabled={btnDisabled}
             on:click={() => {
                 updateLimit();
-            }}>Update</Button>
+            }}>
+            {$LL.console.project.button.submit.update()}</Button>
     </svelte:fragment>
 </CardGrid>
