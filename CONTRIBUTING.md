@@ -10,25 +10,30 @@ If you are worried about or don’t know where to start, check out the next sect
 
 ```
 ├── src
-│   ├── lib                             // All non-route components, accessible over "import ... from '$lib'"
-│   │   ├── components                  // Re-usable components
-│   │   ├── elements                    // Re-usable elements
-│   │   ├── layout                      // Global components for the layout (Nav/Content/Container)
-│   │   └── stores                      // Global stores (state management)
-│   └─── routes
-│       ├── console                     // Routes that need authentication
-│       │   ├──[project]
-│       │   │   ├── database            // Database Service
-│       │   │   │   ├── [collection]    // Nested Route for the collection "/console/[PROJECT_ID]/database/[COLLECTION_ID]"
-│       │   │   │   ├── _create.svelte  // Component to Create collections
-│       │   │   │   └── index.svelte    // Entrypoint for "/console/[PROJECT_ID]/database"
-│       │   │   ├── storage             // Storage Service "/console/[PROJECT]/storage"
-│       │   │   └── auth                // Users Service "/console/[PROJECT]/auth"
-│       │   └──...
-│       ├── login.svelte                // Component for Login "/console/login"
-│       └── register.svelte             // Component for Register "/console/register"
-├── build // Compiled application
-└── static // Static assets
+│   ├── lib                                       // Reusable logic (accessible with '$lib')
+│   │   ├── actions                               // Svelte actions
+│   │   ├── charts                                // Chart components
+│   │   ├── components                            // Re-usable components
+│   │   ├── elements                              // Re-usable elements
+│   │   ├── helpers                               // Small functions used through out the console
+│   │   ├── images                                // Images used in the console
+│   │   ├── layout                                // Global components for the layout (Nav/Content/Container)
+│   │   ├── mock                                  // Mock components used for testing
+│   │   └── stores                                // Global stores (state management)
+│   └── routes
+│       └── console                               // Routes that need authentication
+│       │   └── project-[project]
+│       │   │   └── database                      // Database Service
+│       │   │   │   ├── +layout.svelte            // Layout head and other logic like realtime events is set here
+│       │   │   │   ├── +layout.ts                // Layout data is set here (Header, Breadcrumbs, ...)
+│       │   │   │   ├── +page.svelte              // Page displayed on "/console/project-[PROJECT_ID]/database"
+│       │   │   │   ├── +page.ts                  // Necessary data for the page is fetched here
+│       │   │   │   └── create.svelte             // Component to create databases
+│       │   │   └── ...                           // Other services
+│       │   └── ...
+│       └── ...                                   // Routes that don't need authentication
+├── build                                         // Compiled application
+└── static                                        // Static assets
 ```
 
 ## Development

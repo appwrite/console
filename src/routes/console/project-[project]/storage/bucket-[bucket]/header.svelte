@@ -34,7 +34,9 @@
         <CoverTitle href={`/console/project-${projectId}/storage`}>
             {$bucket?.name}
         </CoverTitle>
-        <Id value={$bucket?.$id} event="bucket">Bucket ID</Id>
+        {#if $bucket?.$id}
+            <Id value={$bucket.$id} event="bucket">{$bucket.$id}</Id>
+        {/if}
     </svelte:fragment>
 
     <Tabs>
