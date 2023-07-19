@@ -149,7 +149,8 @@
                                         </DropListItem>
                                     {/each}
                                 {/if}
-                                <DropListItem>Add new payment method</DropListItem>
+                                <DropListItem on:click={() => (showPayment = true)}
+                                    >Add new payment method</DropListItem>
                             </svelte:fragment>
                         </DropList>
                     </div>
@@ -186,7 +187,8 @@
                                         </DropListItem>
                                     {/each}
                                 {/if}
-                                <DropListItem>Add new payment method</DropListItem>
+                                <DropListItem on:click={() => (showPayment = true)}
+                                    >Add new payment method</DropListItem>
                             </svelte:fragment>
                         </DropList>
                     </div>
