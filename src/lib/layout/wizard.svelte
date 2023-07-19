@@ -108,13 +108,15 @@
     </header>
 
     <aside class="wizard-side">
-        <Steps
-            on:step={handleStepClick}
-            steps={sortedSteps.map(([, { label, optional }]) => ({
-                text: label,
-                optional
-            }))}
-            {currentStep} />
+        <slot name="aside">
+            <Steps
+                on:step={handleStepClick}
+                steps={sortedSteps.map(([, { label, optional }]) => ({
+                    text: label,
+                    optional
+                }))}
+                {currentStep} />
+        </slot>
     </aside>
     <div class="wizard-media">
         {#if $wizard.media}

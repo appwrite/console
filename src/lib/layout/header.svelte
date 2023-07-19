@@ -5,7 +5,9 @@
         DropList,
         DropListItem,
         DropListLink,
-        FeedbackGeneral
+        FeedbackGeneral,
+        FeedbackNPS,
+        Support
     } from '$lib/components';
     import { app, feedback } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
@@ -14,10 +16,9 @@
     import LightMode from '$lib/images/mode/light-mode.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { FeedbackNPS } from '$lib/components';
-
     import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
+    import { Button } from '$lib/elements/forms';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
@@ -26,6 +27,7 @@
     import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
 
     let showDropdown = false;
+    let showSupport = false;
     let droplistElement: HTMLDivElement;
 
     function toggleFeedback() {
@@ -76,7 +78,7 @@
 {/if}
 
 <div class="main-header-end">
-    <nav class="u-flex is-only-desktop">
+    <nav class="u-flex is-only-desktop u-cross-center">
         {#if $feedback.notification}
             <div class="u-flex u-cross-center">
                 <div class="pulse-notification" />
@@ -94,13 +96,15 @@
                 {/if}
             </svelte:fragment>
         </DropList>
-        <a
-            href="https://appwrite.io/support"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="button is-small is-text">
-            <span class="text">Support</span>
-        </a>
+
+        <DropList width="17.5" bind:show={showSupport} scrollable={true}>
+            <Button text on:click={() => (showSupport = !showSupport)}>
+                <span class="text">Support</span>
+            </Button>
+            <svelte:fragment slot="other">
+                <Support bind:show={showSupport} />
+            </svelte:fragment>
+        </DropList>
     </nav>
     <nav class="u-flex u-height-100-percent u-sep-inline-start">
         {#if $user}
