@@ -1,9 +1,9 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid, Heading, PaginationInline } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
@@ -17,9 +17,11 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { Query } from '@appwrite.io/console';
     import { creditList } from './store';
 
     let coupon: string = null;
+    let offset = 0;
 
     async function redeem() {
         try {
@@ -42,6 +44,17 @@
         }
     }
 
+    async function request() {
+        $creditList = await sdk.forConsole.billing.listCredits($organization.$id, [
+            Query.limit(5),
+            Query.offset(offset)
+        ]);
+    }
+
+    $: if (offset !== null) {
+        request();
+    }
+
     $: balance = $creditList?.credits?.reduce((acc: number, curr: Credit) => acc + curr.credits, 0);
 </script>
 
@@ -56,15 +69,17 @@
         <h4 class="body-text-1 u-bold">
             Credit balance: <span class="u-color-text-success">${balance}</span>
         </h4>
-        <FormList>
-            <InputText
-                placeholder="Entert promo code"
-                id="code"
-                label="Promo code"
-                bind:value={coupon}>
-                <Button secondary on:click={redeem}>Redeem</Button>
-            </InputText>
-        </FormList>
+        <Form onSubmit={redeem} noMargin>
+            <FormList>
+                <InputText
+                    placeholder="Entert promo code"
+                    id="code"
+                    label="Promo code"
+                    bind:value={coupon}>
+                    <Button secondary submit>Redeem</Button>
+                </InputText>
+            </FormList>
+        </Form>
         {#if $creditList?.total}
             <Table noStyles noMargin>
                 <TableHeader>
@@ -88,6 +103,10 @@
                     {/each}
                 </TableBody>
             </Table>
+            <div class="u-flex u-main-space-between">
+                <p class="text">Total results: {$creditList?.total}</p>
+                <PaginationInline limit={5} bind:offset sum={$creditList?.total} hidePages />
+            </div>
         {/if}
     </svelte:fragment>
 </CardGrid>

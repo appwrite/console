@@ -38,50 +38,91 @@ export type InvoiceList = {
 };
 
 export type Credit = {
-    $id: string;
     /**
      * Credit ID.
      */
-    $createdAt: string;
+    $id: string;
     /**
      * Credit creation time in ISO 8601 format.
      */
-    $updatedAt: string;
+    $createdAt: string;
     /**
      * Credit update date in ISO 8601 format.
      */
-    couponId: string;
+    $updatedAt: string;
     /**
      * coupon ID
      */
-    userId: string;
+    couponId: string;
     /**
      * ID of the User.
      */
-    teamId: string;
+    userId: string;
     /**
      * ID of the Team.
      */
-    credits: number;
+    teamId: string;
     /**
      * Provided credit amount
      */
-    creditsUsed: number;
+    credits: number;
     /**
      * Used up credit amount
      */
-    expiration: string;
+    creditsUsed: number;
     /**
      * Credit expiration time in ISO 8601 format.
      */
-    status: string;
+    expiration: string;
     /**
      * Status of the credit. Can be one of `disabled`, `active` or `expired`.
      */
+    status: string;
 };
 
 export type CreditList = {
     credits: Credit[];
+    total: number;
+};
+
+export type Aggregation = {
+    $id: string;
+    /**
+     * Aggregation creation time in ISO 8601 format.
+     */
+    $createdAt: string;
+    /**
+     * Aggregation update date in ISO 8601 format.
+     */
+    $updatedAt: string;
+    /**
+     * Beginning date of the invoice.
+     */
+    from: string;
+    /**
+     * End date of the invoice.
+     */
+    to: string;
+    /**
+     * Total storage usage.
+     */
+    usageStorage: number;
+    /**
+     * Total active users for the billing period.
+     */
+    usageUsers: number;
+    /**
+     * Total number of executions for the billing period.
+     */
+    usageExecutions: number;
+    /**
+     * Total bandwidth usage for the billing period.
+     */
+    usageBandwidth: number;
+};
+
+export type AggregationList = {
+    aggregations: Aggregation[];
     total: number;
 };
 export class Billing {
@@ -278,10 +319,7 @@ export class Billing {
         );
     }
 
-    async listUsage(
-        organizationId: string,
-        queries: string[] = []
-    ): Promise<Record<string, unknown>> {
+    async listUsage(organizationId: string, queries: string[] = []): Promise<AggregationList> {
         const path = `/organizations/${organizationId}/aggregations`;
         const params = {
             organizationId,
@@ -298,10 +336,7 @@ export class Billing {
         );
     }
 
-    async getUsage(
-        organizationId: string,
-        aggregationId: string
-    ): Promise<Record<string, unknown>> {
+    async getUsage(organizationId: string, aggregationId: string): Promise<Aggregation> {
         const path = `/organizations/${organizationId}/aggregations/${aggregationId}`;
         const params = {
             organizationId,
