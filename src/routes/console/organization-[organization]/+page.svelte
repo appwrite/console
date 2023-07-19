@@ -11,6 +11,8 @@
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import { services } from '$lib/stores/project-services';
+    import type { Models } from '@appwrite.io/console';
 
     export let data: PageData;
 
@@ -40,6 +42,17 @@
         }
         return { name, icon };
     };
+
+    function allServiceDisabled(project: Models.Project): boolean {
+        let disabled = true;
+        services.load(project);
+        $services.list.forEach((service) => {
+            if (service.value) {
+                disabled = false;
+            }
+        });
+        return disabled;
+    }
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -75,6 +88,11 @@
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
+                    {#if allServiceDisabled(project)}
+                        <p>
+                            <span class="icon-pause" aria-hidden="true" /> All services are disabled.
+                        </p>
+                    {/if}
                     {@const platforms = filterPlatforms(
                         project.platforms.map((platform) => getPlatformInfo(platform.type))
                     )}
