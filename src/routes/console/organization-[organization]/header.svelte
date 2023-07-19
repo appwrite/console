@@ -78,6 +78,9 @@
                         {#if isCloud && $organization?.billingPlan === 'tier-0'}
                             <Pill>FREE</Pill>
                         {/if}
+                        {#if isCloud && $organization?.billingTrialStartDate && $organization?.billingTrialDays}
+                            <Pill>FREE TRIAL</Pill>
+                        {/if}
                     </span>
                     <span
                         class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}

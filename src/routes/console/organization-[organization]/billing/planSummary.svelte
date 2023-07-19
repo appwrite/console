@@ -1,6 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { Box, CardGrid, Heading } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
@@ -30,17 +31,24 @@
         </button>
     </p>
     <svelte:fragment slot="aside">
-        <Box>
-            <svelte:fragment slot="title">
+        <div class="box u-flex u-main-space-between u-cross-center">
+            <div class="u-flex u-gap-8 u-cross-center">
                 <h6 class="u-bold u-trim-1">
                     {currentTier.name}
                 </h6>
-            </svelte:fragment>
+                <Pill>FREE TRIAL</Pill>
+                {#if $organization.billingPlan !== 'tier-0' && $organization.billingTrialDays}
+                    <Pill>FREE TRIAL</Pill>
+                {/if}
+            </div>
 
-            <svelte:fragment slot="end">
-                <p class="text">${currentTier.price}</p>
-            </svelte:fragment>
-        </Box>
+            <p class="text">
+                {#if $organization.billingPlan !== 'tier-0' && $organization.billingTrialDays}
+                    <span class="u-color-text-gray"> Esimated total: </span>
+                {/if}
+                ${currentTier.price}
+            </p>
+        </div>
         <div class="u-flex u-main-space-between u-cross-center">
             <p class="text">
                 Billing period: {toLocaleDate($organization.billingCurrentInvoiceDate)} - {toLocaleDate(

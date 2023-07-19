@@ -13,6 +13,10 @@
     import CreateOrganization from '../../createOrganization.svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
+    import { isCloud } from '$lib/system';
+    import { Pill } from '$lib/elements';
+    import type { Models } from '@appwrite.io/console';
+    import type { Organization } from '$lib/stores/organization';
 
     export let data: PageData;
 
@@ -20,6 +24,12 @@
         const memberships = await sdk.forConsole.teams.listMemberships(teamId);
         return memberships.memberships.map((team) => team.userName);
     };
+
+    function isCloudOrg(
+        data: Partial<Models.TeamList<Models.Preferences>> | Organization
+    ): data is Organization {
+        return isCloud ? true : false;
+    }
 
     let addOrganization = false;
 </script>
@@ -48,6 +58,16 @@
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {organization.name}
+                    </svelte:fragment>
+                    <svelte:fragment slot="status">
+                        {#if isCloudOrg(organization)}
+                            {#if organization?.billingPlan === 'tier-0'}
+                                <Pill>FREE</Pill>
+                            {/if}
+                            {#if organization?.billingTrialStartDate && organization?.billingTrialDays}
+                                <Pill>FREE TRIAL</Pill>
+                            {/if}
+                        {/if}
                     </svelte:fragment>
                     {#await avatarList}
                         <span class="avatar is-color-empty" />

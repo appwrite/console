@@ -18,7 +18,7 @@ export const createOrganization = writable<{
 }>({
     id: null,
     name: null,
-    billingPlan: 'tier-2',
+    billingPlan: 'tier-1',
     paymentMethodId: null,
     collaborators: []
 });
