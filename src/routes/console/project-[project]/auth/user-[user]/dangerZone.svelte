@@ -1,10 +1,22 @@
+<script lang="ts" context="module">
+    import { get } from 'svelte/store';
+
+    let showDelete = writable(false);
+
+    export const promptDeleteUser = (id: string) => {
+        showDelete.set(true);
+        goto(`/console/project-${get(project).$id}/auth/user-${id}`);
+    };
+</script>
+
 <script lang="ts">
     import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { writable } from 'svelte/store';
     import DeleteUser from './deleteUser.svelte';
     import { user } from './store';
-
-    let showDelete = false;
+    import { goto } from '$app/navigation';
+    import { project } from '../../store';
 </script>
 
 <CardGrid danger>
@@ -46,8 +58,8 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => (showDelete = true)} event="delete_user">Delete</Button>
+        <Button secondary on:click={() => ($showDelete = true)} event="delete_user">Delete</Button>
     </svelte:fragment>
 </CardGrid>
 
-<DeleteUser bind:showDelete />
+<DeleteUser bind:showDelete={$showDelete} />

@@ -17,10 +17,11 @@
 
     import { goto } from '$app/navigation';
 
-    import { CommandCenter, registerCommands } from '$lib/commandCenter';
+    import { CommandCenter, registerCommands, registerSearcher } from '$lib/commandCenter';
     import { AIPanel, OrganizationsPanel } from '$lib/commandCenter/panels';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { openMigrationWizard } from './(migration-wizard)';
+    import { orgSearcher } from '$lib/commandCenter/searchers';
 
     $: $registerCommands([
         {
@@ -107,6 +108,8 @@
     $: if ($requestedMigration) {
         openMigrationWizard();
     }
+
+    $registerSearcher(orgSearcher);
 </script>
 
 <CommandCenter />

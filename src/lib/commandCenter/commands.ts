@@ -258,6 +258,7 @@ export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTr
     const initialRanks = {
         ...Object.fromEntries(groups.map((group) => [group, 0])),
         ungrouped: 9999,
+        users: 1,
         help: -1
     } as CommandGroupRanks;
 

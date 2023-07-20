@@ -4,6 +4,7 @@ import { project } from '$routes/console/project-[project]/store';
 import { get } from 'svelte/store';
 import type { Command, Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
+import { promptDeleteUser } from '$routes/console/project-[project]/auth/user-[user]/dangerZone.svelte';
 
 const getUserCommand = (user: Models.User<Models.Preferences>, projectId: string) =>
     ({
@@ -22,6 +23,14 @@ export const userSearcher = (async (query: string) => {
     if (users.length === 1) {
         return [
             getUserCommand(users[0], projectId),
+            {
+                label: 'Delete user',
+                callback: () => {
+                    promptDeleteUser(users[0].$id);
+                },
+                group: 'users',
+                icon: 'trash'
+            },
             {
                 label: 'Go to activity',
                 callback: () => {
