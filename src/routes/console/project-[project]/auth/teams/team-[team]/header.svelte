@@ -4,6 +4,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { team } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     const teamId = $page.params.team;
@@ -11,18 +12,18 @@
     const tabs = [
         {
             href: path,
-            title: 'Overview',
+            title: $LL.console.project.navbar.teamHeader.overview(),
             event: 'overview'
         },
         {
             href: `${path}/members`,
-            title: 'Members',
+            title: $LL.console.project.navbar.teamHeader.members(),
             event: 'members',
             hasChildren: true
         },
         {
             href: `${path}/activity`,
-            title: 'Activity',
+            title: $LL.console.project.navbar.teamHeader.activity(),
             event: 'activity',
             hasChildren: true
         }

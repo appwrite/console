@@ -24,6 +24,7 @@
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -38,15 +39,18 @@
 <Container>
     <SearchQuery search={data.search} placeholder="Search by name">
         <Button on:click={() => (showCreate = true)} event="create_team">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">{$LL.console.project.button.createTeam()}</span>
         </Button>
     </SearchQuery>
     {#if data.teams.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead onlyDesktop>Members</TableCellHead>
-                <TableCellHead onlyDesktop>Created</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.name()}</TableCellHead>
+                <TableCellHead onlyDesktop
+                    >{$LL.console.project.table.header.members()}</TableCellHead>
+                <TableCellHead onlyDesktop
+                    >{$LL.console.project.table.header.created()}</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.teams.teams as team}
@@ -59,7 +63,8 @@
                             </div>
                         </TableCell>
                         <TableCellText onlyDesktop title="Members"
-                            >{team.total} members</TableCellText>
+                            >{team.total}
+                            {$LL.console.project.texts.teams.members()}</TableCellText>
                         <TableCellText onlyDesktop title="Created">
                             {toLocaleDateTime(team.$createdAt)}
                         </TableCellText>
@@ -76,11 +81,11 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
-                <p>There are no teams that match your search.</p>
+                <b>{$LL.console.project.texts.teams.searchData.phaseOne()}{' '}‘{data.search}’</b>
+                <p>{$LL.console.project.texts.teams.searchData.phaseTwo()}</p>
             </div>
             <Button secondary href={`/console/project-${$page.params.project}/auth/teams`}>
-                Clear Search
+                {$LL.console.project.button.clearSearch()}
             </Button>
         </EmptySearch>
     {:else}

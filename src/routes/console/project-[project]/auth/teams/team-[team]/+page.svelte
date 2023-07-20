@@ -6,6 +6,7 @@
     import UpdatePrefs from './updatePrefs.svelte';
     import UpdateName from './updateName.svelte';
     import DangerZone from './dangerZone.svelte';
+    import LL from '$i18n/i18n-svelte';
 </script>
 
 <Container>
@@ -18,8 +19,11 @@
         </div>
         <svelte:fragment slot="aside">
             <div>
-                <p>{$team.total} Members</p>
-                <p>Created on {toLocaleDateTime($team.$createdAt)}</p>
+                <p>{$team.total}{' '}{$LL.console.project.texts.teams.members()}</p>
+                <p>
+                    {$LL.console.project.texts.teams.createdOn()}
+                    {toLocaleDateTime($team.$createdAt)}
+                </p>
             </div>
         </svelte:fragment>
     </CardGrid>

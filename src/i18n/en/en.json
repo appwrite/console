@@ -370,7 +370,12 @@
                 "auth": "Auth",
                 "createUser": "Create User",
                 "createTeam": "Create Team",
+                "teamPref": "Team Preferences",
+                "deleteMember": "Delete Member",
                 "user": "User",
+                "team": "Team",
+                "createMembership": "Create Membership",
+                "deleteTeam": "Delete Team",
                 "oAuth2": "OAuth2 Settings",
                 "userData": {
                     "name": "Name",
@@ -561,16 +566,59 @@
                             "label": "Time Period"
                         }
                     }
+                },
+                "teams": {
+                    "updatePrefs": {
+                        "inputs": {
+                            "key": {
+                                "label": "Key",
+                                "placeholder": "Enter key"
+                            },
+                            "value": {
+                                "label": "Value",
+                                "placeholder": "Enter value"
+                            }
+                        }
+                    },
+                    "updateName": {
+                        "title": "Name",
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Enter team name"
+                            }
+                        }
+                    },
+                    "createMembership": {
+                        "inputs": {
+                            "name": {
+                                "label": "Name (optional)",
+                                "placeholder": "Enter name"
+                            },
+                            "email": {
+                                "label": "Email",
+                                "placeholder": "Enter email"
+                            },
+                            "roles": {
+                                "label": "Roles",
+                                "placeholder": "Add roles"
+                            }
+                        }
+                    }
                 }
             },
             "button": {
                 "createUser": "Create user",
                 "clearSearch": "Clear Search",
+                "createTeam": "Create team",
+                "createMembership": "Create Membership",
+                "documentation": "Documentation",
                 "cancel": "Cancel",
                 "submit": {
                     "create": "Create",
                     "update": "Update",
-                    "addPrefs": "Add Preference"
+                    "addPrefs": "Add Preference",
+                    "delete": "Delete"
                 },
                 "pill": {
                     "userId": "User ID"
@@ -579,10 +627,13 @@
             "table": {
                 "header": {
                     "name": "Name",
+                    "roles": "Roles",
                     "identifiers": "Identifiers",
                     "status": "Status",
                     "id": "ID",
-                    "joined": "Joined"
+                    "joined": "Joined",
+                    "members": "Members",
+                    "created": "Created"
                 },
                 "pill": {
                     "verify": "verified",
@@ -617,7 +668,21 @@
                     "limited": "limited",
                     "unlimited": "unlimited"
                 },
-                "settings": "Enable the authentication methods you wish to use."
+                "settings": "Enable the authentication methods you wish to use.",
+                "teams": {
+                    "members": "members",
+                    "searchData": {
+                        "phaseOne": "Sorry, we couldn’t find",
+                        "phaseTwo": "There are no teams that match your search.",
+                        "phaseThree": "There are no members that match your search."
+                    },
+                    "updatePrefs": "You can update your team's preferences by storing shared information on the teams's objects so they can easily be shared across members.",
+                    "deleteTeam": "Are you sure you want to delete",
+                    "deleteMember": "Are you sure you want to delete",
+                    "from": "from",
+                    "dangerZone": " The team will be permanently deleted, including all data associated with this team. This action is irreversible.",
+                    "createdOn": "Created on"
+                }
             },
             "navbar": {
                 "header": {
@@ -632,6 +697,11 @@
                     "membership": "Memberships",
                     "sessions": "Sessions",
                     "activity": "Activity"
+                },
+                "teamHeader": {
+                    "overview": "Overview",
+                    "members": "Members",
+                    "activity": "Activity"
                 }
             },
             "links": {
@@ -644,6 +714,9 @@
                 "oAuthProvider": {
                     "fieldOne": "To complete set up, add this OAuth2 redirect URI to your",
                     "fieldTwo": "app configuration."
+                },
+                "teams": {
+                    "createMembership": "Roles are used to manage access permissions. You can create any role you want."
                 }
             }
         }

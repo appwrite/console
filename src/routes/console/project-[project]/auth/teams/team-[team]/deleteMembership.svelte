@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import LL from '$i18n/i18n-svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -43,12 +44,14 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Member</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.deleteMember()}</svelte:fragment>
     <p data-private>
-        Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
+        {$LL.console.project.texts.teams.deleteMember()}{' '}<b>{selectedMembership.userName}</b
+        >{' '}{$LL.console.project.texts.teams.from()}{' '}'{selectedMembership.teamName}'?
     </p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

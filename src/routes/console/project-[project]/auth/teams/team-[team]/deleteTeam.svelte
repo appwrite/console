@@ -8,7 +8,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-
+    import LL from '$i18n/i18n-svelte';
+ 
     export let showDelete = false;
     export let team: Models.Team<Record<string, unknown>>;
 
@@ -34,12 +35,13 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Team</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.deleteTeam()}</svelte:fragment>
     <p data-private>
-        Are you sure you want to delete <b>{team.name}</b>?
+        {$LL.console.project.texts.teams.deleteTeam()}{' '}<b>{team.name}</b>?
     </p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

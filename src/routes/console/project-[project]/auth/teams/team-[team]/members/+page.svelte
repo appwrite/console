@@ -27,6 +27,7 @@
     import DeleteMembership from '../deleteMembership.svelte';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -45,15 +46,17 @@
     <SearchQuery search={data.search} placeholder="Search by ID">
         <Button on:click={() => (showCreate = true)} event="create_membership">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create membership</span>
+            <span class="text">{$LL.console.project.button.createMembership()}</span>
         </Button>
     </SearchQuery>
     {#if data.memberships.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead onlyDesktop>Roles</TableCellHead>
-                <TableCellHead onlyDesktop>Joined</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.name()}</TableCellHead>
+                <TableCellHead onlyDesktop
+                    >{$LL.console.project.table.header.roles()}</TableCellHead>
+                <TableCellHead onlyDesktop
+                    >{$LL.console.project.table.header.joined()}</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -95,16 +98,17 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
-                <p>There are no members that match your search.</p>
+                <b>{$LL.console.project.texts.teams.searchData.phaseOne()}{' '}‘{data.search}’</b>
+                <p>{$LL.console.project.texts.teams.searchData.phaseThree()}</p>
             </div>
             <Button
                 external
                 href="https://appwrite.io/docs/client/teams?sdk=web-default#teamsCreateMembership"
                 text>
-                Documentation
+                {$LL.console.project.button.documentation()}
             </Button>
-            <Button secondary on:click={() => (showCreate = true)}>Create membership</Button>
+            <Button secondary on:click={() => (showCreate = true)}
+                >{$LL.console.project.button.createMembership()}</Button>
         </EmptySearch>
     {:else}
         <Empty

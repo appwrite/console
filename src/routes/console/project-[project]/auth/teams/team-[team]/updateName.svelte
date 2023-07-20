@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { team } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     let teamName: string = null;
 
@@ -37,21 +38,22 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.forms.teams.updateName.title()}</Heading>
 
         <svelte:fragment slot="aside">
             <ul>
                 <InputText
                     id="name"
-                    label="Name"
-                    placeholder="Enter team name"
+                    label={$LL.console.project.forms.teams.updateName.inputs.name.label()}
+                    placeholder={$LL.console.project.forms.teams.updateName.inputs.name.placeholder()}
                     autocomplete={false}
                     bind:value={teamName} />
             </ul>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button submit disabled={teamName === $team.name || !teamName}>Update</Button>
+            <Button submit disabled={teamName === $team.name || !teamName}
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
