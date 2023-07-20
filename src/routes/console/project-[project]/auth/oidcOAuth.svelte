@@ -61,11 +61,11 @@
 </script>
 
 <Modal {error} onSubmit={update} size="big" show on:close>
-    <svelte:fragment slot="header">{provider.name.toUpperCase()} OAuth2 Settings</svelte:fragment>
+    <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
-            To use {provider.name.toUpperCase()} authentication in your application, first fill in this
-            form. For more info you can
+            To use {provider.name} authentication in your application, first fill in this form. For more
+            info you can
             <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
                 >visit the docs.</a>
         </p>
@@ -110,9 +110,7 @@
         <div>
             <p>URI</p>
             <CopyInput
-                value={`${
-                    sdk.forConsole.client.config.endpoint
-                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+                value={`${sdk.forConsole.client.config.endpoint}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">
