@@ -1,22 +1,5 @@
 import { writable } from 'svelte/store';
 
-import {
-    PUBLIC_MOCK_APIKEY,
-    PUBLIC_MOCK_ENDPOINT,
-    PUBLIC_MOCK_PROJECTID,
-    PUBLIC_NHOST_TEST_DATABASE,
-    PUBLIC_NHOST_TEST_PASSWORD,
-    PUBLIC_NHOST_TEST_REGION,
-    PUBLIC_NHOST_TEST_SECRET,
-    PUBLIC_NHOST_TEST_SUBDOMAIN,
-    PUBLIC_NHOST_TEST_USERNAME,
-    PUBLIC_SUPABASE_TEST_ENDPOINT,
-    PUBLIC_SUPABASE_TEST_HOST,
-    PUBLIC_SUPABASE_TEST_KEY,
-    PUBLIC_SUPABASE_TEST_PASSWORD,
-    PUBLIC_SUPABASE_TEST_PORT,
-    PUBLIC_SUPABASE_TEST_USERNAME
-} from '$env/static/public';
 import { includesAll } from '$lib/helpers/array';
 
 const initialFormData = {
@@ -185,34 +168,10 @@ type NhostInput = {
 export type ProviderInput = AppwriteInput | NhostInput | SupabaseInput | FirebaseInput;
 export type Provider = ProviderInput['provider'];
 
-// const mockProvider: ProviderInput = {
-//     provider: 'appwrite',
-//     endpoint: PUBLIC_MOCK_ENDPOINT,
-//     apiKey: PUBLIC_MOCK_APIKEY,
-//     projectID: PUBLIC_MOCK_PROJECTID
-// };
-const mockProvider: ProviderInput = {
-    provider: 'supabase',
-    endpoint: PUBLIC_SUPABASE_TEST_ENDPOINT,
-    apiKey: PUBLIC_SUPABASE_TEST_KEY,
-    host: PUBLIC_SUPABASE_TEST_HOST,
-    port: Number(PUBLIC_SUPABASE_TEST_PORT),
-    username: PUBLIC_SUPABASE_TEST_USERNAME,
-    password: PUBLIC_SUPABASE_TEST_PASSWORD
-};
-// const mockProvider: ProviderInput = {
-//     provider: 'nhost',
-//     subdomain: PUBLIC_NHOST_TEST_SUBDOMAIN,
-//     region: PUBLIC_NHOST_TEST_REGION,
-//     adminSecret: PUBLIC_NHOST_TEST_SECRET,
-//     database: PUBLIC_NHOST_TEST_DATABASE,
-//     username: PUBLIC_NHOST_TEST_USERNAME,
-//     password: PUBLIC_NHOST_TEST_PASSWORD
-// };
 
 const initialProvider: ProviderInput = { provider: 'appwrite' };
 export const createMigrationProviderStore = () => {
-    const store = writable<ProviderInput>({ ...mockProvider });
+    const store = writable<ProviderInput>({ ...initialProvider });
 
     const changeProvider = (provider: Provider) => {
         const newProvider: ProviderInput = { provider };
