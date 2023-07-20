@@ -12,6 +12,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
     import { createProject } from './wizard/store';
+    import { wizard } from '$lib/stores/wizard';
 
     const teamId = $page.params.organization;
     const dispatch = createEventDispatcher();
@@ -38,6 +39,7 @@
                 message: `${$createProject.name} has been created`
             });
             await goto(`/console/project-${project.$id}`);
+            wizard.hide();
         } catch (e) {
             addNotification({
                 type: 'error',

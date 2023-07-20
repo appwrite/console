@@ -7,12 +7,13 @@
     import Step2 from './wizard/cloudOrganization/step2.svelte';
     import Step3 from './wizard/cloudOrganization/step3.svelte';
     import Step4 from './wizard/cloudOrganization/step4.svelte';
-    import { createOrganization, stepsComponents } from './wizard/cloudOrganization/store';
+    import { createOrganization, createOrgSteps } from './wizard/cloudOrganization/store';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
     import { page } from '$app/stores';
+    import { wizard } from '$lib/stores/wizard';
 
     const dispatch = createEventDispatcher();
 
@@ -59,6 +60,7 @@
             trackEvent(Submit.OrganizationCreate, {
                 customId: !!$createOrganization.id
             });
+            wizard.hide();
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -77,19 +79,19 @@
         };
     });
 
-    $stepsComponents.set(1, {
+    $createOrgSteps.set(1, {
         label: 'Organization details',
         component: Step1
     });
-    $stepsComponents.set(2, {
+    $createOrgSteps.set(2, {
         label: 'Payment details',
         component: Step2
     });
-    $stepsComponents.set(3, {
+    $createOrgSteps.set(3, {
         label: 'Invite collaborators',
         component: Step3
     });
-    $stepsComponents.set(4, {
+    $createOrgSteps.set(4, {
         label: 'Review & confirm',
         component: Step4
     });
@@ -97,7 +99,7 @@
 
 <Wizard
     title="Create organization"
-    steps={$stepsComponents}
+    steps={$createOrgSteps}
     finalAction="Start trial"
     on:finish={create}
     on:exit={onFinish} />

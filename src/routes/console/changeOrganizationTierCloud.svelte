@@ -7,13 +7,16 @@
     import Step2 from './wizard/cloudOrganizationChangeTier/step2.svelte';
     import Step3 from './wizard/cloudOrganizationChangeTier/step3.svelte';
     import Step4 from './wizard/cloudOrganizationChangeTier/step4.svelte';
-    import { changeOrganizationTier } from './wizard/cloudOrganizationChangeTier/store';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import {
+        changeOrganizationTier,
+        changeTierSteps
+    } from './wizard/cloudOrganizationChangeTier/store';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { page } from '$app/stores';
     import { organization } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
 
     const dispatch = createEventDispatcher();
 
@@ -37,6 +40,7 @@
                     [75]
                 );
             }
+
             //Add collaborators
             if ($changeOrganizationTier?.collaborators?.length) {
                 $changeOrganizationTier.collaborators.forEach(async (collaborator) => {
@@ -62,6 +66,7 @@
             trackEvent(Submit.OrganizationCreate, {
                 customId: !!$changeOrganizationTier.id
             });
+            wizard.hide();
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -79,21 +84,19 @@
         };
     });
 
-    const stepsComponents: WizardStepsType = new Map();
-
-    stepsComponents.set(1, {
+    $changeTierSteps.set(1, {
         label: 'Change plan',
         component: Step1
     });
-    stepsComponents.set(2, {
+    $changeTierSteps.set(2, {
         label: 'Payment details',
         component: Step2
     });
-    stepsComponents.set(3, {
+    $changeTierSteps.set(3, {
         label: 'Invite collaborators',
         component: Step3
     });
-    stepsComponents.set(4, {
+    $changeTierSteps.set(4, {
         label: 'Review & confirm',
         component: Step4
     });
@@ -101,7 +104,7 @@
 
 <Wizard
     title="Change plan"
-    steps={stepsComponents}
+    steps={$changeTierSteps}
     finalAction="Start trial"
     on:finish={upgrade}
     on:exit={onFinish} />

@@ -4,7 +4,21 @@
     import { WizardStep } from '$lib/layout';
     import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { changeOrganizationTier } from './store';
+    import { updateStepStatus } from '$lib/stores/wizard';
+    import { changeOrganizationTier, changeTierSteps } from './store';
+
+    $: if ($changeOrganizationTier.billingPlan === 'tier-0') {
+        $changeTierSteps = updateStepStatus($changeTierSteps, 2, true);
+        $changeTierSteps = updateStepStatus($changeTierSteps, 3, true);
+    }
+
+    $: if (
+        $changeOrganizationTier.billingPlan === 'tier-2' ||
+        $changeOrganizationTier.billingPlan === 'tier-1'
+    ) {
+        $changeTierSteps = updateStepStatus($changeTierSteps, 2, false);
+        $changeTierSteps = updateStepStatus($changeTierSteps, 3, false);
+    }
 </script>
 
 <WizardStep>
@@ -81,4 +95,6 @@
             </li>
         {/if}
     </ul>
+
+    {#if $organization.billingPlan === 'tier-0'}tesr{/if}
 </WizardStep>

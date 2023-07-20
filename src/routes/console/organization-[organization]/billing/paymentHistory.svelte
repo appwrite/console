@@ -53,16 +53,17 @@
         {#if $invoiceList.total}
             <Table noMargin noStyles>
                 <TableHeader>
-                    <TableCellHead>Date</TableCellHead>
+                    <TableCellHead>Due Date</TableCellHead>
                     <TableCellHead>Status</TableCellHead>
                     <TableCellHead>Amount Due</TableCellHead>
                     <TableCellHead>Invoce #</TableCellHead>
-                    <TableCellHead width={20} />
+                    <TableCellHead width={40} />
                 </TableHeader>
                 <TableBody>
                     {#each $invoiceList?.invoices as invoice, i}
                         <TableRow>
-                            <TableCellText title="date">{toLocaleDate(invoice.from)}</TableCellText>
+                            <TableCellText title="date"
+                                >{toLocaleDate(invoice.dueAt)}</TableCellText>
                             <TableCell title="status">
                                 <Pill>{invoice.status}</Pill>
                             </TableCell>

@@ -5,7 +5,8 @@
     import { WizardStep } from '$lib/layout';
     import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
-    import { createOrganization, stepsComponents, updateComponentStatus } from './store';
+    import { updateStepStatus } from '$lib/stores/wizard';
+    import { createOrganization, createOrgSteps } from './store';
 
     let showCustomId = false;
 
@@ -14,16 +15,16 @@
     );
 
     $: if ($createOrganization.billingPlan === 'tier-0') {
-        $stepsComponents = updateComponentStatus($stepsComponents, 2, true);
-        $stepsComponents = updateComponentStatus($stepsComponents, 3, true);
+        $createOrgSteps = updateStepStatus($createOrgSteps, 2, true);
+        $createOrgSteps = updateStepStatus($createOrgSteps, 3, true);
     }
 
     $: if (
         $createOrganization.billingPlan === 'tier-2' ||
         $createOrganization.billingPlan === 'tier-1'
     ) {
-        $stepsComponents = updateComponentStatus($stepsComponents, 2, false);
-        $stepsComponents = updateComponentStatus($stepsComponents, 3, false);
+        $createOrgSteps = updateStepStatus($createOrgSteps, 2, false);
+        $createOrgSteps = updateStepStatus($createOrgSteps, 3, false);
     }
 </script>
 

@@ -16,7 +16,7 @@
         <article class="card u-grid u-cross-center u-width-full-line dashed">
             <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
                 <div class="common-section">
-                    <DropList bind:show={showDropdown} placement="bottom-end">
+                    <DropList bind:show={showDropdown} placement="bottom-start">
                         <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
                             <i class="icon-plus" />
                         </Button>

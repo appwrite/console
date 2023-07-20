@@ -1,4 +1,5 @@
 import { trackEvent } from '$lib/actions/analytics';
+import type { WizardStepsType } from '$lib/layout/wizard.svelte';
 import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
@@ -47,3 +48,12 @@ function createWizardStore() {
 }
 
 export const wizard = createWizardStore();
+
+export function updateStepStatus(map: WizardStepsType, key: number, status: boolean) {
+    const updatedComponent = {
+        ...map.get(key),
+        disabled: status
+    };
+    map.set(key, updatedComponent);
+    return map;
+}

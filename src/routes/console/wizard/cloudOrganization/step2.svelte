@@ -79,20 +79,20 @@
             });
             console.log(clientSecret);
             if (!clientSecret) {
-                console.log('test2');
                 paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+                clientSecret = paymentMethod.clientSecret;
             }
-            const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
+            const { setupIntent } = await stripe.retrieveSetupIntent(clientSecret);
             if (setupIntent && setupIntent.status === 'succeeded') {
                 await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                    $organization.$id,
+                    $createOrganization.id,
                     paymentMethod.$id
                 );
                 await invalidate(Dependencies.PAYMENT_METHODS);
                 console.log('test');
                 // const paymentElement = elements.getElement('payment');
                 // paymentElement.destroy();
-            } else console.log('test2');
+            } else console.log('something went wrong');
         } catch (e) {
             console.log(e);
             // trackError(StripeError, Submit.ProjectCreate);
