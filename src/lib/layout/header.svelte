@@ -1,15 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import {
-        AvatarInitials,
-        DropList,
-        DropListItem,
-        DropListLink,
-        FeedbackGeneral,
-        FeedbackNPS,
-        Support
-    } from '$lib/components';
-    import { app, feedback } from '$lib/stores/app';
+    import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
+    import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
@@ -25,6 +17,8 @@
     import { isCloud } from '$lib/system';
     import { wizard } from '$lib/stores/wizard';
     import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
+    import { feedback } from '$lib/stores/feedback';
+    import { Feedback } from '$lib/components/feedback';
 
     let showDropdown = false;
     let showSupport = false;
@@ -89,11 +83,7 @@
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
-                {#if $feedback.type === 'nps'}
-                    <FeedbackNPS />
-                {:else}
-                    <FeedbackGeneral />
-                {/if}
+                <Feedback />
             </svelte:fragment>
         </DropList>
 
