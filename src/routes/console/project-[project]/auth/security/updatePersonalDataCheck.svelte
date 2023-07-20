@@ -10,38 +10,46 @@
     import { project } from '../../store';
 
     const projectId = $project.$id;
-    let disallowPersonalData = $project.authDisallowPersonalData ?? false;
+    let authPersonalDataCheck = $project.authPersonalDataCheck ?? false;
 
-    async function updateDisallowPersonalData() {
+    async function updatePersonalDataCheck() {
         try {
-            await sdk.forConsole.projects.updateDisallowPersonalData(
-                projectId,
-                disallowPersonalData
+            const path = '/projects/' + $project.$id + '/auth/personal-data';
+            await sdk.forConsole.client.call(
+                'PATCH',
+                new URL(sdk.forConsole.client.config.endpoint + path),
+                {
+                    'content-type': 'application/json'
+                },
+                {
+                    projectId,
+                    enabled: authPersonalDataCheck
+                }
             );
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'Updated disallow personal data.'
+                message: 'Toggled personal data checks for passwords'
             });
-            trackEvent(Submit.AuthDisallowPersonalDataUpdate);
+            trackEvent(Submit.AuthPersonalDataCheckUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.AuthDisallowPersonalDataUpdate);
+            trackError(error, Submit.AuthPersonalDataCheckUpdate);
         }
     }
 </script>
 
-<Form onSubmit={updateDisallowPersonalData}>
+<Form onSubmit={updatePersonalDataCheck}>
     <CardGrid>
         <Heading tag="h2" size="7">Personal Data</Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch
-                    bind:value={disallowPersonalData}
-                    id="passwordHisotryEnabled"
+                    bind:value={authPersonalDataCheck}
+                    id="personalDataCheck"
                     label="Disallow Personal Data" />
             </FormList>
             <p class="text">
@@ -51,7 +59,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={disallowPersonalData === $project.authDisallowPersonalData} submit
+            <Button disabled={authPersonalDataCheck === $project.authPersonalDataCheck} submit
                 >Update</Button>
         </svelte:fragment>
     </CardGrid>
