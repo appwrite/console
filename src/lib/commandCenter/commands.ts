@@ -1,24 +1,28 @@
 import { debounce } from '$lib/helpers/debounce';
 import { isMac } from '$lib/helpers/platform';
+import { onMount } from 'svelte';
 import { derived, writable, type Updater } from 'svelte/store';
 
-// Stores
-export type CommandGroup =
-    | 'ungrouped'
-    | 'navigation'
-    | 'projects'
-    | 'organizations'
-    | 'auth'
-    | 'help'
-    | 'account'
-    | 'platforms'
-    | 'databases'
-    | 'functions'
-    | 'storage'
-    | 'domains'
-    | 'webhooks'
-    | 'integrations'
-    | 'migrations';
+const groups = [
+    'ungrouped',
+    'navigation',
+    'projects',
+    'organizations',
+    'auth',
+    'help',
+    'account',
+    'platforms',
+    'databases',
+    'functions',
+    'storage',
+    'domains',
+    'webhooks',
+    'integrations',
+    'migrations',
+    'users'
+] as const;
+
+export type CommandGroup = (typeof groups)[number];
 
 type BaseCommand = {
     callback: () => void;
@@ -251,24 +255,60 @@ export const updateCommandGroupRanks = {
 };
 
 export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTransformations) => {
-    const initialRanks: CommandGroupRanks = {
+    const initialRanks = {
+        ...Object.fromEntries(groups.map((group) => [group, 0])),
         ungrouped: 9999,
-        domains: 0,
-        webhooks: 0,
-        navigation: 1,
-        projects: 0,
-        account: 0,
-        organizations: 0,
-        auth: 0,
-        platforms: 0,
-        databases: 0,
-        functions: 0,
-        storage: 0,
-        integrations: 0,
-        migrations: 0,
         help: -1
-    };
+    } as CommandGroupRanks;
 
     const transformations = Array.from($groupRankTransformations.values());
     return transformations.reduce((prev, curr) => curr(prev), initialRanks);
 });
+
+export type Searcher = (query: string) => Promise<Command[]>;
+const searchersMap = writable<Map<string, Searcher>>(new Map());
+
+export const registerSearcher = {
+    subscribe(runner: (cb: (searcher: Searcher) => void) => void) {
+        const uuid = crypto.randomUUID();
+
+        runner((searcher: Searcher) => {
+            searchersMap.update((curr) => {
+                curr.set(uuid, searcher);
+                return curr;
+            });
+        });
+
+        return () => {
+            searchersMap.update((curr) => {
+                curr.delete(uuid);
+                return curr;
+            });
+        };
+    }
+};
+
+export const searchers = derived(searchersMap, ($searchersMap) => {
+    return Array.from($searchersMap.values());
+});
+
+export const useSearcher = (searcher: Searcher) => {
+    const search = writable('');
+    const results = writable<Command[]>([]);
+
+    const searcherDebounced = debounce(async (query: string) => {
+        results.set(await searcher(query));
+    }, 500);
+
+    onMount(() => {
+        searcherDebounced.immediate('');
+        return search.subscribe((query) => {
+            searcherDebounced(query);
+        });
+    });
+
+    return {
+        search,
+        results
+    };
+};

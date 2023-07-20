@@ -5,9 +5,10 @@
     import { project, stats } from './store';
 
     import { goto } from '$app/navigation';
-    import { registerCommands } from '$lib/commandCenter';
+    import { registerCommands, registerSearcher } from '$lib/commandCenter';
 
     import { MigrationBox } from '$lib/components';
+    import { dbSearcher, userSearcher } from '$lib/commandCenter/searchers';
 
     onMount(async () => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -70,6 +71,9 @@
             group: 'navigation'
         }
     ]);
+
+    $registerSearcher(dbSearcher);
+    $registerSearcher(userSearcher);
 </script>
 
 <slot />

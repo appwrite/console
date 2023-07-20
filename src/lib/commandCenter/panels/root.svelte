@@ -2,58 +2,19 @@
     This is the root command panel. It precedes all other command panels.
  -->
 <script lang="ts">
-    import { commands, type Command } from '../commands';
-    import { isMac } from '$lib/helpers/platform';
-    import Template from './template.svelte';
-    import { sdk } from '$lib/stores/sdk';
-    import { Query } from '@appwrite.io/console';
-    import { goto } from '$app/navigation';
-    import { project } from '$routes/console/project-[project]/store';
-    import { database } from '$routes/console/project-[project]/databases/database-[database]/store';
     import { debounce } from '$lib/helpers/debounce';
+    import { isMac } from '$lib/helpers/platform';
+    import { commands, searchers, type Command } from '../commands';
+    import Template from './template.svelte';
 
     let search = '';
 
     let searchResults: Omit<Command, 'keys'>[] = [];
     const executeSearch = debounce(async (s: string) => {
-        const newResults: typeof searchResults = [];
-        const { databases } = await sdk.forProject.databases.list([Query.limit(20)]);
-        newResults.push(
-            ...databases
-                .filter((db) => db.name.includes(s))
-                .map((db) => {
-                    return {
-                        label: `Go to ${db.name} database`,
-                        callback: () => {
-                            goto(`/console/project-${$project.$id}/databases/database-${db.$id}`);
-                        },
-                        group: 'databases'
-                    } as const;
-                })
-        );
-
-        if ($database?.$id) {
-            const { collections } = await sdk.forProject.databases.listCollections($database.$id, [
-                Query.limit(20)
-            ]);
-            newResults.push(
-                ...collections
-                    .filter((collection) => collection.name.includes(s))
-                    .map((collection) => {
-                        return {
-                            label: `Go to ${collection.name} collection`,
-                            callback: () => {
-                                goto(
-                                    `/console/project-${$project.$id}/databases/database-${$database.$id}/collection-${collection.$id}`
-                                );
-                            },
-                            group: 'databases'
-                        } as const;
-                    })
-            );
-        }
-
-        searchResults = [...newResults];
+        $searchers.forEach(async (searcher) => {
+            const results = await searcher(s);
+            searchResults = [...searchResults, ...results];
+        });
     }, 500);
 
     $: {

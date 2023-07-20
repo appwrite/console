@@ -1,10 +1,5 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import {
-        PUBLIC_MOCK_APIKEY,
-        PUBLIC_MOCK_ENDPOINT,
-        PUBLIC_MOCK_PROJECTID
-    } from '$env/static/public';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { Arrow, CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -116,23 +111,23 @@
             undefined
         );
 
-        // const migrationData = {
-        //     endpoint: currEndpoint,
-        //     projectId: $project.$id,
-        //     apiKey: secret
-        // };
-
         const migrationData = {
-            endpoint: PUBLIC_MOCK_ENDPOINT,
-            projectId: PUBLIC_MOCK_PROJECTID,
-            apiKey: PUBLIC_MOCK_APIKEY
+            endpoint: currEndpoint,
+            projectId: $project.$id,
+            apiKey: secret
         };
 
-        window.location.href = `http://localhost:3000/?migrate=${encodeURIComponent(
+        window.location.href = `https://cloud.appwrite.io/?migrate=${encodeURIComponent(
             JSON.stringify(migrationData)
         )}`;
 
-        // window.location.href = `https://cloud.appwrite.io/?migrate=${encodeURIComponent(
+        // const migrationData = {
+        //     endpoint: PUBLIC_MOCK_ENDPOINT,
+        //     projectId: PUBLIC_MOCK_PROJECTID,
+        //     apiKey: PUBLIC_MOCK_APIKEY
+        // };
+
+        // window.location.href = `http://localhost:3000/?migrate=${encodeURIComponent(
         //     JSON.stringify(migrationData)
         // )}`;
     };
