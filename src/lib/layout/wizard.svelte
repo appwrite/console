@@ -5,6 +5,7 @@
             label: string;
             component: typeof SvelteComponent;
             optional?: boolean;
+            disabled?: boolean;
         }
     >;
 </script>
@@ -78,9 +79,21 @@
             trackEvent('wizard_finish');
             dispatch('finish');
         } else {
+            if (steps.get(currentStep + 1)?.disabled) {
+                currentStep++;
+                while (steps.get(currentStep)?.disabled) {
+                    currentStep++;
+                }
+            } else {
+                currentStep++;
+            }
             trackEvent('wizard_next');
-            currentStep++;
         }
+    }
+
+    function previousStep() {
+        trackEvent('wizard_back');
+        currentStep--;
     }
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
@@ -111,9 +124,10 @@
         <slot name="aside">
             <Steps
                 on:step={handleStepClick}
-                steps={sortedSteps.map(([, { label, optional }]) => ({
+                steps={sortedSteps.map(([, { label, optional, disabled }]) => ({
                     text: label,
-                    optional
+                    optional,
+                    disabled
                 }))}
                 {currentStep} />
         </slot>
@@ -141,16 +155,10 @@
                         <Button secondary on:click={handleExit}>Cancel</Button>
                         <Button submit>Next</Button>
                     {:else if isLastStep}
-                        <Button
-                            secondary
-                            on:click={() => currentStep--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
+                        <Button secondary on:click={previousStep}>Back</Button>
                         <Button submit>{finalAction}</Button>
                     {:else}
-                        <Button
-                            secondary
-                            on:click={() => currentStep--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
+                        <Button secondary on:click={previousStep}>Back</Button>
                         <Button submit>Next</Button>
                     {/if}
                 </div>

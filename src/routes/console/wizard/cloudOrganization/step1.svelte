@@ -5,13 +5,26 @@
     import { WizardStep } from '$lib/layout';
     import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
-    import { createOrganization } from './store';
+    import { createOrganization, stepsComponents, updateComponentStatus } from './store';
 
     let showCustomId = false;
 
     $: anyOrgFree = $organizationList.teams?.find(
         (org) => (org as Organization)?.billingPlan === 'tier-0'
     );
+
+    $: if ($createOrganization.billingPlan === 'tier-0') {
+        $stepsComponents = updateComponentStatus($stepsComponents, 2, true);
+        $stepsComponents = updateComponentStatus($stepsComponents, 3, true);
+    }
+
+    $: if (
+        $createOrganization.billingPlan === 'tier-2' ||
+        $createOrganization.billingPlan === 'tier-1'
+    ) {
+        $stepsComponents = updateComponentStatus($stepsComponents, 2, false);
+        $stepsComponents = updateComponentStatus($stepsComponents, 3, false);
+    }
 </script>
 
 <WizardStep>

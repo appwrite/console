@@ -7,8 +7,7 @@
     import Step2 from './wizard/cloudOrganization/step2.svelte';
     import Step3 from './wizard/cloudOrganization/step3.svelte';
     import Step4 from './wizard/cloudOrganization/step4.svelte';
-    import { createOrganization } from './wizard/cloudOrganization/store';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import { createOrganization, stepsComponents } from './wizard/cloudOrganization/store';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -78,21 +77,19 @@
         };
     });
 
-    const stepsComponents: WizardStepsType = new Map();
-
-    stepsComponents.set(1, {
+    $stepsComponents.set(1, {
         label: 'Organization details',
         component: Step1
     });
-    stepsComponents.set(2, {
+    $stepsComponents.set(2, {
         label: 'Payment details',
         component: Step2
     });
-    stepsComponents.set(3, {
+    $stepsComponents.set(3, {
         label: 'Invite collaborators',
         component: Step3
     });
-    stepsComponents.set(4, {
+    $stepsComponents.set(4, {
         label: 'Review & confirm',
         component: Step4
     });
@@ -100,7 +97,7 @@
 
 <Wizard
     title="Create organization"
-    steps={stepsComponents}
+    steps={$stepsComponents}
     finalAction="Start trial"
     on:finish={create}
     on:exit={onFinish} />

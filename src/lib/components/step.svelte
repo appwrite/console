@@ -5,7 +5,7 @@
     export let current = false;
     export let currentSub = 0;
     export let isSub = false;
-    export let step: { text: string; substeps?: { text: string }[] };
+    export let step: { text: string; disabled?: boolean; substeps?: { text: string }[] };
 </script>
 
 <li
@@ -13,6 +13,7 @@
     on:keyup|self={clickOnEnter}
     class:steps-item={!isSub}
     class:steps-sub-item={isSub}
+    class:u-opacity-50={step.disabled}
     style={`cursor: ${completed ? 'pointer' : 'default'};`}
     aria-label={`${completed ? 'done' : current ? 'current' : ''} step`}>
     {#if isSub}
