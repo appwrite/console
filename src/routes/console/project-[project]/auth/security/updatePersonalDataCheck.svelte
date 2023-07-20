@@ -4,7 +4,7 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputSwitch } from '$lib/elements/forms';
-    import FormList from '$lib/elements/forms/formList.svelte';
+    import { FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
