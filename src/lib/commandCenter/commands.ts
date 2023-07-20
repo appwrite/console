@@ -32,6 +32,7 @@ type BaseCommand = {
     group?: CommandGroup;
     icon?: string;
     rank?: number;
+    nested?: boolean;
 };
 
 type KeyedCommand = BaseCommand & {

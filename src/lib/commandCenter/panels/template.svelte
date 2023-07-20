@@ -13,7 +13,7 @@
     import { quadOut } from 'svelte/easing';
     import { crossfade } from 'svelte/transition';
 
-    type BaseOption = { callback: () => void; group?: string; rank?: number };
+    type BaseOption = { callback: () => void; group?: string; rank?: number; nested?: boolean };
     type Option = $$Generic<BaseOption>;
     export let options: Option[] | null = null;
     export let search = '';
@@ -203,6 +203,24 @@
             }
         }
     };
+
+    const isFirstNested = (index: number) => {
+        const prevItem = groupsAndOptions[index - 1];
+        const item = groupsAndOptions[index];
+        if (isGroup(item)) return false;
+        if (!item.nested) return false;
+
+        return !isGroup(prevItem) && !prevItem.nested;
+    };
+
+    const isLastNested = (index: number) => {
+        const nextItem = groupsAndOptions[index + 1];
+        const item = groupsAndOptions[index];
+        if (isGroup(item)) return false;
+        if (!item.nested) return false;
+
+        return isGroup(nextItem) || !nextItem.nested;
+    };
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
@@ -232,14 +250,20 @@
     <div class="content" bind:this={contentEl}>
         {#if groupsAndOptions}
             <ul class="options">
-                {#each groupsAndOptions as item}
+                {#each groupsAndOptions as item, i}
                     {@const isSelected = !isGroup(item) && item.index === selected}
+
                     {#if isGroup(item)}
                         <li class="group eyebrow-heading-3">
                             {item.name}
                         </li>
                     {:else}
-                        <li class="result" data-selected={isSelected ? true : undefined}>
+                        <li
+                            class="result"
+                            data-selected={isSelected ? true : undefined}
+                            class:nested={item.nested}
+                            class:first-nested={isFirstNested(i)}
+                            class:last-nested={isLastNested(i)}>
                             {#if isSelected}
                                 <div
                                     class="bg"
@@ -431,6 +455,26 @@
                     width: 100%;
 
                     box-shadow: none !important;
+                }
+
+                &.nested {
+                    margin-left: 30px;
+
+                    &.first-nested::before {
+                        top: 8px;
+                    }
+
+                    &.last-nested::before {
+                        height: calc(100% - 8px);
+                    }
+
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        left: -8px;
+                        border-left: 1px solid hsl(var(--color-border));
+                        height: 100%;
+                    }
                 }
             }
         }

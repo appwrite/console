@@ -29,6 +29,7 @@ export const userSearcher = (async (query: string) => {
                     promptDeleteUser(users[0].$id);
                 },
                 group: 'users',
+                nested: true,
                 icon: 'trash'
             },
             {
@@ -36,21 +37,24 @@ export const userSearcher = (async (query: string) => {
                 callback: () => {
                     goto(`/console/project-${projectId}/auth/user-${users[0].$id}/activity`);
                 },
-                group: 'users'
+                group: 'users',
+                nested: true
             },
             {
                 label: 'Go to sessions',
                 callback: () => {
                     goto(`/console/project-${projectId}/auth/user-${users[0].$id}/sessions`);
                 },
-                group: 'users'
+                group: 'users',
+                nested: true
             },
             {
                 label: 'Go to memberships',
                 callback: () => {
                     goto(`/console/project-${projectId}/auth/user-${users[0].$id}/memberships`);
                 },
-                group: 'users'
+                group: 'users',
+                nested: true
             }
         ];
     }
