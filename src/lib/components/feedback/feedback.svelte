@@ -1,40 +1,41 @@
 <script lang="ts">
+    import { Button, Form } from '$lib/elements/forms';
     import {
-        Form,
-        FormList,
-        InputTextarea,
-        Button,
-        InputText,
-        InputEmail
-    } from '$lib/elements/forms';
-    import { feedback } from '$lib/stores/app';
+        feedback,
+        selectedFeedback,
+        feedbackOptions,
+        feedbackData
+    } from '$lib/stores/feedback';
     import { addNotification } from '$lib/stores/notifications';
 
-    let message: string;
-    let name: string;
-    let email: string;
-    async function handleSubmit() {
-        try {
-            await feedback.submitFeedback('feedback-general', message, name, email);
+    $: $selectedFeedback = feedbackOptions.find((option) => option.type === $feedback.type);
 
+    async function submit() {
+        try {
+            await feedback.submitFeedback(
+                `feedback-${$feedback.type}`,
+                $feedbackData.message,
+                $feedbackData.name,
+                $feedbackData.email
+            );
             addNotification({
                 type: 'success',
                 message: 'Feedback submitted successfully'
             });
+            feedback.toggleFeedback();
+            feedbackData.reset();
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-        } finally {
-            feedback.toggleFeedback();
         }
     }
 </script>
 
 <section class="drop-section">
     <header class="u-flex u-main-space-between u-gap-16">
-        <h4 class="body-text-1 u-bold">How can we improve?</h4>
+        <h4 class="body-text-1 u-bold">{$selectedFeedback.title}</h4>
         <button
             type="button"
             class="button is-text is-only-icon u-margin-inline-start-auto"
@@ -46,21 +47,11 @@
         </button>
     </header>
     <div class="u-margin-block-start-8 u-line-height-1-5">
-        Your feedback is important to us. Please be honest and tell us what you think.
+        {$selectedFeedback.desc}
     </div>
 
-    <Form onSubmit={handleSubmit}>
-        <FormList>
-            <InputText label="Name" id="name" bind:value={name} placeholder="Enter name" />
-            <InputEmail label="Email" id="email" bind:value={email} placeholder="Enter email" />
-            <InputTextarea
-                id="feedback"
-                placeholder="Your message here"
-                label="Message"
-                required
-                bind:value={message} />
-        </FormList>
-
+    <Form onSubmit={submit}>
+        <svelte:component this={$selectedFeedback.component} />
         <div class="u-flex u-main-end u-gap-16 u-margin-block-start-24">
             <Button text on:click={() => feedback.toggleFeedback()}>Cancel</Button>
             <Button secondary submit>Submit</Button>
