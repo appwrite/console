@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
+    import { AvatarInitials, DropList, DropListItem, DropListLink, Support } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
