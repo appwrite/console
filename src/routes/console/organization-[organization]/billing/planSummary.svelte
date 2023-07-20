@@ -6,6 +6,8 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     // import { sdk } from '$lib/stores/sdk';
     import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
 
@@ -58,7 +60,7 @@
     </svelte:fragment>
     <svelte:fragment slot="actions">
         <!-- TODO: add change plan method -->
-        <Button text>Change plan</Button>
+        <Button text on:click={() => wizard.start(ChangeOrganizationTierCloud)}>Change plan</Button>
         <Button secondary href={`${base}/console/organization-${$organization.$id}/usage`}
             >View estimated usage</Button>
     </svelte:fragment>

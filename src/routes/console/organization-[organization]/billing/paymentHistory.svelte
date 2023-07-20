@@ -64,11 +64,11 @@
                         <TableRow>
                             <TableCellText title="date">{toLocaleDate(invoice.from)}</TableCellText>
                             <TableCell title="status">
-                                <Pill>test</Pill>
+                                <Pill>{invoice.status}</Pill>
                             </TableCell>
                             <TableCellText title="due">{invoice.amount}</TableCellText>
-                            <TableCellText title="invoice number"
-                                >{invoice.aggregationId}
+                            <TableCellText title="invoice number">
+                                {invoice.$id}
                             </TableCellText>
                             <TableCell showOverflow>
                                 <DropList

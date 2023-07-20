@@ -260,31 +260,39 @@ export const eventServices: Array<EventService> = [
 
 export const usageRates = {
     'tier-0': [
-        { resource: 'Organization members', limit: '1', rate: 'lorem' },
-        { resource: 'Bandwidth', limit: '1', rate: 'lorem' },
-        { resource: 'Storage', limit: '1', rate: 'lorem' },
-        { resource: 'Function executions', limit: '1', rate: 'lorem' },
-        { resource: 'Active users', limit: '1', rate: 'lorem' },
-        { resource: 'Concurrent connections', limit: '1', rate: 'lorem' }
-    ],
-    'tier-1': [
-        { resource: 'Organization members', limit: '1', rate: 'lorem' },
-        { resource: 'Bandwidth', limit: '1', rate: 'lorem' },
-        { resource: 'Storage', limit: '1', rate: 'lorem' },
-        { resource: 'Function executions', limit: '1', rate: 'lorem' },
-        { resource: 'Active users', limit: '1', rate: 'lorem' },
-        { resource: 'Concurrent connections', limit: '1', rate: 'lorem' }
-    ],
-    'tier-2': [
-        { resource: 'Organization members', limit: 'Unlimited', rate: '20$/member' },
+        { resource: 'Organization members', limit: 'Unlimited', rate: '$20/member' },
         { resource: 'Bandwidth', limit: '1TB', rate: '$0.04/GB' },
         { resource: 'Storage', limit: '150GB', rate: '$0.025/GB' },
-        { resource: 'Function executions', limit: '3500000 executions', rate: '$2/1M executions' },
-        { resource: 'Active users', limit: '200000', rate: '$0.0012/users' },
         {
-            resource: 'Concurrent connections',
-            limit: '750 connections',
-            rate: '$5/1000 connections'
-        }
+            resource: 'Function executions',
+            limit: '3,500,000 executions',
+            rate: '$2/1M executions'
+        },
+        { resource: 'Active users', limit: '200,000 AU', rate: '$0.0012/user' },
+        { resource: 'Concurrent connections', limit: '750 connections', rate: '$5/1K connections' }
+    ],
+    'tier-1': [
+        { resource: 'Organization members', limit: 'Unlimited', rate: '$20/member' },
+        { resource: 'Bandwidth', limit: '1TB', rate: '$0.04/GB' },
+        { resource: 'Storage', limit: '150GB', rate: '$0.025/GB' },
+        {
+            resource: 'Function executions',
+            limit: '3,500,000 executions',
+            rate: '$2/1M executions'
+        },
+        { resource: 'Active users', limit: '200,000 AU', rate: '$0.0012/user' },
+        { resource: 'Concurrent connections', limit: '750 connections', rate: '$5/1K connections' }
+    ],
+    'tier-2': [
+        { resource: 'Organization members', limit: 'Unlimited', rate: '$20/member' },
+        { resource: 'Bandwidth', limit: '1TB', rate: '$0.04/GB' },
+        { resource: 'Storage', limit: '150GB', rate: '$0.025/GB' },
+        {
+            resource: 'Function executions',
+            limit: '3,500,000 executions',
+            rate: '$2/1M executions'
+        },
+        { resource: 'Active users', limit: '200,000 AU', rate: '$0.0012/user' },
+        { resource: 'Concurrent connections', limit: '750 connections', rate: '$5/1K connections' }
     ]
 };

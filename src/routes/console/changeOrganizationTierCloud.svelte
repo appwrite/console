@@ -3,17 +3,17 @@
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher, onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import Step1 from './wizard/cloudOrganization/step1.svelte';
-    import Step2 from './wizard/cloudOrganization/step2.svelte';
-    import Step3 from './wizard/cloudOrganization/step3.svelte';
-    import Step4 from './wizard/cloudOrganization/step4.svelte';
-    import { createOrganization } from './wizard/cloudOrganization/store';
+    import Step1 from './wizard/cloudOrganizationChangeTier/step1.svelte';
+    import Step2 from './wizard/cloudOrganizationChangeTier/step2.svelte';
+    import Step3 from './wizard/cloudOrganizationChangeTier/step3.svelte';
+    import Step4 from './wizard/cloudOrganizationChangeTier/step4.svelte';
+    import { changeOrganizationTier } from './wizard/cloudOrganizationChangeTier/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@appwrite.io/console';
     import { page } from '$app/stores';
+    import { organization } from '$lib/stores/organization';
 
     const dispatch = createEventDispatcher();
 
@@ -21,26 +21,25 @@
         await invalidate(Dependencies.FUNCTIONS);
     }
 
-    async function create() {
+    async function upgrade() {
         try {
-            const org = await sdk.forConsole.billing.createOrganization(
-                $createOrganization.id ?? ID.unique(),
-                $createOrganization.name,
-                $createOrganization.billingPlan,
-                $createOrganization.paymentMethodId
+            const org = await sdk.forConsole.billing.updatePlan(
+                $organization.$id,
+                $changeOrganizationTier.billingPlan,
+                $changeOrganizationTier.paymentMethodId
             );
 
             //Add budget
-            if ($createOrganization?.billingBudget) {
+            if ($changeOrganizationTier?.billingBudget) {
                 await sdk.forConsole.billing.updateBudget(
                     org.$id,
-                    $createOrganization.billingBudget,
+                    $changeOrganizationTier.billingBudget,
                     [75]
                 );
             }
             //Add collaborators
-            if ($createOrganization?.collaborators?.length) {
-                $createOrganization.collaborators.forEach(async (collaborator) => {
+            if ($changeOrganizationTier?.collaborators?.length) {
+                $changeOrganizationTier.collaborators.forEach(async (collaborator) => {
                     await sdk.forConsole.teams.createMembership(
                         org.$id,
                         ['collaborator'],
@@ -55,10 +54,13 @@
             await goto(`/console/organization-${org.$id}`);
             addNotification({
                 type: 'success',
-                message: `${$createOrganization.name} has been created`
+                isHtml: true,
+                message: `
+                <b>Your organization has been upgraded</b>
+                Make the most of your increased resource capacity and continue building great things with Appwrite.`
             });
             trackEvent(Submit.OrganizationCreate, {
-                customId: !!$createOrganization.id
+                customId: !!$changeOrganizationTier.id
             });
         } catch (e) {
             addNotification({
@@ -69,9 +71,8 @@
         }
     }
     onDestroy(() => {
-        $createOrganization = {
+        $changeOrganizationTier = {
             id: null,
-            name: null,
             billingPlan: 'tier-1',
             paymentMethodId: null,
             collaborators: []
@@ -81,7 +82,7 @@
     const stepsComponents: WizardStepsType = new Map();
 
     stepsComponents.set(1, {
-        label: 'Organization details',
+        label: 'Change plan',
         component: Step1
     });
     stepsComponents.set(2, {
@@ -99,8 +100,8 @@
 </script>
 
 <Wizard
-    title="Create organization"
+    title="Change plan"
     steps={stepsComponents}
     finalAction="Start trial"
-    on:finish={create}
+    on:finish={upgrade}
     on:exit={onFinish} />

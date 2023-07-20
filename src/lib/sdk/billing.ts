@@ -30,6 +30,7 @@ export type Invoice = {
     from: string;
     to: string;
     status: string;
+    dueAt: string;
 };
 
 export type InvoiceList = {
@@ -176,7 +177,7 @@ export class Billing {
         organizationId: string,
         billingPlan: string,
         paymentMethodId: string
-    ): Promise<string> {
+    ): Promise<Organization> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
             organizationId,

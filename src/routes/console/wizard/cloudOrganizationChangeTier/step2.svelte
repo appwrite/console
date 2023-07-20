@@ -4,8 +4,8 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { createOrganization } from './store';
-    import UsageRates from './usageRates.svelte';
+    import { changeOrganizationTier } from './store';
+    import UsageRates from '../cloudOrganization/usageRates.svelte';
     import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { loadStripe, type Stripe, type StripeElements } from '@stripe/stripe-js';
     import { organization } from '$lib/stores/organization';
@@ -33,7 +33,7 @@
         if (methods?.total) {
             clientSecret = methods.paymentMethods[0]?.clientSecret;
 
-            $createOrganization.paymentMethodId = methods.paymentMethods[0].$id;
+            $changeOrganizationTier.paymentMethodId = methods.paymentMethods[0].$id;
         } else if (!isStripeInitialized) {
             initialize();
         }
@@ -99,15 +99,13 @@
         }
     }
 
-    $: if ($createOrganization.paymentMethodId === null && !isStripeInitialized) {
+    $: if ($changeOrganizationTier.paymentMethodId === null && !isStripeInitialized) {
         initialize();
     }
 
-    $: if ($createOrganization.paymentMethodId) {
+    $: if ($changeOrganizationTier.paymentMethodId) {
         isStripeInitialized = false;
     }
-
-    $: console.log($createOrganization.paymentMethodId);
 </script>
 
 <WizardStep beforeSubmit={handleSubmit}>
@@ -124,7 +122,7 @@
                             label={`${method.brand} ending in ${method.last4}`}
                             value={method.$id}
                             name="payment"
-                            bind:group={$createOrganization.paymentMethodId} />
+                            bind:group={$changeOrganizationTier.paymentMethodId} />
                     </div>
                 {/each}
             {/if}
@@ -136,9 +134,9 @@
                         label="Add new payment method"
                         value={null}
                         name="payment"
-                        bind:group={$createOrganization.paymentMethodId} />
+                        bind:group={$changeOrganizationTier.paymentMethodId} />
                 {/if}
-                {#if $createOrganization.paymentMethodId === null}
+                {#if $changeOrganizationTier.paymentMethodId === null}
                     <FormList>
                         <InputText
                             id="name"
@@ -176,9 +174,9 @@
                 id="budget"
                 label="Budget cap"
                 placeholder="0"
-                bind:value={$createOrganization.billingBudget} />
+                bind:value={$changeOrganizationTier.billingBudget} />
         {/if}
     </FormList>
 </WizardStep>
 
-<UsageRates bind:show={showRates} tier={$organization?.billingPlan} />
+<UsageRates bind:show={showRates} tier={$changeOrganizationTier?.billingPlan} />
