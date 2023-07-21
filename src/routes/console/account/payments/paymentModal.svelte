@@ -33,7 +33,6 @@
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
-        console.log(methods);
         if (methods?.total) {
             clientSecret = methods.paymentMethods[0]?.clientSecret;
 
@@ -48,19 +47,24 @@
         isStripeInitialized = true;
 
         try {
+            // Check if there is a payment method and get the client secret
             clientSecret = methods.paymentMethods[0]?.clientSecret;
+            // If there is no payment method, create an empty one and get the client secret
             if (!clientSecret) {
                 paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+                clientSecret = paymentMethod.clientSecret;
             }
+
+            // Set up the options for the stripe elements
             const options = {
-                clientSecret: clientSecret ? clientSecret : paymentMethod.clientSecret,
+                clientSecret: clientSecret,
                 appearance: $app.themeInUse === 'dark' ? apperanceDark : apperanceLight
             };
-            // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
+            // Set up Elements and then create form
             elements = stripe.elements(options);
             createForm();
         } catch (e) {
-            // error = e.message;
+            error = e.message;
             console.log(e);
         }
     }
@@ -72,12 +76,13 @@
 
     async function handleSubmit() {
         try {
-            if (!clientSecret || !paymentMethod) {
+            // If a payment method was created during mount, use it, otherwise create a new one
+            if (!paymentElement) {
                 paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
-                clientSecret = paymentMethod.clientSecret;
             }
+            // Retireve the setup intent created with `createPaymentMethod`
             await stripe.retrieveSetupIntent(clientSecret);
-
+            // Confirm the setup intent with the payment method
             const { setupIntent } = await stripe.confirmCardSetup(clientSecret, {
                 payment_method: {
                     card: paymentElement,
@@ -105,7 +110,7 @@
     }
 </script>
 
-<Modal {error} onSubmit={handleSubmit} size="big" bind:show>
+<Modal bind:error onSubmit={handleSubmit} size="big" bind:show>
     <svelte:fragment slot="header">Add Payment Method</svelte:fragment>
     <FormList>
         <InputText
