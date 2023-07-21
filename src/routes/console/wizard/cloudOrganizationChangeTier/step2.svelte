@@ -6,14 +6,10 @@
     import { onMount } from 'svelte';
     import { changeOrganizationTier } from './store';
     import UsageRates from '../cloudOrganization/usageRates.svelte';
-    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
-    import { loadStripe, type Stripe, type StripeElements } from '@stripe/stripe-js';
-    import { organization } from '$lib/stores/organization';
+    import type { PaymentList } from '$lib/sdk/billing';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { app } from '$lib/stores/app';
-    import { apperanceDark, apperanceLight } from '$lib/stores/billing';
-    import { VARS, hasStripePublicKey } from '$lib/system';
+    import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
 
     let methods: PaymentList;
     let name: string;
@@ -21,86 +17,26 @@
     let showRates = false;
 
     // let error: string;
-    let elements: StripeElements;
-    let stripe: Stripe;
-    let clientSecret: string;
-    let paymentMethod: PaymentMethodData;
+
     let isStripeInitialized = false;
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
-        console.log(methods);
-        if (methods?.total) {
-            clientSecret = methods.paymentMethods[0]?.clientSecret;
 
-            $changeOrganizationTier.paymentMethodId = methods.paymentMethods[0].$id;
-        } else if (!isStripeInitialized) {
-            initialize();
-        }
+        isStripeInitialized = await initializeStripe(isStripeInitialized);
     });
-
-    async function initialize() {
-        if (!hasStripePublicKey) return;
-        stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
-        isStripeInitialized = true;
-
-        try {
-            clientSecret = methods.paymentMethods[0]?.clientSecret;
-            if (!clientSecret) {
-                paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
-            }
-            const options = {
-                clientSecret: clientSecret ? clientSecret : paymentMethod.clientSecret,
-                appearance: $app.themeInUse === 'dark' ? apperanceDark : apperanceLight
-            };
-            console.log(clientSecret);
-            // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 3
-            elements = stripe.elements(options);
-            createForm();
-        } catch (e) {
-            // error = e.message;
-            console.log(e);
-        }
-    }
-
-    async function createForm() {
-        const paymentElement = elements.create('payment');
-        paymentElement.mount('#payment-element');
-    }
 
     async function handleSubmit() {
         try {
-            await stripe.confirmSetup({
-                elements,
-                confirmParams: {
-                    return_url: 'http://localhost:3000'
-                },
-                redirect: 'if_required'
-            });
-            console.log(clientSecret);
-            if (!clientSecret) {
-                console.log('test2');
-                paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
-            }
-            const { setupIntent } = await stripe.retrieveSetupIntent(paymentMethod.clientSecret);
-            if (setupIntent && setupIntent.status === 'succeeded') {
-                await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                    $organization.$id,
-                    paymentMethod.$id
-                );
-                await invalidate(Dependencies.PAYMENT_METHODS);
-                console.log('test');
-                // const paymentElement = elements.getElement('payment');
-                // paymentElement.destroy();
-            } else console.log('test2');
+            await submitStripeCard(name);
+            invalidate(Dependencies.PAYMENT_METHODS);
         } catch (e) {
-            console.log(e);
-            // trackError(StripeError, Submit.ProjectCreate);
+            console.log(e.message);
         }
     }
 
     $: if ($changeOrganizationTier.paymentMethodId === null && !isStripeInitialized) {
-        initialize();
+        initializeStripe(isStripeInitialized);
     }
 
     $: if ($changeOrganizationTier.paymentMethodId) {

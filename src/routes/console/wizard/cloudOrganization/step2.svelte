@@ -41,8 +41,6 @@
     $: if ($createOrganization.paymentMethodId) {
         isStripeInitialized = false;
     }
-
-    $: console.log($createOrganization.paymentMethodId);
 </script>
 
 <WizardStep beforeSubmit={handleSubmit}>
