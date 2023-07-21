@@ -2,7 +2,7 @@ import { hasStripePublicKey, VARS } from '$lib/system';
 import { loadStripe, type Stripe, type StripeCardElement } from '@stripe/stripe-js';
 import { sdk } from './sdk';
 import { app } from './app';
-import { get } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { apperanceDark, apperanceLight } from './billing';
 import type { PaymentMethodData } from '$lib/sdk/billing';
 
@@ -11,10 +11,12 @@ let paymentMethod: PaymentMethodData;
 let clientSecret: string;
 let paymentElement: StripeCardElement;
 
-export async function initializeStripe(isStripeInitialized: boolean) {
+export const isStripeInitialized = writable(false);
+
+export async function initializeStripe() {
     if (!hasStripePublicKey) return;
     stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
-    isStripeInitialized = true;
+    isStripeInitialized.set(true);
 
     try {
         const methods = await sdk.forConsole.billing.listPaymentMethods();
@@ -39,7 +41,6 @@ export async function initializeStripe(isStripeInitialized: boolean) {
         const elements = stripe.elements(options);
         paymentElement = elements.create('card');
         paymentElement.mount('#payment-element');
-        return isStripeInitialized;
     } catch (e) {
         console.log(e);
     }
@@ -64,12 +65,12 @@ export async function submitStripeCard(name: string) {
         });
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            await sdk.forConsole.billing.updatePaymentMethod(
+            const method = await sdk.forConsole.billing.updatePaymentMethod(
                 paymentMethod.$id,
                 setupIntent.payment_method
             );
-
             paymentElement.destroy();
+            return method;
         } else console.log('something went wrong');
     } catch (e) {
         console.log(e);

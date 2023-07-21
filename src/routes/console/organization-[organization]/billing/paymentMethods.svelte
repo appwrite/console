@@ -9,7 +9,7 @@
     import { Button } from '$lib/elements/forms';
     import PaymentModal from '$routes/console/account/payments/paymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import { paymentMethods } from '$lib/stores/billing';
+    import { getCreditCardImage, paymentMethods } from '$lib/stores/billing';
     import { onMount } from 'svelte';
     import type { PaymentMethodData } from '$lib/sdk/billing';
 
@@ -127,6 +127,7 @@
         <h4 class="u-bold body-text-2">Default</h4>
         {#if $organization?.paymentMethodId}
             <CreditCardInfo
+                isBox
                 paymentMethod={defaultPaymentMethod}
                 isDeleteDisabled={!$organization?.backupPaymentMethodId} />
         {:else}
@@ -139,13 +140,19 @@
                             </Button>
                             <svelte:fragment slot="list">
                                 {#if $paymentMethods.total}
-                                    {#each $paymentMethods.paymentMethods.filter((o) => o.$id !== $organization.backupPaymentMethodId) as paymentMethod}
+                                    {#each $paymentMethods.paymentMethods.filter((o) => !!o.last4 && o.$id !== $organization.backupPaymentMethodId) as paymentMethod}
                                         <DropListItem
                                             on:click={() => addPaymentMethod(paymentMethod?.$id)}>
-                                            <p class="text">
-                                                Card ending in {paymentMethod.last4}
-                                                <span>{paymentMethod.brand}</span>
-                                            </p>
+                                            <span class="u-flex u-cross-center u-gap-8">
+                                                <p class="text">
+                                                    Card ending in {paymentMethod.last4}
+                                                </p>
+                                                <img
+                                                    width="23"
+                                                    height="16"
+                                                    src={getCreditCardImage(paymentMethod?.brand)}
+                                                    alt={paymentMethod?.brand} />
+                                            </span>
                                         </DropListItem>
                                     {/each}
                                 {/if}
@@ -176,14 +183,20 @@
                             </Button>
                             <svelte:fragment slot="list">
                                 {#if $paymentMethods.total}
-                                    {#each $paymentMethods.paymentMethods.filter((o) => o.$id !== $organization?.paymentMethodId) as paymentMethod}
+                                    {#each $paymentMethods.paymentMethods.filter((o) => !!o.last4 && o.$id !== $organization?.paymentMethodId) as paymentMethod}
                                         <DropListItem
                                             on:click={() =>
                                                 addBackupPaymentMethod(paymentMethod?.$id)}>
-                                            <p class="text">
-                                                Card ending in {paymentMethod.last4}
-                                                <span>{paymentMethod.brand}</span>
-                                            </p>
+                                            <span class="u-flex u-cross-center u-gap-8">
+                                                <p class="text">
+                                                    Card ending in {paymentMethod.last4}
+                                                </p>
+                                                <img
+                                                    width="23"
+                                                    height="16"
+                                                    src={getCreditCardImage(paymentMethod?.brand)}
+                                                    alt={paymentMethod?.brand} />
+                                            </span>
                                         </DropListItem>
                                     {/each}
                                 {/if}

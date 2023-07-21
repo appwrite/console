@@ -40,30 +40,34 @@
         {/if}
     </div>
 
-    <div class="u-margin-block-start-32">
-        <p class="body-text-1 u-bold">Organization members</p>
-        <p class="text">{collaboratorsNumber} invited</p>
-    </div>
-    <div class="u-margin-block-start-32">
-        <p class="body-text-1 u-bold">Payment</p>
-        {#await fetchCard()}
-            <div class="u-flex u-margin-block-start-4">
-                <div class="loader is-small" />
-            </div>
-        {:then card}
-            <p class="text">Card ending in {card.last4} {card.brand}</p>
-        {/await}
-    </div>
+    {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
+        <div class="u-margin-block-start-32">
+            <p class="body-text-1 u-bold">Organization members</p>
+            <p class="text">{collaboratorsNumber} invited</p>
+        </div>
+        <div class="u-margin-block-start-32">
+            <p class="body-text-1 u-bold">Payment</p>
+            {#await fetchCard()}
+                <div class="u-flex u-margin-block-start-4">
+                    <div class="loader is-small" />
+                </div>
+            {:then card}
+                <p class="text">Card ending in {card.last4} {card.brand}</p>
+            {/await}
+        </div>
+    {/if}
 
     <div class="box u-margin-block-start-32 u-flex u-flex-vertical u-gap-16">
-        <span class="u-flex u-main-space-between">
-            <p class="text">{plan.name} plan</p>
-            <p class="text">${plan.price}</p>
-        </span>
-        <span class="u-flex u-main-space-between">
-            <p class="text">Invited members</p>
-            <p class="text">${plan.collaboratorPrice * collaboratorsNumber}</p>
-        </span>
+        {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
+            <span class="u-flex u-main-space-between">
+                <p class="text">{plan.name} plan</p>
+                <p class="text">${plan.price}</p>
+            </span>
+            <span class="u-flex u-main-space-between">
+                <p class="text">Invited members</p>
+                <p class="text">${plan.collaboratorPrice * collaboratorsNumber}</p>
+            </span>
+        {/if}
         <div class="u-sep-block-start" />
         <span class="u-flex u-main-space-between">
             <p class="text">Estimated total</p>

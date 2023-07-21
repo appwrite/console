@@ -9,38 +9,42 @@
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
+    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
+    import { getCreditCardImage } from '$lib/stores/billing';
 
     let methods: PaymentList;
     let name: string;
     let budgetEnabled = false;
     let showRates = false;
 
-    let isStripeInitialized = false;
-
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
+        $createOrganization.paymentMethodId =
+            methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
 
-        isStripeInitialized = await initializeStripe(isStripeInitialized);
+        // await initializeStripe();
     });
 
     async function handleSubmit() {
         try {
-            await submitStripeCard(name);
+            const method = await submitStripeCard(name);
+            $createOrganization.paymentMethodId = method.$id;
             invalidate(Dependencies.PAYMENT_METHODS);
         } catch (e) {
             console.log(e.message);
         }
     }
 
-    $: if ($createOrganization.paymentMethodId === null && !isStripeInitialized) {
-        initializeStripe(isStripeInitialized);
+    $: if ($createOrganization.paymentMethodId === null && !$isStripeInitialized) {
+        initializeStripe();
     }
 
     $: if ($createOrganization.paymentMethodId) {
-        isStripeInitialized = false;
+        isStripeInitialized.set(false);
     }
+
+    $: filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);
 </script>
 
 <WizardStep beforeSubmit={handleSubmit}>
@@ -50,14 +54,23 @@
     <FormList>
         <div class:boxes-wrapper={methods?.total}>
             {#if methods?.total}
-                {#each methods.paymentMethods as method}
+                {#each filteredMethods as method}
                     <div class="box">
                         <InputRadio
                             id={`payment-method-${method.last4}`}
-                            label={`${method.brand} ending in ${method.last4}`}
                             value={method.$id}
                             name="payment"
-                            bind:group={$createOrganization.paymentMethodId} />
+                            bind:group={$createOrganization.paymentMethodId}>
+                            <span class="u-flex u-cross-center u-gap-8">
+                                <span>
+                                    <span class="u-capitalize">{method.brand}</span> ending in {method.last4}</span>
+                                <img
+                                    width="23"
+                                    height="16"
+                                    src={getCreditCardImage(method.brand)}
+                                    alt={method.brand} />
+                            </span>
+                        </InputRadio>
                     </div>
                 {/each}
             {/if}

@@ -9,7 +9,8 @@
     import type { PaymentList } from '$lib/sdk/billing';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
+    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
+    import { organization } from '$lib/stores/organization';
 
     let methods: PaymentList;
     let name: string;
@@ -18,12 +19,10 @@
 
     // let error: string;
 
-    let isStripeInitialized = false;
-
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
-
-        isStripeInitialized = await initializeStripe(isStripeInitialized);
+        $changeOrganizationTier.paymentMethodId =
+            $organization?.backupPaymentMethodId ?? methods.paymentMethods[0]?.$id ?? null;
     });
 
     async function handleSubmit() {
@@ -35,13 +34,15 @@
         }
     }
 
-    $: if ($changeOrganizationTier.paymentMethodId === null && !isStripeInitialized) {
-        initializeStripe(isStripeInitialized);
+    $: if ($changeOrganizationTier.paymentMethodId === null && !$isStripeInitialized) {
+        initializeStripe();
     }
 
     $: if ($changeOrganizationTier.paymentMethodId) {
-        isStripeInitialized = false;
+        isStripeInitialized.set(false);
     }
+
+    $: filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);
 </script>
 
 <WizardStep beforeSubmit={handleSubmit}>
@@ -51,7 +52,7 @@
     <FormList>
         <div class:boxes-wrapper={methods?.total}>
             {#if methods?.total}
-                {#each methods.paymentMethods as method}
+                {#each filteredMethods as method}
                     <div class="box">
                         <InputRadio
                             id={`payment-method-${method.last4}`}

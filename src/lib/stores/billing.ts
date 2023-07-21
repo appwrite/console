@@ -1,5 +1,6 @@
 import { page } from '$app/stores';
 import { derived } from 'svelte/store';
+import { sdk } from './sdk';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -16,6 +17,11 @@ export function tierToPlan(tier: Tier) {
         default:
             return tierFree;
     }
+}
+
+export function getCreditCardImage(brand: string, width = 46, height = 32) {
+    if (!brand) return '';
+    return sdk.forConsole.avatars.getCreditCard(brand, width, height).toString();
 }
 
 export const tierFree = {

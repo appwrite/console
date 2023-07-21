@@ -1,5 +1,12 @@
 <script lang="ts">
-    import { CardGrid, DropList, DropListItem, Empty, Heading } from '$lib/components';
+    import {
+        CardGrid,
+        CreditCardInfo,
+        DropList,
+        DropListItem,
+        Empty,
+        Heading
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -19,6 +26,8 @@
     let showDelete = false;
 
     console.log($paymentMethods);
+
+    $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
 </script>
 
 <CardGrid>
@@ -33,65 +42,47 @@
             <Table noMargin noStyles>
                 <TableHeader>
                     <TableCellHead>Payment methods</TableCellHead>
-                    <TableCellHead width={220} />
-                    <TableCellHead width={50} />
                 </TableHeader>
                 <TableBody>
-                    {#each $paymentMethods.paymentMethods as paymentMethod, i}
+                    {#each filteredMethods as paymentMethod, i}
                         <TableRow>
                             <TableCell>
-                                <p class="text u-bold">
-                                    {paymentMethod.brand} ending in {paymentMethod.last4}
-                                    <span>{paymentMethod.brand}</span>
-                                </p>
-                                <p class="text">
-                                    Expires {paymentMethod.expiryMonth}/{paymentMethod.expiryYear}
-                                </p>
-                            </TableCell>
-                            <TableCell>
-                                {#if paymentMethod.default}
-                                    <Pill>
-                                        <span class="icon-info" /> default payment method
-                                    </Pill>
-                                {/if}
-                                {#if paymentMethod.backup}
-                                    <Pill>
-                                        <span class="icon-info" /> backup payment method
-                                    </Pill>
-                                {/if}
-                            </TableCell>
-                            <TableCell showOverflow>
-                                <DropList
-                                    bind:show={showDropdown[i]}
-                                    placement="bottom-start"
-                                    noArrow>
-                                    <Button
-                                        round
-                                        text
-                                        on:click={() => {
-                                            showDropdown[i] = !showDropdown[i];
-                                        }}>
-                                        <span class="icon-dots-horizontal" />
-                                    </Button>
-                                    <svelte:fragment slot="list">
-                                        <DropListItem
-                                            icon="pencil"
-                                            on:click={() => {
-                                                console.log('test');
-                                            }}>
-                                            Edit
-                                        </DropListItem>
-                                        <DropListItem
-                                            icon="trash"
-                                            on:click={() => {
-                                                selectedMethod = paymentMethod.$id;
-                                                showDelete = true;
-                                                showDropdown[i] = false;
-                                            }}>
-                                            Delete
-                                        </DropListItem>
-                                    </svelte:fragment>
-                                </DropList>
+                                <CreditCardInfo {paymentMethod}>
+                                    <div class="u-flex u-gap-16">
+                                        <Pill>test</Pill>
+                                        <DropList
+                                            bind:show={showDropdown[i]}
+                                            placement="bottom-start"
+                                            noArrow>
+                                            <Button
+                                                round
+                                                text
+                                                on:click={() => {
+                                                    showDropdown[i] = !showDropdown[i];
+                                                }}>
+                                                <span class="icon-dots-horizontal" />
+                                            </Button>
+                                            <svelte:fragment slot="list">
+                                                <DropListItem
+                                                    icon="pencil"
+                                                    on:click={() => {
+                                                        console.log('test');
+                                                    }}>
+                                                    Edit
+                                                </DropListItem>
+                                                <DropListItem
+                                                    icon="trash"
+                                                    on:click={() => {
+                                                        selectedMethod = paymentMethod.$id;
+                                                        showDelete = true;
+                                                        showDropdown[i] = false;
+                                                    }}>
+                                                    Delete
+                                                </DropListItem>
+                                            </svelte:fragment>
+                                        </DropList>
+                                    </div>
+                                </CreditCardInfo>
                             </TableCell>
                         </TableRow>
                     {/each}

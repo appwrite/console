@@ -12,10 +12,8 @@
     let name: string;
     let error: string;
 
-    let isStripeInitialized = false;
-
     onMount(async () => {
-        await initializeStripe(isStripeInitialized);
+        await initializeStripe();
     });
 
     async function handleSubmit() {
