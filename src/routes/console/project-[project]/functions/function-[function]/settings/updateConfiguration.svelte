@@ -30,8 +30,7 @@
     const functionId = $page.params.function;
 
     let entrypoint: string;
-    let installCmd: string;
-    let buildCmd: string;
+    let commands: string;
     let showGit = false;
     let branchesList: Models.BranchList;
     let selectedBranch: string;
@@ -41,8 +40,7 @@
 
     onMount(() => {
         entrypoint = $func?.entrypoint;
-        installCmd = $func?.installCommand;
-        buildCmd = $func?.buildCommand;
+        commands = $func?.commands;
         selectedBranch = $func?.vcsBranch;
         silentMode = $func?.vcsSilentMode ?? false;
         selectedDir = $func?.vcsRootDirectory;
@@ -88,8 +86,7 @@
                 $func.timeout || undefined,
                 $func.enabled,
                 $func.logging,
-                buildCmd,
-                installCmd,
+                commands,
                 $func.vcsInstallationId,
                 $func.vcsRepositoryId,
                 selectedBranch,
@@ -130,8 +127,7 @@
 
     $: isUpdateButtonEnabled =
         entrypoint !== $func?.entrypoint ||
-        installCmd !== $func?.installCommand ||
-        buildCmd !== $func?.buildCommand ||
+        commands !== $func?.commands ||
         selectedBranch !== $func?.vcsBranch ||
         silentMode !== $func?.vcsSilentMode ||
         selectedDir !== $func?.vcsRootDirectory;
@@ -226,15 +222,10 @@
                     <svelte:fragment slot="title">Build settings</svelte:fragment>
                     <FormList>
                         <InputText
-                            label="Install command"
+                            label="Commands"
                             placeholder="Enter an install commad (e.g. 'npm install')"
                             id="install"
-                            bind:value={installCmd} />
-                        <InputText
-                            label="Build command"
-                            placeholder="Enter a build commad (e.g. 'npm run build')"
-                            id="build"
-                            bind:value={buildCmd} />
+                            bind:value={commands} />
                     </FormList>
                 </CollapsibleItem>
             </Collapsible>

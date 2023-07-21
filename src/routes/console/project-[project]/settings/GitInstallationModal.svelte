@@ -2,11 +2,13 @@
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
 
     export let showGitInstall: boolean;
 
     function connectGitHub() {
         sdk.forProject.vcs.createGitHubInstallation(
+            $page.params.project,
             window.location.href + '?alert=installation-created'
         );
     }

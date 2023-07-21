@@ -25,7 +25,7 @@ export const createFunction = writable<Partial<Models.Function>>({
     entrypoint: null,
     execute: [],
     runtime: null,
-    buildCommand: null
+    commands: null
 });
 
 export const createFunctionDeployment = writable<FileList>();
