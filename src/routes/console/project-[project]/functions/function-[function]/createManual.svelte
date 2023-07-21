@@ -69,7 +69,7 @@
                 <FormList>
                     <InputTextarea
                         label="Commands"
-                        placeholder="Enter a build commad (e.g. 'npm run build')"
+                        placeholder="Enter a build commad (e.g. 'npm install')"
                         id="build"
                         bind:value={buildCommand} />
                 </FormList>
