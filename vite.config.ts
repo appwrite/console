@@ -7,7 +7,7 @@ const config = defineConfig({
         include: ['echarts', 'prismjs']
     },
     ssr: {
-        noExternal: ['echarts', 'prismjs', '@analytics/google-analytics', 'analytics']
+        noExternal: ['echarts', 'prismjs', '@analytics/google-analytics', 'analytics', 'dayjs']
     },
     define: {
         'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)
@@ -39,7 +39,7 @@ const testConfig = defineConfig({
 
 export default process.env.VITEST
     ? {
-          ...config,
-          ...testConfig
-      }
+        ...config,
+        ...testConfig
+    }
     : config;
