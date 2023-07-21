@@ -55,7 +55,7 @@
         },
         {
             label: 'Go to security',
-            keys: ['g', 's'],
+            keys: ['g', 'e'],
             callback() {
                 goto(`/console/project-${$project.$id}/auth/security`);
             },
@@ -64,7 +64,7 @@
         },
         {
             label: 'Go to settings',
-            keys: ['g', 's', 't'],
+            keys: ['g', 's'],
             callback() {
                 goto(`/console/project-${$project.$id}/auth/settings`);
             },

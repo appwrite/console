@@ -134,7 +134,12 @@
 </script>
 
 <Container>
-    <Heading tag="h2" size="5">Migrations</Heading>
+    <div class="u-flex u-cross-center u-gap-8">
+        <Heading tag="h2" size="5">Migrations</Heading>
+        <div class="tag eyebrow-heading-3">
+            <span class="text u-x-small">Experimental</span>
+        </div>
+    </div>
 
     <CardGrid>
         <Heading tag="h3" size="7">Import project data</Heading>
@@ -186,25 +191,25 @@
                     <ul class="avatars-group">
                         <li class="avatars-group-item">
                             <div class="avatar">
-                                <img src="/logos/firebase.png" alt="Firebase" width="20" />
+                                <i class="icon-user-group" />
                             </div>
                         </li>
 
                         <li class="avatars-group-item">
                             <div class="avatar">
-                                <img src="/logos/supabase.png" alt="Supabase" width="20" />
+                                <i class="icon-database" />
                             </div>
                         </li>
 
                         <li class="avatars-group-item">
                             <div class="avatar">
-                                <img src="/logos/nhost.png" alt="nhost" width="20" />
+                                <i class="icon-lightning-bolt" />
                             </div>
                         </li>
 
                         <li class="avatars-group-item">
                             <div class="avatar">
-                                <img src="/logos/appwrite.png" alt="Appwrite" width="18" />
+                                <i class="icon-folder" />
                             </div>
                         </li>
                     </ul>

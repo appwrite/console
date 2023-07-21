@@ -6,7 +6,7 @@
     import { provider } from '.';
 
     const providers: Record<Provider, string> = {
-        appwrite: 'Appwrite',
+        appwrite: 'Appwrite Self-hosted',
         firebase: 'Firebase',
         supabase: 'Supabase',
         nhost: 'NHost'
@@ -28,7 +28,6 @@
                     bind:group={$provider.provider}
                     value={key} />
                 <div class="content">
-                    <img src="/logos/{key}.png" width="33" class="u-margin-inline-auto" alt="" />
                     <p>{value}</p>
                 </div>
             </label>
@@ -174,17 +173,22 @@
 
 <style lang="scss">
     .cards {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(9.125rem, 1fr));
+        align-items: stretch;
         gap: 1rem;
     }
 
     .card {
-        --card-padding: 2.5rem 0.5rem;
+        --card-padding: 0;
         --card-border-radius: var(--border-radius-small);
         display: block;
-
         position: relative;
+
+        block-size: auto;
+        display: grid;
+        place-items: center;
+        text-align: center;
 
         input {
             position: absolute;
@@ -194,13 +198,12 @@
 
         .content {
             width: 9.125rem;
-            height: 4rem;
+            height: 5.5rem;
 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            text-align: center;
+            padding: 0 2rem;
+
+            display: grid;
+            place-items: center;
         }
     }
 </style>

@@ -272,21 +272,23 @@ export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTr
 });
 
 export type Searcher = (query: string) => Promise<Command[]>;
-const searchersMap = writable<Map<string, Searcher>>(new Map());
+const searchersMap = writable<Map<string, Searcher[]>>(new Map());
 
-export const registerSearcher = {
-    subscribe(runner: (cb: (searcher: Searcher) => void) => void) {
+export const registerSearchers = {
+    subscribe(runner: (cb: (...searchers: Searcher[]) => void) => void) {
         const uuid = crypto.randomUUID();
 
-        runner((searcher: Searcher) => {
+        runner((...searchers: Searcher[]) => {
             searchersMap.update((curr) => {
-                curr.set(uuid, searcher);
+                console.log(curr);
+                curr.set(uuid, [...searchers]);
                 return curr;
             });
         });
 
         return () => {
             searchersMap.update((curr) => {
+                console.log('deleting', curr, uuid);
                 curr.delete(uuid);
                 return curr;
             });
@@ -295,7 +297,7 @@ export const registerSearcher = {
 };
 
 export const searchers = derived(searchersMap, ($searchersMap) => {
-    return Array.from($searchersMap.values());
+    return Array.from($searchersMap.values()).flat();
 });
 
 export const useSearcher = (searcher: Searcher) => {

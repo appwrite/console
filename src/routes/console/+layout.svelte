@@ -17,11 +17,11 @@
 
     import { goto } from '$app/navigation';
 
-    import { CommandCenter, registerCommands, registerSearcher } from '$lib/commandCenter';
+    import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
     import { AIPanel, OrganizationsPanel } from '$lib/commandCenter/panels';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { openMigrationWizard } from './(migration-wizard)';
-    import { orgSearcher } from '$lib/commandCenter/searchers';
+    import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
 
     $: $registerCommands([
         {
@@ -72,6 +72,30 @@
             },
             group: 'help',
             icon: 'book-open'
+        },
+        {
+            label: 'Contact support',
+            callback: () => {
+                window.open('https://appwrite.io/support', '_blank');
+            },
+            group: 'help',
+            icon: 'question-mark-circle'
+        },
+        {
+            label: 'Send feedback',
+            callback: () => {
+                feedback.toggleFeedback();
+            },
+            group: 'help',
+            icon: 'annotation'
+        },
+        {
+            label: 'Join Discord community',
+            callback: () => {
+                window.open('https://appwrite.io/discord', '_blank');
+            },
+            group: 'help',
+            icon: 'discord'
         }
     ]);
 
@@ -109,7 +133,7 @@
         openMigrationWizard();
     }
 
-    $registerSearcher(orgSearcher);
+    $registerSearchers(orgSearcher, projectsSearcher);
 </script>
 
 <CommandCenter />

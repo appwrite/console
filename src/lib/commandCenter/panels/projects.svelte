@@ -1,29 +1,11 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import type { Models } from '@appwrite.io/console';
+    import { useSearcher } from '../commands';
+    import { projectsSearcher } from '../searchers';
     import Template from './template.svelte';
-    import { goto } from '$app/navigation';
 
-    let search = '';
-
-    let projects = [] as Models.ProjectList['projects'];
-    $page.data.streamed.projects.then((data) => {
-        projects = data.projects;
-    });
-
-    $: filteredProjects = projects
-        .filter((project) => project.name.toLowerCase().includes(search.toLowerCase()))
-        .map((project) => {
-            return {
-                label: project.name,
-                callback: () => {
-                    goto(`/console/project-${project.$id}`);
-                },
-                group: 'projects'
-            } as const;
-        });
+    const { search, results } = useSearcher(projectsSearcher);
 </script>
 
-<Template options={filteredProjects} bind:search>
+<Template options={$results} bind:search={$search}>
     <div class="option" slot="option" let:option>{option.label}</div>
 </Template>
