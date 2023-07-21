@@ -21,7 +21,10 @@
         if (search) {
             searchResults = [];
             executeSearch(search);
-        } else searchResults = [];
+        } else {
+            searchResults = [];
+            executeSearch.cancel();
+        }
     }
 
     $: results = [

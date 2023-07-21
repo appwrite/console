@@ -174,9 +174,13 @@ export const commandCenterKeyDownHandler = derived(
 
                 const { keys, ctrl: meta, shift, alt } = command;
 
-                const isMetaPressed = meta ? (isMac() ? event.metaKey : event.ctrlKey) : true;
-                const isShiftPressed = shift ? event.shiftKey : true;
-                const isAltPressed = alt ? event.altKey : true;
+                const isMetaPressed = meta
+                    ? isMac()
+                        ? event.metaKey
+                        : event.ctrlKey
+                    : !(isMac() ? event.metaKey : event.ctrlKey);
+                const isShiftPressed = shift ? event.shiftKey : !event.shiftKey;
+                const isAltPressed = alt ? event.altKey : !event.altKey;
 
                 const commandKeyCodes = keys.map((key) => key.toUpperCase().charCodeAt(0));
                 const allKeysPressed = recentKeyCodes.join('').includes(commandKeyCodes.join(''));

@@ -114,7 +114,7 @@
     type Group = { type: 'group'; name: string };
     type IndexedOption = Option & { index: number };
     function isGroup(item: Option | Group): item is Group {
-        return 'type' in item && item.type === 'group';
+        return !!item && 'type' in item && item.type === 'group';
     }
     const getGroupsAndOptions = (options: Option[]) => {
         if (!options) return null;
@@ -210,7 +210,7 @@
         if (isGroup(item)) return false;
         if (!item.nested) return false;
 
-        return !isGroup(prevItem) && !prevItem.nested;
+        return !isGroup(prevItem) && !prevItem?.nested;
     };
 
     const isLastNested = (index: number) => {
@@ -219,7 +219,7 @@
         if (isGroup(item)) return false;
         if (!item.nested) return false;
 
-        return isGroup(nextItem) || !nextItem.nested;
+        return isGroup(nextItem) || !nextItem?.nested;
     };
 </script>
 

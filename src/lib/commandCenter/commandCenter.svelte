@@ -14,6 +14,7 @@
     };
 
     export const toggleCommandCenter = () => {
+        console.log('toggleCommandCenter');
         if (get(subPanels).length > 0) {
             clearSubPanels();
         } else {
@@ -88,8 +89,8 @@
     }
 
     const handleKeydown = (e) => {
-        if (isInputEvent(e)) return;
         if (!$subPanels.length) {
+            if (isInputEvent(e)) return;
             keys = [...keys, e.key].slice(-10);
             resetKeys();
         }
