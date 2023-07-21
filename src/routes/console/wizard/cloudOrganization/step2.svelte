@@ -84,9 +84,9 @@
             }
             const { setupIntent } = await stripe.retrieveSetupIntent(clientSecret);
             if (setupIntent && setupIntent.status === 'succeeded') {
-                await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                    $createOrganization.id,
-                    paymentMethod.$id
+                await sdk.forConsole.billing.updatePaymentMethod(
+                    paymentMethod.$id,
+                    setupIntent.payment_method
                 );
                 await invalidate(Dependencies.PAYMENT_METHODS);
                 console.log('test');

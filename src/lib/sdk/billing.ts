@@ -1,5 +1,6 @@
 import type { Client } from '@appwrite.io/console';
 import type { Organization } from '../stores/organization';
+import type { PaymentMethod } from '@stripe/stripe-js';
 
 export type PaymentMethodData = {
     $id: string;
@@ -403,7 +404,7 @@ export class Billing {
     }
     async updatePaymentMethod(
         paymentMethodId: string,
-        providerMethodId: string
+        providerMethodId: string | PaymentMethod
     ): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
