@@ -39,7 +39,7 @@ const testConfig = defineConfig({
 
 export default process.env.VITEST
     ? {
-        ...config,
-        ...testConfig
-    }
+          ...config,
+          ...testConfig
+      }
     : config;
