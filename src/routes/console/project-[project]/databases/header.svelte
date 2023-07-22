@@ -3,19 +3,20 @@
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     const path = `/console/project-${projectId}/databases`;
     const tabs = [
         {
             href: path,
-            title: 'Databases',
+            title: $LL.console.project.navbar.databases.databases(),
             event: 'databases',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage',
+            title: $LL.console.project.navbar.databases.usage(),
             event: 'usage',
             hasChildren: true
         }
@@ -24,7 +25,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Databases</CoverTitle>
+        <CoverTitle>{$LL.console.project.title.databases()}</CoverTitle>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}

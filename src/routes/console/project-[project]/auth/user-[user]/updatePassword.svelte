@@ -35,7 +35,8 @@
         </div>
 
         <p>
-            Enter a new password. A password must contain <b>at least 8 characters.</b>
+            {$LL.console.project.texts.users.updatePassword.phaseOne()}{' '}<b
+                >{$LL.console.project.texts.users.updatePassword.phaseTwo()}</b>
         </p>
         <svelte:fragment slot="aside">
             <ul>
@@ -51,7 +52,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={!newPassword} submit>{$LL.console.project.button.submit.update()}</Button>
+            <Button disabled={!newPassword} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

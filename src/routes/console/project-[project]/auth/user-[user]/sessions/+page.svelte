@@ -16,6 +16,7 @@
     import DeleteAllSessions from '../deleteAllSessions.svelte';
     import DeleteSessions from '../deleteSession.svelte';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -31,15 +32,18 @@
     {#if data.sessions.total}
         <div class="u-flex u-main-end common-section">
             <Button secondary on:click={() => (showDeleteAll = true)}>
-                <span class="text">Delete All</span>
+                <span class="text">{$LL.console.project.button.submit.deleteAll()}</span>
             </Button>
         </div>
         <Table>
             <TableHeader>
-                <TableCellHead width={140}>Browser and Device</TableCellHead>
-                <TableCellHead width={140}>Session</TableCellHead>
-                <TableCellHead width={140}>Location</TableCellHead>
-                <TableCellHead width={140}>IP</TableCellHead>
+                <TableCellHead width={140}
+                    >{$LL.console.project.table.header.browserAndDevice()}</TableCellHead>
+                <TableCellHead width={140}
+                    >{$LL.console.project.table.header.sessions()}</TableCellHead>
+                <TableCellHead width={140}
+                    >{$LL.console.project.table.header.location()}</TableCellHead>
+                <TableCellHead width={140}>{$LL.console.project.table.header.ip()}</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -56,11 +60,12 @@
                                 </div>
                                 <p class="text">
                                     {session.clientName}
-                                    {session.clientVersion} on {session.osName}
+                                    {session.clientVersion}{' '}{$LL.console.project.texts.users.on()}{' '}{session.osName}
                                     {session.osVersion}
                                 </p>
                                 {#if session.current}
-                                    <Pill success>current session</Pill>
+                                    <Pill success
+                                        >{$LL.console.project.table.pill.currentSession()}</Pill>
                                 {/if}
                             </div>
                         </TableCell>
@@ -87,12 +92,14 @@
     {:else}
         <EmptySearch>
             <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
-                <p class="text u-line-height-1-5">No sessions available</p>
+                <p class="text u-line-height-1-5">
+                    {$LL.console.project.texts.users.noSessions()}
+                </p>
                 <Button
                     external
                     secondary
                     href="https://appwrite.io/docs/client/account#accountCreateEmailSession">
-                    Documentation
+                    {$LL.console.project.button.documemtation()}
                 </Button>
             </div>
         </EmptySearch>

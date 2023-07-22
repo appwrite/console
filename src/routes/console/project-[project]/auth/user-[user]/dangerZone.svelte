@@ -3,17 +3,17 @@
     import { Button } from '$lib/elements/forms';
     import DeleteUser from './deleteUser.svelte';
     import { user } from './store';
-
+    import LL from '$i18n/i18n-svelte';
+    
     let showDelete = false;
 </script>
 
 <CardGrid danger>
     <div>
-        <Heading tag="h6" size="7">Delete User</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.deleteUser()}</Heading>
     </div>
     <p>
-        The user will be permanently deleted, including all data associated with this user. This
-        action is irreversible.
+        {$LL.console.project.texts.users.dangerZone()}{' '}
     </p>
     <svelte:fragment slot="aside">
         <Box>
@@ -46,7 +46,8 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => (showDelete = true)} event="delete_user">Delete</Button>
+        <Button secondary on:click={() => (showDelete = true)} event="delete_user"
+            >{$LL.console.project.button.submit.delete()}</Button>
     </svelte:fragment>
 </CardGrid>
 

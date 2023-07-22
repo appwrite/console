@@ -9,6 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     let showVerifcationDropdown = false;
 
@@ -135,24 +136,30 @@
                     <Button
                         secondary
                         on:click={() => (showVerifcationDropdown = !showVerifcationDropdown)}>
-                        {$user.emailVerification ? 'Unverify' : 'Verify'} account
+                        {$user.emailVerification
+                            ? 'Unverify'
+                            : 'Verify'}{' '}{$LL.console.project.button.account()}
                     </Button>
                     <svelte:fragment slot="list">
                         <DropListItem icon="mail" on:click={() => updateVerificationEmail()}>
-                            {$user.emailVerification ? 'Unverify' : 'Verify'} email
+                            {$user.emailVerification ? 'Unverify' : 'Verify'}{' '}{$LL.console.project.button.email()}
                         </DropListItem>
                         <DropListItem icon="phone" on:click={() => updateVerificationPhone()}>
-                            {$user.phoneVerification ? 'Unverify' : 'Verify'} phone
+                            {$user.phoneVerification ? 'Unverify' : 'Verify'}{' '}{$LL.console.project.button.phone()}
                         </DropListItem>
                     </svelte:fragment>
                 </DropList>
             {:else if $user.email}
                 <Button secondary on:click={() => updateVerificationEmail()}>
-                    {$user.emailVerification ? 'Unverify' : 'Verify'} account
+                    {$user.emailVerification
+                        ? 'Unverify'
+                        : 'Verify'}{' '}{$LL.console.project.button.account()}
                 </Button>
             {:else if $user.phone}
                 <Button secondary on:click={() => updateVerificationPhone()}>
-                    {$user.phoneVerification ? 'Unverify' : 'Verify'} account
+                    {$user.phoneVerification
+                        ? 'Unverify'
+                        : 'Verify'}{' '}{$LL.console.project.button.account()}
                 </Button>
             {/if}
         {/if}

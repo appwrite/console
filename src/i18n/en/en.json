@@ -162,7 +162,6 @@
                 "orgId": "Organization ID"
             }
         },
-
         "account": {
             "title": {
                 "user": "User",
@@ -371,9 +370,14 @@
                 "createUser": "Create User",
                 "createTeam": "Create Team",
                 "teamPref": "Team Preferences",
+                "deleteUser": "Delete User",
+                "deleteSession": "Delete Sessions",
+                "deleteAllSession": "Delete All Sessions",
                 "deleteMember": "Delete Member",
                 "user": "User",
                 "team": "Team",
+                "databases": "Databases",
+                "createDb": "Create Database",
                 "createMembership": "Create Membership",
                 "deleteTeam": "Delete Team",
                 "oAuth2": "OAuth2 Settings",
@@ -605,20 +609,35 @@
                             }
                         }
                     }
+                },
+                "databases": {
+                    "createDb": {
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Enter database name"
+                            }
+                        }
+                    }
                 }
             },
             "button": {
                 "createUser": "Create user",
                 "clearSearch": "Clear Search",
+                "account": "account",
+                "email": "email",
+                "phone": "phone",
                 "createTeam": "Create team",
                 "createMembership": "Create Membership",
+                "createDb": "Create database",
                 "documentation": "Documentation",
                 "cancel": "Cancel",
                 "submit": {
                     "create": "Create",
                     "update": "Update",
                     "addPrefs": "Add Preference",
-                    "delete": "Delete"
+                    "delete": "Delete",
+                    "deleteAll": "Delete All"
                 },
                 "pill": {
                     "userId": "User ID"
@@ -631,9 +650,13 @@
                     "identifiers": "Identifiers",
                     "status": "Status",
                     "id": "ID",
+                    "ip": "IP",
                     "joined": "Joined",
                     "members": "Members",
-                    "created": "Created"
+                    "created": "Created",
+                    "browserAndDevice": "Browser and Device",
+                    "sessions": "Sessions",
+                    "location": "Location"
                 },
                 "pill": {
                     "verify": "verified",
@@ -643,7 +666,9 @@
                     "block": "blocked",
                     "userId": "User ID",
                     "teamId": "Team ID",
-                    "recommended": "recommended"
+                    "recommended": "recommended",
+                    "dbId": "Database ID",
+                    "currentSession": "current session"
                 }
             },
             "texts": {
@@ -682,6 +707,50 @@
                     "from": "from",
                     "dangerZone": " The team will be permanently deleted, including all data associated with this team. This action is irreversible.",
                     "createdOn": "Created on"
+                },
+                "databases": {
+                    "newDb": "Create a new database"
+                },
+                "users": {
+                    "updatePrefs": "You can update your user preferences by storing information on the user's objects so they can easily be shared across devices and sessions.",
+                    "updatePassword": {
+                        "phaseOne": "Enter a new password. A password must contain",
+                        "phaseTwo": "at least 8 characters."
+                    },
+                    "noMembership": "No memberships available",
+                    "noSessions": "No sessions available",
+                    "deleteUser": {
+                        "phaseOne": "Are you sure you want to delete",
+                        "from": "from"
+                    },
+                    "deleteSession": "Are you sure you want to delete this session?",
+                    "deleteMembership": {
+                        "phaseOne": "Are you sure you want to delete",
+                        "from": "from"
+                    },
+                    "deleteAllSession": {
+                        "phaseOne": "Are you sure you want to delete",
+                        "allOf": "all of",
+                        "sessions": "sessions"
+                    },
+                    "dangerZone": "The user will be permanently deleted, including all data associated with this user. This action is irreversible.",
+                    "on": "on"
+                }
+            },
+            "legends": {
+                "teams": {
+                    "users": "Registered users",
+                    "create": "Users created",
+                    "read": "Users read",
+                    "update": "Users updated",
+                    "delete": "Users deleted"
+                },
+                "databases": {
+                    "databases": "Total databases",
+                    "create": "Databases created",
+                    "read": "Databases read",
+                    "update": "Databases updated",
+                    "delete": "Databases deleted"
                 }
             },
             "navbar": {
@@ -702,6 +771,10 @@
                     "overview": "Overview",
                     "members": "Members",
                     "activity": "Activity"
+                },
+                "databases": {
+                    "databases": "Databases",
+                    "usage": "Usage"
                 }
             },
             "links": {

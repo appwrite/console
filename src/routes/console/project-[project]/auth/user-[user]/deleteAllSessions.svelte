@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     export let showDeleteAll = false;
 
@@ -37,12 +38,14 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete All Sessions</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.deleteAllSessions()}</svelte:fragment>
     <p data-private>
-        Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
+        {$LL.console.project.texts.users.deleteAllSession.phaseOne()}{' '}<b
+            >{$LL.console.project.texts.users.deleteAllSession.allOf()}{' '}{$user.name}'s{' '}{$LL.console.project.texts.users.deleteAllSession.sessions()}</b>
     </p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDeleteAll = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDeleteAll = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

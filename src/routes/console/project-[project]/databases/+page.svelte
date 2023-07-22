@@ -11,6 +11,7 @@
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { columns } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -27,7 +28,7 @@
     <GridHeader title="Databases" {columns} view={data.view}>
         <Button on:click={() => (showCreate = true)} event="create_database">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create database</span>
+            <span class="text">{$LL.console.project.button.createDb()}</span>
         </Button>
     </GridHeader>
 

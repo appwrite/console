@@ -59,8 +59,7 @@
     <CardGrid>
         <Heading tag="h6" size="7">{$LL.console.project.title.userData.userPref()}</Heading>
         <p>
-            You can update your user preferences by storing information on the user's objects so
-            they can easily be shared across devices and sessions.
+            {$LL.console.project.texts.users.updatePrefs()}
         </p>
         <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
@@ -133,7 +132,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={arePrefsDisabled} submit>{$LL.console.project.button.submit.update()}</Button>
+            <Button disabled={arePrefsDisabled} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -7,6 +7,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let showCreate = false;
 
@@ -40,12 +41,12 @@
 </script>
 
 <Modal size="big" onSubmit={create} bind:show={showCreate}>
-    <svelte:fragment slot="header">Create Database</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.createDb()}</svelte:fragment>
     <FormList>
         <InputText
             id="name"
-            label="Name"
-            placeholder="Enter database name"
+            label={$LL.console.project.forms.databases.createDb.inputs.name.label()}
+            placeholder={$LL.console.project.forms.databases.createDb.inputs.name.placeholder()}
             bind:value={name}
             autofocus
             required />
@@ -54,7 +55,7 @@
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}
                     ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Database ID
+                        {$LL.console.project.table.pill.dbId()}
                     </span></Pill>
             </div>
         {:else}
@@ -62,7 +63,8 @@
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button secondary on:click={() => (showCreate = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button submit>{$LL.console.project.button.submit.create()}</Button>
     </svelte:fragment>
 </Modal>

@@ -18,6 +18,7 @@
     import type { PageData } from './$types';
     import { trackEvent } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -31,9 +32,11 @@
     {#if data.memberships.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead onlyDesktop>Roles</TableCellHead>
-                <TableCellHead onlyDesktop>Joined</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.name()}</TableCellHead>
+                <TableCellHead onlyDesktop
+                    >{$LL.console.project.table.header.roles()}</TableCellHead>
+                <TableCellHead onlyDesktop
+                    >{$LL.console.project.table.header.joined()}</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -69,9 +72,11 @@
     {:else}
         <EmptySearch>
             <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
-                <p class="text u-line-height-1-5">No memberships available</p>
+                <p class="text u-line-height-1-5">
+                    {$LL.console.project.texts.users.noMembership()}
+                </p>
                 <Button external secondary href="https://appwrite.io/docs/client/teams">
-                    Documentation
+                    {$LL.console.project.button.documemtation()}
                 </Button>
             </div>
         </EmptySearch>

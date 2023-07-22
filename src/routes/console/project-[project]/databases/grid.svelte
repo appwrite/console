@@ -3,6 +3,8 @@
     import { page } from '$app/stores';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
+
     export let data: PageData;
     export let showCreate = false;
     const project = $page.params.project;
@@ -16,6 +18,6 @@
         </GridItem1>
     {/each}
     <svelte:fragment slot="empty">
-        <p>Create a new database</p>
+        <p>{$LL.console.project.texts.databases.newDb()}</p>
     </svelte:fragment>
 </CardContainer>

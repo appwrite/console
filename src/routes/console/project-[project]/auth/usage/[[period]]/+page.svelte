@@ -2,6 +2,7 @@
     import { page } from '$app/stores';
     import { Usage } from '$lib/layout';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -22,21 +23,21 @@
     {deleted}
     countMetadata={{
         legend: 'Users',
-        title: 'Registered users'
+        title: $LL.console.project.legend.teams.users()
     }}
     createdMetadata={{
         legend: 'Create',
-        title: 'Users created'
+        title: $LL.console.project.legend.teams.create()
     }}
     readMetadata={{
         legend: 'Read',
-        title: 'Users read'
+        title: $LL.console.project.legend.teams.read()
     }}
     updatedMetadata={{
         legend: 'Update',
-        title: 'Users updated'
+        title: $LL.console.project.legend.teams.update()
     }}
     deletedMetadata={{
         legend: 'Delete',
-        title: 'Users deleted'
+        title: $LL.console.project.legend.teams.delete()
     }} />
