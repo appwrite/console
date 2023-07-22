@@ -11,12 +11,13 @@
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/stores';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
+    import type { Option } from './attributes/store';
 
     export let data: PageData;
 
     let showCreateAttribute = false;
     let showCreateDropdown = false;
-    let selectedAttribute: string = null;
+    let selectedAttribute: Option['name'] = null;
 
     $: selected = preferences.getCustomCollectionColumns($page.params.collection);
     $: columns.set(

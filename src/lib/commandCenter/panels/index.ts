@@ -42,3 +42,9 @@ export const CollectionsPanel: SubPanel = {
     name: 'Collections',
     component: Collections
 };
+
+import CreateAttribute from './createAttribute.svelte';
+export const CreateAttributePanel: SubPanel = {
+    name: 'Create Attribute',
+    component: CreateAttribute
+};

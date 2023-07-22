@@ -1,10 +1,28 @@
+<script lang="ts" context="module">
+    const createAttributeArgs = writable({
+        showCreate: false,
+        selectedOption: null as Option['name'] | null
+    });
+
+    export const initCreateAttribute = (option: Option['name']) => {
+        createAttributeArgs.set({ showCreate: true, selectedOption: option });
+    };
+</script>
+
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { onDestroy, onMount } from 'svelte';
     import { collection } from './store';
-    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import CreateAttribute from './createAttribute.svelte';
+    import { writable } from 'svelte/store';
+    import type { Option } from './attributes/store';
+    import { CreateAttributePanel } from '$lib/commandCenter/panels';
+    import { database } from '../store';
+    import { project } from '$routes/console/project-[project]/store';
+    import { page } from '$app/stores';
 
     let unsubscribe: { (): void };
 
@@ -28,12 +46,78 @@
     $: $registerCommands([
         {
             label: 'Create Attribute',
-            keys: ['c', 'a'],
+            keys: $page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
             callback() {
-                // no-op
+                addSubPanel(CreateAttributePanel);
             },
             icon: 'plus',
             group: 'attributes'
+        },
+        {
+            label: 'Go to Documents',
+            keys: ['g', 'd'],
+            callback() {
+                goto(
+                    `/console/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}`
+                );
+            },
+            disabled: $page.url.pathname.endsWith($collection.$id),
+            group: 'collections'
+        },
+        {
+            label: 'Go to Attributes',
+            keys: ['g', 'a'],
+            callback() {
+                goto(
+                    `/console/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/attributes`
+                );
+            },
+            disabled: $page.url.pathname.endsWith('attributes'),
+            group: 'collections'
+        },
+        {
+            label: 'Go to Indexes',
+            keys: ['g', 'i'],
+            callback() {
+                goto(
+                    `/console/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/indexes`
+                );
+            },
+            disabled: $page.url.pathname.endsWith('indexes'),
+            group: 'collections'
+        },
+        {
+            label: 'Go to Activity',
+            keys: ['g', 'c'],
+            callback() {
+                goto(
+                    `/console/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/activity`
+                );
+            },
+            disabled: $page.url.pathname.endsWith('activity'),
+            group: 'collections'
+        },
+        {
+            label: 'Go to Usage',
+            keys: ['g', 'u'],
+            callback() {
+                goto(
+                    `/console/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/usage`
+                );
+            },
+            disabled: $page.url.pathname.endsWith('usage'),
+            group: 'collections'
+        },
+        {
+            label: 'Go to Settings',
+            keys: ['g', 's'],
+            callback() {
+                goto(
+                    `/console/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
+                );
+            },
+            disabled: $page.url.pathname.endsWith('settings'),
+            group: 'collections'
         }
     ]);
 
@@ -50,3 +134,5 @@
 </svelte:head>
 
 <slot />
+
+<CreateAttribute {...$createAttributeArgs} />
