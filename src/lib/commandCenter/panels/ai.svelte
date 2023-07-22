@@ -6,8 +6,8 @@
     import { useCompletion } from 'ai/svelte';
     import { subPanels } from '../subPanels';
 
-    import CoolerAppwrite from '$lib/images/appwrite-cooler.svg';
     import { isLanguage, type Language } from '$lib/components/code.svelte';
+    import CoolerAppwrite from '$lib/images/appwrite-cooler.svg';
     import { VARS } from '$lib/system';
 
     const { input, handleSubmit, completion, isLoading, complete } = useCompletion({

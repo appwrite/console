@@ -36,3 +36,9 @@ export const DatabasesPanel: SubPanel = {
     name: 'Databases',
     component: Databases
 };
+
+import Collections from './collections.svelte';
+export const CollectionsPanel: SubPanel = {
+    name: 'Collections',
+    component: Collections
+};

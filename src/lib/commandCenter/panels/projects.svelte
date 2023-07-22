@@ -7,5 +7,5 @@
 </script>
 
 <Template options={$results} bind:search={$search}>
-    <div class="option" slot="option" let:option>{option.label}</div>
+    <div slot="option" let:option>{option.label}</div>
 </Template>

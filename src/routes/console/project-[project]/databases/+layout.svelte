@@ -22,8 +22,8 @@
                 goto(`/console/project-${$project.$id}/databases/usage`);
             },
             keys: ['g', 'u'],
-            disabled: $page.url.pathname.includes('usage'),
-
+            disabled:
+                $page.url.pathname.includes('usage') || $page.url.pathname.includes('database-'),
             group: 'databases'
         }
     ]);

@@ -19,7 +19,9 @@ const groups = [
     'webhooks',
     'integrations',
     'migrations',
-    'users'
+    'users',
+    'collections',
+    'attributes'
 ] as const;
 
 export type CommandGroup = (typeof groups)[number];
@@ -104,7 +106,7 @@ export const commandCenterKeyDownHandler = derived(
         const reset = debounce(() => {
             recentKeyCodes = [];
             validCommands = [];
-        }, 2000);
+        }, 1000);
 
         const getHighestPriorityCommand = () => {
             if (!validCommands.length) return;
