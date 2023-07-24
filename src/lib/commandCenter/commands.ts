@@ -308,7 +308,7 @@ export const searchers = derived(searchersMap, ($searchersMap) => {
     return Array.from($searchersMap.values()).flat();
 });
 
-export const useSearcher = (searcher: Searcher) => {
+export const initSearcher = (searcher: Searcher) => {
     const search = writable('');
     const results = writable<Command[]>([]);
 

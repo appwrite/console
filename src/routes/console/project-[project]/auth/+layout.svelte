@@ -122,6 +122,7 @@
         }
     ]);
 
+    // To prioritize the groups!
     $: $updateCommandGroupRanks({ users: 300, teams: 200, security: 100 });
 </script>
 

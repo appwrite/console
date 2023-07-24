@@ -11,7 +11,9 @@
         {
             label: 'Create deployment',
             async callback() {
-                await goto(`/console/project-${$project.$id}/functions/function-${$func.$id}`);
+                if (!$page.url.pathname.endsWith($func.$id)) {
+                    await goto(`/console/project-${$project.$id}/functions/function-${$func.$id}`);
+                }
                 showCreateDeployment();
             },
             keys: $page.url.pathname.endsWith($func.$id) ? ['c'] : ['c', 'd'],
