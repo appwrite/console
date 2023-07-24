@@ -17,7 +17,7 @@
             },
             keys: $page.url.pathname.endsWith('auth') ? ['c'] : ['c', 'u'],
 
-            group: 'auth',
+            group: 'users',
             icon: 'plus',
             rank: $page.url.pathname.endsWith('auth') ? 10 : 0
         },
@@ -31,7 +31,7 @@
             },
             keys: $page.url.pathname.endsWith('teams') ? ['c'] : ['c', 't'],
 
-            group: 'auth',
+            group: 'teams',
             icon: 'plus',
             rank: $page.url.pathname.endsWith('teams') ? 10 : 0
         },
@@ -41,7 +41,8 @@
             callback() {
                 goto(`/console/project-${$project.$id}/auth/teams`);
             },
-            group: 'auth',
+            group: 'navigation',
+            rank: 1,
             disabled: $page.url.pathname.endsWith('teams')
         },
         {
@@ -50,7 +51,8 @@
             callback() {
                 goto(`/console/project-${$project.$id}/auth/usage`);
             },
-            group: 'auth',
+            group: 'navigation',
+            rank: 1,
             disabled: $page.url.pathname.endsWith('usage')
         },
         {
@@ -59,7 +61,8 @@
             callback() {
                 goto(`/console/project-${$project.$id}/auth/security`);
             },
-            group: 'auth',
+            group: 'navigation',
+            rank: 1,
             disabled: $page.url.pathname.endsWith('security')
         },
         {
@@ -68,12 +71,13 @@
             callback() {
                 goto(`/console/project-${$project.$id}/auth/settings`);
             },
-            group: 'auth',
+            group: 'navigation',
+            rank: 1,
             disabled: $page.url.pathname.endsWith('settings')
         }
     ]);
 
-    $: $updateCommandGroupRanks((prev) => ({ ...prev, auth: 200 }));
+    $: $updateCommandGroupRanks((prev) => ({ ...prev, users: 200, teams: 100 }));
 </script>
 
 <svelte:head>

@@ -13,7 +13,14 @@
     import { quadOut } from 'svelte/easing';
     import { crossfade } from 'svelte/transition';
 
-    type BaseOption = { callback: () => void; group?: string; rank?: number; nested?: boolean };
+    type BaseOption = {
+        callback: () => void;
+        group?: string;
+        rank?: number;
+        nested?: boolean;
+        icon?: string;
+        label?: string;
+    };
     type Option = $$Generic<BaseOption>;
     export let options: Option[] | null = null;
     export let search = '';
@@ -275,7 +282,14 @@
                                 on:click={getOptionClickHandler(item)}
                                 on:mouseover={getOptionFocusHandler(item)}
                                 on:focus={getOptionFocusHandler(item)}>
-                                <slot name="option" option={castOption(item)} />
+                                <slot name="option" option={castOption(item)}>
+                                    <div class="u-flex u-gap-8 u-cross-center">
+                                        <i class="icon-{item.icon ?? 'arrow-sm-right'}" />
+                                        <span>
+                                            {item.label}
+                                        </span>
+                                    </div>
+                                </slot>
                             </button>
                         </li>
                     {/if}

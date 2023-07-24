@@ -7,6 +7,11 @@
     export const initCreateAttribute = (option: Option['name']) => {
         createAttributeArgs.set({ showCreate: true, selectedOption: option });
     };
+
+    const showCreateIndex = writable(false);
+    export const initCreateIndex = () => {
+        showCreateIndex.set(true);
+    };
 </script>
 
 <script lang="ts">
@@ -23,6 +28,9 @@
     import { database } from '../store';
     import { project } from '$routes/console/project-[project]/store';
     import { page } from '$app/stores';
+    import CreateIndex from './indexes/createIndex.svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import CreateDocument from './createDocument.svelte';
 
     let unsubscribe: { (): void };
 
@@ -44,6 +52,15 @@
     });
 
     $: $registerCommands([
+        {
+            label: 'Create Document',
+            keys: $page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
+            callback() {
+                wizard.start(CreateDocument);
+            },
+            icon: 'plus',
+            group: 'documents'
+        },
         {
             label: 'Create Attribute',
             keys: $page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
@@ -118,6 +135,15 @@
             },
             disabled: $page.url.pathname.endsWith('settings'),
             group: 'collections'
+        },
+        {
+            label: 'Create Index',
+            keys: $page.url.pathname.endsWith('indexes') ? ['c'] : ['c', 'i'],
+            callback() {
+                initCreateIndex();
+            },
+            icon: 'plus',
+            group: 'indexes'
         }
     ]);
 
@@ -125,7 +151,8 @@
         ...p,
         attributes: 1000,
         documents: 900,
-        collections: 800
+        collections: 800,
+        indexes: 700
     }));
 </script>
 
@@ -136,3 +163,4 @@
 <slot />
 
 <CreateAttribute {...$createAttributeArgs} />
+<CreateIndex bind:showCreateIndex={$showCreateIndex} />

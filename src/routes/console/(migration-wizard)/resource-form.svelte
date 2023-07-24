@@ -10,10 +10,10 @@
     import {
         createMigrationFormStore,
         createMigrationProviderStore,
+        isVersionAtLeast,
         providerResources,
         resourcesToMigrationForm
     } from '$lib/stores/migration';
-    import { wizard } from '$lib/stores/wizard';
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
@@ -62,10 +62,11 @@
     }
 
     function selectAll() {
-        $formData = resourcesToMigrationForm(resources);
+        $formData = resourcesToMigrationForm(resources, version);
     }
 
     let report: any;
+    $: version = report?.version || '0.0';
 
     onMount(async () => {
         switch ($provider.provider) {
@@ -224,7 +225,7 @@
         </li>
     {/if}
 
-    {#if resources.includes('function')}
+    {#if resources.includes('function') && isVersionAtLeast(version, '1.4')}
         <li class="checkbox-field">
             <input
                 type="checkbox"

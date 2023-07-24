@@ -21,7 +21,10 @@ const groups = [
     'migrations',
     'users',
     'collections',
-    'attributes'
+    'attributes',
+    'indexes',
+    'documents',
+    'teams'
 ] as const;
 
 export type CommandGroup = (typeof groups)[number];
@@ -265,8 +268,11 @@ export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTr
     const initialRanks = {
         ...Object.fromEntries(groups.map((group) => [group, 0])),
         ungrouped: 9999,
-        users: 1,
-        help: -1
+        databases: 3,
+        users: 2,
+        teams: 1,
+        navigation: -1,
+        help: -2
     } as CommandGroupRanks;
 
     const transformations = Array.from($groupRankTransformations.values());

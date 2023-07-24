@@ -103,7 +103,31 @@ export const migrationFormToResources = (formData: MigrationFormData): Resource[
     return resources;
 };
 
-export const resourcesToMigrationForm = (resources: Resource[]): MigrationFormData => {
+const compareVersions = (a: string, b: string) => {
+    const aParts = a.split('.');
+    const bParts = b.split('.');
+    const maxLength = Math.max(aParts.length, bParts.length);
+    for (let i = 0; i < maxLength; i++) {
+        const aPart = aParts[i] ? parseInt(aParts[i]) : 0;
+        const bPart = bParts[i] ? parseInt(bParts[i]) : 0;
+        if (aPart > bPart) {
+            return 1;
+        }
+        if (aPart < bPart) {
+            return -1;
+        }
+    }
+    return 0;
+};
+
+export const isVersionAtLeast = (version: string, atLeast: string) => {
+    return compareVersions(version, atLeast) >= 0;
+};
+
+export const resourcesToMigrationForm = (
+    resources: Resource[],
+    version = '1.4'
+): MigrationFormData => {
     const formData = { ...initialFormData };
     if (resources.includes('user')) {
         formData.users.root = true;
@@ -117,13 +141,13 @@ export const resourcesToMigrationForm = (resources: Resource[]): MigrationFormDa
     if (includesAll(resources, ['collection', 'attribute', 'index', 'document'])) {
         formData.databases.documents = true;
     }
-    if (resources.includes('function')) {
+    if (resources.includes('function') && isVersionAtLeast(version, '1.4')) {
         formData.functions.root = true;
     }
-    if (resources.includes('envVar')) {
+    if (resources.includes('envVar') && isVersionAtLeast(version, '1.4')) {
         formData.functions.env = true;
     }
-    if (resources.includes('deployment')) {
+    if (resources.includes('deployment') && isVersionAtLeast(version, '1.4')) {
         formData.functions.inactive = true;
     }
     if (includesAll(resources, ['bucket', 'file'])) {
@@ -167,7 +191,6 @@ type NhostInput = {
 
 export type ProviderInput = AppwriteInput | NhostInput | SupabaseInput | FirebaseInput;
 export type Provider = ProviderInput['provider'];
-
 
 const initialProvider: ProviderInput = { provider: 'appwrite' };
 export const createMigrationProviderStore = () => {

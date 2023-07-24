@@ -48,3 +48,15 @@ export const CreateAttributePanel: SubPanel = {
     name: 'Create Attribute',
     component: CreateAttribute
 };
+
+import Users from './users.svelte';
+export const UsersPanel: SubPanel = {
+    name: 'Users',
+    component: Users
+};
+
+import Teams from './teams.svelte';
+export const TeamsPanel: SubPanel = {
+    name: 'Teams',
+    component: Teams
+};
