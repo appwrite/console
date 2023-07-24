@@ -68,36 +68,46 @@ export const providerResources: Record<Provider, Resource[]> = {
     firebase: ['user', 'database', 'collection', 'attribute', 'document', 'bucket', 'file']
 };
 
-export const migrationFormToResources = (formData: MigrationFormData): Resource[] => {
+export const migrationFormToResources = (
+    formData: MigrationFormData,
+    provider?: Provider
+): Resource[] => {
     const resources: Resource[] = [];
+    const addResource = (resource: Resource) => {
+        if (providerResources[provider].includes(resource)) {
+            resources.push(resource);
+        }
+    };
+
     if (formData.users.root) {
-        resources.push('user');
+        addResource('user');
     }
     if (formData.users.teams) {
-        resources.push('team');
-        resources.push('membership');
+        addResource('team');
+        addResource('membership');
     }
     if (formData.databases.root) {
-        resources.push('database');
+        addResource('database');
     }
     if (formData.databases.documents) {
-        resources.push('collection');
-        resources.push('attribute');
-        resources.push('index');
-        resources.push('document');
+        addResource('collection');
+        addResource('attribute');
+
+        addResource('index');
+        addResource('document');
     }
     if (formData.functions.root) {
-        resources.push('function');
+        addResource('function');
     }
     if (formData.functions.env) {
-        resources.push('envVar');
+        addResource('envVar');
     }
     if (formData.functions.inactive) {
-        resources.push('deployment');
+        addResource('deployment');
     }
     if (formData.storage.root) {
-        resources.push('bucket');
-        resources.push('file');
+        addResource('bucket');
+        addResource('file');
     }
 
     return resources;
@@ -138,7 +148,7 @@ export const resourcesToMigrationForm = (
     if (resources.includes('database')) {
         formData.databases.root = true;
     }
-    if (includesAll(resources, ['collection', 'attribute', 'index', 'document'])) {
+    if (includesAll(resources, ['collection', 'attribute', 'document'])) {
         formData.databases.documents = true;
     }
     if (resources.includes('function') && isVersionAtLeast(version, '1.4.0')) {

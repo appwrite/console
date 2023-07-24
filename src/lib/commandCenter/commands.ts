@@ -24,7 +24,8 @@ const groups = [
     'attributes',
     'indexes',
     'documents',
-    'teams'
+    'teams',
+    'security'
 ] as const;
 
 export type CommandGroup = (typeof groups)[number];

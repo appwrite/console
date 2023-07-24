@@ -14,7 +14,7 @@
         providerResources,
         resourcesToMigrationForm
     } from '$lib/stores/migration';
-    import { wizard } from '$lib/stores/wizard';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
@@ -69,58 +69,72 @@
     let report: any;
     $: version = report?.version || '0.0.0';
 
+    let isOpen = false;
     onMount(async () => {
-        switch ($provider.provider) {
-            case 'appwrite': {
-                const res = await sdk.forProject.migrations.getAppwriteReport(
-                    providerResources.appwrite,
-                    $provider.endpoint,
-                    $provider.projectID,
-                    $provider.apiKey
-                );
-                report = res;
-                break;
+        isOpen = true;
+        try {
+            switch ($provider.provider) {
+                case 'appwrite': {
+                    const res = await sdk.forProject.migrations.getAppwriteReport(
+                        providerResources.appwrite,
+                        $provider.endpoint,
+                        $provider.projectID,
+                        $provider.apiKey
+                    );
+                    report = res;
+                    break;
+                }
+                case 'supabase': {
+                    const res = await sdk.forProject.migrations.getSupabaseReport(
+                        providerResources.supabase,
+                        $provider.endpoint,
+                        $provider.apiKey,
+                        $provider.host,
+                        $provider.username,
+                        $provider.password,
+                        $provider.port
+                    );
+                    report = res;
+                    break;
+                }
+                case 'firebase': {
+                    const res = await sdk.forProject.migrations.getFirebaseReport(
+                        providerResources.firebase,
+                        $provider.serviceAccount
+                    );
+                    report = res;
+                    break;
+                }
+                case 'nhost': {
+                    const res = await sdk.forProject.migrations.getNHostReport(
+                        providerResources.nhost,
+                        $provider.subdomain,
+                        $provider.region,
+                        $provider.adminSecret,
+                        $provider.database,
+                        $provider.username,
+                        $provider.password
+                    );
+                    report = res;
+                }
             }
-            case 'supabase': {
-                const res = await sdk.forProject.migrations.getSupabaseReport(
-                    providerResources.supabase,
-                    $provider.endpoint,
-                    $provider.apiKey,
-                    $provider.host,
-                    $provider.username,
-                    $provider.password,
-                    $provider.port
-                );
-                report = res;
-                break;
-            }
-            case 'firebase': {
-                const res = await sdk.forProject.migrations.getFirebaseReport(
-                    providerResources.firebase,
-                    $provider.serviceAccount
-                );
-                report = res;
-                break;
-            }
-            case 'nhost': {
-                const res = await sdk.forProject.migrations.getNHostReport(
-                    providerResources.nhost,
-                    $provider.subdomain,
-                    $provider.region,
-                    $provider.adminSecret,
-                    $provider.database,
-                    $provider.username,
-                    $provider.password
-                );
-                report = res;
-            }
+        } catch (e) {
+            if (!isOpen) return;
+            addNotification({
+                message: e.message,
+                type: 'error'
+            });
         }
+
+        return () => {
+            isOpen = false;
+        };
     });
 
     $: console.log(report);
     $: resources = providerResources[$provider.provider];
 
-    $: wizard.setNextDisabled(!report);
+    // $: wizard.setNextDisabled(!report);
 </script>
 
 <div class="box" style:border-radius="0.5rem">
@@ -176,7 +190,9 @@
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Users</span>
 
-                <span class="inline-tag">{report?.user ?? '...'}</span>
+                {#if $provider.provider !== 'firebase'}
+                    <span class="inline-tag">{report?.user ?? '...'}</span>
+                {/if}
             </div>
             <div />
             <span>Import all users</span>
@@ -190,7 +206,9 @@
                             on:change={handleInputChange('users.teams')} />
                         <div class="u-flex u-gap-4">
                             <span class="u-bold">Include teams</span>
-                            <span class="inline-tag">{report?.team ?? '...'}</span>
+                            {#if $provider.provider === 'firebase'}
+                                <span class="inline-tag">{report?.team ?? '...'}</span>
+                            {/if}
                         </div>
                         <div />
                         <span>Import all teams and the team memberships of your users</span>
@@ -208,7 +226,9 @@
                 on:change={handleInputChange('databases.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Databases</span>
-                <span class="inline-tag">{report?.database ?? '...'}</span>
+                {#if $provider.provider !== 'firebase'}
+                    <span class="inline-tag">{report?.database ?? '...'}</span>
+                {/if}
             </div>
             <div />
             <span>Import all databases, including collections, indexes and attributes</span>
@@ -222,7 +242,9 @@
                             on:change={handleInputChange('databases.documents')} />
                         <div class="u-flex u-gap-4">
                             <span class="u-bold">Include documents</span>
-                            <span class="inline-tag">{report?.document ?? '...'}</span>
+                            {#if $provider.provider !== 'firebase'}
+                                <span class="inline-tag">{report?.document ?? '...'}</span>
+                            {/if}
                         </div>
                         <div />
                         <span>Import all of your documents</span>
@@ -240,7 +262,9 @@
                 on:change={handleInputChange('functions.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Functions</span>
-                <span class="inline-tag">{report?.function ?? '...'}</span>
+                {#if $provider.provider !== 'firebase'}
+                    <span class="inline-tag">{report?.function ?? '...'}</span>
+                {/if}
             </div>
             <div />
             <span>Import all functions and their active deployment</span>
@@ -274,6 +298,7 @@
             </ul>
         </li>
     {/if}
+
     {#if resources.includes('bucket') && resources.includes('file')}
         <li class="checkbox-field">
             <input
@@ -282,16 +307,23 @@
                 on:change={handleInputChange('storage.root')} />
             <div class="u-flex u-gap-4">
                 <span class="u-bold">Storage</span>
-                <span class="inline-tag">
-                    {report?.size ? `${report.size.toFixed(2)}MB` : '...'}
-                </span>
+                {#if $provider.provider !== 'firebase'}
+                    <span class="inline-tag">
+                        {report?.size ? `${report.size.toFixed(2)}MB` : '...'}
+                    </span>
+                {/if}
             </div>
             <div />
 
             <span>
-                Import all buckets <span class="inline-tag">{report?.bucket ?? '...'}</span> and
-                files
-                <span class="inline-tag">{report?.file ?? '...'}</span>
+                Import all buckets
+                {#if $provider.provider !== 'firebase'}
+                    <span class="inline-tag">{report?.bucket ?? '...'}</span>
+                {/if}
+                and files
+                {#if $provider.provider !== 'firebase'}
+                    <span class="inline-tag">{report?.file ?? '...'}</span>
+                {/if}
             </span>
         </li>
     {/if}

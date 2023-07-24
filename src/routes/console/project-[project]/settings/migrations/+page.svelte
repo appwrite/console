@@ -162,14 +162,13 @@
                     <TableBody>
                         {#each data.migrations as entry}
                             <TableRow>
-                                {@const source = capitalize(parseIfString(entry.source).type)}
                                 {@const status = getStatus(entry.status)}
                                 <TableCell title="Data">
                                     {isSameDay(new Date(), new Date(entry.$createdAt))
                                         ? 'Today'
                                         : toLocaleDate(entry.$createdAt)}
                                 </TableCell>
-                                <TableCell title="Source">{source}</TableCell>
+                                <TableCell title="Source">{entry.source}</TableCell>
                                 <TableCell title="Status">
                                     <div class="u-flex u-gap-4 u-cross-center">
                                         <i

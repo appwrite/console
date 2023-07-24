@@ -60,3 +60,9 @@ export const TeamsPanel: SubPanel = {
     name: 'Teams',
     component: Teams
 };
+
+import Functions from './functions.svelte';
+export const FunctionsPanel: SubPanel = {
+    name: 'Functions',
+    component: Functions
+};

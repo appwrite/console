@@ -41,8 +41,6 @@
         if (!counter) return 0;
         return Object.values(counter).reduce((acc, curr) => acc + curr, 0);
     };
-
-    $: parsedSource = parseIfString(details?.source || '{}');
 </script>
 
 <Modal bind:show on:close={() => (migrationId = null)} size="big">
@@ -58,9 +56,7 @@
             <span>Date</span>
             <span>{toLocaleDateTime(details.$createdAt)}</span>
             <span>Source</span>
-            <span>{parsedSource.type}</span>
-            <span>Project ID</span>
-            <span>{parsedSource.projectId}</span>
+            <span>{details.source}</span>
         </div>
 
         {#if Object.keys(statusCounters).length}

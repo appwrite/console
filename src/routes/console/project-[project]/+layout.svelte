@@ -9,7 +9,12 @@
 
     import { dbSearcher, userSearcher } from '$lib/commandCenter/searchers';
     import { MigrationBox } from '$lib/components';
-    import { UsersPanel, TeamsPanel, DatabasesPanel } from '$lib/commandCenter/panels';
+    import {
+        UsersPanel,
+        TeamsPanel,
+        DatabasesPanel,
+        FunctionsPanel
+    } from '$lib/commandCenter/panels';
 
     onMount(async () => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -78,7 +83,8 @@
             },
             group: 'users',
             icon: 'search',
-            keys: ['f', 'u']
+            keys: ['f', 'u'],
+            rank: 10
         },
         {
             label: 'Find Teams',
@@ -97,6 +103,15 @@
             group: 'databases',
             icon: 'search',
             keys: ['f', 'd']
+        },
+        {
+            label: 'Find Functions',
+            callback: () => {
+                addSubPanel(FunctionsPanel);
+            },
+            group: 'functions',
+            icon: 'search',
+            keys: ['f', 'f']
         }
     ]);
 

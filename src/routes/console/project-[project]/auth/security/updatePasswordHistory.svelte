@@ -39,7 +39,7 @@
 
 <Form onSubmit={updatePasswordHistoryLimit}>
     <CardGrid>
-        <Heading tag="h2" size="7">Password History</Heading>
+        <Heading tag="h2" size="7" id="password-history">Password History</Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch

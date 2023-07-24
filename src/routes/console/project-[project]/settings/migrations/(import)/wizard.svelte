@@ -12,70 +12,79 @@
     import { migrationFormToResources } from '$lib/stores/migration';
     import { started } from '../stores';
     import { showMigrationBox } from '$lib/components/migrationBox.svelte';
+    import { addNotification } from '$lib/stores/notifications';
 
     const onExit = () => {
         resetImportStores();
     };
 
     const onFinish = async () => {
-        const resources = migrationFormToResources($formData);
-        console.log('resources', resources);
+        try {
+            const resources = migrationFormToResources($formData, $provider.provider);
 
-        switch ($provider.provider) {
-            case 'appwrite': {
-                const res = await sdk.forProject.migrations.migrateAppwrite(
-                    resources,
-                    $provider.endpoint,
-                    $provider.projectID,
-                    $provider.apiKey
-                );
-                console.log('appwrite', res);
-                invalidate(Dependencies.MIGRATIONS);
-                break;
+            switch ($provider.provider) {
+                case 'appwrite': {
+                    const res = await sdk.forProject.migrations.migrateAppwrite(
+                        resources,
+                        $provider.endpoint,
+                        $provider.projectID,
+                        $provider.apiKey
+                    );
+                    console.log('appwrite', res);
+                    invalidate(Dependencies.MIGRATIONS);
+                    break;
+                }
+                case 'supabase': {
+                    const res = await sdk.forProject.migrations.migrateSupabase(
+                        resources,
+                        $provider.endpoint,
+                        $provider.apiKey,
+                        $provider.host,
+                        $provider.username,
+                        $provider.password,
+                        $provider.port
+                    );
+                    console.log('Supabase', res);
+                    invalidate(Dependencies.MIGRATIONS);
+                    break;
+                }
+                case 'firebase': {
+                    console.log('firebase', $provider.serviceAccount);
+                    const res = await sdk.forProject.migrations.migrateFirebase(
+                        resources,
+                        $provider.serviceAccount
+                    );
+                    console.log('Firebase', res);
+                    invalidate(Dependencies.MIGRATIONS);
+                    break;
+                }
+                case 'nhost': {
+                    const res = await sdk.forProject.migrations.migrateNHost(
+                        resources,
+                        $provider.subdomain,
+                        $provider.region,
+                        $provider.adminSecret,
+                        $provider.database,
+                        $provider.username,
+                        $provider.password
+                    );
+                    console.log('nhost', res);
+                    invalidate(Dependencies.MIGRATIONS);
+                    break;
+                }
             }
-            case 'supabase': {
-                const res = await sdk.forProject.migrations.migrateSupabase(
-                    resources,
-                    $provider.endpoint,
-                    $provider.apiKey,
-                    $provider.host,
-                    $provider.username,
-                    $provider.password,
-                    $provider.port
-                );
-                console.log('Supabase', res);
-                invalidate(Dependencies.MIGRATIONS);
-                break;
-            }
-            case 'firebase': {
-                const res = await sdk.forProject.migrations.migrateFirebase(
-                    resources,
-                    $provider.serviceAccount
-                );
-                console.log('Firebase', res);
-                invalidate(Dependencies.MIGRATIONS);
-                break;
-            }
-            case 'nhost': {
-                const res = await sdk.forProject.migrations.migrateNHost(
-                    resources,
-                    $provider.subdomain,
-                    $provider.region,
-                    $provider.adminSecret,
-                    $provider.database,
-                    $provider.username,
-                    $provider.password
-                );
-                console.log('nhost', res);
-                invalidate(Dependencies.MIGRATIONS);
-                break;
-            }
+            resetImportStores();
+            wizard.hide();
+            started.set(performance.now());
+
+            showMigrationBox.set(true);
+        } catch (e) {
+            addNotification({
+                title: 'Error',
+                message: e.message,
+                type: 'error'
+            });
         }
-        resetImportStores();
-        wizard.hide();
-        started.set(performance.now());
-
-        showMigrationBox.set(true);
     };
 
     onDestroy(onExit);
