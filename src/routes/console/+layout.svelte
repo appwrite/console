@@ -18,17 +18,10 @@
     import { goto } from '$app/navigation';
 
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
-    import {
-        AIPanel,
-        DatabasesPanel,
-        OrganizationsPanel,
-        TeamsPanel,
-        UsersPanel
-    } from '$lib/commandCenter/panels';
+    import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
+    import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { openMigrationWizard } from './(migration-wizard)';
-    import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
-    import Databases from '$lib/commandCenter/panels/databases.svelte';
 
     $: $registerCommands([
         {
@@ -57,31 +50,13 @@
             keys: ['f', 'o']
         },
         {
-            label: 'Find Users',
+            label: 'Find a project',
             callback: () => {
-                addSubPanel(UsersPanel);
+                addSubPanel(ProjectsPanel);
             },
-            group: 'users',
-            icon: 'search',
-            keys: ['f', 'u']
-        },
-        {
-            label: 'Find Teams',
-            callback: () => {
-                addSubPanel(TeamsPanel);
-            },
-            group: 'teams',
-            icon: 'search',
-            keys: ['f', 't']
-        },
-        {
-            label: 'Find Databases',
-            callback: () => {
-                addSubPanel(DatabasesPanel);
-            },
-            group: 'databases',
-            icon: 'search',
-            keys: ['f', 'd']
+            keys: ['f', 'p'],
+            group: 'projects',
+            icon: 'search'
         },
         {
             label: 'Create new Organization',

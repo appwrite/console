@@ -30,7 +30,6 @@
     });
 
     const handleInvalid = (event: Event) => {
-        console.log('Invalid');
         event.preventDefault();
 
         if (element.validity.valueMissing) {

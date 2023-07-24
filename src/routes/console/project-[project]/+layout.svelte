@@ -5,10 +5,11 @@
     import { project, stats } from './store';
 
     import { goto } from '$app/navigation';
-    import { registerCommands, registerSearchers } from '$lib/commandCenter';
+    import { addSubPanel, registerCommands, registerSearchers } from '$lib/commandCenter';
 
     import { dbSearcher, userSearcher } from '$lib/commandCenter/searchers';
     import { MigrationBox } from '$lib/components';
+    import { UsersPanel, TeamsPanel, DatabasesPanel } from '$lib/commandCenter/panels';
 
     onMount(async () => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -69,6 +70,33 @@
             },
             keys: ['p'],
             group: 'navigation'
+        },
+        {
+            label: 'Find Users',
+            callback: () => {
+                addSubPanel(UsersPanel);
+            },
+            group: 'users',
+            icon: 'search',
+            keys: ['f', 'u']
+        },
+        {
+            label: 'Find Teams',
+            callback: () => {
+                addSubPanel(TeamsPanel);
+            },
+            group: 'teams',
+            icon: 'search',
+            keys: ['f', 't']
+        },
+        {
+            label: 'Find Databases',
+            callback: () => {
+                addSubPanel(DatabasesPanel);
+            },
+            group: 'databases',
+            icon: 'search',
+            keys: ['f', 'd']
         }
     ]);
 

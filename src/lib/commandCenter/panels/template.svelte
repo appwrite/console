@@ -81,18 +81,15 @@
 
                 if (selectedIdx === 0) {
                     contentEl.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
+                        top: 0
                     });
                 } else if (selectedIdx === resultEls.length - 1) {
                     contentEl.scrollTo({
-                        top: contentEl.scrollHeight,
-                        behavior: 'smooth'
+                        top: contentEl.scrollHeight
                     });
                 } else if (selectedEl) {
                     selectedEl.scrollIntoView({
-                        block: 'nearest',
-                        behavior: 'smooth'
+                        block: 'nearest'
                     });
                 }
             });
@@ -272,10 +269,7 @@
                             class:first-nested={isFirstNested(i)}
                             class:last-nested={isLastNested(i)}>
                             {#if isSelected}
-                                <div
-                                    class="bg"
-                                    in:send|local={{ key: 'bg' }}
-                                    out:receive|local={{ key: 'bg' }} />
+                                <div class="bg" />
                             {/if}
                             <button
                                 class="option"

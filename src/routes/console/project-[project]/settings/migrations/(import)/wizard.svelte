@@ -20,7 +20,7 @@
     const onFinish = async () => {
         const resources = migrationFormToResources($formData);
         console.log('resources', resources);
-        return;
+
         switch ($provider.provider) {
             case 'appwrite': {
                 const res = await sdk.forProject.migrations.migrateAppwrite(

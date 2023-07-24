@@ -14,7 +14,6 @@
     };
 
     export const toggleCommandCenter = () => {
-        console.log('toggleCommandCenter');
         if (get(subPanels).length > 0) {
             clearSubPanels();
         } else {

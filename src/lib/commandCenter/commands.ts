@@ -288,7 +288,6 @@ export const registerSearchers = {
 
         runner((...searchers: Searcher[]) => {
             searchersMap.update((curr) => {
-                console.log(curr);
                 curr.set(uuid, [...searchers]);
                 return curr;
             });
@@ -296,7 +295,6 @@ export const registerSearchers = {
 
         return () => {
             searchersMap.update((curr) => {
-                console.log('deleting', curr, uuid);
                 curr.delete(uuid);
                 return curr;
             });

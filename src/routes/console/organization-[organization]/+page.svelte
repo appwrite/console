@@ -1,16 +1,29 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { addSubPanel, registerCommands } from '$lib/commandCenter';
-    import { ProjectsPanel } from '$lib/commandCenter/panels';
-    import { CardContainer, Empty, GridItem1, Heading, PaginationWithLimit } from '$lib/components';
+    import { registerCommands } from '$lib/commandCenter';
+    import {
+        CardContainer,
+        DropList,
+        DropListItem,
+        Empty,
+        GridItem1,
+        Heading,
+        PaginationWithLimit
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
 
     import { Container } from '$lib/layout';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import CreateOrganization from '../createOrganization.svelte';
     import type { PageData } from './$types';
     import CreateProject from './createProject.svelte';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { goto } from '$app/navigation';
+    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
+    import { loading } from '$routes/store';
 
     export let data: PageData;
 
@@ -49,15 +62,6 @@
 
     $: $registerCommands([
         {
-            label: 'Find a project',
-            callback: () => {
-                addSubPanel(ProjectsPanel);
-            },
-            keys: ['f'],
-            group: 'projects',
-            icon: 'search'
-        },
-        {
             label: 'Create project',
             callback: () => {
                 showCreate = true;
@@ -68,14 +72,47 @@
             icon: 'plus'
         }
     ]);
+
+    let showDropdown = false;
+
+    const importProject = async () => {
+        try {
+            loading.set(true);
+            const project = await sdk.forConsole.projects.create(
+                ID.unique(),
+                `Imported project ${new Date().toISOString()}`,
+                $page.params.organization,
+                'default'
+            );
+            trackEvent(Submit.ProjectCreate, {
+                teamId: $page.params.organization
+            });
+            await goto(`/console/project-${project.$id}/settings/migrations`);
+            openImportWizard();
+            loading.set(false);
+        } catch (e) {
+            trackError(e, Submit.ProjectCreate);
+        }
+    };
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Projects</Heading>
-        <Button on:click={() => (showCreate = true)} event="create_project">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create project</span>
-        </Button>
+        <DropList bind:show={showDropdown} placement="bottom-end">
+            <Button on:click={() => (showDropdown = true)} event="create_project">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create project</span>
+            </Button>
+            <svelte:fragment slot="list">
+                <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
+                <DropListItem on:click={importProject}>
+                    <div class="u-flex u-gap-8 u-cross-center">
+                        Import project <span class="tag eyebrow-heading-3">Experimental</span>
+                    </div>
+                </DropListItem>
+            </svelte:fragment>
+        </DropList>
     </div>
 
     {#if data.projects.total}
