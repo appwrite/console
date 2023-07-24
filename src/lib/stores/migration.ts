@@ -126,7 +126,7 @@ export const isVersionAtLeast = (version: string, atLeast: string) => {
 
 export const resourcesToMigrationForm = (
     resources: Resource[],
-    version = '1.4'
+    version = '0.0.0'
 ): MigrationFormData => {
     const formData = { ...initialFormData };
     if (resources.includes('user')) {
@@ -141,13 +141,13 @@ export const resourcesToMigrationForm = (
     if (includesAll(resources, ['collection', 'attribute', 'index', 'document'])) {
         formData.databases.documents = true;
     }
-    if (resources.includes('function') && isVersionAtLeast(version, '1.4')) {
+    if (resources.includes('function') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.root = true;
     }
-    if (resources.includes('envVar') && isVersionAtLeast(version, '1.4')) {
+    if (resources.includes('envVar') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.env = true;
     }
-    if (resources.includes('deployment') && isVersionAtLeast(version, '1.4')) {
+    if (resources.includes('deployment') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.inactive = true;
     }
     if (includesAll(resources, ['bucket', 'file'])) {

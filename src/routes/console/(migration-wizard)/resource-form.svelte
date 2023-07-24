@@ -14,6 +14,7 @@
         providerResources,
         resourcesToMigrationForm
     } from '$lib/stores/migration';
+    import { wizard } from '$lib/stores/wizard';
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
@@ -66,12 +67,12 @@
     }
 
     let report: any;
-    $: version = report?.version || '0.0';
+    $: version = report?.version || '0.0.0';
 
     onMount(async () => {
         switch ($provider.provider) {
             case 'appwrite': {
-                const res = await sdk.forProject.migrations.generateAppwriteReport(
+                const res = await sdk.forProject.migrations.getAppwriteReport(
                     providerResources.appwrite,
                     $provider.endpoint,
                     $provider.projectID,
@@ -81,7 +82,7 @@
                 break;
             }
             case 'supabase': {
-                const res = await sdk.forProject.migrations.generateSupabaseReport(
+                const res = await sdk.forProject.migrations.getSupabaseReport(
                     providerResources.supabase,
                     $provider.endpoint,
                     $provider.apiKey,
@@ -94,7 +95,7 @@
                 break;
             }
             case 'nhost': {
-                const res = await sdk.forProject.migrations.generateNHostReport(
+                const res = await sdk.forProject.migrations.getNHostReport(
                     providerResources.nhost,
                     $provider.subdomain,
                     $provider.region,
@@ -108,12 +109,10 @@
         }
     });
 
-    // $: {
-    //     wizard.setNextDisabled(!report);
-    // }
-
     $: console.log(report);
     $: resources = providerResources[$provider.provider];
+
+    $: wizard.setNextDisabled(!report);
 </script>
 
 <div class="box" style:border-radius="0.5rem">
@@ -225,7 +224,7 @@
         </li>
     {/if}
 
-    {#if resources.includes('function') && isVersionAtLeast(version, '1.4')}
+    {#if resources.includes('function') && isVersionAtLeast(version, '1.4.0')}
         <li class="checkbox-field">
             <input
                 type="checkbox"
