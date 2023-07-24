@@ -1,7 +1,7 @@
 import { debounce } from '$lib/helpers/debounce';
 import { isMac } from '$lib/helpers/platform';
 import { onMount } from 'svelte';
-import { derived, writable, type Updater } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 const groups = [
     'ungrouped',
@@ -241,23 +241,24 @@ export const disableCommands = {
     }
 };
 
-type CommandGroupRanks = Record<CommandGroup, number>;
+type CommandGroupRanks = Partial<Record<CommandGroup, number>>;
 
-type CommandGroupRankTransformations = Map<string, Updater<CommandGroupRanks>>;
-const groupRankTransformations = writable<CommandGroupRankTransformations>(new Map());
+type GroupRanksMap = Map<string, CommandGroupRanks>;
+const groupRanksMap = writable<GroupRanksMap>(new Map());
+
 export const updateCommandGroupRanks = {
-    subscribe(runner: (cb: (updater: Updater<CommandGroupRanks>) => void) => void) {
+    subscribe(runner: (cb: (updater: CommandGroupRanks) => void) => void) {
         const uuid = crypto.randomUUID();
 
-        runner((updater: Updater<CommandGroupRanks>) => {
-            groupRankTransformations.update((curr) => {
-                curr.set(uuid, updater);
+        runner((groupRank: CommandGroupRanks) => {
+            groupRanksMap.update((curr) => {
+                curr.set(uuid, groupRank);
                 return curr;
             });
         });
 
         return () => {
-            groupRankTransformations.update((curr) => {
+            groupRanksMap.update((curr) => {
                 curr.delete(uuid);
                 return curr;
             });
@@ -265,7 +266,7 @@ export const updateCommandGroupRanks = {
     }
 };
 
-export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTransformations) => {
+export const commandGroupRanks = derived(groupRanksMap, ($groupRankTransformations) => {
     const initialRanks = {
         ...Object.fromEntries(groups.map((group) => [group, 0])),
         ungrouped: 9999,
@@ -277,7 +278,7 @@ export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTr
     } as CommandGroupRanks;
 
     const transformations = Array.from($groupRankTransformations.values());
-    return transformations.reduce((prev, curr) => curr(prev), initialRanks);
+    return transformations.reduce((prev, curr) => ({ ...prev, ...curr }), initialRanks);
 });
 
 export type Searcher = (query: string) => Promise<Command[]>;

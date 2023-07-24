@@ -1,3 +1,10 @@
+<script lang="ts" context="module">
+    let showCreate = false;
+    export const showCreateDeployment = () => {
+        showCreate = true;
+    };
+</script>
+
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import {
@@ -40,7 +47,6 @@
 
     export let data: PageData;
 
-    let showCreate = false;
     let showDropdown = [];
     let showDelete = false;
     let showActivate = false;

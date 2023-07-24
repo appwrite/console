@@ -5,9 +5,19 @@
     import { project, stats } from './store';
 
     import { goto } from '$app/navigation';
-    import { addSubPanel, registerCommands, registerSearchers } from '$lib/commandCenter';
+    import {
+        addSubPanel,
+        registerCommands,
+        registerSearchers,
+        updateCommandGroupRanks
+    } from '$lib/commandCenter';
 
-    import { dbSearcher, userSearcher } from '$lib/commandCenter/searchers';
+    import {
+        dbSearcher,
+        functionsSearcher,
+        teamSearcher,
+        userSearcher
+    } from '$lib/commandCenter/searchers';
     import { MigrationBox } from '$lib/components';
     import {
         UsersPanel,
@@ -115,7 +125,9 @@
         }
     ]);
 
-    $: $registerSearchers(userSearcher, dbSearcher);
+    $registerSearchers(userSearcher, teamSearcher, dbSearcher, functionsSearcher);
+
+    $updateCommandGroupRanks({ functions: 10 });
 </script>
 
 <slot />

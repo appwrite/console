@@ -17,10 +17,7 @@
         }
     ]);
 
-    $: $updateCommandGroupRanks((prev) => ({
-        ...prev,
-        databases: 100
-    }));
+    $: $updateCommandGroupRanks({ databases: 100 });
 </script>
 
 <svelte:head>
