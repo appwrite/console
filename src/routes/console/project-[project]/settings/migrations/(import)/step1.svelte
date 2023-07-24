@@ -79,7 +79,8 @@
                     id="credentials"
                     label="Account credentials"
                     required
-                    placeholder="TODO" />
+                    bind:value={$provider.serviceAccount}
+                    placeholder="Enter account credentials" />
             </div>
         {/if}
     {:else if $provider.provider === 'supabase'}

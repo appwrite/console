@@ -94,6 +94,14 @@
                 report = res;
                 break;
             }
+            case 'firebase': {
+                const res = await sdk.forProject.migrations.getFirebaseReport(
+                    providerResources.firebase,
+                    $provider.serviceAccount
+                );
+                report = res;
+                break;
+            }
             case 'nhost': {
                 const res = await sdk.forProject.migrations.getNHostReport(
                     providerResources.nhost,

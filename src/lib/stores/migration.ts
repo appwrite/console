@@ -65,7 +65,7 @@ export const providerResources: Record<Provider, Resource[]> = {
         'file'
     ],
     nhost: ['user', 'database', 'collection', 'attribute', 'index', 'document', 'bucket', 'file'],
-    firebase: []
+    firebase: ['user', 'database', 'collection', 'attribute', 'document', 'bucket', 'file']
 };
 
 export const migrationFormToResources = (formData: MigrationFormData): Resource[] => {
