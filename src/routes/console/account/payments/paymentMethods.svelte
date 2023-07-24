@@ -19,6 +19,10 @@
     } from '$lib/elements/table';
     import DeletePayment from './deletePayment.svelte';
     import { paymentMethods } from './store';
+    import type { PaymentMethodData } from '$lib/sdk/billing';
+    import { organizationList, type Organization } from '$lib/stores/organization';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { base } from '$app/paths';
 
     export let showPayment = false;
     let showDropdown = [];
@@ -27,7 +31,11 @@
 
     console.log($paymentMethods);
 
-    $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
+    $: orgList = $organizationList.teams as unknown as Organization[];
+
+    $: filteredMethods = $paymentMethods?.paymentMethods.filter(
+        (method: PaymentMethodData) => !!method?.last4
+    );
 </script>
 
 <CardGrid>
@@ -38,18 +46,61 @@
         created.
     </p>
     <svelte:fragment slot="aside">
-        {#if $paymentMethods.total > 0}
+        {#if $paymentMethods?.total}
             <Table noMargin noStyles>
                 <TableHeader>
                     <TableCellHead>Payment methods</TableCellHead>
                 </TableHeader>
                 <TableBody>
                     {#each filteredMethods as paymentMethod, i}
+                        {@const linkedOrgs = orgList?.filter(
+                            (org) =>
+                                paymentMethod.$id === org.paymentMethodId ||
+                                paymentMethod.$id === org.backupPaymentMethodId
+                        )}
+
                         <TableRow>
                             <TableCell>
                                 <CreditCardInfo {paymentMethod}>
-                                    <div class="u-flex u-gap-16">
-                                        <Pill>test</Pill>
+                                    <div class="u-flex u-gap-16 u-cross-center">
+                                        {#if linkedOrgs?.length > 0}
+                                            <div
+                                                use:tooltip={{
+                                                    interactive: true,
+                                                    allowHTML: true,
+                                                    trigger: 'click',
+                                                    content: `
+                                                        <div class="u-flex u-flex-vertical u-gap-8">
+                                                            <p class="text">This payment method is linked to the following organizations:</p>                                                         
+                                                            ${linkedOrgs
+                                                                .map(
+                                                                    (org) =>
+                                                                        `<a href="${base}/console/organization-${org.$id}/billing" class="link">${org.name}</a>`
+                                                                )
+                                                                .join('')}
+                                                        </div>`
+
+                                                    // onShow(instance) {
+                                                    //     if (isFetching || data) {
+                                                    //         return;
+                                                    //     }
+                                                    //     getData(role)
+                                                    //         .then((n) => {
+                                                    //             data = n;
+                                                    //         })
+                                                    //         .finally(() => {
+                                                    //             tick().then(() => {
+                                                    //                 instance.setContent(content);
+                                                    //             });
+                                                    //         });
+                                                    // }
+                                                    // }
+                                                }}>
+                                                <Pill button>
+                                                    <span class="icon-info" /> linked to organization
+                                                </Pill>
+                                            </div>
+                                        {/if}
                                         <DropList
                                             bind:show={showDropdown[i]}
                                             placement="bottom-start"

@@ -2,7 +2,7 @@
     import { Pill } from '$lib/elements';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { getCreditCardImage, tierToPlan } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk';
     import { createOrganization } from './store';
 
@@ -52,7 +52,16 @@
                     <div class="loader is-small" />
                 </div>
             {:then card}
-                <p class="text">Card ending in {card.last4} {card.brand}</p>
+                <span class="u-flex u-cross-center u-gap-8">
+                    <p class="text u-bold">
+                        <span class="u-capitalize">{card?.brand}</span> ending in {card?.last4}
+                    </p>
+                    <img
+                        width="23"
+                        height="16"
+                        src={getCreditCardImage(card?.brand)}
+                        alt={card?.brand} />
+                </span>
             {/await}
         </div>
     {/if}

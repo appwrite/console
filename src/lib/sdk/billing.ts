@@ -4,14 +4,18 @@ import type { PaymentMethod } from '@stripe/stripe-js';
 
 export type PaymentMethodData = {
     $id: string;
+    $createdAt: string;
+    $updatedAt: string;
     providerMethodId: string;
+    providerUserId: string;
     expiryMonth: number;
     expiryYear: number;
+    expired: boolean;
     last4: string;
     country: string;
     brand: string;
-    clientSecret?: string;
-    name?: string;
+    clientSecret: string;
+    failed: boolean;
 };
 
 export type PaymentList = {
@@ -127,6 +131,20 @@ export type AggregationList = {
     aggregations: Aggregation[];
     total: number;
 };
+
+export type Region = {
+    $id: string;
+    name: string;
+    disabled: boolean;
+    default: boolean;
+    flag: string;
+};
+
+export type RegionList = {
+    regions: Region[];
+    total: number;
+};
+
 export class Billing {
     client: Client;
 
@@ -500,23 +518,17 @@ export class Billing {
         );
     }
 
-    // async listPaymentMethods(teamId: string) {
-    //     const path = `/teams/${teamId}/payment-methods`;
-    //     const uri = new URL(this.client.config.endpoint + path);
-    //     return await this.client.call('GET', uri);
-    // }
-
-    // async createPaymentMethod(teamId: string): Promise<PaymentMethod> {
-    //     const path = `/teams/${teamId}/payment-methods`;
-    //     const params = {};
-    //     const uri = new URL(this.client.config.endpoint + path);
-    //     return await this.client.call(
-    //         'POST',
-    //         uri,
-    //         {
-    //             'content-type': 'application/json'
-    //         },
-    //         params
-    //     );
-    // }
+    async listRegions(): Promise<RegionList> {
+        const path = `/console/regions`;
+        const params = {};
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
 }
