@@ -1,7 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { CardGrid, DropList, EmptySearch, Heading, PaginationInline } from '$lib/components';
-    import DropListItem from '$lib/components/dropListItem.svelte';
+    import {
+        CardGrid,
+        DropList,
+        DropListLink,
+        EmptySearch,
+        Heading,
+        PaginationInline
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -22,12 +28,21 @@
     let selectedInvoice: string;
     let offset = 0;
 
+    let downloadLink: string;
+    let viewLink: string;
+
     async function download() {
-        sdk.forConsole.billing.downloadInvoice($page.params.organization, selectedInvoice);
+        return await sdk.forConsole.billing.downloadInvoice(
+            $page.params.organization,
+            selectedInvoice
+        );
     }
 
     async function view() {
-        sdk.forConsole.billing.getInvoiceView($page.params.organization, selectedInvoice);
+        return await sdk.forConsole.billing.getInvoiceView(
+            $page.params.organization,
+            selectedInvoice
+        );
     }
 
     async function request() {
@@ -35,6 +50,15 @@
             Query.limit(5),
             Query.offset(offset)
         ]);
+    }
+
+    $: if (selectedInvoice) {
+        download().then((res) => {
+            downloadLink = res.toString();
+        });
+        view().then((res) => {
+            viewLink = res.toString();
+        });
     }
 
     $: if (offset !== null) {
@@ -82,25 +106,18 @@
                                         noMargin
                                         ariaLabel="More options"
                                         on:click={() => {
+                                            selectedInvoice = invoice.$id;
                                             showDropdown[i] = !showDropdown[i];
                                         }}>
                                         <span class="icon-dots-horizontal" aria-hidden="true" />
                                     </Button>
                                     <svelte:fragment slot="list">
-                                        <DropListItem
-                                            icon="external-link"
-                                            on:click={() => {
-                                                selectedInvoice = invoice.$id;
-                                                view();
-                                            }}>
+                                        <DropListLink icon="external-link" external href={viewLink}>
                                             View invoice
-                                        </DropListItem>
-                                        <DropListItem
-                                            icon="download"
-                                            on:click={() => {
-                                                selectedInvoice = invoice.$id;
-                                                download();
-                                            }}>Download PDF</DropListItem>
+                                        </DropListLink>
+                                        <DropListLink icon="download" external href={downloadLink}>
+                                            Download PDF
+                                        </DropListLink>
                                     </svelte:fragment>
                                 </DropList>
                             </TableCell>

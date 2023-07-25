@@ -1,6 +1,8 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelectSearch } from '$lib/elements/forms';
     import {
         Table,
@@ -11,12 +13,13 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
+    import { onMount } from 'svelte';
 
-    let budget: number;
     let showRates = false;
     let search: string;
     let selectedAlert: number;
@@ -29,6 +32,10 @@
         { value: 100, label: '100%' }
     ];
 
+    onMount(() => {
+        alerts = $organization?.budgetAlert ?? [];
+    });
+
     function addAlert() {
         if (alerts.some((alert) => alert === selectedAlert)) {
             return;
@@ -40,16 +47,21 @@
         }
     }
 
-    //TODO: add budget value that has been fetched
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget($organization.$id, budget, alerts);
-            trackEvent(Submit.BudgetCapUpdate, {
+            await sdk.forConsole.billing.updateBudget(
+                $organization.$id,
+                $organization.billingBudget,
                 alerts
-            });
+            );
+            invalidate(Dependencies.ORGANIZATION);
+
             addNotification({
                 type: 'success',
                 message: `Budget cap enabled for ${$organization.name}`
+            });
+            trackEvent(Submit.BudgetCapUpdate, {
+                alerts
             });
         } catch (error) {
             addNotification({
@@ -59,11 +71,15 @@
             trackError(error, Submit.BudgetCapUpdate);
         }
     }
+
+    $: isButtonDisabled = symmetricDifference(alerts, $organization.budgetAlert).length === 0;
+
+    $: console.log($organization.budgetAlert, alerts);
 </script>
 
 <Form onSubmit={updateBudget}>
     <CardGrid>
-        <Heading tag="h2" size="6">Budget alert aondition</Heading>
+        <Heading tag="h2" size="6">Budget alert condition</Heading>
 
         <p class="text">
             Get notified by email when your organization meets or exceeds a percent of your
@@ -71,16 +87,21 @@
         </p>
         <svelte:fragment slot="aside">
             <FormList>
-                <InputSelectSearch
-                    label="Percentage (%) of budget cap"
-                    placeholder="Select a percentage"
-                    id="alerts"
-                    {options}
-                    bind:search
-                    bind:value={selectedAlert}
-                    on:select={() => (search = selectedAlert.toString())} />
-                <Button secondary disabled={alerts.length > 2} on:click={addAlert}
-                    >Add alert</Button>
+                <div class="u-flex u-gap-16">
+                    <InputSelectSearch
+                        label="Percentage (%) of budget cap"
+                        placeholder="Select a percentage"
+                        id="alerts"
+                        {options}
+                        bind:search
+                        bind:value={selectedAlert}
+                        on:select={() => (search = selectedAlert.toString())} />
+                    <div style="align-self: flex-end">
+                        <Button secondary disabled={alerts.length > 2} on:click={addAlert}>
+                            Add alert
+                        </Button>
+                    </div>
+                </div>
             </FormList>
 
             {#if alerts.length}
@@ -93,7 +114,7 @@
                         {#each alerts as alert}
                             <TableRow>
                                 <TableCellText title="Percentage">
-                                    {alert}
+                                    {alert}%
                                 </TableCellText>
                                 <TableCell>
                                     <Button
@@ -113,7 +134,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button submit>Update</Button>
+            <Button disabled={isButtonDisabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

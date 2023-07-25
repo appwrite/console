@@ -214,7 +214,11 @@ export class Billing {
         );
     }
 
-    async updateBudget(organizationId: string, budget: number, alert: number[]): Promise<string> {
+    async updateBudget(
+        organizationId: string,
+        budget: number,
+        alert: number[]
+    ): Promise<Organization> {
         const path = `/organizations/${organizationId}/budget`;
         const params = {
             organizationId,
