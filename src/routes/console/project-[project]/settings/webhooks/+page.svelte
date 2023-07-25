@@ -39,11 +39,7 @@
 
     const projectId = $page.params.project;
 
-    $: $updateCommandGroupRanks((prev) => ({
-        ...prev,
-        webhooks: 20,
-        domains: 10
-    }));
+    $: $updateCommandGroupRanks({ webhooks: 20, domains: 10 });
 </script>
 
 <svelte:head>

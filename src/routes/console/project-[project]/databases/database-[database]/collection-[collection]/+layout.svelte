@@ -147,13 +147,12 @@
         }
     ]);
 
-    $updateCommandGroupRanks((p) => ({
-        ...p,
+    $updateCommandGroupRanks({
         attributes: 1000,
         documents: 900,
         collections: 800,
         indexes: 700
-    }));
+    });
 </script>
 
 <svelte:head>

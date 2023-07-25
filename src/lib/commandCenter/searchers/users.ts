@@ -17,7 +17,7 @@ const getUserCommand = (user: Models.User<Models.Preferences>, projectId: string
     } satisfies Command);
 
 export const userSearcher = (async (query: string) => {
-    const { users } = await sdk.forProject.users.list([], query);
+    const { users } = await sdk.forProject.users.list([], query || undefined);
     const projectId = get(project).$id;
 
     if (users.length === 1) {

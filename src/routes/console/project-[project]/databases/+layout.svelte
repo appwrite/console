@@ -17,7 +17,7 @@
         }
     ]);
 
-    $: $updateCommandGroupRanks({ databases: 100 });
+    $: $updateCommandGroupRanks({ databases: 200, navigation: 100 });
 </script>
 
 <svelte:head>

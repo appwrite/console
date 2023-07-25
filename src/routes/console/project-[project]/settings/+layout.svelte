@@ -71,11 +71,10 @@
         }
     ]);
 
-    $: $updateCommandGroupRanks((prev) => ({
-        ...prev,
+    $updateCommandGroupRanks({
         domains: 20,
         webhooks: 10
-    }));
+    });
 </script>
 
 <svelte:head>

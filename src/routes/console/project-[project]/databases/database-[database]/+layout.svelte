@@ -85,7 +85,7 @@
 
     $registerSearchers(collectionsSearcher);
 
-    $: $updateCommandGroupRanks((p) => ({ ...p, collections: 10 }));
+    $: $updateCommandGroupRanks({ collections: 10 });
 </script>
 
 <svelte:head>

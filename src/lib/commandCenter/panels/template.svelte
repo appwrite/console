@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { commandGroupRanks, type CommandGroup } from '../commands';
+    import { commandGroupRanks, type CommandGroup, type Command } from '../commands';
 
     // This is the template for all panels used in the command center.
     // Use this component when you want to create a new panel.
@@ -10,18 +10,7 @@
 
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
 
-    import { quadOut } from 'svelte/easing';
-    import { crossfade } from 'svelte/transition';
-
-    type BaseOption = {
-        callback: () => void;
-        group?: string;
-        rank?: number;
-        nested?: boolean;
-        icon?: string;
-        label?: string;
-    };
-    type Option = $$Generic<BaseOption>;
+    type Option = $$Generic<Command>;
     export let options: Option[] | null = null;
     export let search = '';
     export let searchPlaceholder = 'Search...';
@@ -31,10 +20,10 @@
     let selected = 0;
     let contentEl: HTMLElement;
 
-    function triggerOption(option: Option) {
+    async function triggerOption(option: Option) {
         const prevPanels = $subPanels.length;
         option.callback();
-        if (prevPanels === $subPanels.length && clearOnCallback) {
+        if (prevPanels === $subPanels.length && clearOnCallback && !option.keepOpen) {
             clearSubPanels();
         }
     }
@@ -105,11 +94,6 @@
         options;
         selected = 0;
     }
-
-    const [send, receive] = crossfade({
-        duration: 100,
-        easing: quadOut
-    });
 
     const commandCenterCtx = getCommandCenterCtx();
 
@@ -237,10 +221,14 @@
     class:scale-up={$commandCenterCtx.isInitialPanel && $commandCenterCtx.open}>
     <div class="search-wrapper">
         {#each breadcrumbs as crumb, i}
+            {@const isLast = i === breadcrumbs.length - 1}
             <button class="crumb" on:click={() => handleCrumbClick(i)}>
                 <span>{crumb}</span>
                 <i class="icon-x" />
             </button>
+            {#if !isLast}
+                <span style="opacity: 50%">/</span>
+            {/if}
         {/each}
 
         <slot name="search">

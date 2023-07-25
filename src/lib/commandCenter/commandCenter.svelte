@@ -24,7 +24,6 @@
 
 <script lang="ts">
     import { dev } from '$app/environment';
-    import { afterNavigate } from '$app/navigation';
     import { portal } from '$lib/actions/portal';
     import { last } from '$lib/helpers/array';
     import { debounce } from '$lib/helpers/debounce';
@@ -61,10 +60,6 @@
         }
     }
 
-    afterNavigate(() => {
-        clearSubPanels();
-    });
-
     const ctx = setCommandCenterCtx({
         isInitialPanel: true,
         open: false
@@ -95,6 +90,8 @@
         }
         $commandCenterKeyDownHandler(e);
     };
+
+    $: console.log($subPanels);
 </script>
 
 <svelte:window on:mousedown={handleBlur} on:keydown={handleKeydown} />

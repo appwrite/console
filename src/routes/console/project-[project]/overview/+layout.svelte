@@ -80,10 +80,9 @@
         }
     ]);
 
-    $: $updateCommandGroupRanks((prev) => ({
-        ...prev,
+    $: $updateCommandGroupRanks({
         integrations: 10
-    }));
+    });
 </script>
 
 <svelte:head>

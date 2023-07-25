@@ -13,6 +13,7 @@
     } from '$lib/commandCenter';
 
     import {
+        bucketSearcher,
         dbSearcher,
         functionsSearcher,
         teamSearcher,
@@ -23,7 +24,8 @@
         UsersPanel,
         TeamsPanel,
         DatabasesPanel,
-        FunctionsPanel
+        FunctionsPanel,
+        BucketsPanel
     } from '$lib/commandCenter/panels';
 
     onMount(async () => {
@@ -122,12 +124,19 @@
             group: 'functions',
             icon: 'search',
             keys: ['f', 'f']
+        },
+        {
+            label: 'Find Buckets',
+            callback: () => {
+                addSubPanel(BucketsPanel);
+            },
+            group: 'buckets',
+            icon: 'search',
+            keys: ['f', 'b']
         }
     ]);
 
-    $registerSearchers(userSearcher, teamSearcher, dbSearcher, functionsSearcher);
-
-    $updateCommandGroupRanks({ functions: 10 });
+    $registerSearchers(userSearcher, teamSearcher, dbSearcher, functionsSearcher, bucketSearcher);
 </script>
 
 <slot />

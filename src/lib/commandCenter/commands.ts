@@ -25,7 +25,9 @@ const groups = [
     'indexes',
     'documents',
     'teams',
-    'security'
+    'security',
+    'buckets',
+    'files'
 ] as const;
 
 export type CommandGroup = (typeof groups)[number];
@@ -39,6 +41,7 @@ type BaseCommand = {
     icon?: string;
     rank?: number;
     nested?: boolean;
+    keepOpen?: boolean;
 };
 
 type KeyedCommand = BaseCommand & {
@@ -152,7 +155,7 @@ export const commandCenterKeyDownHandler = derived(
 
         const rankAndExecute = debounce(() => {
             const command = getHighestPriorityCommand();
-            command.callback();
+            command?.callback();
             reset.immediate();
         }, 200);
 
