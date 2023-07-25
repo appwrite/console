@@ -1,16 +1,15 @@
 <script lang="ts">
     // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { InputText, Button, FormList } from '$lib/elements/forms';
+    import { Button, FormList } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
+    import { initializeStripe, updateStripeCard } from '$lib/stores/stripe';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
 
     export let show = false;
-
-    let name: string;
+    export let selectedPaymentMethod: string;
     let error: string;
 
     onMount(async () => {
@@ -19,31 +18,22 @@
 
     async function handleSubmit() {
         try {
-            await submitStripeCard(name);
+            await updateStripeCard(selectedPaymentMethod);
             show = false;
-            invalidate(Dependencies.PAYMENT_METHODS);
             addNotification({
                 type: 'success',
-                message: 'A new payment method has been added to your account'
+                message: 'Your payment method has been updated'
             });
+            invalidate(Dependencies.PAYMENT_METHODS);
         } catch (e) {
             error = e.message;
-            console.log(e.message);
         }
     }
 </script>
 
 <Modal bind:error onSubmit={handleSubmit} size="big" bind:show>
-    <svelte:fragment slot="header">Add payment method</svelte:fragment>
+    <svelte:fragment slot="header">Update payment method</svelte:fragment>
     <FormList>
-        <InputText
-            id="name"
-            label="Cardholder name"
-            placeholder="Cardholder name"
-            bind:value={name}
-            required
-            autofocus={true} />
-
         <div id="payment-element">
             <!-- Elements will create form elements here -->
         </div>

@@ -17,19 +17,22 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import DeletePayment from './deletePayment.svelte';
     import { paymentMethods } from './store';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { tooltip } from '$lib/actions/tooltip';
     import { base } from '$app/paths';
+    import EditPaymentModal from './editPaymentModal.svelte';
+    import DeletePaymentModal from './deletePaymentModal.svelte';
+    import { hasStripePublicKey, isCloud } from '$lib/system';
+    import PaymentModal from './paymentModal.svelte';
 
     export let showPayment = false;
     let showDropdown = [];
     let selectedMethod: string;
+    let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
-
-    console.log($paymentMethods);
+    let showEdit = false;
 
     $: orgList = $organizationList.teams as unknown as Organization[];
 
@@ -79,22 +82,6 @@
                                                                 )
                                                                 .join('')}
                                                         </div>`
-
-                                                    // onShow(instance) {
-                                                    //     if (isFetching || data) {
-                                                    //         return;
-                                                    //     }
-                                                    //     getData(role)
-                                                    //         .then((n) => {
-                                                    //             data = n;
-                                                    //         })
-                                                    //         .finally(() => {
-                                                    //             tick().then(() => {
-                                                    //                 instance.setContent(content);
-                                                    //             });
-                                                    //         });
-                                                    // }
-                                                    // }
                                                 }}>
                                                 <Pill button>
                                                     <span class="icon-info" /> linked to organization
@@ -117,7 +104,9 @@
                                                 <DropListItem
                                                     icon="pencil"
                                                     on:click={() => {
-                                                        console.log('test');
+                                                        showEdit = true;
+                                                        showDropdown[i] = false;
+                                                        selectedMethod = paymentMethod.$id;
                                                     }}>
                                                     Edit
                                                 </DropListItem>
@@ -125,6 +114,7 @@
                                                     icon="trash"
                                                     on:click={() => {
                                                         selectedMethod = paymentMethod.$id;
+                                                        selectedLinkedOrgs = linkedOrgs;
                                                         showDelete = true;
                                                         showDropdown[i] = false;
                                                     }}>
@@ -151,6 +141,13 @@
     </svelte:fragment>
 </CardGrid>
 
+{#if showPayment && isCloud && hasStripePublicKey}
+    <PaymentModal bind:show={showPayment} />
+{/if}
+{#if showEdit && isCloud && hasStripePublicKey}
+    <EditPaymentModal selectedPaymentMethod={selectedMethod} bind:show={showEdit} />
+{/if}
+
 {#if selectedMethod}
-    <DeletePayment method={selectedMethod} bind:showDelete />
+    <DeletePaymentModal method={selectedMethod} bind:showDelete linkedOrgs={selectedLinkedOrgs} />
 {/if}

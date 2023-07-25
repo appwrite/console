@@ -1,10 +1,8 @@
 <script lang="ts">
     import { Heading } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { hasStripePublicKey, isCloud } from '$lib/system';
     import BillingAddress from './billingAddress.svelte';
     import PaymentMethods from './paymentMethods.svelte';
-    import PaymentModal from './paymentModal.svelte';
 
     // export let data;
     let showPayment = false;
@@ -17,7 +15,3 @@
     <PaymentMethods bind:showPayment />
     <BillingAddress />
 </Container>
-
-{#if showPayment && isCloud && hasStripePublicKey}
-    <PaymentModal bind:show={showPayment} />
-{/if}

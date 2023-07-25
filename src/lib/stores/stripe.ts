@@ -49,10 +49,13 @@ export async function initializeStripe() {
         paymentElement.mount('#payment-element');
     } catch (e) {
         console.log(e);
+        throw e;
     }
 }
 
-export async function submitStripeCard(name: string) {
+// TODO: fix redirect
+
+export async function submitStripeCard(name?: string) {
     try {
         // If a payment method was during initialization, use it, otherwise create a new one
         if (!paymentMethod) {
@@ -77,7 +80,41 @@ export async function submitStripeCard(name: string) {
             redirect: 'if_required'
         });
 
-        // console.log(setupIntent);
+        if (setupIntent && setupIntent.status === 'succeeded') {
+            const method = await sdk.forConsole.billing.updatePaymentMethod(
+                paymentMethod.$id,
+                setupIntent.payment_method
+            );
+            paymentElement.destroy();
+            return method;
+        } else {
+            console.log('something went wrong');
+            throw new Error('Something went wrong');
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+// TODO: fix update
+
+export async function updateStripeCard(selectedPaymentMethod?: string) {
+    try {
+        paymentMethod = await sdk.forConsole.billing.getPaymentMethod(selectedPaymentMethod);
+        clientSecret = paymentMethod.clientSecret;
+
+        // Element needs to be submitted before confirming the setup intent
+        elements.submit();
+
+        const { setupIntent } = await stripe.confirmSetup({
+            elements,
+            clientSecret,
+            confirmParams: {
+                return_url: 'https://example.com'
+            },
+            redirect: 'if_required'
+        });
 
         if (setupIntent && setupIntent.status === 'succeeded') {
             const method = await sdk.forConsole.billing.updatePaymentMethod(
@@ -86,10 +123,12 @@ export async function submitStripeCard(name: string) {
             );
             paymentElement.destroy();
             return method;
-        } else console.log('something went wrong');
+        } else {
+            console.log('something went wrong');
+            throw new Error('Something went wrong');
+        }
     } catch (e) {
         console.log(e);
-        console.log(e.message);
-        // trackError(StripeError, Submit.ProjectCreate);
+        throw e;
     }
 }
