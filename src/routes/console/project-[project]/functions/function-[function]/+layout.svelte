@@ -21,6 +21,59 @@
             icon: 'plus'
         },
         {
+            label: 'Permissions',
+            async callback() {
+                await goto(
+                    `/console/project-${$project.$id}/functions/function-${$func.$id}/settings#permissions`
+                );
+                scrollBy({ top: -100 });
+            },
+            icon: 'search',
+            group: 'functions'
+        },
+        {
+            label: 'Events',
+            async callback() {
+                await goto(
+                    `/console/project-${$project.$id}/functions/function-${$func.$id}/settings#events`
+                );
+                scrollBy({ top: -100 });
+            },
+            icon: 'calendar',
+            group: 'functions'
+        },
+        {
+            label: 'Variables',
+            async callback() {
+                await goto(
+                    `/console/project-${$project.$id}/functions/function-${$func.$id}/settings#variables`
+                );
+            },
+            icon: 'list',
+            group: 'functions'
+        },
+        {
+            label: 'Timeout',
+            async callback() {
+                await goto(
+                    `/console/project-${$project.$id}/functions/function-${$func.$id}/settings#timeout`
+                );
+            },
+            icon: 'x-circle',
+            group: 'functions'
+        },
+        {
+            label: 'Schedule',
+            async callback() {
+                await goto(
+                    `/console/project-${$project.$id}/functions/function-${$func.$id}/settings#schedule`
+                );
+                scrollBy({ top: -100 });
+            },
+            icon: 'clock',
+            group: 'functions'
+        },
+        {
             label: 'Go to deployments',
             callback() {
                 goto(`/console/project-${$project.$id}/functions/function-${$func.$id}`);

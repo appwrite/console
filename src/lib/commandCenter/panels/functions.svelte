@@ -6,6 +6,4 @@
     const { search, results } = initSearcher(functionsSearcher);
 </script>
 
-<Template options={$results} bind:search={$search}>
-    <div slot="option" let:option>{option.label}</div>
-</Template>
+<Template options={$results} bind:search={$search} />
