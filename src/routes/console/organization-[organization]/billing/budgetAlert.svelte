@@ -63,7 +63,7 @@
 
 <Form onSubmit={updateBudget}>
     <CardGrid>
-        <Heading tag="h2" size="6">Budget Alert Condition</Heading>
+        <Heading tag="h2" size="6">Budget alert aondition</Heading>
 
         <p class="text">
             Get notified by email when your organization meets or exceeds a percent of your

@@ -109,6 +109,11 @@
                             +{project.platforms.length - 3}
                         </Pill>
                     {/if}
+                    <svelte:fragment slot="icon">
+                        {#if isCloud}
+                            <p>region</p>
+                        {/if}
+                    </svelte:fragment>
                 </GridItem1>
             {/each}
             <svelte:fragment slot="empty">

@@ -1,25 +1,38 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
+    import { onMount } from 'svelte';
 
     let capActive = false;
     let budget: number;
     let showRates = false;
 
+    onMount(() => {
+        budget = $organization?.billingBudget;
+        capActive = !!$organization?.billingBudget;
+    });
+
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget($organization.$id, budget, []);
-            trackEvent(Submit.BudgetCapUpdate, {
-                budget: capActive ? budget : undefined
-            });
+            await sdk.forConsole.billing.updateBudget(
+                $organization.$id,
+                budget,
+                $organization.budgetAlert
+            );
+            invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
                 message: `Budget cap enabled for ${$organization.name}`
+            });
+            trackEvent(Submit.BudgetCapUpdate, {
+                budget: capActive ? budget : undefined
             });
         } catch (error) {
             addNotification({
@@ -28,6 +41,10 @@
             });
             trackError(error, Submit.BudgetCapUpdate);
         }
+    }
+
+    $: if (!capActive) {
+        budget = 0;
     }
 </script>
 
@@ -43,7 +60,7 @@
                 class="link">Learn more about usage rates.</a>
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization?.billingPlan !== 'tier-2'}
+            {#if $organization?.billingPlan === 'tier-0'}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Budget caps are a Pro plan feature
@@ -60,7 +77,7 @@
                         <InputNumber
                             placeholder="Add budget cap"
                             id="cap"
-                            label="Budget cap"
+                            label="Budget cap ($USD)"
                             bind:value={budget} />
                     {/if}
                 </FormList>
@@ -68,7 +85,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={$organization?.billingPlan !== 'tier-2'} submit>Update</Button>
+            <Button disabled={$organization?.billingBudget === budget} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

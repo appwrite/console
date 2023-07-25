@@ -27,11 +27,6 @@
             title: 'Usage',
             event: 'usage',
             hasChildren: true
-        },
-        {
-            href: `${path}/billing`,
-            title: 'Billing',
-            event: 'billing'
         }
     ];
 </script>

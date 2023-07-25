@@ -7,7 +7,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Billing Address</Heading>
+    <Heading tag="h2" size="6">Billing address</Heading>
 
     <p class="text">
         View or update your billing address. This address will appear on your invoice.

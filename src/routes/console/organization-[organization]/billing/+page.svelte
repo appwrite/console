@@ -16,7 +16,7 @@
     <PaymentMethods />
     <BillingAddress />
     <BudgetCap />
-    {#if $organization?.billingPlan === 'tier-2'}
+    {#if $organization?.billingPlan !== 'tier-0' && !!$organization?.billingBudget}
         <BudgetAlert />
     {/if}
     <AvailableCredit />
