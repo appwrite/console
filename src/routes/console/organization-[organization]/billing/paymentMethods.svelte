@@ -74,46 +74,46 @@
         }
     }
 
-    // async function removeDefaultMethod(){
-    //     try {
-    //         await sdk.forConsole.billing.remove(
-    //             $organization.$id,
-    //             $organization.paymentMethodId
-    //         );
-    //         addNotification({
-    //             type: 'success',
-    //             message: `The payment method has been removed from ${$organization.name}`
-    //         });
-    //         trackEvent(Submit.OrganizationPaymentRemoved);
-    //         invalidate(Dependencies.ORGANIZATION);
-    //     } catch (error) {
-    //         addNotification({
-    //             type: 'error',
-    //             message: error.message
-    //         });
-    //         trackError(error, Submit.OrganizationPaymentRemoved);
-    //     }
-    // }
-    // async function removeBackuptMethod(){
-    //     try {
-    //         await sdk.forConsole.billing.remove(
-    //             $organization.$id,
-    //             $organization.paymentMethodId
-    //         );
-    //         addNotification({
-    //             type: 'success',
-    //             message: `The payment method has been removed from ${$organization.name}`
-    //         });
-    //         trackEvent(Submit.OrganizationBackupPaymentRemoved);
-    //         invalidate(Dependencies.ORGANIZATION);
-    //     } catch (error) {
-    //         addNotification({
-    //             type: 'error',
-    //             message: error.message
-    //         });
-    //         trackError(error, Submit.OrganizationBackupPaymentRemoved);
-    //     }
-    // }
+    async function removeDefaultMethod() {
+        if (!$organization.paymentMethodId || !$organization.backupPaymentMethodId) return;
+
+        try {
+            await sdk.forConsole.billing.setOrganizationPaymentMethod($organization.$id, null);
+            addNotification({
+                type: 'success',
+                message: `The payment method has been removed from ${$organization.name}`
+            });
+            trackEvent(Submit.OrganizationPaymentRemoved);
+            invalidate(Dependencies.ORGANIZATION);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.OrganizationPaymentRemoved);
+        }
+    }
+    async function removeBackuptMethod() {
+        if (!$organization.paymentMethodId || !$organization.backupPaymentMethodId) return;
+        try {
+            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
+                $organization.$id,
+                undefined
+            );
+            addNotification({
+                type: 'success',
+                message: `The payment method has been removed from ${$organization.name}`
+            });
+            trackEvent(Submit.OrganizationBackupPaymentRemoved);
+            invalidate(Dependencies.ORGANIZATION);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.OrganizationBackupPaymentRemoved);
+        }
+    }
 </script>
 
 <CardGrid>
@@ -126,10 +126,34 @@
     <svelte:fragment slot="aside">
         <h4 class="u-bold body-text-2">Default</h4>
         {#if $organization?.paymentMethodId}
-            <CreditCardInfo
-                isBox
-                paymentMethod={defaultPaymentMethod}
-                isDeleteDisabled={!$organization?.backupPaymentMethodId} />
+            <CreditCardInfo isBox paymentMethod={defaultPaymentMethod}>
+                <DropList bind:show={showDropdown} placement="bottom-start" noArrow>
+                    <Button
+                        round
+                        text
+                        ariaLabel="More options"
+                        on:click={() => {
+                            showDropdown = !showDropdown;
+                        }}>
+                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                    </Button>
+                    <svelte:fragment slot="list">
+                        <DropListItem
+                            icon="pencil"
+                            on:click={() => {
+                                console.log('test');
+                            }}>
+                            Edit
+                        </DropListItem>
+                        <DropListItem
+                            disabled={!$organization?.backupPaymentMethodId}
+                            icon="trash"
+                            on:click={removeDefaultMethod}>
+                            Delete
+                        </DropListItem>
+                    </svelte:fragment>
+                </DropList>
+            </CreditCardInfo>
         {:else}
             <article class="card u-grid u-cross-center u-width-full-line dashed">
                 <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -169,7 +193,34 @@
         {/if}
         <h4 class="u-bold body-text-2">Backup</h4>
         {#if $organization?.backupPaymentMethodId}
-            <CreditCardInfo paymentMethod={backupPaymentMethod} />
+            <CreditCardInfo isBox paymentMethod={backupPaymentMethod}>
+                <DropList bind:show={showDropdownBackup} placement="bottom-start" noArrow>
+                    <Button
+                        round
+                        text
+                        ariaLabel="More options"
+                        on:click={() => {
+                            showDropdownBackup = !showDropdownBackup;
+                        }}>
+                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                    </Button>
+                    <svelte:fragment slot="list">
+                        <DropListItem
+                            icon="pencil"
+                            on:click={() => {
+                                console.log('test');
+                            }}>
+                            Edit
+                        </DropListItem>
+                        <DropListItem
+                            disabled={!$organization?.paymentMethodId}
+                            icon="trash"
+                            on:click={removeBackuptMethod}>
+                            Delete
+                        </DropListItem>
+                    </svelte:fragment>
+                </DropList>
+            </CreditCardInfo>
         {:else}
             <article class="card u-grid u-cross-center u-width-full-line dashed">
                 <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

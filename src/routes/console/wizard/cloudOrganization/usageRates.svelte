@@ -39,7 +39,7 @@
             {#each usageRates[tier] as usage}
                 <TableRow>
                     <TableCellText title="resource">{usage.resource}</TableCellText>
-                    <TableCellText title="limit">{usage.limit}</TableCellText>
+                    <TableCellText title="limit">{usage.amount}{usage?.unit}</TableCellText>
                     <TableCellText title="rate">{usage.rate}</TableCellText>
                 </TableRow>
             {/each}

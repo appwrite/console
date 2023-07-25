@@ -236,7 +236,10 @@ export class Billing {
         );
     }
 
-    async setOrganizationPaymentMethod(organizationId: string, paymentMethodId: string) {
+    async setOrganizationPaymentMethod(
+        organizationId: string,
+        paymentMethodId: string
+    ): Promise<Organization> {
         const path = `/organizations/${organizationId}/payment-method`;
         const params = {
             organizationId,
@@ -253,7 +256,10 @@ export class Billing {
         );
     }
 
-    async setOrganizationPaymentMethodBackup(organizationId: string, paymentMethodId: string) {
+    async setOrganizationPaymentMethodBackup(
+        organizationId: string,
+        paymentMethodId: string
+    ): Promise<Organization> {
         const path = `/organizations/${organizationId}/payment-method/backup`;
         const params = {
             organizationId,

@@ -1,16 +1,34 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { CardGrid, Heading, ProgressBarBig, ProjectUsage } from '$lib/components';
+    import { CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import { organization } from '$lib/stores/organization';
+    import { usageRates } from '$lib/constants';
+    import { base } from '$app/paths';
 
-    // export let data;
+    export let data;
+
+    $: rates = usageRates[$organization.billingPlan];
+
+    $: bandwidth = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageBandwidth, 0);
+    $: bandwidthLimit = rates.filter((r) => r.resource === 'Bandwidth')[0].amount;
+
+    $: users = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageUsers, 0);
+    $: usersLimit = rates.filter((r) => r.resource === 'Active users')[0].amount;
+
+    $: executions = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageExecutions, 0);
+    $: executionsLimit = rates.filter((r) => r.resource === 'Function executions')[0].amount;
+
+    $: storage = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageStorage, 0);
+    $: storageLimit = rates.filter((r) => r.resource === 'Storage')[0].amount;
 </script>
 
 <Container>
     <Heading tag="h2" size="5">Usage</Heading>
     <div class="u-flex u-main-space-between common-section">
         <p class="text">
-            Metrics are estimates updated every 24 hours and may not accurately reflect your
-            invoice.
+            If you exceed the limits of the Free plan, services for your projects may be disrupted. <a
+                href={`${base}/console/`}>Upgrade for greater capacity</a
+            >.
         </p>
         <div class="u-flex u-gap-8">
             <p class="text">Usage period:</p>
@@ -18,14 +36,27 @@
             JANUARY 2021
         </div>
     </div>
-    <ul
-        class="grid-box common-section u-margin-block-start-32"
-        style="--grid-gap:1.5rem; --grid-item-size:25rem;'}">
-        <!-- TODO: show correct data -->
-        {#each [] as project}
-            <ProjectUsage title={project?.name} data={project?.projectUsage} />
-        {/each}
-    </ul>
+
+    <CardGrid>
+        <Heading tag="h6" size="7">Bandwidth</Heading>
+
+        <p class="text">
+            Calculated for all bandwidth used across all projects in your organization.
+        </p>
+
+        <svelte:fragment slot="aside">
+            <ProgressBarBig unit="TB" max={bandwidthLimit} used={bandwidth} />
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">Active users</Heading>
+
+        <p class="text">Active users across all projects in your organization.</p>
+
+        <svelte:fragment slot="aside">
+            <ProgressBarBig unit="AU" max={usersLimit} used={users} />
+        </svelte:fragment>
+    </CardGrid>
 
     <CardGrid>
         <Heading tag="h6" size="7">Function executions</Heading>
@@ -35,7 +66,23 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <ProgressBarBig unit="executions" max={750000} used={125000} />
+            <ProgressBarBig unit="executions" max={executionsLimit} used={executions} />
         </svelte:fragment>
     </CardGrid>
+
+    <CardGrid>
+        <Heading tag="h6" size="7">Storage</Heading>
+
+        <p class="text">
+            Calculated for all storage operations across all projects in your organization.
+        </p>
+
+        <svelte:fragment slot="aside">
+            <ProgressBarBig unit="GB" max={storageLimit} used={storage} />
+        </svelte:fragment>
+    </CardGrid>
+
+    <p class="text common-section u-color-text-gray">
+        Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.
+    </p>
 </Container>
