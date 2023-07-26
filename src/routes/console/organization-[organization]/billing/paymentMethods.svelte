@@ -21,7 +21,6 @@
     let showDelete = false;
     let showReplace = false;
     let isSelectedBackup = false;
-    let selectedPaymentMethod: string;
     let defaultPaymentMethod: PaymentMethodData;
     let backupPaymentMethod: PaymentMethodData;
 
@@ -122,7 +121,6 @@
                             on:click={() => {
                                 showDelete = true;
                                 showDropdown = false;
-                                selectedPaymentMethod = $organization.paymentMethodId;
                             }}>
                             Delete
                         </DropListItem>
@@ -207,7 +205,6 @@
                                 showDelete = true;
                                 isSelectedBackup = true;
                                 showDropdownBackup = false;
-                                selectedPaymentMethod = $organization.backupPaymentMethodId;
                             }}>
                             Delete
                         </DropListItem>
