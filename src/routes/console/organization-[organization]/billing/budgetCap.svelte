@@ -24,7 +24,7 @@
             await sdk.forConsole.billing.updateBudget(
                 $organization.$id,
                 budget,
-                $organization.budgetAlert
+                $organization.budgetAlerts
             );
             invalidate(Dependencies.ORGANIZATION);
             addNotification({

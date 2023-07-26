@@ -33,14 +33,14 @@
     ];
 
     onMount(() => {
-        alerts = $organization?.budgetAlert ?? [];
+        alerts = $organization?.budgetAlerts ?? [];
     });
 
     function addAlert() {
         if (alerts.some((alert) => alert === selectedAlert)) {
             return;
         }
-        if (alerts.length < 2) {
+        if (alerts.length <= 2) {
             alerts = [...alerts, selectedAlert ? selectedAlert : parseInt(search)];
             search = '';
             selectedAlert = null;
@@ -54,6 +54,7 @@
                 $organization.billingBudget,
                 alerts
             );
+
             invalidate(Dependencies.ORGANIZATION);
 
             addNotification({
@@ -72,9 +73,7 @@
         }
     }
 
-    $: isButtonDisabled = symmetricDifference(alerts, $organization.budgetAlert).length === 0;
-
-    $: console.log($organization.budgetAlert, alerts);
+    $: isButtonDisabled = symmetricDifference(alerts, $organization.budgetAlerts).length === 0;
 </script>
 
 <Form onSubmit={updateBudget}>
@@ -111,7 +110,7 @@
                         <TableCellHead width={30} />
                     </TableHeader>
                     <TableBody>
-                        {#each alerts as alert}
+                        {#each alerts.sort() as alert}
                             <TableRow>
                                 <TableCellText title="Percentage">
                                     {alert}%

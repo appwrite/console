@@ -5,7 +5,7 @@ import type { Models } from '@appwrite.io/console';
 export type Organization = Models.Team<Record<string, unknown>> & {
     billingBudget: number;
     billingPlan: string;
-    budgetAlert: number[];
+    budgetAlerts: number[];
     paymentMethodId: string;
     backupPaymentMethodId: string;
     billingCurrentInvoiceDate: string;
