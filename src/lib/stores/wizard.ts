@@ -24,6 +24,7 @@ function createWizardStore() {
             update((n) => {
                 n.show = true;
                 n.component = component;
+                n.interceptor = null;
                 n.media = media;
                 trackEvent('wizard_start');
                 return n;
@@ -39,6 +40,7 @@ function createWizardStore() {
             update((n) => {
                 n.show = false;
                 n.component = null;
+                n.interceptor = null;
                 n.media = null;
 
                 return n;
