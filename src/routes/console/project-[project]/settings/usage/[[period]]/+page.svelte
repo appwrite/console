@@ -8,18 +8,20 @@
     export let data;
 
     $: requests = data.requests;
-    // $: network = data.response.network;
-    // $: executions = data.response.executions;
-    // $: documents = data.response.documents;
-    // $: databases = data.response.databases;
-    // $: users = data.response.users;
-    // $: storage = data.response.storage;
-    // $: buckets = data.response.buckets;
+    // $: network = data.network;
+    // $: executions = data.executions;
+    // $: documents = data.documents;
+    // $: databases = data.databases;
+    // $: users = data.users;
+    // $: storage = data.storage;
+    // $: buckets = data.buckets;
+
+    $: console.log(data);
 </script>
 
 <Container>
     <div class="u-flex u-main-space-between common-section">
-        <Heading tag="h2" size="5">Functions</Heading>
+        <Heading tag="h2" size="5">Usage</Heading>
         <SecondaryTabs>
             <SecondaryTabsItem
                 href={`/console/project-${data.project.$id}/settings/usage/24h`}

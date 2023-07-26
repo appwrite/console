@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { AvatarInitials, Heading, PaginationWithLimit } from '$lib/components';
+    import { AvatarInitials, PaginationWithLimit } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -15,7 +15,7 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { members, newMemberModal, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -57,14 +57,12 @@
 
 <Container>
     {#if data.organizationMembers.total}
-        <div class="u-flex u-gap-12 common-section u-main-space-between">
-            <Heading tag="h2" size="5">Members</Heading>
-
+        <ContainerHeader title="Members">
             <Button on:click={() => newMemberModal.set(true)} event="invite">
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Invite</span>
             </Button>
-        </div>
+        </ContainerHeader>
 
         <TableScroll>
             <TableHeader>
@@ -73,7 +71,7 @@
                 <TableCellHead width={90} />
                 <TableCellHead width={30} />
             </TableHeader>
-            <TableBody>
+            <TableBody service="members">
                 {#each data.organizationMembers.memberships as member}
                     <TableRow>
                         <TableCell title="Name">

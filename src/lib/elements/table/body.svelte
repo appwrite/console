@@ -1,20 +1,35 @@
 <script lang="ts">
+    import { usageRates } from '$lib/constants';
+    import { organization } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { Button } from '../forms';
 
-    export let limitReached = true;
-    export let name: string = null;
+    let tableBody: HTMLDivElement;
+
+    export let service: string = null;
+    export let name = service;
+    let rows = 0;
+
+    $: limitReached = isCloud ? usageRates[$organization?.billingPlan ?? 'tier-0'] : false;
+
+    $: if (tableBody) {
+        rows = tableBody?.parentNode?.querySelectorAll('.table-thead-col')?.length;
+    }
 </script>
 
-<div class="table-tbody" role="rowgroup">
+<div class="table-tbody" role="rowgroup" bind:this={tableBody}>
     <slot />
 </div>
-{#if isCloud && limitReached && name}
+{#if isCloud && limitReached && service}
     <tr class="table-row">
-        <td class="table-col" width="100%">
+        <td class="table-col" width="100%" colspan={rows}>
             <span class="u-flex u-gap-24 u-main-center u-cross-center">
                 <span class="text">Upgrade your plan to add {name} to your organization</span>
-                <Button secondary on:click={() => console.log('test')}>Change plan</Button>
+                <Button secondary on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                    Change plan
+                </Button>
             </span>
         </td>
     </tr>

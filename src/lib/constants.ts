@@ -260,22 +260,31 @@ export const eventServices: Array<EventService> = [
 
 export const usageRates = {
     'tier-0': [
-        { resource: 'Organization members', amount: 'Unlimited', unit: '', rate: '$20/member' },
-        { resource: 'Bandwidth', amount: 1, unit: 'TB', rate: '$0.04/GB' },
-        { resource: 'Storage', amount: 150, unit: 'GB', rate: '$0.025/GB' },
         {
+            id: 'members',
+            resource: 'Organization members',
+            amount: 1,
+            unit: '',
+            rate: '$20/member'
+        },
+        { id: 'bandwith', resource: 'Bandwidth', amount: 10, unit: 'GB', rate: '$0.04/GB' },
+        { id: 'storage', resource: 'Storage', amount: 2, unit: 'GB', rate: '$0.025/GB' },
+        {
+            id: 'executions',
             resource: 'Function executions',
-            amount: 3500000,
+            amount: 750000,
             unit: 'executions',
             rate: '$2/1M executions'
         },
         {
+            id: 'users',
             resource: 'Active users',
             amount: 200000,
             unit: 'AU',
             rate: '$0.0012/user'
         },
         {
+            id: 'connections',
             resource: 'Concurrent connections',
             amount: 750,
             unit: 'connections',
@@ -284,26 +293,30 @@ export const usageRates = {
     ],
     'tier-1': [
         {
+            id: 'members',
             resource: 'Organization members',
             amount: 'Unlimited',
             unit: '',
             rate: '$20/member'
         },
-        { resource: 'Bandwidth', amount: 1, unit: 'TB', rate: '$0.04/GB' },
-        { resource: 'Storage', amount: 150, unit: 'GB', rate: '$0.025/GB' },
+        { id: 'bandwith', resource: 'Bandwidth', amount: 1, unit: 'TB', rate: '$0.04/GB' },
+        { id: 'storage', resource: 'Storage', amount: 150, unit: 'GB', rate: '$0.025/GB' },
         {
+            id: 'executions',
             resource: 'Function executions',
             amount: 3500000,
             unit: 'executions',
             rate: '$2/1M executions'
         },
         {
+            id: 'users',
             resource: 'Active users',
             amount: 200000,
             unit: 'AU',
             rate: '$0.0012/user'
         },
         {
+            id: 'connections',
             resource: 'Concurrent connections',
             amount: 750,
             unit: 'connections',
@@ -312,26 +325,30 @@ export const usageRates = {
     ],
     'tier-2': [
         {
+            id: 'members',
             resource: 'Organization members',
             amount: 'Unlimited',
             unit: '',
             rate: '$20/member'
         },
-        { resource: 'Bandwidth', amount: 1, unit: 'TB', rate: '$0.04/GB' },
-        { resource: 'Storage', amount: 150, unit: 'GB', rate: '$0.025/GB' },
+        { id: 'bandwith', resource: 'Bandwidth', amount: 1, unit: 'TB', rate: '$0.04/GB' },
+        { id: 'storage', resource: 'Storage', amount: 150, unit: 'GB', rate: '$0.025/GB' },
         {
+            id: 'executions',
             resource: 'Function executions',
             amount: 3500000,
             unit: 'executions',
             rate: '$2/1M executions'
         },
         {
+            id: 'users',
             resource: 'Active users',
             amount: 200000,
             unit: 'AU',
             rate: '$0.0012/user'
         },
         {
+            id: 'connections',
             resource: 'Concurrent connections',
             amount: 750,
             unit: 'connections',
