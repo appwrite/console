@@ -76,6 +76,10 @@
             .getPaymentMethod($organization.paymentMethodId)
             .then((res) => (defaultPaymentMethod = res));
     }
+
+    $: if (!showReplace) {
+        isSelectedBackup = false;
+    }
 </script>
 
 <CardGrid>

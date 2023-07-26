@@ -55,7 +55,7 @@
                 {#each filteredMethods as method}
                     <div class="box">
                         <InputRadio
-                            id={`payment-method-${method.last4}`}
+                            id={`payment-method-${method.$id}`}
                             label={`${method.brand} ending in ${method.last4}`}
                             value={method.$id}
                             name="payment"

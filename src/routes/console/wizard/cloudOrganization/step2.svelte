@@ -57,7 +57,7 @@
                 {#each filteredMethods as method}
                     <div class="box">
                         <InputRadio
-                            id={`payment-method-${method.last4}`}
+                            id={`payment-method-${method.$id}`}
                             value={method.$id}
                             name="payment"
                             bind:group={$createOrganization.paymentMethodId}>

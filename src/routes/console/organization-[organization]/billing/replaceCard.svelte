@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
-    import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
+    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
     import type { PaymentList } from '$lib/sdk/billing';
     import { getCreditCardImage } from '$lib/stores/billing';
@@ -26,15 +26,17 @@
         selectedPaymentMethodId = isBackup
             ? $organization.backupPaymentMethodId
             : $organization.paymentMethodId;
-        // await initializeStripe();
     });
 
+    // TODO: fix new payment method replacement
     async function handleSubmit() {
         try {
+            console.log(selectedPaymentMethodId);
             if (!selectedPaymentMethodId) {
                 const method = await submitStripeCard(name);
                 selectedPaymentMethodId = method.$id;
             }
+            console.log(selectedPaymentMethodId);
             isBackup
                 ? await addBackupPaymentMethod(selectedPaymentMethodId)
                 : await addPaymentMethod(selectedPaymentMethodId);
@@ -83,28 +85,30 @@
         }
     }
 
-    $: if (selectedPaymentMethodId === null && show) {
+    $: if (selectedPaymentMethodId === null && !$isStripeInitialized && show) {
         initializeStripe();
     }
 
     $: filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);
+
+    $: if (show) {
+        isStripeInitialized.set(false);
+    }
+
+    $: if (!show) {
+        selectedPaymentMethodId = null;
+    }
 </script>
 
-<Modal
-    bind:show
-    bind:error
-    onSubmit={handleSubmit}
-    icon="exclamation"
-    state="warning"
-    size="big"
-    headerDivider={false}>
+<Modal bind:show bind:error onSubmit={handleSubmit} size="big" headerDivider={false}>
     <svelte:fragment slot="header">Replace payment method</svelte:fragment>
+    <p class="text">Replace the existing payment method for your organization.</p>
     <div class:boxes-wrapper={methods?.total}>
         {#if methods?.total}
             {#each filteredMethods as method}
                 <div class="box">
                     <InputRadio
-                        id={`payment-method-${method.last4}`}
+                        id={`payment-method-${method.$id}`}
                         disabled={isBackup
                             ? method.$id === $organization.paymentMethodId
                             : method.$id === $organization.backupPaymentMethodId}
