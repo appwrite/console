@@ -10,28 +10,20 @@
     import PaymentModal from '$routes/console/account/payments/paymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import { getCreditCardImage, paymentMethods } from '$lib/stores/billing';
-    import { onMount } from 'svelte';
     import type { PaymentMethodData } from '$lib/sdk/billing';
+    import DeleteOrgPayment from './deleteOrgPayment.svelte';
+    import ReplaceCard from './replaceCard.svelte';
 
-    export let showDropdown = false;
-    export let showDropdownBackup = false;
+    let showDropdown = false;
+    let showDropdownBackup = false;
 
     let showPayment = false;
+    let showDelete = false;
+    let showReplace = false;
+    let isSelectedBackup = false;
+    let selectedPaymentMethod: string;
     let defaultPaymentMethod: PaymentMethodData;
     let backupPaymentMethod: PaymentMethodData;
-
-    onMount(async () => {
-        if ($organization.paymentMethodId) {
-            defaultPaymentMethod = await sdk.forConsole.billing.getPaymentMethod(
-                $organization.paymentMethodId
-            );
-        }
-        if ($organization.backupPaymentMethodId) {
-            backupPaymentMethod = await sdk.forConsole.billing.getPaymentMethod(
-                $organization.backupPaymentMethodId
-            );
-        }
-    });
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
@@ -74,45 +66,16 @@
         }
     }
 
-    async function removeDefaultMethod() {
-        if (!$organization.paymentMethodId || !$organization.backupPaymentMethodId) return;
-
-        try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod($organization.$id, null);
-            addNotification({
-                type: 'success',
-                message: `The payment method has been removed from ${$organization.name}`
-            });
-            trackEvent(Submit.OrganizationPaymentRemoved);
-            invalidate(Dependencies.ORGANIZATION);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.OrganizationPaymentRemoved);
-        }
+    $: if ($organization.backupPaymentMethodId) {
+        sdk.forConsole.billing
+            .getPaymentMethod($organization.backupPaymentMethodId)
+            .then((res) => (backupPaymentMethod = res));
     }
-    async function removeBackuptMethod() {
-        if (!$organization.paymentMethodId || !$organization.backupPaymentMethodId) return;
-        try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                $organization.$id,
-                undefined
-            );
-            addNotification({
-                type: 'success',
-                message: `The payment method has been removed from ${$organization.name}`
-            });
-            trackEvent(Submit.OrganizationBackupPaymentRemoved);
-            invalidate(Dependencies.ORGANIZATION);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.OrganizationBackupPaymentRemoved);
-        }
+
+    $: if ($organization.paymentMethodId) {
+        sdk.forConsole.billing
+            .getPaymentMethod($organization.paymentMethodId)
+            .then((res) => (defaultPaymentMethod = res));
     }
 </script>
 
@@ -146,9 +109,21 @@
                             Edit
                         </DropListItem>
                         <DropListItem
+                            icon="switch-horizontal"
+                            on:click={() => {
+                                showReplace = true;
+                                showDropdown = false;
+                            }}>
+                            Replace
+                        </DropListItem>
+                        <DropListItem
                             disabled={!$organization?.backupPaymentMethodId}
                             icon="trash"
-                            on:click={removeDefaultMethod}>
+                            on:click={() => {
+                                showDelete = true;
+                                showDropdown = false;
+                                selectedPaymentMethod = $organization.paymentMethodId;
+                            }}>
                             Delete
                         </DropListItem>
                     </svelte:fragment>
@@ -166,7 +141,10 @@
                                 {#if $paymentMethods.total}
                                     {#each $paymentMethods.paymentMethods.filter((o) => !!o.last4 && o.$id !== $organization.backupPaymentMethodId) as paymentMethod}
                                         <DropListItem
-                                            on:click={() => addPaymentMethod(paymentMethod?.$id)}>
+                                            on:click={() => {
+                                                showDropdown = false;
+                                                addPaymentMethod(paymentMethod?.$id);
+                                            }}>
                                             <span class="u-flex u-cross-center u-gap-8">
                                                 <p class="text">
                                                     Card ending in {paymentMethod.last4}
@@ -180,8 +158,9 @@
                                         </DropListItem>
                                     {/each}
                                 {/if}
-                                <DropListItem on:click={() => (showPayment = true)}
-                                    >Add new payment method</DropListItem>
+                                <DropListItem on:click={() => (showPayment = true)}>
+                                    Add new payment method
+                                </DropListItem>
                             </svelte:fragment>
                         </DropList>
                     </div>
@@ -213,9 +192,23 @@
                             Edit
                         </DropListItem>
                         <DropListItem
+                            icon="switch-horizontal"
+                            on:click={() => {
+                                showReplace = true;
+                                isSelectedBackup = true;
+                                showDropdownBackup = false;
+                            }}>
+                            Replace
+                        </DropListItem>
+                        <DropListItem
                             disabled={!$organization?.paymentMethodId}
                             icon="trash"
-                            on:click={removeBackuptMethod}>
+                            on:click={() => {
+                                showDelete = true;
+                                isSelectedBackup = true;
+                                showDropdownBackup = false;
+                                selectedPaymentMethod = $organization.backupPaymentMethodId;
+                            }}>
                             Delete
                         </DropListItem>
                     </svelte:fragment>
@@ -236,8 +229,10 @@
                                 {#if $paymentMethods.total}
                                     {#each $paymentMethods.paymentMethods.filter((o) => !!o.last4 && o.$id !== $organization?.paymentMethodId) as paymentMethod}
                                         <DropListItem
-                                            on:click={() =>
-                                                addBackupPaymentMethod(paymentMethod?.$id)}>
+                                            on:click={() => {
+                                                showDropdownBackup = true;
+                                                addBackupPaymentMethod(paymentMethod?.$id);
+                                            }}>
                                             <span class="u-flex u-cross-center u-gap-8">
                                                 <p class="text">
                                                     Card ending in {paymentMethod.last4}
@@ -267,4 +262,10 @@
 
 {#if showPayment && isCloud && hasStripePublicKey}
     <PaymentModal bind:show={showPayment} />
+{/if}
+{#if showReplace && isCloud && hasStripePublicKey}
+    <ReplaceCard bind:show={showReplace} isBackup={isSelectedBackup} />
+{/if}
+{#if showDelete && isCloud && hasStripePublicKey}
+    <DeleteOrgPayment bind:showDelete isBackup={isSelectedBackup} />
 {/if}

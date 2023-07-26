@@ -20,6 +20,9 @@
 
     $: storage = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageStorage, 0);
     $: storageLimit = rates.filter((r) => r.resource === 'Storage')[0].amount;
+
+    $: realtime = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageRealtime, 0);
+    $: realtimeLimit = rates.filter((r) => r.resource === 'Concurrent connections')[0].amount;
 </script>
 
 <Container>
@@ -79,6 +82,19 @@
 
         <svelte:fragment slot="aside">
             <ProgressBarBig unit="GB" max={storageLimit} used={storage} />
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <Heading tag="h6" size="7">Realtime connections</Heading>
+
+        <p class="text">
+            Calculated for all realtime concurrent connections and messages sent to all projects in
+            your organization.
+        </p>
+
+        <svelte:fragment slot="aside">
+            <ProgressBarBig unit="GB" max={realtimeLimit} used={realtime} />
         </svelte:fragment>
     </CardGrid>
 

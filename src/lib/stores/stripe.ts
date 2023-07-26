@@ -86,6 +86,7 @@ export async function submitStripeCard(name?: string) {
                 setupIntent.payment_method
             );
             paymentElement.destroy();
+            isStripeInitialized.set(false);
             return method;
         } else {
             console.log('something went wrong');

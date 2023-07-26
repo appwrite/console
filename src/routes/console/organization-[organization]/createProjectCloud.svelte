@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { createEventDispatcher, onDestroy } from 'svelte';
+    import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
@@ -15,7 +15,6 @@
     import { wizard } from '$lib/stores/wizard';
 
     const teamId = $page.params.organization;
-    const dispatch = createEventDispatcher();
 
     async function onFinish() {
         await invalidate(Dependencies.FUNCTIONS);
@@ -27,9 +26,8 @@
                 $createProject?.id ?? ID.unique(),
                 $createProject.name,
                 teamId,
-                'default'
+                $createProject.region
             );
-            dispatch('created', project);
             trackEvent(Submit.ProjectCreate, {
                 customId: !!$createProject?.id,
                 teamId
@@ -53,7 +51,7 @@
         $createProject = {
             id: null,
             name: null,
-            region: 'eu-central-1'
+            region: 'eu-de'
         };
     });
 

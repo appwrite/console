@@ -134,7 +134,7 @@
             </Table>
             <div class="u-flex u-main-space-between">
                 <p class="text">Total results: {$invoiceList?.total}</p>
-                <PaginationInline limit={5} bind:offset sum={$invoiceList?.total} hidePages />
+                <PaginationInline limit={1} bind:offset sum={$invoiceList?.total} hidePages />
             </div>
         {:else}
             <EmptySearch cardOnly>

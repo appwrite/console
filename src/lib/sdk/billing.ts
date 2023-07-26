@@ -125,6 +125,10 @@ export type Aggregation = {
      * Total bandwidth usage for the billing period.
      */
     usageBandwidth: number;
+    /**
+     * Total realtime usage for the billing period.
+     */
+    usageRealtime: number;
 };
 
 export type AggregationList = {
@@ -217,13 +221,13 @@ export class Billing {
     async updateBudget(
         organizationId: string,
         budget: number,
-        alert: number[]
+        alerts: number[]
     ): Promise<Organization> {
         const path = `/organizations/${organizationId}/budget`;
         const params = {
             organizationId,
             budget,
-            alert
+            alerts
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -268,6 +272,21 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+    async removeOrganizationPaymentMethodBackup(organizationId: string): Promise<Organization> {
+        const path = `/organizations/${organizationId}/payment-method/backup`;
+        const params = {
+            organizationId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'DELETE',
             uri,
             {
                 'content-type': 'application/json'
