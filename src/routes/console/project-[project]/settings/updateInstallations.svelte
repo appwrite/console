@@ -60,8 +60,13 @@
 
     function configureGitHub() {
         const redirect = new URL($page.url);
-        redirect.searchParams.set('alert', 'installation-updated');
-        sdk.forProject.vcs.createGitHubInstallation(redirect.toString());
+        redirect.searchParams.append('alert', 'installation-updated');
+        const target = new URL(
+            `${sdk.forProject.client.config.endpoint}/v1/vcs/github/installations`
+        );
+        target.searchParams.set('projectId', $page.params.project);
+        target.searchParams.set('redirect', redirect.toString());
+        goto(target);
     }
 
     async function navigateInstallations() {

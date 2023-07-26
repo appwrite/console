@@ -59,6 +59,8 @@
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} />
+{:else if $wizard.cover}
+    <svelte:component this={$wizard.cover} />
 {/if}
 
 <Create bind:show={$newOrgModal} />

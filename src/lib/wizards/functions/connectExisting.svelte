@@ -7,7 +7,7 @@
     import { func } from '$routes/console/project-[project]/functions/function-[function]/store';
     import { choices, installation, repository } from './store';
     import { wizard } from '$lib/stores/wizard';
-    import { beforeNavigate, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
 
     async function createGitHubInstallation() {
@@ -32,10 +32,6 @@
         resetState();
         wizard.hide();
     }
-
-    beforeNavigate(() => {
-        wizard.hide();
-    });
 
     function resetState() {
         choices.set({

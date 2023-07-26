@@ -4,14 +4,13 @@
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
-    import { beforeNavigate, goto } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { choices, createFunction, installation, repository } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import ExecuteAccess from './steps/executeAccess.svelte';
-    import SelectRepository from './steps/selectRepository.svelte';
     import GitConfiguration from './steps/gitConfiguration.svelte';
     import FunctionConfiguration from './steps/functionConfiguration.svelte';
 
@@ -46,10 +45,6 @@
         wizard.hide();
     }
 
-    beforeNavigate(() => {
-        wizard.hide();
-    });
-
     function resetState() {
         createFunction.set({
             $id: null,
@@ -62,18 +57,14 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Select Repository',
-        component: SelectRepository
-    });
-    stepsComponents.set(2, {
         label: 'Git configuration',
         component: GitConfiguration
     });
-    stepsComponents.set(3, {
+    stepsComponents.set(2, {
         label: 'Function configuration',
         component: FunctionConfiguration
     });
-    stepsComponents.set(4, {
+    stepsComponents.set(3, {
         label: 'Execute access',
         component: ExecuteAccess,
         optional: true

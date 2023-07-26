@@ -2,15 +2,20 @@
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { sdk } from '$lib/stores/sdk';
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
 
     export let showGitInstall: boolean;
 
     function connectGitHub() {
-        sdk.forProject.vcs.createGitHubInstallation(
-            $page.params.project,
-            window.location.href + '?alert=installation-created'
+        const redirect = new URL($page.url);
+        redirect.searchParams.append('alert', 'installation-created');
+        const target = new URL(
+            `${sdk.forProject.client.config.endpoint}/v1/vcs/github/installations`
         );
+        target.searchParams.set('projectId', $page.params.project);
+        target.searchParams.set('redirect', redirect.toString());
+        goto(target);
     }
 </script>
 

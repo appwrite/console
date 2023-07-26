@@ -4,7 +4,7 @@
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
-    import { beforeNavigate, goto } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import {
         choices,
         createFunction,
@@ -36,7 +36,7 @@
         );
         await sdk.forProject.functions.createDeployment(
             response.$id,
-            $createFunctionDeployment.item[0],
+            $createFunctionDeployment[0],
             true
         );
         goto(`${base}/console/project-${$page.params.project}/functions/function-${response.$id}`);
@@ -50,10 +50,6 @@
         resetState();
         wizard.hide();
     }
-
-    beforeNavigate(() => {
-        wizard.hide();
-    });
 
     function resetState() {
         createFunction.set({
@@ -70,6 +66,7 @@
         });
         installation.set(null);
         repository.set(null);
+        createFunctionDeployment.set(null);
     }
 
     const stepsComponents: WizardStepsType = new Map();

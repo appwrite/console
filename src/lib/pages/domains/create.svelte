@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { beforeNavigate, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { dependencyStore, domain } from './wizard/store';
@@ -16,10 +16,6 @@
         return sdk.forConsole.client.subscribe<Models.ProxyRule>('console', (data) => {
             domain.set(data.payload);
         });
-    });
-
-    beforeNavigate(() => {
-        wizard.hide();
     });
 
     async function onFinish() {

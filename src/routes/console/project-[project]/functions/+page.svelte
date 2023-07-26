@@ -7,56 +7,41 @@
         GridItem1,
         Heading,
         PaginationWithLimit,
-        Id,
-        DropList,
-        DropListItem
+        Id
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { tooltip } from '$lib/actions/tooltip';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import { beforeNavigate } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import CreateManual from '$lib/wizards/functions/createManual.svelte';
-    import CreateGit from '$lib/wizards/functions/createGit.svelte';
-    import CreateStarter from '$lib/wizards/functions/createStarter.svelte';
+    import { onMount } from 'svelte';
+    import Initial from '$lib/wizards/functions/cover.svelte';
 
     export let data;
 
     let offset = 0;
-    let showCreateDropdown = false;
 
     const project = $page.params.project;
 
-    function openWizard() {
-        wizard.start(CreateManual);
-    }
-
-    beforeNavigate(() => {
-        wizard.hide();
+    onMount(() => {
+        if ($page.url.searchParams.has('github-installed')) {
+            openWizard();
+        }
     });
+
+    function openWizard() {
+        wizard.showCover(Initial);
+    }
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Functions</Heading>
-        <DropList bind:show={showCreateDropdown} scrollable>
-            <slot>
-                <Button
-                    on:click={() => (showCreateDropdown = !showCreateDropdown)}
-                    event="create_attribute">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create function</span>
-                </Button>
-            </slot>
-            <svelte:fragment slot="list">
-                <DropListItem on:click={() => wizard.start(CreateManual)}>Manual</DropListItem>
-                <DropListItem on:click={() => wizard.start(CreateGit)}>Git</DropListItem>
-                <DropListItem on:click={() => wizard.start(CreateStarter)}
-                    >Starter template</DropListItem>
-            </svelte:fragment>
-        </DropList>
+        <Button on:click={openWizard} event="create_attribute">
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create function</span>
+        </Button>
     </div>
 
     {#if data.functions.total}
@@ -81,14 +66,14 @@
                         </div>
                     </svelte:fragment>
                     <svelte:fragment slot="icons">
-                        {#if func.scheduleNext}
+                        {#if func.schedule}
                             <li>
                                 <span
                                     class="icon-clock"
                                     aria-hidden="true"
                                     use:tooltip={{
                                         content: `Next execution: 
-                                        ${toLocaleDateTime(func.scheduleNext)}`
+                                        ${toLocaleDateTime(func.schedule)}`
                                     }} />
                             </li>
                         {/if}

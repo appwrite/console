@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { beforeNavigate, goto, invalidate } from '$app/navigation';
-    import { wizard } from '$lib/stores/wizard';
+    import { goto, invalidate } from '$app/navigation';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
@@ -40,10 +39,6 @@
 
     onDestroy(() => {
         key.reset();
-    });
-
-    beforeNavigate(() => {
-        wizard.hide();
     });
 
     const stepsComponents: WizardStepsType = new Map();

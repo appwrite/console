@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { beforeNavigate, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
@@ -19,10 +19,6 @@
         createPlatform.reset();
         wizard.hide();
     }
-
-    beforeNavigate(() => {
-        wizard.hide();
-    });
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {

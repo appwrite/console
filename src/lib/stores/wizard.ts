@@ -6,6 +6,7 @@ export type WizardStore = {
     show: boolean;
     media?: string;
     component?: typeof SvelteComponent;
+    cover?: typeof SvelteComponent;
     interceptor?: () => Promise<void>;
 };
 
@@ -13,6 +14,7 @@ function createWizardStore() {
     const { subscribe, update, set } = writable<WizardStore>({
         show: false,
         component: null,
+        cover: null,
         interceptor: null,
         media: null
     });
@@ -25,6 +27,7 @@ function createWizardStore() {
                 n.show = true;
                 n.component = component;
                 n.media = media;
+                n.cover = null;
                 trackEvent('wizard_start');
                 return n;
             }),
@@ -40,7 +43,12 @@ function createWizardStore() {
                 n.show = false;
                 n.component = null;
                 n.media = null;
-
+                n.cover = null;
+                return n;
+            }),
+        showCover: (component: typeof SvelteComponent) =>
+            update((n) => {
+                n.cover = component;
                 return n;
             })
     };

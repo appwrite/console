@@ -1,7 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async () => {
+export const load: LayoutLoad = async ({ fetch }) => {
     const response = await fetch(`${sdk.forConsole.client.config.endpoint}/health/version`);
     const data = await response.json();
 

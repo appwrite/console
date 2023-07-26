@@ -15,8 +15,6 @@
     let selectedResponse = 'logs';
     let rawData: string;
 
-    $: console.log($log.data);
-
     function isExecution(
         data: Models.Deployment | Models.Execution<any>
     ): data is Models.Execution<any> {

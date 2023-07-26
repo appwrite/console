@@ -4,7 +4,7 @@
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
-    import { beforeNavigate, goto } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { choices, createFunction, installation, repository } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent } from '$lib/actions/analytics';
@@ -45,10 +45,6 @@
         resetState();
         wizard.hide();
     }
-
-    beforeNavigate(() => {
-        wizard.hide();
-    });
 
     function resetState() {
         createFunction.set({

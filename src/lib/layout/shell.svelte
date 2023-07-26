@@ -26,13 +26,17 @@
         }
     };
 
+    /**
+     * Cancel navigation when wizard is open and triggered by popstate
+     */
     beforeNavigate((n) => {
-        /**
-         * Hide wizard when navigation is triggered by popstate.
-         */
-        if (n.type === 'popstate' && $wizard.show) {
-            wizard.hide();
-            n.cancel();
+        if ($wizard.show || $wizard.cover) {
+            if (n.type === 'popstate') {
+                n.cancel();
+            }
+            if (n.type !== 'leave') {
+                wizard.hide();
+            }
         }
     });
 </script>
@@ -42,7 +46,7 @@
 <main
     class:grid-with-side={showSideNavigation}
     class:is-open={isOpen}
-    class:u-hide={$wizard.show || $log.show}>
+    class:u-hide={$wizard.show || $log.show || $wizard.cover}>
     <header class="main-header u-padding-inline-end-0">
         <button
             class:u-hide={!showSideNavigation}
