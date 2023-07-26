@@ -20,6 +20,7 @@
                     sdk.forConsole.client.config.endpoint + '/projects/' + $project.$id + '/team'
                 ),
                 {
+                    'X-Appwrite-Project': sdk.forConsole.client.config.project,
                     'content-type': 'application/json'
                 },
                 {
