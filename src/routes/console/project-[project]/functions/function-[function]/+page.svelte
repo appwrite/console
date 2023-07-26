@@ -38,7 +38,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
     import Create from './create.svelte';
-    import { onMount } from 'svelte';
     import DropListLink from '$lib/components/dropListLink.svelte';
     import { page } from '$app/stores';
 

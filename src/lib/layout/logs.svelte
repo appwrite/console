@@ -6,6 +6,7 @@
     import { app } from '$lib/stores/app';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { TableCellText, TableList } from '$lib/elements/table';
+    import { beforeNavigate } from '$app/navigation';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -16,6 +17,15 @@
             $log.show = false;
         }
     }
+
+    beforeNavigate((n) => {
+        if ($log.show) {
+            if (n.type === 'popstate') {
+                n.cancel();
+            }
+            $log.show = false;
+        }
+    });
 
     $: execution = $log.data;
     $: func = $log.func;

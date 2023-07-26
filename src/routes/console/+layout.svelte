@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/stores';
     import { INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
@@ -35,10 +34,6 @@
             feedback.switchType('nps');
         }
     }
-
-    beforeNavigate(() => {
-        $log.show = false;
-    });
 
     $: if (!$log.show) {
         $log.data = null;

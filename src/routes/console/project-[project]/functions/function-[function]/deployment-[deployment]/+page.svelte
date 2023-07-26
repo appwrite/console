@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Card, CardGrid, Code, Id } from '$lib/components';
+    import { Card, CardGrid, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
@@ -15,13 +15,16 @@
     import { page } from '$app/stores';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { timer } from '$lib/actions/timer';
 
     export let data;
 
-    let logs = '';
+    let stdout = '',
+        stderr = '';
 
     onMount(() => {
-        logs = data.deployment.buildStdout;
+        stdout = data.deployment.buildStdout;
+        stderr = data.deployment.buildStderr;
         if (data.deployment.status === 'ready') {
             return;
         }
@@ -31,7 +34,8 @@
                     `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
                 )
             ) {
-                logs = (message.payload as any).stdout as string;
+                stdout = (message.payload as any).stdout as string;
+                stderr = (message.payload as any).stderr as string;
                 if (message.payload.status === 'ready') {
                     invalidate(Dependencies.DEPLOYMENT);
                 }
@@ -56,8 +60,8 @@
                 </div>
 
                 <div class="u-flex u-gap-12 u-cross-center">
-                    <Id value={$func.deployment}>
-                        {$func.deployment}
+                    <Id value={data.deployment.$id}>
+                        {data.deployment.$id}
                     </Id>
                 </div>
             </div>
@@ -67,10 +71,17 @@
             {@const fileSize = humanFileSize(data.deployment.size)}
             <div class="u-flex u-main-space-between">
                 <div>
-                    <p><b>Build time:</b> {calculateTime(data.deployment.buildTime)}</p>
+                    <p>
+                        <b>Build time:</b>
+                        {#if ['processing', 'building'].includes(data.deployment.status)}
+                            <span use:timer={{ start: data.deployment.$createdAt }} />
+                        {:else}
+                            {calculateTime(data.deployment.buildTime)}
+                        {/if}
+                    </p>
                     <p><b>Created:</b> {timeFromNow(data.deployment.$createdAt)}</p>
                     <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
-                    <p><b>Source:</b> <span>Git</span></p>
+                    <p><b>Source:</b> <span>tbd</span></p>
                 </div>
                 <div class="u-flex u-flex-vertical u-cross-end">
                     <Pill
@@ -104,10 +115,9 @@
                     </div>
                 </header>
                 <div class="code-panel-content">
-                    {#if data.deployment.buildStderr}
-                        <Code code={data.deployment.buildStderr} language="sh" />
-                    {:else}
-                        <pre><code>{logs}</code></pre>
+                    <pre><code>{stdout}</code></pre>
+                    {#if stderr}
+                        <pre><code>{stderr}</code></pre>
                     {/if}
                 </div>
             </section>
