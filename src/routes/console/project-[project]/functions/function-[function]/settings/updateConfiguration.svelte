@@ -10,7 +10,8 @@
         FormList,
         InputChoice,
         InputSelect,
-        InputText
+        InputText,
+        InputTextarea
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -221,7 +222,7 @@
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Build settings</svelte:fragment>
                     <FormList>
-                        <InputText
+                        <InputTextarea
                             label="Commands"
                             placeholder="Enter an install commad (e.g. 'npm install')"
                             id="install"

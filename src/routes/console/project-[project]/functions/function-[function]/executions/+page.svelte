@@ -18,7 +18,7 @@
     import { Container } from '$lib/layout';
     import { log } from '$lib/stores/logs';
     import { sdk } from '$lib/stores/sdk';
-    import { onDestroy, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { func } from '../store';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
@@ -29,20 +29,12 @@
 
     let showCreate = false;
 
-    let unsubscribe: { (): void };
-
     onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('functions.*.executions.*')) {
                 invalidate(Dependencies.EXECUTIONS);
             }
         });
-    });
-
-    onDestroy(() => {
-        if (unsubscribe) {
-            unsubscribe();
-        }
     });
 
     function showLogs(execution: Models.Execution<any>) {

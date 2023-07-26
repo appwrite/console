@@ -13,9 +13,9 @@
     onMount(() => {
         domain.set({ $id: '', domain: '' });
 
-        return sdk.forConsole.client.subscribe<Models.ProxyRule>('console', (data) => {
-            domain.set(data.payload);
-        });
+        return sdk.forConsole.client.subscribe<Models.ProxyRule>('console', (data) =>
+            domain.set(data.payload)
+        );
     });
 
     async function onFinish() {

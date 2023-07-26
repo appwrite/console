@@ -25,14 +25,12 @@
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import { timeFromNow } from '$lib/helpers/date';
-    import { log } from '$lib/stores/logs';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
     import Activate from './activate.svelte';
-    import { browser } from '$app/environment';
     import { sdk } from '$lib/stores/sdk';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
@@ -40,6 +38,9 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
     import Create from './create.svelte';
+    import { onMount } from 'svelte';
+    import DropListLink from '$lib/components/dropListLink.svelte';
+    import { page } from '$app/stores';
 
     export let data: PageData;
 
@@ -55,27 +56,6 @@
     }
 
     $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
-
-    if (browser) {
-        sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            if (message.events.includes('functions.*.deployments.*.create')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-
-                return;
-            }
-            if (message.events.includes('functions.*.deployments.*.update')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-                invalidate(Dependencies.FUNCTION);
-
-                return;
-            }
-            if (message.events.includes('functions.*.deployments.*.delete')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-
-                return;
-            }
-        });
-    }
 
     async function redeploy(deployment: Models.Deployment) {
         try {
@@ -166,11 +146,7 @@
                 <svelte:fragment slot="actions">
                     <Button
                         text
-                        on:click={() => {
-                            $log.show = true;
-                            $log.func = $func;
-                            $log.data = activeDeployment;
-                        }}>
+                        href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
                         Build logs
                     </Button>
                     <Button text on:click={() => redeploy(activeDeployment)}>Redeploy</Button>
@@ -269,16 +245,11 @@
                                                     Activate
                                                 </DropListItem>
                                             {/if}
-                                            <DropListItem
+                                            <DropListLink
                                                 icon="terminal"
-                                                on:click={() => {
-                                                    $log.show = true;
-                                                    $log.func = $func;
-                                                    $log.data = deployment;
-                                                    showDropdown = [];
-                                                }}>
+                                                href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                                 Output
-                                            </DropListItem>
+                                            </DropListLink>
                                             <DropListItem
                                                 icon="trash"
                                                 on:click={() => {
