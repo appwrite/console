@@ -2,6 +2,7 @@ import { debounce } from '$lib/helpers/debounce';
 import { isMac } from '$lib/helpers/platform';
 import { onMount } from 'svelte';
 import { derived, writable } from 'svelte/store';
+import { nanoid } from 'nanoid/non-secure';
 
 const groups = [
     'ungrouped',
@@ -206,7 +207,7 @@ export const commandCenterKeyDownHandler = derived(
 // Methods
 export const registerCommands = {
     subscribe(runner: (cb: (newCommands: Command[]) => void) => void) {
-        const uuid = crypto.randomUUID();
+        const uuid = nanoid();
 
         runner((newCommands: Command[]) => {
             commandMap.update((curr) => {
@@ -226,7 +227,7 @@ export const registerCommands = {
 
 export const disableCommands = {
     subscribe(runner: (cb: (disabled: boolean) => void) => void) {
-        const uuid = crypto.randomUUID();
+        const uuid = nanoid();
 
         runner((disabled: boolean) => {
             disabledMap.update((curr) => {
@@ -251,7 +252,7 @@ const groupRanksMap = writable<GroupRanksMap>(new Map());
 
 export const updateCommandGroupRanks = {
     subscribe(runner: (cb: (updater: CommandGroupRanks) => void) => void) {
-        const uuid = crypto.randomUUID();
+        const uuid = nanoid();
 
         runner((groupRank: CommandGroupRanks) => {
             groupRanksMap.update((curr) => {
@@ -289,7 +290,7 @@ const searchersMap = writable<Map<string, Searcher[]>>(new Map());
 
 export const registerSearchers = {
     subscribe(runner: (cb: (...searchers: Searcher[]) => void) => void) {
-        const uuid = crypto.randomUUID();
+        const uuid = nanoid();
 
         runner((...searchers: Searcher[]) => {
             searchersMap.update((curr) => {
