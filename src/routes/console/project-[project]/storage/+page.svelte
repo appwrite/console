@@ -1,18 +1,10 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { Button } from '$lib/elements/forms';
-    import {
-        Empty,
-        GridItem1,
-        CardContainer,
-        Heading,
-        PaginationWithLimit,
-        Id
-    } from '$lib/components';
+    import { Empty, GridItem1, CardContainer, PaginationWithLimit, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import Create from './create.svelte';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import { tooltip } from '$lib/actions/tooltip';
     import type { Models } from '@appwrite.io/console';
@@ -31,19 +23,19 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Buckets</Heading>
-
-        <Button on:click={() => (showCreate = true)} event="create_bucket">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create bucket</span>
-        </Button>
-    </div>
+    <ContainerHeader
+        title="Buckets"
+        total={data.buckets.total}
+        buttonText="Create bucket"
+        buttonEvent="create_bucket"
+        buttonMethod={() => (showCreate = true)} />
 
     {#if data.buckets.total}
         <CardContainer
             total={data.buckets.total}
             offset={data.offset}
             event="bucket"
+            service="buckets"
             on:click={() => (showCreate = true)}>
             {#each data.buckets.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket-${bucket.$id}`}>
