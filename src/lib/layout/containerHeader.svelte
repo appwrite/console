@@ -9,10 +9,15 @@
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { limitRates } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
 
     export let title: string;
     export let serviceId = title.toLocaleLowerCase();
     export let totalUse: number = null;
+
+    export let buttonText: string = null;
+    export let buttonMethod: () => void = null;
+    export let buttonEvent: string = buttonText?.toLocaleLowerCase();
 
     let tooltipContent: HTMLDivElement;
 
@@ -21,7 +26,7 @@
     $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
 </script>
 
-{#if isCloud && totalUse && limit !== 'unlimited' && limit <= totalUse}
+{#if isCloud && totalUse && limit !== 'unlimited' && totalUse >= limit}
     <Alert type="warning">
         <span class="text">
             You've reached the maximum number of {title.toLowerCase()} for the {tier} plan.
@@ -57,7 +62,15 @@
         {/if}
     </div>
 
-    <slot />
+    <slot>
+        <Button
+            on:click={buttonMethod}
+            event={buttonEvent}
+            disabled={limit !== 'unlimited' && totalUse >= limit}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">{buttonText}</span>
+        </Button>
+    </slot>
 </div>
 
 {#if isCloud}
