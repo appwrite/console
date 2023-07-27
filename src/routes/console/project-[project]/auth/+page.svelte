@@ -19,7 +19,7 @@
         TableRowLink
     } from '$lib/elements/table';
     import { Pill } from '$lib/elements';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { goto } from '$app/navigation';
@@ -32,7 +32,8 @@
     // TODO: Remove this when the console SDK is updated
     const users = data.users.users.map((user) => {
         const labels: string[] = [];
-        return { labels, ...user };
+        const accessedAt = '';
+        return { accessedAt, labels, ...user };
     });
 
     let showCreate = false;
@@ -57,6 +58,7 @@
                 <TableCellHead onlyDesktop width={100}>ID</TableCellHead>
                 <TableCellHead onlyDesktop width={100}>Labels</TableCellHead>
                 <TableCellHead onlyDesktop>Joined</TableCellHead>
+                <TableCellHead onlyDesktop>Last Activity</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each users as user}
@@ -114,6 +116,9 @@
                         </TableCellText>
                         <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(user.registration)}
+                        </TableCellText>
+                        <TableCellText onlyDesktop title="Last Activity">
+                            {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
                         </TableCellText>
                     </TableRowLink>
                 {/each}
