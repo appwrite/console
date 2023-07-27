@@ -96,5 +96,5 @@
         {/if}
     </ul>
 
-    {#if $organization.billingPlan === 'tier-0'}tesr{/if}
+    {#if $organization.billingPlan === 'tier-0'}TODO: add transfer modal{/if}
 </WizardStep>

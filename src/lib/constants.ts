@@ -356,3 +356,211 @@ export const usageRates = {
         }
     ]
 };
+
+//resources: bandwidth, buckets, file size limit, functions, executions, users,teams, members, apps, webhooks, databases, connections, messages
+export const limitRates = {
+    'tier-0': [
+        {
+            id: 'bandwith',
+            amount: 10,
+            unit: 'GB'
+        },
+        {
+            id: 'buckets',
+            amount: 3,
+            unit: ''
+        },
+        {
+            id: 'file-size-limit',
+            amount: 50,
+            unit: 'MB'
+        },
+        {
+            id: 'functions',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'executions',
+            amount: 750000,
+            unit: 'executions'
+        },
+        {
+            id: 'users',
+            amount: 200000,
+            unit: 'AU'
+        },
+
+        {
+            id: 'teams',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'members',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'apps',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'webhooks',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'databases',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'connections',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'messages',
+            amount: 1,
+            unit: ''
+        }
+    ],
+    'tier-1': [
+        {
+            id: 'bandwith',
+            amount: 10,
+            unit: 'GB'
+        },
+        {
+            id: 'buckets',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'file-size-limit',
+            amount: 5,
+            unit: 'MB'
+        },
+        {
+            id: 'functions',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'executions',
+            amount: 750000,
+            unit: 'executions'
+        },
+        {
+            id: 'users',
+            amount: 200000,
+            unit: 'AU'
+        },
+
+        {
+            id: 'teams',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'members',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'apps',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'webhooks',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'databases',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'connections',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'messages',
+            amount: 1,
+            unit: ''
+        }
+    ],
+    'tier-2': [
+        {
+            id: 'bandwith',
+            amount: 10,
+            unit: 'GB'
+        },
+        {
+            id: 'buckets',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'file-size-limit',
+            amount: 5,
+            unit: 'MB'
+        },
+        {
+            id: 'functions',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'executions',
+            amount: 750000,
+            unit: 'executions'
+        },
+        {
+            id: 'users',
+            amount: 200000,
+            unit: 'AU'
+        },
+
+        {
+            id: 'teams',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'members',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'apps',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'webhooks',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'databases',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'connections',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'messages',
+            amount: 1,
+            unit: ''
+        }
+    ]
+};

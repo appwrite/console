@@ -57,7 +57,7 @@
 
 <Container>
     {#if data.organizationMembers.total}
-        <ContainerHeader title="Members">
+        <ContainerHeader title="Members" totalUse={data.organizationMembers.total}>
             <Button on:click={() => newMemberModal.set(true)} event="invite">
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Invite</span>
