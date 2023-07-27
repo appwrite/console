@@ -6,7 +6,7 @@
 </script>
 
 {#if show}
-    <div class="floating-action-bar" transition:fly={{ y: '6rem' }} use:portal>
+    <div class="floating-action-bar" transition:fly|local={{ y: '6rem' }} use:portal>
         <slot />
     </div>
 {/if}
