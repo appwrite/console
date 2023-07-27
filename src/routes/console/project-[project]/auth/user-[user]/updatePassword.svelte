@@ -34,7 +34,7 @@
         </div>
 
         <p>
-            Enter a new password. A password must contain <b>at least 8 characters.</b>
+            Enter a new password. A password must contain <b>at least 8 characters</b>.
         </p>
         <svelte:fragment slot="aside">
             <ul>
