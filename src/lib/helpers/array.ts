@@ -88,3 +88,11 @@ export function excludeArray<T, E extends T>(
 export function includesAll<T>(arr1: T[], arr2: T[]): boolean {
     return arr2.every((elem) => arr1.includes(elem));
 }
+
+export function toggle<T>(arr: T[], elem: T): T[] {
+    if (arr.includes(elem)) {
+        return arr.filter((e) => e !== elem);
+    }
+    arr.push(elem);
+    return arr;
+}
