@@ -304,6 +304,7 @@
 </div>
 
 <style lang="scss">
+    // Animations
     @keyframes press {
         0% {
             scale: 1;
@@ -336,6 +337,36 @@
         animation: scale-up 150ms cubic-bezier(0.5, 1, 0.89, 1);
     }
 
+    // Theme
+    :global(.theme-light) .card {
+        --cmd-center-bg: hsl(var(--color-neutral-0));
+        --cmd-center-border: hsl(var(--color-neutral-10));
+        --cmd-center-shadow: 0px 16px 32px 0px rgba(55, 59, 77, 0.04);
+
+        --kbd-bg: hsl(var(--color-neutral-30));
+
+        --crumb-bg: hsl(var(--color-neutral-10));
+        --crumb-color: hsl(var(--color-neutral-100));
+
+        --result-bg: hsl(var(--color-neutral-10));
+        --footer-bg: linear-gradient(180deg, #fff 0%, #e8e9f0 100%);
+    }
+
+    :global(.theme-dark) .card {
+        --cmd-center-bg: rgba(27, 27, 40, 0.8);
+        --cmd-center-border: hsl(var(--color-neutral-150));
+        --cmd-center-shadow: 0px 16px 32px 0px #14141f;
+
+        --kbd-bg: hsl(var(--color-neutral-150));
+
+        --crumb-bg: hsl(var(--color-neutral-150));
+        --crumb-color: hsl(var(--color-neutral-30));
+
+        --result-bg: hsl(var(--color-neutral-200));
+        --footer-bg: linear-gradient(180deg, #1b1b28 0%, #282a3b 100%);
+    }
+
+    // Elements
     .card {
         display: flex;
         flex-direction: column;
@@ -351,9 +382,9 @@
         translate: -50%;
 
         border-radius: 0.5rem;
-        border: 1px solid var(--dark-neutrals-150, #373b4d);
-        background: rgba(27, 27, 40, 0.8);
-        box-shadow: 0px 16px 32px 0px #14141f;
+        border: 1px solid var(--cmd-center-border);
+        background: var(--cmd-center-bg);
+        box-shadow: var(--cmd-center-shadow);
         backdrop-filter: blur(6px);
 
         &.fullheight {
@@ -361,7 +392,7 @@
         }
 
         :global(.kbd) {
-            background-color: hsl(var(--color-neutral-150));
+            background-color: var(--kbd-bg);
             padding-inline: 0.25rem;
         }
     }
@@ -393,9 +424,8 @@
         gap: 0.25rem;
 
         border-radius: 0.25rem;
-        background: var(--dark-neutrals-150, #373b4d);
-
-        color: var(--light-neutrals-30, #e8e9f0);
+        background: var(--crumb-bg);
+        color: var(--crumb-color);
         text-align: center;
         font-family: Inter;
         font-size: 0.75rem;
@@ -439,7 +469,7 @@
                 .bg {
                     position: absolute;
                     inset: 0;
-                    background-color: hsl(var(--color-neutral-200));
+                    background-color: var(--result-bg);
                     border-radius: 0.75rem;
                     translate: 0 -1px;
                 }
@@ -477,10 +507,9 @@
     }
 
     .footer {
-        background: linear-gradient(180deg, #1b1b28 0%, #282a3b 100%);
+        background: var(--footer-bg);
         border-top: 1px solid hsl(var(--color-border));
 
-        // margin: -1rem;
         padding: 0.5rem 1rem;
     }
 </style>
