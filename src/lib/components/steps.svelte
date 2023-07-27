@@ -23,7 +23,6 @@
         {#each steps as step, index}
             {@const stepNumber = index + 1}
             {#if firstOptional === index}
-                {step.disabled}
                 <li class="steps-item">
                     <h3 class="eyebrow-heading-3">OPTIONAL</h3>
                 </li>
