@@ -36,6 +36,8 @@
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
+    import { ContainerHeader } from '$lib/layout';
+    import { getServiceLimit } from '$lib/stores/billing';
 
     export let data: PageData;
 
@@ -72,27 +74,26 @@
     };
 </script>
 
-<div class="common-section u-flex u-gap-12">
-    <Heading tag="h3" size="7">Platforms</Heading>
-    <span class="u-margin-inline-start-auto">
-        <DropList bind:show={showDropdown} placement="bottom-start">
-            <Button on:click={() => (showDropdown = !showDropdown)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add platform</span>
-            </Button>
-            <svelte:fragment slot="list">
-                <DropListItem on:click={() => addPlatform(Platform.Web)}>Web App</DropListItem>
-                <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
-                    Flutter App
-                </DropListItem>
-                <DropListItem on:click={() => addPlatform(Platform.Android)}>
-                    Android App
-                </DropListItem>
-                <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple App</DropListItem>
-            </svelte:fragment>
-        </DropList>
-    </span>
-</div>
+<ContainerHeader
+    title="Platforms"
+    titleTag="h3"
+    titleSize="7"
+    totalUse={data?.platforms?.platforms?.length}>
+    <DropList bind:show={showDropdown} placement="bottom-start">
+        <Button
+            on:click={() => (showDropdown = !showDropdown)}
+            disabled={data?.platforms?.platforms?.length >= getServiceLimit('platforms')}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Add platform</span>
+        </Button>
+        <svelte:fragment slot="list">
+            <DropListItem on:click={() => addPlatform(Platform.Web)}>Web App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Android)}>Android App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple App</DropListItem>
+        </svelte:fragment>
+    </DropList>
+</ContainerHeader>
 
 {#if data.platforms.platforms.length}
     <div

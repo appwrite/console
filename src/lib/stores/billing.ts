@@ -1,6 +1,8 @@
 import { page } from '$app/stores';
-import { derived } from 'svelte/store';
+import { derived, get } from 'svelte/store';
 import { sdk } from './sdk';
+import { limitRates } from '$lib/constants';
+import { organization } from './organization';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -22,6 +24,10 @@ export function tierToPlan(tier: Tier) {
 export function getCreditCardImage(brand: string, width = 46, height = 32) {
     if (!brand) return '';
     return sdk.forConsole.avatars.getCreditCard(brand, width, height).toString();
+}
+
+export function getServiceLimit(serviceId: string) {
+    return limitRates?.[get(organization)?.billingPlan]?.find((l) => l.id === serviceId)?.amount;
 }
 
 export const tierFree = {

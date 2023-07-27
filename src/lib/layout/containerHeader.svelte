@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { tierToPlan, type Tier } from '$lib/stores/billing';
+    import { tierToPlan, type Tier, getServiceLimit } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { Alert, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -8,10 +8,12 @@
     import { tick } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { limitRates } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
 
     export let title: string;
+    export let titleTag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' = 'h2';
+
+    export let titleSize: '1' | '2' | '3' | '4' | '5' | '6' | '7' = '5';
     export let serviceId = title.toLocaleLowerCase();
     export let totalUse: number = null;
 
@@ -21,7 +23,7 @@
 
     let tooltipContent: HTMLDivElement;
 
-    $: limit = limitRates?.[$organization?.billingPlan]?.find((l) => l.id === serviceId)?.amount;
+    $: limit = getServiceLimit(serviceId);
 
     $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
 </script>
@@ -42,7 +44,7 @@
 
 <div class="u-flex u-gap-12 common-section u-main-space-between">
     <div class="u-flex u-cross-child-center u-gap-16">
-        <Heading tag="h2" size="5">{title}</Heading>
+        <Heading tag={titleTag} size={titleSize}>{title}</Heading>
         {#if isCloud}
             <div
                 use:tooltip={{
