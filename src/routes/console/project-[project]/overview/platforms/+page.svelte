@@ -82,7 +82,7 @@
     <DropList bind:show={showDropdown} placement="bottom-start">
         <Button
             on:click={() => (showDropdown = !showDropdown)}
-            disabled={data?.platforms?.platforms?.length >= getServiceLimit('platforms')}>
+            disabled={data?.platforms?.platforms?.length >= getServiceLimit('platforms')?.amount}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Add platform</span>
         </Button>

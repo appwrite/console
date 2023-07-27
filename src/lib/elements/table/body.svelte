@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { usageRates } from '$lib/constants';
-    import { organization } from '$lib/stores/organization';
+    import { getServiceLimit } from '$lib/stores/billing';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
@@ -12,7 +11,7 @@
     export let name = service;
     let rows = 0;
 
-    $: limitReached = isCloud ? usageRates[$organization?.billingPlan ?? 'tier-0'] : false;
+    $: limitReached = rows >= (getServiceLimit(service)?.amount ?? Infinity);
 
     $: if (tableBody) {
         rows = tableBody?.parentNode?.querySelectorAll('.table-thead-col')?.length;

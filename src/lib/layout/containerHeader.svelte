@@ -10,9 +10,9 @@
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { Button } from '$lib/elements/forms';
 
+    export let isFlex = true;
     export let title: string;
     export let titleTag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' = 'h2';
-
     export let titleSize: '1' | '2' | '3' | '4' | '5' | '6' | '7' = '5';
     export let serviceId = title.toLocaleLowerCase();
     export let total: number = null;
@@ -23,26 +23,28 @@
 
     let tooltipContent: HTMLDivElement;
 
-    $: limit = getServiceLimit(serviceId);
+    const limit = getServiceLimit(serviceId)?.amount ?? Infinity;
 
     $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
 </script>
 
 {#if isCloud && total && limit !== 'unlimited' && total >= limit}
-    <Alert type="warning">
-        <span class="text">
-            You've reached the maximum number of {title.toLowerCase()} for the {tier} plan.
-            <button
-                class="link"
-                type="button"
-                on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
-                >Upgrade</button>
-            for additional {title.toLocaleLowerCase()}.
-        </span>
-    </Alert>
+    <slot name="alert">
+        <Alert type="warning">
+            <span class="text">
+                You've reached the maximum number of {title.toLowerCase()} for the {tier} plan.
+                <button
+                    class="link"
+                    type="button"
+                    on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                    >Upgrade</button>
+                for additional {title.toLocaleLowerCase()}.
+            </span>
+        </Alert>
+    </slot>
 {/if}
 
-<div class="u-flex u-gap-12 common-section u-main-space-between">
+<div class:u-flex={isFlex} class=" u-gap-12 common-section u-main-space-between">
     <div class="u-flex u-cross-child-center u-gap-16">
         <Heading tag={titleTag} size={titleSize}>{title}</Heading>
         {#if isCloud}

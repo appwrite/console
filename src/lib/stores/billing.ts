@@ -27,7 +27,7 @@ export function getCreditCardImage(brand: string, width = 46, height = 32) {
 }
 
 export function getServiceLimit(serviceId: string) {
-    return limitRates?.[get(organization)?.billingPlan]?.find((l) => l.id === serviceId)?.amount;
+    return limitRates?.[get(organization)?.billingPlan]?.find((l) => l.id === serviceId);
 }
 
 export const tierFree = {
