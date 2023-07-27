@@ -57,5 +57,5 @@ export { default as ClickableListItem } from './clickableListItem.svelte';
 export { default as Id } from './id.svelte';
 export { default as EyebrowHeading } from './eyebrowHeading.svelte';
 export { default as SvgIcon } from './svgIcon.svelte';
-
 export { default as MigrationBox } from './migrationBox.svelte';
+export { default as FloatingActionBar } from './floatingActionBar.svelte';

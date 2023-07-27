@@ -1,7 +1,12 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Id } from '$lib/components';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Id, Modal } from '$lib/components';
+    import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
+    import { Dependencies } from '$lib/constants';
+    import Button from '$lib/elements/forms/button.svelte';
     import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
     import {
         TableBody,
@@ -15,6 +20,8 @@
     import { toggle } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { isHTMLInputElement } from '$lib/helpers/types';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
     import { columns } from './store';
 
@@ -22,6 +29,32 @@
     const projectId = $page.params.project;
 
     let selected: string[] = [];
+    let showDelete = false;
+    let deleting = false;
+
+    async function handleDelete() {
+        showDelete = false;
+
+        const promises = selected.map((databaseId) => sdk.forProject.databases.delete(databaseId));
+        try {
+            await Promise.all(promises);
+            trackEvent(Submit.DatabaseDelete);
+            addNotification({
+                type: 'success',
+                message: `${selected.length} database${selected.length > 1 ? 's' : ''} deleted`
+            });
+            invalidate(Dependencies.DATABASES);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.DatabaseDelete);
+        } finally {
+            selected = [];
+            showDelete = false;
+        }
+    }
 </script>
 
 <TableScroll>
@@ -92,3 +125,52 @@
         {/each}
     </TableBody>
 </TableScroll>
+
+<FloatingActionBar show={selected.length > 0}>
+    <div class="u-flex u-cross-center u-main-space-between actions">
+        <div class="u-flex u-cross-center u-gap-8">
+            <span class="indicator body-text-2 u-bold">{selected.length}</span>
+            <span>
+                {selected.length > 1 ? 'databases' : 'database'} selected
+            </span>
+        </div>
+
+        <div class="u-flex u-cross-center u-gap-8">
+            <Button text on:click={() => (selected = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showDelete = true)}>Delete selection</Button>
+        </div>
+    </div>
+</FloatingActionBar>
+
+<Modal
+    icon="exclamation"
+    state="warning"
+    bind:show={showDelete}
+    onSubmit={handleDelete}
+    headerDivider={false}
+    closable={!deleting}>
+    <svelte:fragment slot="header">Delete Database</svelte:fragment>
+    <p class="text" data-private>
+        Are you sure you want to delete <b>{selected.length}</b>
+        {selected.length > 1 ? 'databases' : 'database'}?
+    </p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
+        <Button secondary submit disabled={deleting}>Delete</Button>
+    </svelte:fragment>
+</Modal>
+
+<style lang="scss">
+    .actions {
+        width: 31.25rem;
+
+        .indicator {
+            border-radius: 0.25rem;
+            background: hsl(var(--color-information-100));
+            color: hsl(var(--color-neutral-0));
+
+            padding: 0rem 0.375rem;
+            display: inline-block;
+        }
+    }
+</style>
