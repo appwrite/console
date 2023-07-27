@@ -47,7 +47,7 @@
 <div class:u-flex={isFlex} class=" u-gap-12 common-section u-main-space-between">
     <div class="u-flex u-cross-child-center u-gap-16">
         <Heading tag={titleTag} size={titleSize}>{title}</Heading>
-        {#if isCloud}
+        {#if isCloud && limit !== 'unlimited' && limit < Infinity}
             <div
                 use:tooltip={{
                     interactive: true,
@@ -67,19 +67,21 @@
     </div>
 
     <slot>
-        <div
-            use:tooltip={{
-                content: `Upgrade to add more ${title.toLocaleLowerCase()}`,
-                disabled: total < limit || limit === 'unlimited'
-            }}>
-            <Button
-                on:click={buttonMethod}
-                event={buttonEvent}
-                disabled={limit !== 'unlimited' && total >= limit}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">{buttonText}</span>
-            </Button>
-        </div>
+        {#if buttonText}
+            <div
+                use:tooltip={{
+                    content: `Upgrade to add more ${title.toLocaleLowerCase()}`,
+                    disabled: total < limit || limit === 'unlimited'
+                }}>
+                <Button
+                    on:click={buttonMethod}
+                    event={buttonEvent}
+                    disabled={limit !== 'unlimited' && total >= limit}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">{buttonText}</span>
+                </Button>
+            </div>
+        {/if}
     </slot>
 </div>
 

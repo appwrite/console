@@ -357,7 +357,7 @@ export const usageRates = {
     ]
 };
 
-//resources: bandwidth, buckets, file size limit, functions, executions, users,teams, members, platforms, webhooks, databases, connections, messages
+//resources: bandwidth, buckets, file size limit, functions, executions, users,teams,logs, members, platforms, webhooks, databases, connections, messages
 export const limitRates = {
     'tier-0': [
         {
@@ -396,6 +396,13 @@ export const limitRates = {
             amount: 1,
             unit: ''
         },
+
+        {
+            id: 'logs',
+            amount: 1,
+            unit: ''
+        },
+
         {
             id: 'members',
             amount: 1,
@@ -465,6 +472,11 @@ export const limitRates = {
             unit: ''
         },
         {
+            id: 'logs',
+            amount: 1,
+            unit: ''
+        },
+        {
             id: 'members',
             amount: 1,
             unit: ''
@@ -529,6 +541,11 @@ export const limitRates = {
 
         {
             id: 'teams',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'logs',
             amount: 1,
             unit: ''
         },
