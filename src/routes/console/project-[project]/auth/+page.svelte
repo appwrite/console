@@ -19,7 +19,7 @@
         TableRowLink
     } from '$lib/elements/table';
     import { Pill } from '$lib/elements';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import { goto } from '$app/navigation';
@@ -28,6 +28,13 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
+
+    // TODO: Remove this when the console SDK is updated
+    const users = data.users.users.map((user) => {
+        const labels: string[] = [];
+        const accessedAt = '';
+        return { accessedAt, labels, ...user };
+    });
 
     let showCreate = false;
     const projectId = $page.params.project;
@@ -50,9 +57,10 @@
                 <TableCellHead onlyDesktop width={130}>Status</TableCellHead>
                 <TableCellHead onlyDesktop width={100}>ID</TableCellHead>
                 <TableCellHead onlyDesktop>Joined</TableCellHead>
+                <TableCellHead onlyDesktop>Last Activity</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each data.users.users as user}
+                {#each users as user}
                     <TableRowLink
                         href={`${base}/console/project-${projectId}/auth/user-${user.$id}`}>
                         <TableCell title="Name">
@@ -104,6 +112,9 @@
                         </TableCell>
                         <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(user.registration)}
+                        </TableCellText>
+                        <TableCellText onlyDesktop title="Last Activity">
+                            {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
                         </TableCellText>
                     </TableRowLink>
                 {/each}

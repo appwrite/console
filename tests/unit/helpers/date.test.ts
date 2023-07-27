@@ -16,6 +16,10 @@ describe('local date', () => {
             expect(toLocaleDate(value)).toBe(expected);
         });
     });
+
+    it('invalid date', () => {
+        expect(toLocaleDate('')).toBe('n/a');
+    });
 });
 
 describe('local date time', () => {
@@ -26,6 +30,10 @@ describe('local date time', () => {
         it(value, () => {
             expect(toLocaleDateTime(value)).toBe(expected);
         });
+    });
+
+    it('invalid date', () => {
+        expect(toLocaleDateTime('')).toBe('n/a');
     });
 });
 
