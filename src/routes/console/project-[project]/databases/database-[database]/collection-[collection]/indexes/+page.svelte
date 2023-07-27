@@ -19,6 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -32,24 +33,27 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Indexes</Heading>
+        <Heading tag="h2" size="5">{$LL.console.project.title.indexes()}</Heading>
 
         <Button
             event="create_index"
             disabled={!$collection?.attributes?.length}
             on:click={() => (showCreateIndex = true)}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create index</span>
+            <span class="text">{$LL.console.project.button.createIndex()}</span>
         </Button>
     </div>
     {#if $collection?.attributes?.length}
         {#if $indexes.length}
             <Table>
                 <TableHeader>
-                    <TableCellHead>Key</TableCellHead>
-                    <TableCellHead onlyDesktop>Type</TableCellHead>
-                    <TableCellHead onlyDesktop>Attributes</TableCellHead>
-                    <TableCellHead onlyDesktop>Asc/Desc</TableCellHead>
+                    <TableCellHead>{$LL.console.project.table.header.key()}</TableCellHead>
+                    <TableCellHead onlyDesktop
+                        >{$LL.console.project.table.header.type()}</TableCellHead>
+                    <TableCellHead onlyDesktop
+                        >{$LL.console.project.table.header.attributes()}</TableCellHead>
+                    <TableCellHead onlyDesktop
+                        >{$LL.console.project.table.header.asc_dsc()}</TableCellHead>
                     <TableCellHead width={30} />
                 </TableHeader>
                 <TableBody>
@@ -95,14 +99,16 @@
                                             on:click={() => {
                                                 selectedIndex = index;
                                                 showOverview = true;
-                                            }}>Overview</DropListItem>
+                                            }}
+                                            >{$LL.console.project.button.dropdown.overview()}</DropListItem>
 
                                         <DropListItem
                                             icon="trash"
                                             on:click={() => {
                                                 selectedIndex = index;
                                                 showDelete = true;
-                                            }}>Delete</DropListItem>
+                                            }}
+                                            >{$LL.console.project.button.submit.delete()}</DropListItem>
                                     </svelte:fragment>
                                 </DropList>
                             </TableCell>
@@ -111,7 +117,9 @@
                 </TableBody>
             </Table>
             <div class="u-flex u-margin-block-start-32 u-main-space-between">
-                <p class="text">Total results: {$indexes.length}</p>
+                <p class="text">
+                    {$LL.console.project.texts.databaes.totalResult()}{' '}{$indexes.length}
+                </p>
             </div>
         {:else}
             <Empty
@@ -123,9 +131,10 @@
     {:else}
         <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
             <div class="u-text-center">
-                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <Heading size="7" tag="h2"
+                    >{$LL.console.project.texts.databaes.createAttribute.heading()}</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Learn more in our documentation.
+                    {$LL.console.project.texts.databaes.createAttribute.note()}
                 </p>
             </div>
             <div class="u-flex u-gap-16 u-main-center">
@@ -134,7 +143,8 @@
                     href="https://appwrite.io/docs/databases#attributes"
                     text
                     event="empty_documentation"
-                    ariaLabel={`create {target}`}>Documentation</Button>
+                    ariaLabel={`create {target}`}
+                    >{$LL.console.project.button.documentation()}</Button>
                 <CreateAttributeDropdown
                     bind:showCreateDropdown
                     bind:showCreate={showCreateAttribute}
@@ -145,7 +155,7 @@
                         on:click={() => {
                             showCreateDropdown = !showCreateDropdown;
                         }}>
-                        Create attribute
+                        {$LL.console.project.button.createAttribute()}
                     </Button>
                 </CreateAttributeDropdown>
             </div>

@@ -4,25 +4,27 @@
     import { createDocument } from './store';
     import { collection } from '../store';
     import { Alert } from '$lib/components';
+    import LL from '$i18n/i18n-svelte';
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Permissions</svelte:fragment>
+    <svelte:fragment slot="title">{$LL.console.project.title.permissions()}</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Choose who can access your collection and documents. For more information, check out the <a
+        {$LL.console.project.texts.databases.updatePermission.collectionAndDocumentation()}{' '}<a
             href="https://appwrite.io/docs/permissions"
             target="_blank"
             rel="noopener noreferrer"
             class="link">
-            Permissions Guide
+            {$LL.console.project.texts.databases.updatePermission.permissionGuide()}
         </a>.
     </svelte:fragment>
     {#if $collection.documentSecurity}
         <div class="common-section">
             <Alert type="info">
-                <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
-                Users will be able to access this document if they have been granted
-                <b>either Document or Collection permissions</b>.
+                <svelte:fragment slot="title"
+                    >{$LL.console.project.alert.databases.title.documentSecurity.enabled()}</svelte:fragment>
+                {$LL.console.project.alert.databases.title.userPermission()}
+                <b>{$LL.console.project.alert.databases.title.collectionPermission()}</b>.
             </Alert>
         </div>
         <div class="common-section">
@@ -30,9 +32,9 @@
         </div>
     {:else}
         <Alert type="info">
-            <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
-            If you want to assign document permissions, navigate to Collection settings and enable document
-            security. Otherwise, only Collection permissions will be used.
+            <svelte:fragment slot="title"
+                >{$LL.console.project.alert.databases.title.documentSecurity.disabled()}</svelte:fragment>
+            {$LL.console.project.alert.databases.title.permissionCheck()}
         </Alert>
     {/if}
 </WizardStep>

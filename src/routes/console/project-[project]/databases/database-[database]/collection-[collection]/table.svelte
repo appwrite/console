@@ -19,6 +19,7 @@
     import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -85,7 +86,8 @@
 
 <TableScroll isSticky>
     <TableHeader>
-        <TableCellHead width={150} eyebrow={false}>Document ID</TableCellHead>
+        <TableCellHead width={150} eyebrow={false}
+            >{$LL.console.project.table.header.documentId()}</TableCellHead>
         {#each $columns.filter((n) => n.show) as column}
             {#if column.show}
                 <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
@@ -140,7 +142,8 @@
                                             selectedRelationship = attr;
                                         }}
                                         disabled={!itemsNum}>
-                                        Items <span class="inline-tag">{itemsNum ?? 0}</span>
+                                        {$LL.console.project.button.items()}{' '}<span
+                                            class="inline-tag">{itemsNum ?? 0}</span>
                                     </button>
                                 {/if}
                             </TableCell>

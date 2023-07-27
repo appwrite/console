@@ -6,6 +6,7 @@
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 </script>
@@ -14,7 +15,7 @@
     <GridHeader title="Collections" {columns} view={data.view}>
         <Button on:click={() => ($showCreate = true)} event="create_collection">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create collection</span>
+            <span class="text">{$LL.console.project.button.submit.createCollection()}</span>
         </Button>
     </GridHeader>
 

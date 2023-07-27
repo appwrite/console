@@ -13,6 +13,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { collection } from '../store';
+    import LL from '$i18n/i18n-svelte';
 
     let showDelete = false;
     let permissions = $doc?.$permissions;
@@ -52,35 +53,46 @@
 </script>
 
 <svelte:head>
-    <title>Document - Appwrite</title>
+    <title>{$LL.console.project.title.document()} - Appwrite</title>
 </svelte:head>
 
 <Container>
     <CardGrid>
-        <Heading tag="h2" size="7">Metadata</Heading>
+        <Heading tag="h2" size="7">{$LL.console.project.title.metaData()}</Heading>
         <svelte:fragment slot="aside">
             <div>
-                <p>Created: {toLocaleDateTime($doc.$createdAt)}</p>
-                <p>Last Updated: {toLocaleDateTime($doc.$updatedAt)}</p>
+                <p>
+                    {$LL.console.project.texts.databases.created()}{' '}{toLocaleDateTime(
+                        $doc.$createdAt
+                    )}
+                </p>
+                <p>
+                    {$LL.console.project.texts.databases.lastUpdated()}{' '}{toLocaleDateTime(
+                        $doc.$updatedAt
+                    )}
+                </p>
             </div>
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h6" size="7">Permissions</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.permissions()}</Heading>
         <p>
-            Assign read or write permissions at the <b> Collection Level</b> or
-            <b> Document Level</b>. If collection Level permissions are assigned, permissions
-            applied to individual documents are ignored.
+            {$LL.console.project.texts.databases.documentsPage.para.phraseOne()}{' '}<b
+                >{$LL.console.project.texts.databases.documentsPage.para.collectionLevel()}</b
+            >{' '}{$LL.console.project.texts.databases.documentsPage.para.or()}<b
+                >{' '}{$LL.console.project.texts.databases.documentsPage.para.documentLevel()}</b
+            >.{' '}{$LL.console.project.texts.databases.documentsPage.para.phraseTwo()}
         </p>
 
         <svelte:fragment slot="aside">
             {#if $collection.documentSecurity}
                 {#if showPermissionAlert}
                     <Alert type="info" dismissible on:dismiss={() => (showPermissionAlert = false)}>
-                        <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
+                        <svelte:fragment slot="title"
+                            >{$LL.console.project.alert.databases.title.documentSecurity.enabled()}</svelte:fragment>
                         <p class="text">
-                            Users will be able to access this document if they have been granted <b
-                                >either Document or Collection permissions.
+                            {$LL.console.project.alert.databases.title.userPermission()}{' '}<b
+                                >{$LL.console.project.alert.databases.title.collectionPermission()}
                             </b>
                         </p>
                     </Alert>
@@ -90,11 +102,10 @@
                 {/if}
             {:else}
                 <Alert type="info">
-                    <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
+                    <svelte:fragment slot="title"
+                        >{$LL.console.project.alert.databases.title.documentSecurity.disabled()}</svelte:fragment>
                     <p class="text">
-                        If you want to assign document permissions, navigate to Collection settings
-                        and enable document security. Otherwise, only Collection permissions will be
-                        used.
+                        {$LL.console.project.alert.databases.title.permissionCheck()}
                     </p>
                 </Alert>
             {/if}
@@ -105,15 +116,14 @@
                 disabled={arePermsDisabled}
                 on:click={() => {
                     updatePermissions();
-                }}>Update</Button>
+                }}>{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 
     <CardGrid danger>
-        <Heading tag="h6" size="7">Delete Document</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.deleteDocument()}</Heading>
         <p>
-            The document will be permanently deleted, including all the data within it. This action
-            is irreversible.
+            {$LL.console.project.texts.database.deleteDocWarning()}
         </p>
         <svelte:fragment slot="aside">
             <Box>
@@ -121,13 +131,16 @@
                     <h6 class="u-bold u-trim-1">{$doc.$id}</h6>
                 </svelte:fragment>
                 <p>
-                    Last Updated: {toLocaleDateTime($doc.$updatedAt)}
+                    {$LL.console.project.texts.database.lastUpdated()}{' '}{toLocaleDateTime(
+                        $doc.$updatedAt
+                    )}
                 </p>
             </Box>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)}
+                >{$LL.console.project.button.submit.delete()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

@@ -10,6 +10,7 @@
     import { attributes } from '../store';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
 
     const collectionId = $page.params.collection;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
@@ -58,10 +59,9 @@
 
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Display Name</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.displayName()}</Heading>
         <p class="text">
-            Set string attributes with maximum 50 characters to be used as a display name in the
-            Appwrite console. Maximum 5 names.
+            {$LL.console.project.texts.database.displayName()}
         </p>
 
         <svelte:fragment slot="aside">
@@ -69,9 +69,9 @@
                 <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
                     <InputText
                         id="id"
-                        label="Document ID"
+                        label={$LL.console.project.forms.databases.index.id.label()}
+                        placeholder={$LL.console.project.forms.databases.index.id.placeholder()}
                         showLabel={false}
-                        placeholder="Document ID"
                         readonly />
                     {#if names?.length}
                         {#each names as name, i}
@@ -82,7 +82,7 @@
                                         label={name}
                                         showLabel={false}
                                         interactiveOutput
-                                        placeholder="Select attribute"
+                                        placeholder={$LL.console.project.forms.databases.index.attribute.placeholder()}
                                         bind:value={names[i]}
                                         bind:search={names[i]}
                                         name="attributes"
@@ -93,7 +93,7 @@
                                         id={name}
                                         label={name}
                                         showLabel={false}
-                                        placeholder="Select attribute"
+                                        placeholder={$LL.console.project.forms.databases.index.attribute.placeholder()}
                                         bind:value={names[i]}
                                         bind:search
                                         name="attributes"
@@ -124,13 +124,14 @@
                         names = names;
                     }}>
                     <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add attribute</span>
+                    <span class="text">{$LL.console.project.button.addAttribute()}</span>
                 </Button>
             </div>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={updateBtnDisabled} submit>Update</Button>
+            <Button disabled={updateBtnDisabled} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

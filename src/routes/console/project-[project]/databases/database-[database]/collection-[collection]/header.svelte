@@ -4,6 +4,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { collection } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     $: projectId = $page.params.project;
     $: databaseId = $page.params.database;
@@ -12,35 +13,35 @@
     $: tabs = [
         {
             href: path,
-            title: 'Documents',
+            title: $LL.console.project.navbar.databases.dbCollection.documents(),
             event: 'documents',
             hasChildren: true
         },
         {
             href: `${path}/attributes`,
-            title: 'Attributes',
+            title: $LL.console.project.navbar.databases.dbCollection.documents(),
             event: 'attributes'
         },
         {
             href: `${path}/indexes`,
-            title: 'Indexes',
+            title: $LL.console.project.navbar.databases.dbCollection.indexes(),
             event: 'indexes'
         },
         {
             href: `${path}/activity`,
-            title: 'Activity',
+            title: $LL.console.project.navbar.databases.dbCollection.activity(),
             event: 'activity',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage',
+            title: $LL.console.project.navbar.databases.dbCollection.usage(),
             event: 'usage',
             hasChildren: true
         },
         {
             href: `${path}/settings`,
-            title: 'Settings',
+            title: $LL.console.project.navbar.databases.dbCollection.settings(),
             event: 'settings'
         }
     ];

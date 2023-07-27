@@ -2,6 +2,7 @@
     import { Modal } from '$lib/components';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     export let showOverview = false;
     export let selectedIndex: Models.Index = null;
@@ -9,18 +10,18 @@
 </script>
 
 <Modal size="big" bind:show={showOverview}>
-    <svelte:fragment slot="header">Overview</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.overview()}</svelte:fragment>
     <FormList>
         <InputText
             id="key"
-            label="Index Key"
-            placeholder="Enter Key"
+            label={$LL.console.project.forms.databases.index.inputs.key.label()}
+            placeholder={$LL.console.project.forms.databases.index.inputs.key.placeholder()}
             value={selectedIndex.key}
             readonly />
         <InputText
             id="type"
-            label="Index type"
-            placeholder="Select type"
+            label={$LL.console.project.forms.databases.index.inputs.type.label()}
+            placeholder={$LL.console.project.forms.databases.index.inputs.type.placeholder()}
             value={selectedIndex.type}
             readonly />
 
@@ -28,7 +29,8 @@
             {#each selectedIndex.attributes as attribute, i}
                 <li class="form-item is-multiple">
                     <div class="form-item-part u-stretch">
-                        <label class="label" for={`value-${attribute}`}>Attribute</label>
+                        <label class="label" for={`value-${attribute}`}
+                            >{$LL.console.project.forms.databases.index.inputs.attribute.label()}</label>
                         <div class="input-text-wrapper">
                             <input
                                 id={`value-${attribute}`}
@@ -40,7 +42,8 @@
                         </div>
                     </div>
                     <div class="form-item-part u-stretch">
-                        <label class="label" for={`value-${selectedIndex.orders[i]}`}>Order</label>
+                        <label class="label" for={`value-${selectedIndex.orders[i]}`}
+                            >{$LL.console.project.forms.databases.index.inputs.order.label()}</label>
                         <div class="input-text-wrapper">
                             <input
                                 id={`value-${selectedIndex.orders[i]}`}

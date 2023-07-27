@@ -15,6 +15,7 @@
     import AttributeItem from '../attributeItem.svelte';
     import { difference, symmetricDifference } from '$lib/helpers/array';
     import { isRelationship, isRelationshipToMany } from '../attributes/store';
+    import LL from '$i18n/i18n-svelte';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -104,7 +105,7 @@
 </script>
 
 <svelte:head>
-    <title>Data - Appwrite</title>
+    <title>{$LL.console.project.title.data()} - Appwrite</title>
 </svelte:head>
 
 <Container>
@@ -120,7 +121,8 @@
                 <svelte:fragment slot="actions">
                     <Button
                         disabled={compareAttributes(attribute, $work, $doc)}
-                        on:click={() => updateData()}>Update</Button>
+                        on:click={() => updateData()}
+                        >{$LL.console.project.button.submit.update()}</Button>
                 </svelte:fragment>
             </CardGrid>
         {/each}

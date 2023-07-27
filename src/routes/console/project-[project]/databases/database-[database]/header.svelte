@@ -4,6 +4,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { database } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -11,20 +12,20 @@
     const tabs = [
         {
             href: path,
-            title: 'Collections',
+            title: $LL.console.project.navbar.databases.collections(),
             event: 'collections',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage',
+            title: $LL.console.project.navbar.databases.usage(),
             event: 'usage',
             hasChildren: true
         },
         {
             href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings'
+            title: $LL.console.project.navbar.databases.settings(),
+            event: 'settings'
         }
     ];
 </script>

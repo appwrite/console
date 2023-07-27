@@ -22,6 +22,7 @@
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
     import { options } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -46,7 +47,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Attributes</Heading>
+        <Heading tag="h2" size="5">{$LL.console.project.title.attributes()}</Heading>
 
         <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
     </div>
@@ -54,9 +55,10 @@
     {#if $attributes.length}
         <Table>
             <TableHeader>
-                <TableCellHead>Key</TableCellHead>
-                <TableCellHead onlyDesktop>Type</TableCellHead>
-                <TableCellHead onlyDesktop>Default Value</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.key()}</TableCellHead>
+                <TableCellHead onlyDesktop>{$LL.console.project.table.header.type()}</TableCellHead>
+                <TableCellHead onlyDesktop
+                    >{$LL.console.project.table.header.defaultValue()}</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -95,7 +97,7 @@
                                         {attribute.status}
                                     </Pill>
                                 {:else if attribute.required}
-                                    <Pill>Required</Pill>
+                                    <Pill>{$LL.console.project.table.pill.required()}</Pill>
                                 {/if}
                             </div>
                         </TableCell>
@@ -143,7 +145,7 @@
                                             showEdit = true;
                                             showDropdown[index] = false;
                                         }}>
-                                        Edit
+                                        {$LL.console.project.button.dropdown.edit()}
                                     </DropListItem>
                                     {#if !isRelationship(attribute)}
                                         <DropListItem
@@ -153,7 +155,7 @@
                                                 showCreateIndex = true;
                                                 showDropdown[index] = false;
                                             }}>
-                                            Create Index
+                                            {$LL.console.project.button.dropdown.createIndex()}
                                         </DropListItem>
                                     {/if}
                                     <DropListItem
@@ -163,7 +165,7 @@
                                             showDelete = true;
                                             showDropdown[index] = false;
                                         }}>
-                                        Delete
+                                        {$LL.console.project.buttons.submit.delete()}
                                     </DropListItem>
                                 </svelte:fragment>
                             </DropList>
@@ -173,14 +175,17 @@
             </TableBody>
         </Table>
         <div class="u-flex common-section u-main-space-between">
-            <p class="text">Total results: {$attributes.length}</p>
+            <p class="text">
+                {$LL.console.project.texts.databases.totalResult()}{' '}{$attributes.length}
+            </p>
         </div>
     {:else}
         <Empty single target="attribute" on:click={() => (showEmptyCreateDropdown = true)}>
             <div class="u-text-center">
-                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <Heading size="7" tag="h2"
+                    >{$LL.console.project.texts.databases.createAttribute.heading()}</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Learn more in our documentation.
+                    {$LL.console.project.texts.databases.createAttribute.note()}
                 </p>
             </div>
             <div class="u-flex u-gap-16 u-main-center">
@@ -189,7 +194,8 @@
                     href="https://appwrite.io/docs/databases#attributes"
                     text
                     event="empty_documentation"
-                    ariaLabel={`create {target}`}>Documentation</Button>
+                    ariaLabel={`create {target}`}
+                    >{$LL.console.project.buttons.documentation()}</Button>
                 <CreateAttributeDropdown
                     bind:showCreateDropdown={showEmptyCreateDropdown}
                     bind:selectedOption
@@ -200,7 +206,7 @@
                         on:click={() => {
                             showEmptyCreateDropdown = !showEmptyCreateDropdown;
                         }}>
-                        Create attribute
+                        {$LL.console.project.buttons.createAttribute()}
                     </Button>
                 </CreateAttributeDropdown>
             </div>

@@ -3,6 +3,7 @@
     import Pill from '$lib/elements/pill.svelte';
     import type { Attributes } from '../store';
     import AttributeItem from './attributeItem.svelte';
+    import LL from '$i18n/i18n-svelte'
 
     export let attributes: Attributes[] = [];
     export let formValues: object = {};
@@ -24,7 +25,7 @@
                 <div>
                     <Pill button on:click={() => (showCustomId = !showCustomId)}>
                         <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            Document ID
+                            {$LL.console.project.table.pill.documentId()}
                         </span>
                     </Pill>
                 </div>

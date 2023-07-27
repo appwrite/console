@@ -4,6 +4,8 @@
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
+
     export let data: PageData;
     export let showCreate = false;
     const projectId = $page.params.project;
@@ -20,7 +22,7 @@
             <svelte:fragment slot="title">{collection.name}</svelte:fragment>
             <svelte:fragment slot="status">
                 {#if !collection.enabled}
-                    <Pill>disabled</Pill>
+                    <Pill>{$LL.console.project.table.pill.disabled()}</Pill>
                 {/if}</svelte:fragment>
 
             <Id value={collection.$id}>{collection.$id}</Id>

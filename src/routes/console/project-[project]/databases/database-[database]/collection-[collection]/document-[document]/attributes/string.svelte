@@ -1,6 +1,7 @@
 <script lang="ts">
     import { InputText, InputTextarea } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     export let id: string;
     export let label: string;
@@ -14,7 +15,7 @@
         {id}
         {label}
         nullable={!attribute.required}
-        placeholder="Enter string"
+        placeholder={$LL.console.project.forms.databases.attribute.inputs.string.placeholder()}
         showLabel={!!label?.length}
         required={attribute.required}
         maxlength={attribute.size}
@@ -25,7 +26,7 @@
         {label}
         {optionalText}
         nullable={!attribute.required}
-        placeholder="Enter string"
+        placeholder={$LL.console.project.forms.databases.attribute.inputs.string.placeholder()}
         showLabel={!!label?.length}
         required={attribute.required}
         maxlength={attribute.size}

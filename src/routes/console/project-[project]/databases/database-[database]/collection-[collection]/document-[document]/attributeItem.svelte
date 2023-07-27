@@ -3,6 +3,7 @@
     import { capitalize } from '$lib/helpers/string';
     import type { Attributes } from '../store';
     import Attribute from './attribute.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let attribute: Attributes;
     export let formValues: object = {};
@@ -54,7 +55,7 @@
             </span>
             <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add item</span>
+                <span class="text">{$LL.console.project.button.addItem()}</span>
             </Button>
         </div>
     {:else}
@@ -81,7 +82,7 @@
             {/each}
             <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text"> Add item</span>
+                <span class="text">{$LL.console.project.button.addItem()}</span>
             </Button>
         </ul>
     {/if}

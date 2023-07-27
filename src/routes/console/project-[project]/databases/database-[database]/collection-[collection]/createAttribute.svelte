@@ -11,6 +11,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { preferences } from '$lib/stores/preferences';
     import { feedback } from '$lib/stores/app';
+    import LL from '$i18n/i18n-svelte';
 
     export let showCreate = false;
     export let selectedOption: string = null;
@@ -116,8 +117,8 @@
             <div>
                 <InputText
                     id="key"
-                    label="Attribute Key"
-                    placeholder="Enter Key"
+                    label={$LL.console.project.forms.databases.createAttribute.inputs.key.label()}
+                    placeholder={$LL.console.project.forms.databases.createAttribute.inputs.key.placeholder()}
                     bind:value={key}
                     autofocus
                     required />
@@ -127,7 +128,7 @@
                         class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                         aria-hidden="true" />
                     <span class="text u-line-height-1-5">
-                        Allowed characters: alphanumeric, hyphen, non-leading underscore, period
+                        {$LL.console.project.forms.databases.createAttribute.texts.createAttribute()}
                     </span>
                 </div>
             </div>
@@ -140,7 +141,9 @@
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit disabled={!selectedOption}>Create</Button>
+        <Button secondary on:click={() => (showCreate = false)}
+            >{$LL.console.project.buttons.cancel()}</Button>
+        <Button submit disabled={!selectedOption}
+            >{$LL.console.project.buttons.submit.create()}</Button>
     </svelte:fragment>
 </Modal>

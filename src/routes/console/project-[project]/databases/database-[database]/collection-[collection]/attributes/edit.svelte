@@ -10,6 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Attributes } from '../store';
     import { options, type Option } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     export let showEdit = false;
     export let selectedAttribute: Attributes;
@@ -73,8 +74,8 @@
             {#if selectedAttribute?.type !== 'relationship'}
                 <InputText
                     id="key"
-                    label="Attribute Key"
-                    placeholder="Enter Key"
+                    label={$LL.console.project.forms.databases.attribute.inputs.key.label()}
+                    placeholder={$LL.console.project.forms.databases.attribute.inputs.key.placeholder()}
                     bind:value={selectedAttribute.key}
                     autofocus
                     readonly />
@@ -88,8 +89,10 @@
             {/if}
         </FormList>
         <svelte:fragment slot="footer">
-            <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
-            <Button submit disabled={deepEqual(currentAttr, selectedAttribute)}>Update</Button>
+            <Button secondary on:click={() => (showEdit = false)}
+                >{$LL.console.project.button.cancel()}</Button>
+            <Button submit disabled={deepEqual(currentAttr, selectedAttribute)}
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </Modal>
 {/if}

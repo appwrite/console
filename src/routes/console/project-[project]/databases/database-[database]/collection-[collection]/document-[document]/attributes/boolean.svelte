@@ -1,6 +1,7 @@
 <script lang="ts">
     import { InputSelect } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     export let id: string;
     export let label: string;
@@ -14,7 +15,7 @@
     {label}
     {optionalText}
     showLabel={!!label?.length}
-    placeholder="Select a value"
+    placeholder={$LL.console.project.forms.databases.attribute.inputs.default.placeholder()}
     required={attribute.required}
     options={[
         !attribute.required && { label: 'NULL', value: null },

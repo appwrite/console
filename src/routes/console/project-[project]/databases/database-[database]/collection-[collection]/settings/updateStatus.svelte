@@ -10,6 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
+    import LL from '$i18n/i18n-svelte';
 
     const databaseId = $page.params.database;
 
@@ -56,14 +57,22 @@
                 bind:value={enabled} />
         </ul>
         <div>
-            <p>Created: {toLocaleDateTime($collection.$createdAt)}</p>
-            <p>Last Updated: {toLocaleDateTime($collection.$updatedAt)}</p>
+            <p>
+                {$LL.console.project.texts.databases.created()}{' '}{toLocaleDateTime(
+                    $collection.$createdAt
+                )}
+            </p>
+            <p>
+                {$LL.console.project.texts.databases.lastUpdated()}{' '}{toLocaleDateTime(
+                    $collection.$updatedAt
+                )}
+            </p>
         </div>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
         <Button disabled={enabled === $collection.enabled} on:click={toggleCollection}>
-            Update
+            {$LL.console.project.button.submit.update()}
         </Button>
     </svelte:fragment>
 </CardGrid>

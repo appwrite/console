@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
+    import LL from '$i18n/i18n-svelte';
 
     const databaseId = $page.params.database;
 
@@ -46,14 +47,15 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
+        <Heading tag="h6" size="7"
+            >{$LL.console.project.forms.databases.updateName.title()}</Heading>
 
         <svelte:fragment slot="aside">
             <ul>
                 <InputText
                     id="name"
-                    label="Name"
-                    placeholder="Enter name"
+                    label={$LL.console.project.forms.databases.updateName.inputs.name.label()}
+                    placeholder={$LL.console.project.forms.databases.updateName.inputs.name.defaultPlaceholder()}
                     autocomplete={false}
                     bind:value={collectionName} />
             </ul>
@@ -61,7 +63,7 @@
 
         <svelte:fragment slot="actions">
             <Button disabled={collectionName === $collection.name || !collectionName} submit
-                >Update</Button>
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -8,6 +8,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { database } from './store';
+    import LL from '$i18n/i18n-svelte';
+
     const databaseId = $page.params.database;
 
     export let showDelete = false;
@@ -38,12 +40,14 @@
     bind:show={showDelete}
     onSubmit={handleDelete}
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Database</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{$LL.console.project.table.header.deleteDatabase()}</svelte:fragment>
     <p class="text" data-private>
-        Are you sure you want to delete <b>{$database.name}</b>?
+        {$LL.console.project.texts.databases.delete()} <b>{$database.name}</b>?
     </p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}>
+            {$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.delete()}</Button>
     </svelte:fragment>
 </Modal>

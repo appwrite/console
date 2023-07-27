@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     export async function submitString(
         databaseId: string,
@@ -51,16 +52,17 @@
 
 <InputNumber
     id="size"
-    label="Size"
-    placeholder="Enter size"
+    label={$LL.console.project.forms.databases.attribute.inputs.size.label()}
+    placeholder={$LL.console.project.forms.databases.attribute.inputs.size.placeholder()}
     bind:value={data.size}
     required={!editing}
     readonly={editing} />
+
 {#if data.size >= 50}
     <InputTextarea
         id="default"
-        label="Default"
-        placeholder="Enter string"
+        label={$LL.console.project.forms.databases.attribute.inputs.string.label()}
+        placeholder={$LL.console.project.forms.databases.attribute.inputs.string.placeholder()}
         disabled={data.required || data.array}
         nullable={!data.required && !data.array}
         maxlength={data.size}
@@ -68,16 +70,26 @@
 {:else}
     <InputText
         id="default"
-        label="Default"
-        placeholder="Enter string"
+        label={$LL.console.project.forms.databases.attribute.inputs.string.label()}
+        placeholder={$LL.console.project.forms.databases.attribute.inputs.string.placeholder()}
         disabled={data.required || data.array}
         nullable={!data.required && !data.array}
         maxlength={data.size}
         bind:value={data.default} />
 {/if}
-<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
-    Indicate whether this is a required attribute
+
+<InputChoice
+    id="required"
+    label={$LL.console.project.forms.databases.attribute.inputs.required.label()}
+    bind:value={data.required}
+    disabled={data.array}>
+    {$LL.console.project.forms.databases.attribute.texts.phraseOne()}
 </InputChoice>
-<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array
+
+<InputChoice
+    id="array"
+    label={$LL.console.project.forms.databases.attribute.inputs.array.label()}
+    bind:value={data.array}
+    disabled={data.required || editing}>
+    {$LL.console.project.forms.databases.attribute.texts.phraseTwo()}
 </InputChoice>

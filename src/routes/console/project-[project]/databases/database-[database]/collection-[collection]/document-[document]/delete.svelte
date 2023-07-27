@@ -19,6 +19,7 @@
     import { attributes, collection } from '../store';
     import { isRelationship } from './attributes/store';
     import type { Models } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     export let showDelete = false;
     const databaseId = $page.params.database;
@@ -66,19 +67,23 @@
     onSubmit={handleDelete}
     bind:show={showDelete}
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Document</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.deleteDocument()}</svelte:fragment>
 
     <p data-private>
-        Are you sure you want to delete <b
-            >the document from <span data-private>{$collection.name}</span></b
+        {$LL.console.project.texts.database.delete()}{' '}<b
+            >{$LL.console.project.texts.database.docFrom()}{' '}<span data-private
+                >{$collection.name}</span
+            ></b
         >?
     </p>
 
     {#if relAttributes?.length}
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={50}>Relation</TableCellHead>
-                <TableCellHead width={50}>Setting</TableCellHead>
+                <TableCellHead width={50}
+                    >{$LL.console.project.table.header.relation()}</TableCellHead>
+                <TableCellHead width={50}
+                    >{$LL.console.project.table.header.settings()}</TableCellHead>
                 <TableCellHead width={200} />
             </TableHeader>
             <TableBody>
@@ -105,15 +110,18 @@
             </TableBody>
         </TableScroll>
         <div class="u-flex u-flex-vertical u-gap-16">
-            <Alert>To change the selection edit the relationship settings.</Alert>
+            <Alert>{$LL.console.project.alert.databases.relationshipSettings()}</Alert>
 
             <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                Delete document from <span data-private>{$collection.name}</span>
+                {$LL.console.project.texts.databases.deleteDocFrom()}{' '}<span data-private
+                    >{$collection.name}</span>
             </InputChoice>
         </div>
     {/if}
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit disabled={relAttributes?.length && !checked}>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit disabled={relAttributes?.length && !checked}
+            >{$LL.console.project.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

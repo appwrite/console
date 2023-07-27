@@ -13,6 +13,7 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import AttributeForm from './attributeForm.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     let disableUpdate = true;
     let currentDoc: string;
@@ -79,13 +80,14 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Data</Heading>
-    <p>Update document data based on the attributes created earlier.</p>
+    <Heading tag="h6" size="7">{$LL.console.project.title.data()}</Heading>
+    <p>{$LL.console.project.texts.databases.updateDocument()}</p>
     <svelte:fragment slot="aside">
         <AttributeForm attributes={$collection.attributes} bind:formValues={$work} gap="16" />
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button disabled={disableUpdate} on:click={() => updateData()}>Update</Button>
+        <Button disabled={disableUpdate} on:click={() => updateData()}
+            >{$LL.console.project.button.submit.update()}</Button>
     </svelte:fragment>
 </CardGrid>

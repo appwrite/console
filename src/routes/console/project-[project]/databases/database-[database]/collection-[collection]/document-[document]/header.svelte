@@ -4,6 +4,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { doc } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -13,18 +14,18 @@
     const tabs = [
         {
             href: path,
-            title: 'Overview',
+            title: $LL.console.project.navbar.databases.document.overview(),
             event: 'overview'
         },
         {
             href: `${path}/data`,
-            title: 'Data',
+            title: $LL.console.project.navbar.databases.document.data(),
             event: 'data',
             hasChildren: true
         },
         {
             href: `${path}/activity`,
-            title: 'Activity',
+            title: $LL.console.project.navbar.databases.document.activity(),
             event: 'activity',
             hasChildren: true
         }
@@ -37,7 +38,8 @@
             href={`/console/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`}>
             {$doc?.$id}
         </CoverTitle>
-        <Id value={$doc?.$id} event="document">Document ID</Id>
+        <Id value={$doc?.$id} event="document"
+            >{$LL.console.project.databases.table.pill.documentId()}</Id>
     </svelte:fragment>
 
     <Tabs>

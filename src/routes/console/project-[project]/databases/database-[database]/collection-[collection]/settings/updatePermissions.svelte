@@ -11,6 +11,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
+    import LL from '$i18n/i18n-svelte';
 
     const databaseId = $page.params.database;
 
@@ -56,14 +57,14 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Permissions</Heading>
+    <Heading tag="h6" size="7">{$LL.console.project.title.permissions()}</Heading>
     <p class="text">
-        Choose who can access your collection and documents. For more information, check out the <a
+        {$LL.console.project.texts.databases.updatePermission.collectionAndDocumentation()}{' '}<a
             href="https://appwrite.io/docs/permissions"
             target="_blank"
             rel="noopener noreferrer"
             class="link">
-            Permissions Guide
+            {$LL.console.project.texts.databases.updatePermission.permissionGuide()}
         </a>.
     </p>
     <svelte:fragment slot="aside">
@@ -72,6 +73,7 @@
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <Button disabled={arePermsDisabled} on:click={updatePermissions}>Update</Button>
+        <Button disabled={arePermsDisabled} on:click={updatePermissions}
+            >{$LL.console.project.button.submit.update()}</Button>
     </svelte:fragment>
 </CardGrid>

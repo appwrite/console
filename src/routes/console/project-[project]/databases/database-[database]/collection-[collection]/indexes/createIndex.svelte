@@ -13,6 +13,7 @@
     import { indexes, type Attributes } from '../store';
     import { collection } from '../store';
     import Select from './select.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
@@ -100,21 +101,37 @@
 </script>
 
 <Modal bind:error size="big" onSubmit={create} bind:show={showCreateIndex}>
-    <svelte:fragment slot="header">Create Index</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.createIndex()}</svelte:fragment>
     <FormList>
-        <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
-        <InputSelect options={types} id="type" label="Index type" bind:value={selectedType} />
+        <InputText
+            id="key"
+            label={$LL.console.project.forms.databases.index.inputs.key.label()}
+            placeholder={$LL.console.project.forms.databases.index.inputs.key.placeholder()}
+            bind:value={key}
+            autofocus />
+        <InputSelect
+            options={types}
+            id="type"
+            label={$LL.console.project.forms.databases.index.inputs.type.label()}
+            bind:value={selectedType} />
 
         {#each attributeList as attribute, i}
             <li class="form-item is-multiple">
                 <div class="form-item-part u-stretch">
-                    <Select id={`attribute-${i}`} label="Attribute" bind:value={attribute.value}>
-                        <option value="" disabled hidden>Select Attribute</option>
+                    <Select
+                        id={`attribute-${i}`}
+                        label={$LL.console.project.forms.databases.index.inputs.attribute.label()}
+                        bind:value={attribute.value}>
+                        <option value="" disabled hidden
+                            >{$LL.console.project.forms.databases.index.options.title.selectAttribute()}</option>
 
                         <optgroup label="Internal">
-                            <option value="$id">$id</option>
-                            <option value="$createdAt">$createdAt</option>
-                            <option value="$updatedAt">$updatedAt</option>
+                            <option value="$id"
+                                >{$LL.console.project.forms.databases.index.options.label.id()}</option>
+                            <option value="$createdAt"
+                                >{$LL.console.project.forms.databases.index.options.label.createdAt()}</option>
+                            <option value="$updatedAt"
+                                >{$LL.console.project.forms.databases.index.options.label.updatedAt()}</option>
                         </optgroup>
                         <optgroup label="Attributes">
                             {#each attributeOptions as option}
@@ -127,10 +144,15 @@
                 </div>
                 <div class="form-item-part u-stretch">
                     <Select id={`order-${i}`} label="Order" bind:value={attribute.order}>
-                        <option value="" disabled hidden>Select Order</option>
+                        <option value="" disabled hidden
+                            >{$LL.console.project.forms.databases.index.options.title.selectOrder()}</option>
 
-                        <option value="ASC"> ASC </option>
-                        <option value="DESC"> DESC </option>
+                        <option value="ASC">
+                            {$LL.console.project.forms.databases.index.options.label.asc()}
+                        </option>
+                        <option value="DESC">
+                            {$LL.console.project.forms.databases.index.options.label.desc()}
+                        </option>
                     </Select>
                 </div>
 
@@ -150,11 +172,12 @@
 
         <Button text noMargin on:click={addAttribute} disabled={addAttributeDisabled}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Add attribute</span>
+            <span class="text">{$LL.console.project.button.addAttribute()}</span>
         </Button>
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreateIndex = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button secondary on:click={() => (showCreateIndex = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button submit>{$LL.console.project.button.submit.create()}</Button>
     </svelte:fragment>
 </Modal>

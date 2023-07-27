@@ -9,6 +9,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import LL from '$i18n/i18n-svelte';
 
     export let showDelete = false;
     export let selectedIndex: Models.Index;
@@ -45,13 +46,16 @@
     onSubmit={handleDelete}
     bind:show={showDelete}
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Index</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.deleteIndex()}</svelte:fragment>
 
     <p data-private>
-        Are you sure you want to delete <b>'{selectedIndex.key}' from {$collection.name}</b>?
+        {$LL.console.project.texts.databases.delete()}{' '}<b
+            >'{selectedIndex.key}'{' '}{$LL.console.project.texts.databases.from()}{' '}{$collection.name}</b
+        >?
     </p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

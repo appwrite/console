@@ -6,6 +6,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Dependencies } from '$lib/constants';
+    import LL from '$i18n/i18n-svelte';
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
@@ -20,7 +21,7 @@
 </script>
 
 <svelte:head>
-    <title>Database - Appwrite</title>
+    <title>{$LL.console.project.title.database()} - Appwrite</title>
 </svelte:head>
 
 <slot />

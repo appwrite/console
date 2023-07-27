@@ -12,6 +12,7 @@
     import { onMount } from 'svelte';
     import Delete from '../delete.svelte';
     import { database } from '../store';
+    import LL from '$i18n/i18n-svelte';
 
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
@@ -55,22 +56,31 @@
                     </div>
                 </div>
                 <div class="grid-1-2-col-2">
-                    <p>Created: {toLocaleDateTime($database.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDateTime($database.$updatedAt)}</p>
+                    <p>
+                        {$LL.console.project.texts.databases.created()}{' '}{toLocaleDateTime(
+                            $database.$createdAt
+                        )}
+                    </p>
+                    <p>
+                        {$LL.console.project.texts.databases.lastUpdated()}{' '}{toLocaleDateTime(
+                            $database.$updatedAt
+                        )}
+                    </p>
                 </div>
             </div>
         </Card>
 
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
+                <Heading tag="h6" size="7"
+                    >{$LL.console.project.forms.databases.updateName.title()}</Heading>
 
                 <svelte:fragment slot="aside">
                     <ul>
                         <InputText
                             id="name"
-                            label="Name"
-                            placeholder="Enter database name"
+                            label={$LL.console.project.forms.databases.updateName.inputs.name.label()}
+                            placeholder={$LL.console.project.forms.databases.updateName.inputs.name.placeholder()}
                             autocomplete={false}
                             bind:value={databaseName}
                             required />
@@ -82,31 +92,34 @@
 
                 <svelte:fragment slot="actions">
                     <Button disabled={databaseName === $database.name || !databaseName} submit
-                        >Update</Button>
+                        >{$LL.console.button.submit.update()}</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
         <CardGrid danger>
             <div>
-                <Heading tag="h6" size="7">Delete Database</Heading>
+                <Heading tag="h6" size="7">{$LL.console.project.title.deleteDatabase()}</Heading>
             </div>
 
             <p>
-                The database will be permanently deleted, including all data associated with this
-                team. This action is irreversible.
+                {$LL.console.project.texts.databases.settings()}
             </p>
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
-                        <span>Last Updated: {toLocaleDateTime($database.$updatedAt)}</span>
+                        <span
+                            >{$LL.console.project.texts.databases.lastUpdated()}{' '}{toLocaleDateTime(
+                                $database.$updatedAt
+                            )}</span>
                     </svelte:fragment>
                 </Box>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button secondary on:click={() => (showDelete = true)}
+                    >{$LL.console.project.button.submit.delete()}</Button>
             </svelte:fragment>
         </CardGrid>
     </Container>

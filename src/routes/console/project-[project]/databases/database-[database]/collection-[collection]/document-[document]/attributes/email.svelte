@@ -1,6 +1,7 @@
 <script lang="ts">
     import InputEmail from '$lib/elements/forms/inputEmail.svelte';
     import type { Models } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     export let id: string;
     export let label: string;
@@ -13,7 +14,7 @@
     {id}
     {label}
     {optionalText}
-    placeholder="Enter URL"
+    placeholder={$LL.console.project.forms.databases.attribute.inputs.email.placeholder()}
     showLabel={!!label?.length}
     required={attribute.required}
     bind:value />

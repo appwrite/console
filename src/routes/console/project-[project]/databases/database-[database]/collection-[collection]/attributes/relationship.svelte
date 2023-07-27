@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
     import { Query, type Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+    import LL from '$i18n/i18n-svelte';
 
     export async function submitRelationship(
         databaseId: string,
@@ -126,10 +127,13 @@
                 value="one"
                 icon="arrow-sm-right"
                 disabled={editing}>
-                <svelte:fragment slot="title">One-way relationship</svelte:fragment>
-                One Relation attribute within this collection
+                <svelte:fragment slot="title"
+                    >{$LL.console.project.forms.databases.attribute.texts.relationship.oneWay
+                        .phraseOne}</svelte:fragment>
+                {$LL.console.project.forms.databases.attribute.texts.relationship.oneWay.phraseTwo}
             </LabelCard>
         </li>
+
         <li>
             <LabelCard
                 name="relationship"
@@ -137,8 +141,10 @@
                 value="two"
                 icon="switch-horizontal"
                 disabled={editing}>
-                <svelte:fragment slot="title">Two-way relationship</svelte:fragment>
-                One Relation attribute within this collection and another within the related collection
+                <svelte:fragment slot="title"
+                    >{$LL.console.project.forms.databases.attribute.texts.relationship.twoWay
+                        .phraseOne}</svelte:fragment>
+                {$LL.console.project.forms.databases.attribute.texts.relationship.twoWay.phraseTwo}
             </LabelCard>
         </li>
     </ul>
@@ -146,13 +152,13 @@
 
 <InputSelectSearch
     id="related"
-    label="Related Collection"
+    label={$LL.console.project.forms.databases.attribute.inputs.related.label()}
+    placeholder={$LL.console.project.forms.databases.attribute.inputs.related.placeholder()}
     name="collections"
     bind:search
     bind:value={data.relatedCollection}
     required
     interactiveOutput={!editing}
-    placeholder="Select a collection"
     disabled={editing}
     options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
     on:select={updateKeyName}
@@ -173,8 +179,8 @@
     <div>
         <InputText
             id="key"
-            label="Attribute Key"
-            placeholder="Enter Key"
+            label={$LL.console.project.forms.databases.attribute.inputs.key.label()}
+            placeholder={$LL.console.project.forms.databases.attribute.inputs.key.placeholder()}
             bind:value={data.key}
             autofocus
             readonly={editing}
@@ -193,8 +199,8 @@
         <div>
             <InputText
                 id="keyRelated"
-                label="Attribute Key (related collection)"
-                placeholder="Enter Key"
+                label={$LL.console.project.forms.databases.attribute.inputs.keyRelated.label()}
+                placeholder={$LL.console.project.forms.databases.attribute.inputs.keyRelated.placeholder()}
                 bind:value={data.twoWayKey}
                 required
                 readonly={editing} />
@@ -212,10 +218,10 @@
 
     <InputSelect
         id="relationship"
-        label="Relation"
+        label={$LL.console.project.forms.databases.attribute.inputs.realationship.label()}
+        placeholder={$LL.console.project.forms.databases.attribute.inputs.realationship.placeholder()}
         bind:value={data.relationType}
         required
-        placeholder="Select a relation"
         options={relationshipType}
         disabled={editing} />
     <div class="u-flex u-flex-vertical u-gap-16">
@@ -251,11 +257,12 @@
             </div>
         {/if}
     </div>
+
     <InputSelect
         id="deleting"
-        label="On deleting a document"
+        label={$LL.console.project.forms.databases.attribute.inputs.deleting.label()}
+        placeholder={$LL.console.project.forms.databases.attribute.inputs.deleting.placeholder()}
         bind:value={data.onDelete}
         required
-        placeholder="Select a deletion method"
         options={deleteOptions} />
 {/if}

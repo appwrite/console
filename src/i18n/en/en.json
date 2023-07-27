@@ -369,17 +369,36 @@
                 "auth": "Auth",
                 "createUser": "Create User",
                 "createTeam": "Create Team",
-                "teamPref": "Team Preferences",
+                "createDb": "Create Database",
+                "createData": "Create data",
+                "createMembership": "Create Membership",
+                "createCollection": "Create Collection",
+                "createIndex": "Create Index",
                 "deleteUser": "Delete User",
                 "deleteSession": "Delete Sessions",
                 "deleteAllSession": "Delete All Sessions",
                 "deleteMember": "Delete Member",
+                "deleteDatabase": "Delete Database",
+                "deleteAttribute": "Delete Attribute",
+                "deleteCollection": "Delete Collection",
+                "deleteTeam": "Delete Team",
+                "deleteDocument": "Delete Document",
+                "deleteIndex": "Delete Index",
                 "user": "User",
                 "team": "Team",
+                "overview": "Overview",
+                "indexes": "Indexes",
+                "documentSecurity": "Document Security",
+                "displayName": "Display Name",
+                "teamPref": "Team Preferences",
+                "data": "Data",
+                "document": "Document",
+                "metaData": "Metadata",
+                "permissions": "Permissions",
+                "attributes": "Attributes",
+                "database": "Database",
                 "databases": "Databases",
-                "createDb": "Create Database",
-                "createMembership": "Create Membership",
-                "deleteTeam": "Delete Team",
+                "collections": "Collections",
                 "oAuth2": "OAuth2 Settings",
                 "userData": {
                     "name": "Name",
@@ -618,6 +637,153 @@
                                 "placeholder": "Enter database name"
                             }
                         }
+                    },
+                    "createCollection": {
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Enter collection name"
+                            }
+                        }
+                    },
+                    "updateName": {
+                        "title": "Name",
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Enter database name",
+                                "defaultPlaceholder": "Enter name"
+                            }
+                        }
+                    },
+                    "createAttribute": {
+                        "texts": {
+                            "createAttribute": " Allowed characters: alphanumeric, hyphen, non-leading underscore, period"
+                        },
+                        "inputs": {
+                            "key": {
+                                "label": "Attribute Key",
+                                "placeholder": "Enter Key"
+                            }
+                        }
+                    },
+                    "attribute": {
+                        "texts": {
+                            "phraseOne": "Indicate whether this is a required attribute",
+                            "phraseTwo": "Indicate whether this attribute should act as an array",
+                            "relationship": {
+                                "oneWay": {
+                                    "phraseOne": "One-way relationship",
+                                    "phraseTwo": " One Relation attribute within this collection"
+                                },
+                                "twoWay": {
+                                    "phraseOne": "Two-way relationship",
+                                    "phraseTwo": "One Relation attribute within this collection and another within the related collection"
+                                }
+                            }
+                        },
+                        "inputs": {
+                            "default": {
+                                "label": "Default value",
+                                "placeholder": "Select a value"
+                            },
+                            "defaultValue": {
+                                "label": "Default value",
+                                "placeholder": "Enter value"
+                            },
+                            "elements": {
+                                "label": "Elements",
+                                "placeholder": "Add elements here"
+                            },
+                            "required": {
+                                "label": "Required"
+                            },
+                            "array": {
+                                "label": "Array"
+                            },
+                            "key": {
+                                "label": "Attribute Key",
+                                "placeholder": "Enter Key"
+                            },
+                            "min": {
+                                "label": "Min",
+                                "placeholder": "Enter size"
+                            },
+                            "max": {
+                                "label": "Max",
+                                "placeholder": "Enter size"
+                            },
+                            "related": {
+                                "label": "Related Collection",
+                                "placeholder": "Select a collection"
+                            },
+                            "keyRelated": {
+                                "label": "Attribute Key (related collection)",
+                                "placeholder": "Enter Key"
+                            },
+                            "relationship": {
+                                "label": "Relation",
+                                "placeholder": "Select a relation"
+                            },
+                            "deleting": {
+                                "label": "On deleting a document",
+                                "placeholder": "Select a deletion method"
+                            },
+                            "size": {
+                                "label": "Size",
+                                "placeholder": "Enter size"
+                            },
+                            "string": {
+                                "label": "Default",
+                                "placeholder": "Enter string"
+                            },
+                            "email": {
+                                "placeholder": "Enter URL"
+                            }
+                        }
+                    },
+                    "index": {
+                        "inputs": {
+                            "key": {
+                                "label": "Index Key",
+                                "placeholder": "Enter Key"
+                            },
+                            "type": {
+                                "label": "Index type",
+                                "placeholder": "Select type"
+                            },
+                            "attribute": {
+                                "label": "Attribute",
+                                "placeholder": "Select attribute"
+                            },
+                            "order": {
+                                "label": "Order"
+                            },
+                            "id": {
+                                "label": "Document ID",
+                                "placeholder": "Document ID"
+                            }
+                        },
+                        "options": {
+                            "title": {
+                                "selectAttribute": "Select Attribute",
+                                "selectOrder": "Select Order"
+                            },
+                            "label": {
+                                "id": "$id",
+                                "createdAt": "$createdAt",
+                                "updatedAt": "$updatedAt",
+                                "asc": "ASC",
+                                "desc": "DESC"
+                            }
+                        }
+                    },
+                    "settings": {
+                        "inputs": {
+                            "docSecurity": {
+                                "label": "Document Security"
+                            }
+                        }
                     }
                 }
             },
@@ -628,9 +794,16 @@
                 "email": "email",
                 "phone": "phone",
                 "createTeam": "Create team",
+                "createIndex": "Create index",
                 "createMembership": "Create Membership",
                 "createDb": "Create database",
+                "createCollection": "Create Collection",
+                "createAttribute": "Create attribute",
+                "createDocument": "Create document",
                 "documentation": "Documentation",
+                "items": "Items",
+                "addItem": "Add item",
+                "addAttribute": "Add attribute",
                 "cancel": "Cancel",
                 "submit": {
                     "create": "Create",
@@ -641,6 +814,11 @@
                 },
                 "pill": {
                     "userId": "User ID"
+                },
+                "dropdown": {
+                    "edit": "Edit",
+                    "createIndex": "Create Index",
+                    "overview": "Overview"
                 }
             },
             "table": {
@@ -650,13 +828,22 @@
                     "identifiers": "Identifiers",
                     "status": "Status",
                     "id": "ID",
+                    "documentId": "Document ID",
                     "ip": "IP",
                     "joined": "Joined",
                     "members": "Members",
                     "created": "Created",
                     "browserAndDevice": "Browser and Device",
                     "sessions": "Sessions",
-                    "location": "Location"
+                    "location": "Location",
+                    "deleteDatabase": "Delete Database",
+                    "key": "Key",
+                    "type": "Type",
+                    "attributes": "Attributes",
+                    "asc_dsc": "Asc/Desc",
+                    "defaultValue": "Default Value",
+                    "relation": "Relation",
+                    "settings": "Settings"
                 },
                 "pill": {
                     "verify": "verified",
@@ -666,9 +853,13 @@
                     "block": "blocked",
                     "userId": "User ID",
                     "teamId": "Team ID",
+                    "required": "Required",
+                    "collectionId": "Collection ID",
                     "recommended": "recommended",
                     "dbId": "Database ID",
-                    "currentSession": "current session"
+                    "currentSession": "current session",
+                    "disabled": "disabled",
+                    "documentId": "Document ID"
                 }
             },
             "texts": {
@@ -709,7 +900,49 @@
                     "createdOn": "Created on"
                 },
                 "databases": {
-                    "newDb": "Create a new database"
+                    "newDb": "Create a new database",
+                    "delete": "Are you sure you want to delete",
+                    "docFrom": "the document from",
+                    "created": "Created:",
+                    "lastUpdated": "Last Updated:",
+                    "settings": "The database will be permanently deleted, including all data associated with this team. This action is irreversible.",
+                    "createAttribute": {
+                        "heading": "Create your first attribute to get started.",
+                        "note": "Need a hand? Learn more in our documentation."
+                    },
+                    "totalResult": "Total results:",
+                    "from": "from",
+                    "twoWayRelationship": "This is a two way relationship and the corresponding relationship will also be deleted.",
+                    "irreversibleAction": "This action is irreversible.",
+                    "deleteRelation": "Delete relationship between",
+                    "deleteDocFrom": "Delete document from",
+                    "to": "to",
+                    "documentsPage": {
+                        "para": {
+                            "phraseOne": "Assign read or write permissions at the",
+                            "collectionLevel": "Collection Level",
+                            "or": "or",
+                            "documentLevel": "Document Level",
+                            "phraseTwo": "If collection Level permissions are assigned, permissions applied to individual documents are ignored."
+                        }
+                    },
+                    "deleteDocWarning": "The document will be permanently deleted, including all the data within it. This action is irreversible.",
+                    "updateDocument": "Update document data based on the attributes created earlier.",
+                    "deleteCollection": "The collection will be permanently deleted, including all the documents within it. This action is irreversible.",
+                    "displayName": "Set string attributes with maximum 50 characters to be used as a display name in the Appwrite console. Maximum 5 names.",
+                    "updatePermission": {
+                        "collectionAndDocumentation": "Choose who can access your collection and documents. For more information, check out the",
+                        "permissionGuide": "Permissions Guide"
+                    },
+                    "updateSecurity": {
+                        "phraseOne": "When document security is enabled, users will be able to access documents for which they have been granted",
+                        "eitherDocOrCollection": "either Document or Collection permissions",
+                        "collectionPermission": "only if they have Collection permissions",
+                        "documentPermission": "Document permissions will be ignored."
+                    },
+                    "wizards": {
+                        "stepOne": "Provide document data based on attributes you created earlier."
+                    }
                 },
                 "users": {
                     "updatePrefs": "You can update your user preferences by storing information on the user's objects so they can easily be shared across devices and sessions.",
@@ -750,7 +983,21 @@
                     "create": "Databases created",
                     "read": "Databases read",
                     "update": "Databases updated",
-                    "delete": "Databases deleted"
+                    "delete": "Databases deleted",
+                    "usage": {
+                        "collections": "Total collections",
+                        "create": "Collections created",
+                        "read": "Collections read",
+                        "update": "Collections updated",
+                        "delete": "Collections deleted"
+                    },
+                    "documents": {
+                        "documents": "Total documents",
+                        "create": "Documents created",
+                        "read": "Documents read",
+                        "update": "Documents updated",
+                        "delete": "Documents deleted"
+                    }
                 }
             },
             "navbar": {
@@ -774,7 +1021,22 @@
                 },
                 "databases": {
                     "databases": "Databases",
-                    "usage": "Usage"
+                    "usage": "Usage",
+                    "collections": "Collections",
+                    "settings": "Settings",
+                    "dbCollection": {
+                        "documents": "Documents",
+                        "activity": "Activity",
+                        "indexes": "Indexes",
+                        "attribute": "Attributes",
+                        "usage": "Usage",
+                        "settings": "Settings"
+                    },
+                    "document": {
+                        "overview": "Overview",
+                        "data": "Data",
+                        "activity": "Activity"
+                    }
                 }
             },
             "links": {
@@ -790,6 +1052,18 @@
                 },
                 "teams": {
                     "createMembership": "Roles are used to manage access permissions. You can create any role you want."
+                },
+                "databases": {
+                    "title": {
+                        "documentSecurity": {
+                            "enabled": "Document security is enabled",
+                            "disabled": "Document security is disabled"
+                        },
+                        "userPermission": "Users will be able to access this document if they have been granted",
+                        "collectionPermission": "either Document or Collection permissions.",
+                        "permissionCheck": "If you want to assign document permissions, navigate to Collection settings and enable document security. Otherwise, only Collection permissions will be used."
+                    },
+                    "relationshipSettings": "To change the selection edit the relationship settings."
                 }
             }
         }

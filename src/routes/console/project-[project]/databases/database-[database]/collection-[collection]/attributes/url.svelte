@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
     import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+    import LL from '$i18n/i18n-svelte';
 
     export async function submitUrl(
         databaseId: string,
@@ -46,14 +47,24 @@
 
 <InputURL
     id="default"
-    label="Default value"
-    placeholder="Enter value"
+    label={$LL.console.project.forms.databases.attribute.inputs.defaultValue.label()}
+    placeholder={$LL.console.project.forms.databases.attribute.inputs.defaultValue.placeholder()}
     bind:value={data.default}
     disabled={data.required || data.array}
     nullable={!data.required && !data.array} />
-<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
-    Indicate whether this is a required attribute
+
+<InputChoice
+    id="required"
+    label={$LL.console.project.forms.databases.attribute.inputs.required.label()}
+    bind:value={data.required}
+    disabled={data.array}>
+    {$LL.console.project.forms.databases.attribute.texts.phraseOne()}
 </InputChoice>
-<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array
+
+<InputChoice
+    id="array"
+    label={$LL.console.project.forms.databases.attribute.inputs.array.label()}
+    bind:value={data.array}
+    disabled={data.required || editing}>
+    {$LL.console.project.forms.databases.attribute.texts.phraseTwo()}
 </InputChoice>

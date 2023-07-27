@@ -11,6 +11,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/stores';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -50,7 +51,7 @@
             on:click={openWizard}
             event="create_document">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create document</span>
+            <span class="text">{$LL.console.project.buttons.createDocument()}</span>
         </Button>
     </GridHeader>
 
@@ -73,9 +74,10 @@
     {:else}
         <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
             <div class="u-text-center">
-                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <Heading size="7" tag="h2"
+                    >{$LL.console.project.texts.databases.createAttribute.heading()}</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Learn more in our documentation.
+                    {$LL.console.project.texts.databases.createAttribute.note()}
                 </p>
             </div>
             <div class="u-flex u-gap-16 u-main-center">
@@ -84,7 +86,8 @@
                     href="https://appwrite.io/docs/databases#attributes"
                     text
                     event="empty_documentation"
-                    ariaLabel={`create {target}`}>Documentation</Button>
+                    ariaLabel={`create {target}`}
+                    >{$LL.console.project.buttons.documentation()}</Button>
                 <CreateAttributeDropdown
                     bind:showCreateDropdown
                     bind:showCreate={showCreateAttribute}
@@ -95,7 +98,7 @@
                         on:click={() => {
                             showCreateDropdown = !showCreateDropdown;
                         }}>
-                        Create attribute
+                        {$LL.console.project.buttons.createAttribute()}
                     </Button>
                 </CreateAttributeDropdown>
             </div>

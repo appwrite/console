@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
+    import LL from '$i18n/i18n-svelte';
 
     const databaseId = $page.params.database;
 
@@ -45,27 +46,27 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Document Security</Heading>
+    <Heading tag="h6" size="7">{$LL.console.project.title.updateSecurity()}</Heading>
     <svelte:fragment slot="aside">
         <FormList>
             <InputSwitch
                 bind:value={collectionDocumentSecurity}
                 id="security"
-                label="Document Security" />
+                label={$LL.console.project.forms.databases.settings.inputs.docSecurity.label()} />
         </FormList>
         <p class="text">
-            When document security is enabled, users will be able to access documents for which they
-            have been granted <b>either Document or Collection permissions</b>.
+            {$LL.console.project.texts.databases.updateSecurity.phraseOne()}{' '}<b
+                >{$LL.console.project.texts.databases.updateSecurity.eitherDocOrCollection()}</b
+            >.
         </p>
         <p class="text">
-            If document security is disabled, users can access documents <b
-                >only if they have Collection permissions</b
-            >. Document permissions will be ignored.
+            <b>{$LL.console.project.texts.databases.updateSecurity.collectionPermission()}</b
+            >.{$LL.console.project.texts.databases.updateSecurity.documentPermission()}
         </p>
     </svelte:fragment>
     <svelte:fragment slot="actions">
         <Button
             disabled={collectionDocumentSecurity === $collection.documentSecurity}
-            on:click={updateSecurity}>Update</Button>
+            on:click={updateSecurity}>{$LL.console.project.button.submit.update()}</Button>
     </svelte:fragment>
 </CardGrid>
