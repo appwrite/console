@@ -78,7 +78,7 @@
     title="Platforms"
     titleTag="h3"
     titleSize="7"
-    totalUse={data?.platforms?.platforms?.length}>
+    total={data?.platforms?.platforms?.length}>
     <DropList bind:show={showDropdown} placement="bottom-start">
         <Button
             on:click={() => (showDropdown = !showDropdown)}

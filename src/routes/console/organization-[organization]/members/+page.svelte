@@ -59,7 +59,7 @@
     {#if data.organizationMembers.total}
         <ContainerHeader
             title="Members"
-            totalUse={data.organizationMembers.total}
+            total={data.organizationMembers.total}
             buttonText="Invite"
             buttonMethod={() => newMemberModal.set(true)} />
 

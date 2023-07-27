@@ -15,7 +15,7 @@
 
     export let titleSize: '1' | '2' | '3' | '4' | '5' | '6' | '7' = '5';
     export let serviceId = title.toLocaleLowerCase();
-    export let totalUse: number = null;
+    export let total: number = null;
 
     export let buttonText: string = null;
     export let buttonMethod: () => void = null;
@@ -28,7 +28,7 @@
     $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
 </script>
 
-{#if isCloud && totalUse && limit !== 'unlimited' && totalUse >= limit}
+{#if isCloud && total && limit !== 'unlimited' && total >= limit}
     <Alert type="warning">
         <span class="text">
             You've reached the maximum number of {title.toLowerCase()} for the {tier} plan.
@@ -68,7 +68,7 @@
         <Button
             on:click={buttonMethod}
             event={buttonEvent}
-            disabled={limit !== 'unlimited' && totalUse >= limit}>
+            disabled={limit !== 'unlimited' && total >= limit}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">{buttonText}</span>
         </Button>
