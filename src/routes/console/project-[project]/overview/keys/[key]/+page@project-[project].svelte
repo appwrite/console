@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -83,7 +83,7 @@
 </svelte:head>
 
 <Container>
-    {@const accessedAt = $key.accessedAt ? toLocaleDateTime($key.accessedAt) : 'never'}
+    {@const accessedAt = $key.accessedAt ? toLocaleDate($key.accessedAt) : 'never'}
     <CardGrid>
         <div>
             <Heading tag="h6" size="7">{$key.name}</Heading>
