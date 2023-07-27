@@ -57,3 +57,4 @@ export { default as ProgressBar } from './progressBar.svelte';
 export { default as ProgressBarBig } from './progressBarBig.svelte';
 export { default as ProjectUsage } from './projectUsage.svelte';
 export { default as CreditCardInfo } from './creditCardInfo.svelte';
+export { default as CardPlanLimit } from './cardPlanLimit.svelte';

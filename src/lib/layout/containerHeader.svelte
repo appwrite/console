@@ -65,13 +65,19 @@
     </div>
 
     <slot>
-        <Button
-            on:click={buttonMethod}
-            event={buttonEvent}
-            disabled={limit !== 'unlimited' && total >= limit}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">{buttonText}</span>
-        </Button>
+        <div
+            use:tooltip={{
+                content: `Upgrade to add more ${title.toLocaleLowerCase()}`,
+                disabled: total < limit || limit === 'unlimited'
+            }}>
+            <Button
+                on:click={buttonMethod}
+                event={buttonEvent}
+                disabled={limit !== 'unlimited' && total >= limit}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">{buttonText}</span>
+            </Button>
+        </div>
     </slot>
 </div>
 
