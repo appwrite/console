@@ -9,7 +9,7 @@
     export let offset = 0;
     export let total = 0;
     export let event: string = null;
-    export let service: string = '';
+    export let service = '';
 
     $: limit = preferences.get($page.route)?.limit ?? CARD_LIMIT;
 </script>
