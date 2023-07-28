@@ -56,6 +56,7 @@
                 <TableCellHead onlyDesktop>Identifiers</TableCellHead>
                 <TableCellHead onlyDesktop width={130}>Status</TableCellHead>
                 <TableCellHead onlyDesktop width={100}>ID</TableCellHead>
+                <TableCellHead onlyDesktop width={100}>Labels</TableCellHead>
                 <TableCellHead onlyDesktop>Joined</TableCellHead>
                 <TableCellHead onlyDesktop>Last Activity</TableCellHead>
             </TableHeader>
@@ -110,6 +111,9 @@
                                 </Pill>
                             </Copy>
                         </TableCell>
+                        <TableCellText onlyDesktop title="Labels">
+                            {user.labels.join(', ')}
+                        </TableCellText>
                         <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(user.registration)}
                         </TableCellText>

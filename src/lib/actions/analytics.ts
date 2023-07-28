@@ -118,6 +118,7 @@ export enum Submit {
     UserCreate = 'submit_user_create',
     UserDelete = 'submit_user_delete',
     UserUpdateEmail = 'submit_user_update_email',
+    UserUpdateLabels = 'submit_user_update_labels',
     UserUpdateName = 'submit_user_update_name',
     UserUpdatePassword = 'submit_user_update_password',
     UserUpdatePhone = 'submit_user_update_phone',
