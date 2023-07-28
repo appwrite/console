@@ -2,6 +2,7 @@
     import type { Action } from 'svelte/action';
 
     export let isSticky = false;
+    export let noMargin = false;
 
     const hasOverflow: Action<HTMLDivElement, (value: boolean) => void> = (node, callback) => {
         const observer = new ResizeObserver((entries) => {
@@ -22,7 +23,7 @@
     let isOverflowing = false;
 </script>
 
-<div class="table-with-scroll u-margin-block-start-32" data-private>
+<div class="table-with-scroll {noMargin ? '' : 'u-margin-block-start-32'}" data-private>
     <div class="table-wrapper" use:hasOverflow={(v) => (isOverflowing = v)}>
         <table class="table" class:is-sticky-scroll={isSticky && isOverflowing}>
             <slot />
