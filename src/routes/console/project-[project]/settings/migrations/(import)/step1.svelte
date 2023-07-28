@@ -24,13 +24,19 @@
         return target;
     }
 
-    // function getFirebaseProjects() {
-    //     sdk.forProject.migrations.listFirebaseProjects().then((res) => {
-    //         console.log(res);
-    //     });
-    // }
+    function getFirebaseProjects() {
+        sdk.forProject.migrations.listFirebaseProjects().then((res) => {
+            firebaseProjects = res.projects;
+        });
+    }
+
+    let firebaseProjects = [];
 
     let showAuth = false;
+
+    $: if ($provider.provider === 'firebase') {
+        getFirebaseProjects();
+    }
 </script>
 
 <WizardStep>
@@ -75,13 +81,23 @@
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'firebase'}
-        <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
-            <p class="u-text-center u-bold">Sign in with Google to get started</p>
-            <Button secondary href={connectGoogle().toString()}>
-                <SvgIcon name="google" />Sign in
-            </Button>
-        </div>
-
+        {#if firebaseProjects.length == 0}
+            <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
+                <p class="u-text-center u-bold">Sign in with Google to get started</p>
+                <Button secondary href={connectGoogle().toString()}>
+                    <SvgIcon name="google" />Sign in
+                </Button>
+            </div>
+        {:else}
+            {#each firebaseProjects as project}
+                <div
+                    class="card is-allow-focus u-height-100-percent u-flex u-flex-vertical u-cursor-pointer u-margin-block-start-24">
+                    <div class="content">
+                        <p>{project.displayName}</p>
+                    </div>
+                </div>
+            {/each}
+        {/if}
         <button
             class="tag u-margin-block-start-16"
             type="button"
