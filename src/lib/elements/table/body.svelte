@@ -9,12 +9,14 @@
 
     export let service: string = null;
     export let name = service;
-    let rows = 0;
+    export let total: number = null;
 
-    $: limitReached = rows >= (getServiceLimit(service)?.amount ?? Infinity);
+    let columns = 0;
+
+    $: limitReached = total >= (getServiceLimit(service)?.amount ?? Infinity);
 
     $: if (tableBody) {
-        rows = tableBody?.parentNode?.querySelectorAll('.table-thead-col')?.length;
+        columns = tableBody?.parentNode?.querySelectorAll('.table-thead-col')?.length;
     }
 </script>
 
@@ -23,7 +25,7 @@
 </div>
 {#if isCloud && limitReached && service}
     <tr class="table-row">
-        <td class="table-col" width="100%" colspan={rows}>
+        <td class="table-col" width="100%" colspan={columns}>
             <span class="u-flex u-gap-24 u-main-center u-cross-center">
                 <span class="text">Upgrade your plan to add {name} to your organization</span>
                 <Button secondary on:click={() => wizard.start(ChangeOrganizationTierCloud)}>

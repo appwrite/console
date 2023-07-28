@@ -62,7 +62,7 @@
                 <TableCellHead onlyDesktop>Members</TableCellHead>
                 <TableCellHead onlyDesktop>Created</TableCellHead>
             </TableHeader>
-            <TableBody service="teams">
+            <TableBody service="teams" total={data.teams.total}>
                 {#each data.teams.teams as team}
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/teams/team-${team.$id}`}>

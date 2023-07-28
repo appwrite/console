@@ -88,16 +88,18 @@
 {#if isCloud}
     <div class="u-hide">
         <div bind:this={tooltipContent}>
-            <p class="text">
-                Your are limited to {limit}
-                {title.toLocaleLowerCase()} per project on the {tier}.
-                <button
-                    class="link"
-                    type="button"
-                    on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
-                    >Upgrade</button>
-                for addtional {title.toLocaleLowerCase()}.
-            </p>
+            <slot name="tooltip">
+                <p class="text">
+                    Your are limited to {limit}
+                    {title.toLocaleLowerCase()} per project on the {tier}.
+                    <button
+                        class="link"
+                        type="button"
+                        on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                        >Upgrade</button>
+                    for addtional {title.toLocaleLowerCase()}.
+                </p>
+            </slot>
         </div>
     </div>
 {/if}

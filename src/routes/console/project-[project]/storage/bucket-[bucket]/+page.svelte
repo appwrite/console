@@ -11,7 +11,8 @@
         DropListItem,
         DropListLink,
         SearchQuery,
-        PaginationWithLimit
+        PaginationWithLimit,
+        Alert
     } from '$lib/components';
     import Create from './create.svelte';
     import Delete from './deleteFile.svelte';
@@ -27,7 +28,7 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import { uploader } from '$lib/stores/uploader';
@@ -36,6 +37,11 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { getServiceLimit, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 
     export let data: PageData;
 
@@ -74,14 +80,56 @@
             trackError(error, Submit.FileDelete);
         }
     }
+
+    const limit = getServiceLimit('storage')?.amount ?? Infinity;
+    $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
+
+    // TODO: fetch the total storage used
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by filename">
-        <Button on:click={() => (showCreate = true)} event="create_file">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
-        </Button>
-    </SearchQuery>
+    <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={10}>
+        <svelte:fragment slot="alert">
+            <Alert type="warning">
+                <span class="text">
+                    You've reached the storage limit for the {tier} plan.
+                    <button
+                        class="link"
+                        type="button"
+                        on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                        >Upgrade</button>
+                    for additional storage.
+                </span>
+            </Alert>
+        </svelte:fragment>
+        <SearchQuery search={data.search} placeholder="Search by filename">
+            <div
+                use:tooltip={{
+                    content: `Upgrade to add more files`,
+                    disabled: data.files.total < getServiceLimit('storage')?.amount
+                }}>
+                <Button
+                    on:click={() => (showCreate = true)}
+                    event="create_file"
+                    disabled={data.files.total >= getServiceLimit('storage')?.amount}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create file</span>
+                </Button>
+            </div>
+        </SearchQuery>
+        <svelte:fragment slot="tooltip">
+            <p class="text">
+                You are limited to {limit} of storage on the {tier} plan.
+
+                <button
+                    class="link"
+                    type="button"
+                    on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                    >Upgrade</button>
+                for addtional storage.
+            </p>
+        </svelte:fragment>
+    </ContainerHeader>
 
     {#if data.files.total}
         <Table>

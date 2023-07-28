@@ -1,15 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Button } from '$lib/elements/forms';
-    import {
-        Empty,
-        CardContainer,
-        GridItem1,
-        Heading,
-        PaginationWithLimit,
-        Id
-    } from '$lib/components';
-    import { Container } from '$lib/layout';
+    import { Empty, CardContainer, GridItem1, PaginationWithLimit, Id } from '$lib/components';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import { tooltip } from '$lib/actions/tooltip';
     import { app } from '$lib/stores/app';
@@ -35,19 +27,20 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Functions</Heading>
-        <Button on:click={openWizard} event="create_function">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create function</span>
-        </Button>
-    </div>
+    <ContainerHeader
+        title="Functions"
+        buttonText="Create function"
+        buttonEvent="create_function"
+        buttonMethod={openWizard}
+        total={data.functions.total} />
 
     {#if data.functions.total}
         <CardContainer
             {offset}
             event="functions"
             total={data.functions.total}
-            on:click={openWizard}>
+            on:click={openWizard}
+            service="functions">
             {#each data.functions.functions as func}
                 <GridItem1
                     href={`${base}/console/project-${project}/functions/function-${func.$id}`}>

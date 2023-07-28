@@ -28,6 +28,7 @@ export function humanFileSize(bytes: number): {
     value: string;
     unit: Size;
 } {
+    if (typeof bytes !== 'number') return { value: '0', unit: 'Bytes' };
     const value = prettyBytes(bytes, {
         locale: 'en'
     }).split(' ');

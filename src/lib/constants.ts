@@ -372,8 +372,13 @@ export const limitRates = {
         },
         {
             id: 'file-size-limit',
-            amount: 50,
+            amount: 1,
             unit: 'MB'
+        },
+        {
+            id: 'storage',
+            amount: 5,
+            unit: 'GB'
         },
         {
             id: 'functions',
@@ -451,6 +456,11 @@ export const limitRates = {
             unit: 'MB'
         },
         {
+            id: 'storage',
+            amount: 5,
+            unit: 'GB'
+        },
+        {
             id: 'functions',
             amount: 1,
             unit: ''
@@ -522,6 +532,11 @@ export const limitRates = {
             id: 'file-size-limit',
             amount: 5,
             unit: 'MB'
+        },
+        {
+            id: 'storage',
+            amount: 5,
+            unit: 'GB'
         },
         {
             id: 'functions',

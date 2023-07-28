@@ -50,7 +50,7 @@
                 <TableCellHead width={180}>POST URL</TableCellHead>
                 <TableCellHead width={80}>Events</TableCellHead>
             </TableHeader>
-            <TableBody service="webhooks">
+            <TableBody service="webhooks" total={data.webhooks.total}>
                 {#each data.webhooks.webhooks as webhook}
                     <TableRowLink
                         href={`${base}/console/project-${projectId}/settings/webhooks/${webhook.$id}`}>
