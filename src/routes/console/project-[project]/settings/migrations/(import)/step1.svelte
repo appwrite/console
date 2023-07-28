@@ -3,6 +3,8 @@
     import { Button, FormList, InputNumber, InputPassword, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import type { Provider } from '$lib/stores/migration';
+    import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
     import { provider } from '.';
 
     const providers: Record<Provider, string> = {
@@ -11,6 +13,22 @@
         supabase: 'Supabase',
         nhost: 'NHost'
     };
+
+    function connectGoogle() {
+        const redirect = new URL($page.url);
+        const target = new URL(
+            `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
+        );
+        target.searchParams.set('projectId', $page.params.project);
+        target.searchParams.set('redirect', redirect.toString());
+        return target;
+    }
+
+    // function getFirebaseProjects() {
+    //     sdk.forProject.migrations.listFirebaseProjects().then((res) => {
+    //         console.log(res);
+    //     });
+    // }
 
     let showAuth = false;
 </script>
@@ -59,7 +77,7 @@
     {:else if $provider.provider === 'firebase'}
         <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
             <p class="u-text-center u-bold">Sign in with Google to get started</p>
-            <Button secondary>
+            <Button secondary href={connectGoogle().toString()}>
                 <SvgIcon name="google" />Sign in
             </Button>
         </div>
