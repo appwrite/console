@@ -16,6 +16,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     let httpUser: string = null;
@@ -58,43 +59,45 @@
 
 <Form onSubmit={updateSecurity}>
     <CardGrid>
-        <Heading tag="h2" size="7">Security</Heading>
+        <Heading tag="h2" size="7">{$LL.console.project.title.security.title()}</Heading>
         <p class="text">
-            Set an optional basic HTTP authentication username and password to protect your endpoint
-            from unauthorized access.
+            {$LL.console.project.texts.webhooks.httpAuth()}
         </p>
         <svelte:fragment slot="aside">
             <FormList>
                 <div>
-                    <Heading tag="h3" size="7">HTTP Authentication</Heading>
-                    <p class="text">Use to secure your endpoint from untrusted sources.</p>
+                    <Heading tag="h3" size="7">{$LL.console.project.title.httpAuth()}</Heading>
+                    <p class="text">{$LL.console.project.texts.webhooks.secureEndpoints()}</p>
                 </div>
+
                 <InputText
-                    label="User"
                     id="user"
-                    placeholder="Enter username"
+                    label={$LL.console.project.forms.settings.webhooks.inputs.user.label()}
+                    placeholder={$LL.console.project.forms.settings.webhooks.inputs.user.placeholder()}
                     bind:value={httpUser} />
+
                 <InputPassword
-                    label="Password"
                     id="password"
                     minlength={0}
                     showPasswordButton
-                    placeholder="Enter password"
+                    label={$LL.console.project.forms.settings.webhooks.inputs.password.label()}
+                    placeholder={$LL.console.project.forms.settings.webhooks.inputs.password.placeholder()}
                     bind:value={httpPass} />
 
                 <InputChoice
                     id="Security"
                     label="Certificate verification (SSL/TLS)"
                     bind:value={security}>
-                    <span class="u-color-text-danger">Warning:</span> Untrusted or self-signed
-                    certificates may not be secure.
+                    <span class="u-color-text-danger">Warning:</span>
+                    {$LL.console.project.forms.settings.webhooks.texts.untrustedCertificate()}
                     <a
                         href="https://appwrite.io/docs/custom-domains#enjoySSLCert"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="link">
-                        Learn more</a>
+                        {$LL.console.project.forms.settings.webhooks.texts.learnMoreWarning()}</a>
                 </InputChoice>
+                
             </FormList>
         </svelte:fragment>
 
@@ -104,7 +107,7 @@
                     httpPass === $webhook.httpPass &&
                     security === $webhook.security}
                 submit>
-                Update
+                {$LL.console.project.button.submit.update()}
             </Button>
         </svelte:fragment>
     </CardGrid>

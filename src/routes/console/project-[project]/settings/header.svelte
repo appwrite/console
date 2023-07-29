@@ -3,23 +3,24 @@
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     const path = `/console/project-${projectId}/settings`;
     const tabs = [
         {
             href: path,
-            title: 'Overview',
+            title: $LL.console.project.navbar.settings.overview(),
             event: 'overview'
         },
         {
             href: `${path}/domains`,
-            title: 'Custom Domains',
+            title: $LL.console.project.navbar.settings.customDomains(),
             event: 'domains'
         },
         {
             href: `${path}/webhooks`,
-            title: 'Webhooks',
+            title: $LL.console.project.navbar.settings.webhooks(),
             event: 'webhooks'
         }
     ];
@@ -27,7 +28,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Settings</CoverTitle>
+        <CoverTitle>{$LL.console.project.title.settings.header()}</CoverTitle>
     </svelte:fragment>
 
     <Tabs>

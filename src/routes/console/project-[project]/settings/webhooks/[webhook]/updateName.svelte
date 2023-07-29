@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     let name: string = null;
@@ -47,21 +48,22 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h2" size="7">Name</Heading>
-        <p>Choose any name that will help you distinguish between Webhooks.</p>
+        <Heading tag="h2" size="7">{$LL.console.project.forms.settings.updateName.title()}</Heading>
+        <p>{$LL.console.project.forms.settings.updateName.texts.chooseWebhook()}</p>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText
                     id="name"
-                    label="Name"
+                    label={$LL.console.project.forms.settings.updateName.inputs.name.label()}
+                    placeholder={$LL.console.project.forms.settings.updateName.inputs.name.defaultPlaceholder()}
                     bind:value={name}
-                    required
-                    placeholder="Enter name" />
+                    required />
             </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={name === $webhook.name || !name} submit>Update</Button>
+            <Button disabled={name === $webhook.name || !name} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

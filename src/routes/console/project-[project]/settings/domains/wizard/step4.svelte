@@ -5,6 +5,7 @@
     import { project } from '../../../store';
     import CnameTable from './cnameTable.svelte';
     import VerificationBox from './verificationBox.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $project.$id;
 
@@ -25,7 +26,7 @@
 <WizardStep>
     <svelte:fragment slot="title">Add a CNAME record</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        In order to continue, set the following record on your DNS provider
+        {$LL.console.project.texts.consoleSettings.dnsProvider()}
     </svelte:fragment>
 
     <CnameTable />

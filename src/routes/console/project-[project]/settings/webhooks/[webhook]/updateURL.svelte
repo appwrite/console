@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     let url: string = null;
@@ -53,7 +54,7 @@
             <FormList>
                 <InputText
                     id="url"
-                    label="POST URL"
+                    label={$LL.console.project.forms.settings.webhooks.inputs.url.label()}
                     bind:value={url}
                     required
                     placeholder="https://example.com/callback" />
@@ -61,7 +62,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={url === $webhook.url || !url} submit>Update</Button>
+            <Button disabled={url === $webhook.url || !url} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

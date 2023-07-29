@@ -13,6 +13,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     async function create() {
@@ -57,15 +58,15 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Add your webhook',
+        label: $LL.console.project.legends.settings.webhooks.addWebhooks(),
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Webhook events',
+        label: $LL.console.project.legends.settings.webhooks.events(),
         component: Step2
     });
     stepsComponents.set(3, {
-        label: 'Security',
+        label: $LL.console.project.legends.settings.webhooks.security(),
         component: Step3,
         optional: true
     });

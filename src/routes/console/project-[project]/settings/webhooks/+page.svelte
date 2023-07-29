@@ -19,6 +19,7 @@
     import type { PageData } from './$types';
     import Create from './createWebhook.svelte';
     import Heading from '$lib/components/heading.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -34,23 +35,25 @@
 </script>
 
 <svelte:head>
-    <title>Webhooks - Appwrite</title>
+    <title>{$LL.console.project.title.webhooks()} - Appwrite</title>
 </svelte:head>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Webhooks</Heading>
+        <Heading tag="h2" size="5">{$LL.console.project.title.webhooks()}</Heading>
         <Button on:click={openWizard} event="create_webhook">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create webhook</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">{$LL.console.project.button.createWebhook()}</span>
         </Button>
     </div>
 
     {#if data.webhooks.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead>POST URL</TableCellHead>
-                <TableCellHead width={80}>Events</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.name()}</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.postUrl()}</TableCellHead>
+                <TableCellHead width={80}
+                    >{$LL.console.project.table.header.events()}</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.webhooks.webhooks as webhook}
@@ -60,7 +63,7 @@
                             <div class="u-flex u-main-space-between">
                                 {webhook.name}
                                 {#if webhook.security === false}
-                                    <Pill>SLL/TLS disabled</Pill>
+                                    <Pill>{$LL.console.project.table.pill.sllTlsDisabled()}</Pill>
                                 {/if}
                             </div>
                         </TableCell>

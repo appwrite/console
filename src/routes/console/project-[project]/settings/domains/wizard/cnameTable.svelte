@@ -11,6 +11,7 @@
         TableRow
     } from '$lib/elements/table';
     import { domain } from './store';
+    import LL from '$i18n/i18n-svelte'
 
     const target = window?.location.hostname ?? '';
     $: parts = $domain.domain.split('.');
@@ -20,9 +21,9 @@
 
 <Table noStyles noMargin>
     <TableHeader>
-        <TableCellHead>Type</TableCellHead>
-        <TableCellHead>Name</TableCellHead>
-        <TableCellHead>Value</TableCellHead>
+        <TableCellHead>{$LL.console.project.table.header.value()}</TableCellHead>
+        <TableCellHead>{$LL.console.project.table.header.name()}</TableCellHead>
+        <TableCellHead>{$LL.console.project.table.header.value()}</TableCellHead>
         <TableCellHead width={50} />
     </TableHeader>
     <TableBody>

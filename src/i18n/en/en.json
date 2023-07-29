@@ -381,16 +381,24 @@
                 "deleteDatabase": "Delete Database",
                 "deleteAttribute": "Delete Attribute",
                 "deleteCollection": "Delete Collection",
+                "deleteProject": "Delete Project",
                 "deleteTeam": "Delete Team",
                 "deleteDocument": "Delete Document",
                 "deleteIndex": "Delete Index",
+                "deleteDomain": "Delete Domain",
+                "deleteWebhook": "Delete Webhook",
                 "user": "User",
                 "team": "Team",
                 "overview": "Overview",
                 "indexes": "Indexes",
+                "services": "Services",
+                "customDomains": "Custom Domains",
                 "documentSecurity": "Document Security",
+                "webhooks": "Webhooks",
+                "webhook": "Webhook",
                 "displayName": "Display Name",
                 "teamPref": "Team Preferences",
+                "apiCredentials": "API Credentials",
                 "data": "Data",
                 "document": "Document",
                 "metaData": "Metadata",
@@ -400,6 +408,10 @@
                 "databases": "Databases",
                 "collections": "Collections",
                 "oAuth2": "OAuth2 Settings",
+                "regenerateKey": "Regenerate Key",
+                "signatureKey": "Signature Key",
+                "events": "Events",
+                "httpAuth": "HTTP Authentication",
                 "userData": {
                     "name": "Name",
                     "email": "Email",
@@ -409,6 +421,7 @@
                     "deleteUser": "Delete User"
                 },
                 "security": {
+                    "title": "Security",
                     "passwordDictionary": "Password Dictionary",
                     "passwordHistory": "Password History",
                     "sessionLength": "Session Length",
@@ -416,8 +429,13 @@
                     "usersLimit": "Users Limit"
                 },
                 "settings": {
+                    "header": "Settings",
                     "authMethods": "Auth Methods",
                     "oauth2Providers": "OAuth2 Providers"
+                },
+                "wizards": {
+                    "addYourDomain": "Add your domain",
+                    "subTitle": "Use your self-owned domain as the endpoint of your Appwrite API."
                 }
             },
             "forms": {
@@ -785,6 +803,69 @@
                             }
                         }
                     }
+                },
+                "settings": {
+                    "default": {
+                        "inputs": {
+                            "projectId": {
+                                "label": "Project ID"
+                            },
+                            "apiEndPoint": {
+                                "label": "API Endpoint"
+                            }
+                        }
+                    },
+                    "updateName": {
+                        "title": "Name",
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Enter database name",
+                                "defaultPlaceholder": "Enter name"
+                            }
+                        },
+                        "texts": {
+                            "chooseWebhook": "Choose any name that will help you distinguish between Webhooks."
+                        }
+                    },
+                    "domain": {
+                        "inputs": {
+                            "domain": {
+                                "label": "Custom Domain",
+                                "placeholder": "appwrite.example.com"
+                            }
+                        }
+                    },
+                    "webhooks": {
+                        "texts": {
+                            "stepOne": "Use webhooks to build integrations that subscribe to specific events on Appwrite. Appwrite will send an HTTP POST payload to the webhook's configured URL when one of the specified events is triggered.",
+                            "events": "Set the events that will trigger your function. Maximum 100 events allowed.",
+                            "addEvent": "Add an event to get started",
+                            "selectEvent": "Select events in your Appwrite project that will trigger your webhook.",
+                            "learnMore": "Learn more about Appwrite Events",
+                            "learnMoreWarning": "Learn more",
+                            "untrustedCertificate": "Untrusted or self-signed certificates may not be secure.",
+                            "security": "Set an optional basic HTTP authentication username and password to protect your endpoint from unauthorized access.",
+                            "secureEndpoints": "Use to secure your endpoint from untrusted sources."
+                        },
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "defaultPlaceholder": "Enter name"
+                            },
+                            "url": {
+                                "label": "POST URL"
+                            },
+                            "user": {
+                                "label": "User",
+                                "placeholder": "Enter username"
+                            },
+                            "password": {
+                                "label": "Password",
+                                "placeholder": "Enter password"
+                            }
+                        }
+                    }
                 }
             },
             "button": {
@@ -800,17 +881,24 @@
                 "createCollection": "Create Collection",
                 "createAttribute": "Create attribute",
                 "createDocument": "Create document",
+                "createDomain": "Create domain",
                 "documentation": "Documentation",
                 "items": "Items",
                 "addItem": "Add item",
+                "addEvent": "Add event",
                 "addAttribute": "Add attribute",
+                "createWebhook": "Create webhook",
+                "viewApiKeys": "View API Keys",
                 "cancel": "Cancel",
                 "submit": {
                     "create": "Create",
                     "update": "Update",
                     "addPrefs": "Add Preference",
                     "delete": "Delete",
-                    "deleteAll": "Delete All"
+                    "deleteAll": "Delete All",
+                    "verify": "Verify",
+                    "regenerate": "Regenerate",
+                    "regenerateKey": "Regenerate Key"
                 },
                 "pill": {
                     "userId": "User ID"
@@ -843,7 +931,10 @@
                     "asc_dsc": "Asc/Desc",
                     "defaultValue": "Default Value",
                     "relation": "Relation",
-                    "settings": "Settings"
+                    "settings": "Settings",
+                    "domainName": "Domain Name",
+                    "postUrl": "POST URL",
+                    "events": "Events"
                 },
                 "pill": {
                     "verify": "verified",
@@ -853,13 +944,16 @@
                     "block": "blocked",
                     "userId": "User ID",
                     "teamId": "Team ID",
+                    "webhookId": "Webhook ID",
                     "required": "Required",
                     "collectionId": "Collection ID",
                     "recommended": "recommended",
                     "dbId": "Database ID",
                     "currentSession": "current session",
                     "disabled": "disabled",
-                    "documentId": "Document ID"
+                    "documentId": "Document ID",
+                    "failed": "failed",
+                    "sllTlsDisabled": "SLL/TLS disabled"
                 }
             },
             "texts": {
@@ -968,6 +1062,45 @@
                     },
                     "dangerZone": "The user will be permanently deleted, including all data associated with this user. This action is irreversible.",
                     "on": "on"
+                },
+                "consoleSettings": {
+                    "deleteProject": {
+                        "phraseOne": "This project will be deleted",
+                        "phraseTwo": "along with all of its metadata, stats, and other resources.",
+                        "phraseThree": "This action is irreversible"
+                    },
+                    "accessService": "Access Appwrite services using your API Endpoint and Project ID.",
+                    "options": "Choose services you wish to enable or disable.",
+                    "deleteAll": "The project will be permanently deleted, including all the metadata, resources and stats within it. This action is irreversible.",
+                    "lastUpdated": "Last Updated:",
+                    "delete": {
+                        "phaseOne": "Are you sure you want to delete",
+                        "from": "from"
+                    },
+                    "verifiedDomain": "Domain has been verified",
+                    "pendingDomain": "Domain is pending verification",
+                    "dnsDoc": "You can find a list of domain providers and their DNS setting documentation",
+                    "domainProvider": "If your domain provider isn't listed, please contact us, and we'll include their settings as well.",
+                    "dnsProvider": "In order to continue, set the following record on your DNS provider",
+                    "time": "Changes may take some time to take effect depending on your provider."
+                },
+                "webhooks": {
+                    "deletePermanently": "The webhook will be permanently deleted. This action is irreversible.",
+                    "lastUpdated": "Last Updated:",
+                    "delete": {
+                        "phaseOne": "Are you sure you want to delete",
+                        "from": "from"
+                    },
+                    "generateKey": "Are you sure you want to generate a new Signature Key?",
+                    "noRecoveryKey": "You will not be able to recover your current key.",
+                    "triggerWebhook": "Set the events that will trigger your webhook. Maximum 100 events allowed.",
+                    "addEvent": "Add an event to get started",
+                    "selectEvent": "Select events in your Appwrite project that will trigger your webhook.",
+                    "learnMore": "Learn more about Appwrite Events",
+                    "httpAuth": "Set an optional basic HTTP authentication username and password to protect your endpoint from unauthorized access.",
+                    "secureEndpoints": "Use to secure your endpoint from untrusted sources.",
+                    "addSignature": "Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your webhooks.",
+                    "webhookValidation": "Learn more about webhook validation."
                 }
             },
             "legends": {
@@ -997,6 +1130,19 @@
                         "read": "Documents read",
                         "update": "Documents updated",
                         "delete": "Documents deleted"
+                    }
+                },
+                "settings": {
+                    "domain": {
+                        "addDomain": "Add your domain",
+                        "addCname": "Add a CNAME Record",
+                        "verifyDomain": "Verify domain",
+                        "sslCertificate": "SSL Certificate"
+                    },
+                    "webhooks": {
+                        "addWebhooks": "Add your webhook",
+                        "events": "Webhook events",
+                        "security": "Security"
                     }
                 }
             },
@@ -1037,6 +1183,11 @@
                         "data": "Data",
                         "activity": "Activity"
                     }
+                },
+                "settings": {
+                    "overview": "Overview",
+                    "customDomains": "Custom Domains",
+                    "webhooks": "Webhooks"
                 }
             },
             "links": {

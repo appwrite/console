@@ -2,25 +2,25 @@
     import { InputText, InputURL, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { createWebhook } from './store';
+    import LL from '$i18n/i18n-svelte';
     //TODO: Create InputURL component
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Add your webhook</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.legends.settings.webhooks.addWebhooks()}</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Use webhooks to build integrations that subscribe to specific events on Appwrite. Appwrite
-        will send an HTTP POST payload to the webhook's configured URL when one of the specified
-        events is triggered.
+        {$LL.console.project.forms.settings.webhooks.texts.stepOne()}
     </svelte:fragment>
     <FormList>
         <InputText
-            label="Name"
+            label={$LL.console.project.forms.settings.webhooks.inputs.name.label()}
             id="name"
-            placeholder="Enter name"
+            placeholder={$LL.console.project.forms.settings.webhooks.inputs.name.defaultPlaceholder()}
             bind:value={$createWebhook.name}
             required />
         <InputURL
-            label="POST URL"
+            label={$LL.console.project.forms.settings.webhooks.inputs.url.label()}
             id="url"
             placeholder="https://example.com/callback"
             bind:value={$createWebhook.url}

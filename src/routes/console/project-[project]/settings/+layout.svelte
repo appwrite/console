@@ -1,5 +1,9 @@
+<script lang="ts">
+    import LL from '$i18n/i18n-svelte';
+</script>
+
 <svelte:head>
-    <title>Settings - Appwrite</title>
+    <title>{$LL.console.project.title.settings.header()} - Appwrite</title>
 </svelte:head>
 
 <slot />

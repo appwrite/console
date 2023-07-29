@@ -3,18 +3,20 @@
     import { Button } from '$lib/elements/forms';
     import Regenerate from './regenerate.svelte';
     import { webhook } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     let showRegenerate = false;
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Signature Key</Heading>
+    <Heading tag="h2" size="7">{$LL.console.project.title.signatureKey()}</Heading>
     <p>
-        Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your webhooks. <a
+        {$LL.console.project.texts.webhooks.addSignature()}
+        <a
             href="https://appwrite.io/docs/webhooks#verification"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Learn more about webhook validation.</a>
+            class="link">{$LL.console.project.texts.webhooks.webhookValidation()}</a>
     </p>
     <svelte:fragment slot="aside">
         <div>
@@ -23,7 +25,8 @@
         </div>
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <Button on:click={() => (showRegenerate = true)} secondary submit>Regenerate Key</Button>
+        <Button on:click={() => (showRegenerate = true)} secondary submit
+            >{$LL.console.project.button.submit.regenerateKey()}</Button>
     </svelte:fragment>
 </CardGrid>
 

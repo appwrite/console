@@ -7,6 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../store';
+    import LL from '$i18n/i18n-svelte';
 
     export let showDelete = false;
 
@@ -39,10 +40,12 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Project</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.deleteProject()}</svelte:fragment>
     <p>
-        <b>This project will be deleted</b>, along with all of its metadata, stats, and other
-        resources. <b>This action is irreversible</b>.
+        <b>{$LL.console.project.texts.consoleSettings.deleteProject.phraseOne()}</b
+        >,{' '}{$LL.console.project.texts.consoleSettings.deleteProject.phraseTwo()}{' '}<b
+            >{$LL.console.project.texts.consoleSettings.deleteProject.phraseThree()}</b
+        >.
     </p>
 
     <FormList>
@@ -62,9 +65,10 @@
             bind:value={password} />
     </FormList>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.project.button.cancel()}</Button>
         <Button disabled={!name || !password || name !== $project.name} secondary submit>
-            Delete
+            {$LL.console.project.button.submit.delete()}
         </Button>
     </svelte:fragment>
 </Modal>

@@ -5,6 +5,7 @@
     import { project } from '../../../store';
     import { addNotification } from '$lib/stores/notifications';
     import { Pill } from '$lib/elements';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $project.$id;
 
@@ -33,9 +34,11 @@
 <div class="box u-flex u-gap-16 u-cross-center">
     {#if isVerified}
         <Pill success>
-            <span class="icon-check-circle" style="font-size: var(--icon-size-small);" />verified
+            <span
+                class="icon-check-circle"
+                style="font-size: var(--icon-size-small);" />{$LL.console.project.table.pill.verify()}
         </Pill>
-        <p class="u-stretch">Domain has been verified</p>
+        <p class="u-stretch">{$LL.console.project.texts.consoleSettings.verifiedDomain()}</p>
     {:else}
         {#if isVerifying}
             <div
@@ -45,13 +48,14 @@
             <Pill danger>
                 <span
                     class="icon-exclamation-circle"
-                    style="font-size: var(--icon-size-small);" />failed
+                    style="font-size: var(--icon-size-small);" />{$LL.console.project.table.pill.failed()}
             </Pill>
         {/if}
 
-        <p class="u-stretch">Domain is pending verification</p>
+        <p class="u-stretch">{$LL.console.project.texts.consoleSettings.pendingDomain()}</p>
     {/if}
     {#if !isVerified}
-        <Button secondary disabled={isVerifying} on:click={verifyDomain}>Verify</Button>
+        <Button secondary disabled={isVerifying} on:click={verifyDomain}
+            >{$LL.console.project.button.verify()}</Button>
     {/if}
 </div>

@@ -5,6 +5,7 @@
     import { createWebhook } from './store';
     import { EventModal } from '$lib/components';
     import { TableList, TableCellText, TableCell } from '$lib/elements/table';
+    import LL from '$i18n/i18n-svelte';
 
     let showCreate = false;
 
@@ -17,9 +18,10 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Webhook events</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.legends.settings.webhooks.events()}</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Set the events that will trigger your function. Maximum 100 events allowed.
+        {$LL.console.project.forms.settings.webhooks.texts.events()}
     </svelte:fragment>
 
     {#if $createWebhook?.events?.length}
@@ -46,22 +48,23 @@
         <div class="u-flex u-margin-block-start-16">
             <Button text noMargin on:click={() => (showCreate = !showCreate)}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="u-text">Add event</span>
+                <span class="u-text">{$LL.console.project.button.addEvent()}</span>
             </Button>
         </div>
     {:else}
-        <Empty on:click={() => (showCreate = !showCreate)}>Add an event to get started</Empty>
+        <Empty on:click={() => (showCreate = !showCreate)}
+            >{$LL.console.project.forms.settings.webhooks.texts.addEvent()}</Empty>
     {/if}
 </WizardStep>
 
 {#if showCreate}
     <EventModal bind:show={showCreate} on:created={handleCreated}>
         <p class="text">
-            Select events in your Appwrite project that will trigger your webhook. <a
+            {$LL.console.project.forms.settings.webhooks.texts.selectEvent()}{' '}<a
                 href="https://appwrite.io/docs/events"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="link">Learn more about Appwrite Events</a
+                class="link">{$LL.console.project.forms.settings.webhooks.texts.learnMore()}</a
             >.
         </p>
     </EventModal>

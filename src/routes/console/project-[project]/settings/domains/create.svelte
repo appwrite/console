@@ -10,6 +10,7 @@
     import Step4 from './wizard/step4.svelte';
     import { onDestroy } from 'svelte';
     import { Dependencies } from '$lib/constants';
+    import LL from '$i18n/i18n-svelte';
 
     onDestroy(() => {
         domain.set({ $id: '', domain: '' });
@@ -26,21 +27,21 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Add your domain',
+        label: $LL.console.project.legends.settings.domain.addDomain(),
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Add a CNAME Record',
+        label: $LL.console.project.legends.settings.domain.addCname(),
         component: Step2,
         optional: true
     });
     stepsComponents.set(3, {
-        label: 'Verify domain',
+        label: $LL.console.project.legends.settings.domain.verifyDomain(),
         component: Step3,
         optional: true
     });
     stepsComponents.set(4, {
-        label: 'SSL Certificate',
+        label: $LL.console.project.legends.settings.domain.sslCertificate(),
         component: Step4,
         optional: true
     });

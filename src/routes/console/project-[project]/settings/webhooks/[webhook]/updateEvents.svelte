@@ -12,6 +12,7 @@
     import { onMount } from 'svelte';
     import { writable, type Writable } from 'svelte/store';
     import { webhook } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     const eventSet: Writable<Set<string>> = writable(new Set());
@@ -66,9 +67,9 @@
 
 <Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Events</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.events()}</Heading>
         <p class="text">
-            Set the events that will trigger your webhook. Maximum 100 events allowed.
+            {$LL.console.project.texts.webhooks.triggerWebhook()}
         </p>
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
@@ -95,27 +96,30 @@
                 <div class="u-flex u-margin-block-start-16">
                     <Button text noMargin on:click={() => (showCreateEvent = true)}>
                         <span class="icon-plus" aria-hidden="true" />
-                        <span class="u-text">Add event</span>
+                        <span class="u-text">{$LL.console.project.button.addEvent()}</span>
                     </Button>
                 </div>
             {:else}
-                <Empty on:click={() => (showCreateEvent = true)}>Add an event to get started</Empty>
+                <Empty on:click={() => (showCreateEvent = true)}
+                    >{$LL.console.project.texts.webhooks.addEvent()}</Empty>
             {/if}
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={areEventsDisabled} submit>Update</Button>
+            <Button disabled={areEventsDisabled} submit
+                >{$LL.console.project.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
 
 <EventModal bind:show={showCreateEvent} on:created={handleEvent}>
     <p class="text">
-        Select events in your Appwrite project that will trigger your webhook. <a
+        {$LL.console.project.texts.webhooks.selectEvent()}
+        <a
             href="https://appwrite.io/docs/events"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Learn more about Appwrite Events</a
+            class="link">{$LL.console.project.texts.webhooks.learnMore()}</a
         >.
     </p>
 </EventModal>

@@ -62,20 +62,22 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Custom Domains</Heading>
+        <Heading tag="h2" size="5">{$LL.console.project.title.customDomains()}</Heading>
 
         <Button on:click={openWizard}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create domain</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">{$LL.console.project.button.createDomain()}</span>
         </Button>
     </div>
     {#if data.domains.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={150}>Domain Name</TableCellHead>
+                <TableCellHead width={150}
+                    >{$LL.console.project.table.header.domainName()}</TableCellHead>
                 <TableCellHead width={100} />
-                <TableCellHead width={60}>Type</TableCellHead>
-                <TableCellHead width={90}>Name</TableCellHead>
-                <TableCellHead width={90}>Value</TableCellHead>
+                <TableCellHead width={60}>{$LL.console.project.table.header.type()}</TableCellHead>
+                <TableCellHead width={90}>{$LL.console.project.table.header.name()}</TableCellHead>
+                <TableCellHead width={90}>{$LL.console.project.table.header.value()}</TableCellHead>
                 <TableCellHead width={40} />
             </TableHeader>
             <TableBody>
@@ -124,7 +126,7 @@
                                     }}>
                                     <span class="icon-trash" aria-hidden="true" />
                                     <span class="tooltip-popup is-bottom" role="tooltip">
-                                        Delete
+                                        {$LL.console.project.button.submit.delete()}
                                     </span>
                                 </button>
                             </div>
