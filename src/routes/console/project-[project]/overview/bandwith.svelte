@@ -6,6 +6,7 @@
     import type { UsagePeriods } from '$lib/layout';
     import { createEventDispatcher } from 'svelte';
     import { BarChart } from '$lib/charts';
+    import LL from '$i18n/i18n-svelte';
 
     export let period: UsagePeriods;
 
@@ -30,7 +31,7 @@
             {bandwith.value}
             <span class="body-text-2 u-bold">{bandwith.unit}</span>
         </div>
-        <div>Bandwidth</div>
+        <div>{$LL.console.project.title.bandwith()}</div>
     </div>
     <DropList bind:show={showPeriod} placement="bottom-start" childStart noArrow>
         <button class="transparent-button" on:click={() => (showPeriod = !showPeriod)}>
@@ -38,9 +39,12 @@
             <span class="icon-cheveron-down" aria-hidden="true" />
         </button>
         <svelte:fragment slot="list">
-            <DropListItem on:click={() => dispatch('change', '24h')}>24h</DropListItem>
-            <DropListItem on:click={() => dispatch('change', '30d')}>30d</DropListItem>
-            <DropListItem on:click={() => dispatch('change', '90d')}>90d</DropListItem>
+            <DropListItem on:click={() => dispatch('change', '24h')}
+                >{$LL.console.project.button.dropdown.twentyFour()}</DropListItem>
+            <DropListItem on:click={() => dispatch('change', '30d')}
+                >{$LL.console.project.button.dropdown.thirty()}</DropListItem>
+            <DropListItem on:click={() => dispatch('change', '90d')}
+                >{$LL.console.project.button.dropdown.ninty()}</DropListItem>
         </svelte:fragment>
     </DropList>
 </div>
@@ -75,7 +79,7 @@
                 class="icon-chart-square-bar text-large"
                 aria-hidden="true"
                 style="font-size: 32px;" />
-            <p class="u-bold">No data to show</p>
+            <p class="u-bold">{$LL.console.project.texts.overview.noData()}</p>
         </div>
     </Card>
 {/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LL from '$i18n/i18n-svelte';
     import { Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
     import { versions } from '../store';
@@ -9,12 +10,13 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Get the SDK</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.forms.overview.title.getSdk()}</svelte:fragment>
 
-    <p>Add Appwrite SDK to your package's pubspec.yaml file. You can view an example here.</p>
+    <p>{$LL.console.project.forms.overview.texts.addProjectFlutter()}</p>
     <Code label="YAML" language="yml" code={example1} withCopy />
     <p class="common-section">
-        You can also install the SDK using the Dart package manager from your terminal:
+        {$LL.console.project.forms.overview.texts.installDartPackage()}
     </p>
     <Code label="Bash" language="sh" code={example2} withCopy />
 </WizardStep>

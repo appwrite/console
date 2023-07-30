@@ -3,6 +3,7 @@
     import { Pill } from '$lib/elements';
     import { WizardStep } from '$lib/layout';
     import { versions } from '../store';
+    import LL from '$i18n/i18n-svelte';
 
     enum Method {
         Xcode,
@@ -29,7 +30,8 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Get the SDK</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.forms.overview.title.getSdk()}</svelte:fragment>
     <div class="u-flex u-gap-16 u-margin-block-start-8">
         <Pill button on:click={() => (method = Method.Xcode)} selected={method === Method.Xcode}>
             Xcode
@@ -42,11 +44,13 @@
         {#if method === Method.Xcode}
             <ol class="numeric-list">
                 <li class="numeric-list-item">
-                    <span class="text"> Select File > Add Packages </span>
+                    <span class="text">
+                        {$LL.console.project.forms.overview.texts.selectFile()} > {$LL.console.project.forms.overview.texts.addPackages()}
+                    </span>
                 </li>
                 <li class="numeric-list-item">
                     <span class="text">
-                        Search for the Appwrite SDK with the URL
+                        {$LL.console.project.forms.overview.texts.searchAppwrite()}
                         <a class="link" href="https://github.com/appwrite/sdk-for-apple">
                             https://github.com/appwrite/sdk-for-apple
                         </a>
@@ -54,25 +58,23 @@
                 </li>
                 <li class="numeric-list-item">
                     <span class="text"
-                        >In the right panel, select your target project and add your desired version
-                        rules</span>
+                        >{$LL.console.project.forms.overview.texts.selectTargetProject()}</span>
                 </li>
                 <li class="numeric-list-item">
                     <span class="text">
-                        Select Add Package and wait for package resolution to complete
+                        {$LL.console.project.forms.overview.texts.selectAndAddPackage()}
                     </span>
                 </li>
                 <li class="numeric-list-item">
                     <span class="text">
-                        Make sure the Appwrite package product is checked and select Add Package
-                        again
+                        {$LL.console.project.forms.overview.texts.productCheck()}
                     </span>
                 </li>
             </ol>
         {:else if method === Method.Swift}
-            <p>Add this to your Package.swift file:</p>
+            <p>{$LL.console.project.forms.overview.texts.addToSwift()}</p>
             <Code withCopy withLineNumbers label="Swift" language="swift" code={example1} />
-            <p class="common-section">Then add the dependency to your target:</p>
+            <p class="common-section">{$LL.console.project.forms.overview.texts.addDependency()}</p>
             <Code withCopy withLineNumbers label="Swift" language="swift" code={example2} />
         {/if}
     </div>

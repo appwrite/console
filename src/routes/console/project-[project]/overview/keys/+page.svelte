@@ -13,6 +13,7 @@
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
     import Wizard from './wizard.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -22,11 +23,11 @@
 </script>
 
 <div class="common-section u-flex u-gap-12">
-    <Heading tag="h3" size="7">API Keys</Heading>
+    <Heading tag="h3" size="7">{$LL.console.project.title.apiKeys()}</Heading>
     <span class="u-margin-inline-start-auto">
         <Button on:click={create}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create API Key</span>
+            <span class="text">{$LL.console.project.button.createApiKey()}</span>
         </Button>
     </span>
 </div>
@@ -34,10 +35,12 @@
 {#if data.keys.total}
     <Table>
         <TableHeader>
-            <TableCellHead>Name</TableCellHead>
-            <TableCellHead onlyDesktop>last accessed</TableCellHead>
-            <TableCellHead onlyDesktop>expiration date</TableCellHead>
-            <TableCellHead onlyDesktop>scopes</TableCellHead>
+            <TableCellHead>{$LL.console.project.table.header.name()}</TableCellHead>
+            <TableCellHead onlyDesktop
+                >{$LL.console.project.table.header.lastAccessed()}</TableCellHead>
+            <TableCellHead onlyDesktop
+                >{$LL.console.project.table.header.expirationDate()}</TableCellHead>
+            <TableCellHead onlyDesktop>{$LL.console.project.table.header.scopes()}</TableCellHead>
         </TableHeader>
         <TableBody>
             {#each data.keys.keys as key}

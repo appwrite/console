@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
     import { BarChart } from '$lib/charts';
     import { Card } from '$lib/components';
     import { stats } from '../store';
@@ -34,12 +35,13 @@
                 class="icon-chart-square-bar text-large"
                 aria-hidden="true"
                 style="font-size: 32px;" />
-            <p class="u-bold">No data to show</p>
+            <p class="u-bold">{$LL.console.project.texts.overview.noData()}</p>
             <a
                 class="link"
                 href="https://appwrite.io/docs/realtime"
                 target="_blank"
-                rel="noopener noreferrer">Get started with Realtime</a>
+                rel="noopener noreferrer"
+                >{$LL.console.project.texts.overview.realtimeGetStarteds()}</a>
         </div>
     </Card>
 {/if}

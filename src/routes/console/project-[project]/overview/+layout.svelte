@@ -35,6 +35,7 @@
     import Bandwith from './bandwith.svelte';
     import Requests from './requests.svelte';
     import Onboard from './onboard.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -58,7 +59,7 @@
 </script>
 
 <svelte:head>
-    <title>Console - Appwrite</title>
+    <title>{$LL.console.project.title.console()} - Appwrite</title>
 </svelte:head>
 
 {#if $project}
@@ -83,7 +84,8 @@
                                 <div class="grid-item-1-start-start">
                                     <div class="eyebrow-heading-3">
                                         <span class="icon-database" aria-hidden="true" />
-                                        <span class="text">Database</span>
+                                        <span class="text"
+                                            >{$LL.console.project.title.database()}</span>
                                     </div>
                                 </div>
 
@@ -93,7 +95,7 @@
                                     <div class="heading-level-4">
                                         {format(total($usage.documents) ?? 0)}
                                     </div>
-                                    <div>Documents</div>
+                                    <div>{$LL.console.project.title.documents()}</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
@@ -110,7 +112,8 @@
                                 <div class="grid-item-1-start-start">
                                     <div class="eyebrow-heading-3">
                                         <span class="icon-folder" aria-hidden="true" />
-                                        <span class="text">Storage</span>
+                                        <span class="text"
+                                            >{$LL.console.project.title.storage()}</span>
                                     </div>
                                 </div>
 
@@ -121,7 +124,7 @@
                                         {storage.value}
                                         <span class="body-text-2 u-bold">{storage.unit}</span>
                                     </div>
-                                    <div>Storage</div>
+                                    <div>{$LL.console.project.title.storage()}</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
@@ -138,7 +141,7 @@
                                 <div class="grid-item-1-start-start">
                                     <div class="eyebrow-heading-3">
                                         <span class="icon-user-group" aria-hidden="true" />
-                                        <span class="text">Auth</span>
+                                        <span class="text">{$LL.console.project.title.auth()}</span>
                                     </div>
                                 </div>
 
@@ -148,7 +151,7 @@
                                     <div class="heading-level-4">
                                         {format(total($usage.users) ?? 0)}
                                     </div>
-                                    <div>Users</div>
+                                    <div>{$LL.console.project.title.users()}</div>
                                 </div>
                             </div>
                         </a>
@@ -159,7 +162,8 @@
                                 <div class="grid-item-1-start-start">
                                     <div class="eyebrow-heading-3">
                                         <span class="icon-lightning-bolt" aria-hidden="true" />
-                                        <span class="text">Functions</span>
+                                        <span class="text"
+                                            >{$LL.console.project.title.functions()}</span>
                                     </div>
                                 </div>
 
@@ -169,7 +173,7 @@
                                     <div class="heading-level-4">
                                         {format(total($usage.executions) ?? 0)}
                                     </div>
-                                    <div>Executions</div>
+                                    <div>{$LL.console.project.title.executions()}</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
@@ -186,7 +190,8 @@
             {/if}
 
             <section class="common-section u-margin-block-start-100">
-                <Heading tag="h2" size="5" id="integrations">Integrations</Heading>
+                <Heading tag="h2" size="5" id="integrations"
+                    >{$LL.console.project.title.integrations()}</Heading>
                 <div class="tabs u-margin-block-start-24 u-sep-block-end">
                     <button
                         class="tabs-button-scroll is-start u-hide"

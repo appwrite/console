@@ -13,6 +13,7 @@
     import { onboarding } from '../../store';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     async function onFinish() {
         try {
@@ -48,11 +49,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Details',
+        label: $LL.console.project.legends.overview.details(),
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Scopes',
+        label: $LL.console.project.legends.overview.scopes(),
         component: Step2
     });
 </script>

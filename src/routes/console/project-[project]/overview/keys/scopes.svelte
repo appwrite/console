@@ -4,6 +4,7 @@
     import { scopes as allScopes } from '$lib/constants';
     import { onMount } from 'svelte';
     import { symmetricDifference } from '$lib/helpers/array';
+    import LL from '$i18n/i18n-svelte';
 
     export let scopes: string[];
 
@@ -79,10 +80,10 @@
 
 <ul class="buttons-list u-main-end">
     <li class="buttons-list-item">
-        <Button text on:click={deselectAll}>Deselect all</Button>
+        <Button text on:click={deselectAll}>{$LL.console.project.button.deselectAll()}</Button>
     </li>
     <li class="buttons-list-item">
-        <Button text on:click={selectAll}>Select all</Button>
+        <Button text on:click={selectAll}>{$LL.console.project.button.selectAll()}</Button>
     </li>
 </ul>
 

@@ -9,27 +9,28 @@
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import Wizard from './keys/wizard.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let projectId: string;
 
     const platforms = [
         {
-            title: 'Web App',
+            title: $LL.console.project.navbar.platforms.web(),
             icon: 'grayscale/code',
             platform: Platform.Web
         },
         {
-            title: 'Flutter App',
+            title: $LL.console.project.navbar.platforms.flutter(),
             icon: 'color/flutter',
             platform: Platform.Flutter
         },
         {
-            title: 'Apple App',
+            title: $LL.console.project.navbar.platforms.apple(),
             icon: 'color/apple',
             platform: Platform.Apple
         },
         {
-            title: 'Android App',
+            title: $LL.console.project.navbar.platforms.android(),
             icon: 'color/android',
             platform: Platform.Android
         }
@@ -47,8 +48,8 @@
 <div class="card">
     <header class="card-header common-section grid-1-2">
         <div class="grid-1-2-col-1">
-            <h2 class="heading-level-5">Getting Started Guide</h2>
-            <p class="u-line-height-1-5">Let's get your project up and running</p>
+            <h2 class="heading-level-5">{$LL.console.project.title.overview.getStartedGuid()}</h2>
+            <p class="u-line-height-1-5">{$LL.console.project.texts.overview.runningProject()}</p>
         </div>
         <div class="grid-1-2-col-2 u-flex u-main-end u-cross-end is-not-mobile">
             <img src={onBoardIntro} alt="" class="card-header-image" />
@@ -57,9 +58,9 @@
 
     <section class="common-section card-separator grid-1-2">
         <div class="grid-1-2-col-1">
-            <h3 class="heading-level-7">Add a Platform</h3>
+            <h3 class="heading-level-7">{$LL.console.project.title.overview.addPlatform()}</h3>
             <p class="u-line-height-1-5">
-                Our SDK's make it possible to easily add any platform that you want to use.
+                {$LL.console.project.texts.overview.sdks()}
             </p>
         </div>
         <div class="grid-1-2-col-2">
@@ -95,9 +96,11 @@
 
     <section class="common-section grid-1-2">
         <div class="grid-1-2-col-1">
-            <h3 class="heading-level-7">Integrate With Your Server</h3>
+            <h3 class="heading-level-7">
+                {$LL.console.project.title.overview.integrateWithServer()}
+            </h3>
             <p class="u-line-height-1-5">
-                Our SDK's make it possible to easily add any platform that you want to use.
+                {$LL.console.project.texts.overview.sdks()}
             </p>
         </div>
         <div class="grid-1-2-col-2">
@@ -110,7 +113,7 @@
                                     src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
                                     alt="technology" />
                             </div>
-                            <span class="text">API Key</span>
+                            <span class="text">{$LL.console.project.title.apiKey()}</span>
                             <span
                                 class="icon-plus u-margin-inline-start-auto"
                                 style="font-size: var(--icon-size-large);"
@@ -129,7 +132,7 @@
                                     src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
                                     alt="technology" />
                             </div>
-                            <span class="text">Webhook</span>
+                            <span class="text">{$LL.console.project.title.webhook()}</span>
                             <span
                                 class="icon-plus u-margin-inline-start-auto"
                                 style="font-size: var(--icon-size-large);"
@@ -150,11 +153,10 @@
             <i class="icon-lock-closed" />
         </div>
         <div class="common-section">
-            <h7 class="heading-level-7">Add a Platform to View Data About Your Project</h7>
+            <h7 class="heading-level-7">{$LL.console.project.texts.overview.addPlatform()}</h7>
         </div>
         <div class="common-section">
-            Get insights on bandwidth usage, requests, realtime connections and more after making
-            your first API call
+            {$LL.console.project.title.insights()}
         </div>
     </div>
 </article>

@@ -3,6 +3,7 @@
     import { WizardStep } from '$lib/layout';
     import { Mode, MODE } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
+    import LL from '$i18n/i18n-svelte';
 
     const { endpoint, project } = sdk.forProject.client.config;
     const code = `import 'package:appwrite/appwrite.dart';
@@ -17,17 +18,16 @@ client
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Let's get coding</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.forms.overview.title.coding()}</svelte:fragment>
 
-    <h2 class="heading-level-7">Init your SDK</h2>
+    <h2 class="heading-level-7">{$LL.console.project.forms.overview.title.initSdk()}</h2>
     <p>
-        Now that you've downloaded the SDK, it's time to initialze it. Use your project ID, which
-        can be found in your project settings page.
+        {$LL.console.project.forms.overview.texts.initSdk()}
     </p>
     <Code label="Flutter SDK" labelIcon="flutter" language="dart" {code} withCopy withLineNumbers />
     <p class="common-section">
-        Before sending any API calls to your new Appwrite project, make sure your device or emulator
-        has network access to your Appwrite project's hostname or IP address.
+        {$LL.console.project.forms.overview.texts.apiCall()}
     </p>
     {#if showAlert}
         <div class="common-section">
@@ -35,11 +35,9 @@ client
                 type="info"
                 dismissible={MODE === Mode.CLOUD}
                 on:dismiss={() => (showAlert = false)}>
-                <svelte:fragment slot="title">For self-hosted solutions</svelte:fragment>
-                When connecting to a locally hosted Appwrite project from an emulator or a mobile device,
-                you should use the private IP of the device running your Appwrite project as the hostname
-                of the endpoint instead of localhost. You can also use a service like ngrok to proxy
-                the Appwrite server.
+                <svelte:fragment slot="title"
+                    >{$LL.console.project.forms.overview.title.selfHosted()}</svelte:fragment>
+                {$LL.console.project.forms.overview.texts.alert()}
             </Alert>
         </div>
     {/if}

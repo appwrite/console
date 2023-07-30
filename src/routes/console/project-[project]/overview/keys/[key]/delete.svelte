@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import LL from '$i18n/i18n-svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -39,11 +40,12 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete API Key</svelte:fragment>
-    <p>The API Key will be permanently deleted. This action is irreversible.</p>
+    <svelte:fragment slot="header">{$LL.console.project.title.deleteApiKey()}</svelte:fragment>
+    <p>{$LL.console.project.texts.overview.deletePermanent()}</p>
 
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

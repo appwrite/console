@@ -11,6 +11,7 @@
     import Light from './light.svg';
     import Dark from './dark.svg';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -48,20 +49,21 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Web app</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.forms.overview.title.register.web()}</svelte:fragment>
     <FormList>
         <InputText
             id="name"
-            label="Name"
-            placeholder="My Web App"
+            label={$LL.console.project.forms.overview.inputs.webAppname.label()}
+            placeholder={$LL.console.project.forms.overview.inputs.webAppname.placeholder()}
             required
             bind:value={$createPlatform.name} />
         <div>
             <InputText
                 id="hostname"
-                label="Hostname"
+                label={$LL.console.project.forms.overview.inputs.webHostName.label()}
                 placeholder="localhost"
-                tooltip="The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required."
+                tooltip={$LL.console.project.forms.overview.inputs.webHostName.placeholder()}
                 required
                 bind:value={$createPlatform.hostname} />
             <div class="u-flex u-gap-16 u-margin-block-start-8">
@@ -76,13 +78,14 @@
             </div>
         </div>
         <Alert type="warning">
-            Using wildcard hostnames in production can become insecure. You can read about
+            {$LL.console.project.forms.overview.texts.wildcard()}
             <a
                 href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">
-                Cross-Origin Resource Sharing (CORS)</a> for more information.
+                Cross-Origin Resource Sharing (CORS)</a>
+            {$LL.console.project.forms.overview.texts.moreInfo()}
         </Alert>
     </FormList>
 </WizardStep>

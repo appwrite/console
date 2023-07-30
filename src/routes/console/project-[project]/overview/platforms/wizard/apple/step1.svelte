@@ -10,6 +10,7 @@
     import Light from './light.svg';
     import Dark from './dark.svg';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
@@ -48,7 +49,8 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Apple app</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.forms.overview.title.register.apple()}</svelte:fragment>
 
     <FormList isCommonSection>
         <FormItem>
@@ -82,15 +84,15 @@
         </FormItem>
         <InputText
             id="name"
-            label="Name"
-            placeholder="My Apple App"
+            label={$LL.console.project.forms.overview.inputs.applePlatformName.label()}
+            placeholder={$LL.console.project.forms.overview.inputs.applePlatformName.placeholder()}
             required
             bind:value={$createPlatform.name} />
         <InputText
             id="hostname"
-            label="Bundle ID"
+            label={$LL.console.project.forms.overview.inputs.appleHostname.label()}
             placeholder="com.company.appname"
-            tooltip="You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
+            tooltip={$LL.console.project.forms.overview.inputs.appleHostname.tooltip()}
             required
             bind:value={$createPlatform.key} />
     </FormList>

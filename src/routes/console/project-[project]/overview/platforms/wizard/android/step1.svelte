@@ -9,6 +9,7 @@
     import Light from './light.svg';
     import Dark from './dark.svg';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
@@ -46,19 +47,20 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Android app</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.forms.overview.title.register.android()}</svelte:fragment>
     <FormList>
         <InputText
             id="name"
-            label="Name"
-            placeholder="My Android App"
+            label={$LL.console.project.forms.overview.inputs.androidPlatformName.label()}
+            placeholder={$LL.console.project.forms.overview.inputs.androidPlatformName.placeholder()}
             required
             bind:value={$createPlatform.name} />
         <InputText
             id="key"
-            label="Package Name"
+            label={$LL.console.project.forms.overview.inputs.androidPlatformKey.label()}
             placeholder="com.company.appname"
-            tooltip="Your package name is generally the applicationId in your app-level build.gradle file."
+            tooltip={$LL.console.project.forms.overview.inputs.androidPlatformKey.tooltip()}
             required
             bind:value={$createPlatform.key} />
     </FormList>

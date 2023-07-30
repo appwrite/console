@@ -392,6 +392,12 @@
                 "overview": "Overview",
                 "indexes": "Indexes",
                 "services": "Services",
+                "console": "Console",
+                "bandwith": "Bandwidth",
+                "documents": "Documents",
+                "addScopes": "Add Scopes",
+                "storage": "Storage",
+                "scopes": "Scopes",
                 "customDomains": "Custom Domains",
                 "documentSecurity": "Document Security",
                 "webhooks": "Webhooks",
@@ -400,7 +406,11 @@
                 "teamPref": "Team Preferences",
                 "apiCredentials": "API Credentials",
                 "data": "Data",
+                "users": "Users",
                 "document": "Document",
+                "functions": "Functions",
+                "executions": "Executions",
+                "integrations": "Integrations",
                 "metaData": "Metadata",
                 "permissions": "Permissions",
                 "attributes": "Attributes",
@@ -410,6 +420,10 @@
                 "oAuth2": "OAuth2 Settings",
                 "regenerateKey": "Regenerate Key",
                 "signatureKey": "Signature Key",
+                "apiKey": "API Key",
+                "apiKeys": "API Keys",
+                "createApiKey": "Create an API Key",
+                "deleteApiKey": "Delete API Key",
                 "events": "Events",
                 "httpAuth": "HTTP Authentication",
                 "userData": {
@@ -436,6 +450,11 @@
                 "wizards": {
                     "addYourDomain": "Add your domain",
                     "subTitle": "Use your self-owned domain as the endpoint of your Appwrite API."
+                },
+                "overView": {
+                    "getStartedGuid": "Getting Started Guide",
+                    "addPlatform": "Add a Platform",
+                    "integrateWithServer": "Integrate With Your Server"
                 }
             },
             "forms": {
@@ -866,6 +885,82 @@
                             }
                         }
                     }
+                },
+                "overview": {
+                    "title": {
+                        "name": "Name",
+                        "coding": "Let's get coding",
+                        "initSdk": "Init your SDK",
+                        "getSdk": "Get the SDK",
+                        "selfHosted": "For self-hosted solutions",
+                        "register": {
+                            "android": "Register your Android app",
+                            "apple": "Register your Apple app",
+                            "flutter": "Register your Flutter app",
+                            "web": "Register your Web app"
+                        }
+                    },
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "API Key Name",
+                            "defaultPlaceholder": "Enter name"
+                        },
+                        "androidPlatformName": {
+                            "label": "Name",
+                            "placeholder": "My Android App"
+                        },
+                        "androidPlatformKey": {
+                            "label": "Package Name",
+                            "tooltip": "Your package name is generally the applicationId in your app-level build.gradle file."
+                        },
+                        "applePlatformName": {
+                            "label": "Name",
+                            "placeholder": "My Apple App"
+                        },
+                        "appleHostname": {
+                            "label": "Bundle ID",
+                            "tooltip": "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
+                        },
+                        "webAppname": {
+                            "label": "Name",
+                            "placeholder": "My Web App"
+                        },
+                        "webHostName": {
+                            "label": "Hostname",
+                            "tooltip": "The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required."
+                        }
+                    },
+                    "texts": {
+                        "initSdk": " Now that you've downloaded the SDK, it's time to initialze it. Use your project ID, which can be found in your project settings page.",
+                        "apiCall": "Before sending any API calls to your new Appwrite project, make sure your device or emulator has network access to your Appwrite project's hostname or IP address.",
+                        "alert": "When connecting to a locally hosted Appwrite project from an emulator or a mobile device, you should use the private IP of the device running your Appwrite project as the hostname of the endpoint instead of localhost. You can also use a service like ngrok to proxy the Appwrite server.",
+                        "android": {
+                            "first": "First, add this to your root level build.gradle file:",
+                            "second": "And add this to your project's build.gradle file:"
+                        },
+                        "selectFile": "Select File",
+                        "addPackages": "Add Packages",
+                        "searchAppwrite": "Search for the Appwrite SDK with the URL",
+                        "selectTargetProject": "In the right panel, select your target project and add your desired version rules",
+                        "selectAndAddPackage": "Select Add Package and wait for package resolution to complete",
+                        "productCheck": "Make sure the Appwrite package product is checked and select Add Package again",
+                        "addToSwift": "Add this to your Package.swift file:",
+                        "addDependency": "Then add the dependency to your target:",
+                        "addProjectFlutter": "Add Appwrite SDK to your package's pubspec.yaml file. You can view an example here.",
+                        "installDartPackage": "You can also install the SDK using the Dart package manager from your terminal:",
+                        "chooseMethod": " Choose your preferred method of installation",
+                        "use": "Use",
+                        "cmdLine": "from your command line to add Appwrite SDK to your project.",
+                        "note": {
+                            "phraseOne": "When you're using a bundler (like",
+                            "or": "or",
+                            "phraseTwo": "), import the Appwrite module when you need it:"
+                        },
+                        "installWithCdn": "To install with a CDN (content delivery network) add the following scripts to the bottom of your tag, but before you use any Appwrite services:",
+                        "wildcard": "Using wildcard hostnames in production can become insecure. You can read about",
+                        "moreInfo": "for more information."
+                    }
                 }
             },
             "button": {
@@ -888,7 +983,10 @@
                 "addEvent": "Add event",
                 "addAttribute": "Add attribute",
                 "createWebhook": "Create webhook",
+                "createApiKey": "Create API Key",
                 "viewApiKeys": "View API Keys",
+                "deselectAll": "Deselect all",
+                "selectAll": "Select all",
                 "cancel": "Cancel",
                 "submit": {
                     "create": "Create",
@@ -906,7 +1004,10 @@
                 "dropdown": {
                     "edit": "Edit",
                     "createIndex": "Create Index",
-                    "overview": "Overview"
+                    "overview": "Overview",
+                    "ninty": "90d",
+                    "thirty": "30d",
+                    "twentyFour": "24h"
                 }
             },
             "table": {
@@ -934,7 +1035,10 @@
                     "settings": "Settings",
                     "domainName": "Domain Name",
                     "postUrl": "POST URL",
-                    "events": "Events"
+                    "events": "Events",
+                    "lastAccessed": "last accessed",
+                    "expirationDate": "expiration date",
+                    "scopes": "Scopes"
                 },
                 "pill": {
                     "verify": "verified",
@@ -953,7 +1057,8 @@
                     "disabled": "disabled",
                     "documentId": "Document ID",
                     "failed": "failed",
-                    "sllTlsDisabled": "SLL/TLS disabled"
+                    "sllTlsDisabled": "SLL/TLS disabled",
+                    "apiKeySecret": "API Key Secret"
                 }
             },
             "texts": {
@@ -1101,6 +1206,22 @@
                     "secureEndpoints": "Use to secure your endpoint from untrusted sources.",
                     "addSignature": "Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your webhooks.",
                     "webhookValidation": "Learn more about webhook validation."
+                },
+                "overview": {
+                    "noData": "No data to show",
+                    "realtimeGetStarted": "Get started with Realtime",
+                    "sdks": "Our SDK's make it possible to easily add any platform that you want to use.",
+                    "addPlatform": "Add a Platform to View Data About Your Project",
+                    "insights": "Get insights on bandwidth usage, requests, realtime connections and more after making your first API call",
+                    "scopePermission": "Choose which permission scopes to grant your application. It is best practice to allow only the permissions you need to meet your project goals.",
+                    "createApiKey": "Let's create an API Key.",
+                    "deletePermanent": "The API Key will be permanently deleted. This action is irreversible.",
+                    "lastAccessed": "Last accessed:",
+                    "scopeGranted": "Scopes granted:",
+                    "chooseName": "Choose any name that will help you distinguish between API keys.",
+                    "permissionScope": "You can choose which permission scope to grant your application. It is a best practice to allow only the permissions you need to meet your project goals.",
+                    "readyTogo": "You're ready to go",
+                    "congratulations": "Congrats, you've just added your first platform to your Appwrite dashboard! Are you ready to give it a go? Why not add a database to your project, or start uploading files? The choice is up to you."
                 }
             },
             "legends": {
@@ -1144,6 +1265,10 @@
                         "events": "Webhook events",
                         "security": "Security"
                     }
+                },
+                "overview": {
+                    "details": "Details",
+                    "scopes": "Scopes"
                 }
             },
             "navbar": {
@@ -1188,6 +1313,12 @@
                     "overview": "Overview",
                     "customDomains": "Custom Domains",
                     "webhooks": "Webhooks"
+                },
+                "platforms": {
+                    "web": "Web App",
+                    "flutter": "Flutter App",
+                    "apple": "Apple App",
+                    "android": "Android App"
                 }
             },
             "links": {

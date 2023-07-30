@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LL from '$i18n/i18n-svelte';
     import { Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
     import { versions } from '../store';
@@ -10,9 +11,10 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Get the SDK</svelte:fragment>
-    <p>First, add this to your root level build.gradle file:</p>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.forms.overview.title.getSdk()}</svelte:fragment>
+    <p>{$LL.console.project.forms.overview.texts.android.first()}</p>
     <Code label="Groovy" labelIcon="android" language="kotlin" code={example1} withCopy />
-    <p class="common-section">And add this to your project's build.gradle file:</p>
+    <p class="common-section">{$LL.console.project.forms.overview.texts.android.second()}</p>
     <Code label="Groovy" labelIcon="android" language="kotlin" code={example2} withCopy />
 </WizardStep>

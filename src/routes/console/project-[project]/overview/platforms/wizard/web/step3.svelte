@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LL from '$i18n/i18n-svelte';
     import { Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
@@ -12,12 +13,12 @@ client
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Let's get coding</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.forms.overview.title.coding()}</svelte:fragment>
 
-    <h2 class="heading-level-7">Init your SDK</h2>
+    <h2 class="heading-level-7">{$LL.console.project.forms.overview.title.initSdk()}</h2>
     <p>
-        Now that you've downloaded the SDK, it's time to initialze it. Use your project ID, which
-        can be found in your project settings page.
+        {$LL.console.project.forms.overview.texts.initSdk()}
     </p>
     <Code label="Web SDK" labelIcon="code" language="js" {code} withCopy withLineNumbers />
 </WizardStep>
