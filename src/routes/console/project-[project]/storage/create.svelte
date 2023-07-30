@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LL from '$i18n/i18n-svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -46,12 +47,13 @@
 </script>
 
 <Modal {error} onSubmit={create} size="big" bind:show={showCreate}>
-    <svelte:fragment slot="header">Create Bucket</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{$LL.console.project.forms.storage.title.createBucket()}</svelte:fragment>
     <FormList>
         <InputText
             id="name"
-            label="Name"
-            placeholder="New Bucket"
+            label={$LL.console.project.forms.storage.inputs.name.label()}
+            placeholder={$LL.console.project.forms.storage.inputs.name.placeholder()}
             bind:value={name}
             autofocus
             required />
@@ -60,7 +62,7 @@
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
                     <span class="icon-pencil" aria-hidden="true" />
-                    <span class="text"> Bucket ID </span>
+                    <span class="text"> {$LL.console.project.table.pill.bucketId()} </span>
                 </Pill>
             </div>
         {:else}
@@ -68,7 +70,8 @@
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button secondary on:click={() => (showCreate = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button submit>{$LL.console.project.button.submit.create()}</Button>
     </svelte:fragment>
 </Modal>

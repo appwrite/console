@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
@@ -11,20 +12,20 @@
     const tabs = [
         {
             href: path,
-            title: 'Files',
+            title: $LL.console.project.navbar.storage.files(),
             event: 'files',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage',
+            title: $LL.console.project.navbar.storage.usage(),
             event: 'usage',
             hasChildren: true
         },
         {
             href: `${path}/settings`,
             event: 'settings',
-            title: 'Settings'
+            title: $LL.console.project.navbar.storage.settings()
         }
     ];
 </script>
@@ -34,7 +35,7 @@
         <CoverTitle href={`/console/project-${projectId}/storage`}>
             {$bucket?.name}
         </CoverTitle>
-        <Id value={$bucket?.$id} event="bucket">Bucket ID</Id>
+        <Id value={$bucket?.$id} event="bucket">{$LL.console.project.table.pill.bucketId()}</Id>
     </svelte:fragment>
 
     <Tabs>

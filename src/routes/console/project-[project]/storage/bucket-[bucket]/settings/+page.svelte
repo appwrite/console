@@ -78,6 +78,7 @@
     import Delete from '../deleteBucket.svelte';
     import { bucket } from '../store';
     import UpdateMaxFileSize from './updateMaxFileSize.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     let showDelete = false;
 
@@ -223,26 +224,34 @@
                                 id="toggle"
                                 bind:value={enabled} />
                         </FormList>
-                        <p class="text">Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                        <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                        <p class="text">
+                            {$LL.console.project.forms.storage.texts.created()}
+                            {toLocaleDateTime($bucket.$createdAt)}
+                        </p>
+                        <p class="text">
+                            {$LL.console.project.forms.storage.texts.lastUpdated()}
+                            {toLocaleDateTime($bucket.$updatedAt)}
+                        </p>
                     </div>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={enabled === $bucket.enabled} submit>Update</Button>
+                    <Button disabled={enabled === $bucket.enabled} submit
+                        >{$LL.console.project.button.submit.update()}</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
+                <Heading tag="h6" size="7"
+                    >{$LL.console.project.forms.storage.title.name()}</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputText
                             id="name"
-                            label="Name"
-                            placeholder="Enter name"
+                            label={$LL.console.project.forms.storage.inputs.name.label()}
+                            placeholder={$LL.console.project.forms.storage.inputs.name.defaultPlaceholder()}
                             autocomplete={false}
                             bind:value={bucketName} />
                     </FormList>
@@ -250,7 +259,7 @@
 
                 <svelte:fragment slot="actions">
                     <Button disabled={bucketName === $bucket.name || !bucketName} submit>
-                        Update
+                        {$LL.console.project.button.submit.update()}
                     </Button>
                 </svelte:fragment>
             </CardGrid>
@@ -258,15 +267,15 @@
 
         <Form onSubmit={updatePermissions}>
             <CardGrid>
-                <Heading tag="h6" size="7">Permissions</Heading>
+                <Heading tag="h6" size="7">{$LL.console.project.title.permissions()}</Heading>
                 <p class="text">
-                    Choose who can access your buckets and files. For more information, check out
-                    the <a
+                    {$LL.console.project.texts.storage.accessPermission()}
+                    <a
                         href="https://appwrite.io/docs/permissions"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="link">
-                        Permissions Guide
+                        {$LL.console.project.texts.storage.permissionGuide()}
                     </a>.
                 </p>
                 <svelte:fragment slot="aside">
@@ -275,34 +284,35 @@
                     {/if}
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
-                    <Button disabled={$arePermsDisabled} submit>Update</Button>
+                    <Button disabled={$arePermsDisabled} submit
+                        >{$LL.console.project.button.submit.update()}</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7">File Security</Heading>
+                <Heading tag="h6" size="7"
+                    >{$LL.console.project.forms.storage.title.fileSecurity()}</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
                             bind:value={bucketFileSecurity}
                             id="security"
-                            label="File Security" />
+                            label={$LL.console.project.forms.storage.inputs.security.label()} />
                     </FormList>
                     <p class="text">
-                        When file security is enabled, users will be able to access files for which
-                        they have been granted <b>either File or Bucket permissions</b>.
+                        {$LL.console.project.forms.storage.texts.enableFileSecurity()}
+                        <b>{$LL.console.project.forms.storage.texts.fileAndBucketPermission()}</b>.
                     </p>
                     <p class="text">
-                        If file security is disabled, users can access files <b
-                            >only if they have Bucket permissions</b
-                        >. File permissions will be ignored..
+                        {$LL.console.project.forms.storage.texts.fileDisabled()}
+                        <b>{$LL.console.project.forms.storage.texts.onlyBucketPermission()}</b>. {$LL.console.project.forms.storage.texts.ignorePermission()}
                     </p>
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
                     <Button disabled={bucketFileSecurity === $bucket.fileSecurity} submit>
-                        Update
+                        {$LL.console.project.button.submit.update()}
                     </Button>
                 </svelte:fragment>
             </CardGrid>
@@ -310,10 +320,13 @@
 
         <Form onSubmit={updateSecurity}>
             <CardGrid>
-                <Heading tag="h2" size="7">Security Settings</Heading>
+                <Heading tag="h2" size="7"
+                    >{$LL.console.project.forms.storage.title.securitySettings()}</Heading>
                 <p class="text">
-                    Enable or disable security services for the bucket including <b>Ecryption</b>
-                    and <b>Antivirus scanning.</b>
+                    {$LL.console.project.forms.storage.texts.enableDisableSecurityService()}
+                    <b>{$LL.console.project.forms.storage.texts.encruption()}</b>
+                    {$LL.console.project.forms.storage.texts.and()}
+                    <b>{$LL.console.project.forms.storage.texts.antivirusScanning()}</b>
                 </p>
                 <svelte:fragment slot="aside">
                     <FormList>
@@ -330,12 +343,12 @@
                                         bind:checked={encryption} />
                                 </div>
                                 <div class="choice-item-content">
-                                    <div class="choice-item-title">Encryption</div>
+                                    <div class="choice-item-title">
+                                        {$LL.console.project.forms.storage.texts.encruption()}
+                                    </div>
 
                                     <div class="choice-item-paragraph">
-                                        This parameter allows you to configure whether or not the
-                                        files inside the bucket will be encrypted. We don't encrypt
-                                        files bigger than 20MB.
+                                        {$LL.console.project.forms.storage.texts.configureEncruption()}
                                     </div>
                                 </div>
                             </label>
@@ -353,12 +366,12 @@
                                         bind:checked={antivirus} />
                                 </div>
                                 <div class="choice-item-content">
-                                    <div class="choice-item-title">Antivirus</div>
+                                    <div class="choice-item-title">
+                                        {$LL.console.project.forms.storage.texts.antivirus()}
+                                    </div>
 
                                     <div class="choice-item-paragraph">
-                                        This parameter allows you to configure whether or not the
-                                        files inside the bucket should be scanned by the Appwrite
-                                        Antivirus scanner.
+                                        {$LL.console.project.forms.storage.texts.configureAntiviruss()}
                                     </div>
                                 </div>
                             </label>
@@ -373,7 +386,7 @@
                         disabled={encryption === $bucket.encryption &&
                             antivirus === $bucket.antivirus}
                         submit>
-                        Update
+                        {$LL.console.project.button.submit.update()}
                     </Button>
                 </svelte:fragment>
             </CardGrid>
@@ -381,23 +394,24 @@
 
         <Form onSubmit={updateCompression}>
             <CardGrid>
-                <Heading tag="h2" size="6">Compression</Heading>
+                <Heading tag="h2" size="6"
+                    >{$LL.console.project.forms.storage.title.compression()}</Heading>
                 <p class="text">
-                    Choose an algorithm for compression. For files larger than 20MB, compression
-                    will be skipped even if it's enabled.
+                    {$LL.console.project.forms.storage.texts.chooseCompressionAlgo()}
                 </p>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSelect
                             id="compression"
-                            label="Algorithm"
+                            label={$LL.console.project.forms.storage.inputs.algorithm.label()}
                             options={compressionOptions}
                             bind:value={compression} />
                     </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={compression === $bucket.compression} submit>Update</Button>
+                    <Button disabled={compression === $bucket.compression} submit
+                        >{$LL.console.project.button.submit.update()}</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -406,17 +420,17 @@
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid>
-                <Heading tag="h6" size="7">File Extensions</Heading>
+                <Heading tag="h6" size="7"
+                    >{$LL.console.project.forms.storage.title.fileExtensions()}</Heading>
                 <p class="text">
-                    Allowed file extensions. A maximum of 100 file extensions can be added. Leave
-                    blank to allow all file types.
+                    {$LL.console.project.forms.storage.texts.allowedFileExtensions()}
                 </p>
                 <svelte:fragment slot="aside">
                     <ul class="common-section">
                         <InputTags
                             id="read"
-                            label="Allowed extensions"
-                            placeholder="Allowed file extensions (mp4, jpg, pdf, etc.)"
+                            label={$LL.console.project.forms.storage.inputs.extensions.label()}
+                            placeholder={$LL.console.project.forms.storage.inputs.extensions.placeholder()}
                             bind:tags={extensions} />
                         <li class="u-flex u-gap-12 u-margin-block-start-8">
                             {#each suggestedExtensions as ext}
@@ -439,28 +453,32 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={isExtensionsDisabled} submit>Update</Button>
+                    <Button disabled={isExtensionsDisabled} submit
+                        >{$LL.console.project.button.submit.update()}</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
         <CardGrid danger>
-            <Heading tag="h6" size="7">Delete Bucket</Heading>
+            <Heading tag="h6" size="7">{$LL.console.project.title.deleteBucket()}</Heading>
             <p class="text">
-                The bucket will be permanently deleted, including all the files within it. This
-                action is irreversible.
+                {$LL.console.project.texts.storage.permanentDeleteBucket()}
             </p>
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
-                    <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                    <p class="text">
+                        {$LL.console.project.texts.storage.lastUpdated()}
+                        {toLocaleDateTime($bucket.$updatedAt)}
+                    </p>
                 </Box>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button secondary on:click={() => (showDelete = true)}
+                    >{$LL.console.project.button.submit.delete()}</Button>
             </svelte:fragment>
         </CardGrid>
     {/if}

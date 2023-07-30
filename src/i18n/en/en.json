@@ -393,12 +393,14 @@
                 "overview": "Overview",
                 "logs": "Logs",
                 "indexes": "Indexes",
+                "buckets": "Buckets",
                 "services": "Services",
                 "console": "Console",
                 "bandwith": "Bandwidth",
                 "documents": "Documents",
                 "addScopes": "Add Scopes",
                 "storage": "Storage",
+                "bucket": "Bucket",
                 "variables": "Variables",
                 "timeout": "Timeout",
                 "scopes": "Scopes",
@@ -409,7 +411,9 @@
                 "webhook": "Webhook",
                 "deployments": "Deployments",
                 "deleteFunction": "Delete Function",
+                "deleteBucket": "Delete Bucket",
                 "displayName": "Display Name",
+                "deleteFile": "Delete File",
                 "teamPref": "Team Preferences",
                 "apiCredentials": "API Credentials",
                 "active": "Active",
@@ -422,7 +426,6 @@
                 "executions": "Executions",
                 "integrations": "Integrations",
                 "metaData": "Metadata",
-
                 "permissions": "Permissions",
                 "attributes": "Attributes",
                 "database": "Database",
@@ -1024,6 +1027,57 @@
                         "installAndUse": "or how to install and use the",
                         "activateWarning": "Are you sure you want to activate this deployment?"
                     }
+                },
+                "storage": {
+                    "title": {
+                        "createBucket": "Create Bucket",
+                        "createFile": "Create File",
+                        "maximumSize": "Maximum File Size",
+                        "fileSecurity": "File Security",
+                        "name": "Name",
+                        "securitySettings": "Security Settings",
+                        "compression": "Compression",
+                        "fileExtensions": "File Extensions"
+                    },
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "New Bucket",
+                            "defaultPlaceholder": "Enter name"
+                        },
+                        "size": {
+                            "label": "Size"
+                        },
+                        "security": {
+                            "label": "File Security"
+                        },
+                        "algorithm": {
+                            "lable": "Algorithm"
+                        },
+                        "extensions": {
+                            "lable": "Allowed extensionss",
+                            "placeholder": "Allowed file extensions (mp4, jpg, pdf, etc.)"
+                        }
+                    },
+                    "texts": {
+                        "setMaxBucketSize": "Set the maximum file size allowed in the bucket.",
+                        "created": "Created:",
+                        "lastUpdated": "Last Updated:",
+                        "enableFileSecurity": "When file security is enabled, users will be able to access files for which they have been granted",
+                        "fileAndBucketPermission": "either File or Bucket permissions",
+                        "fileDisabled": "If file security is disabled, users can access files",
+                        "onlyBucketPermission": "only if they have Bucket permissions",
+                        "ignorePermission": "File permissions will be ignored..",
+                        "enableDisableSecurityService": "Enable or disable security services for the bucket including",
+                        "encruption": "Ecryption",
+                        "and": "and",
+                        "antivirusScanning": "Antivirus scanning.",
+                        "antivirus": "Antivirus",
+                        "configureEncruption": "This parameter allows you to configure whether or not the files inside the bucket will be encrypted. We don't encrypt files bigger than 20MB.",
+                        "configureAntivirus": "This parameter allows you to configure whether or not the files inside the bucket should be scanned by the Appwrite Antivirus scanner.",
+                        "chooseCompressionAlgo": "Choose an algorithm for compression. For files larger than 20MB, compression will be skipped even if it's enabled.",
+                        "allowedFileExtensions": "Allowed file extensions. A maximum of 100 file extensions can be added. Leave blank to allow all file types."
+                    }
                 }
             },
             "button": {
@@ -1041,21 +1095,23 @@
                 "createDocument": "Create document",
                 "createDomain": "Create domain",
                 "documentation": "Documentation",
+                "createBucket": "Create bucket",
                 "items": "Items",
                 "addItem": "Add item",
                 "addEvent": "Add event",
                 "addAttribute": "Add attribute",
-                
                 "createWebhook": "Create webhook",
                 "createApiKey": "Create API Key",
                 "createFunction": "Create function",
                 "createVariable": "Create variable",
+                "createFile": "Create File",
                 "createDeployment": "Create deployment",
                 "viewApiKeys": "View API Keys",
                 "deselectAll": "Deselect all",
                 "selectAll": "Select all",
                 "cancel": "Cancel",
                 "buildLogs": "Build logs",
+                "download": "Download",
                 "close": "Close",
                 "submit": {
                     "create": "Create",
@@ -1109,6 +1165,8 @@
                     "asc_dsc": "Asc/Desc",
                     "defaultValue": "Default Value",
                     "relation": "Relation",
+                    "filename": "Filename",
+
                     "settings": "Settings",
                     "domainName": "Domain Name",
                     "postUrl": "POST URL",
@@ -1129,6 +1187,7 @@
                     "teamId": "Team ID",
                     "webhookId": "Webhook ID",
                     "required": "Required",
+                    "pending": "Pending",
                     "collectionId": "Collection ID",
                     "recommended": "recommended",
                     "dbId": "Database ID",
@@ -1136,6 +1195,8 @@
                     "disabled": "disabled",
                     "documentId": "Document ID",
                     "functionId": "Function ID",
+                    "fileId": "File ID",
+                    "bucketId": "Bucket ID",
                     "failed": "failed",
                     "sllTlsDisabled": "SLL/TLS disabled",
                     "apiKeySecret": "API Key Secret"
@@ -1332,6 +1393,28 @@
                     "permanentActionDelete": "The function will be permanently deleted, including all deployments associated with it. This action is irreversible.",
                     "noExecutionLogs": "You have no execution logs. Create and activate a deployment to see it here.",
                     "needHand": "Need a hand? Learn more in our documentation"
+                },
+                "storage": {
+                    "addNewBucket": "Add a new bucket",
+                    "deleteWarning": "Are you sure you want to delete",
+                    "accessPermission": "Choose who can access your buckets and files. For more information, check out the",
+                    "permissionGuide": "Permissions Guide",
+                    "fileSecurity": {
+                        "enable": "File security enabled",
+                        "disable": "File security disabled"
+                    },
+                    "userAccessability": "Users will be able to access this file if they have been granted",
+                    "fileAndBucketPermission": "either File or Bucket permissions",
+                    "assignFilePermission": "If you want to assign file permissions, navigate to Bucket settings and enable file security. Otherwise, only Bucket permissions will be used.",
+                    "couldNotFind": "Sorry, we couldn’t find",
+                    "noMatchingFiles": "There are no files that match your search.",
+                    "permanentDeleteBucket": "The bucket will be permanently deleted, including all the files within it. This action is irreversible.",
+                    "permanentDeleteFile": "The file will be permanently deleted. This action is irreversible.",
+                    "lastUpdated": "Last Updated:",
+                    "created": "Created:",
+                    "size": "Size:",
+                    "mime": "MIME Type:",
+                    "readWritePermission": "Assign read or write permissions at the Bucket Level or File Level. If Bucket Level permissions are enabled, file permissions will be ignored."
                 }
             },
             "legends": {
@@ -1386,6 +1469,20 @@
                     "events": "Events",
                     "schedule": "Schedule",
                     "variables": "Variables"
+                },
+                "storage": {
+                    "buckets": "Total buckets",
+                    "create": "Buckets created",
+                    "read": "Buckets read",
+                    "update": "Buckets updated",
+                    "delete": "Buckets deleted",
+                    "usage": {
+                        "files": "Files",
+                        "create": "Files created",
+                        "read": "Files read",
+                        "update": "Files updated",
+                        "delete": "Files deleted"
+                    }
                 }
             },
             "navbar": {
@@ -1441,6 +1538,12 @@
                     "deployments": "Deployments",
                     "usage": "Usage",
                     "executions": "Executions",
+                    "settings": "Settings"
+                },
+                "storage": {
+                    "buckets": "Buckets",
+                    "usage": "Usage",
+                    "files": "Files",
                     "settings": "Settings"
                 }
             },

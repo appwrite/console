@@ -10,6 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     export let showCreate = false;
 
@@ -49,7 +50,8 @@
 </script>
 
 <Modal size="big" {error} bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="header">Create File</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{$LL.console.project.forms.storage.title.createFile()}</svelte:fragment>
     <FormList>
         <div>
             <InputFile
@@ -62,30 +64,31 @@
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
                     <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        File ID
+                        {$LL.console.project.table.pill.fileId()}
                     </span>
                 </Pill>
             </div>
         {:else}
             <CustomId bind:show={showCustomId} name="File" bind:id />
         {/if}
-        <Heading tag="h6" size="7">Permissions</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.permissions()}</Heading>
         <p class="text">
-            Choose who can access your buckets and files. For more information, check out the
+            {$LL.console.project.texts.storage.accessPermission()}
             <a
                 href="https://appwrite.io/docs/permissions"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">
-                Permissions Guide
+                {$LL.console.project.texts.storage.permissionGuide()}
             </a>.
         </p>
         {#if $bucket.fileSecurity}
             <div class="common-section">
                 <Alert type="info">
-                    <svelte:fragment slot="title">File security enabled</svelte:fragment>
-                    Users will be able to access this file if they have been granted
-                    <b>either File or Bucket permissions</b>.
+                    <svelte:fragment slot="title"
+                        >{$LL.console.project.texts.storage.fileSecurity.enable()}</svelte:fragment>
+                    {$LL.console.project.texts.storage.userAccessability()}
+                    <b>{$LL.console.project.texts.storage.fileAndBucketPermissionss()}</b>.
                 </Alert>
             </div>
             <div class="common-section">
@@ -93,14 +96,15 @@
             </div>
         {:else}
             <Alert type="info">
-                <svelte:fragment slot="title">File security disabled</svelte:fragment>
-                If you want to assign file permissions, navigate to Bucket settings and enable file security.
-                Otherwise, only Bucket permissions will be used.
+                <svelte:fragment slot="title"
+                    >{$LL.console.project.texts.storage.fileSecurity.disable()}</svelte:fragment>
+                {$LL.console.project.texts.storage.assignFilePermission()}
             </Alert>
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button secondary on:click={() => (showCreate = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button submit>{$LL.console.project.button.submit.create()}</Button>
     </svelte:fragment>
 </Modal>

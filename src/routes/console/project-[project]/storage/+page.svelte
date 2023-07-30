@@ -17,6 +17,7 @@
     import { tooltip } from '$lib/actions/tooltip';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -32,10 +33,11 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Buckets</Heading>
+        <Heading tag="h2" size="5">{$LL.console.project.title.buckets()}</Heading>
 
         <Button on:click={() => (showCreate = true)} event="create_bucket">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create bucket</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">{$LL.console.project.button.createBucket()}</span>
         </Button>
     </div>
 
@@ -83,7 +85,7 @@
                 </GridItem1>
             {/each}
             <svelte:fragment slot="empty">
-                <p>Add a new bucket</p>
+                <p>{$LL.console.project.texts.storage.addNewBucket()}</p>
             </svelte:fragment>
         </CardContainer>
 

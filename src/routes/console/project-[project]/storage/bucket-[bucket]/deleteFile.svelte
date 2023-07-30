@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LL from '$i18n/i18n-svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -38,10 +39,11 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete File</svelte:fragment>
-    <p data-private>Are you sure you want to delete <b>{file.name}</b>?</p>
+    <svelte:fragment slot="header">{$LL.console.project.title.deleteFile()}</svelte:fragment>
+    <p data-private>{$LL.console.project.texts.storage.deleteWarning()} <b>{file.name}</b>?</p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

@@ -1,5 +1,9 @@
+<script lang="ts">
+    import LL from '$i18n/i18n-svelte';
+</script>
+
 <svelte:head>
-    <title>Bucket - Appwrite</title>
+    <title>{$LL.console.project.title.bucket()} - Appwrite</title>
 </svelte:head>
 
 <slot />

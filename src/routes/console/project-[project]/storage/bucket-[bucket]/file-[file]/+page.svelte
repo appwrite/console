@@ -15,6 +15,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { bucket } from '../store';
+    import LL from '$i18n/i18n-svelte';
 
     let showFileAlert = true;
     onMount(async () => {
@@ -94,34 +95,44 @@
             </div>
             <svelte:fragment slot="aside">
                 <div>
-                    <p>MIME Type: {$file.mimeType}</p>
-                    <p>Size: {calculateSize($file.sizeOriginal)}</p>
-                    <p>Created: {toLocaleDate($file.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDate($file.$updatedAt)}</p>
+                    <p>{$LL.console.project.texts.storage.mime()} {$file.mimeType}</p>
+                    <p>
+                        {$LL.console.project.texts.storage.size()}
+                        {calculateSize($file.sizeOriginal)}
+                    </p>
+                    <p>
+                        {$LL.console.project.texts.storage.created()}
+                        {toLocaleDate($file.$createdAt)}
+                    </p>
+                    <p>
+                        {$LL.console.project.texts.storage.lastUpdated()}
+                        {toLocaleDate($file.$updatedAt)}
+                    </p>
                 </div>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
                 <Button secondary href={downloadFile()} event="download_file">
                     <span class="icon-download" aria-hidden="true" />
-                    <span class="text"> Download</span></Button>
+                    <span class="text">{$LL.console.project.button.delete()}</span></Button>
             </svelte:fragment>
         </CardGrid>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Permissions</Heading>
+            <Heading tag="h6" size="7">{$LL.console.project.title.permissions()}</Heading>
             <p>
-                Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
-                permissions are enabled, file permissions will be ignored.
+                {$LL.console.project.texts.storage.readWritePermission()}
             </p>
             <svelte:fragment slot="aside">
                 {#if $bucket.fileSecurity}
                     {#if showFileAlert}
                         <Alert type="info" dismissible on:dismiss={() => (showFileAlert = false)}>
-                            <svelte:fragment slot="title">File security is enabled</svelte:fragment>
+                            <svelte:fragment slot="title"
+                                >{$LL.console.project.texts.storage.fileSecurity.enable()}</svelte:fragment>
                             <p class="text">
-                                Users will be able to access this file if they have been granted <b
-                                    >either File or Bucket permissions.
+                                {$LL.console.project.texts.storage.userAccessability()}
+                                <b
+                                    >{$LL.console.project.texts.storage.fileAndBucketPermissionss()}
                                 </b>
                             </p>
                         </Alert>
@@ -129,11 +140,10 @@
                     <Permissions bind:permissions={filePermissions} />
                 {:else}
                     <Alert type="info">
-                        <svelte:fragment slot="title">File security is disabled</svelte:fragment>
+                        <svelte:fragment slot="title"
+                            >{$LL.console.project.texts.storage.fileSecurity.disable()}</svelte:fragment>
                         <p class="text">
-                            If you want to assign document permissions, navigate to Bucket settings
-                            and enable file security. Otherwise, only Bucket permissions will be
-                            used.
+                            {$LL.console.project.texts.storage.assignFilePermission()}
                         </p>
                     </Alert>
                 {/if}
@@ -144,27 +154,28 @@
                     disabled={arePermsDisabled}
                     on:click={() => {
                         updatePermissions();
-                    }}>Update</Button>
+                    }}>{$LL.console.project.button.update()}</Button>
             </svelte:fragment>
         </CardGrid>
 
         <CardGrid danger>
-            <Heading tag="h6" size="7">Delete File</Heading>
-            <p>The file will be permanently deleted. This action is irreversible.</p>
+            <Heading tag="h6" size="7">{$LL.console.project.title.deleteFile()}</Heading>
+            <p>{$LL.console.project.texts.storage.permanentDeleteFile()}</p>
             <svelte:fragment slot="aside">
                 <Box>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1" data-private>{$file.name}</h6>
                     </svelte:fragment>
                     <p>
-                        Last Updated: {toLocaleDateTime($file.$updatedAt)}
+                        {$LL.console.project.texts.storage.lastUpdated()}
+                        {toLocaleDateTime($file.$updatedAt)}
                     </p>
                 </Box>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
                 <Button secondary on:click={() => (showDelete = true)} event="delete_file">
-                    Delete
+                    {$LL.console.project.button.submit.delete()}
                 </Button>
             </svelte:fragment>
         </CardGrid>

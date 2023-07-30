@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
@@ -9,13 +10,13 @@
     const tabs = [
         {
             href: path,
-            title: 'Buckets',
+            title: $LL.console.project.navbar.storage.buckets(),
             event: 'buckets',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage',
+            title: $LL.console.project.navbar.storage.usage(),
             event: 'usage',
             hasChildren: true
         }
@@ -24,7 +25,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Storage</CoverTitle>
+        <CoverTitle>{$LL.console.project.title.storage()}</CoverTitle>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}

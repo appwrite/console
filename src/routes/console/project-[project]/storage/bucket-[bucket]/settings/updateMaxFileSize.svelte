@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LL from '$i18n/i18n-svelte';
     import { Submit } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
@@ -24,13 +25,13 @@
 
 <Form onSubmit={updateMaxSize}>
     <CardGrid>
-        <Heading tag="h2" size="7">Maximum File Size</Heading>
-        <p class="text">Set the maximum file size allowed in the bucket.</p>
+        <Heading tag="h2" size="7">{$LL.console.project.forms.storage.title.maximumSize()}</Heading>
+        <p class="text">{$LL.console.project.forms.storage.texts.setMaxBucketSize()}</p>
         <svelte:fragment slot="aside">
             <ul class="u-flex u-gap-12">
                 <InputNumber
                     id="size"
-                    label="Size"
+                    label={$LL.console.project.forms.storage.inputs.size.label()}
                     placeholder={$bucket.maximumFileSize.toString()}
                     min={0}
                     bind:value={$value} />
@@ -39,7 +40,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={$baseValue === $bucket.maximumFileSize} submit>Update</Button>
+            <Button disabled={$baseValue === $bucket.maximumFileSize} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

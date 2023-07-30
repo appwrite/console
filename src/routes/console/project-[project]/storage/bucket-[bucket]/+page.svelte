@@ -36,6 +36,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -79,17 +80,21 @@
 <Container>
     <SearchQuery search={data.search} placeholder="Search by filename">
         <Button on:click={() => (showCreate = true)} event="create_file">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">{$LL.console.project.button.createFile()}</span>
         </Button>
     </SearchQuery>
 
     {#if data.files.total}
         <Table>
             <TableHeader>
-                <TableCellHead>Filename</TableCellHead>
-                <TableCellHead onlyDesktop width={140}>Type</TableCellHead>
-                <TableCellHead onlyDesktop width={100}>Size</TableCellHead>
-                <TableCellHead onlyDesktop width={120}>Created</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.filename()}</TableCellHead>
+                <TableCellHead onlyDesktop width={140}
+                    >{$LL.console.project.table.header.type()}</TableCellHead>
+                <TableCellHead onlyDesktop width={100}
+                    >{$LL.console.project.table.header.size()}</TableCellHead>
+                <TableCellHead onlyDesktop width={120}
+                    >{$LL.console.project.table.header.created()}</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -102,7 +107,8 @@
 
                                     <span class="text u-trim">{file.name}</span>
                                     <div>
-                                        <Pill warning>Pending</Pill>
+                                        <Pill warning
+                                            >{$LL.console.project.table.pill.pending()}</Pill>
                                     </div>
                                 </div>
                             </TableCell>
@@ -167,14 +173,16 @@
                                                 showDropdown[index] = false;
                                             }}
                                             href={`${base}/console/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
-                                            icon="pencil">Update</DropListLink>
+                                            icon="pencil"
+                                            >{$LL.console.project.button.submit.update()}</DropListLink>
                                         <DropListItem
                                             icon="trash"
                                             on:click={() => {
                                                 showDropdown[index] = false;
                                                 selectedFile = file;
                                                 showDelete = true;
-                                            }}>Delete</DropListItem>
+                                            }}
+                                            >{$LL.console.project.button.submit.delete()}</DropListItem>
                                     </svelte:fragment>
                                 </DropList>
                             </TableCell>
@@ -192,17 +200,17 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
-                <p>There are no files that match your search.</p>
+                <b>{$LL.console.project.texts.storage.couldNotFind()} ‘{data.search}’</b>
+                <p>{$LL.console.project.texts.storage.noMatchingFiles()}</p>
             </div>
             <div class="u-flex u-gap-16">
                 <Button external href="https://appwrite.io/docs/storage#createFile" text>
-                    Documentation
+                    {$LL.console.project.button.documentation()}
                 </Button>
                 <Button
                     secondary
                     href={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}>
-                    Clear Search
+                    {$LL.console.project.button.clearSearch()}
                 </Button>
             </div>
         </EmptySearch>

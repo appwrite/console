@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
     import { Usage } from '$lib/layout';
     import type { PageData } from './$types';
 
@@ -22,21 +23,21 @@
     {deleted}
     countMetadata={{
         legend: 'Buckets',
-        title: 'Total buckets'
+        title: $LL.console.project.legends.storage.buckets()
     }}
     createdMetadata={{
         legend: 'Create',
-        title: 'Buckets created'
+        title: $LL.console.project.legends.storage.create()
     }}
     readMetadata={{
         legend: 'Read',
-        title: 'Buckets read'
+        title: $LL.console.project.legends.storage.read()
     }}
     updatedMetadata={{
         legend: 'Update',
-        title: 'Buckets updated'
+        title: $LL.console.project.legends.storage.update()
     }}
     deletedMetadata={{
         legend: 'Delete',
-        title: 'Buckets deleted'
+        title: $LL.console.project.legends.storage.delete()
     }} />
