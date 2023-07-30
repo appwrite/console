@@ -2,6 +2,7 @@
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Code, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -64,18 +65,27 @@
 </script>
 
 <Modal bind:show size="big" onSubmit={handleSubmit} on:close={close}>
-    <svelte:fragment slot="header">Execute Function</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{$LL.console.project.forms.functions.title.executeFunction()}</svelte:fragment>
     <FormList>
-        <InputTextarea bind:value={data} id="data" label="Custom data (optional)" />
-        <InputChoice type="switchbox" id="json" label="Show example JSON" bind:value={showJson}>
-            Here's an example of some custom data.</InputChoice>
+        <InputTextarea
+            bind:value={data}
+            id="data"
+            label={$LL.console.project.forms.functions.inputs.data.label()} />
+        <InputChoice
+            type="switchbox"
+            id="json"
+            label={$LL.console.project.forms.functions.inputs.json.label()}
+            bind:value={showJson}>
+            {$LL.console.project.forms.functions.texts.customDataExample()}</InputChoice>
         {#if showJson}
             <Code noMargin language="json" withLineNumbers code={example} />
         {/if}
     </FormList>
 
     <svelte:fragment slot="footer">
-        <Button text on:click={close}>Cancel</Button>
-        <Button disabled={submitting} submit>Execute Now</Button>
+        <Button text on:click={close}>{$LL.console.project.button.cancel()}</Button>
+        <Button disabled={submitting} submit
+            >{$LL.console.project.button.submit.executeNow()}</Button>
     </svelte:fragment>
 </Modal>

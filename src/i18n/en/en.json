@@ -389,7 +389,9 @@
                 "deleteWebhook": "Delete Webhook",
                 "user": "User",
                 "team": "Team",
+                "schedule": "Schedule",
                 "overview": "Overview",
+                "logs": "Logs",
                 "indexes": "Indexes",
                 "services": "Services",
                 "console": "Console",
@@ -397,14 +399,22 @@
                 "documents": "Documents",
                 "addScopes": "Add Scopes",
                 "storage": "Storage",
+                "variables": "Variables",
+                "timeout": "Timeout",
                 "scopes": "Scopes",
+                "executeAccess": "Execute access",
                 "customDomains": "Custom Domains",
                 "documentSecurity": "Document Security",
                 "webhooks": "Webhooks",
                 "webhook": "Webhook",
+                "deployments": "Deployments",
+                "deleteFunction": "Delete Function",
                 "displayName": "Display Name",
                 "teamPref": "Team Preferences",
                 "apiCredentials": "API Credentials",
+                "active": "Active",
+                "inactive": "Inactive",
+                "uploadVariables": "Upload Variables",
                 "data": "Data",
                 "users": "Users",
                 "document": "Document",
@@ -412,6 +422,7 @@
                 "executions": "Executions",
                 "integrations": "Integrations",
                 "metaData": "Metadata",
+
                 "permissions": "Permissions",
                 "attributes": "Attributes",
                 "database": "Database",
@@ -426,6 +437,7 @@
                 "deleteApiKey": "Delete API Key",
                 "events": "Events",
                 "httpAuth": "HTTP Authentication",
+
                 "userData": {
                     "name": "Name",
                     "email": "Email",
@@ -961,6 +973,57 @@
                         "wildcard": "Using wildcard hostnames in production can become insecure. You can read about",
                         "moreInfo": "for more information."
                     }
+                },
+                "functions": {
+                    "title": {
+                        "executeFunction": "Execute Function",
+                        "deleteDeployment": "Delete Deployment",
+                        "createDeployment": "Create Deployment",
+                        "activeDeployment": "Activate Deployment",
+                        "commingSoon": "Coming Soon!",
+                        "easyDeployments": "Creating deployments will be easier than ever with our upcoming Git Integration. Just set up a repository and we'll do the rest.",
+                        "deploymentBuild": "This deployment will be activated after the build is completed.",
+                        "name": "Name"
+                    },
+                    "inputs": {
+                        "key": {
+                            "label": "Key",
+                            "placeholder": "Enter key"
+                        },
+                        "value": {
+                            "label": "Value",
+                            "placeholder": "Enter value"
+                        },
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Function name",
+                            "defaultPlaceholder": "Enter name"
+                        },
+                        "runtime": {
+                            "label": "Runtime",
+                            "placeholder": "Select runtime"
+                        },
+                        "data": {
+                            "label": "Custom data (optional)"
+                        },
+                        "json": {
+                            "label": "Show example JSON"
+                        },
+                        "entryPoint": {
+                            "label": "Entrypoint"
+                        },
+                        "activeDeployment": {
+                            "label": "Activate deployment after build"
+                        }
+                    },
+                    "texts": {
+                        "customDataExample": "Here's an example of some custom data.",
+                        "deleteDeployment": "Are you sure you want to delete this deployment?",
+                        "deployFunction": "You can deploy your function from the Appwrite CLI using Unix, CMD, or PowerShell. Check out our Documentation to learn more about",
+                        "deployYourFunction": "deploying your functions",
+                        "installAndUse": "or how to install and use the",
+                        "activateWarning": "Are you sure you want to activate this deployment?"
+                    }
                 }
             },
             "button": {
@@ -982,12 +1045,18 @@
                 "addItem": "Add item",
                 "addEvent": "Add event",
                 "addAttribute": "Add attribute",
+                
                 "createWebhook": "Create webhook",
                 "createApiKey": "Create API Key",
+                "createFunction": "Create function",
+                "createVariable": "Create variable",
+                "createDeployment": "Create deployment",
                 "viewApiKeys": "View API Keys",
                 "deselectAll": "Deselect all",
                 "selectAll": "Select all",
                 "cancel": "Cancel",
+                "buildLogs": "Build logs",
+                "close": "Close",
                 "submit": {
                     "create": "Create",
                     "update": "Update",
@@ -996,7 +1065,11 @@
                     "deleteAll": "Delete All",
                     "verify": "Verify",
                     "regenerate": "Regenerate",
-                    "regenerateKey": "Regenerate Key"
+                    "regenerateKey": "Regenerate Key",
+                    "executeNow": "Execute Now",
+                    "activate": "Activate",
+                    "downloadEnv": "Download .env file",
+                    "importEnv": "Import .env file"
                 },
                 "pill": {
                     "userId": "User ID"
@@ -1018,6 +1091,9 @@
                     "status": "Status",
                     "id": "ID",
                     "documentId": "Document ID",
+                    "executionId": "Execution ID",
+                    "trigger": "Trigger",
+                    "duration": "Duration",
                     "ip": "IP",
                     "joined": "Joined",
                     "members": "Members",
@@ -1028,6 +1104,7 @@
                     "deleteDatabase": "Delete Database",
                     "key": "Key",
                     "type": "Type",
+                    "value": "Value",
                     "attributes": "Attributes",
                     "asc_dsc": "Asc/Desc",
                     "defaultValue": "Default Value",
@@ -1038,7 +1115,9 @@
                     "events": "Events",
                     "lastAccessed": "last accessed",
                     "expirationDate": "expiration date",
-                    "scopes": "Scopes"
+                    "scopes": "Scopes",
+                    "buildTime": "Build Time",
+                    "size": "Size"
                 },
                 "pill": {
                     "verify": "verified",
@@ -1056,6 +1135,7 @@
                     "currentSession": "current session",
                     "disabled": "disabled",
                     "documentId": "Document ID",
+                    "functionId": "Function ID",
                     "failed": "failed",
                     "sllTlsDisabled": "SLL/TLS disabled",
                     "apiKeySecret": "API Key Secret"
@@ -1222,6 +1302,36 @@
                     "permissionScope": "You can choose which permission scope to grant your application. It is a best practice to allow only the permissions you need to meet your project goals.",
                     "readyTogo": "You're ready to go",
                     "congratulations": "Congrats, you've just added your first platform to your Appwrite dashboard! Are you ready to give it a go? Why not add a database to your project, or start uploading files? The choice is up to you."
+                },
+                "functions": {
+                    "createNewFunction": "Create a new function",
+                    "createVariable": "Create a variable (or secret key) that will be passed to your function at runtime.",
+                    "setVariable": "Set the variables (or secret keys) that will be passed to your function at runtime.",
+                    "getStartedVar": "Create a variable to get started",
+                    "setCron": "Set a Cron schedule to trigger your function. Leave blank for no schedule.",
+                    "moreDetailsCronSyntax": "More details on Cron syntax here",
+                    "setEvents": "Set the events that will trigger your function. Maximum 100 events allowed.",
+                    "addEvent": "Add an event to get started",
+                    "selectEvents": "Select events in your Appwrite project that will trigger your function.",
+                    "learnMore": "Learn more about Appwrite Events",
+                    "setPermission": "Choose who can execute this function using the client API. For more information, check out the",
+                    "permissionGuide": "Permissions Guide",
+                    "createYourFunction": "Create your function",
+                    "createFunction": "Let’s create a function.",
+                    "functionId": "Function ID:",
+                    "deploymentId": "Deployment ID:",
+                    "createdAt": "Created at:",
+                    "updatedAt": "Updated at:",
+                    "entryPoint": "Entrypoint:",
+                    "totalVariables": "Total variables:",
+                    "noInactiveDeployments": "You have no inactive deployments. Create one to see it here.",
+                    "learnDeployments": " Learn more about deployments in our Documentation.",
+                    "uploadVariables": "Upload multiple variables via a .env file that will be passed to your function at runtime.",
+                    "permanentDelete": "Are you sure you want to delete this function and all associated deployments from your project?",
+                    "timeLimit": "Limit the execution time of your function. Maximum value is 900 seconds (15 minutes).",
+                    "permanentActionDelete": "The function will be permanently deleted, including all deployments associated with it. This action is irreversible.",
+                    "noExecutionLogs": "You have no execution logs. Create and activate a deployment to see it here.",
+                    "needHand": "Need a hand? Learn more in our documentation"
                 }
             },
             "legends": {
@@ -1269,6 +1379,13 @@
                 "overview": {
                     "details": "Details",
                     "scopes": "Scopes"
+                },
+                "functions": {
+                    "details": "Details",
+                    "excecuteAccess": "Execute access",
+                    "events": "Events",
+                    "schedule": "Schedule",
+                    "variables": "Variables"
                 }
             },
             "navbar": {
@@ -1319,6 +1436,12 @@
                     "flutter": "Flutter App",
                     "apple": "Apple App",
                     "android": "Android App"
+                },
+                "functions": {
+                    "deployments": "Deployments",
+                    "usage": "Usage",
+                    "executions": "Executions",
+                    "settings": "Settings"
                 }
             },
             "links": {

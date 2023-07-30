@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import LL from '$i18n/i18n-svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -40,10 +41,12 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Deployment</svelte:fragment>
-    <p data-private>Are you sure you want to delete this deployment?</p>
+    <svelte:fragment slot="header"
+        >{$LL.console.project.forms.functions.title.deleteDeployment()}</svelte:fragment>
+    <p data-private>{$LL.console.project.forms.functions.texts.deleteDeployment()}</p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showDelete = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.submit.delete()}</Button>
     </svelte:fragment>
 </Modal>

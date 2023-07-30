@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
@@ -11,26 +12,26 @@
     const tabs = [
         {
             href: path,
-            title: 'Deployments',
+            title: $LL.console.project.navbar.functions.deployments(),
             event: 'deployments',
             hasChildren: true
         },
         {
             href: `${path}/usage`,
-            title: 'Usage',
+            title: $LL.console.project.navbar.functions.usage(),
             event: 'sage',
             hasChildren: true
         },
         {
             href: `${path}/executions`,
-            title: 'Executions',
+            title: $LL.console.project.navbar.functions.executions(),
             event: 'executions',
             hasChildren: true
         },
         {
             href: `${path}/settings`,
             event: 'settings',
-            title: 'Settings'
+            title: $LL.console.project.navbar.functions.settings()
         }
     ];
 </script>
@@ -40,7 +41,7 @@
         <CoverTitle href={`/console/project-${projectId}/functions`}>
             {$func?.name}
         </CoverTitle>
-        <Id value={$func?.$id} event="function">Function ID</Id>
+        <Id value={$func?.$id} event="function">{$LL.console.project.table.pill.functionId()}</Id>
     </svelte:fragment>
 
     <Tabs>

@@ -37,6 +37,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -77,15 +78,15 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Deployments</Heading>
+        <Heading tag="h2" size="5">{$LL.console.project.title.deployments()}</Heading>
         <Button on:click={() => (showCreate = true)} event="create_deployment">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create deployment</span>
+            <span class="text">{$LL.console.project.button.createDeployment()}</span>
         </Button>
     </div>
     {#if data.deployments.total}
         <div class="common-section">
-            <Heading tag="h3" size="7">Active</Heading>
+            <Heading tag="h3" size="7">{$LL.console.project.title.active()}</Heading>
         </div>
         {#if activeDeployment}
             <CardGrid>
@@ -99,12 +100,12 @@
                     </div>
                     <div>
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <p><b>Function ID: </b></p>
+                            <p><b>{$LL.console.project.texts.functions.functionId()}</b></p>
                             <Id value={$func.$id}><b>{$func.$id}</b></Id>
                         </div>
 
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <p>Deployment ID:</p>
+                            <p>{$LL.console.project.texts.functions.deploymentId()}</p>
                             <Id value={$func.deployment}>
                                 {$func.deployment}
                             </Id>
@@ -114,9 +115,18 @@
                 <svelte:fragment slot="aside">
                     <div class="u-flex u-main-space-between">
                         <div>
-                            <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
-                            <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
-                            <p>Entrypoint: {activeDeployment?.entrypoint}</p>
+                            <p>
+                                {$LL.console.project.texts.functions.createdAt()}
+                                {toLocaleDateTime($func.$createdAt)}
+                            </p>
+                            <p>
+                                {$LL.console.project.texts.functions.updatedAt()}
+                                {toLocaleDateTime($func.$updatedAt)}
+                            </p>
+                            <p>
+                                {$LL.console.project.texts.functions.entryPoint()}
+                                {activeDeployment?.entrypoint}
+                            </p>
                         </div>
                         <div class="u-flex u-flex-vertical u-cross-end">
                             <Status status={activeDeployment.status}>
@@ -137,7 +147,7 @@
                             $log.func = $func;
                             $log.data = activeDeployment;
                         }}>
-                        Build logs
+                        {$LL.console.project.button.buildLogs()}
                     </Button>
                     <Button secondary on:click={() => execute.set($func)}>Execute now</Button>
                 </svelte:fragment>
@@ -151,16 +161,21 @@
         {/if}
 
         <div class="common-section">
-            <Heading tag="h3" size="7">Inactive</Heading>
+            <Heading tag="h3" size="7">{$LL.console.project.title.inactive()}</Heading>
         </div>
         {#if data.deployments.total > 1 || (!activeDeployment && data.deployments.total === 1)}
             <TableScroll>
                 <TableHeader>
-                    <TableCellHead width={150}>Deployment ID</TableCellHead>
-                    <TableCellHead width={140}>Created</TableCellHead>
-                    <TableCellHead width={100}>Status</TableCellHead>
-                    <TableCellHead width={100}>Build Time</TableCellHead>
-                    <TableCellHead width={70}>Size</TableCellHead>
+                    <TableCellHead width={150}
+                        >{$LL.console.project.table.header.documentId()}</TableCellHead>
+                    <TableCellHead width={140}
+                        >{$LL.console.project.table.header.created()}</TableCellHead>
+                    <TableCellHead width={100}
+                        >{$LL.console.project.table.header.status()}</TableCellHead>
+                    <TableCellHead width={100}
+                        >{$LL.console.project.table.header.buildTime()}</TableCellHead>
+                    <TableCellHead width={70}
+                        >{$LL.console.project.table.header.size()}</TableCellHead>
                     <TableCellHead width={25} />
                 </TableHeader>
                 <TableBody>
@@ -246,9 +261,9 @@
             <Empty single target="deployment" on:click={() => (showCreate = true)}>
                 <div class="u-text-center">
                     <Heading size="7" tag="h2"
-                        >You have no inactive deployments. Create one to see it here.</Heading>
+                        >{$LL.console.project.texts.functions.noInactiveDeployments()}</Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
-                        Learn more about deployments in our Documentation.
+                        {$LL.console.project.texts.functions.learnDeployments()}
                     </p>
                 </div>
                 <div class="u-flex u-gap-16 u-main-center">
@@ -257,9 +272,10 @@
                         href="https://appwrite.io/docs/functions#createFunction"
                         text
                         event="empty_documentation"
-                        ariaLabel={`create {target}`}>Documentation</Button>
+                        ariaLabel={`create {target}`}
+                        >{$LL.console.project.button.documentation()}</Button>
                     <Button secondary on:click={() => (showCreate = true)}>
-                        Create deployment
+                        {$LL.console.project.button.createDeployment()}
                     </Button>
                 </div>
             </Empty>

@@ -23,6 +23,7 @@
     import CreateDeployment from '../create.svelte';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -52,16 +53,21 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Logs</Heading>
+        <Heading tag="h2" size="5">{$LL.console.project.title.logs()}</Heading>
     </div>
     {#if data.executions.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={150}>Execution ID</TableCellHead>
-                <TableCellHead width={140}>Created</TableCellHead>
-                <TableCellHead width={110}>Status</TableCellHead>
-                <TableCellHead width={90}>Trigger</TableCellHead>
-                <TableCellHead width={80}>Duration</TableCellHead>
+                <TableCellHead width={150}
+                    >{$LL.console.project.table.header.executionId()}</TableCellHead>
+                <TableCellHead width={140}
+                    >{$LL.console.project.table.header.created()}</TableCellHead>
+                <TableCellHead width={110}
+                    >{$LL.console.project.table.header.status()}</TableCellHead>
+                <TableCellHead width={90}
+                    >{$LL.console.project.table.header.trigger()}</TableCellHead>
+                <TableCellHead width={80}
+                    >{$LL.console.project.table.header.duration()}</TableCellHead>
                 <TableCellHead width={50} />
             </TableHeader>
             <TableBody>
@@ -108,15 +114,18 @@
         <EmptySearch>
             <div class="u-text-center">
                 <p class="text u-line-height-1-5">
-                    You have no execution logs. Create and activate a deployment to see it here.
+                    {$LL.console.project.texts.functions.noExecutionLogs()}
                 </p>
-                <p class="text u-line-height-1-5">Need a hand? Learn more in our documentation</p>
+                <p class="text u-line-height-1-5">
+                    {$LL.console.project.texts.functions.needHand()}
+                </p>
             </div>
             <div class="u-flex u-gap-16">
                 <Button text external href="https://appwrite.io/docs/functions#execute">
-                    Documentation
+                    {$LL.console.project.button.documentation()}
                 </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create deployment</Button>
+                <Button secondary on:click={() => (showCreate = true)}
+                    >{$LL.console.project.button.createDocument()}</Button>
             </div>
         </EmptySearch>
     {/if}

@@ -11,6 +11,7 @@
     import { func } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { app } from '$lib/stores/app';
+    import LL from '$i18n/i18n-svelte';
 
     export let showCreate = false;
 
@@ -134,7 +135,8 @@
 </script>
 
 <Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="header">Create Deployment</svelte:fragment>
+    <svelte:fragment slot="header"
+        >{$LL.console.project.forms.functions.title.createDeployment()}</svelte:fragment>
     <Tabs>
         <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI} event="deploy_cli">
             CLI
@@ -152,13 +154,13 @@
     </Tabs>
     {#if mode === Mode.CLI}
         <p class="text">
-            You can deploy your function from the Appwrite CLI using Unix, CMD, or PowerShell. Check
-            out our Documentation to learn more about <a
+            {$LL.console.project.forms.functions.texts.deployFunction()}
+            <a
                 href="https://appwrite.io/docs/functions#deployFunction"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="link">deploying your functions</a
-            >, or how to install and use the
+                class="link">{$LL.console.project.forms.functions.texts.deployYourFunction()}</a
+            >, {$LL.console.project.forms.functions.texts.installAndUse()}
             <a
                 href="https://appwrite.io/docs/command-line"
                 target="_blank"
@@ -187,17 +189,18 @@
                 <img src={GithubLight} alt="github" />
             {/if}
             <div class="u-flex u-flex-vertical u-gap-24">
-                <h3 class="body-text-1 u-bold">Coming Soon!</h3>
+                <h3 class="body-text-1 u-bold">
+                    {$LL.console.project.forms.functions.title.commingSoon()}
+                </h3>
                 <p>
-                    Creating deployments will be easier than ever with our upcoming Git Integration.
-                    Just set up a repository and we'll do the rest.
+                    {$LL.console.project.forms.functions.texts.easyDeployments()}
                 </p>
             </div>
         </div>
     {:else if mode === Mode.Manual}
         <FormList>
             <InputText
-                label="Entrypoint"
+                label={$LL.console.project.forms.functions.inputs.entryPoint.label()}
                 placeholder={`main.${lang}`}
                 id="entrypoint"
                 bind:value={entrypoint}
@@ -207,16 +210,21 @@
                 allowedFileExtensions={['gz']}
                 bind:files
                 required={true} />
-            <InputChoice label="Activate deployment after build" id="activate" bind:value={active}>
-                This deployment will be activated after the build is completed.</InputChoice>
+            <InputChoice
+                label={$LL.console.project.forms.functions.inputs.activeDeployment.label()}
+                id="activate"
+                bind:value={active}>
+                {$LL.console.project.forms.functions.texts.deploymentBuild()}</InputChoice>
         </FormList>
     {/if}
     <svelte:fragment slot="footer">
         {#if mode === Mode.Manual}
-            <Button secondary on:click={() => (showCreate = false)}>Close</Button>
-            <Button submit>Create</Button>
+            <Button secondary on:click={() => (showCreate = false)}
+                >{$LL.console.project.button.close()}</Button>
+            <Button submit>{$LL.console.project.button.submit.create()}</Button>
         {:else}
-            <Button secondary on:click={() => (showCreate = false)}>Close</Button>
+            <Button secondary on:click={() => (showCreate = false)}
+                >{$LL.console.project.button.close()}</Button>
         {/if}
     </svelte:fragment>
 </Modal>

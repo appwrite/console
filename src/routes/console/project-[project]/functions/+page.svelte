@@ -18,6 +18,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Create from './createFunction.svelte';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -36,9 +37,10 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Functions</Heading>
+        <Heading tag="h2" size="5">{$LL.console.project.title.functions()}</Heading>
         <Button on:click={openWizard} event="create_function">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create function</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">{$LL.console.project.button.createFunction()}</span>
         </Button>
     </div>
 
@@ -80,7 +82,7 @@
                 </GridItem1>
             {/each}
             <svelte:fragment slot="empty">
-                <p>Create a new function</p>
+                <p>{$LL.console.project.texts.functions.createNewFunction()}</p>
             </svelte:fragment>
         </CardContainer>
 

@@ -13,6 +13,7 @@
         TableRow
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
+    import LL from '$i18n/i18n-svelte';
 
     let showCreate = false;
 
@@ -43,15 +44,15 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Variables</svelte:fragment>
+    <svelte:fragment slot="title">{$LL.console.project.title.variables()}</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Create a variable (or secret key) that will be passed to your function at runtime.
+        {$LL.console.project.texts.functions.createVariable()}
     </svelte:fragment>
     {#if $createFunction.vars.length}
         <Table noStyles>
             <TableHeader>
-                <TableCellHead>Key</TableCellHead>
-                <TableCellHead>Value</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.key()}</TableCellHead>
+                <TableCellHead>{$LL.console.project.table.header.value()}</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
 
@@ -104,11 +105,11 @@
         <div class="u-flex u-margin-block-start-16">
             <Button text noMargin on:click={() => (showCreate = !showCreate)}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="u-text">Create variable</span>
+                <span class="u-text">{$LL.console.project.button.createVariable()}</span>
             </Button>
         </div>
     {:else}
-        <Empty on:click={() => (showCreate = !showCreate)}>Create a variable to get started</Empty>
+        <Empty on:click={() => (showCreate = !showCreate)}>{$LL.console.project.texts.functions.getStartedVar()}</Empty>
     {/if}
 </WizardStep>
 

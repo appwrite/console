@@ -19,6 +19,7 @@
     import { Button } from '$lib/elements/forms';
     import DropList from '$lib/components/dropList.svelte';
     import DropListItem from '$lib/components/dropListItem.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     const functionId = $page.params.function;
     const eventSet: Writable<Set<string>> = writable(new Set($func.events));
@@ -78,8 +79,8 @@
 
 <Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Events</Heading>
-        <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
+        <Heading tag="h6" size="7">{$LL.console.project.title.events()}</Heading>
+        <p>{$LL.console.project.texts.functions.setEvents()}</p>
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
                 <TableList>
@@ -128,27 +129,30 @@
                 <div class="u-flex u-margin-block-start-16">
                     <Button text noMargin on:click={() => (showEvents = true)}>
                         <span class="icon-plus" aria-hidden="true" />
-                        <span class="u-text">Add event</span>
+                        <span class="u-text">{$LL.console.project.button.addEvent()}</span>
                     </Button>
                 </div>
             {:else}
-                <Empty on:click={() => (showEvents = true)}>Add an event to get started</Empty>
+                <Empty on:click={() => (showEvents = true)}
+                    >{$LL.console.project.texts.functions.addEvent()}</Empty>
             {/if}
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={isDisabled} submit>Update</Button>
+            <Button disabled={isDisabled} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
 
 <EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent}>
     <p class="text">
-        Select events in your Appwrite project that will trigger your function. <a
+        {$LL.console.project.texts.functions.selectEvents()}
+        <a
             href="https://appwrite.io/docs/events"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Learn more about Appwrite Events</a
+            class="link">{$LL.console.project.texts.functions.learnMore()}</a
         >.
     </p>
 </EventModal>

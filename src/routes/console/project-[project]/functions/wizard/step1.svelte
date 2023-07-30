@@ -6,7 +6,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createFunction } from './store';
-
+    import LL from '$i18n/i18n-svelte';
     let showCustomId = false;
 
     let options = [];
@@ -21,20 +21,22 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Create your function</svelte:fragment>
-    <svelte:fragment slot="subtitle">Let’s create a function.</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{$LL.console.project.texts.functions.createYourFunction()}</svelte:fragment>
+    <svelte:fragment slot="subtitle"
+        >{$LL.console.project.texts.functions.createFunction()}</svelte:fragment>
     <FormList>
         <InputText
-            label="Name"
             id="name"
-            placeholder="Function name"
+            label={$LL.console.project.forms.functions.inputs.name.label()}
+            placeholder={$LL.console.project.forms.functions.inputs.name.placeholder()}
             bind:value={$createFunction.name}
             required />
 
         <InputSelect
-            label="Runtime"
             id="runtime"
-            placeholder="Select runtime"
+            label={$LL.console.project.forms.functions.inputs.runtime.label()}
+            placeholder={$LL.console.project.forms.functions.inputs.runtime.placeholder()}
             bind:value={$createFunction.runtime}
             {options}
             required />
@@ -43,7 +45,7 @@
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
                     <span class="icon-pencil" aria-hidden="true" />
-                    <span class="text">Function ID </span>
+                    <span class="text">{$LL.console.project.table.pill.functionId()} </span>
                 </Pill>
             </div>
         {:else}

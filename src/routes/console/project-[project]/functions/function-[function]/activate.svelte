@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LL from '$i18n/i18n-svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -36,10 +37,12 @@
 </script>
 
 <Modal bind:show={showActivate} onSubmit={handleSubmit}>
-    <svelte:fragment slot="header">Activate Deployment</svelte:fragment>
-    <p>Are you sure you want to activate this deployment?</p>
+    <svelte:fragment slot="header"
+        >{$LL.console.project.forms.functions.title.activeDeployment()}</svelte:fragment>
+    <p>{$LL.console.project.forms.functions.texts.activateWarning()}</p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showActivate = false)}>Cancel</Button>
-        <Button secondary submit>Activate</Button>
+        <Button text on:click={() => (showActivate = false)}
+            >{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.submit.activate()}</Button>
     </svelte:fragment>
 </Modal>

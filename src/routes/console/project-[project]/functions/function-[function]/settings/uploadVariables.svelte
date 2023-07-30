@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { parse } from 'dotenv';
     import { variables } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     export let show = false;
 
@@ -65,15 +66,15 @@
 </script>
 
 <Modal bind:show onSubmit={handleSubmit} bind:error>
-    <svelte:fragment slot="header">Upload Variables</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.uploadVariables()}</svelte:fragment>
     <p>
-        Upload multiple variables via a .env file that will be passed to your function at runtime.
+        {$LL.console.project.texts.functions.uploadVariables()}
     </p>
 
     <InputFile bind:files />
 
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Upload</Button>
+        <Button text on:click={() => (show = false)}>{$LL.console.project.button.cancel()}</Button>
+        <Button submit>{$LL.console.project.button.submit.upload()}</Button>
     </svelte:fragment>
 </Modal>

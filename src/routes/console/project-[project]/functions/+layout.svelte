@@ -3,6 +3,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
+    import LL from '$i18n/i18n-svelte';
 
     let unsubscribe: { (): void };
 
@@ -22,7 +23,7 @@
 </script>
 
 <svelte:head>
-    <title>Functions - Appwrite</title>
+    <title>{$LL.console.project.title.functions()} - Appwrite</title>
 </svelte:head>
 
 <slot />

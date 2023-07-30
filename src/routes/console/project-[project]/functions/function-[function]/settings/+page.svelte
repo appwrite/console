@@ -39,6 +39,7 @@
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
     import UpdateEvents from './updateEvents.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -278,28 +279,35 @@
         <svelte:fragment slot="aside">
             <div class="u-flex u-main-space-between">
                 <div>
-                    <p>Function ID: {$func.$id}</p>
-                    <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
-                    <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
+                    <p>{$LL.console.project.texts.functions.addEvent()} {$func.$id}</p>
+                    <p>
+                        {$LL.console.project.texts.functions.addEvent()}
+                        {toLocaleDateTime($func.$createdAt)}
+                    </p>
+                    <p>
+                        {$LL.console.project.texts.functions.updatedAt()}
+                        {toLocaleDateTime($func.$updatedAt)}
+                    </p>
                 </div>
             </div>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+            <Button secondary on:click={() => ($execute = $func)}
+                >{$LL.console.project.button.submit.executeNow()}</Button>
         </svelte:fragment>
     </CardGrid>
 
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
+            <Heading tag="h6" size="7">{$LL.console.project.forms.functions.title.name()}</Heading>
 
             <svelte:fragment slot="aside">
                 <ul>
                     <InputText
                         id="name"
-                        label="Name"
-                        placeholder="Enter name"
+                        label={$LL.console.project.forms.functions.inputs.name.label()}
+                        placeholder={$LL.console.project.forms.functions.inputs.name.defaultPlaceholder()}
                         autocomplete={false}
                         bind:value={functionName} />
                 </ul>
@@ -307,7 +315,7 @@
 
             <svelte:fragment slot="actions">
                 <Button disabled={functionName === $func.name || !functionName} submit>
-                    Update
+                    {$LL.console.project.button.submit.update()}
                 </Button>
             </svelte:fragment>
         </CardGrid>
@@ -315,15 +323,15 @@
 
     <Form onSubmit={updatePermissions}>
         <CardGrid>
-            <Heading tag="h6" size="7">Execute Access</Heading>
+            <Heading tag="h6" size="7">{$LL.console.project.title.executeAccess()}</Heading>
             <p>
-                Choose who can execute this function using the client API. For more information,
-                check out the <a
+                {$LL.console.project.texts.functions.setPermission()}
+                <a
                     href="https://appwrite.io/docs/permissions"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
-                    Permissions Guide
+                    {$LL.console.project.texts.functions.permissionGuide()}
                 </a>.
             </p>
             <svelte:fragment slot="aside">
@@ -331,7 +339,8 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={arePermsDisabled} submit>Update</Button>
+                <Button disabled={arePermsDisabled} submit
+                    >{$LL.console.project.button.submit.update()}</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -340,14 +349,15 @@
 
     <Form onSubmit={updateSchedule}>
         <CardGrid>
-            <Heading tag="h6" size="7">Schedule</Heading>
+            <Heading tag="h6" size="7">{$LL.console.project.title.schedule()}</Heading>
             <p>
-                Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
+                {$LL.console.project.texts.functions.setCron()}
+                <a
                     href="https://en.wikipedia.org/wiki/Cron"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">
-                    More details on Cron syntax here.</a>
+                    {$LL.console.project.texts.functions.moreDetailsCronSyntax()}</a>
             </p>
             <svelte:fragment slot="aside">
                 <FormList>
@@ -359,14 +369,15 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={$func.schedule === functionSchedule} submit>Update</Button>
+                <Button disabled={$func.schedule === functionSchedule} submit
+                    >{$LL.console.project.button.submit.update()}</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Variables</Heading>
-        <p>Set the variables (or secret keys) that will be passed to your function at runtime.</p>
+        <Heading tag="h6" size="7">{$LL.console.project.title.variables()}</Heading>
+        <p>{$LL.console.project.texts.functions.setVariable()}</p>
         <svelte:fragment slot="aside">
             <div class="u-flex u-margin-inline-start-auto u-gap-16">
                 <Button
@@ -375,11 +386,11 @@
                     disabled={!data.variables.total}
                     on:click={downloadVariables}>
                     <span class="icon-download" />
-                    <span class="text">Download .env file</span>
+                    <span class="text">{$LL.console.project.button.submit.downloadEnv}</span>
                 </Button>
                 <Button secondary on:click={() => (showVariablesUpload = true)}>
                     <span class="icon-upload" />
-                    <span class="text">Import .env file</span>
+                    <span class="text">{$LL.console.project.button.submit.importEnv()}</span>
                 </Button>
             </div>
             {@const limit = 10}
@@ -388,8 +399,9 @@
                 <div class="u-flex u-flex-vertical u-gap-16">
                     <Table noMargin noStyles>
                         <TableHeader>
-                            <TableCellHead>Key</TableCellHead>
-                            <TableCellHead width={180}>Value</TableCellHead>
+                            <TableCellHead>{$LL.console.project.table.header.key()}</TableCellHead>
+                            <TableCellHead width={180}
+                                >{$LL.console.project.table.header.value()}</TableCellHead>
                             <TableCellHead width={30} />
                         </TableHeader>
                         <TableBody>
@@ -428,7 +440,7 @@
                                                         showVariablesDropdown[i] = false;
                                                         showVariablesModal = true;
                                                     }}>
-                                                    Edit
+                                                    {$LL.console.project.button.dropdown.edit()}
                                                 </DropListItem>
                                                 <DropListItem
                                                     icon="trash"
@@ -436,7 +448,7 @@
                                                         handleVariableDeleted(variable);
                                                         showVariablesDropdown[i] = false;
                                                     }}>
-                                                    Delete
+                                                    {$LL.console.project.button.submit.delete()}
                                                 </DropListItem>
                                             </svelte:fragment>
                                         </DropList>
@@ -447,16 +459,19 @@
                     </Table>
                     <Button text noMargin on:click={() => (showVariablesModal = true)}>
                         <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create variable</span>
+                        <span class="text">{$LL.console.project.button.createVariable()}</span>
                     </Button>
                     <div class="u-flex u-main-space-between">
-                        <p class="text">Total variables: {sum}</p>
+                        <p class="text">
+                            {$LL.console.project.texts.functions.totalVariables()}
+                            {sum}
+                        </p>
                         <PaginationInline {sum} {limit} bind:offset hidePages />
                     </div>
                 </div>
             {:else}
                 <Empty on:click={() => (showVariablesModal = !showVariablesModal)}>
-                    Create a variable to get started
+                    {$LL.console.project.texts.functions.getStartedVar()}
                 </Empty>
             {/if}
         </svelte:fragment>
@@ -464,10 +479,9 @@
 
     <Form onSubmit={updateTimeout}>
         <CardGrid>
-            <Heading tag="h6" size="7">Timeout</Heading>
+            <Heading tag="h6" size="7">{$LL.console.project.title.timeout()}</Heading>
             <p>
-                Limit the execution time of your function. Maximum value is 900 seconds (15
-                minutes).
+                {$LL.console.project.texts.functions.timeLimit()}
             </p>
             <svelte:fragment slot="aside">
                 <FormList>
@@ -481,16 +495,16 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={$func.timeout === timeout || timeout < 1} submit>Update</Button>
+                <Button disabled={$func.timeout === timeout || timeout < 1} submit
+                    >{$LL.console.project.button.submit.update()}</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
 
     <CardGrid danger>
-        <Heading tag="h6" size="7">Delete Function</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.deleteFunction()}</Heading>
         <p>
-            The function will be permanently deleted, including all deployments associated with it.
-            This action is irreversible.
+            {$LL.console.project.texts.functions.permanentActionDelete()}
         </p>
         <svelte:fragment slot="aside">
             <Box>
@@ -502,7 +516,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)}
+                >{$LL.console.project.button.submit.delete()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

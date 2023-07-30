@@ -2,18 +2,19 @@
     import { WizardStep } from '$lib/layout';
     import { createFunction } from './store';
     import { Roles } from '$lib/components/permissions';
+    import LL from '$i18n/i18n-svelte';
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Execute access</svelte:fragment>
+    <svelte:fragment slot="title">{$LL.console.project.title.executeAccess()}</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Choose who can execute this function using the client API. For more information, check out
-        the <a
+        {$LL.console.project.texts.functions.setPermission()}
+        <a
             href="https://appwrite.io/docs/permissions"
             target="_blank"
             rel="noopener noreferrer"
             class="link">
-            Permissions Guide
+            {$LL.console.project.texts.functions.permissionGuide()}
         </a>.
     </svelte:fragment>
 

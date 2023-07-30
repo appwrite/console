@@ -17,6 +17,7 @@
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     const projectId = $page.params.project;
 
@@ -74,26 +75,26 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Details',
+        label: $LL.console.project.legends.functions.details(),
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Execute access',
+        label: $LL.console.project.legends.functions.excecuteAccess(),
         component: Step2,
         optional: true
     });
     stepsComponents.set(3, {
-        label: 'Events',
+        label: $LL.console.project.legends.functions.events(),
         component: Step3,
         optional: true
     });
     stepsComponents.set(4, {
-        label: 'Schedule',
+        label: $LL.console.project.legends.functions.schedule(),
         component: Step4,
         optional: true
     });
     stepsComponents.set(5, {
-        label: 'Variables',
+        label: $LL.console.project.legends.functions.variables(),
         component: Step5,
         optional: true
     });
