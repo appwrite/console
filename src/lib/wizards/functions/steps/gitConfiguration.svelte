@@ -4,7 +4,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { choices, installation, repository } from '../store';
 
-    $choices.rootDir ??= './';
+    $choices.rootDir ??= '';
     function getProviderIcon(provider: string) {
         switch (provider) {
             case 'github':
@@ -71,7 +71,11 @@
                             };
                         }) ?? []}
                         bind:value={$choices.branch} />
-                    <InputText id="root" label="Root directory" bind:value={$choices.rootDir} />
+                    <InputText
+                        id="root"
+                        label="Root directory"
+                        placeholder="functions/my-function"
+                        bind:value={$choices.rootDir} />
                     <InputChoice
                         id="silent"
                         label="Silent mode"

@@ -8,8 +8,8 @@
     const vcs = new Vcs(client);
 
     let installationId: string;
-    let vcsRepositoryId: string;
-    let pullRequest: string;
+    let repositoryId: string;
+    let providerPullRequestId: string;
 
     let loading = false;
     let error = '';
@@ -21,8 +21,8 @@
         client.setEndpoint(endpoint).setProject(projectId).setMode('admin');
 
         installationId = $page.url.searchParams.get('installationId');
-        vcsRepositoryId = $page.url.searchParams.get('vcsRepositoryId');
-        pullRequest = $page.url.searchParams.get('pullRequest') + '';
+        repositoryId = $page.url.searchParams.get('repositoryId');
+        providerPullRequestId = $page.url.searchParams.get('providerPullRequestId') + '';
     });
 
     async function approveDeployment() {
@@ -35,7 +35,11 @@
         success = '';
 
         try {
-            await vcs.updateExternalDeployments(installationId, vcsRepositoryId, pullRequest);
+            await vcs.updateExternalDeployments(
+                installationId,
+                repositoryId,
+                providerPullRequestId
+            );
             success = 'Deployment approved successfully! Build will start soon.';
         } catch (e) {
             error = e.message;
@@ -50,8 +54,9 @@
         <div class="card" style="min-width: 600px; max-width: 100%;">
             <h1 class="heading-level-2">Authorize External Deployment</h1>
             <small style="margin-block-start: 8px;display: block;"
-                >The deployment for pull request <code class="inline-code">#{pullRequest}</code> is awaiting
-                approval. When authorized, deployments will be started.
+                >The deployment for pull request <code class="inline-code"
+                    >#{providerPullRequestId}</code> is awaiting approval. When authorized, deployments
+                will be started.
             </small>
 
             <div class="with-borders" style="margin-block-start: 1rem;display: block;">

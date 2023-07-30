@@ -25,7 +25,7 @@
                 $func.enabled,
                 $func.logging,
                 $func.commands,
-                $func.vcsInstallationId,
+                $func.installationId,
                 '',
                 '',
                 true,

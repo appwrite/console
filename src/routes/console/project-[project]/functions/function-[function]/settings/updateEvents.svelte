@@ -40,11 +40,11 @@
                 $func.enabled,
                 $func.logging,
                 $func.commands,
-                $func.vcsInstallationId,
-                $func.vcsRepositoryId,
-                $func.vcsBranch,
-                $func.vcsSilentMode,
-                $func.vcsRootDirectory
+                $func.installationId,
+                $func.providerRepositoryId,
+                $func.providerBranch,
+                $func.providerSilentMode,
+                $func.providerRootDirectory
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({

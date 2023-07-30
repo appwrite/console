@@ -8,7 +8,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { installation, installations, repository } from '../store';
     import { createEventDispatcher } from 'svelte';
-    import type { Models } from '@appwrite.io/console';
 
     const dispatch = createEventDispatcher();
 
@@ -33,21 +32,6 @@
     let search = '';
     async function loadRepositories(installationId: string, search: string) {
         return sdk.forProject.vcs.listRepositories(installationId, search || undefined);
-    }
-
-    const detectionMemory = new Map<string, Models.Detection>();
-    async function loadDetection(installationId: string, repositoryId: string) {
-        const key = `${installationId}.${repositoryId}`;
-        if (detectionMemory.has(key)) {
-            return detectionMemory.get(key);
-        }
-        const detection = await sdk.forProject.vcs.createRepositoryDetection(
-            installationId,
-            repositoryId
-        );
-        detectionMemory.set(key, detection);
-
-        return detection;
     }
 
     function connectGitHub() {
@@ -127,22 +111,18 @@
                                             on:change={() => repository.set(repo)}
                                             value={repo.id} />
                                     {/if}
-                                    {#await loadDetection(selectedInstallation, repo.id)}
-                                        <div class="avatar is-size-x-small">
-                                            <div class="loader u-margin-16" />
-                                        </div>
-                                    {:then detection}
-                                        <div
-                                            class="avatar is-size-x-small"
-                                            style:--p-text-size="1.25rem"
-                                            class:is-color-empty={!detection.runtime}>
-                                            {#if detection.runtime}
-                                                <img
-                                                    src={`${base}/icons/${$app.themeInUse}/color/${detection.runtime}.svg`}
-                                                    alt={repo.name} />
-                                            {/if}
-                                        </div>
-                                    {/await}
+                                    <div
+                                        class="avatar is-size-x-small"
+                                        style:--p-text-size="1.25rem"
+                                        class:is-color-empty={!repo.runtime}>
+                                        {#if repo.runtime}
+                                            <img
+                                                src={`${base}/icons/${$app.themeInUse}/color/${
+                                                    repo.runtime.split('-')[0]
+                                                }.svg`}
+                                                alt={repo.name} />
+                                        {/if}
+                                    </div>
                                     <div class="u-flex u-gap-8">
                                         <span class="text">{repo.name}</span>
                                         {#if repo.private}

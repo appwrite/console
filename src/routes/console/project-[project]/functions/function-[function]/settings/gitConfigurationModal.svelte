@@ -242,7 +242,11 @@
                     };
                 }) ?? []}
                 bind:value={selectedBranch} />
-            <InputText id="root" label="Root directory" bind:value={selectedDir} />
+            <InputText
+                id="root"
+                label="Root directory"
+                placeholder="functions/my-function"
+                bind:value={selectedDir} />
             <InputChoice
                 id="silent"
                 label="Silent mode"

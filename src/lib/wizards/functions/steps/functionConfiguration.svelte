@@ -5,9 +5,26 @@
     import InputTextarea from '$lib/elements/forms/inputTextarea.svelte';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
-    import { createFunction } from '../store';
     import { sdk } from '$lib/stores/sdk';
+    import Label from '$lib/elements/forms/label.svelte';
+    import { choices, createFunction, installation, repository } from '../store';
+
     let showCustomId = false;
+
+    let detectingRuntime = true;
+    async function loadDetection(
+        installationId: string,
+        repositoryId: string,
+        rootDirectory: string
+    ) {
+        const detection = await sdk.forProject.vcs.createRepositoryDetection(
+            installationId,
+            repositoryId,
+            rootDirectory
+        );
+
+        return detection;
+    }
 
     let options = [];
 
@@ -17,6 +34,19 @@
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
+
+        try {
+            const detection = await loadDetection(
+                $installation.$id,
+                $repository.id,
+                $choices.rootDir
+            );
+            $createFunction.runtime = detection.runtime;
+        } catch (err) {
+            console.error(err);
+        } finally {
+            detectingRuntime = false;
+        }
     });
 </script>
 
@@ -41,13 +71,26 @@
         {:else}
             <CustomId bind:show={showCustomId} name="Function" bind:id={$createFunction.$id} />
         {/if}
-        <InputSelect
-            label="Runtime"
-            id="runtime"
-            placeholder="Select runtime"
-            bind:value={$createFunction.runtime}
-            {options}
-            required />
+
+        {#if detectingRuntime}
+            <div>
+                <Label required={true}>Runtime</Label>
+                <div class="card-git card is-border-dashed is-no-shadow">
+                    <div class="u-flex u-gap-8 u-cross-center u-main-center">
+                        <div class="loader u-margin-16" />
+                        Detecting runtime...
+                    </div>
+                </div>
+            </div>
+        {:else}
+            <InputSelect
+                label="Runtime"
+                id="runtime"
+                placeholder="Select runtime"
+                bind:value={$createFunction.runtime}
+                {options}
+                required />
+        {/if}
 
         <InputText
             label="Entrypoint"

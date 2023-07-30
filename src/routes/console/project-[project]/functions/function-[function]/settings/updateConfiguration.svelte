@@ -42,9 +42,9 @@
     onMount(() => {
         entrypoint = $func?.entrypoint;
         commands = $func?.commands;
-        selectedBranch = $func?.vcsBranch;
-        silentMode = $func?.vcsSilentMode ?? false;
-        selectedDir = $func?.vcsRootDirectory;
+        selectedBranch = $func?.providerBranch;
+        silentMode = $func?.providerSilentMode ?? false;
+        selectedDir = $func?.providerRootDirectory;
 
         if ($page.url.searchParams.has('github-installed')) {
             wizard.start(ConnectExisting);
@@ -88,8 +88,8 @@
                 $func.enabled,
                 $func.logging,
                 commands,
-                $func.vcsInstallationId,
-                $func.vcsRepositoryId,
+                $func.installationId,
+                $func.providerRepositoryId,
                 selectedBranch,
                 silentMode,
                 selectedDir
@@ -119,19 +119,19 @@
             return a.name > b.name ? -1 : 1;
         });
 
-        selectedBranch = $func?.vcsBranch ?? branchesList.branches[0].name;
+        selectedBranch = $func?.providerBranch ?? branchesList.branches[0].name;
     }
 
-    $: if ($func?.vcsInstallationId && $func?.vcsRepositoryId) {
-        getBranches($func.vcsInstallationId, $func.vcsRepositoryId);
+    $: if ($func?.installationId && $func?.providerRepositoryId) {
+        getBranches($func.installationId, $func.providerRepositoryId);
     }
 
     $: isUpdateButtonEnabled =
         entrypoint !== $func?.entrypoint ||
         commands !== $func?.commands ||
-        selectedBranch !== $func?.vcsBranch ||
-        silentMode !== $func?.vcsSilentMode ||
-        selectedDir !== $func?.vcsRootDirectory;
+        selectedBranch !== $func?.providerBranch ||
+        silentMode !== $func?.providerSilentMode ||
+        selectedDir !== $func?.providerRootDirectory;
 </script>
 
 <Form onSubmit={updateConfiguration}>
@@ -184,6 +184,7 @@
                                     <InputText
                                         id="root"
                                         label="Root directory"
+                                        placeholder="functions/my-function"
                                         bind:value={selectedDir} />
                                     <InputChoice
                                         id="silent"
