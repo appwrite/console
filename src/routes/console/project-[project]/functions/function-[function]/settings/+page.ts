@@ -9,10 +9,10 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
 
     const [repository, globalVariables, variables] = await Promise.all([
         (async () => {
-            if (data.function.vcsInstallationId && data.function.vcsRepositoryId) {
+            if (data.function.installationId && data.function.providerRepositoryId) {
                 return await sdk.forProject.vcs.getRepository(
-                    data.function.vcsInstallationId,
-                    data.function.vcsRepositoryId
+                    data.function.installationId,
+                    data.function.providerRepositoryId
                 );
             } else {
                 return null;

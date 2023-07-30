@@ -230,7 +230,7 @@
                                                     redeploy(deployment);
                                                     showDropdown = [];
                                                 }}>
-                                                Retry
+                                                Redeploy
                                             </DropListItem>
 
                                             {#if deployment.status === 'ready'}
