@@ -6,10 +6,14 @@
     import { onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { sdk } from '$lib/stores/sdk';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
     onMount(() => {
         if (isCloud) {
             checkForTrialEnding();
+            paymentExpired();
         }
     });
 
@@ -28,6 +32,32 @@
                 )}</b>`
             });
             localStorage.setItem('trialEndingNotification', 'true');
+        }
+    }
+
+    //TODO: move this function
+    async function paymentExpired() {
+        if (localStorage.getItem('paymentExpiredNotification') === 'true') return;
+        const payment = await sdk.forConsole.billing.getPaymentMethod(
+            $organization.paymentMethodId
+        );
+
+        if (payment.expired) {
+            addNotification({
+                type: 'info',
+                isHtml: true,
+                dismissible: false,
+                message: `The default payment method for <b>${$organization.name}</b> has expired`,
+                buttons: [
+                    {
+                        name: 'Update payment details',
+                        method: () => {
+                            goto(`${base}/console/account/payments`);
+                        }
+                    }
+                ]
+            });
+            localStorage.setItem('paymentExpiredNotification', 'true');
         }
     }
 </script>

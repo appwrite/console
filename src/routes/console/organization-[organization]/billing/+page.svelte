@@ -8,9 +8,27 @@
     import PaymentMethods from './paymentMethods.svelte';
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
+    import { Alert, Heading } from '$lib/components';
+    import { paymentMethods } from '$lib/stores/billing';
+    import type { PaymentMethodData } from '$lib/sdk/billing';
+
+    $: defaultPaymentMethod = $paymentMethods.paymentMethods.find(
+        (method: PaymentMethodData) => method.$id === $organization.paymentMethodId
+    );
 </script>
 
 <Container>
+    {#if defaultPaymentMethod.failed}
+        <Alert type="error">
+            <svelte:fragment slot="title">
+                The default payment method for {$organization.name} has expired
+            </svelte:fragment>
+            To avoid service disruptions in your projects, please update your payment details.
+        </Alert>
+    {/if}
+    <div class="common-section">
+        <Heading tag="h2" size="5">Billing</Heading>
+    </div>
     <PlanSummary />
     <PaymentHistory />
     <PaymentMethods />

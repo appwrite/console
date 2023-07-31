@@ -20,16 +20,27 @@
         TableRow
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
+    import type { InvoiceList } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
-    import { invoiceList } from './store';
+    import { onMount } from 'svelte';
 
     let showDropdown = [];
     let selectedInvoice: string;
-    let offset = 0;
 
+    let offset = 0;
+    let invoiceList: InvoiceList = {
+        invoices: [],
+        total: 0
+    };
     let downloadLink: string;
     let viewLink: string;
+
+    const limit = 5;
+
+    onMount(async () => {
+        request();
+    });
 
     async function download() {
         return await sdk.forConsole.billing.downloadInvoice(
@@ -46,9 +57,10 @@
     }
 
     async function request() {
-        $invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
-            Query.limit(5),
-            Query.offset(offset)
+        invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
+            Query.limit(limit),
+            Query.offset(offset),
+            Query.orderDesc('$createdAt')
         ]);
     }
 
@@ -74,7 +86,7 @@
         payments.
     </p>
     <svelte:fragment slot="aside">
-        {#if $invoiceList.total}
+        {#if invoiceList.total}
             <Table noMargin noStyles>
                 <TableHeader>
                     <TableCellHead>Due Date</TableCellHead>
@@ -84,7 +96,7 @@
                     <TableCellHead width={40} />
                 </TableHeader>
                 <TableBody>
-                    {#each $invoiceList?.invoices as invoice, i}
+                    {#each invoiceList?.invoices as invoice, i}
                         {@const status = invoice.status}
                         <TableRow>
                             <TableCellText title="date">
@@ -133,8 +145,8 @@
                 </TableBody>
             </Table>
             <div class="u-flex u-main-space-between">
-                <p class="text">Total results: {$invoiceList?.total}</p>
-                <PaginationInline limit={1} bind:offset sum={$invoiceList?.total} hidePages />
+                <p class="text">Total results: {invoiceList?.total}</p>
+                <PaginationInline {limit} bind:offset sum={invoiceList?.total} hidePages />
             </div>
         {:else}
             <EmptySearch cardOnly>

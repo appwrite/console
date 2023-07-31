@@ -3,10 +3,11 @@ import { derived, get } from 'svelte/store';
 import { sdk } from './sdk';
 import { limitRates } from '$lib/constants';
 import { organization } from './organization';
+import type { PaymentList } from '$lib/sdk/billing';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
-export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods);
+export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 
 export function tierToPlan(tier: Tier) {
     switch (tier) {

@@ -1,4 +1,4 @@
-import type { Client } from '@appwrite.io/console';
+import type { Client, Query } from '@appwrite.io/console';
 import type { Organization } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 
@@ -297,7 +297,7 @@ export class Billing {
 
     async listInvoices(
         organizationId: string,
-        queries: string[] = [],
+        queries: Query[] = [],
         search = ''
     ): Promise<InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;

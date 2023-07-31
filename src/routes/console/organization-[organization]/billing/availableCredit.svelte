@@ -13,15 +13,25 @@
         TableRow
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import type { Credit } from '$lib/sdk/billing';
+    import type { Credit, CreditList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
-    import { creditList } from './store';
+    import { onMount } from 'svelte';
 
     let coupon: string = null;
     let offset = 0;
+    let creditList: CreditList = {
+        credits: [],
+        total: 0
+    };
+
+    onMount(async () => {
+        request();
+    });
+
+    const limit = 5;
 
     async function redeem() {
         try {
@@ -45,8 +55,8 @@
     }
 
     async function request() {
-        $creditList = await sdk.forConsole.billing.listCredits($organization.$id, [
-            Query.limit(5),
+        creditList = await sdk.forConsole.billing.listCredits($organization.$id, [
+            Query.limit(limit),
             Query.offset(offset)
         ]);
     }
@@ -55,7 +65,7 @@
         request();
     }
 
-    $: balance = $creditList?.credits?.reduce((acc: number, curr: Credit) => acc + curr.credits, 0);
+    $: balance = creditList?.credits?.reduce((acc: number, curr: Credit) => acc + curr.credits, 0);
 </script>
 
 <CardGrid>
@@ -80,7 +90,7 @@
                 </InputText>
             </FormList>
         </Form>
-        {#if $creditList?.total}
+        {#if creditList?.total}
             <Table noStyles noMargin>
                 <TableHeader>
                     <TableCellHead>Date Added</TableCellHead>
@@ -88,7 +98,7 @@
                     <TableCellHead>Amount</TableCellHead>
                 </TableHeader>
                 <TableBody>
-                    {#each $creditList.credits as credit}
+                    {#each creditList.credits as credit}
                         <TableRow>
                             <TableCellText title="date added">
                                 {toLocaleDate(credit.$createdAt)}
@@ -104,8 +114,8 @@
                 </TableBody>
             </Table>
             <div class="u-flex u-main-space-between">
-                <p class="text">Total results: {$creditList?.total}</p>
-                <PaginationInline limit={5} bind:offset sum={$creditList?.total} hidePages />
+                <p class="text">Total results: {creditList?.total}</p>
+                <PaginationInline {limit} bind:offset sum={creditList?.total} hidePages />
             </div>
         {/if}
     </svelte:fragment>

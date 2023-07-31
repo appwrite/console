@@ -17,7 +17,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { paymentMethods } from './store';
+    import { paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { tooltip } from '$lib/actions/tooltip';

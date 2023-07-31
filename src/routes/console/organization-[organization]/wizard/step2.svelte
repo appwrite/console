@@ -35,7 +35,7 @@
                     <RegionCard
                         name="region"
                         bind:group={$createProject.region}
-                        value={region.name}
+                        value={region.$id}
                         disabled={region.disabled}>
                         <div
                             class="u-flex u-flex-vertical u-gap-12 u-justify-main-center u-cross-center u-margin-inline-auto">
