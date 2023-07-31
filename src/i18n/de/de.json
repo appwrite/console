@@ -139,59 +139,861 @@
     },
 
     "console": {
-        "title": {
-            "auth": "Auth",
-            "createUser": "Benutzer erstellen",
-            "user": "Benutzer",
-            "userData": {
-                "name": "Name",
-                "email": "E-Mail",
-                "phone": "Telefon",
-                "password": "Passwort",
-                "userPref": "Benutzereinstellungen",
-                "deleteUser": "Benutzer löschen"
-            }
-        },
         "forms": {
-            "createUser": {
+            "createOrg": {
+                "title": "Neue Organisation erstellen",
                 "inputs": {
                     "name": {
                         "label": "Name",
                         "placeholder": "Namen eingeben"
-                    },
-                    "email": {
-                        "label": "E-Mail",
-                        "placeholder": "E-Mail-Adresse eingeben"
-                    },
-                    "phone": {
-                        "label": "Telefon",
-                        "placeholder": "Telefonnummer eingeben"
-                    },
-                    "password": {
-                        "label": "Passwort",
-                        "placeholder": "Passwort eingeben"
                     }
                 }
             },
-            "userData": {
-                "update": {
-                    "name": {
-                        "label": "Name",
-                        "placeholder": "Namen eingeben"
+            "inputSwitch": {
+                "enable": "aktivieren",
+                "disabled": "deaktiviert"
+            }
+        },
+        "button": {
+            "cancel": "Abbrechen",
+            "backToConsole": "Zurück zur Konsole",
+            "submit": {
+                "create": "Erstellen"
+            }
+        },
+        "table": {
+            "pill": {
+                "orgId": "Organisations-ID"
+            }
+        },
+        "account": {
+            "title": {
+                "user": "Benutzer",
+                "organizations": "Organisationen",
+                "deleteAccount": "Konto löschen"
+            },
+            "forms": {
+                "updateName": {
+                    "title": "Name",
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Namen eingeben"
+                        }
+                    }
+                },
+                "updateEmail": {
+                    "title": "E-Mail",
+                    "inputs": {
+                        "email": {
+                            "label": "E-Mail",
+                            "placeholder": "E-Mail-Adresse eingeben"
+                        },
+                        "password": {
+                            "label": "Passwort",
+                            "placeholder": "Passwort eingeben"
+                        }
+                    }
+                },
+                "updatePassword": {
+                    "title": "Passwort",
+                    "inputs": {
+                        "oldPassword": {
+                            "label": "Altes Passwort",
+                            "placeholder": "Passwort eingeben"
+                        },
+                        "newPassword": {
+                            "label": "Neues Passwort",
+                            "placeholder": "Passwort eingeben"
+                        }
                     },
-                    "email": {
-                        "label": "E-Mail",
-                        "placeholder": "E-Mail-Adresse eingeben"
+                    "texts": {
+                        "forgotPassword": "Passwort vergessen?",
+                        "recoverPassword": "Stellen Sie Ihr Passwort wieder her"
+                    }
+                }
+            },
+            "button": {
+                "submit": {
+                    "update": "Aktualisieren",
+                    "cancel": "Abbrechen",
+                    "delete": "Löschen"
+                },
+                "logout": "Löschen",
+                "documentation": "Dokumentation",
+                "createOrg": "Organisation erstellen",
+                "logoutAllSessions": "Alle Sitzungen abmelden"
+            },
+            "texts": {
+                "members": "Mitglieder",
+                "createOrg": "Eine neue Organisation erstellen",
+                "noSession": "Keine Sitzungen verfügbar",
+                "totalResult": "Gesamtergebnisse:",
+                "deleteWarning": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
+                "deleteAccount": " Ihr Konto wird dauerhaft gelöscht und der Zugriff auf alle Ihre Teams und Daten geht verloren. Diese Aktion ist irreversibel."
+            },
+            "navbar": {
+                "header": {
+                    "overview": "Übersicht",
+                    "sessions": "Sitzungen",
+                    "activity": "Aktivität",
+                    "organization": "Organisationen"
+                }
+            },
+            "table": {
+                "header": {
+                    "client": "Kunde",
+                    "location": "Standort",
+                    "ip": "IP"
+                },
+                "trim": {
+                    "on": "on"
+                },
+                "texts": {
+                    "unknown": "unbekannt"
+                },
+                "pill": {
+                    "alert": {
+                        "current": "aktuelle Sitzung"
+                    }
+                }
+            }
+        },
+        "onboarding": {
+            "title": {
+                "onboarding": "Onboarding",
+                "coverTitle": "Lass uns dein erstes Projekt erstellen"
+            },
+            "forms": {
+                "createProject": {
+                    "inputs": {
+                        "name": {
+                            "label": "Projektname",
+                            "placeholder": "Erstes Appwrite-Projekt"
+                        }
+                    }
+                }
+            },
+            "button": {
+                "submit": {
+                    "create": "Projekt erstellen"
+                }
+            },
+            "table": {
+                "pill": {
+                    "projectId": "Projekt-ID"
+                }
+            }
+        },
+        "organization": {
+            "title": {
+                "organizations": "Organisationen",
+                "projects": "Projekte",
+                "members": "Mitglieder"
+            },
+            "forms": {
+                "updateName": {
+                    "title": "Name",
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Namen eingeben"
+                        }
+                    }
+                },
+                "createMember": {
+                    "title": "Mitglied einladen",
+                    "inputs": {
+                        "email": {
+                            "label": "E-Mail",
+                            "placeholder": "E-Mail-Adresse eingeben"
+                        },
+                        "name": {
+                            "label": "Namen (optional)",
+                            "placeholder": "Namen eingeben"
+                        }
+                    }
+                },
+                "createProject": {
+                    "title": "Projekt erstellen",
+                    "inputs": {
+                        "name": {
+                            "label": "Name"
+                        }
+                    }
+                },
+                "deleteOrg": {
+                    "title": "Delete Organization",
+                    "texts": {
+                        "phraseOne": "Sind Sie sicher, dass Sie löschen möchten",
+                        "phraseTwo": "? Alle Projekte",
+                        "phraseThree": "und mit dieser Organisation verknüpfte Daten werden gelöscht. Diese Aktion ist unwiderruflich.",
+                        "orgSettings": "Die Organisation wird dauerhaft gelöscht, einschließlich aller mit dieser Organisation verknüpften Projekte und Daten. Diese Aktion ist irreversibel."
+                    }
+                }
+            },
+            "table": {
+                "header": {
+                    "name": "Name",
+                    "email": "E-Mail"
+                },
+                "pill": {
+                    "projectId": "Projekt-ID",
+                    "pending": "Ausstehend"
+                }
+            },
+            "button": {
+                "submit": {
+                    "create": "Erstellen",
+                    "createProject": "Projekt erstellen",
+                    "send": "Einladung senden",
+                    "update": "Aktualisieren",
+                    "cancel": "Aktualisieren",
+                    "delete": "Löschen"
+                },
+                "invite": "Löschen",
+                "resend": "Erneut senden"
+            },
+            "texts": {
+                "dropDown": "Neue Organisation",
+                "apps": "apps",
+                "no": "nein",
+                "members": "Mitglieder",
+                "createProject": "Neues Projekt erstellen"
+            },
+            "navbar": {
+                "header": {
+                    "projects": "Projekte",
+                    "members": "Projekte",
+                    "settings": "Einstellungen"
+                }
+            }
+        },
+        "project": {
+            "title": {
+                "auth": "Auth",
+                "createUser": "Benutzer erstellen",
+                "createTeam": "Team erstellen",
+                "createDb": "Datenbank erstellen",
+                "createData": "Daten erstellen",
+                "createMembership": "Mitgliedschaft erstellen",
+                "createCollection": "Sammlung erstellen",
+                "createIndex": "Index erstellen",
+                "deleteUser": "Benutzer löschen",
+                "deleteSession": "Sitzungen löschen",
+                "deleteAllSession": "Alle Sitzungen löschen",
+                "deleteMember": "Mitglied löschen",
+                "deleteDatabase": "Datenbank löschen",
+                "deleteAttribute": "Attribut löschen",
+                "deleteCollection": "Sammlung löschen",
+                "deleteProject": "Projekt löschen",
+                "deleteTeam": "Team löschen",
+                "deleteDocument": "Dokument löschen",
+                "deleteIndex": "Index löschen",
+                "deleteDomain": "Domain löschen",
+                "deleteWebhook": "Webhook löschen",
+                "user": "Benutzer",
+                "team": "Team",
+                "schedule": "Zeitplan",
+                "overview": "Übersicht",
+                "logs": "Protokolle",
+                "indexes": "Indizes",
+                "buckets": "Eimer",
+                "services": "Dienste",
+                "console": "Konsole",
+                "bandwith": "Bandbreite",
+                "documents": "Dokumente",
+                "addScopes": "Bereiche hinzufügen",
+                "storage": "Speicher",
+                "bucket": "Eimer",
+                "variables": "Variablen",
+                "timeout": "Timeout",
+                "scopes": "Umfänge",
+                "executeAccess": "Ausführungszugriff",
+                "customDomains": "Benutzerdefinierte Domänen",
+                "documentSecurity": "Dokumentensicherheit",
+                "webhooks": "Webhooks",
+                "webhook": "Webhook",
+                "deployments": "Bereitstellungen",
+                "deleteFunction": "Funktion löschen",
+                "deleteBucket": "Bucket löschen",
+                "displayName": "Anzeigename",
+                "deleteFile": "Datei löschen",
+                "teamPref": "Teameinstellungen",
+                "apiCredentials": "API-Anmeldeinformationen",
+                "active": "Aktiv",
+                "inactive": "Inaktiv",
+                "uploadVariables": "Variablen hochladen",
+                "data": "Daten",
+                "users": "Benutzer",
+                "document": "Dokument",
+                "functions": "Funktionen",
+                "executions": "Ausführungen",
+                "integrations": "Integrationen",
+                "metaData": "Metadaten",
+                "permissions": "Berechtigungen",
+                "attributes": "Attribute",
+                "database": "Datenbank",
+                "databases": "Datenbanken",
+                "collections": "Sammlungen",
+                "oAuth2": "OAuth2-Einstellungen",
+                "regenerateKey": "Schlüssel neu generieren",
+                "signatureKey": "Signaturschlüssel",
+                "apiKey": "API-Schlüssel",
+                "apiKeys": "API-Schlüssel",
+                "createApiKey": "API-Schlüssel erstellen",
+                "deleteApiKey": "API-Schlüssel löschen",
+                "events": "Ereignisse",
+                "httpAuth": "HTTP-Authentifizierung",
+
+                "userData": {
+                    "name": "Name",
+                    "email": "Email",
+                    "phone": "Telefon",
+                    "password": "Passwort",
+                    "userPref": "Benutzereinstellungen",
+                    "deleteUser": "Benutzer löschen"
+                },
+                "security": {
+                    "title": "Sicherheit",
+                    "passwordDictionary": "Passwortwörterbuch",
+                    "passwordHistory": "Passwortverlauf",
+                    "sessionLength": "Sitzungslänge",
+                    "sessionLimit": "Sitzungslimit",
+                    "usersLimit": "Benutzerlimit"
+                },
+                "settings": {
+                    "header": "Einstellungen",
+                    "authMethods": "Auth-Methoden",
+                    "oauth2Providers": "OAuth2-Anbieter"
+                },
+                "wizards": {
+                    "addYourDomain": "Fügen Sie Ihre Domain hinzu",
+                    "subTitle": "Verwenden Sie Ihre eigene Domäne als Endpunkt Ihrer Appwrite-API."
+                },
+                "overView": {
+                    "getStartedGuid": "Erste Schritte",
+                    "addPlatform": "Eine Plattform hinzufügen",
+                    "integrateWithServer": "Mit Ihrem Server integrieren"
+                }
+            },
+            "forms": {
+                "createUser": {
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Namen eingeben"
+                        },
+                        "email": {
+                            "label": "E-Mail",
+                            "placeholder": "E-Mail-Adresse eingeben"
+                        },
+                        "phone": {
+                            "label": "Telefon",
+                            "placeholder": "Telefonnummer eingeben"
+                        },
+                        "password": {
+                            "label": "Passwort",
+                            "placeholder": "Passwort eingeben"
+                        }
+                    }
+                },
+                "createTeam": {
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Namen eingeben"
+                        }
+                    }
+                },
+                "userData": {
+                    "update": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Namen eingeben"
+                        },
+                        "email": {
+                            "label": "E-Mail",
+                            "placeholder": "E-Mail-Adresse eingeben"
+                        },
+                        "phone": {
+                            "label": "Telefon",
+                            "placeholder": "Telefonnummer eingeben"
+                        },
+                        "password": {
+                            "label": "Neues Passwort",
+                            "placeholder": "Neues Passwort eingeben"
+                        },
+                        "userPref": {
+                            "key": {
+                                "label": "Schlüssel",
+                                "placeholder": "Eingabetaste"
+                            },
+                            "value": {
+                                "label": "Wert",
+                                "placeholder": "Wert eingeben"
+                            }
+                        }
+                    }
+                },
+                "oAuthProvider": {
+                    "inputs": {
+                        "appleAuth": {
+                            "bundleId": {
+                                "label": "Bundle ID",
+                                "placeholder": "com.company.appname"
+                            },
+                            "keyId": {
+                                "label": "Schlüssel-ID",
+                                "placeholder": "SHAB13ROFN"
+                            },
+                            "teamId": {
+                                "label": "Team-ID",
+                                "placeholder": "ELA2CD3AED"
+                            },
+                            "p8": {
+                                "label": "P8-Datei",
+                                "placeholder": ""
+                            }
+                        },
+                        "auth0Auth": {
+                            "clientId": {
+                                "label": "Client-ID",
+                                "placeholder": "ID eingeben"
+                            },
+                            "secret": {
+                                "label": "Client-Geheimnis",
+                                "placeholder": "Client-Geheimnis eingeben"
+                            },
+                            "domain": {
+                                "label": "Auth0-Domäne",
+                                "placeholder": "Ihre Auth0-Domäne"
+                            }
+                        },
+                        "githubAuth": {
+                            "appId": {
+                                "label": "App-ID",
+                                "placeholder": "ID eingeben"
+                            },
+                            "secret": {
+                                "label": "App-Geheimnis",
+                                "placeholder": "App-Geheimnis eingeben"
+                            },
+                            "endpoint": {
+                                "label": "Endpunkt(optional)",
+                                "placeholder": "Ihr Endpunkt"
+                            }
+                        },
+                        "mainAuth": {
+                            "appId": {
+                                "label": "App-ID",
+                                "placeholder": "ID eingeben"
+                            },
+                            "secret": {
+                                "label": "App-Geheimnis",
+                                "placeholder": "App-Geheimnis eingeben"
+                            }
+                        },
+                        "microsoftAuth": {
+                            "appId": {
+                                "label": "Anwendungs-(Client-)ID",
+                                "placeholder": "ID eingeben"
+                            },
+                            "secret": {
+                                "label": "Client-Geheimnis",
+                                "placeholder": "Client-Geheimnis eingeben"
+                            },
+                            "tenant": {
+                                "label": "Zielmieter",
+                                "placeholder": "'gemeinsam', 'Organisationen', 'Verbraucher' oder Ihre TenantID"
+                            }
+                        },
+                        "oktaAuth": {
+                            "appId": {
+                                "label": "Client-ID",
+                                "placeholder": "ID eingeben"
+                            },
+                            "secret": {
+                                "label": "Client-Geheimnis",
+                                "placeholder": "Client-Geheimnis eingeben"
+                            },
+                            "domain": {
+                                "label": "Okta Domain",
+                                "placeholder": "dev-1337.okta.com"
+                            },
+                            "serverId": {
+                                "label": "Autorisierungsserver-ID",
+                                "placeholder": "Standard"
+                            }
+                        }
+                    }
+                },
+                "security": {
+                    "inputs": {
+                        "passwordDictionary": {
+                            "label": "Passwortwörterbuch"
+                        },
+                        "passwordHistory": {
+                            "label": "Passwortverlauf"
+                        },
+                        "maxSession": {
+                            "label": "Limit"
+                        },
+                        "sessionLength": {
+                            "label": "Länge"
+                        },
+                        "sessionPeriod": {
+                            "label": "Zeitraum"
+                        }
+                    }
+                },
+                "teams": {
+                    "updatePrefs": {
+                        "inputs": {
+                            "key": {
+                                "label": "Schlüssel",
+                                "placeholder": "Eingabetaste"
+                            },
+                            "value": {
+                                "label": "Eingabetaste",
+                                "placeholder": "Wert eingeben"
+                            }
+                        }
                     },
-                    "phone": {
-                        "label": "Telefon",
-                        "placeholder": "Telefonnummer eingeben"
+                    "updateName": {
+                        "title": "Name",
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Teamnamen eingeben"
+                            }
+                        }
                     },
-                    "password": {
-                        "label": "Neues Passwort",
-                        "placeholder": "Neues Passwort eingeben"
+                    "createMembership": {
+                        "inputs": {
+                            "name": {
+                                "label": "Namen (optional)",
+                                "placeholder": "Namen eingeben"
+                            },
+                            "email": {
+                                "label": "E-Mail",
+                                "placeholder": "E-Mail-Adresse eingeben"
+                            },
+                            "roles": {
+                                "label": "Rollen",
+                                "placeholder": "Rollen hinzufügen"
+                            }
+                        }
+                    }
+                },
+                "databases": {
+                    "createDb": {
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Datenbanknamen eingeben"
+                            }
+                        }
                     },
-                    "userPref": {
+                    "createCollection": {
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Sammlungsnamen eingeben"
+                            }
+                        }
+                    },
+                    "updateName": {
+                        "title": "Name",
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Datenbanknamen eingeben",
+                                "defaultPlaceholder": "Namen eingeben"
+                            }
+                        }
+                    },
+                    "createAttribute": {
+                        "texts": {
+                            "createAttribute": "Zulässige Zeichen: alphanumerisch, Bindestrich, nicht führender Unterstrich, Punkt"
+                        },
+                        "inputs": {
+                            "key": {
+                                "label": "Attributschlüssel",
+                                "placeholder": "Eingabetaste"
+                            }
+                        }
+                    },
+                    "attribute": {
+                        "texts": {
+                            "phraseOne": "Geben Sie an, ob dies ein erforderliches Attribut ist",
+                            "phraseTwo": "Geben Sie an, ob dieses Attribut als Array fungieren soll",
+                            "relationship": {
+                                "oneWay": {
+                                    "phraseOne": "Einseitige Beziehung",
+                                    "phraseTwo": "Ein Beziehungsattribut innerhalb dieser Sammlung"
+                                },
+                                "twoWay": {
+                                    "phraseOne": "Zwei-Wege-Beziehung",
+                                    "phraseTwo": "Ein Beziehungsattribut innerhalb dieser Sammlung und ein weiteres innerhalb der zugehörigen Sammlung"
+                                }
+                            }
+                        },
+                        "inputs": {
+                            "default": {
+                                "label": "Standardwert",
+                                "placeholder": "Wählen Sie einen Wert aus"
+                            },
+                            "defaultValue": {
+                                "label": "Standardwert",
+                                "placeholder": "Wert eingeben"
+                            },
+                            "elements": {
+                                "label": "Elemente",
+                                "placeholder": "Hier Elemente hinzufügen"
+                            },
+                            "required": {
+                                "label": "Erforderlich"
+                            },
+                            "array": {
+                                "label": "Array"
+                            },
+                            "key": {
+                                "label": "Attributschlüssel",
+                                "placeholder": "Eingabetaste"
+                            },
+                            "min": {
+                                "label": "Min",
+                                "placeholder": "Größe eingeben"
+                            },
+                            "max": {
+                                "label": "Max",
+                                "placeholder": "Enter size"
+                            },
+                            "related": {
+                                "label": "Verwandte Sammlung",
+                                "placeholder": "Verwandte Sammlung"
+                            },
+                            "keyRelated": {
+                                "label": "Attributschlüssel (zugehörige Sammlung)",
+                                "placeholder": "Eingabetaste"
+                            },
+                            "relationship": {
+                                "label": "Beziehung",
+                                "placeholder": "Wählen Sie eine Beziehung aus"
+                            },
+                            "deleting": {
+                                "label": "Beim Löschen eines Dokuments",
+                                "placeholder": "Wählen Sie eine Löschmethode aus"
+                            },
+                            "size": {
+                                "label": "größe",
+                                "placeholder": "Größe eingeben"
+                            },
+                            "string": {
+                                "label": "Etikettengröße",
+                                "placeholder": "Zeichenfolge eingeben"
+                            },
+                            "email": {
+                                "placeholder": "URL eingeben"
+                            }
+                        }
+                    },
+                    "index": {
+                        "inputs": {
+                            "key": {
+                                "label": "Indexschlüssel",
+                                "placeholder": "Eingabetaste"
+                            },
+                            "type": {
+                                "label": "Indextyp",
+                                "placeholder": "Typ auswählen"
+                            },
+                            "attribute": {
+                                "label": "Attribut",
+                                "placeholder": "Attribut auswählen"
+                            },
+                            "order": {
+                                "label": "Bestellung"
+                            },
+                            "id": {
+                                "label": "Dokument-ID",
+                                "placeholder": "Dokument-ID"
+                            }
+                        },
+                        "options": {
+                            "title": {
+                                "selectAttribute": "Attribut auswählen",
+                                "selectOrder": "Bestellung auswählen"
+                            },
+                            "label": {
+                                "id": "$id",
+                                "createdAt": "$createdAt",
+                                "updatedAt": "$updatedAt",
+                                "asc": "ASC",
+                                "desc": "DESC"
+                            }
+                        }
+                    },
+                    "settings": {
+                        "inputs": {
+                            "docSecurity": {
+                                "label": "Dokumentensicherheit"
+                            }
+                        }
+                    }
+                },
+                "settings": {
+                    "default": {
+                        "inputs": {
+                            "projectId": {
+                                "label": "Projekt-ID"
+                            },
+                            "apiEndPoint": {
+                                "label": "API-Endpunkt"
+                            }
+                        }
+                    },
+                    "updateName": {
+                        "title": "Name",
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "placeholder": "Datenbanknamen eingeben",
+                                "defaultPlaceholder": "Namen eingeben"
+                            }
+                        },
+                        "texts": {
+                            "chooseWebhook": "Wählen Sie einen beliebigen Namen, der Ihnen bei der Unterscheidung zwischen Webhooks hilft."
+                        }
+                    },
+                    "domain": {
+                        "inputs": {
+                            "domain": {
+                                "label": "Benutzerdefinierte Domäne",
+                                "placeholder": "appwrite.example.com"
+                            }
+                        }
+                    },
+                    "webhooks": {
+                        "texts": {
+                            "stepOne": "Verwenden Sie Webhooks, um Integrationen zu erstellen, die bestimmte Ereignisse auf Appwrite abonnieren. Appwrite sendet eine HTTP-POST-Nutzlast an die konfigurierte URL des Webhooks, wenn eines der angegebenen Ereignisse ausgelöst wird.",
+                            "events": "Legen Sie die Ereignisse fest, die Ihre Funktion auslösen. Maximal 100 Ereignisse zulässig.",
+                            "addEvent": "Fügen Sie ein Ereignis hinzu, um loszulegen",
+                            "selectEvent": "Wählen Sie Ereignisse in Ihrem Appwrite-Projekt aus, die Ihren Webhook auslösen.",
+                            "learnMore": "Erfahren Sie mehr über Appwrite-Events",
+                            "learnMoreWarning": "Weitere Informationen",
+                            "untrustedCertificate": "Nicht vertrauenswürdige oder selbstsignierte Zertifikate sind möglicherweise nicht sicher.",
+                            "security": "Legen Sie einen optionalen Benutzernamen und ein Passwort für die einfache HTTP-Authentifizierung fest, um Ihren Endpunkt vor unbefugtem Zugriff zu schützen.",
+                            "secureEndpoints": "Verwenden Sie diese Option, um Ihren Endpunkt vor nicht vertrauenswürdigen Quellen zu schützen."
+                        },
+                        "inputs": {
+                            "name": {
+                                "label": "Name",
+                                "defaultPlaceholder": "Namen eingeben"
+                            },
+                            "url": {
+                                "label": "POST URL"
+                            },
+                            "user": {
+                                "label": "Benutzer",
+                                "placeholder": "Benutzernamen eingeben"
+                            },
+                            "password": {
+                                "label": "Passwort",
+                                "placeholder": "Passwort eingeben"
+                            }
+                        }
+                    }
+                },
+                "overview": {
+                    "title": {
+                        "name": "Name",
+                        "coding": "Lass uns mit dem Codieren beginnen",
+                        "initSdk": "Initiieren Sie Ihr SDK",
+                        "getSdk": "Holen Sie sich das SDK",
+                        "selfHosted": "Für selbstgehostete Lösungen",
+                        "register": {
+                            "android": "Registrieren Sie Ihre Android-App",
+                            "apple": "Registrieren Sie Ihre Apple-App",
+                            "flutter": "Registrieren Sie Ihre Flutter-App",
+                            "web": "Registrieren Sie Ihre Web-App"
+                        }
+                    },
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "API-Schlüsselname",
+                            "defaultPlaceholder": "Namen eingeben"
+                        },
+                        "androidPlatformName": {
+                            "label": "Name",
+                            "placeholder": "Meine Android-App"
+                        },
+                        "androidPlatformKey": {
+                            "label": "Paketname",
+                            "tooltip": "Ihr Paketname ist im Allgemeinen die Anwendungs-ID in Ihrer build.gradle-Datei auf App-Ebene."
+                        },
+                        "applePlatformName": {
+                            "label": "Name",
+                            "placeholder": "Meine Apple App"
+                        },
+                        "appleHostname": {
+                            "label": "Bundle-ID",
+                            "tooltip": "Sie finden Ihre Bundle-ID auf der Registerkarte 'Allgemein' für das primäre Ziel Ihrer App in Xcode."
+                        },
+                        "webAppname": {
+                            "label": "Name",
+                            "placeholder": "Meine Web-App"
+                        },
+                        "webHostName": {
+                            "label": "Hostname",
+                            "tooltip": "Der Hostname, den Ihre Website für die Interaktion mit den Appwrite-APIs in Produktions- oder Entwicklungsumgebungen verwendet. Kein Protokoll oder Portnummer erforderlich."
+                        }
+                    },
+                    "texts": {
+                        "initSdk": " Nachdem Sie das SDK heruntergeladen haben, ist es an der Zeit, es zu initialisieren. Verwenden Sie Ihre Projekt-ID, die Sie auf der Seite mit den Projekteinstellungen finden.",
+                        "apiCall": "Bevor Sie API-Aufrufe an Ihr neues Appwrite-Projekt senden, stellen Sie sicher, dass Ihr Gerät oder Emulator Netzwerkzugriff auf den Hostnamen oder die IP-Adresse Ihres Appwrite-Projekts hat.",
+                        "alert": "Wenn Sie von einem Emulator oder einem mobilen Gerät aus eine Verbindung zu einem lokal gehosteten Appwrite-Projekt herstellen, sollten Sie die private IP des Geräts, auf dem Ihr Appwrite-Projekt ausgeführt wird, als Hostnamen des Endpunkts anstelle von 'localhost' verwenden. Sie können auch einen Dienst verwenden wie ngrok als Proxy für den Appwrite-Server.",
+                        "android": {
+                            "first": "Fügen Sie dies zunächst zu Ihrer build.gradle-Datei auf Stammebene hinzu:",
+                            "second": "Und fügen Sie dies zur build.gradle-Datei Ihres Projekts hinzu:"
+                        },
+                        "selectFile": "Datei auswählen",
+                        "addPackages": "Pakete hinzufügen",
+                        "searchAppwrite": "Suchen Sie mit der URL nach dem Appwrite SDK",
+                        "selectTargetProject": "Wählen Sie im rechten Bereich Ihr Zielprojekt aus und fügen Sie die gewünschten Versionsregeln hinzu",
+                        "selectAndAddPackage": "Wählen Sie 'Paket hinzufügen' und warten Sie, bis die Paketauflösung abgeschlossen ist",
+                        "productCheck": "Stellen Sie sicher, dass das Appwrite-Paketprodukt aktiviert ist und wählen Sie erneut Paket hinzufügen",
+                        "addToSwift": "Fügen Sie dies zu Ihrer Package.swift-Datei hinzu:",
+                        "addDependency": "Fügen Sie dann die Abhängigkeit zu Ihrem Ziel hinzu:",
+                        "addProjectFlutter": "Appwrite SDK zur pubspec.yaml-Datei Ihres Pakets hinzufügen. Ein Beispiel können Sie hier ansehen.",
+                        "installDartPackage": "Sie können das SDK auch mit dem Dart-Paketmanager von Ihrem Terminal aus installieren:",
+                        "chooseMethod": "Wählen Sie Ihre bevorzugte Installationsmethode",
+                        "use": "Verwenden",
+                        "cmdLine": "Fügen Sie über Ihre Befehlszeile Appwrite SDK zu Ihrem Projekt hinzu.",
+                        "note": {
+                            "phraseOne": "Wenn Sie einen Bundler verwenden (wie",
+                            "or": "oder",
+                            "phraseTwo": "), importieren Sie das Appwrite-Modul, wenn Sie es benötigen:"
+                        },
+                        "installWithCdn": "Um mit einem CDN (Content Delivery Network) zu installieren, fügen Sie die folgenden Skripte am Ende Ihres Tags hinzu, aber bevor Sie Appwrite-Dienste verwenden:",
+                        "wildcard": "Die Verwendung von Wildcard-Hostnamen in der Produktion kann unsicher werden. Lesen Sie mehr darüber",
+                        "moreInfo": "für weitere Informationen."
+                    }
+                },
+                "functions": {
+                    "title": {
+                        "executeFunction": "Funktion ausführen",
+                        "deleteDeployment": "Bereitstellung löschen",
+                        "createDeployment": "Bereitstellung erstellen",
+                        "activeDeployment": "Bereitstellung aktivieren",
+                        "commingSoon": "Bald verfügbar!",
+                        "easyDeployments": "Mit unserer kommenden Git-Integration wird das Erstellen von Bereitstellungen einfacher denn je. Richten Sie einfach ein Repository ein und wir erledigen den Rest.",
+                        "deploymentBuild": "Diese Bereitstellung wird aktiviert, nachdem der Build abgeschlossen ist.",
+                        "name": "Name"
+                    },
+                    "inputs": {
                         "key": {
                             "label": "Schlüssel",
                             "placeholder": "Eingabetaste"
@@ -199,60 +1001,593 @@
                         "value": {
                             "label": "Wert",
                             "placeholder": "Wert eingeben"
+                        },
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Funktionsname",
+                            "defaultPlaceholder": "Namen eingeben"
+                        },
+                        "runtime": {
+                            "label": "Laufzeit",
+                            "placeholder": "Laufzeit auswählen"
+                        },
+                        "data": {
+                            "label": "Benutzerdefinierte Daten (optional)"
+                        },
+                        "json": {
+                            "label": "Beispiel JSON anzeigen"
+                        },
+                        "entryPoint": {
+                            "label": "Einstiegspunkt"
+                        },
+                        "activeDeployment": {
+                            "label": "Bereitstellung nach Build aktivieren"
                         }
+                    },
+                    "texts": {
+                        "customDataExample": "Hier ist ein Beispiel für einige benutzerdefinierte Daten.",
+                        "deleteDeployment": "Sind Sie sicher, dass Sie diese Bereitstellung löschen möchten?",
+                        "deployFunction": "Sie können Ihre Funktion über die Appwrite-CLI mit Unix, CMD oder PowerShell bereitstellen. Schauen Sie sich unsere Dokumentation an, um mehr darüber zu erfahren",
+                        "deployYourFunction": "Ihre Funktionen bereitstellen",
+                        "installAndUse": "oder wie man installiert und verwendet",
+                        "activateWarning": "Sind Sie sicher, dass Sie diese Bereitstellung aktivieren möchten?"
+                    }
+                },
+                "storage": {
+                    "title": {
+                        "createBucket": "Bucket erstellen",
+                        "createFile": "Datei erstellen",
+                        "maximumSize": "Maximale Dateigröße",
+                        "fileSecurity": "Dateisicherheit",
+                        "name": "Name",
+                        "securitySettings": "Sicherheitseinstellungen",
+                        "compression": "Komprimierung",
+                        "fileExtensions": "Dateierweiterungen"
+                    },
+                    "inputs": {
+                        "name": {
+                            "label": "Name",
+                            "placeholder": "Neuer Bucket",
+                            "defaultPlaceholder": "Namen eingeben"
+                        },
+                        "size": {
+                            "label": "Etikettengröße"
+                        },
+                        "security": {
+                            "label": "Dateisicherheit"
+                        },
+                        "algorithm": {
+                            "lable": "Algorithmus"
+                        },
+                        "extensions": {
+                            "lable": "Erlaubte Erweiterungen",
+                            "placeholder": "Erlaubte Dateierweiterungen (mp4, jpg, pdf usw.)"
+                        }
+                    },
+                    "texts": {
+                        "setMaxBucketSize": "Legen Sie die maximal zulässige Dateigröße im Bucket fest.",
+                        "created": "Erstellt:",
+                        "lastUpdated": "Letzte Aktualisierung:",
+                        "enableFileSecurity": "Wenn die Dateisicherheit aktiviert ist, können Benutzer auf Dateien zugreifen, für die sie gewährt wurden",
+                        "fileAndBucketPermission": "entweder Datei- oder Bucket-Berechtigungen",
+                        "fileDisabled": "Wenn die Dateisicherheit deaktiviert ist, können Benutzer auf Dateien zugreifen",
+                        "onlyBucketPermission": "nur wenn sie über Bucket-Berechtigungen verfügen",
+                        "ignorePermission": "Dateiberechtigungen werden ignoriert.",
+                        "enableDisableSecurityService": "Sicherheitsdienste für den Bucket aktivieren oder deaktivieren, einschließlich",
+                        "encruption": "Verschlüsselung",
+                        "and": "und",
+                        "antivirusScanning": "Antivirus-Scanning.",
+                        "antivirus": "Antivirus",
+                        "configureEncruption": "Mit diesem Parameter können Sie konfigurieren, ob die Dateien im Bucket verschlüsselt werden oder nicht. Wir verschlüsseln keine Dateien, die größer als 20 MB sind.",
+                        "configureAntivirus": "Mit diesem Parameter können Sie konfigurieren, ob die Dateien im Bucket vom Appwrite Antivirus-Scanner gescannt werden sollen oder nicht.",
+                        "chooseCompressionAlgo": "Wählen Sie einen Algorithmus für die Komprimierung. Bei Dateien, die größer als 20 MB sind, wird die Komprimierung übersprungen, auch wenn sie aktiviert ist.",
+                        "allowedFileExtensions": "Zulässige Dateierweiterungen. Es können maximal 100 Dateierweiterungen hinzugefügt werden. Lassen Sie das Feld leer, um alle Dateitypen zuzulassen."
                     }
                 }
-            }
-        },
-        "button": {
-            "createUser": "Benutzer erstellen",
-            "clearSearch": "Suche löschen",
-            "cancel": "Abbrechen",
-            "submit": {
-                "create": "Erstellen",
-                "update": "Aktualisieren",
-                "addPrefs": "Präferenz hinzufügen"
             },
-            "pill": {
-                "userId": "Benutzer-ID"
-            }
-        },
-        "table": {
-            "header": {
-                "name": "Name",
-                "identifiers": "Identifikatoren",
-                "status": "Status",
-                "id": "ID",
-                "joined": "Beigetreten"
+            "texts": {
+                "emptySearch": {
+                    "phraseOne": "Leider konnten wir nichts finden",
+                    "phraseTwo": "Es gibt keine Benutzer, die Ihrer Suche entsprechen."
+                },
+                "oAuthProvider": {
+                    "uri": "URI",
+                    "textOne": "Zu verwenden",
+                    "phraseOne": "Authentifizierung in Ihrer Bewerbung, füllen Sie zunächst dieses Formular aus. Weitere Informationen erhalten Sie"
+                },
+                "security": {
+                    "passwordDictionary": "Durch die Aktivierung dieser Option wird verhindert, dass Benutzer unsichere Passwörter festlegen, indem das Passwort des Benutzers mit dem Passwort verglichen wird",
+                    "passwordHistory": {
+                        "phraseOne": "Die Aktivierung dieser Option verhindert, dass Benutzer aktuelle Passwörter wiederverwenden, indem das neue Passwort mit ihrem Passwortverlauf verglichen wird.",
+                        "phraseTwo": "Legen Sie die maximale Anzahl der pro Benutzer gespeicherten Passwörter fest. Maximal 20 Passwörter."
+                    },
+                    "sessionLength": "Wenn Sie das Limit reduzieren, werden aktuell angemeldete Benutzer von der Anwendung abgemeldet.",
+                    "sessionLimit": "Maximal zulässige Anzahl aktiver Sitzungen pro Benutzer.",
+                    "usersLimit": "Beschränken Sie die Anmeldung neuer Benutzer für Ihr Projekt, unabhängig von der Authentifizierungsmethode. Sie scannen weiterhin Benutzer und Teammitgliedschaften über Ihre Appwrite-Konsole.",
+                    "limited": "limitiert",
+                    "unlimited": "unbegrenzt"
+                },
+                "settings": "Aktivieren Sie die Authentifizierungsmethoden, die Sie verwenden möchten.",
+                "teams": {
+                    "members": "Mitglieder",
+                    "searchData": {
+                        "phaseOne": "Leider konnten wir nichts finden",
+                        "phaseTwo": "Es gibt keine Teams, die Ihrer Suche entsprechen.",
+                        "phaseThree": "Es gibt keine Mitglieder, die Ihrer Suche entsprechen."
+                    },
+                    "updatePrefs": "Sie können die Einstellungen Ihres Teams aktualisieren, indem Sie gemeinsame Informationen zu den Objekten des Teams speichern, sodass sie problemlos von allen Mitgliedern geteilt werden können.",
+                    "deleteTeam": "Sind Sie sicher, dass Sie löschen möchten",
+                    "deleteMember": "Sind Sie sicher, dass Sie löschen möchten",
+                    "from": "von",
+                    "dangerZone": " Das Team wird dauerhaft gelöscht, einschließlich aller mit diesem Team verknüpften Daten. Diese Aktion ist irreversibel.",
+                    "createdOn": "Erstellt am"
+                },
+
+                "databases": {
+                    "newDb": "Eine neue Datenbank erstellen",
+                    "delete": "Sind Sie sicher, dass Sie löschen möchten",
+                    "docFrom": "das Dokument von",
+                    "created": "Erstellt:",
+                    "lastUpdated": "Letzte Aktualisierung:",
+                    "settings": "Die Datenbank wird dauerhaft gelöscht, einschließlich aller mit diesem Team verknüpften Daten. Diese Aktion ist irreversibel.",
+                    "createAttribute": {
+                        "heading": "Erstellen Sie Ihr erstes Attribut, um loszulegen.",
+                        "note": "Brauchen Sie Hilfe? Erfahren Sie mehr in unserer Dokumentation."
+                    },
+                    "totalResult": "Gesamtergebnisse:",
+                    "from": "von",
+                    "twoWayRelationship": "Dies ist eine zweiseitige Beziehung und die entsprechende Beziehung wird ebenfalls gelöscht.",
+                    "irreversibleAction": "Diese Aktion ist irreversibel.",
+                    "deleteRelation": "Beziehung zwischen löschen",
+                    "deleteDocFrom": "Dokument löschen aus",
+                    "to": "zu",
+                    "documentsPage": {
+                        "para": {
+                            "phraseOne": "Lese- oder Schreibberechtigungen zuweisen",
+                            "collectionLevel": "Sammlungsebene",
+                            "or": "oder",
+                            "documentLevel": "Dokumentebene",
+                            "phraseTwo": "Wenn Berechtigungen auf Sammlungsebene zugewiesen sind, werden auf einzelne Dokumente angewendete Berechtigungen ignoriert."
+                        }
+                    },
+                    "deleteDocWarning": "Das Dokument wird dauerhaft gelöscht, einschließlich aller darin enthaltenen Daten. Diese Aktion ist irreversibel.",
+                    "updateDocument": "Dokumentdaten basierend auf den zuvor erstellten Attributen aktualisieren.",
+                    "deleteCollection": "Die Sammlung wird dauerhaft gelöscht, einschließlich aller darin enthaltenen Dokumente. Diese Aktion ist irreversibel.",
+                    "displayName": "Legen Sie Zeichenfolgenattribute mit maximal 50 Zeichen fest, die als Anzeigename in der Appwrite-Konsole verwendet werden sollen. Maximal 5 Namen.",
+                    "updatePermission": {
+                        "collectionAndDocumentation": "Wählen Sie aus, wer auf Ihre Sammlung und Dokumente zugreifen kann. Weitere Informationen finden Sie im",
+                        "permissionGuide": "Berechtigungshandbuch"
+                    },
+                    "updateSecurity": {
+                        "phraseOne": "Wenn die Dokumentensicherheit aktiviert ist, können Benutzer auf Dokumente zugreifen, für die sie gewährt wurden",
+                        "eitherDocOrCollection": "entweder Dokument- oder Sammlungsberechtigungen",
+                        "collectionPermission": "nur wenn sie Sammlungsberechtigungen haben",
+                        "documentPermission": "Dokumentberechtigungen werden ignoriert."
+                    },
+                    "wizards": {
+                        "stepOne": "Stellen Sie Dokumentdaten basierend auf den zuvor erstellten Attributen bereit."
+                    }
+                },
+                "users": {
+                    "updatePrefs": "Sie können Ihre Benutzereinstellungen aktualisieren, indem Sie Informationen zu den Objekten des Benutzers speichern, sodass diese problemlos über Geräte und Sitzungen hinweg geteilt werden können.",
+                    "updatePassword": {
+                        "phaseOne": "Geben Sie ein neues Passwort ein. Ein Passwort muss enthalten",
+                        "phaseTwo": "mindestens 8 Zeichen."
+                    },
+                    "noMembership": "Keine Mitgliedschaften verfügbar",
+                    "noSessions": "Keine Sitzungen verfügbar",
+                    "deleteUser": {
+                        "phaseOne": "Sind Sie sicher, dass Sie löschen möchten",
+                        "from": "von"
+                    },
+                    "deleteSession": "Sind Sie sicher, dass Sie diese Sitzung löschen möchten?",
+                    "deleteMembership": {
+                        "phaseOne": "Sind Sie sicher, dass Sie löschen möchten",
+                        "from": "von"
+                    },
+                    "deleteAllSession": {
+                        "phaseOne": "Sind Sie sicher, dass Sie löschen möchten",
+                        "allOf": "alle von",
+                        "sessions": "sessions"
+                    },
+                    "dangerZone": "Der Benutzer wird dauerhaft gelöscht, einschließlich aller mit diesem Benutzer verknüpften Daten. Diese Aktion ist unwiderruflich.",
+                    "on": "on"
+                },
+                "consoleSettings": {
+                    "deleteProject": {
+                        "phraseOne": "Dieses Projekt wird gelöscht",
+                        "phraseTwo": "zusammen mit all seinen Metadaten, Statistiken und anderen Ressourcen.",
+                        "phraseThree": "Diese Aktion ist irreversibel"
+                    },
+                    "accessService": "Greifen Sie über Ihren API-Endpunkt und Ihre Projekt-ID auf Appwrite-Dienste zu.",
+                    "options": "Wählen Sie Dienste aus, die Sie aktivieren oder deaktivieren möchten.",
+                    "deleteAll": "Das Projekt wird dauerhaft gelöscht, einschließlich aller darin enthaltenen Metadaten, Ressourcen und Statistiken. Diese Aktion ist irreversibel.",
+                    "lastUpdated": "Letzte Aktualisierung:",
+                    "delete": {
+                        "phaseOne": "Sind Sie sicher, dass Sie löschen möchten",
+                        "from": "von"
+                    },
+                    "verifiedDomain": "Domain wurde verifiziert",
+                    "pendingDomain": "Domain wartet auf Verifizierung",
+                    "dnsDoc": "Hier finden Sie eine Liste der Domänenanbieter und deren Dokumentation zu den DNS-Einstellungen",
+                    "domainProvider": "Wenn Ihr Domain-Anbieter nicht aufgeführt ist, kontaktieren Sie uns bitte. Wir werden dann auch dessen Einstellungen übernehmen.",
+                    "dnsProvider": "Um fortzufahren, setzen Sie den folgenden Eintrag bei Ihrem DNS-Anbieter",
+                    "time": "Je nach Anbieter kann es einige Zeit dauern, bis Änderungen wirksam werden."
+                },
+                "webhooks": {
+                    "deletePermanently": "Der Webhook wird dauerhaft gelöscht. Diese Aktion ist irreversibel.",
+                    "lastUpdated": "Letzte Aktualisierung:",
+                    "delete": {
+                        "phaseOne": "Sind Sie sicher, dass Sie löschen möchten",
+                        "from": "von"
+                    },
+                    "generateKey": "Sind Sie sicher, dass Sie einen neuen Signaturschlüssel generieren möchten?",
+                    "noRecoveryKey": "Sie können Ihren aktuellen Schlüssel nicht wiederherstellen.",
+                    "triggerWebhook": "Legen Sie die Ereignisse fest, die Ihren Webhook auslösen. Maximal 100 Ereignisse zulässig.",
+                    "addEvent": "Fügen Sie ein Ereignis hinzu, um loszulegen",
+                    "selectEvent": "Wählen Sie Ereignisse in Ihrem Appwrite-Projekt aus, die Ihren Webhook auslösen.",
+                    "learnMore": "Erfahren Sie mehr über Appwrite-Events",
+                    "httpAuth": "Legen Sie einen optionalen Benutzernamen und ein Passwort für die einfache HTTP-Authentifizierung fest, um Ihren Endpunkt vor unbefugtem Zugriff zu schützen.",
+                    "secureEndpoints": "Verwenden Sie diese Option, um Ihren Endpunkt vor nicht vertrauenswürdigen Quellen zu schützen.",
+                    "addSignature": "Fügen Sie den Signaturschlüssel zum X-Appwrite-Webhook-Signature-Header hinzu, um Ihre Webhooks zu validieren.",
+                    "webhookValidation": "Erfahren Sie mehr über die Webhook-Validierung."
+                },
+                "overview": {
+                    "noData": "Keine Daten zum Anzeigen",
+                    "realtimeGetStarted": "Erste Schritte mit Realtime",
+                    "sdks": "Unsere SDKs ermöglichen das einfache Hinzufügen jeder Plattform, die Sie verwenden möchten.",
+                    "addPlatform": "Eine Plattform hinzufügen, um Daten zu Ihrem Projekt anzuzeigen",
+                    "insights": "Erhalten Sie Einblicke in Bandbreitennutzung, Anfragen, Echtzeitverbindungen und mehr, nachdem Sie Ihren ersten API-Aufruf durchgeführt haben",
+                    "scopePermission": "Wählen Sie aus, welche Berechtigungsbereiche Sie Ihrer Anwendung gewähren möchten. Es empfiehlt sich, nur die Berechtigungen zuzulassen, die Sie zum Erreichen Ihrer Projektziele benötigen.",
+                    "createApiKey": "Lassen Sie uns einen API-Schlüssel erstellen.",
+                    "deletePermanent": "Der API-Schlüssel wird dauerhaft gelöscht. Diese Aktion ist irreversibel.",
+                    "lastAccessed": "Letzter Zugriff:",
+                    "scopeGranted": "Gewährte Bereiche:",
+                    "chooseName": "Wählen Sie einen beliebigen Namen, der Ihnen bei der Unterscheidung zwischen API-Schlüsseln hilft.",
+                    "permissionScope": "Sie können auswählen, welchen Berechtigungsbereich Sie Ihrer Anwendung gewähren möchten. Es ist eine bewährte Vorgehensweise, nur die Berechtigungen zuzulassen, die Sie zum Erreichen Ihrer Projektziele benötigen.",
+                    "readyTogo": "Du bist bereit zu gehen",
+                    "congratulations": "Herzlichen Glückwunsch, Sie haben gerade Ihre erste Plattform zu Ihrem Appwrite-Dashboard hinzugefügt! Sind Sie bereit, es auszuprobieren? Warum fügen Sie Ihrem Projekt nicht eine Datenbank hinzu oder beginnen mit dem Hochladen von Dateien? Die Wahl liegt bei Ihnen."
+                },
+                "functions": {
+                    "createNewFunction": "Eine neue Funktion erstellen",
+                    "createVariable": "Erstellen Sie eine Variable (oder einen geheimen Schlüssel), die zur Laufzeit an Ihre Funktion übergeben wird.",
+                    "setVariable": "Legen Sie die Variablen (oder geheimen Schlüssel) fest, die zur Laufzeit an Ihre Funktion übergeben werden.",
+                    "getStartedVar": "Erstellen Sie eine Variable, um loszulegen",
+                    "setCron": "Legen Sie einen Cron-Zeitplan fest, um Ihre Funktion auszulösen. Lassen Sie das Feld leer, wenn kein Zeitplan vorhanden ist.",
+                    "moreDetailsCronSyntax": "Weitere Details zur Cron-Syntax hier",
+                    "setEvents": "Legen Sie die Ereignisse fest, die Ihre Funktion auslösen. Maximal 100 Ereignisse zulässig.",
+                    "addEvent": "Fügen Sie ein Ereignis hinzu, um loszulegen",
+                    "selectEvents": "Wählen Sie Ereignisse in Ihrem Appwrite-Projekt aus, die Ihre Funktion auslösen.",
+                    "learnMore": "Erfahren Sie mehr über Appwrite-Events",
+                    "setPermission": "Wählen Sie aus, wer diese Funktion mithilfe der Client-API ausführen kann. Weitere Informationen finden Sie im",
+                    "permissionGuide": "Berechtigungshandbuch",
+                    "createYourFunction": "Erstellen Sie Ihre Funktion",
+                    "createFunction": "Lass uns eine Funktion erstellen.",
+                    "functionId": "Funktions-ID:",
+                    "deploymentId": "Bereitstellungs-ID:",
+                    "createdAt": "Erstellt am:",
+                    "updatedAt": "Aktualisiert am:",
+                    "entryPoint": "Einstiegspunkt:",
+                    "totalVariables": "Variablen insgesamt:",
+                    "noInactiveDeployments": "Sie haben keine inaktiven Bereitstellungen. Erstellen Sie eine, um sie hier anzuzeigen.",
+                    "learnDeployments": " Erfahren Sie mehr über Bereitstellungen in unserer Dokumentation.",
+                    "uploadVariables": "Laden Sie mehrere Variablen über eine .env-Datei hoch, die zur Laufzeit an Ihre Funktion übergeben wird.",
+                    "permanentDelete": "Sind Sie sicher, dass Sie diese Funktion und alle zugehörigen Bereitstellungen aus Ihrem Projekt löschen möchten?",
+                    "timeLimit": "Begrenzen Sie die Ausführungszeit Ihrer Funktion. Der Maximalwert beträgt 900 Sekunden (15 Minuten).",
+                    "permanentActionDelete": "Die Funktion wird dauerhaft gelöscht, einschließlich aller damit verbundenen Bereitstellungen. Diese Aktion ist irreversibel.",
+                    "noExecutionLogs": "Sie haben keine Ausführungsprotokolle. Erstellen und aktivieren Sie eine Bereitstellung, um sie hier anzuzeigen.",
+                    "needHand": "Brauchen Sie Hilfe? Erfahren Sie mehr in unserer Dokumentation",
+                    "executions": "Ausführungen",
+                    "errors": "Fehler"
+                },
+                "storage": {
+                    "addNewBucket": "Neuen Bucket hinzufügen",
+                    "deleteWarning": "Sind Sie sicher, dass Sie löschen möchten",
+                    "accessPermission": "Wählen Sie aus, wer auf Ihre Buckets und Dateien zugreifen kann. Weitere Informationen finden Sie im",
+                    "permissionGuide": "Berechtigungshandbuch",
+                    "fileSecurity": {
+                        "enable": "Dateisicherheit aktiviert",
+                        "disable": "Dateisicherheit deaktiviert"
+                    },
+                    "userAccessability": "Benutzer können auf diese Datei zugreifen, wenn ihnen dies gewährt wurde",
+                    "fileAndBucketPermission": "entweder Datei- oder Bucket-Berechtigungen",
+                    "assignFilePermission": "Wenn Sie Dateiberechtigungen zuweisen möchten, navigieren Sie zu den Bucket-Einstellungen und aktivieren Sie die Dateisicherheit. Andernfalls werden nur Bucket-Berechtigungen verwendet.",
+                    "couldNotFind": "Leider konnten wir nichts finden",
+                    "noMatchingFiles": "Es gibt keine Dateien, die Ihrer Suche entsprechen.",
+                    "permanentDeleteBucket": "Der Bucket wird dauerhaft gelöscht, einschließlich aller darin enthaltenen Dateien. Diese Aktion ist irreversibel.",
+                    "permanentDeleteFile": "Die Datei wird dauerhaft gelöscht. Diese Aktion ist irreversibel.",
+                    "lastUpdated": "Letzte Aktualisierung:",
+                    "created": "Erstellt:",
+                    "size": "Größe:",
+                    "mime": "MIME-Typ:",
+                    "readWritePermission": "Weisen Sie Lese- oder Schreibberechtigungen auf Bucket-Ebene oder Dateiebene zu. Wenn Berechtigungen auf Bucket-Ebene aktiviert sind, werden Dateiberechtigungen ignoriert."
+                },
+                "components": {
+                    "create": "Erstelle dein erstes",
+                    "getStarted": "um loszulegen.",
+                    "needHand": "Brauchen Sie Hilfe? Erfahren Sie mehr in unserer Dokumentation."
+                }
             },
-            "pill": {
-                "verify": "verifiziert",
-                "emailVerify": "bestätigte E-Mail",
-                "phoneVerify": "bestätigtes Telefon",
-                "unverify": "nicht verifiziert",
-                "block": "blockiert",
-                "userId": "Benutzer-ID"
-            }
-        },
-        "texts": {
-            "emptySearch": {
-                "phraseOne": "Leider konnten wir nichts finden",
-                "phraseTwo": "Es gibt keine Benutzer, die Ihrer Suche entsprechen."
-            }
-        },
-        "navbar": {
-            "header": {
-                "users": "Benutzer",
-                "teams": "Teams",
-                "usage": "Nutzung",
-                "security": "Sicherheity",
-                "settings": "Einstellungen"
+            "button": {
+                "createUser": "Benutzer erstellen",
+                "clearSearch": "Suche löschen",
+                "account": "Konto",
+                "email": "E-mail",
+                "phone": "Telefon",
+                "createTeam": "Team erstellen",
+                "createIndex": "Index erstellen",
+                "createMembership": "Mitgliedschaft erstellen",
+                "createDb": "Datenbank erstellen",
+                "createCollection": "Sammlung erstellen",
+                "createAttribute": "Attribut erstellen",
+                "createDocument": "Dokument erstellen",
+                "createDomain": "Domäne erstellen",
+                "documentation": "Dokumentation",
+                "createBucket": "Bucket erstellen",
+                "items": "Artikel",
+                "addItem": "Element hinzufügen",
+                "addEvent": "Ereignis hinzufügen",
+                "addAttribute": "Attribut hinzufügen",
+                "createWebhook": "Webhook erstellen",
+                "createApiKey": "API-Schlüssel erstellen",
+                "createFunction": "Funktion erstellen",
+                "createVariable": "Variable erstellen",
+                "createFile": "Datei erstellen",
+                "createDeployment": "Bereitstellung erstellen",
+                "viewApiKeys": "API-Schlüssel anzeigen",
+                "deselectAll": "Alle abwählen",
+                "selectAll": "Alles auswählen",
+                "cancel": "Abbrechen",
+                "buildLogs": "Erstellungsprotokolle",
+                "download": "Herunterladen",
+                "feedback": "Feedback",
+                "close": "Schließen",
+                "submit": {
+                    "create": "Erstellen",
+                    "update": "Aktualisieren",
+                    "addPrefs": "Präferenz hinzufügen",
+                    "delete": "Löschen",
+                    "deleteAll": "Alle löschen",
+                    "verify": "Überprüfen",
+                    "regenerate": "Regenerieren",
+                    "regenerateKey": "Schlüssel neu generieren",
+                    "executeNow": "Jetzt ausführen",
+                    "activate": "Aktivieren",
+                    "downloadEnv": ".env-Datei herunterladen",
+                    "importEnv": ".env-Datei importieren"
+                },
+                "pill": {
+                    "userId": "Benutzer-ID"
+                },
+                "dropdown": {
+                    "edit": "Bearbeiten",
+                    "createIndex": "Index erstellen",
+                    "overview": "Übersicht",
+                    "ninty": "90d",
+                    "thirty": "30d",
+                    "twentyFour": "24h",
+                    "newOrg": "Neue Organisation",
+                    "yourAccount": "Ihr Konto",
+                    "signOut": "Abmelden"
+                }
             },
-            "userHeader": {
-                "overview": "Übersicht",
-                "membership": "Mitgliedschaften",
-                "sessions": "Sitzungen",
-                "activity": "Aktivität"
+            "table": {
+                "header": {
+                    "name": "Nennen",
+                    "roles": "Rollen",
+                    "identifiers": "Identifikatoren",
+                    "status": "Status",
+                    "id": "ID",
+                    "documentId": "Dokument-ID",
+                    "executionId": "Ausführungs-ID",
+                    "trigger": "Trigger",
+                    "duration": "Dauer",
+                    "ip": "IP",
+                    "joined": "Beigetreten",
+                    "members": "Mitglieder",
+                    "created": "Erstellt",
+                    "browserAndDevice": "Browser und Gerät",
+                    "sessions": "Sitzungen",
+                    "location": "Standort",
+                    "deleteDatabase": "Datenbank löschen",
+                    "key": "Schlüssel",
+                    "type": "Type",
+                    "value": "Wert",
+                    "attributes": "Attribute",
+                    "asc_dsc": "Asc/Desc",
+                    "defaultValue": "Standardwert",
+                    "relation": "Beziehung",
+                    "filename": "Dateiname",
+
+                    "settings": "Einstellungen",
+                    "domainName": "Domänenname",
+                    "postUrl": "POST-URL",
+                    "events": "Ereignisse",
+                    "lastAccessed": "letzter Zugriff",
+                    "expirationDate": "Ablaufdatum",
+                    "scopes": "Umfänge",
+                    "buildTime": "Bauzeit",
+                    "size": "Größe"
+                },
+                "pill": {
+                    "verify": "verifiziert",
+                    "emailVerify": "bestätigte E-Mail",
+                    "phoneVerify": "verifiziertes Telefon",
+                    "unverify": "nicht verifiziert",
+                    "block": "blockiert",
+                    "userId": "Benutzer-ID",
+                    "teamId": "Team-ID",
+                    "webhookId": "Webhook-ID",
+                    "required": "Erforderlich",
+                    "pending": "Ausstehend",
+                    "collectionId": "Sammlungs-ID",
+                    "recommended": "empfohlen",
+                    "dbId": "Datenbank-ID",
+                    "currentSession": "aktuelle Sitzung",
+                    "disabled": "deaktiviert",
+                    "documentId": "Dokument-ID",
+                    "functionId": "Funktions-ID",
+                    "fileId": "Datei-ID",
+                    "bucketId": "Bucket-ID",
+                    "failed": "failed",
+                    "sllTlsDisabled": "SLL/TLS deaktiviert",
+                    "apiKeySecret": "API-Schlüsselgeheimnis"
+                }
+            },
+            "legends": {
+                "teams": {
+                    "users": "Registrierte Benutzer",
+                    "create": "Benutzer erstellt",
+                    "read": "Benutzer lesen",
+                    "update": "Benutzer aktualisiert",
+                    "delete": "Benutzer gelöscht"
+                },
+                "databases": {
+                    "databases": "Gesamtdatenbanken",
+                    "create": "Datenbanken erstellt",
+                    "read": "Datenbanken gelesen",
+                    "update": "Datenbanken aktualisiert",
+                    "delete": "Datenbanken gelöscht",
+                    "usage": {
+                        "collections": "Gesamtsammlungen",
+                        "create": "Sammlungen erstellt",
+                        "read": "Sammlungen gelesen",
+                        "update": "Sammlungen aktualisiert",
+                        "delete": "Sammlungen gelöscht"
+                    },
+                    "documents": {
+                        "documents": "Gesamtdokumente",
+                        "create": "Dokumente erstellt",
+                        "read": "Dokumente gelesen",
+                        "update": "Dokumente aktualisiert",
+                        "delete": "Dokumente gelöscht"
+                    }
+                },
+                "settings": {
+                    "domain": {
+                        "addDomain": "Fügen Sie Ihre Domain hinzu",
+                        "addCname": "Einen CNAME-Eintrag hinzufügen",
+                        "verifyDomain": "Domäne überprüfen",
+                        "sslCertificate": "SSL-Zertifikat"
+                    },
+                    "webhooks": {
+                        "addWebhooks": "Fügen Sie Ihren Webhook hinzu",
+                        "events": "Webhook-Ereignisse",
+                        "Sicherheit": "Sicherheit"
+                    }
+                },
+                "overview": { "details": "Details", "scopes": "Umfänge" },
+                "functions": {
+                    "details": "Details",
+                    "excecuteAccess": "Ausführungszugriff",
+                    "events": "Ereignisse",
+                    "schedule": "Zeitplan",
+                    "Variablen": "Variablen"
+                },
+                "storage": {
+                    "buckets": "Gesamtzahl der Buckets",
+                    "create": "Buckets erstellt",
+                    "read": "Buckets gelesen",
+                    "update": "Buckets aktualisiert",
+                    "delete": "Buckets gelöscht",
+                    "usage": {
+                        "files": "Dateien",
+                        "create": "Dateien erstellt",
+                        "read": "Dateien gelesen",
+                        "update": "Dateien aktualisiert",
+                        "delete": "Dateien gelöscht"
+                    }
+                }
+            },
+            "navbar": {
+                "header": {
+                    "users": "Benutzer",
+                    "teams": "Teams",
+                    "usage": "Nutzung",
+                    "security": "Sicherheit",
+                    "settings": "Einstellungen"
+                },
+                "userHeader": {
+                    "overview": "Übersicht",
+                    "membership": "Mitgliedschaften",
+                    "sessions": "Sitzungen",
+                    "activity": "Aktivität"
+                },
+                "teamHeader": {
+                    "overview": "Übersicht",
+                    "members": "Mitglieder",
+                    "activity": "Aktivität"
+                },
+                "databases": {
+                    "databases": "Datenbanken",
+                    "usage": "Nutzung",
+                    "collections": "Sammlungen",
+                    "settings": "Einstellungen",
+                    "dbCollection": {
+                        "documents": "Dokumente",
+                        "activity": "Aktivität",
+                        "indexes": "Indizes",
+                        "attribute": "Attribute",
+                        "usage": "Nutzung",
+                        "settings": "Einstellungen"
+                    },
+                    "document": {
+                        "overview": "Übersicht",
+                        "data": "Daten",
+                        "activity": "Aktivität"
+                    }
+                },
+                "settings": {
+                    "overview": "Übersicht",
+                    "customDomains": "Benutzerdefinierte Domänen",
+                    "webhooks": "Webhooks"
+                },
+                "platforms": {
+                    "web": "Web-App",
+                    "flutter": "Flutter-App",
+                    "apple": "Apple-App",
+                    "android": "Android-App"
+                },
+                "functions": {
+                    "deployments": "Bereitstellungen",
+                    "usage": "Nutzung",
+                    "executions": "Ausführungen",
+                    "settings": "Einstellungen"
+                },
+                "storage": {
+                    "buckets": "Eimer",
+                    "usage": "Nutzung",
+                    "files": "Dateien",
+                    "settings": "Einstellungen"
+                }
+            },
+            "links": {
+                "oAuthProvider": {
+                    "visitDoc": "Besuchen Sie die Dokumente."
+                },
+                "passwordDictionary": "10.000 am häufigsten verwendete Passwörter.",
+                "support": "Unterstützung"
+            },
+            "alert": {
+                "oAuthProvider": {
+                    "fieldOne": "Um die Einrichtung abzuschließen, fügen Sie diesen OAuth2-Umleitungs-URI zu Ihrem hinzu",
+                    "fieldTwo": "App-Konfiguration."
+                },
+                "teams": {
+                    "createMembership": "Rollen werden zum Verwalten von Zugriffsberechtigungen verwendet. Sie können jede gewünschte Rolle erstellen."
+                },
+                "databases": {
+                    "title": {
+                        "documentSecurity": {
+                            "enabled": "Dokumentensicherheit ist aktiviert",
+                            "disabled": "Dokumentsicherheit ist deaktiviert"
+                        },
+                        "userPermission": "Benutzer können auf dieses Dokument zugreifen, wenn ihnen dies gewährt wurde",
+                        "collectionPermission": "Entweder Dokument- oder Sammlungsberechtigungen.",
+                        "permissionCheck": "Wenn Sie Dokumentberechtigungen zuweisen möchten, navigieren Sie zu den Sammlungseinstellungen und aktivieren Sie die Dokumentsicherheit. Andernfalls werden nur Sammlungsberechtigungen verwendet."
+                    },
+                    "relationshipSettings": "Um die Auswahl zu ändern, bearbeiten Sie die Beziehungseinstellungen."
+                }
             }
         }
     }
