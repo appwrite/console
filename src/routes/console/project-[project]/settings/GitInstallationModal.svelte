@@ -10,9 +10,7 @@
     function connectGitHub() {
         const redirect = new URL($page.url);
         redirect.searchParams.append('alert', 'installation-created');
-        const target = new URL(
-            `${sdk.forProject.client.config.endpoint}/v1/vcs/github/installations`
-        );
+        const target = new URL(`${sdk.forProject.client.config.endpoint}/v1/vcs/github/authorize`);
         target.searchParams.set('projectId', $page.params.project);
         target.searchParams.set('redirect', redirect.toString());
         goto(target);
