@@ -8,6 +8,7 @@
     import { base } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     export let showDelete = false;
 

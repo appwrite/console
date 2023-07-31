@@ -5,6 +5,7 @@
     import { BarChart } from '$lib/charts';
     import { page } from '$app/stores';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -36,7 +37,7 @@
     {#if count}
         <Card>
             <Heading tag="h6" size="6">{total(count)}</Heading>
-            <p>Executions</p>
+            <p>{$LL.console.project.texts.functions.executions()}</p>
             <div class="u-margin-block-start-16" />
             <BarChart
                 series={[
@@ -50,7 +51,7 @@
     {#if errors}
         <Card>
             <Heading tag="h6" size="6">{total(errors)}</Heading>
-            <p>Errors</p>
+            <p>{$LL.console.project.texts.functions.errors()}</p>
             <div class="u-margin-block-start-16" />
             <BarChart
                 series={[

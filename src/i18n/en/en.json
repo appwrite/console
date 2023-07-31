@@ -353,6 +353,7 @@
             "texts": {
                 "dropDown": "New Organization",
                 "apps": "apps",
+                "no": "no",
                 "members": "members",
                 "createProject": "Create a new project"
             },
@@ -1112,6 +1113,7 @@
                 "cancel": "Cancel",
                 "buildLogs": "Build logs",
                 "download": "Download",
+                "feedback": "Feedback",
                 "close": "Close",
                 "submit": {
                     "create": "Create",
@@ -1136,7 +1138,10 @@
                     "overview": "Overview",
                     "ninty": "90d",
                     "thirty": "30d",
-                    "twentyFour": "24h"
+                    "twentyFour": "24h",
+                    "newOrg": "New organization",
+                    "yourAccount": "Your Account",
+                    "signOut": "Sign Out"
                 }
             },
             "table": {
@@ -1392,7 +1397,9 @@
                     "timeLimit": "Limit the execution time of your function. Maximum value is 900 seconds (15 minutes).",
                     "permanentActionDelete": "The function will be permanently deleted, including all deployments associated with it. This action is irreversible.",
                     "noExecutionLogs": "You have no execution logs. Create and activate a deployment to see it here.",
-                    "needHand": "Need a hand? Learn more in our documentation"
+                    "needHand": "Need a hand? Learn more in our documentation",
+                    "executions": "Executions",
+                    "errors": "Errors"
                 },
                 "storage": {
                     "addNewBucket": "Add a new bucket",
@@ -1415,6 +1422,11 @@
                     "size": "Size:",
                     "mime": "MIME Type:",
                     "readWritePermission": "Assign read or write permissions at the Bucket Level or File Level. If Bucket Level permissions are enabled, file permissions will be ignored."
+                },
+                "components": {
+                    "create": "Create your first",
+                    "getStarted": "to get started.",
+                    "needHand": "Need a hand? Learn more in our documentation."
                 }
             },
             "legends": {
@@ -1551,7 +1563,8 @@
                 "oAuthProvider": {
                     "visitDoc": "visit the docs."
                 },
-                "passwordDictionary": "10k most commonly used passwords."
+                "passwordDictionary": "10k most commonly used passwords.",
+                "support": "Support"
             },
             "alert": {
                 "oAuthProvider": {

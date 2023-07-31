@@ -5,6 +5,7 @@
     import EmptyDark from '$lib/images/empty-dark.svg';
     import { Heading } from '.';
     import { trackEvent } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     export let single = false;
     export let target: string = null;
@@ -40,9 +41,12 @@
             </button>
             <slot>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2">Create your first {target} to get started.</Heading>
+                    <Heading size="7" tag="h2"
+                        >{$LL.console.project.texts.components.create()}
+                        {target}
+                        {$LL.console.project.texts.components.getStarted()}</Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
-                        Need a hand? Learn more in our documentation.
+                        {$LL.console.project.texts.components.needHand()}
                     </p>
                 </div>
                 <div class="u-flex u-gap-16 u-main-center">
@@ -51,9 +55,11 @@
                         {href}
                         text
                         event="empty_documentation"
-                        ariaLabel={`create {target}`}>Documentation</Button>
+                        ariaLabel={`create {target}`}
+                        >{$LL.console.project.button.documentation()}</Button>
                     <Button secondary on:click on:click={track}>
-                        Create {target}
+                        {$LL.console.project.button.submit.create()}
+                        {target}
                     </Button>
                 </div>
             </slot>

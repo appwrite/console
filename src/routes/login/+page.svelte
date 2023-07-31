@@ -14,7 +14,6 @@
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { LanguageSelector } from '$lib/components';
     import LL from '$i18n/i18n-svelte';
 
     let mail: string, pass: string;
@@ -71,14 +70,10 @@
     </svelte:fragment>
     <svelte:fragment slot="links">
         <li class="inline-links-item">
-            <a href={`${base}/recover`}
-                ><span class="text">{$LL.login.links.recovery()}?</span></a>
+            <a href={`${base}/recover`}><span class="text">{$LL.login.links.recovery()}?</span></a>
         </li>
         <li class="inline-links-item">
             <a href={`${base}/register`}><span class="text">{$LL.login.links.register()}</span></a>
-        </li>
-        <li class="inline-links-item">
-            <LanguageSelector />
         </li>
     </svelte:fragment>
 </Unauthenticated>

@@ -10,6 +10,7 @@
     import Light from './light.svg';
     import Dark from './dark.svg';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 

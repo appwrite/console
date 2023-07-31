@@ -64,7 +64,9 @@
             {#each data.projects.projects as project}
                 <GridItem1 href={`${base}/console/project-${project.$id}`}>
                     <svelte:fragment slot="eyebrow">
-                        {project?.platforms?.length ? project?.platforms?.length : 'No'}
+                        {project?.platforms?.length
+                            ? project?.platforms?.length
+                            : $LL.console.organization.texts.no()}
                         {' '}
                         {$LL.console.organization.texts.apps()}
                     </svelte:fragment>

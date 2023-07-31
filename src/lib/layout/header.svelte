@@ -22,6 +22,7 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
+    import LL from '$i18n/i18n-svelte';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
@@ -75,7 +76,7 @@
         {/if}
         <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
             <button class="button is-small is-text" on:click={toggleFeedback}>
-                <span class="text">Feedback</span>
+                <span class="text">{$LL.console.project.button.feedback()}</span>
             </button>
             <svelte:fragment slot="other">
                 {#if $feedback.type === 'nps'}
@@ -90,11 +91,10 @@
             target="_blank"
             rel="noopener noreferrer"
             class="button is-small is-text">
-            <span class="text">Support</span>
+            <span class="text">{$LL.console.project.links.support()}</span>
         </a>
 
         <LanguageSelector />
-        
     </nav>
     <nav class="u-flex u-height-100-percent u-sep-inline-start">
         {#if $user}
@@ -138,12 +138,12 @@
                                         showDropdown = false;
                                         newOrgModal.set(true);
                                     }}>
-                                    New organization
+                                    {$LL.console.project.button.dropdown.newOrg()}
                                 </DropListItem>
                                 <DropListLink
                                     href={`${base}/console/account`}
                                     on:click={() => (showDropdown = false)}>
-                                    Your Account
+                                    {$LL.console.project.button.dropdown.yourAccount()}
                                 </DropListLink>
                                 <DropListItem
                                     icon="logout-right"
@@ -151,7 +151,7 @@
                                         showDropdown = false;
                                         logout();
                                     }}>
-                                    Sign Out
+                                    {$LL.console.project.button.dropdown.signOut()}
                                 </DropListItem>
                             </ul>
                         </section>
