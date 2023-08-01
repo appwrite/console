@@ -6,6 +6,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { provider } from '.';
+    import { addNotification } from '$lib/stores/notifications';
 
     const providers: Record<Provider, string> = {
         appwrite: 'Appwrite Self-hosted',
@@ -27,6 +28,17 @@
     function getFirebaseProjects() {
         sdk.forProject.migrations.listFirebaseProjects().then((res) => {
             firebaseProjects = res.projects;
+        });
+    }
+
+    function deauthorizeGoogle() {
+        sdk.forProject.migrations.firebaseDeauthorize().then(() => {
+            firebaseProjects = [];
+        });
+
+        addNotification({
+            type: 'success',
+            message: 'Signed out of Google successfully'
         });
     }
 
@@ -94,9 +106,16 @@
                     class="card is-allow-focus u-height-100-percent u-flex u-flex-vertical u-cursor-pointer u-margin-block-start-24">
                     <div class="content">
                         <p>{project.displayName}</p>
+                        <span>{project.projectId}</span>
                     </div>
                 </div>
             {/each}
+
+            <p class="u-text-center u-margin-block-start-24">
+                Signed in as test@test.com <button
+                    class="u-bold"
+                    on:click|preventDefault={deauthorizeGoogle}>Sign Out?</button>
+            </p>
         {/if}
         <button
             class="tag u-margin-block-start-16"
