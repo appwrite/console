@@ -42,7 +42,11 @@
 <main
     class:grid-with-side={showSideNavigation}
     class:is-open={isOpen}
-    class:u-hide={$wizard.show || $log.show}>
+    class:u-hide={$wizard.show || $log.show}
+    class:is-fixed-layout={$$slots.alert}>
+    {#if $$slots.alert}
+        <slot name="alert" />
+    {/if}
     <header class="main-header u-padding-inline-end-0">
         <button
             class:u-hide={!showSideNavigation}

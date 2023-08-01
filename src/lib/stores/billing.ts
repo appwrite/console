@@ -3,7 +3,9 @@ import { derived, get } from 'svelte/store';
 import { sdk } from './sdk';
 import { limitRates } from '$lib/constants';
 import { organization } from './organization';
-import type { PaymentList } from '$lib/sdk/billing';
+import type { Invoice, PaymentList } from '$lib/sdk/billing';
+import { isCloud } from '$lib/system';
+import { cachedStore } from '$lib/helpers/cache';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -30,6 +32,27 @@ export function getCreditCardImage(brand: string, width = 46, height = 32) {
 export function getServiceLimit(serviceId: string) {
     return limitRates?.[get(organization)?.billingPlan]?.find((l) => l.id === serviceId);
 }
+
+export const failedInvoice = cachedStore<
+    false | Invoice,
+    {
+        load: (orgId: string) => Promise<void>;
+    }
+>('failedInvoice', function ({ set }) {
+    return {
+        load: async (orgId) => {
+            if (!isCloud) set(false);
+            const invoices = await sdk.forConsole.billing.listInvoices(orgId);
+            const failedInvoices = invoices.invoices.filter((i) => i.status === 'failed');
+            // const failedInvoices = invoices.invoices;
+            if (failedInvoices.length > 0) {
+                const firstFailed = failedInvoices[0];
+                //TODO: if firstFailed is older than 30 days, set readonly to true!
+                set(firstFailed);
+            } else set(false);
+        }
+    };
+});
 
 export const tierFree = {
     price: 0,

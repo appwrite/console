@@ -9,7 +9,7 @@
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import { Alert, Heading } from '$lib/components';
-    import { paymentMethods } from '$lib/stores/billing';
+    import { failedInvoice, paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
 
     $: defaultPaymentMethod = $paymentMethods.paymentMethods.find(
@@ -18,7 +18,15 @@
 </script>
 
 <Container>
-    {#if defaultPaymentMethod.failed}
+    {#if $failedInvoice}
+        <Alert type="error">
+            <svelte:fragment slot="title">
+                The scheduled payment for {$organization.name} failed
+            </svelte:fragment>
+            To avoid service disruptions in your projects, please verify your payment details and update
+            them if necessary.
+        </Alert>
+    {:else if defaultPaymentMethod.failed}
         <Alert type="error">
             <svelte:fragment slot="title">
                 The default payment method for {$organization.name} has expired
