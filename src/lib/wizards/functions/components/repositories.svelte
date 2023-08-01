@@ -94,7 +94,7 @@
         {:then response}
             {#if response?.total}
                 <ul class="table is-remove-outer-styles common-section">
-                    {#each response.repositories as repo}
+                    {#each response.providerRepositories as repo}
                         <li class="table-row">
                             <div class="table-col">
                                 <div
