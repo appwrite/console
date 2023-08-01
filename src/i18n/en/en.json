@@ -364,7 +364,7 @@
                     "settings": "Settings"
                 }
             }
-        }, 
+        },
         "project": {
             "title": {
                 "auth": "Auth",
@@ -1556,6 +1556,14 @@
                     "buckets": "Buckets",
                     "usage": "Usage",
                     "files": "Files",
+                    "settings": "Settings"
+                },
+                "sideNavigation": {
+                    "overview": "Overview",
+                    "auth": "Auth",
+                    "databases": "Databases",
+                    "functions": "Functions",
+                    "storage": "Storage",
                     "settings": "Settings"
                 }
             },

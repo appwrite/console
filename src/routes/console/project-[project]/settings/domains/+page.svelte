@@ -23,6 +23,7 @@
     import Create from './create.svelte';
     import Delete from './delete.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 

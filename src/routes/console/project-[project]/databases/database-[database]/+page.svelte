@@ -15,7 +15,7 @@
     <GridHeader title="Collections" {columns} view={data.view}>
         <Button on:click={() => ($showCreate = true)} event="create_collection">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">{$LL.console.project.button.submit.createCollection()}</span>
+            <span class="text">{$LL.console.project.button.createCollection()}</span>
         </Button>
     </GridHeader>
 

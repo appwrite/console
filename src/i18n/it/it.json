@@ -1557,6 +1557,14 @@
                     "usage": "Utilizzo",
                     "files": "File",
                     "settings": "Impostazioni"
+                },
+                "sideNavigation": {
+                    "overview": "Panoramica",
+                    "auth": "Aut",
+                    "databases": "Databases",
+                    "functions": "Funzioni",
+                    "storage": "Archiviazione",
+                    "settings": "Archiviazione"
                 }
             },
             "links": {

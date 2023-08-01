@@ -5,6 +5,7 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { isMac } from '$lib/helpers/platform';
     import { slide } from '$lib/helpers/transition';
+    import LL from '$i18n/i18n-svelte';
 
     $: project = $page.params.project;
     $: projectPath = `${base}/console/project-${project}`;
@@ -51,7 +52,8 @@
                                     disabled: !narrow
                                 }}>
                                 <span class="icon-chart-bar" aria-hidden="true" />
-                                <span class="text">Overview</span>
+                                <span class="text"
+                                    >{$LL.console.project.navbar.sideNavigation.overview()}</span>
                             </a>
                         </li>
                         <li class="drop-list-item">
@@ -68,7 +70,8 @@
                                     disabled: !narrow
                                 }}>
                                 <span class="icon-user-group" aria-hidden="true" />
-                                <span class="text">Auth</span>
+                                <span class="text"
+                                    >{$LL.console.project.navbar.sideNavigation.auth()}</span>
                             </a>
                         </li>
                         <li class="drop-list-item">
@@ -85,7 +88,8 @@
                                     disabled: !narrow
                                 }}>
                                 <span class="icon-database" aria-hidden="true" />
-                                <span class="text">Databases</span>
+                                <span class="text"
+                                    >{$LL.console.project.navbar.sideNavigation.databases()}</span>
                             </a>
                         </li>
                         <li class="drop-list-item">
@@ -102,7 +106,8 @@
                                     disabled: !narrow
                                 }}>
                                 <span class="icon-lightning-bolt" aria-hidden="true" />
-                                <span class="text">Functions</span>
+                                <span class="text"
+                                    >{$LL.console.project.navbar.sideNavigation.functions()}</span>
                             </a>
                         </li>
                         <li class="drop-list-item">
@@ -119,7 +124,8 @@
                                     disabled: !narrow
                                 }}>
                                 <span class="icon-folder" aria-hidden="true" />
-                                <span class="text">Storage</span>
+                                <span class="text"
+                                    >{$LL.console.project.navbar.sideNavigation.storage()}</span>
                             </a>
                         </li>
                     </ul>
@@ -140,7 +146,8 @@
                             disabled: !narrow
                         }}>
                         <span class="icon-cog" aria-hidden="true" />
-                        <span class="text">Settings</span>
+                        <span class="text"
+                            >{$LL.console.project.navbar.sideNavigation.settings()}</span>
                     </a>
                 </section>
             </div>
