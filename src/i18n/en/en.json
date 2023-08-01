@@ -364,7 +364,7 @@
                     "settings": "Settings"
                 }
             }
-        },
+        }, 
         "project": {
             "title": {
                 "auth": "Auth",
