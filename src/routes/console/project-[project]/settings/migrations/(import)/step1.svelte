@@ -3,7 +3,10 @@
     import { Button, FormList, InputNumber, InputPassword, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import type { Provider } from '$lib/stores/migration';
+    import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
     import { provider } from '.';
+    import { addNotification } from '$lib/stores/notifications';
 
     const providers: Record<Provider, string> = {
         appwrite: 'Appwrite Self-hosted',
@@ -12,7 +15,40 @@
         nhost: 'NHost'
     };
 
+    function connectGoogle() {
+        const redirect = new URL($page.url);
+        const target = new URL(
+            `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
+        );
+        target.searchParams.set('projectId', $page.params.project);
+        target.searchParams.set('redirect', redirect.toString());
+        return target;
+    }
+
+    function getFirebaseProjects() {
+        sdk.forProject.migrations.listFirebaseProjects().then((res) => {
+            firebaseProjects = res.projects;
+        });
+    }
+
+    function deauthorizeGoogle() {
+        sdk.forProject.migrations.firebaseDeauthorize().then(() => {
+            firebaseProjects = [];
+        });
+
+        addNotification({
+            type: 'success',
+            message: 'Signed out of Google successfully'
+        });
+    }
+
+    let firebaseProjects = [];
+
     let showAuth = false;
+
+    $: if ($provider.provider === 'firebase') {
+        getFirebaseProjects();
+    }
 </script>
 
 <WizardStep>
@@ -57,13 +93,30 @@
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'firebase'}
-        <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
-            <p class="u-text-center u-bold">Sign in with Google to get started</p>
-            <Button secondary>
-                <SvgIcon name="google" />Sign in
-            </Button>
-        </div>
+        {#if firebaseProjects.length == 0}
+            <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
+                <p class="u-text-center u-bold">Sign in with Google to get started</p>
+                <Button secondary href={connectGoogle().toString()}>
+                    <SvgIcon name="google" />Sign in
+                </Button>
+            </div>
+        {:else}
+            {#each firebaseProjects as project}
+                <div
+                    class="card is-allow-focus u-height-100-percent u-flex u-flex-vertical u-cursor-pointer u-margin-block-start-24">
+                    <div class="content">
+                        <p>{project.displayName}</p>
+                        <span>{project.projectId}</span>
+                    </div>
+                </div>
+            {/each}
 
+            <p class="u-text-center u-margin-block-start-24">
+                Signed in as test@test.com <button
+                    class="u-bold"
+                    on:click|preventDefault={deauthorizeGoogle}>Sign Out?</button>
+            </p>
+        {/if}
         <button
             class="tag u-margin-block-start-16"
             type="button"
