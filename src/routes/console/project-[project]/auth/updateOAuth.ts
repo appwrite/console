@@ -28,7 +28,7 @@ export async function updateOAuth({
     try {
         await sdk.forConsole.projects.updateOAuth2(
             projectId,
-            provider.name.toLowerCase(),
+            provider.key,
             appId || undefined,
             secret || undefined,
             enabled
