@@ -51,7 +51,7 @@
             on:click={openWizard}
             event="create_document">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">{$LL.console.project.buttons.createDocument()}</span>
+            <span class="text">{$LL.console.project.button.createDocument()}</span>
         </Button>
     </GridHeader>
 
@@ -87,7 +87,7 @@
                     text
                     event="empty_documentation"
                     ariaLabel={`create {target}`}
-                    >{$LL.console.project.buttons.documentation()}</Button>
+                    >{$LL.console.project.button.documentation()}</Button>
                 <CreateAttributeDropdown
                     bind:showCreateDropdown
                     bind:showCreate={showCreateAttribute}
@@ -98,7 +98,7 @@
                         on:click={() => {
                             showCreateDropdown = !showCreateDropdown;
                         }}>
-                        {$LL.console.project.buttons.createAttribute()}
+                        {$LL.console.project.button.createAttribute()}
                     </Button>
                 </CreateAttributeDropdown>
             </div>
