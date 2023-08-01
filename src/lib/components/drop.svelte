@@ -84,9 +84,17 @@
             dispatch('blur');
         }
     };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape' && show) {
+            event.preventDefault();
+            show = false;
+            dispatch('blur');
+        }
+    };
 </script>
 
-<svelte:window on:click={onBlur} />
+<svelte:window on:click={onBlur} on:keydown={onKeyDown} />
 
 <div class:drop-wrapper={!noStyle} class:u-cross-child-start={childStart} bind:this={element}>
     <slot />

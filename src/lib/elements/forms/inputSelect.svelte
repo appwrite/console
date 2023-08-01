@@ -2,7 +2,7 @@
     import { FormItem, Helper, Label } from '.';
 
     export let id: string;
-    export let label: string;
+    export let label: string | undefined = undefined;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let value: string | number | boolean;
@@ -45,9 +45,11 @@
 </script>
 
 <FormItem>
-    <Label {required} {optionalText} hide={!showLabel} for={id}>
-        {label}
-    </Label>
+    {#if label}
+        <Label {required} {optionalText} hide={!showLabel} for={id}>
+            {label}
+        </Label>
+    {/if}
 
     <div class="select">
         <select
