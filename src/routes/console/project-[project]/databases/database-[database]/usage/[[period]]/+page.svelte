@@ -23,21 +23,21 @@
     {deleted}
     countMetadata={{
         legend: 'Collections',
-        title: $LL.console.project.legend.databases.usage.collections()
+        title: $LL.console.project.legends.databases.usage.collections()
     }}
     createdMetadata={{
         legend: 'Create',
-        title: $LL.console.project.legend.databases.usage.create()
+        title: $LL.console.project.legends.databases.usage.create()
     }}
     readMetadata={{
         legend: 'Read',
-        title: $LL.console.project.legend.databases.usage.read()
+        title: $LL.console.project.legends.databases.usage.read()
     }}
     updatedMetadata={{
         legend: 'Update',
-        title: $LL.console.project.legend.databases.usage.update()
+        title: $LL.console.project.legends.databases.usage.update()
     }}
     deletedMetadata={{
         legend: 'Delete',
-        title: $LL.console.project.legend.databases.usage.delete()
+        title: $LL.console.project.legends.databases.usage.delete()
     }} />

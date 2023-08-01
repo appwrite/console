@@ -23,21 +23,21 @@
     {deleted}
     countMetadata={{
         legend: 'Users',
-        title: $LL.console.project.legend.teams.users()
+        title: $LL.console.project.legends.teams.users()
     }}
     createdMetadata={{
         legend: 'Create',
-        title: $LL.console.project.legend.teams.create()
+        title: $LL.console.project.legends.teams.create()
     }}
     readMetadata={{
         legend: 'Read',
-        title: $LL.console.project.legend.teams.read()
+        title: $LL.console.project.legends.teams.read()
     }}
     updatedMetadata={{
         legend: 'Update',
-        title: $LL.console.project.legend.teams.update()
+        title: $LL.console.project.legends.teams.update()
     }}
     deletedMetadata={{
         legend: 'Delete',
-        title: $LL.console.project.legend.teams.delete()
+        title: $LL.console.project.legends.teams.delete()
     }} />
