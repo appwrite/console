@@ -81,7 +81,7 @@ export async function submitStripeCard(name?: string) {
         });
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            const method = await sdk.forConsole.billing.updatePaymentMethod(
+            const method = await sdk.forConsole.billing.setPaymentMethod(
                 paymentMethod.$id,
                 setupIntent.payment_method
             );
@@ -118,7 +118,7 @@ export async function updateStripeCard(selectedPaymentMethod?: string) {
         });
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            const method = await sdk.forConsole.billing.updatePaymentMethod(
+            const method = await sdk.forConsole.billing.setPaymentMethod(
                 paymentMethod.$id,
                 setupIntent.payment_method
             );

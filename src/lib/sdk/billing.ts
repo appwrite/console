@@ -530,14 +530,37 @@ export class Billing {
             params
         );
     }
-    async updatePaymentMethod(
+
+    async setPaymentMethod(
         paymentMethodId: string,
         providerMethodId: string | PaymentMethod
+    ): Promise<PaymentMethodData> {
+        const path = `/account/payment-methods/${paymentMethodId}/provider`;
+        const params = {
+            paymentMethodId,
+            providerMethodId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async updatePaymentMethod(
+        paymentMethodId: string,
+        expiryMonth: string,
+        expiryYear: string
     ): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId,
-            providerMethodId
+            expiryMonth,
+            expiryYear
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
