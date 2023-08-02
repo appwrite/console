@@ -19,9 +19,6 @@
     import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
     import { feedback } from '$lib/stores/feedback';
     import { Feedback } from '$lib/components/feedback';
-    import { Pill } from '$lib/elements';
-    import { failedInvoice } from '$lib/stores/billing';
-    import { diffDays } from '$lib/helpers/date';
 
     let showDropdown = false;
     let showSupport = false;
@@ -76,21 +73,6 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop u-cross-center">
-        {#if $failedInvoice}
-            {@const daysPassed = diffDays(new Date($failedInvoice.dueAt), new Date())}
-            {#if daysPassed >= 15}
-                <Pill danger>
-                    <span class="icon-exclamation-circle" aria-hidden="true" />
-                    <span>Organization at risk</span>
-                </Pill>
-            {:else if daysPassed >= 30}
-                <Pill danger>
-                    <span class="icon-exclamation-circle" aria-hidden="true" />
-                    <span>read-only access</span>
-                </Pill>
-            {/if}
-        {/if}
-
         {#if $feedback.notification}
             <div class="u-flex u-cross-center">
                 <div class="pulse-notification" />

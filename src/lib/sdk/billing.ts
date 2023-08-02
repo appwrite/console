@@ -149,6 +149,40 @@ export type RegionList = {
     total: number;
 };
 
+export type Plan = {
+    $id: string;
+    name: string;
+    price: number;
+    bandwidth: number;
+    storage: number;
+    members: number;
+    webhooks: number;
+    users: number;
+    teams: number;
+    databases: number;
+    buckets: number;
+    fileSize: number;
+    functions: number;
+    executions: number;
+    realtime: number;
+    logs: number;
+};
+
+export type Address = {
+    $id: string;
+    streetAddress: string;
+    addressLine2?: string;
+    country: string;
+    city: string;
+    state?: string;
+    postalCode: string;
+};
+
+export type AddressesList = {
+    addresses: Address[];
+    total: number;
+};
+
 export class Billing {
     client: Client;
 
@@ -180,7 +214,7 @@ export class Billing {
         );
     }
 
-    async getPlan(organizationId: string): Promise<string> {
+    async getPlan(organizationId: string): Promise<Plan> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
             organizationId
@@ -402,6 +436,53 @@ export class Billing {
         );
     }
 
+    async addCredit(organizationId: string, couponId: string): Promise<Credit> {
+        const path = `/organizations/${organizationId}/credits`;
+        const params = {
+            couponId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'POST',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+    async listCredits(organizationId: string, queries = []): Promise<CreditList> {
+        const path = `/organizations/${organizationId}/credits`;
+        const params = {
+            queries
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getCredit(organizationId: string, creditId: string): Promise<Credit> {
+        const path = `/organizations/${organizationId}/credits/${creditId}`;
+        const params = {
+            creditId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     //ACCOUNT
 
     async listPaymentMethods(queries: [] = []): Promise<PaymentList> {
@@ -500,23 +581,8 @@ export class Billing {
         );
     }
 
-    async addCredit(organizationId: string, couponId: string): Promise<Credit> {
-        const path = `/organizations/${organizationId}/credits`;
-        const params = {
-            couponId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'POST',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-    async listCredits(organizationId: string, queries = []): Promise<CreditList> {
-        const path = `/organizations/${organizationId}/credits`;
+    async listAddresses(queries: Query[] = []): Promise<AddressesList> {
+        const path = `/account/billing-addresses`;
         const params = {
             queries
         };
@@ -531,14 +597,86 @@ export class Billing {
         );
     }
 
-    async getCredit(organizationId: string, creditId: string): Promise<Credit> {
-        const path = `/organizations/${organizationId}/credits/${creditId}`;
+    async getAddress(billingAddressId: string): Promise<AddressesList> {
+        const path = `/account/billing-addresses/${billingAddressId}`;
         const params = {
-            creditId
+            billingAddressId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
-            'GET',
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async createAddress(
+        country: string,
+        streetAddress: string,
+        addressLine2: string,
+        city: string,
+        state: string,
+        postalCode: string
+    ): Promise<Address> {
+        const path = `/account/billing-addresses`;
+        const params = {
+            country,
+            streetAddress,
+            addressLine2,
+            city,
+            state,
+            postalCode
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'POST',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+    async updateAddress(
+        billingAddressId: string,
+        country: string,
+        streetAddress: string,
+        addressLine2: string,
+        city: string,
+        state: string,
+        postalCode: string
+    ): Promise<Address> {
+        const path = `/account/billing-addresses/${billingAddressId}`;
+        const params = {
+            billingAddressId,
+            country,
+            streetAddress,
+            addressLine2,
+            city,
+            state,
+            postalCode
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'PUT',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+    async deleteAddress(billingAddressId: string): Promise<void> {
+        const path = `/account/billing-addresses/${billingAddressId}`;
+        const params = {
+            billingAddressId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'delete',
             uri,
             {
                 'content-type': 'application/json'

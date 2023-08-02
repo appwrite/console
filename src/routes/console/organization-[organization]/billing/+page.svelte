@@ -26,7 +26,7 @@
             To avoid service disruptions in your projects, please verify your payment details and update
             them if necessary.
         </Alert>
-    {:else if defaultPaymentMethod.failed}
+    {:else if defaultPaymentMethod?.failed}
         <Alert type="error">
             <svelte:fragment slot="title">
                 The default payment method for {$organization.name} has expired
