@@ -12,6 +12,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingNextInvoiceDate: string;
     billingTrialStartDate?: string;
     billingTrialDays?: number;
+    amount: number;
 };
 
 export const newOrgModal = writable<boolean>(false);

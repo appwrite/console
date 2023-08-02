@@ -9,19 +9,31 @@
 
     $: rates = usageRates[$organization.billingPlan];
 
-    $: bandwidth = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageBandwidth, 0);
+    $: bandwidth = data.aggregationList.aggregations.reduce(
+        (acc, curr) => acc + curr.usageBandwidth,
+        0
+    );
     $: bandwidthLimit = rates.filter((r) => r.resource === 'Bandwidth')[0].amount;
 
-    $: users = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageUsers, 0);
+    $: users = data.aggregationList.aggregations.reduce((acc, curr) => acc + curr.usageUsers, 0);
     $: usersLimit = rates.filter((r) => r.resource === 'Active users')[0].amount;
 
-    $: executions = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageExecutions, 0);
+    $: executions = data.aggregationList.aggregations.reduce(
+        (acc, curr) => acc + curr.usageExecutions,
+        0
+    );
     $: executionsLimit = rates.filter((r) => r.resource === 'Function executions')[0].amount;
 
-    $: storage = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageStorage, 0);
+    $: storage = data.aggregationList.aggregations.reduce(
+        (acc, curr) => acc + curr.usageStorage,
+        0
+    );
     $: storageLimit = rates.filter((r) => r.resource === 'Storage')[0].amount;
 
-    $: realtime = data.usage.aggregations.reduce((acc, curr) => acc + curr.usageRealtime, 0);
+    $: realtime = data.aggregationList.aggregations.reduce(
+        (acc, curr) => acc + curr.usageRealtime,
+        0
+    );
     $: realtimeLimit = rates.filter((r) => r.resource === 'Concurrent connections')[0].amount;
 </script>
 

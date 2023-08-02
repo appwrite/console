@@ -45,9 +45,11 @@
                 </div>
 
                 <p class="text">
-                    {#if $organization.billingPlan !== 'tier-0' && $organization.billingTrialDays}
+                    {#if $organization.billingPlan !== 'tier-0' && !$organization.billingTrialDays}
                         <span class="u-color-text-gray"> Esimated total: </span>
                     {/if}
+                    <!-- TODO: add estimated total from aggregation -->
+
                     ${currentTier.price}
                 </p>
             </div>
@@ -60,7 +62,6 @@
             </div>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <!-- TODO: add change plan method -->
             <Button text on:click={() => wizard.start(ChangeOrganizationTierCloud)}
                 >Change plan</Button>
             <Button secondary href={`${base}/console/organization-${$organization?.$id}/usage`}

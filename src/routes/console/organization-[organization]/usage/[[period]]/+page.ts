@@ -5,6 +5,6 @@ export const load: PageLoad = async ({ params }) => {
     const usage = await sdk.forConsole.billing.listUsage(params.organization);
     console.log(usage);
     return {
-        usage
+        aggregationList: usage
     };
 };
