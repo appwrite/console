@@ -75,7 +75,7 @@
                             on:click={() => {
                                 selectedProvider = provider;
                                 trackEvent(`click_select_provider`, {
-                                    provider: provider.name.toLowerCase()
+                                    provider: provider.key.toLowerCase()
                                 });
                             }}>
                             <div class="avatar">
