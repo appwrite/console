@@ -29,17 +29,18 @@
     import { log } from '$lib/stores/logs';
     import { invalidate } from '$app/navigation';
     import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Query, type Models } from '@aw-labs/appwrite-console';
     import type { PageData } from './$types';
     import Delete from '../delete.svelte';
     import Create from '../create.svelte';
     import Activate from '../activate.svelte';
     import { browser } from '$app/environment';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdkForConsole, sdkForProject } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import Output from '$lib/components/output.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
+    import { onMount } from 'svelte';
 
     export let data: PageData;
 
@@ -49,12 +50,22 @@
     let showActivate = false;
 
     let selectedDeployment: Models.Deployment = null;
+    let activeDeployment: Models.Deployment = null;
+
+    onMount(async () => {
+        activeDeployment = await getActiveDeployment();
+    });
+
+    async function getActiveDeployment() {
+        const list = await sdkForProject.functions.listDeployments($page.params.function, [
+            Query.equal('$id', $func?.deployment)
+        ]);
+        return list?.deployments?.[0];
+    }
 
     const handleActivate = () => {
         invalidate(Dependencies.DEPLOYMENTS);
     };
-
-    $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
 
     if (browser) {
         sdkForConsole.client.subscribe<Models.Deployment>('console', (message) => {
