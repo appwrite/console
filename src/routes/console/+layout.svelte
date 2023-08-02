@@ -7,7 +7,7 @@
     import Header from '$lib/layout/header.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
-    import { feedback } from '$lib/stores/app';
+    import { app, feedback } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
     import { newOrgModal } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
@@ -22,6 +22,7 @@
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { openMigrationWizard } from './(migration-wizard)';
+    import { addNotification } from '$lib/stores/notifications';
 
     $: $registerCommands([
         {
@@ -105,6 +106,25 @@
             },
             group: 'help',
             icon: 'discord'
+        },
+        {
+            label: 'Toggle theme',
+            callback: () => {
+                if ($app.theme === 'auto') {
+                    $app.theme = 'light';
+                } else if ($app.theme === 'light') {
+                    $app.theme = 'dark';
+                } else {
+                    $app.theme = 'auto';
+                }
+                addNotification({
+                    title: 'Theme changed',
+                    message: `Theme changed to ${$app.theme}`,
+                    type: 'success'
+                });
+            },
+            group: 'misc',
+            icon: 'switch-horizontal'
         }
     ]);
 

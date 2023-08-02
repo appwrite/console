@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Empty, Heading, PaginationWithLimit } from '$lib/components';
-    import Drop from '$lib/components/drop.svelte';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
