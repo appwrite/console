@@ -6,22 +6,32 @@
     import { Button, InputNumber, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
 
     export let show = false;
 
-    //TODO: fetch countries from appwrite
-    const options = [
-        {
-            value: 'US',
-            label: 'United States'
-        }
-    ];
     let country: string;
     let address: string;
     let address2: string;
     let city: string;
     let state: string;
     let zip: number;
+    let options = [
+        {
+            value: 'US',
+            label: 'United States'
+        }
+    ];
+
+    onMount(async () => {
+        const countryList = await sdk.forProject.locale.listCountries();
+        options = countryList.countries.map((country) => {
+            return {
+                value: country.code,
+                label: country.name
+            };
+        });
+    });
 
     async function handleSubmit() {
         try {
@@ -33,19 +43,19 @@
                 state,
                 zip?.toString()
             );
-            await invalidate(Dependencies.PAYMENT_METHODS);
+            await invalidate(Dependencies.ADDRESS);
             show = false;
             addNotification({
                 type: 'success',
-                message: `Address has been deleted`
+                message: `Address has been added`
             });
-            trackEvent(Submit.BillingAddressDeleted);
+            trackEvent(Submit.BillingAddressCreated);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.BillingAddressDeleted);
+            trackError(error, Submit.BillingAddressCreated);
         }
     }
 

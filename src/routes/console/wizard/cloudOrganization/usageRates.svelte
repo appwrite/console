@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { usageRates } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -12,14 +11,50 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { organization } from '$lib/stores/organization';
+    import { onMount } from 'svelte';
     import { createOrganization } from './store';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Plan } from '$lib/sdk/billing';
 
     export let show = false;
     export let tier: string;
 
+    let plan: Plan = null;
+    onMount(async () => {
+        const planList = await sdk.forConsole.billing.getPlanList();
+        plan = planList.plans.find((p) => p.$id === tier);
+    });
+
     $: nextDate = $createOrganization?.name
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()
         : $organization?.billingNextInvoiceDate;
+
+    $: console.log(plan);
+
+    const planData = [
+        {
+            id: 'members',
+            resource: 'Organization members',
+            unit: ''
+        },
+        { id: 'bandwith', resource: 'Bandwidth', unit: 'GB' },
+        { id: 'storage', resource: 'Storage', unit: 'GB' },
+        {
+            id: 'executions',
+            resource: 'Function executions',
+            unit: 'executions'
+        },
+        {
+            id: 'users',
+            resource: 'Active users',
+            unit: 'AU'
+        },
+        {
+            id: 'realtime',
+            resource: 'Concurrent connections',
+            unit: 'connections'
+        }
+    ];
 </script>
 
 <Modal bind:show size="big" headerDivider={false}>
@@ -36,11 +71,11 @@
             <TableCellHead>Rate</TableCellHead>
         </TableHeader>
         <TableBody>
-            {#each usageRates[tier] as usage}
+            {#each planData as usage}
                 <TableRow>
                     <TableCellText title="resource">{usage.resource}</TableCellText>
-                    <TableCellText title="limit">{usage.amount}{usage?.unit}</TableCellText>
-                    <TableCellText title="rate">{usage.rate}</TableCellText>
+                    <TableCellText title="limit">{plan[usage.id]}{usage?.unit}</TableCellText>
+                    <TableCellText title="rate">{plan[`${usage.id}Addon`]}</TableCellText>
                 </TableRow>
             {/each}
         </TableBody>

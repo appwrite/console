@@ -38,7 +38,7 @@
             await sdk.forConsole.billing.addCredit($organization.$id, coupon);
             addNotification({
                 type: 'success',
-                message: `A new payment method has been added to ${$organization.name}`
+                message: `Credit has been added to ${$organization.name}`
             });
             invalidate(Dependencies.ORGANIZATION);
             trackEvent(Submit.CouponRedeemed, {
@@ -55,6 +55,7 @@
     }
 
     async function request() {
+        if (!$organization?.$id) return;
         creditList = await sdk.forConsole.billing.listCredits($organization.$id, [
             Query.limit(limit),
             Query.offset(offset)

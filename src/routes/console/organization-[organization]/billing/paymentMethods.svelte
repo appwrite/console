@@ -13,11 +13,13 @@
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
+    import EditPaymentModal from '$routes/console/account/payments/editPaymentModal.svelte';
 
     let showDropdown = false;
     let showDropdownBackup = false;
 
     let showPayment = false;
+    let showEdit = false;
     let showDelete = false;
     let showReplace = false;
     let isSelectedBackup = false;
@@ -65,13 +67,13 @@
         }
     }
 
-    $: if ($organization.backupPaymentMethodId) {
+    $: if ($organization?.backupPaymentMethodId) {
         sdk.forConsole.billing
             .getPaymentMethod($organization.backupPaymentMethodId)
             .then((res) => (backupPaymentMethod = res));
     }
 
-    $: if ($organization.paymentMethodId) {
+    $: if ($organization?.paymentMethodId) {
         sdk.forConsole.billing
             .getPaymentMethod($organization.paymentMethodId)
             .then((res) => (defaultPaymentMethod = res));
@@ -107,7 +109,8 @@
                         <DropListItem
                             icon="pencil"
                             on:click={() => {
-                                console.log('test');
+                                showEdit = true;
+                                showDropdown = false;
                             }}>
                             Edit
                         </DropListItem>
@@ -189,7 +192,9 @@
                         <DropListItem
                             icon="pencil"
                             on:click={() => {
-                                console.log('test');
+                                showEdit = true;
+                                isSelectedBackup = true;
+                                showDropdownBackup = false;
                             }}>
                             Edit
                         </DropListItem>
@@ -247,8 +252,9 @@
                                         </DropListItem>
                                     {/each}
                                 {/if}
-                                <DropListItem on:click={() => (showPayment = true)}
-                                    >Add new payment method</DropListItem>
+                                <DropListItem on:click={() => (showPayment = true)}>
+                                    Add new payment method
+                                </DropListItem>
                             </svelte:fragment>
                         </DropList>
                     </div>
@@ -263,6 +269,13 @@
 
 {#if showPayment && isCloud && hasStripePublicKey}
     <PaymentModal bind:show={showPayment} />
+{/if}
+{#if showEdit && isCloud && hasStripePublicKey}
+    <EditPaymentModal
+        selectedPaymentMethod={isSelectedBackup
+            ? $organization.backupPaymentMethodId
+            : $organization.paymentMethodId}
+        bind:show={showEdit} />
 {/if}
 {#if showReplace && isCloud && hasStripePublicKey}
     <ReplaceCard bind:show={showReplace} isBackup={isSelectedBackup} />

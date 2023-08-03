@@ -12,8 +12,8 @@
     import { failedInvoice, paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
 
-    $: defaultPaymentMethod = $paymentMethods.paymentMethods.find(
-        (method: PaymentMethodData) => method.$id === $organization.paymentMethodId
+    $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
+        (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
     );
 </script>
 

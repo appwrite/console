@@ -1,9 +1,39 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, DropList, Heading } from '$lib/components';
     import DropListItem from '$lib/components/dropListItem.svelte';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+    import AddressModal from '$routes/console/account/payments/addressModal.svelte';
+    import { addressList } from './store';
 
     let showDropdown = false;
+    let showCreate = false;
+
+    async function addAddress(addressId: string) {
+        try {
+            await sdk.forConsole.billing.setBillingAddress($organization.$id, addressId);
+            await invalidate(Dependencies.ADDRESS);
+            showDropdown = false;
+            addNotification({
+                type: 'success',
+                message: `A new billing address has been added to ${$organization.name}`
+            });
+            trackEvent(Submit.OrganizationBillingAddressAdded);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.OrganizationBillingAddressAdded);
+        }
+    }
+
+    $: console.log($addressList);
 </script>
 
 <CardGrid>
@@ -21,18 +51,24 @@
                             <i class="icon-plus" />
                         </Button>
                         <svelte:fragment slot="list">
-                            <!-- {#if $addressList.total}
-                                {#each $addressList.addresses as address}
-                                    <DropListItem
-                                        on:click={() => addAddress(address?.$id)}>
+                            {#if $addressList?.total}
+                                {#each $addressList.billingAddresses as address}
+                                    <DropListItem on:click={() => addAddress(address?.$id)}>
                                         <p class="text">
-                                            {address.address1}
-                                            <span>{address.city}</span>
+                                            <span>{address.streetAddress}</span>,
+                                            <span>{address.city}</span>,
+                                            <span>{address.state}</span>,
+                                            <span>{address.postalCode}</span>,
+                                            <span>{address.country}</span>
                                         </p>
                                     </DropListItem>
                                 {/each}
-                            {/if} -->
-                            <DropListItem>Add new billing address</DropListItem>
+                            {/if}
+                            <DropListItem
+                                on:click={() => {
+                                    showCreate = true;
+                                    showDropdown = false;
+                                }}>Add new billing address</DropListItem>
                         </svelte:fragment>
                     </DropList>
                 </div>
@@ -43,3 +79,5 @@
         </article>
     </svelte:fragment>
 </CardGrid>
+
+<AddressModal bind:show={showCreate} />

@@ -1,7 +1,6 @@
 import type { Client, Query } from '@appwrite.io/console';
 import type { Organization } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
-import type BillingAddress from '$routes/console/account/payments/billingAddress.svelte';
 
 export type PaymentMethodData = {
     $id: string;
@@ -161,7 +160,7 @@ export type Address = {
 };
 
 export type AddressesList = {
-    addresses: Address[];
+    billingAddresses: Address[];
     total: number;
 };
 
@@ -195,6 +194,11 @@ export type Plan = {
     usersAddon: AdditionalResource | null;
     executionsAddon: AdditionalResource | null;
     realtimeAddon: AdditionalResource | null;
+};
+
+export type PlanList = {
+    plans: Plan[];
+    total: number;
 };
 
 export class Billing {
@@ -515,7 +519,7 @@ export class Billing {
     async setBillingAddress(
         organizationId: string,
         billingAddressId: string
-    ): Promise<BillingAddress> {
+    ): Promise<Organization> {
         const path = `/organizations/${organizationId}/billing-address`;
         const params = {
             organizationId,
@@ -532,7 +536,7 @@ export class Billing {
         );
     }
 
-    async removeBillingAddress(organizationId: string): Promise<BillingAddress> {
+    async removeBillingAddress(organizationId: string): Promise<void> {
         const path = `/organizations/${organizationId}/billing-address`;
         const params = {
             organizationId
@@ -787,7 +791,7 @@ export class Billing {
         );
     }
 
-    async getPlans(): Promise<RegionList> {
+    async getPlanList(): Promise<PlanList> {
         const path = `/console/plans`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);
