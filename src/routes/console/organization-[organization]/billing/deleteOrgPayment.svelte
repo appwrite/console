@@ -18,7 +18,7 @@
         showDelete = false;
 
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod($organization.$id, null);
+            await sdk.forConsole.billing.removeOrganizationPaymentMethod($organization.$id);
             addNotification({
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`

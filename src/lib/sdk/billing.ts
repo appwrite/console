@@ -1,6 +1,7 @@
 import type { Client, Query } from '@appwrite.io/console';
 import type { Organization } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
+import type BillingAddress from '$routes/console/account/payments/billingAddress.svelte';
 
 export type PaymentMethodData = {
     $id: string;
@@ -149,6 +150,28 @@ export type RegionList = {
     total: number;
 };
 
+export type Address = {
+    $id: string;
+    streetAddress: string;
+    addressLine2?: string;
+    country: string;
+    city: string;
+    state?: string;
+    postalCode: string;
+};
+
+export type AddressesList = {
+    addresses: Address[];
+    total: number;
+};
+
+export type AdditionalResource = {
+    unit: string;
+    currency: string;
+    price: number;
+    value: number;
+};
+
 export type Plan = {
     $id: string;
     name: string;
@@ -166,21 +189,12 @@ export type Plan = {
     executions: number;
     realtime: number;
     logs: number;
-};
-
-export type Address = {
-    $id: string;
-    streetAddress: string;
-    addressLine2?: string;
-    country: string;
-    city: string;
-    state?: string;
-    postalCode: string;
-};
-
-export type AddressesList = {
-    addresses: Address[];
-    total: number;
+    bandwidthAddon: AdditionalResource | null;
+    storageAddon: AdditionalResource | null;
+    memberAddon: AdditionalResource | null;
+    usersAddon: AdditionalResource | null;
+    executionsAddon: AdditionalResource | null;
+    realtimeAddon: AdditionalResource | null;
 };
 
 export class Billing {
@@ -306,6 +320,21 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+    async removeOrganizationPaymentMethod(organizationId: string): Promise<Organization> {
+        const path = `/organizations/${organizationId}/payment-method`;
+        const params = {
+            organizationId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'DELETE',
             uri,
             {
                 'content-type': 'application/json'
@@ -475,6 +504,42 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async setBillingAddress(
+        organizationId: string,
+        billingAddressId: string
+    ): Promise<BillingAddress> {
+        const path = `/organizations/${organizationId}/billing-address`;
+        const params = {
+            organizationId,
+            billingAddressId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'PATCH',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async removeBillingAddress(organizationId: string): Promise<BillingAddress> {
+        const path = `/organizations/${organizationId}/billing-address`;
+        const params = {
+            organizationId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'DELETE',
             uri,
             {
                 'content-type': 'application/json'
@@ -710,6 +775,20 @@ export class Billing {
 
     async listRegions(): Promise<RegionList> {
         const path = `/console/regions`;
+        const params = {};
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getPlans(): Promise<RegionList> {
+        const path = `/console/plans`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
