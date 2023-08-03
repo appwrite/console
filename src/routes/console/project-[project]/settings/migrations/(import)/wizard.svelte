@@ -50,11 +50,16 @@
                 }
                 case 'firebase': {
                     console.log('firebase', $provider.serviceAccount);
-                    const res = await sdk.forProject.migrations.migrateFirebase(
-                        resources,
-                        $provider.serviceAccount
-                    );
-                    console.log('Firebase', res);
+                    if ($provider.projectId) {
+                        // OAuth
+                    } else if ($provider.serviceAccount) {
+                        // Manual auth
+                        const res = await sdk.forProject.migrations.migrateFirebase(
+                            resources,
+                            $provider.serviceAccount
+                        );
+                        console.log('Firebase', res);
+                    }
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
