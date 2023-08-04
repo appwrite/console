@@ -12,8 +12,7 @@ export const load: PageLoad = async ({ params }) => {
         offset,
         buckets: await sdk.forProject.storage.listBuckets([
             Query.limit(CARD_LIMIT),
-            Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.offset(offset)
         ])
     };
 };

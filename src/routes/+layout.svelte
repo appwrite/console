@@ -60,12 +60,20 @@
          * Handle initial load.
          */
         if (!$page.url.pathname.startsWith('/auth')) {
-            const acceptedRoutes = ['/login', '/register', '/recover', '/invite', '/card'];
+            const acceptedRoutes = [
+                '/login',
+                '/register',
+                '/recover',
+                '/invite',
+                '/card',
+                '/hackathon'
+            ];
             if ($user) {
                 if (
                     !$page.url.pathname.startsWith('/console') &&
                     !$page.url.pathname.startsWith('/invite') &&
-                    !$page.url.pathname.startsWith('/card')
+                    !$page.url.pathname.startsWith('/card') &&
+                    !$page.url.pathname.startsWith('/hackathon')
                 ) {
                     await goto(`${base}/console`, {
                         replaceState: true

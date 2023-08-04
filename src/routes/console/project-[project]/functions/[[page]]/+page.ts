@@ -13,8 +13,7 @@ export const load: PageLoad = async ({ params, depends }) => {
         offset,
         functions: await sdk.forProject.functions.list([
             Query.limit(CARD_LIMIT),
-            Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.offset(offset)
         ])
     };
 };

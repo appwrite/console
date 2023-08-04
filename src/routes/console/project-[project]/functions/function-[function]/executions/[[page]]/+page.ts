@@ -13,8 +13,7 @@ export const load: PageLoad = async ({ params, depends }) => {
         offset,
         executions: await sdk.forProject.functions.listExecutions(params.function, [
             Query.limit(PAGE_LIMIT),
-            Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.offset(offset)
         ])
     };
 };

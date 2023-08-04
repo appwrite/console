@@ -14,19 +14,19 @@
     import { onMount } from 'svelte';
     import { loading } from '../store';
     import Create from './createOrganization.svelte';
-    import { isCloud } from '$lib/system';
+    export let data;
 
     onMount(() => {
         loading.set(false);
 
-        // Check if user already viewed cloud card
-        if (isCloud) {
-            const viewed = localStorage.getItem('cloud-card-viewed');
-            if (!viewed) {
-                localStorage.setItem('cloud-card-viewed', 'true');
-                goto('/card');
-            }
-        }
+        // Check if user already viewed cloud hackathon page
+        // if (isCloud) {
+        //     const viewed = localStorage.getItem('cloud-hackathon-viewed');
+        //     if (viewed !== data.account.$id) {
+        //         localStorage.setItem('cloud-hackathon-viewed', data.account.$id);
+        //         goto('/hackathon');
+        //     }
+        // }
 
         setInterval(() => {
             checkForFeedback(INTERVAL);

@@ -16,7 +16,7 @@ export const load: PageLoad = async ({ params, depends, url }) => {
         search,
         memberships: await sdk.forProject.teams.listMemberships(
             teamId,
-            [Query.limit(PAGE_LIMIT), Query.offset(offset), Query.orderDesc('$createdAt')],
+            [Query.limit(PAGE_LIMIT), Query.offset(offset)],
             search
         )
     };

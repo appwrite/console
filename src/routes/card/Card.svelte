@@ -12,14 +12,11 @@
     import { windowFocusStore } from '$lib/stores/windowFocus';
 
     import { spring } from 'svelte/motion';
-    import { getCardImgUrls } from './helpers';
-    import { VARS } from '$lib/system';
-    import { page } from '$app/stores';
 
     let cardEl: HTMLDivElement | undefined;
     export let active = false;
     export let isFlipped = false;
-    export let userId: string;
+    export let base64: { front: string; back: string };
 
     let interacting = false;
 
@@ -128,9 +125,9 @@
         if (!cardEl) return;
         const rect = cardEl.getBoundingClientRect(); // get element's size/position
         let delay = 100;
-        let scaleW = (window.innerWidth / rect.width) * 0.9;
-        let scaleH = (window.innerHeight / rect.height) * 0.9;
-        let scaleF = 1.75;
+        let scaleW = (window.innerWidth / rect.width) * 0.65;
+        let scaleH = (window.innerHeight / rect.height) * 0.65;
+        let scaleF = 1.5;
         setCenter();
 
         delay = 1000;
@@ -229,9 +226,6 @@
 		--angle: ${angle}deg;
 		--center: ${$centerProximity};
 	`;
-
-    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
-    const { frontImg, backImg } = getCardImgUrls(userId, endpoint);
 </script>
 
 <svelte:window on:keydown={windowKeyDown} />
@@ -250,7 +244,15 @@
             }}>
             <div class="card__back">
                 <img
-                    src={backImg}
+                    class="invisible"
+                    src={base64.back}
+                    alt="The back of the Card"
+                    loading="lazy"
+                    width="450"
+                    height="274" />
+                <img
+                    class="abs"
+                    src={base64.back}
                     alt="The back of the Card"
                     loading="lazy"
                     width="450"
@@ -262,7 +264,8 @@
                 <div class="card__thick" style:--i={i + 1} />
             {/each}
             <div class="card__front" style:--thickness={THICKNESS}>
-                <img src={frontImg} alt="The front of the card" />
+                <img class="invisible" src={base64.front} alt="" />
+                <img class="abs" src={base64.front} alt="The front of the card" />
                 <div class="card__glare" />
             </div>
         </button>
@@ -270,6 +273,9 @@
 </div>
 
 <style lang="scss">
+    .invisible {
+        opacity: 0;
+    }
     @media (prefers-reduced-motion: reduce) {
         .cb-card,
         .cb-card * {
@@ -336,10 +342,10 @@
     }
 
     .card__rotator {
-        transform: rotateY(var(--rx)) rotateX(var(--ry)) rotateZ(var(--rz));
-        transform-style: preserve-3d;
         -webkit-transform: rotateY(var(--rx)) rotateX(var(--ry)) rotateZ(var(--rz));
         -webkit-transform-style: preserve-3d;
+        transform: rotateY(var(--rx)) rotateX(var(--ry)) rotateZ(var(--rz));
+        transform-style: preserve-3d;
         box-shadow: 0px 10px 20px -5px var(--shadow-clr);
         border-radius: var(--radius);
         outline: none;
@@ -398,6 +404,21 @@
 
         &::before {
             --resolved-angle: calc(var(--angle) + 65deg);
+        }
+    }
+
+    .card__front,
+    .card__back {
+        .abs {
+            display: block;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            translate: -50% -50%;
+            width: 200%;
+            scale: calc(100 / 200);
+            max-inline-size: initial;
+            max-block-size: initial;
         }
     }
 
