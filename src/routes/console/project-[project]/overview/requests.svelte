@@ -54,7 +54,7 @@
             series={[
                 {
                     name: 'Requests',
-                    data: [...requests.map((e) => [e.date, e.value])]
+                    data: [...(requests?.map((e) => [e.date, e.value]) ?? [])]
                 }
             ]} />
     </div>
