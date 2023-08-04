@@ -3,13 +3,14 @@ import { derived, get } from 'svelte/store';
 import { sdk } from './sdk';
 import { limitRates } from '$lib/constants';
 import { organization } from './organization';
-import type { Invoice, PaymentList } from '$lib/sdk/billing';
+import type { AddressesList, Invoice, PaymentList } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
+export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
 
 export function tierToPlan(tier: Tier) {
     switch (tier) {

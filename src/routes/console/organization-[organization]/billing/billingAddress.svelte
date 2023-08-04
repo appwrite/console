@@ -5,11 +5,11 @@
     import DropListItem from '$lib/components/dropListItem.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import { addressList } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import AddressModal from '$routes/console/account/payments/addressModal.svelte';
-    import { addressList } from './store';
 
     let showDropdown = false;
     let showCreate = false;

@@ -8,6 +8,7 @@ export const load: PageLoad = async ({ params, parent, depends }) => {
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.CREDIT);
     depends(Dependencies.INVOICES);
+    depends(Dependencies.ADDRESS);
 
     return {
         paymentMethods: await sdk.forConsole.billing.listPaymentMethods(),
