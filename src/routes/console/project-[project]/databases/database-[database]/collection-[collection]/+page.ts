@@ -11,6 +11,10 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
+    const queries = url.searchParams.get('query');
+    const parsedQueries = queries ? JSON.parse(queries) : [];
+    console.log(parsedQueries);
+
     return {
         offset,
         limit,
@@ -18,7 +22,12 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
         documents: await sdk.forProject.databases.listDocuments(
             params.database,
             params.collection,
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')]
+            [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc('$createdAt'),
+                ...parsedQueries
+            ]
         )
     };
 };
