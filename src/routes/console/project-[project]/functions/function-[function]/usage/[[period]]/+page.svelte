@@ -7,7 +7,6 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
-
     $: count = data.executionsTotal;
 </script>
 

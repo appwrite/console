@@ -68,7 +68,6 @@
         {:else}
             {#if $usage}
                 {@const storage = humanFileSize(total($usage.filesStorage) ?? 0)}
-
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -92,14 +91,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.documentsTotal))}
+                                        {format(total($usage.documentsTotal) ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(total($usage.databasesTotal))}
+                                        Databases: {format(total($usage.databasesTotal) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -127,7 +126,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(total($usage.bucketsTotal))}
+                                        Buckets: {format(total($usage.bucketsTotal) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -147,7 +146,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.usersTotal))}
+                                        {format(total($usage.usersTotal) ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -168,7 +167,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.executionsTotal))}
+                                        {format(total($usage.executionsTotal) ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>

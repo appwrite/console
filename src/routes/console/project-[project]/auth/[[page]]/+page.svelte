@@ -63,12 +63,12 @@
                                         <AvatarInitials size={32} name={user.name} />
                                         <span class="text u-trim">{user.name}</span>
                                     {:else}
-                                        <div class="avatar is-size-small ">
+                                        <div class="avatar is-size-small">
                                             <span class="icon-minus-sm" aria-hidden="true" />
                                         </div>
                                     {/if}
                                 {:else}
-                                    <div class="avatar is-size-small ">
+                                    <div class="avatar is-size-small">
                                         <span class="icon-anonymous" aria-hidden="true" />
                                     </div>
                                     <span class="text u-trim">{user.name}</span>
