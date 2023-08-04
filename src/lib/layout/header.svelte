@@ -19,7 +19,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { slide } from 'svelte/transition';
     import { isCloud } from '$lib/system';
 
@@ -36,7 +36,7 @@
     }
 
     async function logout() {
-        await sdkForConsole.account.deleteSession('current');
+        await sdk.forConsole.account.deleteSession('current');
         trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }
