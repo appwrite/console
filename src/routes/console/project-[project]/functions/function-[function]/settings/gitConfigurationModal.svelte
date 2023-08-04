@@ -21,7 +21,7 @@
     let selectedInstallationId: string;
     let step = 1;
     let search: string;
-    let repositoriesList: Models.RepositoryList;
+    let repositoriesList: Models.ProviderRepositoryList;
     let branchesList: Models.BranchList;
     let offset = 0;
     let selectedBranch: string;
@@ -29,7 +29,8 @@
     let silentMode = false;
 
     $: selectedRepo =
-        (repositoriesList?.repositories ?? []).find((repo) => repo.id === selectedRepoId) ?? null;
+        (repositoriesList?.providerRepositories ?? []).find((repo) => repo.id === selectedRepoId) ??
+        null;
     $: selectedInstallation =
         (installationsList?.installations ?? []).find(
             (installation) => installation.$id === selectedInstallationId
@@ -148,7 +149,7 @@
             </p>
             {#if repositoriesList?.total}
                 <ul class="table is-remove-outer-styles u-sep-block-start">
-                    {#each repositoriesList.repositories as repo}
+                    {#each repositoriesList.providerRepositories as repo}
                         <li class="table-row">
                             <label class="table-col u-cursor-pointer">
                                 <div class="u-flex u-cross-center u-gap-8">

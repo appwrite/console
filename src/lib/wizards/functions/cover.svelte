@@ -8,67 +8,43 @@
     import type { Models } from '@appwrite.io/console';
     import Repositories from './components/repositories.svelte';
     import CreateManual from './createManual.svelte';
-    import { repository } from './store';
+    import { repository, templateConfig, template as templateStore } from './store';
     import CreateGit from './createGit.svelte';
+    import { marketplace, type MarketplaceTemplate } from '$lib/stores/marketplace';
+    import { sdk } from '$lib/stores/sdk';
+    import CreateTemplate from './createTemplate.svelte';
 
     let hasInstallations;
     let selectedRepository;
 
-    const quickStarts: {
-        name: string;
-        icon: string;
-    }[] = [
-        {
-            icon: 'dart',
-            name: 'Dart'
-        },
-        {
-            icon: 'node',
-            name: 'Node.js'
-        },
-        {
-            icon: 'php',
-            name: 'PHP'
-        },
-        {
-            icon: 'python',
-            name: 'Python'
-        },
-        {
-            icon: 'swift',
-            name: 'Swift'
-        },
-        {
-            icon: 'ruby',
-            name: 'Ruby'
-        }
-    ];
+    const quickStart = marketplace.find((template) => template.id === 'starter');
+    const templates = marketplace
+        .filter((template) => template.id !== 'starter')
+        .filter((_template, index) => index < 3);
 
-    const templates: {
-        name: string;
-        description: string;
-        icon: string;
-    }[] = [
-        {
-            name: 'URL shortener',
-            description: 'Shorten URLs using Bitly',
-            icon: 'python'
-        },
-        {
-            name: 'URL shortener',
-            description: 'Shorten URLs using Bitly',
-            icon: 'dart'
-        },
-        {
-            name: 'URL shortener',
-            description: 'Shorten URLs using Bitly',
-            icon: 'node'
-        }
-    ];
-
-    function connect(event: CustomEvent<Models.Repository>) {
+    function connect(event: CustomEvent<Models.ProviderRepository>) {
         repository.set(event.detail);
         wizard.start(CreateGit);
+    }
+
+    function connectTemplate(template: MarketplaceTemplate, runtime: string | null = null) {
+        const variables: any = {};
+        template.variables.forEach((variable) => {
+            variables[variable.name] = variable.value ?? '';
+        });
+
+        if (!runtime) {
+            runtime = template.runtimes[0].name;
+        }
+
+        templateStore.set(template);
+        templateConfig.set({ $id: null, runtime, name: template.name, variables });
+        wizard.start(CreateTemplate);
+    }
+
+    async function loadRuntimes() {
+        let runtimes = await sdk.forProject.functions.listRuntimes();
+        return runtimes.runtimes;
     }
 </script>
 
@@ -105,27 +81,57 @@
                     <p class="u-margin-block-start-8">
                         Use a starter templates to begin with the basics.
                     </p>
-                    <ul
-                        class="grid-box u-margin-block-start-16"
-                        style:--grid-gap="1rem"
-                        style:--p-grid-item-size="8rem">
-                        {#each quickStarts as quickStart}
-                            <li>
-                                <button
-                                    class="box u-width-full-line u-flex-vertical u-cross-center u-gap-8"
-                                    style:--box-padding="1rem"
-                                    style:--box-border-radius="var(--border-radius-small)">
-                                    <div class="avatar">
-                                        <img
-                                            style:--p-text-size="1.25rem"
-                                            src={`${base}/icons/${$app.themeInUse}/color/${quickStart.icon}.svg`}
-                                            alt={quickStart.name} />
+
+                    {#await loadRuntimes()}
+                        <div class="avatar is-size-x-small">
+                            <div class="loader u-margin-16" />
+                        </div>
+                    {:then runtimes}
+                        <ul
+                            class="grid-box u-margin-block-start-16"
+                            style:--grid-gap="1rem"
+                            style:--p-grid-item-size="8rem">
+                            {#each quickStart.runtimes.filter((_template, index) => index < 6) as runtime}
+                                {@const runtimeDetail = runtimes.find(
+                                    (r) => r.$id === runtime.name
+                                )}
+                                <li>
+                                    <button
+                                        on:click={() => connectTemplate(quickStart, runtime.name)}
+                                        class="box u-width-full-line u-flex-vertical u-cross-center u-gap-8"
+                                        style:--box-padding="1rem"
+                                        style:--box-border-radius="var(--border-radius-small)">
+                                        <div class="avatar">
+                                            <img
+                                                style:--p-text-size="1.25rem"
+                                                src={`${base}/icons/${$app.themeInUse}/color/${
+                                                    runtime.name.split('-')[0]
+                                                }.svg`}
+                                                alt={runtime.name} />
+                                        </div>
+                                        <div class="body-text-2">{runtimeDetail.name}</div>
+                                    </button>
+                                </li>
+                            {/each}
+
+                            {#if quickStart.runtimes.length < 6}
+                                <li>
+                                    <div
+                                        class="box u-width-full-line u-flex-vertical u-cross-center u-gap-8"
+                                        style:--box-padding="1rem"
+                                        style:--box-border-radius="var(--border-radius-small)">
+                                        <div class="avatar">
+                                            <img
+                                                style:--p-text-size="1.25rem"
+                                                src={`${base}/icons/${$app.themeInUse}/grayscale/dotnet.svg`}
+                                                alt="dotnet-7.0" />
+                                        </div>
+                                        <div class="body-text-2">Coming soon</div>
                                     </div>
-                                    <div class="body-text-2">{quickStart.name}</div>
-                                </button>
-                            </li>
-                        {/each}
-                    </ul>
+                                </li>
+                            {/if}
+                        </ul>
+                    {/await}
                 </section>
                 <section class="common-section">
                     <h2 class="heading-level-6">Templates</h2>
@@ -138,18 +144,17 @@
                         {#each templates as template}
                             <li>
                                 <button
+                                    on:click={() => connectTemplate(template)}
                                     class="box u-width-full-line u-flex u-gap-8"
                                     style:--box-padding="1rem"
                                     style:--box-border-radius="var(--border-radius-small)">
                                     <div class="avatar is-size-small" style:--p-text-size="1.25rem">
-                                        <img
-                                            src={`${base}/icons/${$app.themeInUse}/color/${template.icon}.svg`}
-                                            alt={template.name} />
+                                        <span class={template.icon} />
                                     </div>
                                     <div>
                                         <div class="body-text-2 u-trim">{template.name}</div>
-                                        <div class="u-trim u-color-text-gray">
-                                            {template.description}
+                                        <div class="u-trim-1 u-color-text-gray">
+                                            {template.tagline}
                                         </div>
                                     </div>
                                 </button>

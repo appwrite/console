@@ -1,8 +1,16 @@
 import { page } from '$app/stores';
+import type { MarketplaceTemplate } from '$lib/stores/marketplace';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
-export const repository = writable<Models.Repository>();
+export const template = writable<MarketplaceTemplate>();
+export const templateConfig = writable<{
+    $id: string;
+    name: string;
+    runtime: string;
+    variables: { [key: string]: string };
+}>();
+export const repository = writable<Models.ProviderRepository>();
 export const installation = writable<Models.Installation>();
 export const choices = writable<{
     branch: string;

@@ -34,6 +34,10 @@
             <span class="icon-bitBucket" aria-hidden="true" />
             <span class="text">BitBucket (coming soon)</span>
         </Button>
+        <Button disabled fullWidth secondary>
+            <span class="icon-azure" aria-hidden="true" />
+            <span class="text">Azure (coming soon)</span>
+        </Button>
     </div>
 
     <svelte:fragment slot="footer">

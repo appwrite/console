@@ -27,7 +27,7 @@
     import ConnectExisting from '$lib/wizards/functions/connectExisting.svelte';
 
     export let installations: Models.InstallationList;
-    export let repository: Models.Repository | null;
+    export let repository: Models.ProviderRepository | null;
     const functionId = $page.params.function;
 
     let entrypoint: string;
@@ -54,7 +54,8 @@
     enum ProviderNames {
         github = 'GitHub',
         gitlab = 'GitLab',
-        bitBucket = 'BitBucket'
+        bitBucket = 'BitBucket',
+        azure = 'Azure'
     }
 
     function getProviderIcon(provider: string) {
@@ -66,7 +67,7 @@
         }
     }
 
-    function getRepositoryLink(repository: Models.Repository) {
+    function getRepositoryLink(repository: Models.ProviderRepository) {
         switch (repository.provider) {
             case 'github':
                 return `https://github.com/${repository.organization}/${repository.name}`;
@@ -207,11 +208,12 @@
                         <article class="card-git card is-border-dashed is-no-shadow">
                             <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                                 <div class="u-flex u-cross-center u-gap-8">
-                                    <AvatarGroup icons={['github', 'gitlab', 'bitBucket']} />
+                                    <AvatarGroup
+                                        icons={['github', 'gitlab', 'bitBucket', 'azure']} />
 
                                     <span class="icon-arrow-narrow-right" />
 
-                                    <div class="avatar"><span class="icon-server" /></div>
+                                    <div class="avatar"><span class="icon-appwrite" /></div>
                                 </div>
                                 <Button secondary on:click={() => wizard.start(ConnectExisting)}>
                                     <span class="text">Connect Git</span>

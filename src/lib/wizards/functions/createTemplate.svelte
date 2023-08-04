@@ -5,15 +5,22 @@
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { goto } from '$app/navigation';
-    import { choices, createFunction, installation, repository } from './store';
+    import {
+        choices,
+        createFunction,
+        installation,
+        repository,
+        template,
+        templateConfig
+    } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import ExecuteAccess from './steps/executeAccess.svelte';
     import SelectRepository from './steps/selectRepository.svelte';
     import GitConfiguration from './steps/gitConfiguration.svelte';
-    import FunctionConfiguration from './steps/functionConfiguration.svelte';
+    import TemplateConfiguration from './steps/templateConfiguration.svelte';
+    import TempalteFunctionDetails from './steps/tempalteFunctionDetails.svelte';
 
     async function create() {
         const response = await sdk.forProject.functions.create(
@@ -47,32 +54,27 @@
     }
 
     function resetState() {
-        createFunction.set({
-            $id: null,
-            name: null,
-            entrypoint: null,
-            execute: [],
-            runtime: null
-        });
+        wizard.hide();
+        templateConfig.set(null);
+        template.set(null);
     }
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
+        label: 'Template Configuration',
+        component: TemplateConfiguration
+    });
+    stepsComponents.set(2, {
+        label: 'Function Details',
+        component: TempalteFunctionDetails
+    });
+    stepsComponents.set(3, {
         label: 'Select Repository',
         component: SelectRepository
     });
-    stepsComponents.set(2, {
+    stepsComponents.set(4, {
         label: 'Git configuration',
         component: GitConfiguration
-    });
-    stepsComponents.set(3, {
-        label: 'Function configuration',
-        component: FunctionConfiguration
-    });
-    stepsComponents.set(4, {
-        label: 'Execute access',
-        component: ExecuteAccess,
-        optional: true
     });
 </script>
 

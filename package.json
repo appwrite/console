@@ -19,9 +19,9 @@
     },
     "dependencies": {
         "@analytics/google-analytics": "^1.0.5",
-        "@appwrite.io/console": "npm:matej-appwrite-console@7.1.113",
-        "@appwrite.io/pink": "0.0.6-rc.15",
-        "@appwrite.io/pink-icons": "0.0.6-rc.15",
+        "@appwrite.io/console": "npm:matej-appwrite-console@7.1.115",
+        "@appwrite.io/pink": "0.0.7-next.0",
+        "@appwrite.io/pink-icons": "0.0.7-next.0",
         "@popperjs/core": "^2.11.6",
         "@sentry/svelte": "^7.44.2",
         "@sentry/tracing": "^7.44.2",
