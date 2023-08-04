@@ -4,6 +4,7 @@
     import { Modal } from '..';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let show: boolean;
     export let groups: Writable<Map<string, Permission>>;
@@ -26,10 +27,9 @@
 </script>
 
 <Modal bind:show on:close={reset} onSubmit={create}>
-    <svelte:fragment slot="header">Custom permission</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.customPermission()}</svelte:fragment>
     <p class="text">
-        Custom permissions allow you to grant access to specific users or teams using their ID and
-        role.
+        {$LL.console.project.texts.components.custom.permission()}
     </p>
     <FormList>
         <InputText
@@ -39,11 +39,13 @@
             placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
             bind:value />
         <Helper type="neutral">
-            A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸
+            {$LL.console.project.texts.components.custom.permissionFormation()}
+            {$LL.console.project.texts.components.custom.user()}[USER_ID] {$LL.console.project.texts.components.custom.or()}
+            {$LL.console.project.texts.components.custom.team()}[TEAM_ID]/[ROLE]¸
         </Helper>
     </FormList>
 
     <svelte:fragment slot="footer">
-        <Button submit {disabled}>Add</Button>
+        <Button submit {disabled}>{$LL.console.project.button.submit.add()}</Button>
     </svelte:fragment>
 </Modal>

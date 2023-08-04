@@ -16,6 +16,7 @@
     import { onMount } from 'svelte';
     import { View } from '$lib/helpers/load';
     import { tooltip } from '$lib/actions/tooltip';
+    import LL from '$i18n/i18n-svelte';
 
     export let columns: Writable<Column[]>;
     export let view: View;
@@ -84,7 +85,8 @@
                         class="icon-view-boards u-opacity-50"
                         aria-hidden="true"
                         aria-label="columns" />
-                    <span class="text is-only-desktop">Columns</span>
+                    <span class="text is-only-desktop"
+                        >{$LL.console.project.table.pill.columns()}</span>
                     <span class="inline-tag">{selectedColumnsNumber}</span>
                 </Button>
                 <svelte:fragment slot="list">

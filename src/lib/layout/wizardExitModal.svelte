@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LL from '$i18n/i18n-svelte';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
@@ -12,13 +13,13 @@
 </script>
 
 <Modal bind:show onSubmit={handleSubmit} icon="exclamation" state="warning">
-    <svelte:fragment slot="header">Exit Process</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.exitProcess()}</svelte:fragment>
     <p>
-        Are you sure you want to exit from <slot />? All data will be deleted. This action is
-        irreversible.
+        {$LL.console.project.texts.wizardExitModle.areYouSure()}
+        <slot />? {$LL.console.project.texts.wizardExitModle.dataDelete()}
     </p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit>Exit</Button>
+        <Button text on:click={() => (show = false)}>{$LL.console.project.button.cancel()}</Button>
+        <Button secondary submit>{$LL.console.project.button.exit()}</Button>
     </svelte:fragment>
 </Modal>

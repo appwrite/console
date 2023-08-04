@@ -24,6 +24,7 @@
     import { writable, type Unsubscriber } from 'svelte/store';
     import Actions from './actions.svelte';
     import Row from './row.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let withCreate = false;
     export let permissions: string[] = [];
@@ -144,13 +145,14 @@
 {#if [...$groups]?.length}
     <Table noMargin noStyles>
         <TableHeader>
-            <TableCellHead width={70}>Role</TableCellHead>
+            <TableCellHead width={70}>{$LL.console.project.table.header.role()}</TableCellHead>
             {#if withCreate}
-                <TableCellHead width={70}>Create</TableCellHead>
+                <TableCellHead width={70}
+                    >{$LL.console.project.table.header.create()}</TableCellHead>
             {/if}
-            <TableCellHead width={70}>Read</TableCellHead>
-            <TableCellHead width={70}>Update</TableCellHead>
-            <TableCellHead width={70}>Delete</TableCellHead>
+            <TableCellHead width={70}>{$LL.console.project.table.header.read()}</TableCellHead>
+            <TableCellHead width={70}>{$LL.console.project.table.header.update()}</TableCellHead>
+            <TableCellHead width={70}>{$LL.console.project.table.header.delete()}</TableCellHead>
             <TableCellHead width={40} />
         </TableHeader>
         <TableBody>
@@ -220,7 +222,7 @@
         on:create={create}>
         <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Add role</span>
+            <span class="text">{$LL.console.project.button.addRole()}</span>
         </Button>
     </Actions>
 {:else}
@@ -240,7 +242,7 @@
                 </Actions>
             </div>
             <div class="common-section">
-                <span class="text"> Add a role to get started </span>
+                <span class="text"> {$LL.console.project.texts.components.addRole()} </span>
             </div>
         </div>
     </article>

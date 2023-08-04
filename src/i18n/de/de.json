@@ -392,6 +392,7 @@
                 "deleteIndex": "Index löschen",
                 "deleteDomain": "Domain löschen",
                 "deleteWebhook": "Webhook löschen",
+                "exitProcess": "Prozess beenden",
                 "user": "Benutzer",
                 "team": "Team",
                 "schedule": "Zeitplan",
@@ -411,6 +412,7 @@
                 "scopes": "Umfänge",
                 "executeAccess": "Ausführungszugriff",
                 "customDomains": "Benutzerdefinierte Domänen",
+                "customPermission": "Benutzerdefinierte Berechtigung",
                 "documentSecurity": "Dokumentensicherheit",
                 "webhooks": "Webhooks",
                 "webhook": "Webhook",
@@ -445,7 +447,8 @@
                 "deleteApiKey": "API-Schlüssel löschen",
                 "events": "Ereignisse",
                 "httpAuth": "HTTP-Authentifizierung",
-
+                "selectTeams": "Teams auswählen",
+                "selectUsers": "Benutzer auswählen",
                 "userData": {
                     "name": "Name",
                     "email": "Email",
@@ -1083,6 +1086,16 @@
                         "chooseCompressionAlgo": "Wählen Sie einen Algorithmus für die Komprimierung. Bei Dateien, die größer als 20 MB sind, wird die Komprimierung übersprungen, auch wenn sie aktiviert ist.",
                         "allowedFileExtensions": "Zulässige Dateierweiterungen. Es können maximal 100 Dateierweiterungen hinzugefügt werden. Lassen Sie das Feld leer, um alle Dateitypen zuzulassen."
                     }
+                },
+                "components": {
+                    "inputs": {
+                        "team": {
+                            "placeholder": "Suche nach Name oder ID"
+                        },
+                        "user": {
+                            "placeholder": "Suche nach Name, E-Mail, Telefon oder ID"
+                        }
+                    }
                 }
             },
             "texts": {
@@ -1305,7 +1318,48 @@
                 "components": {
                     "create": "Erstelle dein erstes",
                     "getStarted": "um loszulegen.",
-                    "needHand": "Brauchen Sie Hilfe? Erfahren Sie mehr in unserer Dokumentation."
+                    "needHand": "Brauchen Sie Hilfe? Erfahren Sie mehr in unserer Dokumentation.",
+                    "pagination": {
+                        "totalResult": "Gesamtergebnisse:",
+                        "uploadingFiles": "Hochladen von Dateien"
+                    },
+                    "custom": {
+                        "permissions": "Mit benutzerdefinierten Berechtigungen kannst du bestimmten Benutzern oder Teams mithilfe ihrer ID und Rolle Zugriff gewähren.",
+                        "permissionFormation": "Eine Berechtigung sollte wie folgt formatiert werden:",
+                        "user": "Benutzer:",
+                        "or": "oder",
+                        "team": "Mannschaft:"
+                    },
+                    "addRole": "Fügen Sie eine Rolle hinzu, um loszulegen",
+                    "totalResult": "Gesamtergebnisse:",
+                    "couldNotFind": "Leider konnten wir nichts finden",
+                    "noTeamMembers": "Es gibt keine Teams, die Ihrer Suche entsprechen.",
+                    "noUserExist": "Es gibt keine Benutzer, die Ihrer Suche entsprechen.",
+                    "noUsers": "Sie haben keine Benutzer. Erstellen Sie einen Benutzer, um sie hier anzuzeigen.",
+                    "noTeams": "Sie haben keine Teams. Erstellen Sie ein Team, um sie hier zu sehen.",
+                    "needHelp": "Hilfe brauchen? Erfahren Sie mehr in unserem",
+                    "email": "E-Mail:",
+                    "phone": "Telefon:",
+                    "members": "Mitglieder:",
+                    "notFound": "nicht gefunden",
+                    "grantAccessSpecificTeamMember": "Gewähren Sie jedem Mitglied eines bestimmten Teams Zugriff. So gewähren Sie Teammitgliedern Zugriff mit bestimmten müssen Sie eine",
+                    "grantAccessToUser": "Gewähren Sie jedem authentifizierten oder anonymen Benutzer Zugriff."
+                },
+                "footer": {
+                    "version": "Version",
+                    "terms": "Bedingungen",
+                    "privacy": "Datenschutz",
+                    "allRightReserved": "Appwrite. Alle Rechte vorbehalten"
+                },
+                "logs": {
+                    "functionId": "Funktions-ID:",
+                    "deploymentId": "Bereitstellungs-ID:",
+                    "executionId": "Ausführungs-ID:"
+                },
+                "unAuthenticated": "Integrieren Sie Ihre bevorzugten Technologien",
+                "wizardExitModle": {
+                    "areYouSure": "Bist du sicher, dass du aussteigen möchtest",
+                    "dataDelete": "Alle Daten werden gelöscht. Dieser Vorgang ist irreversibel."
                 }
             },
             "button": {
@@ -1325,6 +1379,7 @@
                 "documentation": "Dokumentation",
                 "createBucket": "Bucket erstellen",
                 "items": "Artikel",
+                "test": "prüfen",
                 "addItem": "Element hinzufügen",
                 "addEvent": "Ereignis hinzufügen",
                 "addAttribute": "Attribut hinzufügen",
@@ -1341,7 +1396,16 @@
                 "buildLogs": "Erstellungsprotokolle",
                 "download": "Herunterladen",
                 "feedback": "Feedback",
+                "next": "Nächster",
+                "back": "Zurück",
+                "skipSteps": "Optionale Schritte überspringen",
+                "exit": "Beenden",
                 "close": "Schließen",
+                "addRole": "Rolle hinzufügen",
+                "customPermission": "Benutzerdefinierte Berechtigung",
+                "rawData": "Rohdaten",
+                "scrollToTop": "Nach oben scrollen",
+                "button": "Taste",
                 "submit": {
                     "create": "Erstellen",
                     "update": "Aktualisieren",
@@ -1354,7 +1418,9 @@
                     "executeNow": "Jetzt ausführen",
                     "activate": "Aktivieren",
                     "downloadEnv": ".env-Datei herunterladen",
-                    "importEnv": ".env-Datei importieren"
+                    "importEnv": ".env-Datei importieren",
+                    "add": "Hinzufügen",
+                    "submit": "Einreichen"
                 },
                 "pill": {
                     "userId": "Benutzer-ID"
@@ -1368,7 +1434,13 @@
                     "twentyFour": "24h",
                     "newOrg": "Neue Organisation",
                     "yourAccount": "Ihr Konto",
-                    "signOut": "Abmelden"
+                    "signOut": "Abmelden",
+                    "any": "Beliebig",
+                    "allGuests": "Alle Gäste",
+                    "allUsers": "Alle Benutzer",
+                    "selectUsers": "Benutzer auswählen",
+                    "selectTeams": "Teams auswählen",
+                    "currentPermission": "Benutzerdefinierte Berechtigung"
                 }
             },
             "table": {
@@ -1398,7 +1470,11 @@
                     "defaultValue": "Standardwert",
                     "relation": "Beziehung",
                     "filename": "Dateiname",
-
+                    "role": "Rolle",
+                    "create": "Erstellen",
+                    "read": "Lesen",
+                    "update": "Aktualisieren",
+                    "delete": "Löschen",
                     "settings": "Einstellungen",
                     "domainName": "Domänenname",
                     "postUrl": "POST-URL",
@@ -1407,7 +1483,10 @@
                     "expirationDate": "Ablaufdatum",
                     "scopes": "Umfänge",
                     "buildTime": "Bauzeit",
-                    "size": "Größe"
+                    "size": "Größe",
+                    "any": "Beliebig",
+                    "guests": "Gäste",
+                    "users": "Benutzer"
                 },
                 "pill": {
                     "verify": "verifiziert",
@@ -1431,7 +1510,8 @@
                     "bucketId": "Bucket-ID",
                     "failed": "failed",
                     "sllTlsDisabled": "SLL/TLS deaktiviert",
-                    "apiKeySecret": "API-Schlüsselgeheimnis"
+                    "apiKeySecret": "API-Schlüsselgeheimnis",
+                    "columns": "Spalten"
                 }
             },
             "legends": {
@@ -1595,6 +1675,33 @@
                         "permissionCheck": "Wenn Sie Dokumentberechtigungen zuweisen möchten, navigieren Sie zu den Sammlungseinstellungen und aktivieren Sie die Dokumentsicherheit. Andernfalls werden nur Sammlungsberechtigungen verwendet."
                     },
                     "relationshipSettings": "Um die Auswahl zu ändern, bearbeiten Sie die Beziehungseinstellungen."
+                }
+            },
+            "components": {
+                "pagination": {
+                    "prev": "Zurück",
+                    "next": "Nächster"
+                }
+            },
+            "mock": {
+                "content": "Inhalt",
+                "list": "Liste",
+                "other": "andere",
+                "title": {
+                    "stepOne": "Schritt-1",
+                    "stepTwo": "Schritt-2",
+                    "subStepOne": "Untertitel-1",
+                    "subStepTwo": "Untertitel-2"
+                },
+                "inputs": {
+                    "label": {
+                        "stepOneFirst": "Schritt-1-erforderlich",
+                        "stepOneSecond": "Schritt-1-Optional",
+                        "labelStepOne": "Etikett-Schritt-1",
+                        "stepTwoFirst": "Schritt-2-Erste",
+                        "stepTwoSecond": "Schritt-2-Sekunde",
+                        "labelStepTwo": "Etikett-Schritt-2"
+                    }
                 }
             }
         }

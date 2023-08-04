@@ -388,6 +388,7 @@
                 "deleteIndex": "Elimina indice",
                 "deleteDomain": "Elimina dominio",
                 "deleteWebhook": "Elimina webhook",
+                "exitProcess": "Processo di uscita",
                 "user": "Utente",
                 "team": "Squadra",
                 "schedule": "Programma",
@@ -407,6 +408,7 @@
                 "scopes": "Scopi",
                 "executeAccess": "Esegui accesso",
                 "customDomains": "Domini personalizzati",
+                "customPermission": "Autorizzazione personalizzata",
                 "documentSecurity": "Sicurezza documento",
                 "webhook": "Webhook",
                 "webhooks": "Webhooks",
@@ -441,7 +443,8 @@
                 "deleteApiKey": "Elimina chiave API",
                 "events": "Eventi",
                 "httpAuth": "Autenticazione HTTP",
-
+                "selectTeams": "Seleziona le squadre",
+                "selectUsers": "Seleziona utenti",
                 "userData": {
                     "name": "Nome",
                     "email": "E-mail",
@@ -1079,6 +1082,16 @@
                         "chooseCompressionAlgo": "Scegli un algoritmo per la compressione. Per i file più grandi di 20MB, la compressione verrà saltata anche se è abilitata.",
                         "allowedFileExtensions": "Estensioni di file consentite. È possibile aggiungere un massimo di 100 estensioni di file. Lasciare vuoto per consentire tutti i tipi di file."
                     }
+                },
+                "components": {
+                    "inputs": {
+                        "team": {
+                            "placeholder": "Ricerca per nome o ID"
+                        },
+                        "user": {
+                            "placeholder": "Ricerca per nome, e-mail, telefono o ID"
+                        }
+                    }
                 }
             },
             "button": {
@@ -1098,6 +1111,7 @@
                 "documentation": "Documentazione",
                 "createBucket": "Crea secchio",
                 "items": "Articoli",
+                "test": "test",
                 "addItem": "Aggiungi elemento",
                 "addEvent": "Aggiungi evento",
                 "addAttribute": "Aggiungi attributo",
@@ -1114,7 +1128,16 @@
                 "buildLogs": "Crea log",
                 "download": "Scarica",
                 "feedback": "Feedback",
+                "next": "Prossima",
+                "back": "indietro",
+                "skipSteps": "Salta passaggi facoltativi",
+                "exit": "Exit",
                 "close": "Chiudi",
+                "addRole": "Aggiungi ruolo",
+                "customPermission": "Autorizzazione personalizzata",
+                "rawData": "Dati grezzi",
+                "scrollToTop": "Scorri verso l'alto",
+                "button": "Pulsante",
                 "submit": {
                     "create": "Crea",
                     "update": "Aggiorna",
@@ -1127,7 +1150,9 @@
                     "executeNow": "Esegui ora",
                     "activate": "Attiva",
                     "downloadEnv": "Scarica file .env",
-                    "importEnv": "Importa file .env"
+                    "importEnv": "Importa file .env",
+                    "add": "Aggiungere",
+                    "submit": "Invia"
                 },
                 "pill": {
                     "userId": "ID utente"
@@ -1141,7 +1166,13 @@
                     "twentyFour": "24h",
                     "newOrg": "Nuova organizzazione",
                     "yourAccount": "Il tuo account",
-                    "signOut": "Esci"
+                    "signOut": "Esci",
+                    "any": "Qualsiasi",
+                    "allGuests": "Tutti gli ospiti",
+                    "allUsers": "Tutti gli utenti",
+                    "selectUsers": "Seleziona utenti",
+                    "selectTeams": "Seleziona team",
+                    "currentPermission": "Autorizzazione personalizzata"
                 }
             },
             "texts": {
@@ -1363,7 +1394,48 @@
                 "components": {
                     "create": "Crea il tuo primo",
                     "getStarted": "per iniziare.",
-                    "needHand": "Hai bisogno di una mano? Scopri di più nella nostra documentazione."
+                    "needHand": "Hai bisogno di una mano? Scopri di più nella nostra documentazione.",
+                    "pagination": {
+                        "totalResult": "Risultati totali:",
+                        "uploadingFiles": "Caricamento di file"
+                    },
+                    "custom": {
+                        "permissions": "Le autorizzazioni personalizzate consentono di concedere l'accesso a utenti o team specifici utilizzando il loro ID e ruolo.",
+                        "permissionFormation": "Un'autorizzazione deve essere formattata come:",
+                        "user": "utente:",
+                        "or": "o",
+                        "team": "squadra:"
+                    },
+                    "addRole": "Aggiungere un ruolo per iniziare",
+                    "totalResult": "Risultati totali:",
+                    "couldNotFind": "Spiacenti, non siamo riusciti a trovare",
+                    "noTeamMembers": "Non ci sono squadre che corrispondono alla tua ricerca.",
+                    "noUserExist": "Non ci sono utenti che corrispondono alla tua ricerca.",
+                    "noUsers": "Non hai utenti. Crea un utente per vederli qui.",
+                    "noTeams": "Non hai squadre. Crea un team per vederli qui.",
+                    "needHelp": "Aver bisogno di una mano? Scopri di più nel nostro",
+                    "email": "E-mail:",
+                    "phone": "Telefono:",
+                    "members": "Membri:",
+                    "notFound": "non trovato",
+                    "grantAccessSpecificTeamMember": "Concedere l'accesso a qualsiasi membro di un team specifico. Per concedere l'accesso ai membri del team con ruoli, sarà necessario impostare un",
+                    "grantAccessToUser": "Concedere l'accesso a qualsiasi utente autenticato o anonimo."
+                },
+                "footer": {
+                    "version": "Versione",
+                    "terms": "Termini",
+                    "privacy": "Privacy",
+                    "allRightReserved": "Appwrite. Tutti i diritti riservati."
+                },
+                "logs": {
+                    "functionId": "ID funzione:",
+                    "deploymentId": "ID distribuzione:",
+                    "executionId": "ID esecuzione:"
+                },
+                "unAuthenticated": "Integrazione con le tue tecnologie preferite",
+                "wizardExitModle": {
+                    "areYouSure": "Sei sicuro di voler uscire da",
+                    "dataDelete": "Tutti i dati verranno cancellati. Questa azione è irreversibile."
                 }
             },
             "table": {
@@ -1393,7 +1465,11 @@
                     "defaultValue": "Valore predefinito",
                     "relation": "Relazione",
                     "filename": "Nome file",
-
+                    "role": "Ruolo",
+                    "create": "Crea",
+                    "read": "Leggi",
+                    "update": "Aggiorna",
+                    "delete": "Elimina",
                     "settings": "Impostazioni",
                     "domainName": "Nome di dominio",
                     "postUrl": "URL POST",
@@ -1402,7 +1478,10 @@
                     "expirationDate": "data di scadenza",
                     "scopes": "Scopi",
                     "buildTime": "Tempo di costruzione",
-                    "size": "taglia"
+                    "size": "taglia",
+                    "any": "Qualsiasi",
+                    "guests": "Ospiti",
+                    "users": "Utenti"
                 },
                 "pill": {
                     "verify": "verificato",
@@ -1426,7 +1505,8 @@
                     "bucketId": "ID secchio",
                     "failed": "fallito",
                     "sllTlsDisabled": "SLL/TLS disabilitato",
-                    "apiKeySecret": "Segreto chiave API"
+                    "apiKeySecret": "Segreto chiave API",
+                    "columns": "Colonne"
                 }
             },
             "legends": {
@@ -1593,6 +1673,33 @@
                         "permissionCheck": "Se desideri assegnare i permessi ai documenti, vai alle impostazioni della raccolta e abilita la sicurezza dei documenti. In caso contrario, verranno utilizzati solo i permessi della raccolta."
                     },
                     "relationshipSettings": "Per cambiare la selezione modifica le impostazioni di relazione."
+                }
+            },
+            "components": {
+                "pagination": {
+                    "prev": "Prev",
+                    "next": "Prossima"
+                }
+            },
+            "mock": {
+                "content": "Contenuto",
+                "list": "elenco",
+                "other": "altro",
+                "title": {
+                    "stepOne": "passo-1",
+                    "stepTwo": "passo-2",
+                    "subStepOne": "sottotitolo-1",
+                    "subStepTwo": "sottotitolo-2"
+                },
+                "inputs": {
+                    "label": {
+                        "stepOneFirst": "passo-1-necessario",
+                        "stepOneSecond": "passo-1-opzionale",
+                        "labelStepOne": "etichetta-passo-1",
+                        "stepTwoFirst": "passo-2-primo",
+                        "stepTwoSecond": "passo-2-secondo",
+                        "labelStepTwo": "etichetta-passo-2"
+                    }
                 }
             }
         }

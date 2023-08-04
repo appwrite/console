@@ -6,6 +6,7 @@
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let show: boolean;
     export let groups: Writable<Map<string, Permission>>;
@@ -62,19 +63,17 @@
 </script>
 
 <Modal bind:show onSubmit={create} on:close={reset} size="big">
-    <svelte:fragment slot="header">Select teams</svelte:fragment>
+    <svelte:fragment slot="header">{$LL.console.project.title.selectTeams()}</svelte:fragment>
     <p class="text">
-        Grant access to any member of a specific team. To grant access to team members with specific
-        roles, you will need to set a <button
-            type="button"
-            class="link"
-            on:click={() => dispatch('custom')}>custom permission</button
+        {$LL.console.project.texts.components.grantAccessSpecificTeamMember()}
+        <button type="button" class="link" on:click={() => dispatch('custom')}
+            >{$LL.console.project.button.customPermission()}</button
         >.
     </p>
     <InputSearch
         autofocus
         disabled={!results?.teams?.length && !search}
-        placeholder="Search by name or ID"
+        placeholder={$LL.console.project.forms.components.inputs.team.placeholder()}
         bind:value={search} />
     {#if results?.teams?.length}
         <div class="table-wrapper">
@@ -109,20 +108,25 @@
             </table>
         </div>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {results?.total}</p>
+            <p class="text">
+                {$LL.console.project.texts.components.totalResult()}
+                {results?.total}
+            </p>
             <PaginationInline limit={5} bind:offset sum={results?.total} hidePages />
         </div>
     {:else if search}
         <EmptySearch hidePages>
             <div class="common-section">
                 <div class="u-text-center common-section">
-                    <b class="body-text-2 u-bold">Sorry we couldn't find "{search}"</b>
-                    <p>There are no teams that match your search.</p>
+                    <b class="body-text-2 u-bold"
+                        >{$LL.console.project.texts.components.couldNotFind()} "{search}"</b>
+                    <p>{$LL.console.project.texts.components.noTeamMembers()}</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
                     <Button external href="https://appwrite.io/docs/client/teams" text
-                        >Documentation</Button>
-                    <Button secondary on:click={() => (search = '')}>Clear search</Button>
+                        >{$LL.console.project.button.documentation()}</Button>
+                    <Button secondary on:click={() => (search = '')}
+                        >{$LL.console.project.button.clearSearch()}</Button>
                 </div>
             </div>
         </EmptySearch>
@@ -131,14 +135,15 @@
             <div class="common-section">
                 <div class="u-text-center common-section">
                     <p class="text u-line-height-1-5">
-                        You have no teams. Create a team to see them here.
+                        {$LL.console.project.texts.components.noTeams()}
                     </p>
                     <p class="text u-line-height-1-5">
-                        Need a hand? Learn more in our <a
+                        {$LL.console.project.texts.components.needHelp()}
+                        <a
                             href="https://appwrite.io/docs/client/teams"
                             target="_blank"
                             rel="noopener noreferrer">
-                            documentation</a
+                            {$LL.console.project.button.documentation()}</a
                         >.
                     </p>
                 </div>
@@ -147,6 +152,6 @@
     {/if}
 
     <svelte:fragment slot="footer">
-        <Button submit disabled={!hasSelection}>Add</Button>
+        <Button submit disabled={!hasSelection}>{$LL.console.project.button.submit.add()}</Button>
     </svelte:fragment>
 </Modal>

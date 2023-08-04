@@ -388,6 +388,7 @@
                 "deleteIndex": "Delete Index",
                 "deleteDomain": "Delete Domain",
                 "deleteWebhook": "Delete Webhook",
+                "exitProcess": "Exit Process",
                 "user": "User",
                 "team": "Team",
                 "schedule": "Schedule",
@@ -407,6 +408,7 @@
                 "scopes": "Scopes",
                 "executeAccess": "Execute access",
                 "customDomains": "Custom Domains",
+                "customPermission": "Custom permission",
                 "documentSecurity": "Document Security",
                 "webhooks": "Webhooks",
                 "webhook": "Webhook",
@@ -441,7 +443,8 @@
                 "deleteApiKey": "Delete API Key",
                 "events": "Events",
                 "httpAuth": "HTTP Authentication",
-
+                "selectTeams": "Select teams",
+                "selectUsers": "Select users",
                 "userData": {
                     "name": "Name",
                     "email": "Email",
@@ -1079,6 +1082,16 @@
                         "chooseCompressionAlgo": "Choose an algorithm for compression. For files larger than 20MB, compression will be skipped even if it's enabled.",
                         "allowedFileExtensions": "Allowed file extensions. A maximum of 100 file extensions can be added. Leave blank to allow all file types."
                     }
+                },
+                "components": {
+                    "inputs": {
+                        "team": {
+                            "placeholder": "Search by name or ID"
+                        },
+                        "user": {
+                            "placeholder": "Search by name, email, phone or ID"
+                        }
+                    }
                 }
             },
             "button": {
@@ -1099,6 +1112,7 @@
                 "createBucket": "Create bucket",
                 "items": "Items",
                 "addItem": "Add item",
+                "test": "test",
                 "addEvent": "Add event",
                 "addAttribute": "Add attribute",
                 "createWebhook": "Create webhook",
@@ -1115,6 +1129,15 @@
                 "download": "Download",
                 "feedback": "Feedback",
                 "close": "Close",
+                "next": "Next",
+                "back": "Back",
+                "skipSteps": "Skip optional steps",
+                "exit": "Exit",
+                "addRole": "Add role",
+                "customPermission": "custom permission",
+                "rawData": "Raw data",
+                "scrollToTop": "Scroll to top",
+                "button": "Button",
                 "submit": {
                     "create": "Create",
                     "update": "Update",
@@ -1127,7 +1150,9 @@
                     "executeNow": "Execute Now",
                     "activate": "Activate",
                     "downloadEnv": "Download .env file",
-                    "importEnv": "Import .env file"
+                    "importEnv": "Import .env file",
+                    "add": "Add",
+                    "submit": "Submit"
                 },
                 "pill": {
                     "userId": "User ID"
@@ -1141,7 +1166,13 @@
                     "twentyFour": "24h",
                     "newOrg": "New organization",
                     "yourAccount": "Your Account",
-                    "signOut": "Sign Out"
+                    "signOut": "Sign Out",
+                    "any": "Any",
+                    "allGuests": "All guests",
+                    "allUsers": "All users",
+                    "selectUsers": "Select users",
+                    "selectTeams": "Select teams",
+                    "currentPermission": "Custom permission"
                 }
             },
             "texts": {
@@ -1363,7 +1394,48 @@
                 "components": {
                     "create": "Create your first",
                     "getStarted": "to get started.",
-                    "needHand": "Need a hand? Learn more in our documentation."
+                    "needHand": "Need a hand? Learn more in our documentation.",
+                    "pagination": {
+                        "totalResult": "Total results:",
+                        "uploadingFiles": "Uploading files"
+                    },
+                    "custom": {
+                        "permissions": "Custom permissions allow you to grant access to specific users or teams using their ID and role.",
+                        "permissionFormation": "A permission should be formatted as:",
+                        "user": "user:",
+                        "or": "or",
+                        "team": "team:"
+                    },
+                    "addRole": "Add a role to get started",
+                    "totalResult": "Total results:",
+                    "couldNotFind": "Sorry we couldn't find",
+                    "noTeamMembers": "There are no teams that match your search.",
+                    "noUserExist": "There are no Users that match your search.",
+                    "noUsers": "You have no users. Create a user to see them here.",
+                    "noTeams": "You have no teams. Create a team to see them here.",
+                    "needHelp": "Need a hand? Learn more in our",
+                    "email": "Email:",
+                    "phone": "Phone:",
+                    "members": "Members:",
+                    "notFound": "Not found.",
+                    "grantAccessSpecificTeamMember": "Grant access to any member of a specific team. To grant access to team members with specific roles, you will need to set a",
+                    "grantAccessToUser": "Grant access to any authenticated or anonymous user."
+                },
+                "footer": {
+                    "version": "Version",
+                    "terms": "Terms",
+                    "privacy": "Privacy",
+                    "allRightReserved": "Appwrite. All rights reserved."
+                },
+                "logs": {
+                    "functionId": "Function ID:",
+                    "deploymentId": "Deployment ID:",
+                    "executionId": "Execution ID:"
+                },
+                "unAuthenticated": "Integrate with your favourite technologies",
+                "wizardExitModle": {
+                    "areYouSure": "Are you sure you want to exit from",
+                    "dataDelete": "All data will be deleted. This action is irreversible."
                 }
             },
             "table": {
@@ -1393,7 +1465,11 @@
                     "defaultValue": "Default Value",
                     "relation": "Relation",
                     "filename": "Filename",
-
+                    "role": "Role",
+                    "create": "Create",
+                    "read": "Read",
+                    "update": "Update",
+                    "delete": "Delete",
                     "settings": "Settings",
                     "domainName": "Domain Name",
                     "postUrl": "POST URL",
@@ -1402,7 +1478,10 @@
                     "expirationDate": "expiration date",
                     "scopes": "Scopes",
                     "buildTime": "Build Time",
-                    "size": "Size"
+                    "size": "Size",
+                    "any": "Any",
+                    "guests": "Guests",
+                    "users": "Users"
                 },
                 "pill": {
                     "verify": "verified",
@@ -1424,9 +1503,10 @@
                     "functionId": "Function ID",
                     "fileId": "File ID",
                     "bucketId": "Bucket ID",
-                    "failed": "failed",
+                    "failed": "Failed",
                     "sllTlsDisabled": "SLL/TLS disabled",
-                    "apiKeySecret": "API Key Secret"
+                    "apiKeySecret": "API Key Secret",
+                    "columns": "Columns"
                 }
             },
             "legends": {
@@ -1593,6 +1673,33 @@
                         "permissionCheck": "If you want to assign document permissions, navigate to Collection settings and enable document security. Otherwise, only Collection permissions will be used."
                     },
                     "relationshipSettings": "To change the selection edit the relationship settings."
+                }
+            },
+            "components": {
+                "pagination": {
+                    "prev": "Prev",
+                    "next": "Next"
+                }
+            },
+            "mock": {
+                "content": "Content",
+                "list": "list",
+                "other": "other",
+                "title": {
+                    "stepOne": "step-1",
+                    "stepTwo": "step-2",
+                    "subStepOne": "sub-title-1",
+                    "subStepTwo": "sub-title-2"
+                },
+                "inputs": {
+                    "label": {
+                        "stepOneFirst": "step-1-required",
+                        "stepOneSecond": "step-1-optional",
+                        "labelStepOne": "label-step-1",
+                        "stepTwoFirst": "step-2-first",
+                        "stepTwoSecond": "step-2-second",
+                        "labelStepTwo": "label-step-2"
+                    }
                 }
             }
         }

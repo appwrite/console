@@ -1,6 +1,7 @@
 <script>
     import { isCloud } from '$lib/system';
     import { version } from '$routes/console/store';
+    import LL from '$i18n/i18n-svelte';
 
     const currentYear = new Date().getFullYear();
 </script>
@@ -19,19 +20,20 @@
                             href="https://github.com/appwrite/appwrite/releases"
                             target="_blank"
                             rel="noreferrer">
-                            Version {$version}
+                            {$LL.console.project.texts.footer.version()}
+                            {$version}
                         </a>
                     {/if}
                 </div>
             </li>
             <li class="inline-links-item">
                 <a href="https://appwrite.io/policy/terms" target="_blank" rel="noreferrer">
-                    <span class="text">Terms</span>
+                    <span class="text">{$LL.console.project.texts.footer.terms()}</span>
                 </a>
             </li>
             <li class="inline-links-item">
                 <a href="https://appwrite.io/policy/privacy" target="_blank" rel="noreferrer">
-                    <span class="text">Privacy</span>
+                    <span class="text">{$LL.console.project.texts.footer.privacy()}</span>
                 </a>
             </li>
         </ul>
@@ -39,7 +41,8 @@
     <div class="main-footer-end">
         <ul class="inline-links is-no-padding-first-and-last u-x-small">
             <li class="inline-links-item">
-                <span class="text">ⓒ {currentYear} Appwrite. All rights reserved.</span>
+                <span class="text"
+                    >ⓒ {currentYear} {$LL.console.project.texts.footer.allRightReserved()}</span>
             </li>
             <li class="inline-links-item u-flex u-gap-8">
                 <a href="https://github.com/appwrite/appwrite" target="_blank" rel="noreferrer">

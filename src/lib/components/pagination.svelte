@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page as pageStore } from '$app/stores';
     import { Button } from '$lib/elements/forms';
+    import LL from '$i18n/i18n-svelte';
 
     export let sum: number;
     export let limit: number;
@@ -46,12 +47,12 @@
             {#if currentPage <= 1}
                 <Button disabled text ariaLabel="prev page">
                     <span class="icon-cheveron-left" aria-hidden="true" />
-                    <span class="text">Prev</span>
+                    <span class="text">{$LL.console.project.components.pagination.prev()}</span>
                 </Button>
             {:else}
                 <Button text ariaLabel="prev page" href={getLink(currentPage - 1)}>
                     <span class="icon-cheveron-left" aria-hidden="true" />
-                    <span class="text">Prev</span>
+                    <span class="text">{$LL.console.project.components.pagination.prev()}</span>
                 </Button>
             {/if}
             {#if !hidePages}
@@ -79,12 +80,12 @@
             {/if}
             {#if currentPage >= totalPages}
                 <Button disabled text ariaLabel="next page">
-                    <span class="text">Next</span>
+                    <span class="text">{$LL.console.project.components.pagination.next()}</span>
                     <span class="icon-cheveron-right" aria-hidden="true" />
                 </Button>
             {:else}
                 <Button text ariaLabel="next page" href={getLink(currentPage + 1)}>
-                    <span class="text">Next</span>
+                    <span class="text">{$LL.console.project.components.pagination.next()}</span>
                     <span class="icon-cheveron-right" aria-hidden="true" />
                 </Button>
             {/if}
@@ -94,7 +95,7 @@
     <nav class="pagination">
         <Button text disabled ariaLabel="prev page">
             <span class="icon-cheveron-left" aria-hidden="true" />
-            <span class="text">Prev</span>
+            <span class="text">{$LL.console.project.components.pagination.prev()}</span>
         </Button>
         {#if !hidePages}
             <ol class="pagination-list is-only-desktop">
@@ -106,7 +107,7 @@
             </ol>
         {/if}
         <Button text disabled ariaLabel="next page">
-            <span class="text">Next</span>
+            <span class="text">{$LL.console.project.components.pagination.next()}</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
         </Button>
     </nav>

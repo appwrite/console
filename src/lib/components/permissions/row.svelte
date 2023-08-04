@@ -5,6 +5,7 @@
     import { tick } from 'svelte';
     import { AvatarInitials } from '../';
     import Output from '../output.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let role: string;
 
@@ -33,11 +34,11 @@
 <div class="u-flex u-cross-center u-gap-8 tippy-user">
     <div>
         {#if role === 'users'}
-            <div>Users</div>
+            <div>{$LL.console.project.table.header.users()}</div>
         {:else if role === 'guests'}
-            <div>Guests</div>
+            <div>{$LL.console.project.table.header.guests()}</div>
         {:else if role === 'any'}
-            <div>Any</div>
+            <div>{$LL.console.project.table.header.any()}</div>
         {:else}
             <div
                 class="u-trim-1"
@@ -94,20 +95,20 @@
                                     {#if isUser}
                                         <div class="u-grid u-gap-4">
                                             {#if data?.email}
-                                                <p class="text u-x-small">Email: {data?.email}</p>
+                                                <p class="text u-x-small">{$LL.console.project.texts.components.email()} {data?.email}</p>
                                             {/if}
                                             {#if data?.phone}
-                                                <p class="text u-x-small">Phone: {data?.phone}</p>
+                                                <p class="text u-x-small">{$LL.console.project.texts.components.phone()} {data?.phone}</p>
                                             {/if}
                                         </div>
                                     {:else if isTeam}
-                                        <p class="text u-x-small">Members: {data?.total}</p>
+                                        <p class="text u-x-small">{$LL.console.project.texts.components.members()} {data?.total}</p>
                                     {/if}
                                 </span>
                             {/if}
                         </div>
                     {:else}
-                        Not found.
+                    {$LL.console.project.texts.components.notFound()}
                     {/if}
                 </div>
             </div>

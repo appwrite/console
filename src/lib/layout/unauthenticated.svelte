@@ -5,6 +5,7 @@
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { user } from '$lib/stores/user';
+    import LL from '$i18n/i18n-svelte';
 
     export let imgLight = LoginLight;
     export let imgDark = LoginDark;
@@ -53,7 +54,7 @@
         <div
             class="container u-color-text-gray is-not-mobile"
             style="--p-container-max-size:var(--container-size-small); --p-container-padding-inline:1rem;">
-            <p>Integrate with your favourite technologies</p>
+            <p>{$LL.console.project.texts.unAuthenticated()}</p>
             <ul
                 class="u-flex u-main-center u-flex-wrap u-gap-16 u-margin-block-start-32 u-line-height-1 u-opacity-50">
                 {#each technologies as tech}

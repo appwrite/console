@@ -5,6 +5,7 @@
     import { Avatar } from '$lib/components';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
 
     let hovering = false;
 
@@ -16,7 +17,8 @@
     <section class="upload-box is-float">
         <header class="upload-box-header">
             <h4 class="upload-box-title">
-                <span class="text">Uploading files</span>
+                <span class="text"
+                    >{$LL.console.project.texts.components.pagination.uploadingFiles()}</span>
                 <span class="amount">{$uploader.files.length}</span>
             </h4>
             <button
@@ -72,7 +74,7 @@
                                 <span class="icon">{progress}%</span>
                             </div>
                             <label for={file.name} class="file-name u-trim">{file.name}</label>
-                            <Pill danger>Failed</Pill>
+                            <Pill danger>{$LL.console.project.table.pill.failed()}</Pill>
                             <button
                                 class="upload-box-button"
                                 aria-label="Failed"
@@ -93,7 +95,7 @@
                                 <span class="icon">{progress}%</span>
                             </div>
                             <label for={file.name} class="file-name u-trim">{file.name}</label>
-                            <Pill warning>Pending</Pill>
+                            <Pill warning>{$LL.console.project.table.pill.pending()}</Pill>
                         </li>
                     {/if}
                 {/each}

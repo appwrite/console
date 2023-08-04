@@ -15,6 +15,7 @@
     import Actions from './actions.svelte';
     import type { Permission } from './permissions.svelte';
     import Row from './row.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let roles: string[] = [];
 
@@ -127,7 +128,7 @@
         on:create={create}>
         <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Add role</span>
+            <span class="text">{$LL.console.project.button.addRole()}</span>
         </Button>
     </Actions>
 {:else}
@@ -147,7 +148,7 @@
                 </Actions>
             </div>
             <div class="common-section">
-                <span class="text"> Add a role to get started </span>
+                <span class="text"> {$LL.console.project.texts.components.addRole()} </span>
             </div>
         </div>
     </article>

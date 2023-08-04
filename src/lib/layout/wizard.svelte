@@ -18,6 +18,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { createEventDispatcher, type SvelteComponent } from 'svelte';
     import WizardExitModal from './wizardExitModal.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let title: string;
     export let steps: WizardStepsType;
@@ -132,24 +133,27 @@
                 <div class="u-flex u-main-end u-gap-12">
                     {#if !isLastStep && sortedSteps[currentStep - 1][1].optional}
                         <Button text on:click={() => dispatch('finish')}>
-                            Skip optional steps
+                            {$LL.console.project.button.skipSteps()}
                         </Button>
                     {/if}
                     {#if currentStep === 1}
-                        <Button secondary on:click={handleExit}>Cancel</Button>
-                        <Button submit>Next</Button>
+                        <Button secondary on:click={handleExit}
+                            >{$LL.console.project.button.cancel()}</Button>
+                        <Button submit>{$LL.console.project.button.next()}</Button>
                     {:else if isLastStep}
                         <Button
                             secondary
                             on:click={() => currentStep--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
+                            on:click={() => trackEvent('wizard_back')}
+                            >{$LL.console.project.button.back()}</Button>
                         <Button submit>{finalAction}</Button>
                     {:else}
                         <Button
                             secondary
                             on:click={() => currentStep--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
-                        <Button submit>Next</Button>
+                            on:click={() => trackEvent('wizard_back')}
+                            >{$LL.console.project.button.back()}</Button>
+                        <Button submit>{$LL.console.project.button.next()}</Button>
                     {/if}
                 </div>
             </div>

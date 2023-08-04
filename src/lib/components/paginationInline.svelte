@@ -1,5 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+    import LL from '$i18n/i18n-svelte';
 
     export let sum: number;
     export let limit: number;
@@ -59,7 +60,7 @@
             class="button is-text"
             aria-label="prev page">
             <span class="icon-cheveron-left" aria-hidden="true" />
-            <span class="text">Prev</span>
+            <span class="text">{$LL.console.project.components.pagination.prev()}</span>
         </button>
         {#if !hidePages}
             <ol class="pagination-list is-only-desktop">
@@ -90,7 +91,7 @@
             class="button is-text"
             type="button"
             aria-label="next page">
-            <span class="text">Next</span>
+            <span class="text">{$LL.console.project.components.pagination.next()}</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
         </button>
     </nav>
@@ -98,7 +99,7 @@
     <nav class="pagination">
         <button type="button" class="button is-text is-disabled" aria-label="prev page">
             <span class="icon-cheveron-left" aria-hidden="true" />
-            <span class="text">Prev</span>
+            <span class="text">{$LL.console.project.components.pagination.prev()}</span>
         </button>
         {#if !hidePages}
             <ol class="pagination-list is-only-desktop">
@@ -110,7 +111,7 @@
             </ol>
         {/if}
         <button type="button" class="button is-text is-disabled" aria-label="next page">
-            <span class="text">Next</span>
+            <span class="text">{$LL.console.project.components.pagination.next()}</span>
             <span class="icon-cheveron-right" aria-hidden="true" />
         </button>
     </nav>

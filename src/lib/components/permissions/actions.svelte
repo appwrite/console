@@ -5,7 +5,9 @@
     import Team from './team.svelte';
     import User from './user.svelte';
     import type { Permission } from './permissions.svelte';
-    import type { Writable } from 'svelte/store';
+    import type { Writable } from 'svelte/store';,
+    import LL from '$i18n/i18n-svelte';
+
 
     export let showDropdown: boolean;
     export let showUser: boolean;
@@ -24,21 +26,24 @@
     <slot />
     <svelte:fragment slot="list">
         <DropListItem disabled={$groups.has('any')} on:click={() => dispatch('create', ['any'])}>
-            Any
+            {$LL.console.project.button.dropdown.any()}
         </DropListItem>
         <DropListItem
             disabled={$groups.has('guests')}
             on:click={() => dispatch('create', ['guests'])}>
-            All guests
+            {$LL.console.project.button.dropdown.allGuests()}
         </DropListItem>
         <DropListItem
             disabled={$groups.has('users')}
             on:click={() => dispatch('create', ['users'])}>
-            All users
+            {$LL.console.project.button.dropdown.allUsers()}
         </DropListItem>
-        <DropListItem on:click={() => (showUser = true)}>Select users</DropListItem>
-        <DropListItem on:click={() => (showTeam = true)}>Select teams</DropListItem>
-        <DropListItem on:click={() => (showCustom = true)}>Custom permission</DropListItem>
+        <DropListItem on:click={() => (showUser = true)}
+            >{$LL.console.project.button.dropdown.selectUsers()}</DropListItem>
+        <DropListItem on:click={() => (showTeam = true)}
+            >{$LL.console.project.button.dropdown.selectTeams()}</DropListItem>
+        <DropListItem on:click={() => (showCustom = true)}
+            >{$LL.console.project.button.dropdown.currentPermission()}</DropListItem>
     </svelte:fragment>
 </DropList>
 

@@ -4,15 +4,16 @@
     import Step2 from './wizard.step2.test.svelte';
     import { wizard } from '$lib/stores/wizard';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import LL from '$i18n/i18n-svelte';
 
     const stepsComponents: WizardStepsType = new Map();
 
     stepsComponents.set(1, {
-        label: 'label-step-1',
+        label: $LL.console.project.mock.inputs.label.labelStepOne(),
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'label-step-2',
+        label: $LL.console.project.mock.inputs.label.labelStepTwo(),
         component: Step2
     });
 

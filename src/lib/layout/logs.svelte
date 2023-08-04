@@ -10,6 +10,7 @@
     import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import type { Models } from '@appwrite.io/console';
+    import LL from '$i18n/i18n-svelte';
 
     let selectedTab: string;
     let rawData: string;
@@ -49,7 +50,10 @@
 {#if $log.data}
     <section class="cover-frame" data-private>
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
-            <h1 class="body-text-1 u-bold">Function ID: {$log.func.$id}</h1>
+            <h1 class="body-text-1 u-bold">
+                {$LL.console.project.texts.footer.functionId()}
+                {$log.func.$id}
+            </h1>
             <button
                 on:click={() => ($log.show = false)}
                 class="button is-text is-only-icon"
@@ -73,7 +77,9 @@
                     </div>
                     <div>
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <h2 class="body-text-2 u-bold">Deployment ID:</h2>
+                            <h2 class="body-text-2 u-bold">
+                                {$LL.console.project.texts.footer.deploymentId()}
+                            </h2>
                             <Output value={$log.data.$id}>
                                 {$log.data.$id}
                             </Output>
@@ -110,10 +116,11 @@
                             <div class="u-flex u-gap-16 u-margin-inline-start-auto">
                                 <Button text external href={rawData}>
                                     <span class="icon-external-link" aria-hidden="true" />
-                                    <span class="text">Raw data</span>
+                                    <span class="text">{$LL.console.project.button.rawData()}</span>
                                 </Button>
                                 <Button secondary on:click={scrollToTop}>
-                                    <span class="text">Scroll to top</span>
+                                    <span class="text"
+                                        >{$LL.console.project.button.scrollToTop()}</span>
                                 </Button>
                             </div>
                         </header>
@@ -145,7 +152,9 @@
                     </div>
                     <div>
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <h2 class="body-text-2 u-bold">Execution ID:</h2>
+                            <h2 class="body-text-2 u-bold">
+                                {$LL.console.project.texts.footer.executionId()}
+                            </h2>
                             <Output value={$log.data.$id}>
                                 {$log.data.$id}
                             </Output>
@@ -187,10 +196,11 @@
                             <div class="u-flex u-gap-16 u-margin-inline-start-auto">
                                 <Button text external href={rawData}>
                                     <span class="icon-external-link" aria-hidden="true" />
-                                    <span class="text">Raw data</span>
+                                    <span class="text">{$LL.console.project.button.rawData()}</span>
                                 </Button>
                                 <Button secondary on:click={scrollToTop}>
-                                    <span class="text">Scroll to top</span>
+                                    <span class="text"
+                                        >{$LL.console.project.button.scrollToTop()}</span>
                                 </Button>
                             </div>
                         </header>
