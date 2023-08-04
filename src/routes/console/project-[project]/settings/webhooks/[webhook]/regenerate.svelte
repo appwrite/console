@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { webhook } from './store';
 
     export let show = false;
@@ -14,7 +14,7 @@
 
     async function regenerate() {
         try {
-            await sdkForConsole.projects.updateWebhookSignature(projectId, $webhook.$id);
+            await sdk.forConsole.projects.updateWebhookSignature(projectId, $webhook.$id);
             invalidate(Dependencies.WEBHOOK);
             show = false;
             addNotification({
@@ -32,7 +32,7 @@
     }
 </script>
 
-<Modal bind:show on:submit={regenerate}>
+<Modal bind:show onSubmit={regenerate}>
     <svelte:fragment slot="header">Regenerate Key</svelte:fragment>
     <p class="u-text">
         Are you sure you want to generate a new Signature Key?

@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;
@@ -31,7 +31,7 @@
     async function updateLimit() {
         submitting = true;
         try {
-            await sdkForConsole.projects.updateAuthLimit(projectId, isLimited ? newLimit : 0);
+            await sdk.forConsole.projects.updateAuthLimit(projectId, isLimited ? newLimit : 0);
             invalidate(Dependencies.PROJECT).then(() => (submitting = false));
             addNotification({
                 type: 'success',

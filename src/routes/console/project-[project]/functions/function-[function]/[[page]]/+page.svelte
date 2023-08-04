@@ -35,7 +35,7 @@
     import Create from '../create.svelte';
     import Activate from '../activate.svelte';
     import { browser } from '$app/environment';
-    import { sdkForConsole, sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import Output from '$lib/components/output.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
@@ -57,7 +57,7 @@
     });
 
     async function getActiveDeployment() {
-        const list = await sdkForProject.functions.listDeployments($page.params.function, [
+        const list = await sdk.forProject.functions.listDeployments($page.params.function, [
             Query.equal('$id', $func?.deployment)
         ]);
         return list?.deployments?.[0];
@@ -68,7 +68,7 @@
     };
 
     if (browser) {
-        sdkForConsole.client.subscribe<Models.Deployment>('console', (message) => {
+        sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
             if (message.events.includes('functions.*.deployments.*.create')) {
                 invalidate(Dependencies.DEPLOYMENTS);
 

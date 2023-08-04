@@ -1,4 +1,4 @@
-import { sdkForConsole, sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
 import type { Models } from '@aw-labs/appwrite-console';
 import { writable, type Writable } from 'svelte/store';
@@ -7,14 +7,14 @@ import { isCloud } from '$lib/system';
 export const usage = cachedStore<
     Models.UsageProject,
     {
-        load: (range: string) => Promise<void>;
+        load: (projectId: string, range: string) => Promise<void>;
     }
 >('projectUsage', function ({ set }) {
     return {
         load: async (projectId, range) => {
             const usages = isCloud
-                ? await sdkForProject.project.getUsage(range)
-                : await sdkForConsole.projects.getUsage(projectId, range);
+                ? await sdk.forProject.project.getUsage(range)
+                : await sdk.forConsole.projects.getUsage(projectId, range);
             set(usages);
         }
     };

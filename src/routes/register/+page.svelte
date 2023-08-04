@@ -11,7 +11,7 @@
         InputText
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
@@ -24,22 +24,23 @@
     async function register() {
         try {
             disabled = true;
-            await sdkForConsole.account.create('unique()', mail, pass, name ?? '');
-            await sdkForConsole.account.createEmailSession(mail, pass);
+            await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
+            await sdk.forConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
-            trackEvent('submit_account_create');
+            trackEvent(Submit.AccountCreate);
         } catch (error) {
             disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AccountCreate);
         }
     }
 
     function onGithubLogin() {
-        sdkForConsole.account.createOAuth2Session(
+        sdk.forConsole.account.createOAuth2Session(
             'github',
             window.location.origin,
             window.location.origin,
@@ -55,7 +56,7 @@
 <Unauthenticated>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
-        <Form on:submit={register}>
+        <Form onSubmit={register}>
             <FormList>
                 <InputText
                     id="name"
