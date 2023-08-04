@@ -2,8 +2,16 @@ import { Dependencies } from '$lib/constants.js';
 import { sdk } from '$lib/stores/sdk';
 
 async function getFirebaseProjects() {
-    const res = await sdk.forProject.migrations.listFirebaseProjects();
-    return res.projects;
+    try {
+        const res = await sdk.forProject.migrations.listFirebaseProjects();
+        return res.projects;
+    } catch (e) {
+        if (e.code === 401) {
+            return [];
+        } else {
+            throw e;
+        }
+    }
 }
 
 export async function load({ depends }) {
