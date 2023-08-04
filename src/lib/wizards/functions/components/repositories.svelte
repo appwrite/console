@@ -31,7 +31,17 @@
 
     let search = '';
     async function loadRepositories(installationId: string, search: string) {
-        return sdk.forProject.vcs.listRepositories(installationId, search || undefined);
+        const repositories = await sdk.forProject.vcs.listRepositories(
+            installationId,
+            search || undefined
+        );
+
+        if (repositories.providerRepositories.length) {
+            selectedRepository = repositories.providerRepositories[0].id;
+            $repository = repositories.providerRepositories[0];
+        }
+
+        return repositories;
     }
 
     function connectGitHub() {
@@ -104,7 +114,7 @@
                                         <input
                                             class="is-small u-margin-inline-end-8"
                                             type="radio"
-                                            name={repo.name}
+                                            name="repositories"
                                             bind:group={selectedRepository}
                                             on:change={() => repository.set(repo)}
                                             value={repo.id} />

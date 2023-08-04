@@ -38,7 +38,16 @@
         }
 
         templateStore.set(template);
-        templateConfig.set({ $id: null, runtime, name: template.name, variables });
+        templateConfig.set({
+            $id: null,
+            runtime,
+            name: template.name,
+            variables,
+            repositoryBehaviour: 'new',
+            repositoryName: template.id,
+            repositoryPrivate: false,
+            repositoryId: null
+        });
         wizard.start(CreateTemplate);
     }
 

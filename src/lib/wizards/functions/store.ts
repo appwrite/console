@@ -9,6 +9,10 @@ export const templateConfig = writable<{
     name: string;
     runtime: string;
     variables: { [key: string]: string };
+    repositoryBehaviour: 'new' | 'existing';
+    repositoryName: string;
+    repositoryPrivate: boolean;
+    repositoryId: string;
 }>();
 export const repository = writable<Models.ProviderRepository>();
 export const installation = writable<Models.Installation>();

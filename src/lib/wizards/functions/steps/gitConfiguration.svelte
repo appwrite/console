@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { FormList, InputChoice, InputSelect, InputText } from '$lib/elements/forms';
+    import { FormList, InputChoice, InputText } from '$lib/elements/forms';
+    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { choices, installation, repository } from '../store';
@@ -26,7 +27,11 @@
 
             return a.name > b.name ? -1 : 1;
         });
-        $choices.branch = sorted[0].name ?? null;
+        $choices.branch = sorted[0]?.name ?? null;
+
+        if (!$choices.branch) {
+            $choices.branch = 'main';
+        }
 
         return sorted;
     }
@@ -61,16 +66,22 @@
         {:then branches}
             <div class="u-margin-block-start-24">
                 <FormList>
-                    <InputSelect
+                    <InputSelectSearch
                         id="branch"
-                        label="Branch"
+                        label="Select branch"
+                        placeholder="main"
+                        bind:value={$choices.branch}
+                        bind:search={$choices.branch}
+                        on:select={(event) => {
+                            $choices.branch = event.detail.value;
+                        }}
+                        name="branch"
                         options={branches?.map((branch) => {
                             return {
                                 value: branch.name,
                                 label: branch.name
                             };
-                        }) ?? []}
-                        bind:value={$choices.branch} />
+                        }) ?? []} />
                     <InputText
                         id="root"
                         label="Root directory"

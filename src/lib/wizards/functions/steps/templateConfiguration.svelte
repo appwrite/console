@@ -1,13 +1,16 @@
 <script lang="ts">
-    import Alert from '$lib/components/alert.svelte';
     import Collapsible from '$lib/components/collapsible.svelte';
     import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
+    import CustomId from '$lib/components/customId.svelte';
     import FormList from '$lib/elements/forms/formList.svelte';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import InputText from '$lib/elements/forms/inputText.svelte';
+    import Pill from '$lib/elements/pill.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { template, templateConfig } from '../store';
+
+    let showCustomId = false;
 
     $: runtimeDetail =
         $templateConfig.runtime &&
@@ -15,7 +18,7 @@
 
     async function beforeSubmit() {
         if (!$templateConfig.runtime) {
-            throw new Error('Please seelct a runtime.');
+            throw new Error('Please select a runtime.');
         }
 
         for (const variable of $template.variables) {
@@ -51,6 +54,25 @@
         {$template.tagline}
     </svelte:fragment>
     <div class="u-flex u-flex-vertical u-gap-24">
+        <FormList>
+            <InputText
+                label="Name"
+                id="name"
+                placeholder="Function name"
+                bind:value={$templateConfig.name}
+                required />
+            {#if !showCustomId}
+                <div>
+                    <Pill button on:click={() => (showCustomId = !showCustomId)}>
+                        <span class="icon-pencil" aria-hidden="true" />
+                        <span class="text">Function ID</span>
+                    </Pill>
+                </div>
+            {:else}
+                <CustomId bind:show={showCustomId} name="Function" bind:id={$templateConfig.$id} />
+            {/if}
+        </FormList>
+
         {#await loadRuntimes()}
             <div class="avatar is-size-x-small">
                 <div class="loader u-margin-16" />
@@ -65,11 +87,10 @@
                 required />
         {/await}
 
-        <div class="u-flex u-flex-vertical u-gap-16">
-            <p class="text u-bold">Environment variables</p>
-            {#if $template.variables.length <= 0}
-                <p>No variables to configure.</p>
-            {:else}
+        {#if $template.variables.length > 0}
+            <div class="u-flex u-flex-vertical u-gap-16">
+                <p class="text u-bold">Environment variables</p>
+
                 <div class="u-flex u-flex-vertical u-gap-16">
                     {#each $template.variables as variable}
                         <div>
@@ -81,15 +102,16 @@
                                 autocomplete={false}
                                 bind:value={$templateConfig.variables[variable.name]} />
                             <div class="u-margin-block-start-4">
-                                <Alert type="info" isInline={true}>
-                                    {@html variable.description}
-                                </Alert>
+                                <p class="helper">
+                                    <span class="icon-info" aria-hidden="true" />
+                                    <span class="text">{@html variable.description}</span>
+                                </p>
                             </div>
                         </div>
                     {/each}
                 </div>
-            {/if}
-        </div>
+            </div>
+        {/if}
 
         <Collapsible>
             <CollapsibleItem>

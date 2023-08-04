@@ -156,7 +156,7 @@
                                     <input
                                         class="is-small u-margin-inline-end-8"
                                         type="radio"
-                                        name={repo.name}
+                                        name="repositories"
                                         bind:group={selectedRepoId}
                                         value={repo.id} />
                                     <div class="avatar is-size-x-small">

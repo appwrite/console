@@ -5,49 +5,48 @@
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { goto } from '$app/navigation';
-    import {
-        choices,
-        createFunction,
-        installation,
-        repository,
-        template,
-        templateConfig
-    } from './store';
+    import { choices, installation, repository, template, templateConfig } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import SelectRepository from './steps/selectRepository.svelte';
     import GitConfiguration from './steps/gitConfiguration.svelte';
     import TemplateConfiguration from './steps/templateConfiguration.svelte';
-    import TempalteFunctionDetails from './steps/tempalteFunctionDetails.svelte';
+    import RepositoryBehaviour from './steps/repositoryBehaviour.svelte';
+    import CreateRepository from './steps/createRepository.svelte';
 
     async function create() {
+        const runtimeDetail = $template.runtimes.find((r) => r.name === $templateConfig.runtime);
+
         const response = await sdk.forProject.functions.create(
-            $createFunction.$id || ID.unique(),
-            $createFunction.name,
-            $createFunction.runtime,
-            $createFunction.execute || undefined,
-            $createFunction.entrypoint,
+            $templateConfig.$id || ID.unique(),
+            $templateConfig.name,
+            $templateConfig.runtime,
+            $template.permissions || undefined,
+            runtimeDetail.entrypoint,
+            $template.events || undefined,
+            $template.cron || undefined,
+            $template.timeout || undefined,
             undefined,
             undefined,
-            undefined,
-            undefined,
-            undefined,
-            $createFunction.commands,
+            runtimeDetail.commands,
             $installation.$id,
             $repository.id,
             $choices.branch,
             $choices.silentMode,
-            $choices.rootDir
+            $choices.rootDir,
+            $template.providerRepositoryId,
+            $template.providerOwner,
+            runtimeDetail.providerRootDirectory,
+            $template.providerBranch
         );
         goto(`${base}/console/project-${$page.params.project}/functions/function-${response.$id}`);
         addNotification({
-            message: `${$createFunction.name} has been created`,
+            message: `${response.name} has been created`,
             type: 'success'
         });
         trackEvent(Submit.FunctionCreate, {
-            customId: !!$createFunction.$id
+            customId: !!response.$id
         });
         resetState();
         wizard.hide();
@@ -61,16 +60,16 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Template Configuration',
+        label: 'Function configuration',
         component: TemplateConfiguration
     });
     stepsComponents.set(2, {
-        label: 'Function Details',
-        component: TempalteFunctionDetails
+        label: 'Repository behaviour',
+        component: RepositoryBehaviour
     });
     stepsComponents.set(3, {
-        label: 'Select Repository',
-        component: SelectRepository
+        label: 'Select repository',
+        component: CreateRepository
     });
     stepsComponents.set(4, {
         label: 'Git configuration',
