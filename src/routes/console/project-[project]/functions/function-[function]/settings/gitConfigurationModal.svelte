@@ -11,6 +11,7 @@
     import type { Models } from '@appwrite.io/console';
     import { func } from '../store';
     import { invalidate } from '$app/navigation';
+    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
 
     export let show: boolean;
     export let installationsList: Models.InstallationList;
@@ -232,17 +233,23 @@
                 <p>Last updated: {toLocaleDateTime(selectedRepo.pushedAt)}</p>
             </Box>
 
-            <InputSelect
+            <InputSelectSearch
+                required={true}
                 id="branch"
                 label="Branch"
-                required={true}
+                placeholder="main"
+                bind:value={selectedBranch}
+                bind:search={selectedBranch}
+                on:select={(event) => {
+                    selectedBranch = event.detail.value;
+                }}
+                name="branch"
                 options={branchesList?.branches?.map((branch) => {
                     return {
                         value: branch.name,
                         label: branch.name
                     };
-                }) ?? []}
-                bind:value={selectedBranch} />
+                }) ?? []} />
             <InputText
                 id="root"
                 label="Root directory"

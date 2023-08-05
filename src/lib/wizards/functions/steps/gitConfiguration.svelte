@@ -67,6 +67,7 @@
             <div class="u-margin-block-start-24">
                 <FormList>
                     <InputSelectSearch
+                        required={true}
                         id="branch"
                         label="Select branch"
                         placeholder="main"

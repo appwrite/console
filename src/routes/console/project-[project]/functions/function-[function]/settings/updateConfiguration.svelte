@@ -9,7 +9,6 @@
         Form,
         FormList,
         InputChoice,
-        InputSelect,
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
@@ -25,6 +24,7 @@
     import { Pill } from '$lib/elements';
     import { wizard } from '$lib/stores/wizard';
     import ConnectExisting from '$lib/wizards/functions/connectExisting.svelte';
+    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
 
     export let installations: Models.InstallationList;
     export let repository: Models.ProviderRepository | null;
@@ -172,16 +172,23 @@
                             </div>
                             <div class="u-margin-block-start-24">
                                 <FormList>
-                                    <InputSelect
+                                    <InputSelectSearch
+                                        required={true}
                                         id="branch"
                                         label="Branch"
+                                        placeholder="main"
+                                        bind:value={selectedBranch}
+                                        bind:search={selectedBranch}
+                                        on:select={(event) => {
+                                            selectedBranch = event.detail.value;
+                                        }}
+                                        name="branch"
                                         options={branchesList?.branches?.map((branch) => {
                                             return {
                                                 value: branch.name,
                                                 label: branch.name
                                             };
-                                        }) ?? []}
-                                        bind:value={selectedBranch} />
+                                        }) ?? []} />
                                     <InputText
                                         id="root"
                                         label="Root directory"
