@@ -19,12 +19,10 @@
 
     export let data;
 
-    let stdout = '',
-        stderr = '';
+    let logs = '';
 
     onMount(() => {
-        stdout = data.deployment.buildStdout;
-        stderr = data.deployment.buildStderr;
+        logs = data.deployment.buildLogs;
         if (data.deployment.status === 'ready') {
             return;
         }
@@ -34,8 +32,7 @@
                     `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
                 )
             ) {
-                stdout = (message.payload as any).stdout as string;
-                stderr = (message.payload as any).stderr as string;
+                logs = (message.payload as any).logs as string;
                 if (message.payload.status === 'ready') {
                     invalidate(Dependencies.DEPLOYMENT);
                 }
@@ -115,10 +112,7 @@
                     </div>
                 </header>
                 <div class="code-panel-content">
-                    <pre><code>{stdout}</code></pre>
-                    {#if stderr}
-                        <pre><code>{stderr}</code></pre>
-                    {/if}
+                    <pre><code>{logs}</code></pre>
                 </div>
             </section>
         </div>
