@@ -12,7 +12,8 @@
         redirect.searchParams.append('alert', 'installation-created');
         const target = new URL(`${sdk.forProject.client.config.endpoint}/v1/vcs/github/authorize`);
         target.searchParams.set('projectId', $page.params.project);
-        target.searchParams.set('redirect', redirect.toString());
+        target.searchParams.set('success', redirect.toString());
+        target.searchParams.set('failure', redirect.toString());
         goto(target);
     }
 </script>
