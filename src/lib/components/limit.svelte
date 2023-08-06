@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page as pageStore } from '$app/stores';
+    import LL from '$i18n/i18n-svelte';
     import { InputSelect } from '$lib/elements/forms';
     import { preferences } from '$lib/stores/preferences';
 
@@ -35,10 +36,14 @@
 <div class="u-flex u-gap-12 u-cross-center">
     <InputSelect
         id="rows"
-        label="Rows per page"
+        label={$LL.console.organization.forms.limit.inputs.rows.label()}
         showLabel={false}
         {options}
         bind:value={limit}
         on:change={limitChange} />
-    <p class="text">{name} per page. Total results: {sum}</p>
+    <p class="text">
+        {name}
+        {$LL.console.organization.forms.limit.texts.perPage()}. {$LL.console.organization.forms.limit.texts.totalResult()}
+        {sum}
+    </p>
 </div>

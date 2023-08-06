@@ -326,6 +326,17 @@
                         "phraseThree": "e i dati associati a questa organizzazione verranno eliminati. Questa azione è irreversibile.",
                         "orgSettings": "L'organizzazione verrà eliminata definitivamente, inclusi tutti i progetti ei dati associati a questa organizzazione. Questa azione è irreversibile."
                     }
+                },
+                "limit": {
+                    "inputs": {
+                        "rows": {
+                            "label": "Righe per pagina"
+                        }
+                    },
+                    "texts": {
+                        "perPage": "per pagina",
+                        "totalResult": "Risultati totali:"
+                    }
                 }
             },
             "table": {
@@ -388,11 +399,13 @@
                 "deleteIndex": "Elimina indice",
                 "deleteDomain": "Elimina dominio",
                 "deleteWebhook": "Elimina webhook",
+                "deletePlatform": "Elimina piattaforma",
                 "exitProcess": "Processo di uscita",
                 "user": "Utente",
                 "team": "Squadra",
                 "schedule": "Programma",
                 "overview": "Panoramica",
+                "hostName": "Nome host",
                 "logs": "Registri",
                 "indexes": "Indici",
                 "buckets": "Secchi",
@@ -445,6 +458,9 @@
                 "httpAuth": "Autenticazione HTTP",
                 "selectTeams": "Seleziona le squadre",
                 "selectUsers": "Seleziona utenti",
+                "platforms": "piattaforme",
+                "packageName": "nome del pacchetto",
+                "bundleId": "ID bundle",
                 "userData": {
                     "name": "Nome",
                     "email": "E-mail",
@@ -1142,6 +1158,7 @@
                     "create": "Crea",
                     "update": "Aggiorna",
                     "addPrefs": "Aggiungi preferenza",
+                    "addPlatform": "Aggiungi piattaforma",
                     "delete": "Elimina",
                     "deleteAll": "Elimina tutto",
                     "verify": "Verifica",
@@ -1335,7 +1352,14 @@
                     "chooseName": "Scegli un nome che ti aiuti a distinguere le chiavi API.",
                     "permissionScope": "Puoi scegliere quale ambito di autorizzazione concedere alla tua applicazione. È consigliabile consentire solo le autorizzazioni necessarie per raggiungere gli obiettivi del tuo progetto.",
                     "readyTogo": "Sei pronto per partire",
-                    "congratulations": "Congratulazioni, hai appena aggiunto la tua prima piattaforma alla dashboard di Appwrite! Sei pronto a fare un tentativo? Perché non aggiungere un database al tuo progetto o iniziare a caricare i file? La scelta spetta a te. "
+                    "congratulations": "Congratulazioni, hai appena aggiunto la tua prima piattaforma alla dashboard di Appwrite! Sei pronto a fare un tentativo? Perché non aggiungere un database al tuo progetto o iniziare a caricare i file? La scelta spetta a te. ",
+                    "choosePlatform": "Scegli un nome che ti aiuti a distinguere tra le piattaforme.",
+                    "deletePlatform": "La piattaforma verrà eliminata definitivamente. Questa azione è irreversibile.",
+                    "deletePlatformPermanent": "La piattaforma verrà eliminata definitivamente. Questa azione è irreversibile.",
+                    "packageName": "Il nome del pacchetto è generalmente applicationId nel file build.gradle a livello di app.",
+                    "bundleId": "Puoi trovare il tuo identificatore bundle nella scheda Generale per la destinazione principale della tua app in Xcode.",
+                    "applicationName": "Nome dell'applicazione.",
+                    "hostName": "È possibile utilizzare * per consentire nomi host o sottodomini con caratteri jolly."
                 },
                 "functions": {
                     "createNewFunction": "Crea una nuova funzione",
@@ -1419,7 +1443,9 @@
                     "members": "Membri:",
                     "notFound": "non trovato",
                     "grantAccessSpecificTeamMember": "Concedere l'accesso a qualsiasi membro di un team specifico. Per concedere l'accesso ai membri del team con ruoli, sarà necessario impostare un",
-                    "grantAccessToUser": "Concedere l'accesso a qualsiasi utente autenticato o anonimo."
+                    "grantAccessToUser": "Concedere l'accesso a qualsiasi utente autenticato o anonimo.",
+                    "lastUpdated": "Ultimo aggiornamento",
+                    "firstPlatform": "Crea la tua prima piattaforma per iniziare."
                 },
                 "footer": {
                     "version": "Versione",

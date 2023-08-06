@@ -21,6 +21,7 @@
     import { platform } from './store';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
+    import LL from '$i18n/i18n-svelte';
 
     const types: Record<string, typeof SvelteComponent> = {
         web: Web,
@@ -70,21 +71,22 @@
 <Container>
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
-            <p class="text">Choose any name that will help you distinguish between platforms.</p>
+            <Heading tag="h6" size="7">{$LL.console.project.userData.name()}</Heading>
+            <p class="text">{$LL.console.project.texts.overview.choosePlatform()}</p>
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputText
                         id="name"
-                        label="Name"
+                        label={$LL.console.project.forms.overview.inputs.name.label()}
                         bind:value={name}
                         required
-                        placeholder="Enter name" />
+                        placeholder={$LL.console.project.forms.overview.inputs.name.defaultPlaceholder()} />
                 </FormList>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={name === $platform.name} submit>Update</Button>
+                <Button disabled={name === $platform.name} submit
+                    >{$LL.console.project.button.submit.update()}</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -93,9 +95,9 @@
 
     <CardGrid danger>
         <div>
-            <Heading tag="h6" size="7">Delete Platform</Heading>
+            <Heading tag="h6" size="7">{$LL.console.project.title.deletePlatform()}</Heading>
         </div>
-        <p>The Platform will be permanently deleted. This action is irreversible.</p>
+        <p>{$LL.console.project.texts.overview.deletePlatform()}</p>
         <svelte:fragment slot="aside">
             <div class="box">
                 <div class="u-flex u-gap-16">
@@ -108,9 +110,11 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button secondary on:click={() => (showDelete = true)}
+                >{$LL.console.project.button.submit.delete()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>
 
 <Delete bind:showDelete />
+ 

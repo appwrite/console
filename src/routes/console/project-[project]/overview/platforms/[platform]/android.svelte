@@ -9,6 +9,7 @@
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     let key: string = null;
 
@@ -46,15 +47,15 @@
 
 <Form onSubmit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Package Name</Heading>
+        <Heading tag="h6" size="7">{$LL.console.project.title.packageName()}</Heading>
         <p class="text">
-            Your package name is generally the applicationId in your app-level build.gradle file.
+            {$LL.console.project.texts.overview.packageName()}
         </p>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText
                     id="key"
-                    label="Package Name"
+                    label={$LL.console.project.forms.overview.inputs.androidPlatformKey.label()}
                     bind:value={key}
                     required
                     placeholder="com.company.appname" />
@@ -62,7 +63,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={key === $platform.hostname} submit>Update</Button>
+            <Button disabled={key === $platform.hostname} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

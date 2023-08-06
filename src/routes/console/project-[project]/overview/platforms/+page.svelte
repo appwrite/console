@@ -36,6 +36,7 @@
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
+    import LL from '$i18n/i18n-svelte';
 
     export let data: PageData;
 
@@ -73,12 +74,12 @@
 </script>
 
 <div class="common-section u-flex u-gap-12">
-    <Heading tag="h3" size="7">Platforms</Heading>
+    <Heading tag="h3" size="7">{$LL.console.project.title.platforms()}</Heading>
     <span class="u-margin-inline-start-auto">
         <DropList bind:show={showDropdown} placement="bottom-start">
             <Button on:click={() => (showDropdown = !showDropdown)}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add platform</span>
+                <span class="text">{$LL.console.project.button.submit.addPlatform()}</span>
             </Button>
             <svelte:fragment slot="list">
                 <DropListItem on:click={() => addPlatform(Platform.Web)}>Web App</DropListItem>
@@ -121,7 +122,9 @@
                     <div class="grid-item-1-end-start">
                         <div class="u-flex u-gap-16 u-flex-wrap">
                             <div class="grid-item-1-end-start">
-                                <p class="eyebrow-heading-3">Last Updated</p>
+                                <p class="eyebrow-heading-3">
+                                    {$LL.console.project.texts.components.lastUpdated()}
+                                </p>
                                 <p>{toLocaleDateTime(platform.$updatedAt)}</p>
                             </div>
                         </div>
@@ -140,18 +143,20 @@
             {/if}
             <slot>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h4">Create your first platform to get started.</Heading>
+                    <Heading size="7" tag="h4"
+                        >{$LL.console.project.components.firstPlatform()}</Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
-                        Need a hand? Learn more in our documentation.
+                        {$LL.console.project.components.needHand()}
                     </p>
                 </div>
                 <div class="u-flex u-gap-16 u-main-center">
                     <Button external href="https://appwrite.io/docs/sdks" text>
-                        Documentation
+                        {$LL.console.project.button.documentation()}
                     </Button>
                     <DropList bind:show={showDropdownEmpty} placement="bottom-start">
                         <Button secondary on:click={() => (showDropdownEmpty = !showDropdownEmpty)}>
-                            <span class="text">Add platform</span>
+                            <span class="text"
+                                >{$LL.console.project.button.submit.addPlatform()}</span>
                         </Button>
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>

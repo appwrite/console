@@ -326,6 +326,17 @@
                         "phraseThree": "and data associated with this organization will be deleted. This action is irreversible.",
                         "orgSettings": "The organization will be permanently deleted, including all projects and data associated with this organization. This action is irreversible."
                     }
+                },
+                "limit": {
+                    "inputs": {
+                        "rows": {
+                            "label": "Rows per page"
+                        }
+                    },
+                    "texts": {
+                        "perPage": "per page",
+                        "totalResult": "Total results:"
+                    }
                 }
             },
             "table": {
@@ -388,7 +399,9 @@
                 "deleteIndex": "Delete Index",
                 "deleteDomain": "Delete Domain",
                 "deleteWebhook": "Delete Webhook",
+                "deletePlatform": "Delete Platform",
                 "exitProcess": "Exit Process",
+                "hostName":"Hostname",
                 "user": "User",
                 "team": "Team",
                 "schedule": "Schedule",
@@ -445,6 +458,9 @@
                 "httpAuth": "HTTP Authentication",
                 "selectTeams": "Select teams",
                 "selectUsers": "Select users",
+                "platforms": "Platforms",
+                "packageName": "Package Name",
+                "bundleId": "Bundle ID",
                 "userData": {
                     "name": "Name",
                     "email": "Email",
@@ -1142,6 +1158,7 @@
                     "create": "Create",
                     "update": "Update",
                     "addPrefs": "Add Preference",
+                    "addPlatform": "Add platform",
                     "delete": "Delete",
                     "deleteAll": "Delete All",
                     "verify": "Verify",
@@ -1335,7 +1352,14 @@
                     "chooseName": "Choose any name that will help you distinguish between API keys.",
                     "permissionScope": "You can choose which permission scope to grant your application. It is a best practice to allow only the permissions you need to meet your project goals.",
                     "readyTogo": "You're ready to go",
-                    "congratulations": "Congrats, you've just added your first platform to your Appwrite dashboard! Are you ready to give it a go? Why not add a database to your project, or start uploading files? The choice is up to you."
+                    "congratulations": "Congrats, you've just added your first platform to your Appwrite dashboard! Are you ready to give it a go? Why not add a database to your project, or start uploading files? The choice is up to you.",
+                    "choosePlatform": "Choose any name that will help you distinguish between platforms.",
+                    "deletePlatform": "The Platform will be permanently deleted. This action is irreversible.",
+                    "deletePlatformPermanent": "The Platform will be permanently deleted. This action is irreversible.",
+                    "packageName": "Your package name is generally the applicationId in your app-level build.gradle file.",
+                    "bundleId": "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode.",
+                    "applicationName": "Your application name."
+                    ,"hostName":"You can use * to allow wildcard hostnames or subdomains."
                 },
                 "functions": {
                     "createNewFunction": "Create a new function",
@@ -1419,7 +1443,9 @@
                     "members": "Members:",
                     "notFound": "Not found.",
                     "grantAccessSpecificTeamMember": "Grant access to any member of a specific team. To grant access to team members with specific roles, you will need to set a",
-                    "grantAccessToUser": "Grant access to any authenticated or anonymous user."
+                    "grantAccessToUser": "Grant access to any authenticated or anonymous user.",
+                    "lastUpdated": "Last Updated",
+                    "firstPlatform": "Create your first platform to get started."
                 },
                 "footer": {
                     "version": "Version",

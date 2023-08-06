@@ -323,12 +323,23 @@
                     }
                 },
                 "deleteOrg": {
-                    "title": "Delete Organization",
+                    "title": "Organisation löschen",
                     "texts": {
                         "phraseOne": "Sind Sie sicher, dass Sie löschen möchten",
                         "phraseTwo": "? Alle Projekte",
                         "phraseThree": "und mit dieser Organisation verknüpfte Daten werden gelöscht. Diese Aktion ist unwiderruflich.",
                         "orgSettings": "Die Organisation wird dauerhaft gelöscht, einschließlich aller mit dieser Organisation verknüpften Projekte und Daten. Diese Aktion ist irreversibel."
+                    }
+                },
+                "limit": {
+                    "inputs": {
+                        "rows": {
+                            "label": "Zeilen pro Seite"
+                        }
+                    },
+                    "texts": {
+                        "perPage": " pro Seite",
+                        "totalResult": "Gesamtergebnisse:"
                     }
                 }
             },
@@ -392,9 +403,11 @@
                 "deleteIndex": "Index löschen",
                 "deleteDomain": "Domain löschen",
                 "deleteWebhook": "Webhook löschen",
+                "deletePlatform": "Plattform löschen",
                 "exitProcess": "Prozess beenden",
                 "user": "Benutzer",
                 "team": "Team",
+                "hostName":"Hostname",
                 "schedule": "Zeitplan",
                 "overview": "Übersicht",
                 "logs": "Protokolle",
@@ -449,9 +462,12 @@
                 "httpAuth": "HTTP-Authentifizierung",
                 "selectTeams": "Teams auswählen",
                 "selectUsers": "Benutzer auswählen",
+                "platforms": "Plattformen",
+                "packageName": "Paketname",
+                "bundleId": "Bundle-ID",
                 "userData": {
                     "name": "Name",
-                    "email": "Email",
+                    "email": "E-Mail",
                     "phone": "Telefon",
                     "password": "Passwort",
                     "userPref": "Benutzereinstellungen",
@@ -1259,7 +1275,14 @@
                     "chooseName": "Wählen Sie einen beliebigen Namen, der Ihnen bei der Unterscheidung zwischen API-Schlüsseln hilft.",
                     "permissionScope": "Sie können auswählen, welchen Berechtigungsbereich Sie Ihrer Anwendung gewähren möchten. Es ist eine bewährte Vorgehensweise, nur die Berechtigungen zuzulassen, die Sie zum Erreichen Ihrer Projektziele benötigen.",
                     "readyTogo": "Du bist bereit zu gehen",
-                    "congratulations": "Herzlichen Glückwunsch, Sie haben gerade Ihre erste Plattform zu Ihrem Appwrite-Dashboard hinzugefügt! Sind Sie bereit, es auszuprobieren? Warum fügen Sie Ihrem Projekt nicht eine Datenbank hinzu oder beginnen mit dem Hochladen von Dateien? Die Wahl liegt bei Ihnen."
+                    "congratulations": "Herzlichen Glückwunsch, Sie haben gerade Ihre erste Plattform zu Ihrem Appwrite-Dashboard hinzugefügt! Sind Sie bereit, es auszuprobieren? Warum fügen Sie Ihrem Projekt nicht eine Datenbank hinzu oder beginnen mit dem Hochladen von Dateien? Die Wahl liegt bei Ihnen.",
+                    "choosePlatform": "Wähle einen beliebigen Namen, der dir hilft, zwischen den Plattformen zu unterscheiden.",
+                    "deletePlatform": "Die Plattform wird dauerhaft gelöscht. Diese Aktion ist irreversibel.",
+                    "deletePlatformPermanent": "Die Plattform wird dauerhaft gelöscht. Diese Aktion ist irreversibel.",
+                    "packageName": "Ihr Paketname ist im Allgemeinen die applicationId in Ihrer build.gradle-Datei auf App-Ebene.",
+                    "bundleId": "Du findest deinen Bundle-Bezeichner auf der Registerkarte Allgemein für das primäre Ziel deiner App in Xcode.",
+                    "applicationName": "Der Name Ihrer Anwendung."
+                    ,"hostName":"Sie können * verwenden, um Platzhalter-Hostnamen oder Subdomains zuzulassen."
                 },
                 "functions": {
                     "createNewFunction": "Eine neue Funktion erstellen",
@@ -1343,7 +1366,9 @@
                     "members": "Mitglieder:",
                     "notFound": "nicht gefunden",
                     "grantAccessSpecificTeamMember": "Gewähren Sie jedem Mitglied eines bestimmten Teams Zugriff. So gewähren Sie Teammitgliedern Zugriff mit bestimmten müssen Sie eine",
-                    "grantAccessToUser": "Gewähren Sie jedem authentifizierten oder anonymen Benutzer Zugriff."
+                    "grantAccessToUser": "Gewähren Sie jedem authentifizierten oder anonymen Benutzer Zugriff.",
+                    "lastUpdated": "Letzte Aktualisierung",
+                    "firstPlatform": "Erstelle deine erste Plattform, um loszulegen."
                 },
                 "footer": {
                     "version": "Version",
@@ -1410,6 +1435,7 @@
                     "create": "Erstellen",
                     "update": "Aktualisieren",
                     "addPrefs": "Präferenz hinzufügen",
+                    "addPlatform": "Plattform hinzufügen",
                     "delete": "Löschen",
                     "deleteAll": "Alle löschen",
                     "verify": "Überprüfen",

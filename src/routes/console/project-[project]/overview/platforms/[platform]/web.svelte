@@ -8,6 +8,7 @@
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
+    import LL from '$i18n/i18n-svelte';
 
     let hostname: string = null;
 
@@ -41,13 +42,13 @@
 
 <Form onSubmit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Hostname</Heading>
-        <p class="text">You can use * to allow wildcard hostnames or subdomains.</p>
+        <Heading tag="h6" size="7">{$LL.console.project.title.hostName()}</Heading>
+        <p class="text">{$LL.console.project.texts.overview.hostName()}</p>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText
                     id="hostname"
-                    label="Hostname"
+                    label={$LL.console.project.forms.overview.inputs.webHostName.label()}
                     bind:value={hostname}
                     required
                     placeholder="myapp.com" />
@@ -55,7 +56,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={hostname === $platform.hostname} submit>Update</Button>
+            <Button disabled={hostname === $platform.hostname} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
