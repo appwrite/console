@@ -61,7 +61,7 @@
     function configureGitHub() {
         const redirect = new URL($page.url);
         redirect.searchParams.append('alert', 'installation-updated');
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/v1/vcs/github/authorize`);
+        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
         target.searchParams.set('projectId', $page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
