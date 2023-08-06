@@ -15,7 +15,7 @@
 
     const handleDelete = async () => {
         try {
-            await sdk.forConsole.projects.delete($project.$id, password);
+            await sdk.forConsole.projects.delete($project.$id);
             showDelete = false;
             addNotification({
                 type: 'success',

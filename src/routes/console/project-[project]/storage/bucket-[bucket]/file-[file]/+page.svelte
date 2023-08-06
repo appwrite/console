@@ -46,7 +46,12 @@
 
     async function updatePermissions() {
         try {
-            await sdk.forProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
+            await sdk.forProject.storage.updateFile(
+                $file.bucketId,
+                $file.$id,
+                $file.name,
+                filePermissions
+            );
             await invalidate(Dependencies.FILE);
             arePermsDisabled = true;
             addNotification({

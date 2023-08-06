@@ -37,7 +37,7 @@
         });
     });
 
-    function showLogs(execution: Models.Execution<any>) {
+    function showLogs(execution: Models.Execution) {
         $log.show = true;
         $log.func = $func;
         $log.data = execution;

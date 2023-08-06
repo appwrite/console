@@ -114,6 +114,7 @@
 
 {#if showCreate}
     <Create
+        isGlobal={false}
         bind:selectedVar
         bind:showCreate
         on:created={handleCreated}

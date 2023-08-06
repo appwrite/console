@@ -97,11 +97,11 @@
                         <div class="u-flex u-gap-24">
                             <div class="u-flex u-gap-16">
                                 <h4 class="u-bold">Method:</h4>
-                                <span>{execution.method}</span>
+                                <span>{execution.requestMethod}</span>
                             </div>
                             <div class="u-flex u-gap-16">
                                 <h4 class="u-bold">Path:</h4>
-                                <span>{execution.path}</span>
+                                <span>{execution.requestPath}</span>
                             </div>
                         </div>
 
@@ -148,7 +148,7 @@
                                     </p>
                                 </Alert>
                             {:else if selectedRequest === 'headers'}
-                                {@const headers = Object.entries(execution?.headers)}
+                                {@const headers = Object.entries(execution?.responseHeaders)}
                                 {#if headers.length}
                                     <TableList>
                                         {#each headers as [key, value]}
@@ -182,8 +182,12 @@
                                     </Alert>
                                 {/if}
                             {:else if selectedRequest === 'body'}
-                                {#if execution.headers?.body?.length}
-                                    <Code withCopy noMargin code={execution.body} language="sh" />
+                                {#if execution.responseBody.length}
+                                    <Code
+                                        withCopy
+                                        noMargin
+                                        code={execution.responseBody}
+                                        language="sh" />
                                 {:else}
                                     <Alert type="info">
                                         <svelte:fragment slot="title">
