@@ -33,7 +33,7 @@
             $installation.$id,
             $repository.id,
             $choices.branch,
-            $choices.silentMode,
+            $choices.silentMode || undefined,
             $choices.rootDir,
             $template.providerRepositoryId,
             $template.providerOwner,
