@@ -1,5 +1,12 @@
 <script lang="ts" context="module">
-    const columnTypes = ['string', 'number', 'relationship'] as const;
+    const columnTypes = [
+        'string',
+        'integer',
+        'double',
+        'boolean',
+        'datetime',
+        'relationship'
+    ] as const;
     type ColumnType = (typeof columnTypes)[number];
 
     type StoreValues<Store> = Store extends Writable<infer T> ? T : never;
@@ -8,22 +15,19 @@
     };
 
     type Operator = {
-        toTag: (attribute: string, input: string) => string;
-        toQuery: (attribute: string, input: string) => string;
+        toTag: (attribute: string, input?: string | number) => string;
+        toQuery: (attribute: string, input?: string | number) => string;
         types: ColumnType[];
+        hideInput?: boolean;
     };
 
     function initQueries() {
-        const queries = writable(
-            new Map<string, string>([
-                ['**name** starts with **Th**', Query.startsWith('name', 'Th')]
-            ])
-        );
+        const queries = writable(new Map<string, string>());
 
         type AddFilterArgs = {
             operator: Operator;
             column: Column;
-            value: string;
+            value: string | number;
         };
 
         function addFilter({ column, operator, value }: AddFilterArgs) {
@@ -66,15 +70,14 @@
 </script>
 
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { Drop } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputNumber } from '$lib/elements/forms';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import InputText from '$lib/elements/forms/inputText.svelte';
+    import { Query } from '@appwrite.io/console';
     import { derived, get, writable, type Writable } from 'svelte/store';
     import { columns } from './store';
-    import { Query } from '@appwrite.io/console';
-    import InputText from '$lib/elements/forms/inputText.svelte';
-    import { goto } from '$app/navigation';
-    import { tick } from 'svelte';
 
     let showFilters = false;
 
@@ -93,14 +96,41 @@
             types: ['string']
         },
         'greater than': {
-            toQuery: Query.greaterThan,
+            toQuery: (attr, input) => Query.greaterThan(attr, Number(input)),
             toTag: (attribute, input) => `**${attribute}** greater than **${input}**`,
-            types: ['number']
+            types: ['integer', 'double']
+        },
+        'greater than or equal to': {
+            toQuery: (attr, input) => Query.greaterThanEqual(attr, Number(input)),
+            toTag: (attribute, input) => `**${attribute}** greater than or equal to **${input}**`,
+            types: ['integer', 'double']
         },
         'less than': {
             toQuery: Query.lessThan,
             toTag: (attribute, input) => `**${attribute}** less than **${input}**`,
-            types: ['number']
+            types: ['integer', 'double']
+        },
+        'less than or equal to': {
+            toQuery: Query.lessThanEqual,
+            toTag: (attribute, input) => `**${attribute}** less than or equal to **${input}**`,
+            types: ['integer', 'double']
+        },
+        equal: {
+            toQuery: Query.equal,
+            toTag: (attribute, input) => `**${attribute}** equal to **${input}**`,
+            types: ['string', 'integer', 'double']
+        },
+        'not null': {
+            toQuery: Query.isNotNull,
+            toTag: (attribute) => `**${attribute}** is not null`,
+            types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
+            hideInput: true
+        },
+        null: {
+            toQuery: Query.isNull,
+            toTag: (attribute) => `**${attribute}** is null`,
+            types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
+            hideInput: true
         }
     };
 
@@ -118,31 +148,60 @@
         operatorKey = null;
     }
 
-    let value: string | null = null;
+    let valueStr: string | null = null;
+    let valueNum: number | null = null;
+    $: value = column?.type === 'integer' || column?.type === 'double' ? valueNum : valueStr;
+
     $: {
         columnId;
-        value = null;
+        valueStr = null;
+        valueNum = null;
     }
 
     // This Map is keyed by tags, and has a query as the value
-
     function addFilter() {
-        if (column && operator && value) {
+        if (column && operator) {
             queries.addFilter({ column, operator, value });
+            valueStr = null;
+            valueNum = null;
         }
     }
 
     function tagFormat(node: HTMLElement) {
         node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
     }
+
+    let applied = 0;
+
+    function apply() {
+        queries.apply();
+        applied = $tags.length;
+        showFilters = false;
+    }
+
+    function clearAll() {
+        queries.clearAll();
+        queries.apply();
+        applied = 0;
+        showFilters = false;
+    }
+
+    $: isDisabled = (function getDisabled() {
+        return !operator || (column?.type === 'string' && !value);
+    })();
 </script>
 
 <Drop bind:show={showFilters} noArrow>
     <Button secondary on:click={() => (showFilters = !showFilters)}>
         <i class="icon-filter" />
         Filters
+        {#if applied > 0}
+            <span class="inline-tag">
+                {applied}
+            </span>
+        {/if}
     </Button>
-    <div class="dropped" slot="list">
+    <div class="dropped card" slot="list">
         <p>Apply filter rules to refine the table view</p>
         <div class="selects u-flex u-gap-12 u-margin-block-start-16">
             <InputSelect
@@ -159,12 +218,16 @@
                 placeholder="Select operator"
                 bind:value={operatorKey} />
         </div>
-        {#if column && operatorKey}
+        {#if column && operator && !operator?.hideInput}
             <div class="u-margin-block-start-16">
-                <InputText id="value" bind:value placeholder="Enter value" />
+                {#if column.type === 'integer' || column.type === 'double'}
+                    <InputNumber id="value" bind:value={valueNum} placeholder="Enter value" />
+                {:else}
+                    <InputText id="value" bind:value={valueStr} placeholder="Enter value" />
+                {/if}
             </div>
         {/if}
-        <Button text disabled={!value} class="u-margin-block-start-12" on:click={addFilter}>
+        <Button text disabled={isDisabled} class="u-margin-block-start-12" on:click={addFilter}>
             <i class="icon-plus" />
             Add filter
         </Button>
@@ -174,9 +237,6 @@
                     class="tag"
                     on:click={() => {
                         queries.removeFilter(tag);
-                        tick().then(() => {
-                            showFilters = true;
-                        });
                     }}>
                     <span class="text" use:tagFormat>
                         {tag}
@@ -187,12 +247,8 @@
         </ul>
         <hr />
         <div class="u-flex u-margin-block-start-16 u-main-end u-gap-8">
-            <Button text on:click={queries.clearAll}>Clear all</Button>
-            <Button
-                on:click={() => {
-                    queries.apply();
-                    showFilters = false;
-                }}>Apply</Button>
+            <Button text on:click={clearAll}>Clear all</Button>
+            <Button on:click={apply}>Apply</Button>
         </div>
     </div>
 </Drop>
@@ -204,8 +260,6 @@
 
     .dropped {
         border-radius: 0.5rem;
-        border: 1px solid hsl(var(--color-neutral-10));
-        background-color: hsl(var(--color-neutral-0));
         box-shadow: 0px 16px 32px 0px rgba(55, 59, 77, 0.04);
 
         padding: 1rem;
@@ -236,7 +290,7 @@
     hr {
         height: 1px;
         width: calc(100% + 2rem);
-        background-color: hsl(var(--color-neutral-10));
+        background-color: hsl(var(--color-border));
 
         margin-block-start: 1rem;
         margin-inline: -1rem;

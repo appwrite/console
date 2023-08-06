@@ -77,7 +77,9 @@
                 event.target === element ||
                 element.contains(event.target as Node) ||
                 event.target === tooltip ||
-                tooltip.contains(event.target as Node)
+                tooltip.contains(event.target as Node) ||
+                // Avoid deleted elements triggering blur
+                !document.body.contains(event.target as Node)
             )
         ) {
             show = false;
