@@ -4,6 +4,12 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
+function queryParamToMap(queryParam: string) {
+    const decodedQueryParam = decodeURIComponent(queryParam);
+    const queries = JSON.parse(decodedQueryParam) as [string, string][];
+    return new Map(queries);
+}
+
 export const load: PageLoad = async ({ params, depends, url, route }) => {
     depends(Dependencies.DOCUMENTS);
     const page = getPage(url);
@@ -12,7 +18,7 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
     const offset = pageToOffset(page, limit);
 
     const queries = url.searchParams.get('query');
-    const parsedQueries = queries ? JSON.parse(queries) : [];
+    const parsedQueries = queryParamToMap(queries || '[]');
     console.log(parsedQueries);
 
     return {
@@ -26,7 +32,7 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc('$createdAt'),
-                ...parsedQueries
+                ...parsedQueries.values()
             ]
         )
     };

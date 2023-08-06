@@ -21,8 +21,18 @@
         hideInput?: boolean;
     };
 
-    function initQueries() {
-        const queries = writable(new Map<string, string>());
+    function mapToQueryParams(map: Map<string, string>) {
+        return encodeURIComponent(JSON.stringify(Array.from(map.entries())));
+    }
+
+    function queryParamToMap(queryParam: string) {
+        const decodedQueryParam = decodeURIComponent(queryParam);
+        const queries = JSON.parse(decodedQueryParam) as [string, string][];
+        return new Map(queries);
+    }
+
+    function initQueries(initialValue = new Map<string, string>()) {
+        const queries = writable(initialValue);
 
         type AddFilterArgs = {
             operator: Operator;
@@ -49,11 +59,9 @@
         }
 
         function apply() {
-            const queryParam = JSON.stringify(Array.from(get(queries)).map(([_, v]) => v));
-
-            const encodedQueryParam = encodeURIComponent(queryParam);
+            const queryParam = mapToQueryParams(get(queries));
             const currentLocation = window.location.pathname;
-            goto(`${currentLocation}?query=${encodedQueryParam}`);
+            goto(`${currentLocation}?query=${queryParam}`);
         }
 
         return {
@@ -64,9 +72,6 @@
             apply
         };
     }
-
-    const queries = initQueries();
-    const tags = derived(queries, ($queries) => Array.from($queries.keys()));
 </script>
 
 <script lang="ts">
@@ -78,11 +83,15 @@
     import { Query } from '@appwrite.io/console';
     import { derived, get, writable, type Writable } from 'svelte/store';
     import { columns } from './store';
+    import { page } from '$app/stores';
 
     let showFilters = false;
 
     let columnId: string | null = null;
     $: column = $columns.find((c) => c.id === columnId) as Column;
+
+    const queries = initQueries(queryParamToMap($page.url.searchParams.get('query') || '[]'));
+    const tags = derived(queries, ($queries) => Array.from($queries.keys()));
 
     const operators: Record<string, Operator> = {
         'starts with': {
