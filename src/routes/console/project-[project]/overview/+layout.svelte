@@ -207,11 +207,11 @@
                         <Tab
                             href={`${path}/platforms`}
                             selected={$page.url.pathname === `${path}/platforms`}
-                            event="platforms">Platforms</Tab>
+                            event="platforms">{$LL.console.project.button.platforms()}</Tab>
                         <Tab
                             href={`${path}/keys`}
                             selected={$page.url.pathname === `${path}/keys`}
-                            event="keys">API Keys</Tab>
+                            event="keys">{$LL.console.project.button.apiKeys()}</Tab>
                     </ul>
                 </div>
 

@@ -407,7 +407,7 @@
                 "exitProcess": "Prozess beenden",
                 "user": "Benutzer",
                 "team": "Team",
-                "hostName":"Hostname",
+                "hostName": "Hostname",
                 "schedule": "Zeitplan",
                 "overview": "Übersicht",
                 "logs": "Protokolle",
@@ -1281,8 +1281,9 @@
                     "deletePlatformPermanent": "Die Plattform wird dauerhaft gelöscht. Diese Aktion ist irreversibel.",
                     "packageName": "Ihr Paketname ist im Allgemeinen die applicationId in Ihrer build.gradle-Datei auf App-Ebene.",
                     "bundleId": "Du findest deinen Bundle-Bezeichner auf der Registerkarte Allgemein für das primäre Ziel deiner App in Xcode.",
-                    "applicationName": "Der Name Ihrer Anwendung."
-                    ,"hostName":"Sie können * verwenden, um Platzhalter-Hostnamen oder Subdomains zuzulassen."
+                    "applicationName": "Der Name Ihrer Anwendung.",
+                    "hostName": "Sie können * verwenden, um Platzhalter-Hostnamen oder Subdomains zuzulassen.",
+                    "realTime": "Echtzeit-Verbindungen"
                 },
                 "functions": {
                     "createNewFunction": "Eine neue Funktion erstellen",
@@ -1431,6 +1432,8 @@
                 "rawData": "Rohdaten",
                 "scrollToTop": "Nach oben scrollen",
                 "button": "Taste",
+                "platforms":"Plattformen",
+                "apiKeys":"API-Schlüssel",
                 "submit": {
                     "create": "Erstellen",
                     "update": "Aktualisieren",

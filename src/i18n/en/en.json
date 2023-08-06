@@ -401,7 +401,7 @@
                 "deleteWebhook": "Delete Webhook",
                 "deletePlatform": "Delete Platform",
                 "exitProcess": "Exit Process",
-                "hostName":"Hostname",
+                "hostName": "Hostname",
                 "user": "User",
                 "team": "Team",
                 "schedule": "Schedule",
@@ -1154,6 +1154,8 @@
                 "rawData": "Raw data",
                 "scrollToTop": "Scroll to top",
                 "button": "Button",
+                "platforms":"Platforms",
+                "apiKeys":"API Keys",
                 "submit": {
                     "create": "Create",
                     "update": "Update",
@@ -1358,8 +1360,9 @@
                     "deletePlatformPermanent": "The Platform will be permanently deleted. This action is irreversible.",
                     "packageName": "Your package name is generally the applicationId in your app-level build.gradle file.",
                     "bundleId": "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode.",
-                    "applicationName": "Your application name."
-                    ,"hostName":"You can use * to allow wildcard hostnames or subdomains."
+                    "applicationName": "Your application name.",
+                    "hostName": "You can use * to allow wildcard hostnames or subdomains."
+                    ,"realTime":"Realtime Connections"
                 },
                 "functions": {
                     "createNewFunction": "Create a new function",

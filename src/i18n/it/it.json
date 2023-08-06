@@ -1154,6 +1154,8 @@
                 "rawData": "Dati grezzi",
                 "scrollToTop": "Scorri verso l'alto",
                 "button": "Pulsante",
+                "platforms": "piattaforme",
+                "apiKeys": "Chiavi API",
                 "submit": {
                     "create": "Crea",
                     "update": "Aggiorna",
@@ -1359,7 +1361,8 @@
                     "packageName": "Il nome del pacchetto è generalmente applicationId nel file build.gradle a livello di app.",
                     "bundleId": "Puoi trovare il tuo identificatore bundle nella scheda Generale per la destinazione principale della tua app in Xcode.",
                     "applicationName": "Nome dell'applicazione.",
-                    "hostName": "È possibile utilizzare * per consentire nomi host o sottodomini con caratteri jolly."
+                    "hostName": "È possibile utilizzare * per consentire nomi host o sottodomini con caratteri jolly.",
+                    "realTime": "Connessioni in tempo reale"
                 },
                 "functions": {
                     "createNewFunction": "Crea una nuova funzione",

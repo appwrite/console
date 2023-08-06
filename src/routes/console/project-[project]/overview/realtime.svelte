@@ -15,7 +15,7 @@
 <div class="heading-level-4">
     {format(current)}
 </div>
-<div>Realtime Connections</div>
+<div>{$LL.console.project.texts.overview.realTime()}</div>
 {#if total}
     <div style="height: 18em">
         <BarChart
