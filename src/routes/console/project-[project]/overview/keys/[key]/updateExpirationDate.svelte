@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import LL from '$i18n/i18n-svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -45,21 +46,20 @@
 
 <Form onSubmit={updateExpire}>
     <CardGrid>
-        <Heading tag="h6" size="7">Expiration Date</Heading>
-        <p class="text">Set a date after which your API Key will expire.</p>
+        <Heading tag="h6" size="7">{$LL.console.project.title.expirationDate()}</Heading>
+        <p class="text">{$LL.console.project.texts.overview.setExpireDate()}</p>
         <svelte:fragment slot="aside">
             {#if isExpired}
                 <Alert type="error" dismissible on:dismiss={() => (alertsDismissed = true)}>
-                    <span slot="title">Your API Key has expired</span>
+                    <span slot="title">{$LL.console.project.texts.overview.expiredApiKey()}</span>
                     <p>
-                        For security reasons, we recommend you delete your expired key and create a
-                        new one.
+                        {$LL.console.project.texts.overview.deleteExpiredKey()}
                     </p>
                 </Alert>
             {:else if isExpiring}
                 <Alert type="warning" dismissible on:dismiss={() => (alertsDismissed = true)}>
-                    <span slot="title">Your API Key is about to expire</span>
-                    <p>Update the expiration date to keep the key active</p>
+                    <span slot="title">{$LL.console.project.texts.overview.keyToExpire()}</span>
+                    <p>{$LL.console.project.texts.overview.updateExpireDate()}</p>
                 </Alert>
             {/if}
             <FormList>
@@ -68,7 +68,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={expiration === $key.expire} submit>Update</Button>
+            <Button disabled={expiration === $key.expire} submit
+                >{$LL.console.project.button.submit.update()}</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -401,6 +401,7 @@
                 "deleteWebhook": "Elimina webhook",
                 "deletePlatform": "Elimina piattaforma",
                 "exitProcess": "Processo di uscita",
+                "expirationDate": "data di scadenza",
                 "user": "Utente",
                 "team": "Squadra",
                 "schedule": "Programma",
@@ -1362,7 +1363,13 @@
                     "bundleId": "Puoi trovare il tuo identificatore bundle nella scheda Generale per la destinazione principale della tua app in Xcode.",
                     "applicationName": "Nome dell'applicazione.",
                     "hostName": "È possibile utilizzare * per consentire nomi host o sottodomini con caratteri jolly.",
-                    "realTime": "Connessioni in tempo reale"
+                    "realTime": "Connessioni in tempo reale",
+                    "setExpireDate": "Imposta una data dopo la quale scadrà la tua chiave API.",
+                    "expiredApiKey": "La tua chiave API è scaduta",
+                    "deleteExpiredKey": "Per motivi di sicurezza, ti consigliamo di eliminare la chiave scaduta e crearne una nuova.",
+                    "keyToExpire": "La tua chiave API sta per scadere",
+                    "updateExpireDate": "Aggiornare la data di scadenza per mantenere attiva la chiave",
+                    "expireWarning": "La chiave scadrà nel"
                 },
                 "functions": {
                     "createNewFunction": "Crea una nuova funzione",

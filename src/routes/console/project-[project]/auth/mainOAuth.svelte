@@ -63,7 +63,7 @@
             placeholder={$LL.console.project.forms.oAuthProvider.inputs.mainAuth.secret.placeholder()}
             minlength={0}
             showPasswordButton
-            bind:value={clientSecret} />
+            bind:value={secret} />
         <Alert type="info">
             {$LL.console.project.alert.oAuthProvider.fieldOne()}{' '}{provider.name}{' '}
             {$LL.console.project.alert.oAuthProvider.fieldTwo()}

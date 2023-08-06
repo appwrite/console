@@ -400,6 +400,7 @@
                 "deleteDomain": "Delete Domain",
                 "deleteWebhook": "Delete Webhook",
                 "deletePlatform": "Delete Platform",
+                "expirationDate": "Expiration Date",
                 "exitProcess": "Exit Process",
                 "hostName": "Hostname",
                 "user": "User",
@@ -1154,8 +1155,8 @@
                 "rawData": "Raw data",
                 "scrollToTop": "Scroll to top",
                 "button": "Button",
-                "platforms":"Platforms",
-                "apiKeys":"API Keys",
+                "platforms": "Platforms",
+                "apiKeys": "API Keys",
                 "submit": {
                     "create": "Create",
                     "update": "Update",
@@ -1361,8 +1362,14 @@
                     "packageName": "Your package name is generally the applicationId in your app-level build.gradle file.",
                     "bundleId": "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode.",
                     "applicationName": "Your application name.",
-                    "hostName": "You can use * to allow wildcard hostnames or subdomains."
-                    ,"realTime":"Realtime Connections"
+                    "hostName": "You can use * to allow wildcard hostnames or subdomains.",
+                    "realTime": "Realtime Connections",
+                    "setExpireDate": "Set a date after which your API Key will expire.",
+                    "expiredApiKey": "Your API Key has expired",
+                    "deleteExpiredKey": "For security reasons, we recommend you delete your expired key and create a new one.",
+                    "keyToExpire": "Your API Key is about to expire",
+                    "updateExpireDate": "Update the expiration date to keep the key active",
+                    "expireWarning": "Your key will expire in"
                 },
                 "functions": {
                     "createNewFunction": "Create a new function",

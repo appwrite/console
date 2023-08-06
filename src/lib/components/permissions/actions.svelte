@@ -5,9 +5,8 @@
     import Team from './team.svelte';
     import User from './user.svelte';
     import type { Permission } from './permissions.svelte';
-    import type { Writable } from 'svelte/store';,
+    import type { Writable } from 'svelte/store';
     import LL from '$i18n/i18n-svelte';
-
 
     export let showDropdown: boolean;
     export let showUser: boolean;

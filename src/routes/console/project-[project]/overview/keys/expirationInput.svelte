@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LL from '$i18n/i18n-svelte';
     import { Helper, InputDateTime, InputSelect } from '$lib/elements/forms';
     import { isSameDay, isValidDate, toLocaleDate } from '$lib/helpers/date';
 
@@ -73,10 +74,15 @@
     }
 </script>
 
-<InputSelect bind:value={expirationSelect} {options} id="preset" label="Expiration Date">
+<InputSelect
+    bind:value={expirationSelect}
+    {options}
+    id="preset"
+    label={$LL.console.project.title.expirationDate()}>
     <svelte:fragment slot="helper">
         {#if expirationSelect !== 'custom' && expirationSelect !== null}
-            <Helper type="neutral">Your key will expire in {toLocaleDate(value)}</Helper>
+            <Helper type="neutral"
+                >{$LL.console.project.texts.overview.expireWarning()} {toLocaleDate(value)}</Helper>
         {/if}
     </svelte:fragment>
 </InputSelect>

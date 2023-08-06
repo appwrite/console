@@ -405,6 +405,7 @@
                 "deleteWebhook": "Webhook löschen",
                 "deletePlatform": "Plattform löschen",
                 "exitProcess": "Prozess beenden",
+                "expirationDate": "Ablaufdatum",
                 "user": "Benutzer",
                 "team": "Team",
                 "hostName": "Hostname",
@@ -1283,7 +1284,13 @@
                     "bundleId": "Du findest deinen Bundle-Bezeichner auf der Registerkarte Allgemein für das primäre Ziel deiner App in Xcode.",
                     "applicationName": "Der Name Ihrer Anwendung.",
                     "hostName": "Sie können * verwenden, um Platzhalter-Hostnamen oder Subdomains zuzulassen.",
-                    "realTime": "Echtzeit-Verbindungen"
+                    "realTime": "Echtzeit-Verbindungen",
+                    "setExpireDate": "Legen Sie ein Datum fest, nach dem Ihr API-Schlüssel abläuft.",
+                    "expiredApiKey": "Dein API-Schlüssel ist abgelaufen",
+                    "deleteExpiredKey": "Aus Sicherheitsgründen empfehlen wir dir, deinen abgelaufenen Schlüssel zu löschen und einen neuen zu erstellen.",
+                    "keyToExpire": "Ihr API-Schlüssel läuft bald ab",
+                    "updateExpireDate": "Aktualisieren Sie das Ablaufdatum, um den Schlüssel aktiv zu halten",
+                    "expireWarning": "Ihr Schlüssel läuft ab in"
                 },
                 "functions": {
                     "createNewFunction": "Eine neue Funktion erstellen",
@@ -1432,8 +1439,8 @@
                 "rawData": "Rohdaten",
                 "scrollToTop": "Nach oben scrollen",
                 "button": "Taste",
-                "platforms":"Plattformen",
-                "apiKeys":"API-Schlüssel",
+                "platforms": "Plattformen",
+                "apiKeys": "API-Schlüssel",
                 "submit": {
                     "create": "Erstellen",
                     "update": "Aktualisieren",
