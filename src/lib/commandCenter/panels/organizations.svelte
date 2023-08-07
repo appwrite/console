@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { useSearcher } from '../commands';
+    import { initSearcher } from '../commands';
     import { orgSearcher } from '../searchers';
     import Template from './template.svelte';
 
-    const { results, search } = useSearcher(orgSearcher);
+    const { results, search } = initSearcher(orgSearcher);
 </script>
 
-<Template options={$results} bind:search={$search}>
-    <div slot="option" let:option>{option.label}</div>
-</Template>
+<Template options={$results} bind:search={$search} />

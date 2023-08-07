@@ -16,7 +16,8 @@ export const dbSearcher = (async (query: string) => {
                     label: db.name,
                     callback: () => {
                         goto(`/console/project-${get(project).$id}/databases/database-${db.$id}`);
-                    }
+                    },
+                    icon: 'database'
                 } as const)
         );
 }) satisfies Searcher;

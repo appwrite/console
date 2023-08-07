@@ -5,3 +5,5 @@ export * from './collections';
 export * from './projects';
 export * from './teams';
 export * from './functions';
+export * from './buckets';
+export * from './files';

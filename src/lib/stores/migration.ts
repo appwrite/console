@@ -177,6 +177,7 @@ type AppwriteInput = {
 type FirebaseInput = {
     provider: 'firebase';
     serviceAccount?: string;
+    projectId?: string;
 };
 
 type SupabaseInput = {

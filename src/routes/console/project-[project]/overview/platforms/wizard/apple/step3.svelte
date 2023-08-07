@@ -10,7 +10,7 @@
 let client = Client()
     .setEndpoint("${endpoint}")
     .setProject("${project}")
-    .setSelfSigned(status: true) // For self signed certificates, only use for development`;
+    .setSelfSigned(true) // For self signed certificates, only use for development`;
 
     let showAlert = true;
 </script>

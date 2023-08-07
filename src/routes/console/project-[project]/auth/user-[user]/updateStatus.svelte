@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
@@ -71,6 +71,9 @@
             trackError(error, Submit.UserUpdateStatus);
         }
     }
+
+    // TODO: Remove this when the console SDK is updated
+    $: accessedAt = ($user as unknown as { accessedAt: string }).accessedAt;
 </script>
 
 <CardGrid>
@@ -100,6 +103,7 @@
                     <p class="title">{$user.phone}</p>
                 {/if}
                 <p>Joined: {toLocaleDateTime($user.registration)}</p>
+                <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
             </div>
             {#if !$user.status}
                 <Pill danger>blocked</Pill>

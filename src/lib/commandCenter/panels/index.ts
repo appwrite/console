@@ -66,3 +66,15 @@ export const FunctionsPanel: SubPanel = {
     name: 'Functions',
     component: Functions
 };
+
+import Buckets from './buckets.svelte';
+export const BucketsPanel: SubPanel = {
+    name: 'Buckets',
+    component: Buckets
+};
+
+import Files from './files.svelte';
+export const FilesPanel: SubPanel = {
+    name: 'Files',
+    component: Files
+};

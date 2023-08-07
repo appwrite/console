@@ -54,9 +54,11 @@
 
     async function invite() {
         try {
-            const res = await fetch(`${sdk.forConsole.client.config.endpoint}/account/invite`, {
+            const { endpoint, project } = sdk.forConsole.client.config;
+            const res = await fetch(`${endpoint}/account/invite`, {
                 method: 'POST',
                 headers: {
+                    'X-Appwrite-Project': project,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({

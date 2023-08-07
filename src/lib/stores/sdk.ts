@@ -9,11 +9,11 @@ import {
     Functions,
     Health,
     Locale,
+    Migrations,
     Projects,
     Storage,
     Teams,
-    Users,
-    Migrations
+    Users
 } from '@appwrite.io/console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;

@@ -24,7 +24,7 @@
 
             switch ($provider.provider) {
                 case 'appwrite': {
-                    const res = await sdk.forProject.migrations.migrateAppwrite(
+                    const res = await sdk.forProject.migrations.createAppwriteMigration(
                         resources,
                         $provider.endpoint,
                         $provider.projectID,
@@ -35,7 +35,7 @@
                     break;
                 }
                 case 'supabase': {
-                    const res = await sdk.forProject.migrations.migrateSupabase(
+                    const res = await sdk.forProject.migrations.createSupabaseMigration(
                         resources,
                         $provider.endpoint,
                         $provider.apiKey,
@@ -50,16 +50,21 @@
                 }
                 case 'firebase': {
                     console.log('firebase', $provider.serviceAccount);
-                    const res = await sdk.forProject.migrations.migrateFirebase(
-                        resources,
-                        $provider.serviceAccount
-                    );
-                    console.log('Firebase', res);
+                    if ($provider.projectId) {
+                        // OAuth
+                    } else if ($provider.serviceAccount) {
+                        // Manual auth
+                        const res = await sdk.forProject.migrations.createFirebaseMigration(
+                            resources,
+                            $provider.serviceAccount
+                        );
+                        console.log('Firebase', res);
+                    }
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'nhost': {
-                    const res = await sdk.forProject.migrations.migrateNHost(
+                    const res = await sdk.forProject.migrations.createNHostMigration(
                         resources,
                         $provider.subdomain,
                         $provider.region,
@@ -100,4 +105,4 @@
     });
 </script>
 
-<Wizard title="Create Function" {steps} on:exit={onExit} on:finish={onFinish} />
+<Wizard title="Create Project" {steps} on:exit={onExit} on:finish={onFinish} />

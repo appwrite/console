@@ -28,7 +28,7 @@
 
     $: $registerCommands([
         {
-            label: 'Find Collections',
+            label: 'Find collections',
             callback() {
                 addSubPanel(CollectionsPanel);
             },
@@ -37,7 +37,7 @@
             icon: 'search'
         },
         {
-            label: 'Create Collection',
+            label: 'Create collection',
             callback() {
                 $showCreate = true;
                 if (!$page.url.pathname.endsWith(databaseId)) {
@@ -85,7 +85,7 @@
 
     $registerSearchers(collectionsSearcher);
 
-    $: $updateCommandGroupRanks((p) => ({ ...p, collections: 10 }));
+    $: $updateCommandGroupRanks({ collections: 10 });
 </script>
 
 <svelte:head>

@@ -122,7 +122,8 @@
         }
     ]);
 
-    $: $updateCommandGroupRanks((prev) => ({ ...prev, users: 300, teams: 200, security: 100 }));
+    // To prioritize the groups!
+    $: $updateCommandGroupRanks({ users: 300, teams: 200, security: 100, navigation: 50 });
 </script>
 
 <svelte:head>

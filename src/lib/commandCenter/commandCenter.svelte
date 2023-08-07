@@ -24,7 +24,6 @@
 
 <script lang="ts">
     import { dev } from '$app/environment';
-    import { afterNavigate } from '$app/navigation';
     import { portal } from '$lib/actions/portal';
     import { last } from '$lib/helpers/array';
     import { debounce } from '$lib/helpers/debounce';
@@ -60,10 +59,6 @@
             clearSubPanels();
         }
     }
-
-    afterNavigate(() => {
-        clearSubPanels();
-    });
 
     const ctx = setCommandCenterCtx({
         isInitialPanel: true,

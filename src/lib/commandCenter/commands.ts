@@ -2,7 +2,8 @@ import { debounce } from '$lib/helpers/debounce';
 import { isMac } from '$lib/helpers/platform';
 import { wizard } from '$lib/stores/wizard';
 import { onMount } from 'svelte';
-import { derived, writable, type Updater } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
+import { nanoid } from 'nanoid/non-secure';
 
 const groups = [
     'ungrouped',
@@ -26,7 +27,9 @@ const groups = [
     'indexes',
     'documents',
     'teams',
-    'security'
+    'security',
+    'buckets',
+    'files'
 ] as const;
 
 export type CommandGroup = (typeof groups)[number];
@@ -40,6 +43,7 @@ type BaseCommand = {
     icon?: string;
     rank?: number;
     nested?: boolean;
+    keepOpen?: boolean;
 };
 
 type KeyedCommand = BaseCommand & {
@@ -153,7 +157,7 @@ export const commandCenterKeyDownHandler = derived(
 
         const rankAndExecute = debounce(() => {
             const command = getHighestPriorityCommand();
-            command.callback();
+            command?.callback();
             reset.immediate();
         }, 200);
 
@@ -204,7 +208,7 @@ export const commandCenterKeyDownHandler = derived(
 // Methods
 export const registerCommands = {
     subscribe(runner: (cb: (newCommands: Command[]) => void) => void) {
-        const uuid = crypto.randomUUID();
+        const uuid = nanoid();
 
         runner((newCommands: Command[]) => {
             commandMap.update((curr) => {
@@ -224,7 +228,7 @@ export const registerCommands = {
 
 export const disableCommands = {
     subscribe(runner: (cb: (disabled: boolean) => void) => void) {
-        const uuid = crypto.randomUUID();
+        const uuid = nanoid();
 
         runner((disabled: boolean) => {
             disabledMap.update((curr) => {
@@ -242,23 +246,24 @@ export const disableCommands = {
     }
 };
 
-type CommandGroupRanks = Record<CommandGroup, number>;
+type CommandGroupRanks = Partial<Record<CommandGroup, number>>;
 
-type CommandGroupRankTransformations = Map<string, Updater<CommandGroupRanks>>;
-const groupRankTransformations = writable<CommandGroupRankTransformations>(new Map());
+type GroupRanksMap = Map<string, CommandGroupRanks>;
+const groupRanksMap = writable<GroupRanksMap>(new Map());
+
 export const updateCommandGroupRanks = {
-    subscribe(runner: (cb: (updater: Updater<CommandGroupRanks>) => void) => void) {
-        const uuid = crypto.randomUUID();
+    subscribe(runner: (cb: (updater: CommandGroupRanks) => void) => void) {
+        const uuid = nanoid();
 
-        runner((updater: Updater<CommandGroupRanks>) => {
-            groupRankTransformations.update((curr) => {
-                curr.set(uuid, updater);
+        runner((groupRank: CommandGroupRanks) => {
+            groupRanksMap.update((curr) => {
+                curr.set(uuid, groupRank);
                 return curr;
             });
         });
 
         return () => {
-            groupRankTransformations.update((curr) => {
+            groupRanksMap.update((curr) => {
                 curr.delete(uuid);
                 return curr;
             });
@@ -266,7 +271,7 @@ export const updateCommandGroupRanks = {
     }
 };
 
-export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTransformations) => {
+export const commandGroupRanks = derived(groupRanksMap, ($groupRankTransformations) => {
     const initialRanks = {
         ...Object.fromEntries(groups.map((group) => [group, 0])),
         ungrouped: 9999,
@@ -278,7 +283,7 @@ export const commandGroupRanks = derived(groupRankTransformations, ($groupRankTr
     } as CommandGroupRanks;
 
     const transformations = Array.from($groupRankTransformations.values());
-    return transformations.reduce((prev, curr) => curr(prev), initialRanks);
+    return transformations.reduce((prev, curr) => ({ ...prev, ...curr }), initialRanks);
 });
 
 export type Searcher = (query: string) => Promise<Command[]>;
@@ -286,7 +291,7 @@ const searchersMap = writable<Map<string, Searcher[]>>(new Map());
 
 export const registerSearchers = {
     subscribe(runner: (cb: (...searchers: Searcher[]) => void) => void) {
-        const uuid = crypto.randomUUID();
+        const uuid = nanoid();
 
         runner((...searchers: Searcher[]) => {
             searchersMap.update((curr) => {
@@ -308,7 +313,7 @@ export const searchers = derived(searchersMap, ($searchersMap) => {
     return Array.from($searchersMap.values()).flat();
 });
 
-export const useSearcher = (searcher: Searcher) => {
+export const initSearcher = (searcher: Searcher) => {
     const search = writable('');
     const results = writable<Command[]>([]);
 

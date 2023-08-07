@@ -13,8 +13,6 @@
     } from '$lib/elements/table';
     import Table from '$lib/elements/table/table.svelte';
     import { isSameDay, toLocaleDate } from '$lib/helpers/date';
-    import { parseIfString } from '$lib/helpers/object';
-    import { capitalize } from '$lib/helpers/string';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
@@ -71,10 +69,7 @@
               }
     ]);
 
-    $: $updateCommandGroupRanks((prev) => ({
-        ...prev,
-        migrations: 100
-    }));
+    $updateCommandGroupRanks({ migrations: 100 });
 
     const getCurrentEndpoint = () => {
         // Remove subpaths and query strings from the current URL. Add a /v1 suffix

@@ -15,7 +15,8 @@
                 $showCreateBucket = true;
             },
             keys: $page.url.pathname.endsWith('storage') ? ['c'] : ['c', 'b'],
-            icon: 'plus'
+            icon: 'plus',
+            group: 'buckets'
         },
         {
             label: 'Go to usage',
@@ -23,12 +24,14 @@
                 goto(`/console/project-${$project.$id}/storage/usage`);
             },
             keys: ['g', 'u'],
-            disabled: $page.url.pathname.endsWith('usage'),
-            group: 'storage'
+            disabled:
+                $page.url.pathname.endsWith('usage') || $page.url.pathname.includes('bucket-'),
+            group: 'navigation',
+            rank: 10
         }
     ]);
 
-    $: $updateCommandGroupRanks((prev) => ({ ...prev, storage: 10 }));
+    $: $updateCommandGroupRanks({ buckets: 200, files: 150, navigation: 100 });
 </script>
 
 <svelte:head>
