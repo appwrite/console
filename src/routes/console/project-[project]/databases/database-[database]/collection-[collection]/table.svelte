@@ -8,6 +8,7 @@
         TableBody,
         TableCell,
         TableCellHead,
+        TableCellHeadCheck,
         TableCellText,
         TableHeader,
         TableRow,
@@ -140,31 +141,13 @@
     ) as Models.AttributeRelationship[];
 
     let checked = false;
-
-    $: someSelectedDb = data.documents.documents.some((doc) => selectedDb.includes(doc.$id));
-    $: allSelectedDb = data.documents.documents.every((doc) => selectedDb.includes(doc.$id));
 </script>
 
 <TableScroll isSticky>
     <TableHeader>
-        <TableCellHead width={10}>
-            <InputCheckbox
-                id="select-all"
-                indeterminate={someSelectedDb && !allSelectedDb}
-                value={allSelectedDb}
-                on:click={(e) => {
-                    if (!isHTMLInputElement(e.target)) return;
-                    if (e.target.checked) {
-                        const set = new Set(selectedDb);
-                        data.documents.documents.forEach((doc) => set.add(doc.$id));
-                        selectedDb = Array.from(set);
-                    } else {
-                        selectedDb = selectedDb.filter((id) => {
-                            return !data.documents.documents.map((doc) => doc.$id).includes(id);
-                        });
-                    }
-                }} />
-        </TableCellHead>
+        <TableCellHeadCheck
+            bind:selected={selectedDb}
+            pageItemsIds={data.documents.documents.map((d) => d.$id)} />
         <TableCellHead width={150} eyebrow={false}>Document ID</TableCellHead>
         {#each $columns.filter((n) => n.show) as column}
             {#if column.show}

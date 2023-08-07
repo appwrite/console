@@ -12,6 +12,7 @@
         TableBody,
         TableCell,
         TableCellHead,
+        TableCellHeadCheck,
         TableCellText,
         TableHeader,
         TableRowLink,
@@ -62,18 +63,9 @@
 
 <TableScroll>
     <TableHeader>
-        <TableCellHead width={10}>
-            <InputCheckbox
-                id="select-all"
-                indeterminate={selected.length > 0 && selected.length < data.collections.total}
-                value={selected.length === data.collections.total}
-                on:click={(e) => {
-                    if (!isHTMLInputElement(e.target)) return;
-                    selected = e.target.checked
-                        ? data.collections.collections.map((database) => database.$id)
-                        : [];
-                }} />
-        </TableCellHead>
+        <TableCellHeadCheck
+            bind:selected
+            pageItemsIds={data.collections.collections.map((c) => c.$id)} />
         {#each $columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
