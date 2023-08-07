@@ -20,7 +20,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$platform.name} has been deleted`
+                message: `${$platform.name} ${$LL.components.notification.hasBeenDeleted()}`
             });
             trackEvent(Submit.PlatformDelete);
             await goto(`${base}/console/project-${$project.$id}/overview/platforms`);

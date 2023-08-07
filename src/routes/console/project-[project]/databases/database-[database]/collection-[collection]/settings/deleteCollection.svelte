@@ -22,7 +22,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$collection.name} has been deleted`
+                message: `${$collection.name} ${$LL.components.notification.hasBeenDeleted()}`
             });
             trackEvent(Submit.CollectionDelete);
             await goto(

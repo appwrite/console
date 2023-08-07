@@ -24,7 +24,7 @@
             await sdk.forConsole.teams.updateName($organization.$id, name);
             await invalidate(Dependencies.ORGANIZATION);
             addNotification({
-                message: 'Name has been updated',
+                message: $LL.components.notification.nameUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.OrganizationUpdateName);

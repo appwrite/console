@@ -20,7 +20,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$webhook.name} has been deleted`
+                message: `${$webhook.name} ${$LL.components.notification.hasBeenDeleted()}`
             });
             trackEvent(Submit.WebhookDelete);
             await goto(`${base}/console/project-${$project.$id}/settings/webhooks`);

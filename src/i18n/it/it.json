@@ -1,4 +1,22 @@
 {
+    "auth": {
+        "title": {
+            "missingRedirectUrl": "URL di reindirizzamento mancante"
+        },
+        "texts": {
+            "magicUrl": {
+                "loginFlow": "Nel flusso di accesso di Magic URL manca un URL di reindirizzamento corretto. Si prega di controllare il",
+                "magicDocs": "Magic URL docs",
+                "sendMsg": "e invia la richiesta di una nuova sessione con un URL di reindirizzamento valido."
+            },
+            "oAuth": {
+                "loginFlow": "Nel flusso di accesso OAuth manca un URL di reindirizzamento corretto. Si prega di controllare il",
+                "oAuthDocs": "OAuth docs",
+                "sendRequest": "e invia la richiesta di una nuova sessione con un URL di callback valido."
+            }
+        }
+    },
+
     "login": {
         "title": "Accedi",
         "forms": {
@@ -25,6 +43,7 @@
             "register": "Iscriviti"
         }
     },
+
     "register": {
         "title": "Iscriviti",
         "forms": {
@@ -41,6 +60,9 @@
                     "password": {
                         "label": "Password",
                         "placeholder": "La tua password"
+                    },
+                    "terms": {
+                        "label": "Termini"
                     }
                 }
             },
@@ -74,9 +96,16 @@
             "login": "Accedi"
         },
         "texts": {
-            "registery": "Hai già un account?"
+            "registery": "Hai già un account?",
+            "privacyPolicy": {
+                "phraseOne": "Registrandoti, accetti di aver letto, compreso e riconosciuto il nostro",
+                "privacy": "Informativa sulla privacy",
+                "phraseTwo": "e accetta il nostro",
+                "generalTerm": "Condizioni generali d'uso"
+            }
         }
     },
+
     "recover": {
         "title": {
             "pageHeader": "Recupera",
@@ -111,6 +140,7 @@
             "login": "Accedi"
         }
     },
+
     "invite": {
         "title": {
             "pageHeader": "Accetta invito",
@@ -132,8 +162,26 @@
             "accept": {
                 "register": "Iscriviti ad Appwrite"
             }
+        },
+        "texts": {
+            "privacyPolicy": {
+                "phraseOne": "Accettando l'invito, accetti il",
+                "termsAndCond": "Termini e condizioni",
+                "and": "e",
+                "privacy": "Informativa sulla e privacy"
+            }
+        },
+        "forms": {
+            "invite": {
+                "inputs": {
+                    "terms": {
+                        "label": "Termini"
+                    }
+                }
+            }
         }
     },
+
     "console": {
         "forms": {
             "createOrg": {
@@ -1738,6 +1786,76 @@
                     }
                 }
             }
+        }
+    },
+
+    "components": {
+        "notification": {
+            "sentPswdLink": "Ti abbiamo inviato un'email con un link per reimpostare la password",
+             "pswdUpdatedSuccessfully": "La password è stata aggiornata con successo",
+             "loginSuccessfully": "Accesso riuscito.",
+             "hasBeenCreated": "è stato creato",
+             "hasBeenUpdated": "è stato aggiornato",
+             "hasBeenDeleted": "è stato eliminato",
+             "accountDeleted": "L'account è stato eliminato",
+             "sessionDeleted": "La sessione è stata eliminata",
+             "allSessionDeleted": "Tutte le sessioni sono state eliminate",
+             "functionDeleted": "La funzione è stata eliminata",
+             "membershipDeleted": "L'iscrizione è stata cancellata",
+             "indexDeleted": "L'indice è stato eliminato",
+             "indexCreated": "L'indice è stato creato",
+             "webhookHasBeenCreated": "Il webhook è stato creato",
+             "webhookUrlHasBeenCreated": "L'URL del webhook è stato creato",
+             "webhookSecurityHasBeenCreated": "La sicurezza del webhook è stata aggiornata",
+             "webhookNameHasBeenCreated": "Il nome del webhook è stato aggiornato",
+             "webhookEventsHasBeenCreated": "Gli eventi webhook sono stati aggiornati",
+             "keyRegenerated": "La chiave è stata rigenerata",
+             "fileUpload": "Il file è stato caricato",
+             "nameUpdated": "Il nome è stato aggiornato",
+             "emailUpdated": "L'email è stata aggiornata",
+             "pswdUpdated": "La password è stata aggiornata",
+             "updatePrefs": "Le preferenze sono state aggiornate",
+             "phoneUpdated": "Il telefono è stato aggiornato",
+             "authUpdated": "l'autenticazione è stata aggiornata",
+             "projectUserLimitUpdated": "Limite utenti del progetto aggiornato con successo",
+             "platformNameUpdated": "Il nome della piattaforma è stato aggiornato",
+             "apiKeyExpirationUpdated": "La scadenza della chiave API è stata aggiornata",
+             "apiKeyNameUpdated": "Il nome della chiave API è stato aggiornato",
+             "apiKeyScopeUpdated": "Gli ambiti della chiave API sono stati aggiornati",
+             "securityUpdated": "La sicurezza è stata aggiornata",
+             "permissionsUpdated": "I permessi sono stati aggiornati",
+             "displayNameUpdated": "I nomi visualizzati sono stati aggiornati",
+             "cronUpdated": "La pianificazione Cron è stata aggiornata",
+             "timeOutUpdated": "Il timeout è stato aggiornato",
+             "variablesUpdated": "le variabili sono state aggiornate",
+             "platformHostnameUpdated": "Il nome host della piattaforma è stato aggiornato",
+             "platformPackageNameUpdated": "Il nome del pacchetto della piattaforma è stato aggiornato",
+             "platformBundleIdUpdated": "L'ID pacchetto piattaforma è stato aggiornato",
+             "projectNameUpdated": "Il nome del progetto è stato aggiornato",
+             "documentCreated": "Il documento è stato creato",
+             "documentDeleted": "Il documento è stato eliminato",
+             "documentWasUpdated": "Il documento è stato aggiornato!",
+             "attributeDeleted": "L'attributo è stato eliminato",
+             "sessionLimitUpdated": "Il limite delle sessioni è stato aggiornato",
+             "pswdHistoryLimitUpdated": "Limite cronologia password aggiornato.",
+             "pswdDictonaryCheck": "Controllo dizionario password aggiornato.",
+             "functionExecuted": "La funzione è stata eseguita",
+             "deploymentDeleted": "Il deployment è stato eliminato",
+             "deploymentActivated": "La distribuzione è stata attivata",
+             "variablesUploaded": "Variabili caricate",
+             "wasDeletedFrom": "è stato eliminato da",
+             "inviteSentTo": "L'invito è stato inviato a",
+             "yourExperience": "Com'è la tua esperienza con la nostra nuova funzione 'Relazioni'? Ci piacerebbe sentire il tuo feedback!",
+             "attribute": "Attributo",
+             "theAccount": "L'account",
+             "serviceHasBeen": "il servizio è stato",
+             "hasBeen": "è stato",
+             "verified": "verificato",
+             "unVerfied": "non verificato",
+             "blocked": "bloccato",
+             "unBlocked": "bloccato",
+             "enabled": "abilitato",
+             "disabled": "disabilitato"
         }
     }
 }

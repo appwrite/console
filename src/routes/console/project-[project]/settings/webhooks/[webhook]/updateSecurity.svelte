@@ -44,7 +44,7 @@
             await invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',
-                message: 'Webhook security has been updated'
+                message: $LL.components.notification.webhookSecurityHasBeenCreated()
             });
             trackEvent(Submit.WebhookUpdateSecurity);
         } catch (error) {

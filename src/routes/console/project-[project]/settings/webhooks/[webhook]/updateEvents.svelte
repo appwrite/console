@@ -40,7 +40,7 @@
             areEventsDisabled = true;
             addNotification({
                 type: 'success',
-                message: 'Webhook events have been updated'
+                message: $LL.components.notification.webhookEventsHasBeenCreated()
             });
             trackEvent(Submit.WebhookUpdateEvents, {
                 events: Array.from($eventSet)

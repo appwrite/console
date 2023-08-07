@@ -102,7 +102,7 @@
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'Permissions have been updated',
+                message: $LL.components.notification.permissionsUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.FunctionUpdatePermissions);
@@ -129,7 +129,7 @@
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
-                message: 'Cron Schedule has been updated'
+                message: $LL.components.notification.cronUpdated()
             });
             trackEvent(Submit.FunctionUpdateSchedule);
         } catch (error) {
@@ -155,7 +155,7 @@
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
-                message: 'Timeout has been updated'
+                message: $LL.components.notification.timeOutUpdated()
             });
             trackEvent(Submit.FunctionUpdateTimeout);
         } catch (error) {
@@ -176,7 +176,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `${$func.name} variables have been updated`
+                message: `${$func.name} ${$LL.components.notification.variablesUpdated()}`
             });
             trackEvent(Submit.VariableCreate);
         } catch (error) {
@@ -202,7 +202,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `${$func.name} variables have been updated`
+                message: `${$func.name} ${$LL.components.notification.variablesUpdated()}`
             });
             trackEvent(Submit.VariableUpdate);
         } catch (error) {
@@ -219,7 +219,7 @@
             await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
-                message: `Variable has been deleted`
+                message: $LL.components.notification.variablesUpdated()
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {

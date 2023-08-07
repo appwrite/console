@@ -14,7 +14,7 @@
             await sdk.forProject.users.updatePassword($user.$id, newPassword);
             newPassword = null;
             addNotification({
-                message: 'Password has been updated',
+                message: $LL.components.notification.pswdUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.UserUpdatePassword);

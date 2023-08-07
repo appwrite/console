@@ -24,7 +24,7 @@
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
-                message: 'Successfully logged in.'
+                message: $LL.components.notification.loginSuccessfully()
             });
             trackEvent(Submit.AccountCreate);
             await goto(`${base}/console`);

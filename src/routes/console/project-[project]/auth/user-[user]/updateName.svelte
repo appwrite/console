@@ -20,7 +20,7 @@
             await sdk.forProject.users.updateName($user.$id, userName);
             await invalidate(Dependencies.USER);
             addNotification({
-                message: 'Name has been updated',
+                message: $LL.components.notification.nameUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateName);

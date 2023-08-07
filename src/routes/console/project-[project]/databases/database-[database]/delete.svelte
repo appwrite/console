@@ -20,7 +20,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$database.name} has been deleted`
+                message: `${$database.name} ${$LL.components.notification.hasBeenCreated()}`
             });
             await goto(`${base}/console/project-${$page.params.project}/databases`);
             trackEvent(Submit.DatabaseDelete);

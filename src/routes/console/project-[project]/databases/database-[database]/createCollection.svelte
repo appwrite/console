@@ -31,7 +31,7 @@
             dispatch('created', collection);
             addNotification({
                 type: 'success',
-                message: `${name} has been created`
+                message: `${name} ${$LL.components.notification.hasBeenCreated()}`
             });
             name = id = null;
             trackEvent(Submit.CollectionCreate, {

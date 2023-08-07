@@ -25,7 +25,7 @@
             initialPasswordHistoryEnabled = passwordHistoryEnabled;
             addNotification({
                 type: 'success',
-                message: 'Updated password history limit.'
+                message: $LL.components.notification.pswdHistoryLimitUpdated()
             });
             trackEvent(Submit.AuthPasswordHistoryUpdate);
         } catch (error) {

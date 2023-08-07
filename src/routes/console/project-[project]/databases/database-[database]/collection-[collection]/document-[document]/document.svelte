@@ -66,7 +66,7 @@
             trackEvent(Submit.DocumentUpdate);
             disableUpdate = true;
             addNotification({
-                message: 'Document was updated!',
+                message: $LL.components.notification.documentWasUpdated(),
                 type: 'success'
             });
         } catch (error) {

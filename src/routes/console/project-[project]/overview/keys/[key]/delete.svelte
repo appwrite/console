@@ -20,7 +20,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$key.name} has been deleted`
+                message: `${$key.name} ${$LL.components.notification.hasBeenDeleted()}`
             });
             trackEvent(Submit.KeyDelete);
             await goto(`${base}/console/project-${$project.$id}/overview/keys`);

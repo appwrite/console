@@ -19,7 +19,7 @@
             showDeleteAll = false;
             addNotification({
                 type: 'success',
-                message: 'All sessions have been deleted'
+                message: $LL.components.notification.allSessionDeleted()
             });
             trackEvent(Submit.SessionDeleteAll);
         } catch (error) {

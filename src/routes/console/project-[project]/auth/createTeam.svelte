@@ -24,7 +24,7 @@
             showCustomId = false;
             addNotification({
                 type: 'success',
-                message: `${team.name} has been created`
+                message: `${team.name} ${$LL.components.notification.hasBeenCreated()}`
             });
             trackEvent(Submit.TeamCreate, {
                 customId: !!id

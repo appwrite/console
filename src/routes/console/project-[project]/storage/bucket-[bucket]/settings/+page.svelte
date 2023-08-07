@@ -143,7 +143,7 @@
                 name: bucketName
             },
             {
-                successMessage: 'Name has been updated',
+                successMessage: $LL.components.notification.nameUpdated(),
                 trackEventName: Submit.BucketUpdateName
             }
         );
@@ -155,7 +155,7 @@
                 $permissions: bucketPermissions
             },
             {
-                successMessage: 'Permissions have been updated',
+                successMessage: $LL.components.notification.permissionsUpdated(),
                 trackEventName: Submit.BucketUpdatePermissions,
                 arePermsDisabled: true
             }
@@ -168,7 +168,7 @@
                 fileSecurity: bucketFileSecurity
             },
             {
-                successMessage: 'Security has been updated',
+                successMessage: $LL.components.notification.securityUpdated(),
                 trackEventName: Submit.BucketUpdateFileSecurity,
                 arePermsDisabled: true
             }

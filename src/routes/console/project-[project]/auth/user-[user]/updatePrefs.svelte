@@ -41,7 +41,7 @@
             arePrefsDisabled = true;
 
             addNotification({
-                message: 'Preferences have been updated',
+                message: $LL.components.notification.updatePrefs(),
                 type: 'success'
             });
             trackEvent(Submit.UserUpdatePreferences);

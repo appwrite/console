@@ -38,7 +38,7 @@
             showDropdown = false;
             addNotification({
                 type: 'success',
-                message: `${user.name ? user.name : 'User'} has been created`
+                message: `${user.name ? user.name : 'User'} ${$LL.components.notification.hasBeenCreated()}`
             });
             trackEvent(Submit.UserCreate, {
                 customId: !!id

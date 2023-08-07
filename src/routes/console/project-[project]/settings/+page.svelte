@@ -31,7 +31,7 @@
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'Project name has been updated'
+                message: $LL.components.notification.projectNameUpdated()
             });
             trackEvent(Submit.ProjectUpdateName);
         } catch (error) {
@@ -53,8 +53,10 @@
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: `${service.label} service has been ${
-                    service.value ? 'enabled' : 'disabled'
+                message: `${service.label} ${$LL.components.notification.serviceHasBeen()} ${
+                    service.value
+                        ? $LL.components.notification.enabled()
+                        : $LL.components.notification.disabled()
                 }`
             });
             trackEvent(Submit.ProjectService, {

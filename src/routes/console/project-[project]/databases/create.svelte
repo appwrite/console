@@ -24,7 +24,7 @@
             dispatch('created', database);
             addNotification({
                 type: 'success',
-                message: `${name} has been created`
+                message: `${name} ${$LL.components.notification.hasBeenCreated()}`
             });
             trackEvent(Submit.DatabaseCreate, {
                 customId: !!id

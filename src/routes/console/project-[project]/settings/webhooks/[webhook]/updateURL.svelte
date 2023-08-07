@@ -33,7 +33,7 @@
             await invalidate(Dependencies.WEBHOOK);
             addNotification({
                 type: 'success',
-                message: 'Webhook url has been updated'
+                message: $LL.components.notification.webhookUrlHasBeenCreated()
             });
             trackEvent(Submit.WebhookUpdateUrl);
         } catch (error) {

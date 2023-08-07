@@ -43,7 +43,7 @@
             );
             addNotification({
                 type: 'success',
-                message: `Invite has been sent to ${member.userEmail}`
+                message: `${$LL.components.notification.inviteSentTo()} ${member.userEmail}`
             });
             trackEvent(Submit.MemberCreate);
         } catch (error) {

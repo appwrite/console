@@ -22,7 +22,7 @@
             await sdk.forProject.teams.updateName($page.params.team, teamName);
             await invalidate(Dependencies.TEAM);
             addNotification({
-                message: 'Name has been updated',
+                message: $LL.components.notification.nameUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.TeamUpdateName);

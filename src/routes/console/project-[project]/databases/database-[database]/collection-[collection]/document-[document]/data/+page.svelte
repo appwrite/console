@@ -53,7 +53,7 @@
             invalidate(Dependencies.DOCUMENT);
             trackEvent(Submit.DocumentUpdate);
             addNotification({
-                message: 'Document was updated!',
+                message: $LL.components.notification.documentWasUpdated(),
                 type: 'success'
             });
         } catch (error) {

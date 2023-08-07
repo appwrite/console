@@ -67,19 +67,26 @@
                     required={true}
                     showPasswordButton={true}
                     bind:value={pass} />
-                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                    By registering, you agree that you have read, understand, and acknowledge our <a
+                <InputChoice
+                    required
+                    value={terms}
+                    id="terms"
+                    label={$LL.register.forms.register.inputs.terms.label()}
+                    showLabel={false}>
+                    {$LL.register.texts.privacyPolicy.phraseOne()}
+                    <a
                         class="link"
                         href="https://appwrite.io/policy/privacy"
                         target="_blank"
                         rel="noopener noreferrer">
-                        Privacy Policy</a>
-                    and accept our
+                        {$LL.register.texts.privacyPolicy.privacy()}</a>
+                    {$LL.register.texts.privacyPolicy.phraseTwo()}
                     <a
                         class="link"
                         href="https://appwrite.io/policy/terms"
                         target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</a
+                        rel="noopener noreferrer"
+                        >{$LL.register.texts.privacyPolicy.generalTerm()}</a
                     >.</InputChoice>
                 <FormItem>
                     <Button fullWidth submit>{$LL.register.button.register()}</Button>

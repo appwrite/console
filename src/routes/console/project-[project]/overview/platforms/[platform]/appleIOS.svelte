@@ -33,7 +33,7 @@
             });
             addNotification({
                 type: 'success',
-                message: 'Platform Bundle ID has been updated'
+                message: $LL.components.notification.platformBundleIdUpdated()
             });
         } catch (error) {
             addNotification({

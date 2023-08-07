@@ -35,7 +35,7 @@
             );
             await invalidate(Dependencies.COLLECTION);
             addNotification({
-                message: 'Permissions have been updated',
+                message: $LL.components.notification.permissionsUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.CollectionUpdatePermissions);

@@ -1,4 +1,22 @@
 {
+    "auth": {
+        "title": {
+            "missingRedirectUrl": "Missing Redirect URL"
+        },
+        "texts": {
+            "magicUrl": {
+                "loginFlow": "Your Magic URL login flow is missing a proper redirect URL. Please check the",
+                "magicDocs": "Magic URL docs",
+                "sendMsg": "and send request for new session with a valid redirect URL."
+            },
+            "oAuth": {
+                "loginFlow": "Your OAuth login flow is missing a proper redirect URL. Please check the",
+                "oAuthDocs": "OAuth docs",
+                "sendRequest": "and send request for new session with a valid callback URL."
+            }
+        }
+    },
+
     "login": {
         "title": "Sign in",
         "forms": {
@@ -25,6 +43,7 @@
             "register": "Sign up"
         }
     },
+
     "register": {
         "title": "Sign up",
         "forms": {
@@ -41,6 +60,9 @@
                     "password": {
                         "label": "Password",
                         "placeholder": "Your password"
+                    },
+                    "terms": {
+                        "label": "terms"
                     }
                 }
             },
@@ -74,9 +96,16 @@
             "login": "Sign in"
         },
         "texts": {
-            "registery": "Already got an account?"
+            "registery": "Already got an account?",
+            "privacyPolicy": {
+                "phraseOne": "By registering, you agree that you have read, understand, and acknowledge our",
+                "privacy": "Privacy Policy",
+                "phraseTwo": "and accept our",
+                "generalTerm": "General Terms of Use"
+            }
         }
     },
+
     "recover": {
         "title": {
             "pageHeader": "Recover",
@@ -111,6 +140,7 @@
             "login": "Sign in"
         }
     },
+
     "invite": {
         "title": {
             "pageHeader": "Accept invite",
@@ -132,8 +162,26 @@
             "accept": {
                 "register": "Sign up to Appwrite"
             }
+        },
+        "texts": {
+            "privacyPolicy": {
+                "phraseOne": "By accepting the invitation, you agree to the",
+                "termsAndCond": "Terms and Conditions",
+                "and": "and",
+                "privacy": "Privacy and Policy"
+            }
+        },
+        "forms": {
+            "invite": {
+                "inputs": {
+                    "terms": {
+                        "label": "terms"
+                    }
+                }
+            }
         }
     },
+
     "console": {
         "forms": {
             "createOrg": {
@@ -1738,6 +1786,76 @@
                     }
                 }
             }
+        }
+    },
+
+    "components": {
+        "notification": {
+            "sentPswdLink": "We have sent you an email with a password reset link",
+            "pswdUpdatedSuccessfully": "Password has been updated successfully",
+            "loginSuccessfully": "Successfully logged in.",
+            "hasBeenCreated": "has been created",
+            "hasBeenUpdated": "has been updated",
+            "hasBeenDeleted": "has been deleted",
+            "accountDeleted": "Account was deleted",
+            "sessionDeleted": "Session has been deleted",
+            "allSessionDeleted": "All sessions have been deleted",
+            "functionDeleted": "Function has been deleted",
+            "membershipDeleted": "Membership has been deleted",
+            "indexDeleted": "Index has been deleted",
+            "indexCreated": "Index has been created",
+            "webhookHasBeenCreated": "Webhook has been created",
+            "webhookUrlHasBeenCreated": "Webhook url has been created",
+            "webhookSecurityHasBeenCreated": "Webhook security has been updated",
+            "webhookNameHasBeenCreated": "Webhook name has been updated",
+            "webhookEventsHasBeenCreated": "Webhook events has been updated",
+            "keyRegenerated": "Key has been regenerated",
+            "fileUpload": "File has been uploaded",
+            "nameUpdated": "Name has been updated",
+            "emailUpdated": "Email has been updated",
+            "pswdUpdated": "Password has been updated",
+            "updatePrefs": "Preferences have been updated",
+            "phoneUpdated": "Phone has been updated",
+            "authUpdated": "authentication has been updated",
+            "projectUserLimitUpdated": "Updated project users limit successfully",
+            "platformNameUpdated": "Platform name has been updated",
+            "apiKeyExpirationUpdated": "API Key expiration has been updated",
+            "apiKeyNameUpdated": "API Key name has been updated",
+            "apiKeyScopeUpdated": "API Key scopes have been updated",
+            "securityUpdated": "Security has been updated",
+            "permissionsUpdated": "Permissions have been updated",
+            "displayNameUpdated": "Display names has been updated",
+            "cronUpdated": "Cron Schedule has been updated",
+            "timeOutUpdated": "Timeout has been updated",
+            "variablesUpdated": "variables have been updated",
+            "platformHostnameUpdated": "Platform hostname have been updated",
+            "platformPackageNameUpdated": "Platform Package Name has been updated",
+            "platformBundleIdUpdated": "Platform Bundle ID has been updated",
+            "projectNameUpdated": "Project name has been updated",
+            "documentCreated": "Document has been created",
+            "documentDeleted": "Document has been deleted",
+            "documentWasUpdated": "Document was updated!",
+            "attributeDeleted": "Attribute has been deleted",
+            "sessionLimitUpdated": "Sessions limit has been updated",
+            "pswdHistoryLimitUpdated": "Updated password history limit.",
+            "pswdDictonaryCheck": "Updated password dictionary check.",
+            "functionExecuted": "Function has been executed",
+            "deploymentDeleted": "Deployment has been deleted",
+            "deploymentActivated": "Deployment has been activated",
+            "variablesUploaded": "Variables uploaded",
+            "wasDeletedFrom": "was deleted from",
+            "inviteSentTo": "Invite has been sent to",
+            "yourExperience": "How is your experience with our new 'Relationships' feature? We'd love to hear your feedback!",
+            "attribute": "Attribute",
+            "theAccount": "The account",
+            "serviceHasBeen": "service has been",
+            "hasBeen": "has been",
+            "verified": "verified",
+            "unVerfied": "unverified",
+            "blocked": "blocked",
+            "unBlocked": "blocked",
+            "enabled": "enabled",
+            "disabled": "disabled"
         }
     }
 }

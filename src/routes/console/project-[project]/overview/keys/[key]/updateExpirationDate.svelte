@@ -27,7 +27,7 @@
             trackEvent(Submit.KeyUpdateExpire);
             addNotification({
                 type: 'success',
-                message: 'API Key expiration has been updated'
+                message: $LL.components.notification.apiKeyExpirationUpdated()
             });
         } catch (error) {
             addNotification({

@@ -41,7 +41,7 @@
             trackEvent(Submit.KeyUpdateName);
             addNotification({
                 type: 'success',
-                message: 'API Key name has been updated'
+                message: $LL.components.notification.apiKeyNameUpdated()
             });
         } catch (error) {
             addNotification({
@@ -67,7 +67,7 @@
             });
             addNotification({
                 type: 'success',
-                message: 'API Key scopes have been updated'
+                message: $LL.components.notification.apiKeyScopeUpdated()
             });
         } catch (error) {
             addNotification({

@@ -20,7 +20,7 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: 'Key has been regenerated'
+                message: $LL.components.notification.keyRegenerated()
             });
             trackEvent(Submit.WebhookUpdateSignature);
         } catch (error) {

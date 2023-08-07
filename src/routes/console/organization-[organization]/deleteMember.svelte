@@ -29,7 +29,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${selectedMember.userName} was deleted from ${selectedMember.teamName}`
+                message: `${selectedMember.userName} ${$LL.components.notification.wasDeletedFrom()} ${selectedMember.teamName}`
             });
             trackEvent(Submit.MemberDelete);
         } catch (error) {

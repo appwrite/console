@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import LL from '$i18n/i18n-svelte';
-    
+
     export let showDelete = false;
     export let selectedSessionId: string;
 
@@ -18,7 +18,7 @@
             await invalidate(Dependencies.SESSIONS);
             addNotification({
                 type: 'success',
-                message: 'Session has been deleted'
+                message: $LL.components.notification.sessionDeleted()
             });
             trackEvent(Submit.SessionDelete);
         } catch (error) {

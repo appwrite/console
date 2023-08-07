@@ -56,7 +56,7 @@
             await invalidate(Dependencies.VARIABLES);
             addNotification({
                 type: 'success',
-                message: 'Variables uploaded'
+                message: $LL.components.notification.variablesUploaded()
             });
             show = false;
         } catch (e) {

@@ -28,7 +28,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Attribute has been deleted`
+                message: $LL.components.notification.attributeDeleted()
             });
             trackEvent(Submit.AttributeDelete);
             await goto(

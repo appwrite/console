@@ -17,7 +17,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Account was deleted `
+                message: $LL.components.notification.accountDeleted()
             });
             trackEvent(Submit.AccountDelete);
         } catch (error) {

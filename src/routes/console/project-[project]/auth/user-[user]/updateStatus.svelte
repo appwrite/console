@@ -19,8 +19,15 @@
             await sdk.forProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    !$user.emailVerification ? 'unverified' : 'verified'
+                message: `${
+                    $user.name ||
+                    $user.email ||
+                    $user.phone ||
+                    $LL.components.notification.theAccount()
+                } ${$LL.components.notification.hasBeen()} ${
+                    !$user.emailVerification
+                        ? $LL.components.notification.unverified()
+                        : $LL.components.notification.verified()
                 }`,
                 type: 'success'
             });
@@ -39,8 +46,15 @@
             await sdk.forProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.phoneVerification ? 'unverified' : 'verified'
+                message: `${
+                    $user.name ||
+                    $user.email ||
+                    $user.phone ||
+                    $LL.components.notification.theAccount()
+                } ${$LL.components.notification.hasBeen()} ${
+                    $user.phoneVerification
+                        ? $LL.components.notification.unverified()
+                        : $LL.components.notification.verified()
                 }`,
                 type: 'success'
             });
@@ -58,8 +72,15 @@
             await sdk.forProject.users.updateStatus($user.$id, !$user.status);
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.status ? 'unblocked' : 'blocked'
+                message: `${
+                    $user.name ||
+                    $user.email ||
+                    $user.phone ||
+                    $LL.components.notification.theAccount()
+                } ${$LL.components.notification.hasBeen()} ${
+                    $user.status
+                        ? $LL.components.notification.unblocked()
+                        : $LL.components.notification.blocked()
                 }`,
                 type: 'success'
             });
@@ -142,10 +163,14 @@
                     </Button>
                     <svelte:fragment slot="list">
                         <DropListItem icon="mail" on:click={() => updateVerificationEmail()}>
-                            {$user.emailVerification ? 'Unverify' : 'Verify'}{' '}{$LL.console.project.button.email()}
+                            {$user.emailVerification
+                                ? 'Unverify'
+                                : 'Verify'}{' '}{$LL.console.project.button.email()}
                         </DropListItem>
                         <DropListItem icon="phone" on:click={() => updateVerificationPhone()}>
-                            {$user.phoneVerification ? 'Unverify' : 'Verify'}{' '}{$LL.console.project.button.phone()}
+                            {$user.phoneVerification
+                                ? 'Unverify'
+                                : 'Verify'}{' '}{$LL.console.project.button.phone()}
                         </DropListItem>
                     </svelte:fragment>
                 </DropList>

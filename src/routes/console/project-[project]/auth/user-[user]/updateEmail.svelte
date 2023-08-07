@@ -20,7 +20,7 @@
             await sdk.forProject.users.updateEmail($user.$id, userEmail);
             await invalidate(Dependencies.USER);
             addNotification({
-                message: 'Email has been updated',
+                message: $LL.components.notification.emailUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateEmail);

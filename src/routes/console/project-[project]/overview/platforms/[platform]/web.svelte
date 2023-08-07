@@ -29,7 +29,7 @@
             await invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
-                message: 'Platform Hostname has been updated'
+                message: $LL.components.notification.platformHostnameUpdated()
             });
         } catch (error) {
             addNotification({

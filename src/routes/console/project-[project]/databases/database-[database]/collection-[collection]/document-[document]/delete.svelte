@@ -35,7 +35,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Document has been deleted`
+                message: $LL.components.notification.documentDeleted()
             });
             trackEvent(Submit.DocumentDelete);
             await goto(

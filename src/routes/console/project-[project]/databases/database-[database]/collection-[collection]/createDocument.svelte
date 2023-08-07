@@ -14,6 +14,7 @@
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import { createDocument } from './wizard/store';
+    import LL from '$i18n/i18n-svelte';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -43,7 +44,7 @@
             await invalidate(Dependencies.DOCUMENTS);
 
             addNotification({
-                message: 'Document has been created',
+                message: $LL.components.notification.documentCreated(),
                 type: 'success'
             });
             trackEvent(Submit.DocumentCreate, {

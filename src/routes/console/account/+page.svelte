@@ -30,7 +30,7 @@
             await sdk.forConsole.account.updateName(name);
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
-                message: 'Name has been updated',
+                message: $LL.components.notification.nameUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.AccountUpdateName);
@@ -48,7 +48,7 @@
             await sdk.forConsole.account.updateEmail(email, emailPassword);
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
-                message: 'Email has been updated',
+                message: $LL.components.notification.emailUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.AccountUpdateEmail);
@@ -66,7 +66,7 @@
             await sdk.forConsole.account.updatePassword(newPassword, oldPassword);
             newPassword = oldPassword = null;
             addNotification({
-                message: 'Password has been updated',
+                message: $LL.components.notification.pswdUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.AccountUpdatePassword);

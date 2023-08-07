@@ -18,7 +18,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$bucket.name} has been deleted`
+                message: `${$bucket.name} ${$LL.components.notification.hasBeenDeleted()}`
             });
             await goto(`${base}/console/project-${$page.params.project}/storage`);
             trackEvent(Submit.BucketDelete);

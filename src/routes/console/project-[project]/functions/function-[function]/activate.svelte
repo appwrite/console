@@ -22,7 +22,7 @@
             showActivate = false;
             addNotification({
                 type: 'success',
-                message: `Deployment has been activated`
+                message: $LL.components.notification.deploymentActivated()
             });
             dispatch('activated');
             trackEvent(Submit.DeploymentUpdate);

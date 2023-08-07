@@ -28,7 +28,7 @@
             await goto(`/console/organization-${org.$id}`);
             addNotification({
                 type: 'success',
-                message: `${name} has been created`
+                message: `${name} ${$LL.components.notification.hasBeenCreated()}`
             });
             trackEvent(Submit.OrganizationCreate, {
                 customId: !!id
@@ -66,8 +66,7 @@
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (show = false)}
-            >{$LL.console.button.cancel()}</Button>
+        <Button secondary on:click={() => (show = false)}>{$LL.console.button.cancel()}</Button>
         <Button submit>{$LL.console.button.submit.create()}</Button>
     </svelte:fragment>
 </Modal>

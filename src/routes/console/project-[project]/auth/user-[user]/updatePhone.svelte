@@ -20,7 +20,7 @@
             await sdk.forProject.users.updatePhone($user.$id, userPhone);
             await invalidate(Dependencies.USER);
             addNotification({
-                message: 'Phone has been updated',
+                message: $LL.components.notification.phoneUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.UserUpdatePhone);

@@ -31,7 +31,7 @@
             );
             await invalidate(Dependencies.COLLECTION);
             addNotification({
-                message: 'Security has been updated',
+                message: $LL.components.notification.securityUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.CollectionUpdateSecurity);

@@ -29,7 +29,7 @@
             );
             await invalidate(Dependencies.WEBHOOKS);
             addNotification({
-                message: 'Webhook has been created',
+                message: $LL.components.notification.webhookHasBeenCreated(),
                 type: 'success'
             });
             wizard.hide();

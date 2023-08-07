@@ -20,7 +20,7 @@
 
             addNotification({
                 type: 'success',
-                message: 'Sessions limit has been updated'
+                message: $LL.components.notification.sessionLimitUpdated()
             });
             trackEvent(Submit.SessionsLimitUpdate);
         } catch (error) {

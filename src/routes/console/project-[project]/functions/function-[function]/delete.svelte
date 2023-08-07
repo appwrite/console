@@ -22,7 +22,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Deployment has been deleted`
+                message: $LL.components.notification.deploymentDeleted()
             });
             trackEvent(Submit.DeploymentDelete);
         } catch (error) {

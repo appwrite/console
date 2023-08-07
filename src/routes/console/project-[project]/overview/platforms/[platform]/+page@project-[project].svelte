@@ -57,7 +57,7 @@
             await invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
-                message: 'Platform name has been updated'
+                message: $LL.components.notification.platformNameUpdated()
             });
         } catch (error) {
             addNotification({
@@ -117,4 +117,3 @@
 </Container>
 
 <Delete bind:showDelete />
- 

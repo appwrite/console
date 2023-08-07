@@ -20,7 +20,7 @@
             dispatch('deleted', file);
             addNotification({
                 type: 'success',
-                message: `${file.name} has been deleted`
+                message: `${file.name} ${$LL.components.notification.hasBeenDeleted()}`
             });
             trackEvent(Submit.FileDelete);
         } catch (error) {

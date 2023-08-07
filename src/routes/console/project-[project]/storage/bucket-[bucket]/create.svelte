@@ -32,7 +32,7 @@
             dispatch('created');
             addNotification({
                 type: 'success',
-                message: `File has been uploaded`
+                message: $LL.components.notification.fileUpload()
             });
             trackEvent(Submit.FileCreate, {
                 customId: !!id

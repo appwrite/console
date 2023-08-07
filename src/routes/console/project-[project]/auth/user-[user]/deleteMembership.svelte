@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import LL from '$i18n/i18n-svelte';
-    
+
     export let showDelete = false;
     export let selectedMembership: Models.Membership;
 
@@ -24,7 +24,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Membership has been deleted`
+                message: $LL.components.notification.membershipDeleted()
             });
             trackEvent(Submit.MemberDelete);
             await goto(

@@ -34,7 +34,7 @@
             await sdk.forConsole.account.createRecovery(email, window.location.toString());
             addNotification({
                 type: 'success',
-                message: 'We have sent you an email with a password reset link'
+                message: $LL.components.notification.sentPswdLink()
             });
             trackEvent(Submit.AccountRecover);
         } catch (error) {
@@ -52,7 +52,7 @@
             await goto(`${base}/login`);
             addNotification({
                 type: 'success',
-                message: 'Password has been updated successfully'
+                message: $LL.components.notification.pswdUpdatedSuccessfully()
             });
         } catch (error) {
             addNotification({

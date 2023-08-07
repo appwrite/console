@@ -18,7 +18,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Function has been deleted`
+                message: $LL.components.notification.functionDeleted()
             });
             await goto(`${base}/console/project-${$page.params.project}/functions`);
             trackEvent(Submit.FunctionDelete);

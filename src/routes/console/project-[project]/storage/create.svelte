@@ -25,7 +25,7 @@
             dispatch('created', bucket);
             addNotification({
                 type: 'success',
-                message: `${name} has been created`
+                message: `${name} ${$LL.components.notification.hasBeenCreated()}`
             });
             name = null;
             trackEvent(Submit.BucketCreate, {

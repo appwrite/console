@@ -44,7 +44,7 @@
             await invalidate(Dependencies.FUNCTIONS);
             goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
             addNotification({
-                message: `${$createFunction.name} has been created`,
+                message: `${$createFunction.name} ${$LL.components.notification.hasBeenCreated()}`,
                 type: 'success'
             });
             trackEvent(Submit.FunctionCreate, {

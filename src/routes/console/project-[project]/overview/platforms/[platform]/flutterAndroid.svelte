@@ -34,7 +34,7 @@
             });
             addNotification({
                 type: 'success',
-                message: 'Platform Package Name has been updated'
+                message: $LL.components.notification.platformPackageNameUpdated()
             });
         } catch (error) {
             addNotification({

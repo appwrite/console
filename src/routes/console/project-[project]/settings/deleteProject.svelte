@@ -20,7 +20,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$project.name} has been deleted`
+                message: `${$project.name} ${$LL.components.notification.hasBeenDeleted()}`
             });
             trackEvent(Submit.ProjectDelete);
             await goto(`${base}/console`);

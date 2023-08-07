@@ -33,7 +33,7 @@
             showCreate = false;
             addNotification({
                 type: 'success',
-                message: `Invite has been sent to ${email}`
+                message: `${$LL.components.notification.inviteSentTo()} ${email}`
             });
             trackEvent(Submit.MemberCreate);
             dispatch('created', team);

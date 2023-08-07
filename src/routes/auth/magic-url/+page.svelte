@@ -21,10 +21,10 @@
     });
 </script>
 
-<Heading tag="h1" size="1">Missing Redirect URL</Heading>
+<Heading tag="h1" size="1">{$LL.auth.title.missingRedirectUrl()}</Heading>
 <p>
-    Your Magic URL login flow is missing a proper redirect URL. Please check the
+    {$LL.auth.texts.magicUrl.loginFlow}
     <a href="https://appwrite.io/docs/client/account?sdk=web#createMagicURLSession"
-        >Magic URL docs</a>
-    and send request for new session with a valid redirect URL.
+        >{$LL.auth.texts.magicUrl.sendMsg}</a>
+    {$LL.auth.texts.magicUrl.sendMsg}
 </p>

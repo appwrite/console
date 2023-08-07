@@ -26,7 +26,7 @@
             await sdk.forConsole.teams.updateMembershipStatus(teamId, membershipId, userId, secret);
             addNotification({
                 type: 'success',
-                message: 'Successfully logged in.'
+                message: $LL.components.notification.loginSuccessfully()
             });
             await goto(`${base}/console/organization-${teamId}`);
             trackEvent(Submit.MembershipUpdateStatus);
@@ -70,22 +70,22 @@
                         required
                         bind:value={terms}
                         id="terms"
-                        label="terms"
+                        label={$LL.invite.forms.invite.inputs.terms.label()}
                         showLabel={false}>
-                        By accepting the invitation, you agree to the
+                        {$LL.invite.texts.privacyAndPolicy.phraseOne()}
                         <a
                             class="link"
                             href="https://appwrite.io/policy/terms"
                             target="_blank"
                             rel="noopener noreferrer">
-                            Terms and Conditions</a>
-                        and
+                            {$LL.invite.texts.privacyAndPolicy.termsAndCond()}</a>
+                        {$LL.invite.texts.privacyAndPolicy.and()}
                         <a
                             class="link"
                             href="https://appwrite.io/policy/privacy"
                             target="_blank"
                             rel="noopener noreferrer">
-                            Privacy and Policy</a
+                            {$LL.invite.texts.privacyAndPolicy.privacy()}</a
                         >.</InputChoice>
 
                     <div class="u-flex u-main-end u-gap-12">

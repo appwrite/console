@@ -35,7 +35,7 @@
             });
             addNotification({
                 type: 'success',
-                message: `${name} has been created`
+                message: `${name} ${$LL.components.notification.hasBeenCreated()}`
             });
             await goto(`/console/project-${project.$id}`);
         } catch (e) {

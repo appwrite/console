@@ -33,7 +33,7 @@
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'Updated project users limit successfully'
+                message: $LL.components.notification.projectUserLimitUpdated()
             });
             trackEvent(Submit.AuthLimitUpdate);
         } catch (error) {

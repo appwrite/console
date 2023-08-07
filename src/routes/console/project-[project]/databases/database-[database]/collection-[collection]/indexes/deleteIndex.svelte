@@ -27,7 +27,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Index has been deleted`
+                message: $LL.components.notification.indexDeleted()
             });
             trackEvent(Submit.IndexDelete);
         } catch (error) {

@@ -21,7 +21,7 @@
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'Updated password dictionary check.'
+                message: $LL.components.notification.pswdDictonaryCheck()
             });
             trackEvent(Submit.AuthPasswordDictionaryUpdate);
         } catch (error) {

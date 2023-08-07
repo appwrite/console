@@ -42,7 +42,7 @@
             close();
             addNotification({
                 type: 'success',
-                message: `Function has been executed`
+                message: $LL.components.notification.functionExecuted()
             });
             trackEvent(Submit.ExecutionCreate);
         } catch (error) {

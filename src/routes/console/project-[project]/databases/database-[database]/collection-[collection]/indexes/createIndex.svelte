@@ -78,7 +78,7 @@
             );
 
             addNotification({
-                message: 'Index has been created',
+                message: $LL.components.notification.indexCreated(),
                 type: 'success'
             });
             trackEvent(Submit.IndexCreate);

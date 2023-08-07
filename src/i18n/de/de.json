@@ -1,4 +1,22 @@
 {
+    "auth": {
+        "title": {
+            "missingRedirectUrl": "Fehlende Weiterleitungs-URL"
+        },
+        "texts": {
+            "magicUrl": {
+                "loginFlow": "Deinem Magic URL-Login-Flow fehlt eine korrekte Weiterleitungs-URL. Bitte überprüfen Sie die",
+                "magicDocs": "Magische URL-Dokumente",
+                "sendMsg": "und sende eine Anfrage für eine neue Sitzung mit einer gültigen Umleitungs-URL."
+            },
+            "oAuth": {
+                "loginFlow": "Deinem OAuth-Anmeldeablauf fehlt eine korrekte Weiterleitungs-URL. Bitte überprüfen Sie die",
+                "oAuthDocs": "OAuth-Dokumente",
+                "sendRequest": "und sende eine Anfrage für eine neue Sitzung mit einer gültigen Callback-URL."
+            }
+        }
+    },
+
     "login": {
         "title": "Anmelden",
         "forms": {
@@ -42,6 +60,9 @@
                     "password": {
                         "label": "Passwort",
                         "placeholder": "Ihr Passwort"
+                    },
+                    "terms": {
+                        "label": "Bedingungen"
                     }
                 }
             },
@@ -75,7 +96,13 @@
             "login": "Anmelden"
         },
         "texts": {
-            "registery": "Sie haben bereits ein Konto?"
+            "registery": "Sie haben bereits ein Konto?",
+            "privacyPolicy": {
+                "phraseOne": "Mit der Registrierung bestätigen Sie, dass Sie unsere gelesen, verstanden und anerkannt haben",
+                "privacy": "Datenschutzerklärung",
+                "phraseTwo": "und akzeptiere unsere",
+                "generalTerm": "Allgemeine Nutzungsbedingungen"
+            }
         }
     },
 
@@ -134,6 +161,23 @@
             },
             "accept": {
                 "register": "Melden Sie sich bei Appwrite an"
+            }
+        },
+        "texts": {
+            "privacyPolicy": {
+                "phraseOne": "Mit der Annahme der Einladung erklärst du dich damit einverstanden",
+                "termsAndCond": "Allgemeine Geschäftsbedingungen",
+                "and": "und",
+                "privacy": "Datenschutz und Richtlinie"
+            }
+        },
+        "forms": {
+            "invite": {
+                "inputs": {
+                    "terms": {
+                        "label": "Bedingungen"
+                    }
+                }
             }
         }
     },
@@ -1740,6 +1784,76 @@
                     }
                 }
             }
+        }
+    },
+
+    "components": {
+        "notification": {
+            "sentPswdLink": "Wir haben Ihnen eine E-Mail mit einem Link zum Zurücksetzen des Passworts gesendet",
+            "pswdUpdatedSuccessfully": "Passwort wurde erfolgreich aktualisiert",
+            "loginSuccessfully": "Erfolgreich angemeldet.",
+            "hasBeenCreated": "wurde erstellt",
+            "hasBeenUpdated": "wurde aktualisiert",
+            "hasBeenDeleted": "wurde gelöscht",
+            "accountDeleted": "Konto wurde gelöscht",
+            "sessionDeleted": "Sitzung wurde gelöscht",
+            "allSessionDeleted": "Alle Sitzungen wurden gelöscht",
+            "functionDeleted": "Funktion wurde gelöscht",
+            "membershipDeleted": "Mitgliedschaft wurde gelöscht",
+            "indexDeleted": "Index wurde gelöscht",
+            "indexCreated": "Index wurde erstellt",
+            "webhookHasBeenCreated": "Webhook wurde erstellt",
+            "webhookUrlHasBeenCreated": "Webhook-URL wurde erstellt",
+            "webhookSecurityHasBeenCreated": "Webhook-Sicherheit wurde aktualisiert",
+            "webhookNameHasBeenCreated": "Webhook-Name wurde aktualisiert",
+            "webhookEventsHasBeenCreated": "Webhook-Ereignisse wurden aktualisiert",
+            "keyRegenerated": "Schlüssel wurde neu generiert",
+            "fileUpload": "Datei wurde hochgeladen",
+            "nameUpdated": "Name wurde aktualisiert",
+            "emailUpdated": "E-Mail wurde aktualisiert",
+            "pswdUpdated": "Passwort wurde aktualisiert",
+            "updatePrefs": "Einstellungen wurden aktualisiert",
+            "phoneUpdated": "Telefon wurde aktualisiert",
+            "authUpdated": "Authentifizierung wurde aktualisiert",
+            "projectUserLimitUpdated": "Projektbenutzerlimit erfolgreich aktualisiert",
+            "platformNameUpdated": "Plattformname wurde aktualisiert",
+            "apiKeyExpirationUpdated": "Der Ablauf des API-Schlüssels wurde aktualisiert",
+            "apiKeyNameUpdated": "API-Schlüsselname wurde aktualisiert",
+            "apiKeyScopeUpdated": "API-Schlüsselbereiche wurden aktualisiert",
+            "securityUpdated": "Sicherheit wurde aktualisiert",
+            "permissionsUpdated": "Berechtigungen wurden aktualisiert",
+            "displayNameUpdated": "Anzeigenamen wurden aktualisiert",
+            "cronUpdated": "Cron-Zeitplan wurde aktualisiert",
+            "timeOutUpdated": "Timeout wurde aktualisiert",
+            "variablesUpdated": "Variablen wurden aktualisiert",
+            "platformHostnameUpdated": "Plattform-Hostname wurde aktualisiert",
+            "platformPackageNameUpdated": "Plattform-Paketname wurde aktualisiert",
+            "platformBundleIdUpdated": "Plattform-Bundle-ID wurde aktualisiert",
+            "projectNameUpdated": "Der Projektname wurde aktualisiert",
+            "documentCreated": "Dokument wurde erstellt",
+            "documentDeleted": "Dokument wurde gelöscht",
+            "documentWasUpdated": "Dokument wurde aktualisiert!",
+            "attributeDeleted": "Attribut wurde gelöscht",
+            "sessionLimitUpdated": "Sitzungslimit wurde aktualisiert",
+            "pswdHistoryLimitUpdated": "Grenze für den Passwortverlauf aktualisiert.",
+            "pswdDictonaryCheck": "Überprüfung des Passwortwörterbuchs aktualisiert.",
+            "functionExecuted": "Funktion wurde ausgeführt",
+            "deploymentDeleted": "Bereitstellung wurde gelöscht",
+            "deploymentActivated": "Bereitstellung wurde aktiviert",
+            "variablesUploaded": "Variablen hochgeladen",
+            "wasDeletedFrom": "wurde gelöscht aus",
+            "inviteSentTo": "Einladung wurde gesendet an",
+            "yourExperience": "Wie sind Ihre Erfahrungen mit unserer neuen Funktion „Beziehungen“? Wir würden uns über Ihr Feedback freuen!",
+            "attribute": "Attribut",
+            "theAccount": "Das Konto",
+            "serviceHasBeen": "Dienst war",
+            "hasBeen": "war",
+            "verified": "verifiziert",
+            "unVerfied": "unverifiziert",
+            "blocked": "blockiert",
+            "unBlocked": "blockiert",
+            "enabled": "aktiviert",
+            "disabled": "deaktiviert"
         }
     }
 }

@@ -32,7 +32,7 @@
             );
             await invalidate(Dependencies.COLLECTION);
             addNotification({
-                message: `${$collection.name} has been updated`,
+                message: `${$collection.name} ${$LL.components.notification.hasBeenUpdated()}`,
                 type: 'success'
             });
             trackEvent(Submit.CollectionUpdateEnabled);

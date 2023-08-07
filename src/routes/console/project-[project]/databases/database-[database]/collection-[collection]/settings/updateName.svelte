@@ -31,7 +31,7 @@
             );
             await invalidate(Dependencies.COLLECTION);
             addNotification({
-                message: 'Name has been updated',
+                message: $LL.components.notification.nameUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.CollectionUpdateName);

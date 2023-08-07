@@ -22,7 +22,7 @@
             names = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
             await invalidate(Dependencies.TEAM);
             addNotification({
-                message: 'Display names has been updated',
+                message: $LL.components.notification.displayNameUpdated(),
                 type: 'success'
             });
             trackEvent(Submit.CollectionUpdateDisplayNames);

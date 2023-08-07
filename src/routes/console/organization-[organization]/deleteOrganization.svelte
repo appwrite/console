@@ -18,7 +18,7 @@
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
-                message: `${$organization.name} has been deleted`
+                message: `${$organization.name} ${$LL.components.notification.hasBeenUpdated()}`
             });
             trackEvent(Submit.OrganizationDelete);
             if ($organizationList?.total > 1) {

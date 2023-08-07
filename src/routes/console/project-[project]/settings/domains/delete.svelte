@@ -20,7 +20,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been deleted`
+                message: `${selectedDomain.domain} ${$LL.components.notification.hasBeenDeleted()}`
             });
             trackEvent(Submit.DomainDelete);
         } catch (error) {

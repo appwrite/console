@@ -21,7 +21,7 @@
 
             addNotification({
                 type: 'success',
-                message: 'Updated project users limit successfully'
+                message: $LL.components.notification.projectUserLimitUpdated()
             });
             trackEvent(Submit.SessionsLengthUpdate);
         } catch (error) {

@@ -41,7 +41,9 @@
             }
             addNotification({
                 type: 'success',
-                message: `Attribute ${key ?? data?.key} has been created`
+                message: `${$LL.components.notification.attribute()} ${
+                    key ?? data?.key
+                } ${$LL.components.notification.hasBeenCreated()}`
             });
             if ($option.type === 'relationship') {
                 let counter = localStorage.getItem('createRelationshipCounter');
@@ -52,7 +54,7 @@
                         addNotification({
                             type: 'info',
                             icon: 'question-mark-circle',
-                            message: `How is your experience with our new "Relationships" feature? We'd love to hear your feedback!`,
+                            message: $LL.components.notification.yourExperience(),
                             timeout: 15000,
                             buttons: [
                                 {
