@@ -14,16 +14,18 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
 
+    import { goto } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Container } from '$lib/layout';
+    import { services } from '$lib/stores/project-services';
     import { sdk } from '$lib/stores/sdk';
+    import { loading } from '$routes/store';
+    import type { Models } from '@appwrite.io/console';
     import { ID } from '@appwrite.io/console';
     import CreateOrganization from '../createOrganization.svelte';
+    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import type { PageData } from './$types';
     import CreateProject from './createProject.svelte';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { goto } from '$app/navigation';
-    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
-    import { loading } from '$routes/store';
 
     export let data: PageData;
 
@@ -53,6 +55,17 @@
         }
         return { name, icon };
     };
+
+    function allServiceDisabled(project: Models.Project): boolean {
+        let disabled = true;
+        services.load(project);
+        $services.list.forEach((service) => {
+            if (service.value) {
+                disabled = false;
+            }
+        });
+        return disabled;
+    }
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -129,6 +142,11 @@
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
+                    {#if allServiceDisabled(project)}
+                        <p>
+                            <span class="icon-pause" aria-hidden="true" /> All services are disabled.
+                        </p>
+                    {/if}
                     {@const platforms = filterPlatforms(
                         project.platforms.map((platform) => getPlatformInfo(platform.type))
                     )}

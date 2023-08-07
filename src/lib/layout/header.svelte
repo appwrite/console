@@ -1,27 +1,22 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import {
-        AvatarInitials,
-        DropList,
-        DropListItem,
-        DropListLink,
-        FeedbackGeneral
-    } from '$lib/components';
-    import { app, feedback } from '$lib/stores/app';
-    import { user } from '$lib/stores/user';
-    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
-    import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
-    import LightMode from '$lib/images/mode/light-mode.svg';
-    import DarkMode from '$lib/images/mode/dark-mode.svg';
-    import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { FeedbackNPS } from '$lib/components';
-
-    import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { sdk } from '$lib/stores/sdk';
-    import { goto } from '$app/navigation';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
+    import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
+    import { Feedback } from '$lib/components/feedback';
+    import Button from '$lib/elements/forms/button.svelte';
+    import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
+    import DarkMode from '$lib/images/mode/dark-mode.svg';
+    import LightMode from '$lib/images/mode/light-mode.svg';
+    import SystemMode from '$lib/images/mode/system-mode.svg';
+    import { app } from '$lib/stores/app';
+    import { feedback } from '$lib/stores/feedback';
+    import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
+    import { slide } from 'svelte/transition';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
@@ -78,11 +73,7 @@
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
-                {#if $feedback.type === 'nps'}
-                    <FeedbackNPS />
-                {:else}
-                    <FeedbackGeneral />
-                {/if}
+                <Feedback />
             </svelte:fragment>
         </DropList>
         <a
@@ -92,9 +83,9 @@
             class="button is-small is-text">
             <span class="text">Support</span>
         </a>
-        <button class="button is-text is-small" on:click={toggleCommandCenter}>
+        <Button text class="is-small" on:click={toggleCommandCenter}>
             <i class="icon-search" />
-        </button>
+        </Button>
     </nav>
     <nav class="u-flex u-height-100-percent u-sep-inline-start">
         {#if $user}

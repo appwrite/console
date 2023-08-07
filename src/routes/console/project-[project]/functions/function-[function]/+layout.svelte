@@ -54,8 +54,8 @@
         },
         {
             label: 'Timeout',
-            async callback() {
-                await goto(
+            callback() {
+                goto(
                     `/console/project-${$project.$id}/functions/function-${$func.$id}/settings#timeout`
                 );
             },

@@ -3,6 +3,7 @@
     import { Alert } from '$lib/components';
     import { trackEvent } from '$lib/actions/analytics';
     import { Form } from '$lib/elements/forms';
+    import { disableCommands } from '$lib/commandCenter';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
@@ -69,6 +70,8 @@
     } else {
         closeModal();
     }
+
+    $: $disableCommands(show);
 
     $: if (error) {
         alert?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });

@@ -98,11 +98,17 @@
                     break;
                 }
                 case 'firebase': {
-                    const res = await sdk.forProject.migrations.getFirebaseReport(
-                        providerResources.firebase,
-                        $provider.serviceAccount
-                    );
-                    report = res;
+                    if ($provider.projectId) {
+                        // OAuth
+                    } else if ($provider.serviceAccount) {
+                        // Manual auth
+                        const res = await sdk.forProject.migrations.getFirebaseReport(
+                            providerResources.firebase,
+                            $provider.serviceAccount
+                        );
+                        report = res;
+                    }
+
                     break;
                 }
                 case 'nhost': {
@@ -131,7 +137,6 @@
         };
     });
 
-    $: console.log(report);
     $: resources = providerResources[$provider.provider];
 
     // $: wizard.setNextDisabled(!report);
@@ -158,15 +163,30 @@
                 <p>Make sure to have enough storage in your project plan when importing files</p>
             </div>
         </div>
-        <div class="u-flex u-gap-16">
-            <div class="circled">
-                <i class="icon-currency-dollar" />
+        {#if $provider.provider === 'firebase'}
+            <div class="u-flex u-gap-16">
+                <div class="circled">
+                    <i class="icon-exclamation u-color-text-warning" />
+                </div>
+                <div>
+                    <p class="u-bold">Possible charges by Firebase</p>
+                    <p>
+                        Appwrite does not impose charges for importing data, but please note that
+                        Firebase may have its own pricing for this service
+                    </p>
+                </div>
             </div>
-            <div>
-                <p class="u-bold">Transfer is free of charge</p>
-                <p>You won't be charged for Appwrite bandwidth usage for importing data</p>
+        {:else}
+            <div class="u-flex u-gap-16">
+                <div class="circled">
+                    <i class="icon-currency-dollar" />
+                </div>
+                <div>
+                    <p class="u-bold">Transfer is free of charge</p>
+                    <p>You won't be charged for Appwrite bandwidth usage for importing data</p>
+                </div>
             </div>
-        </div>
+        {/if}
     </div>
 </div>
 

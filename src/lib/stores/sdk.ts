@@ -9,11 +9,11 @@ import {
     Functions,
     Health,
     Locale,
+    Migrations,
     Projects,
     Storage,
     Teams,
     Users
-    // Migrations
 } from '@appwrite.io/console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
@@ -34,8 +34,8 @@ const sdkForProject = {
     project: new Project(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
-    users: new Users(clientProject)
-    // migrations: new Migrations(clientProject)
+    users: new Users(clientProject),
+    migrations: new Migrations(clientProject)
 };
 
 export const getSdkForProject = (projectId: string) => {
@@ -56,8 +56,8 @@ export const sdk = {
         locale: new Locale(clientConsole),
         projects: new Projects(clientConsole),
         teams: new Teams(clientConsole),
-        users: new Users(clientConsole)
-        // migrations: new Migrations(clientConsole)
+        users: new Users(clientConsole),
+        migrations: new Migrations(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();

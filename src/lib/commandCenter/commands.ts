@@ -1,5 +1,6 @@
 import { debounce } from '$lib/helpers/debounce';
 import { isMac } from '$lib/helpers/platform';
+import { wizard } from '$lib/stores/wizard';
 import { onMount } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import { nanoid } from 'nanoid/non-secure';
@@ -105,8 +106,8 @@ function hasDisputing(command: KeyedCommand, allCommands: Command[]) {
 }
 
 export const commandCenterKeyDownHandler = derived(
-    [commandMap, commandsEnabled],
-    ([$commandMap, enabled]) => {
+    [commandMap, commandsEnabled, wizard],
+    ([$commandMap, enabled, $wizard]) => {
         const commandsArr = Array.from($commandMap.values()).flat();
         let recentKeyCodes: number[] = [];
         let validCommands: KeyedCommand[] = [];
@@ -177,9 +178,9 @@ export const commandCenterKeyDownHandler = derived(
             for (const command of commandsArr) {
                 if (!isKeyedCommand(command)) continue;
                 if (!command.forceEnable) {
-                    if (command.disabled) continue;
-                    if (!enabled) continue;
-                    if (isInputEvent(event)) continue;
+                    if (command.disabled || !enabled || isInputEvent(event) || $wizard.show) {
+                        continue;
+                    }
                 }
 
                 const { keys, ctrl: meta, shift, alt } = command;

@@ -7,8 +7,7 @@ import Wizard from './wizard.svelte';
 export const formData = createMigrationFormStore();
 
 export function openMigrationWizard() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    wizard.start(Wizard as any);
+    wizard.start(Wizard);
     const migData = get(requestedMigration);
     provider.set({
         provider: 'appwrite',
