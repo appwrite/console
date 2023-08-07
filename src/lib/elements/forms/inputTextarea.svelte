@@ -61,7 +61,7 @@
         {label}
     </Label>
 
-    <div class="input-text-wrapper" on:click on:keydown={clickOnEnter}>
+    <div class="input-text-wrapper" on:click on:keyup={clickOnEnter}>
         <textarea
             {id}
             {placeholder}

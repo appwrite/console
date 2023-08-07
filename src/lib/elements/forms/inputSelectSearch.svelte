@@ -83,7 +83,11 @@
         value = option.value;
         search = option.label;
         // It's not working without this line.
-        $$slots.output ? (search = '') : (element.value = search);
+        if ($$slots.output) {
+            search = '';
+        } else {
+            element.value = search;
+        }
         hasFocus = false;
         dispatch('select', option);
     }
