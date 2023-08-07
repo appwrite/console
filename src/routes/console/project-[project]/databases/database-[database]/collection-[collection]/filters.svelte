@@ -157,22 +157,19 @@
         operatorKey = null;
     }
 
-    let valueStr: string | null = null;
-    let valueNum: number | null = null;
-    $: value = column?.type === 'integer' || column?.type === 'double' ? valueNum : valueStr;
+    // We cast to any to not cause type errors in the input components
+    let value: any = null;
 
     $: {
         columnId;
-        valueStr = null;
-        valueNum = null;
+        value = null;
     }
 
     // This Map is keyed by tags, and has a query as the value
     function addFilter() {
         if (column && operator) {
             queries.addFilter({ column, operator, value });
-            valueStr = null;
-            valueNum = null;
+            value = null;
         }
     }
 
@@ -180,7 +177,7 @@
         node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
     }
 
-    let applied = 0;
+    let applied = $queries.size;
 
     function apply() {
         queries.apply();
@@ -196,7 +193,7 @@
     }
 
     $: isDisabled = (function getDisabled() {
-        return !operator || (column?.type === 'string' && !value);
+        return !operator || (!operator?.hideInput && !value);
     })();
 </script>
 
@@ -211,35 +208,39 @@
         {/if}
     </Button>
     <div class="dropped card" slot="list">
-        <p>Apply filter rules to refine the table view</p>
-        <div class="selects u-flex u-gap-12 u-margin-block-start-16">
-            <InputSelect
-                id="column"
-                options={$columns.map((c) => ({
-                    label: c.title,
-                    value: c.id
-                }))}
-                placeholder="Select column"
-                bind:value={columnId} />
-            <InputSelect
-                id="operator"
-                options={operatorsForColumn}
-                placeholder="Select operator"
-                bind:value={operatorKey} />
-        </div>
-        {#if column && operator && !operator?.hideInput}
-            <div class="u-margin-block-start-16">
-                {#if column.type === 'integer' || column.type === 'double'}
-                    <InputNumber id="value" bind:value={valueNum} placeholder="Enter value" />
-                {:else}
-                    <InputText id="value" bind:value={valueStr} placeholder="Enter value" />
-                {/if}
+        <form on:submit={addFilter}>
+            <p>Apply filter rules to refine the table view</p>
+            <div class="selects u-flex u-gap-12 u-margin-block-start-16">
+                <InputSelect
+                    id="column"
+                    options={$columns.map((c) => ({
+                        label: c.title,
+                        value: c.id
+                    }))}
+                    placeholder="Select column"
+                    bind:value={columnId} />
+                <InputSelect
+                    id="operator"
+                    disabled={!column}
+                    options={operatorsForColumn}
+                    placeholder="Select operator"
+                    bind:value={operatorKey} />
             </div>
-        {/if}
-        <Button text disabled={isDisabled} class="u-margin-block-start-12" on:click={addFilter}>
-            <i class="icon-plus" />
-            Add filter
-        </Button>
+            {#if column && operator && !operator?.hideInput}
+                <div class="u-margin-block-start-16">
+                    {#if column.type === 'integer' || column.type === 'double'}
+                        <InputNumber id="value" bind:value placeholder="Enter value" />
+                    {:else}
+                        <InputText id="value" bind:value placeholder="Enter value" />
+                    {/if}
+                </div>
+            {/if}
+            <Button text disabled={isDisabled} class="u-margin-block-start-12" submit>
+                <i class="icon-plus" />
+                Add filter
+            </Button>
+        </form>
+
         <ul class="tags">
             {#each $tags as tag (tag)}
                 <button
