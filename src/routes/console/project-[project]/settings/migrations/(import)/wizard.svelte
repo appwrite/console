@@ -24,7 +24,7 @@
 
             switch ($provider.provider) {
                 case 'appwrite': {
-                    const res = await sdk.forProject.migrations.migrateAppwrite(
+                    const res = await sdk.forProject.migrations.createAppwriteMigration(
                         resources,
                         $provider.endpoint,
                         $provider.projectID,
@@ -35,7 +35,7 @@
                     break;
                 }
                 case 'supabase': {
-                    const res = await sdk.forProject.migrations.migrateSupabase(
+                    const res = await sdk.forProject.migrations.createSupabaseMigration(
                         resources,
                         $provider.endpoint,
                         $provider.apiKey,
@@ -54,7 +54,7 @@
                         // OAuth
                     } else if ($provider.serviceAccount) {
                         // Manual auth
-                        const res = await sdk.forProject.migrations.migrateFirebase(
+                        const res = await sdk.forProject.migrations.createFirebaseMigration(
                             resources,
                             $provider.serviceAccount
                         );
@@ -64,7 +64,7 @@
                     break;
                 }
                 case 'nhost': {
-                    const res = await sdk.forProject.migrations.migrateNHost(
+                    const res = await sdk.forProject.migrations.createNHostMigration(
                         resources,
                         $provider.subdomain,
                         $provider.region,
