@@ -29,13 +29,13 @@
         const target = new URL(
             `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
         );
-        target.searchParams.set('projectId', $page.params.project);
         target.searchParams.set('redirect', redirect.toString());
+        target.searchParams.set('projectId', $page.params.project);
         return target;
     }
 
     function deauthorizeGoogle() {
-        sdk.forProject.migrations.firebaseDeauthorize().then(() => {
+        sdk.forProject.migrations.deleteFirebaseAuth().then(() => {
             firebaseProjects = [];
         });
 
