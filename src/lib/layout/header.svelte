@@ -6,6 +6,7 @@
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
     import { Feedback } from '$lib/components/feedback';
+    import Button from '$lib/elements/forms/button.svelte';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
@@ -82,9 +83,9 @@
             class="button is-small is-text">
             <span class="text">Support</span>
         </a>
-        <button class="button is-text is-small" on:click={toggleCommandCenter}>
+        <Button text class="is-small" on:click={toggleCommandCenter}>
             <i class="icon-search" />
-        </button>
+        </Button>
     </nav>
     <nav class="u-flex u-height-100-percent u-sep-inline-start">
         {#if $user}

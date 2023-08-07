@@ -56,7 +56,7 @@
 
 <WizardStep>
     <svelte:fragment slot="title">Choose provider</svelte:fragment>
-    <div class="radio-group">
+    <div class="u-flex u-flex-vertical u-gap-16">
         {#each Object.entries(providers) as [key, value]}
             <label class="u-flex u-cross-center u-cursor-pointer u-gap-8">
                 <input
@@ -228,11 +228,3 @@
         </FormList>
     {/if}
 </WizardStep>
-
-<style lang="scss">
-    .radio-group {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-</style>
