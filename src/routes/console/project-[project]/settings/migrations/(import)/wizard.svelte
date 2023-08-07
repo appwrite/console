@@ -105,4 +105,4 @@
     });
 </script>
 
-<Wizard title="Create Function" {steps} on:exit={onExit} on:finish={onFinish} />
+<Wizard title="Create Project" {steps} on:exit={onExit} on:finish={onFinish} />

@@ -90,8 +90,6 @@
         }
         $commandCenterKeyDownHandler(e);
     };
-
-    $: console.log($subPanels);
 </script>
 
 <svelte:window on:mousedown={handleBlur} on:keydown={handleKeydown} />

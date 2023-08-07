@@ -137,7 +137,6 @@
         };
     });
 
-    $: console.log(report);
     $: resources = providerResources[$provider.provider];
 
     // $: wizard.setNextDisabled(!report);
