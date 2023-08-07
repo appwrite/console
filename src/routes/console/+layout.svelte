@@ -33,7 +33,7 @@
             icon: 'light-bulb'
         },
         {
-            label: 'Go to Account',
+            label: 'Go to account',
             callback: () => {
                 goto('/console/account');
             },
@@ -41,7 +41,7 @@
             group: 'navigation'
         },
         {
-            label: 'Find an Organization',
+            label: 'Find an organization',
             callback: () => {
                 addSubPanel(OrganizationsPanel);
             },
@@ -59,7 +59,7 @@
             icon: 'search'
         },
         {
-            label: 'Create new Organization',
+            label: 'Create new organization',
             callback: () => {
                 newOrgModal.set(true);
             },
@@ -67,7 +67,7 @@
             group: 'organizations'
         },
         {
-            label: 'Go to Home',
+            label: 'Go to home',
             callback: () => {
                 goto('/console');
             },

@@ -53,7 +53,7 @@
 
     $: $registerCommands([
         {
-            label: 'Create Document',
+            label: 'Create document',
             keys: $page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
             callback() {
                 wizard.start(CreateDocument);
@@ -62,7 +62,7 @@
             group: 'documents'
         },
         {
-            label: 'Create Attribute',
+            label: 'Create attribute',
             keys: $page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
             callback() {
                 addSubPanel(CreateAttributePanel);
@@ -71,7 +71,7 @@
             group: 'attributes'
         },
         {
-            label: 'Go to Documents',
+            label: 'Go to documents',
             keys: ['g', 'd'],
             callback() {
                 goto(
@@ -82,7 +82,7 @@
             group: 'collections'
         },
         {
-            label: 'Go to Attributes',
+            label: 'Go to attributes',
             keys: ['g', 'a'],
             callback() {
                 goto(
@@ -93,7 +93,7 @@
             group: 'collections'
         },
         {
-            label: 'Go to Indexes',
+            label: 'Go to indexes',
             keys: ['g', 'i'],
             callback() {
                 goto(
@@ -104,7 +104,7 @@
             group: 'collections'
         },
         {
-            label: 'Go to Activity',
+            label: 'Go to activity',
             keys: ['g', 'c'],
             callback() {
                 goto(
@@ -115,7 +115,7 @@
             group: 'collections'
         },
         {
-            label: 'Go to Usage',
+            label: 'Go to usage',
             keys: ['g', 'u'],
             callback() {
                 goto(
@@ -126,7 +126,7 @@
             group: 'collections'
         },
         {
-            label: 'Go to Settings',
+            label: 'Go to settings',
             keys: ['g', 's'],
             callback() {
                 goto(
@@ -137,7 +137,7 @@
             group: 'collections'
         },
         {
-            label: 'Create Index',
+            label: 'Create index',
             keys: $page.url.pathname.endsWith('indexes') ? ['c'] : ['c', 'i'],
             callback() {
                 initCreateIndex();

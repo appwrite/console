@@ -26,7 +26,7 @@
             group: 'webhooks'
         },
         {
-            label: 'Go to Settings Overview',
+            label: 'Go to settings overview',
 
             keys: ['g', 'o'],
             callback: () => {
@@ -37,7 +37,7 @@
             rank: 40
         },
         {
-            label: 'Go to Custom domains',
+            label: 'Go to custom domains',
 
             keys: ['g', 'd'],
             callback: () => {
@@ -48,7 +48,7 @@
             rank: 30
         },
         {
-            label: 'Go to Webhooks',
+            label: 'Go to webhooks',
             keys: ['g', 'w'],
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings/webhooks`);
@@ -59,7 +59,7 @@
             rank: 20
         },
         {
-            label: 'Go to Migrations',
+            label: 'Go to migrations',
             keys: ['g', 'm'],
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings/migrations`);
