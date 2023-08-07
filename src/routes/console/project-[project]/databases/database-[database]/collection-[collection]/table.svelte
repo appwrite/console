@@ -88,14 +88,16 @@
 
     $: selected = preferences.getCustomCollectionColumns($page.params.collection);
 
-    $: columns.set(
-        $collection.attributes.map((attribute) => ({
-            id: attribute.key,
-            title: attribute.key,
-            type: attribute.type,
-            show: selected?.includes(attribute.key) ?? true
-        }))
-    );
+    $: {
+        columns.set(
+            $collection.attributes.map((attribute) => ({
+                id: attribute.key,
+                title: attribute.key,
+                type: attribute.type,
+                show: selected?.includes(attribute.key) ?? true
+            }))
+        );
+    }
 
     let selectedDb: string[] = [];
     let showDelete = false;
@@ -112,7 +114,7 @@
             trackEvent(Submit.DocumentDelete);
             addNotification({
                 type: 'success',
-                message: `${selected.length} document${selected.length > 1 ? 's' : ''} deleted`
+                message: `${selectedDb.length} document${selectedDb.length > 1 ? 's' : ''} deleted`
             });
             invalidate(Dependencies.DOCUMENTS);
         } catch (error) {
@@ -122,7 +124,7 @@
             });
             trackError(error, Submit.DocumentDelete);
         } finally {
-            selected = [];
+            selectedDb = [];
             showDelete = false;
         }
     }
@@ -138,6 +140,9 @@
     ) as Models.AttributeRelationship[];
 
     let checked = false;
+
+    $: someSelectedDb = data.documents.documents.some((doc) => selectedDb.includes(doc.$id));
+    $: allSelectedDb = data.documents.documents.every((doc) => selectedDb.includes(doc.$id));
 </script>
 
 <TableScroll isSticky>
@@ -145,13 +150,19 @@
         <TableCellHead width={10}>
             <InputCheckbox
                 id="select-all"
-                indeterminate={selectedDb.length > 0 && selectedDb.length < data.documents.total}
-                value={selectedDb.length === data.documents.total}
+                indeterminate={someSelectedDb && !allSelectedDb}
+                value={allSelectedDb}
                 on:click={(e) => {
                     if (!isHTMLInputElement(e.target)) return;
-                    selectedDb = e.target.checked
-                        ? data.documents.documents.map((database) => database.$id)
-                        : [];
+                    if (e.target.checked) {
+                        const set = new Set(selectedDb);
+                        data.documents.documents.forEach((doc) => set.add(doc.$id));
+                        selectedDb = Array.from(set);
+                    } else {
+                        selectedDb = selectedDb.filter((id) => {
+                            return !data.documents.documents.map((doc) => doc.$id).includes(id);
+                        });
+                    }
                 }} />
         </TableCellHead>
         <TableCellHead width={150} eyebrow={false}>Document ID</TableCellHead>
