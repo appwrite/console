@@ -33,9 +33,7 @@
             <Heading tag="h6" size="7">Password</Heading>
         </div>
 
-        <p>
-            Enter a new password. A password must contain <b>at least 8 characters.</b>
-        </p>
+        <p>Enter a new password. A password must contain at least 8 characters.</p>
         <svelte:fragment slot="aside">
             <ul>
                 <InputPassword

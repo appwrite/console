@@ -15,7 +15,7 @@
         TableHeader,
         TableRowLink
     } from '$lib/elements/table';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
     import Wizard from './wizard.svelte';
@@ -48,7 +48,7 @@
                         {key.name}
                     </TableCellText>
                     <TableCellText onlyDesktop title="Last Accessed">
-                        {key.accessedAt ? toLocaleDateTime(key.accessedAt) : 'never'}
+                        {key.accessedAt ? toLocaleDate(key.accessedAt) : 'never'}
                     </TableCellText>
                     <TableCellText onlyDesktop title="Expiration Date">
                         {key.expire ? toLocaleDateTime(key.expire) : 'never'}

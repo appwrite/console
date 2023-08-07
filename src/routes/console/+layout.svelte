@@ -7,7 +7,7 @@
     import Header from '$lib/layout/header.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
-    import { feedback } from '$lib/stores/app';
+    import { feedback } from '$lib/stores/feedback';
     import { log } from '$lib/stores/logs';
     import { newOrgModal } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
@@ -107,6 +107,7 @@
             icon: 'discord'
         }
     ]);
+    let isOpen = false;
 
     onMount(() => {
         loading.set(false);
@@ -148,12 +149,13 @@
 <CommandCenter />
 
 <Shell
+    bind:isOpen
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <Header slot="header" />
-    <SideNavigation slot="side" />
+    <SideNavigation slot="side" bind:isOpen />
     <slot />
     <Footer slot="footer" />
 </Shell>

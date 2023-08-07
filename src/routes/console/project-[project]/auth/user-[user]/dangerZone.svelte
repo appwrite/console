@@ -17,6 +17,8 @@
     import { user } from './store';
     import { goto } from '$app/navigation';
     import { project } from '../../store';
+    import { toLocaleDate } from '$lib/helpers/date';
+    $: accessedAt = ($user as unknown as { accessedAt: string }).accessedAt;
 </script>
 
 <CardGrid danger>
@@ -54,6 +56,7 @@
                     ? [$user.email, $user.phone].join(',')
                     : $user.email || $user.phone}
             </p>
+            <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
         </Box>
     </svelte:fragment>
 
