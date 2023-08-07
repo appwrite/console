@@ -6,6 +6,7 @@
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import InputText from '$lib/elements/forms/inputText.svelte';
     import { WizardStep } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import Repositories from '../components/repositories.svelte';
     import { installation, repository, templateConfig } from '../store';
@@ -26,6 +27,11 @@
                 $templateConfig.repositoryPrivate
             );
             $repository = repo;
+
+            addNotification({
+                type: 'success',
+                message: 'Repository successfully created.'
+            });
         }
 
         if (!$repository) {
