@@ -20,6 +20,11 @@
             event: 'teams'
         },
         {
+            href: `${path}/security`,
+            title: 'Security',
+            event: 'security'
+        },
+        {
             href: `${path}/templates`,
             title: 'Templates',
             hasChildren: false,
@@ -30,11 +35,6 @@
             title: 'Usage',
             hasChildren: true,
             event: 'usage'
-        },
-        {
-            href: `${path}/security`,
-            title: 'Security',
-            event: 'security'
         },
         {
             href: `${path}/settings`,

@@ -11,7 +11,7 @@
     export let localeCodes: Models.LocaleCode[];
 
     const projectId = $page.params.project;
-    let locale = 'en-us';
+    let locale = 'en';
     let loading = false;
 
     async function onLocaleChange() {

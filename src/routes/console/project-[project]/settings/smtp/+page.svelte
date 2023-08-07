@@ -146,7 +146,6 @@
                 </FormList>
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <!-- <Button text disabled={!enabled}>Send test email</Button> -->
                 <Button submit disabled={isButtonDisabled}>Update</Button>
             </svelte:fragment>
         </CardGrid>
