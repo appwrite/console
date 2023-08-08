@@ -32,22 +32,27 @@ export async function load({ params, url, parent }) {
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${url.origin}/v1`;
     const { frontImg, backImg } = getCardImgUrls(userId, endpoint);
 
-    const res = await fetch(frontImg);
+    try {
+        const res = await fetch(frontImg);
 
-    if (!res.ok) {
+        if (!res.ok) {
+            throw redirect(303, '/');
+        }
+
+        return {
+            userId: params.uid,
+            base64: {
+                front: await urlContentToDataUri(frontImg),
+                back: await urlContentToDataUri(backImg)
+            },
+            isOwner: account && account.$id === userId,
+            imgUrls: {
+                frontImg,
+                backImg
+            }
+        };
+    } catch (e) {
+        console.error(e);
         throw redirect(303, '/');
     }
-
-    return {
-        userId: params.uid,
-        base64: {
-            front: await urlContentToDataUri(frontImg),
-            back: await urlContentToDataUri(backImg)
-        },
-        isOwner: account && account.$id === userId,
-        imgUrls: {
-            frontImg,
-            backImg
-        }
-    };
 }
