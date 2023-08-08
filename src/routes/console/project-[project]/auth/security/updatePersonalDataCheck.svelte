@@ -13,17 +13,9 @@
 
     async function updatePersonalDataCheck() {
         try {
-            const path = '/projects/' + $project.$id + '/auth/personal-data';
-            await sdk.forConsole.client.call(
-                'PATCH',
-                new URL(sdk.forConsole.client.config.endpoint + path),
-                {
-                    'content-type': 'application/json'
-                },
-                {
-                    projectId: $project.$id,
-                    enabled: authPersonalDataCheck
-                }
+            await sdk.forConsole.projects.updatePersonalDataCheck(
+                $project.$id,
+                authPersonalDataCheck
             );
             await invalidate(Dependencies.PROJECT);
             addNotification({
