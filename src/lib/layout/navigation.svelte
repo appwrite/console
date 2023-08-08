@@ -1,10 +1,15 @@
 <script lang="ts">
+    import { beforeNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { isMac } from '$lib/helpers/platform';
     import { slide } from '$lib/helpers/transition';
+    import { wizard } from '$lib/stores/wizard';
+    import Create from '$routes/console/feedbackWizard.svelte';
+
+    export let isOpen = false;
 
     $: project = $page.params.project;
     $: projectPath = `${base}/console/project-${project}`;
@@ -27,6 +32,15 @@
             narrow = !narrow;
         }
     }
+
+    function openWizard() {
+        isOpen = false;
+        wizard.start(Create);
+    }
+
+    beforeNavigate(() => {
+        wizard.hide();
+    });
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
@@ -122,6 +136,24 @@
                                 <span class="text">Storage</span>
                             </a>
                         </li>
+                        <li class="drop-list-item is-only-mobile">
+                            <a
+                                class="drop-button"
+                                href={`${projectPath}/settings`}
+                                on:click={() => trackEvent('click_menu_settings')}
+                                class:is-selected={$page.url.pathname.startsWith(
+                                    `${projectPath}/settings`
+                                )}
+                                title="Settings"
+                                use:tooltip={{
+                                    content: 'Settings',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
+                                <span class="icon-cog" aria-hidden="true" />
+                                <span class="text">Settings</span>
+                            </a>
+                        </li>
                     </ul>
                 </section>
             </div>
@@ -129,7 +161,7 @@
             <div class="side-nav-bottom">
                 <section class="drop-section">
                     <a
-                        class="drop-button"
+                        class="drop-button is-only-desktop"
                         href={`${projectPath}/settings`}
                         on:click={() => trackEvent('click_menu_settings')}
                         class:is-selected={$page.url.pathname.startsWith(`${projectPath}/settings`)}
@@ -142,6 +174,13 @@
                         <span class="icon-cog" aria-hidden="true" />
                         <span class="text">Settings</span>
                     </a>
+                    <ul class="drop-list is-only-mobile">
+                        <li class="drop-list-item">
+                            <button class="drop-button" on:click={openWizard}>
+                                <span class="text">Feedback</span>
+                            </button>
+                        </li>
+                    </ul>
                 </section>
             </div>
         {/if}

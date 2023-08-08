@@ -64,14 +64,14 @@
                         </div>
                     </svelte:fragment>
                     <svelte:fragment slot="icons">
-                        {#if func.scheduleNext}
+                        {#if func.schedule}
                             <li>
                                 <span
                                     class="icon-clock"
                                     aria-hidden="true"
                                     use:tooltip={{
                                         content: `Next execution: 
-                                        ${toLocaleDateTime(func.scheduleNext)}`
+                                        ${toLocaleDateTime(func.schedule)}`
                                     }} />
                             </li>
                         {/if}

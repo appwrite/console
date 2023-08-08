@@ -3,10 +3,18 @@
     import { onMount } from 'svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
+    import { organizationList } from '$lib/stores/organization';
     import { project } from '../store';
     import { services, type Service } from '$lib/stores/project-services';
     import { CardGrid, CopyInput, Box, Heading } from '$lib/components';
-    import { Button, Form, FormList, InputText, InputSwitch } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputText,
+        InputSwitch,
+        InputSelect
+    } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -14,14 +22,22 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import EnableAllServices from './enableAllServices.svelte';
+    import DisableAllServices from './disableAllServices.svelte';
+    import Transfer from './transferProject.svelte';
 
     let name: string = null;
+    let teamId: string = null;
     let showDelete = false;
+    let showTransfer = false;
     const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
+    let showDisableAll = false;
+    let showEnableAll = false;
 
     onMount(async () => {
         name ??= $project.name;
+        teamId ??= $project.teamId;
     });
 
     async function updateName() {
@@ -39,6 +55,51 @@
                 message: error.message
             });
             trackError(error, Submit.ProjectUpdateName);
+        }
+    }
+
+    async function toggleAllServices(status: boolean) {
+        if (status && !showEnableAll) {
+            showEnableAll = true;
+            return;
+        }
+        if (!status && !showDisableAll) {
+            showDisableAll = true;
+            return;
+        }
+
+        try {
+            const path = '/projects/' + $project.$id + '/service/all';
+            await sdk.forConsole.client.call(
+                'PATCH',
+                new URL(sdk.forConsole.client.config.endpoint + path),
+                {
+                    'X-Appwrite-Project': sdk.forConsole.client.config.project,
+                    'content-type': 'application/json'
+                },
+                {
+                    status: status
+                }
+            );
+            invalidate(Dependencies.PROJECT);
+            addNotification({
+                type: 'success',
+                message:
+                    'All services for ' +
+                    $project.name +
+                    ' has been ' +
+                    (status ? 'enabled.' : 'disabled.')
+            });
+            trackEvent(Submit.ProjectService);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.ProjectService);
+        } finally {
+            showDisableAll = false;
+            showEnableAll = false;
         }
     }
 
@@ -120,8 +181,18 @@
                 services are not accessible to client SDKs but remain accessible to server SDKs.
             </p>
             <svelte:fragment slot="aside">
+                <ul class="buttons-list u-main-end">
+                    <li class="buttons-list-item">
+                        <Button text={true} on:click={() => toggleAllServices(true)}
+                            >Enable all</Button>
+                    </li>
+                    <li class="buttons-list-item">
+                        <Button text={true} on:click={() => toggleAllServices(false)}
+                            >Disable all</Button>
+                    </li>
+                </ul>
                 <FormList>
-                    <form class="form">
+                    <form class="form card-separator">
                         <ul class="form-list is-multiple">
                             {#each $services.list as service}
                                 <InputSwitch
@@ -137,7 +208,30 @@
                 </FormList>
             </svelte:fragment>
         </CardGrid>
+        <CardGrid>
+            <Heading tag="h6" size="7">Transfer project</Heading>
+            <p class="text">Transfer your project to another organization that you own.</p>
 
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputSelect
+                        id="organization"
+                        label="Available organizations"
+                        bind:value={teamId}
+                        options={$organizationList.teams.map((team) => ({
+                            value: team.$id,
+                            label: team.name
+                        }))} />
+                </FormList>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button
+                    secondary
+                    disabled={teamId === $project.teamId}
+                    on:click={() => (showTransfer = true)}>Transfer</Button>
+            </svelte:fragment>
+        </CardGrid>
         <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Delete Project</Heading>
@@ -163,3 +257,11 @@
 </Container>
 
 <Delete bind:showDelete />
+<DisableAllServices handleDisableAll={() => toggleAllServices(false)} bind:show={showDisableAll} />
+<EnableAllServices handleEnableAll={() => toggleAllServices(true)} bind:show={showEnableAll} />
+{#if teamId}
+    <Transfer
+        bind:teamId
+        teamName={$organizationList.teams.find((t) => t.$id == teamId).name}
+        bind:show={showTransfer} />
+{/if}
