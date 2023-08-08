@@ -141,7 +141,7 @@
                                 <DropListLink
                                     href={`${base}/console/account`}
                                     on:click={() => (showDropdown = false)}>
-                                    Your Account
+                                    Your account
                                 </DropListLink>
                                 <DropListItem
                                     icon="logout-right"
@@ -149,7 +149,7 @@
                                         showDropdown = false;
                                         logout();
                                     }}>
-                                    Sign Out
+                                    Sign out
                                 </DropListItem>
                             </ul>
                         </section>
