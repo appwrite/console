@@ -15,8 +15,6 @@
     import { loading } from '../store';
     import Create from './createOrganization.svelte';
 
-    export let data;
-
     let isOpen = false;
 
     onMount(() => {
