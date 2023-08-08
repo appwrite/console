@@ -184,7 +184,7 @@
             </div>
         {/if}
         {#if browser}
-            <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} {userId} />
+            <Card bind:active={cardActive} bind:isFlipped={cardIsFlipped} />
         {/if}
     </div>
     {#if cardActive}
