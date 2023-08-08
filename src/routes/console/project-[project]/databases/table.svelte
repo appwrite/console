@@ -6,8 +6,7 @@
     import { Id, Modal } from '$lib/components';
     import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
     import { Dependencies } from '$lib/constants';
-    import Button from '$lib/elements/forms/button.svelte';
-    import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
+    import { Button } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
@@ -16,11 +15,10 @@
         TableCellText,
         TableHeader,
         TableRowLink,
-        TableScroll
+        TableScroll,
+        TableCellCheck
     } from '$lib/elements/table';
-    import { toggle } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { isHTMLInputElement } from '$lib/helpers/types';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
@@ -73,25 +71,7 @@
         {#each data.databases.databases as database}
             <TableRowLink
                 href={`${base}/console/project-${projectId}/databases/database-${database.$id}`}>
-                <TableCell>
-                    <InputCheckbox
-                        id="select-{database.$id}"
-                        value={selected.includes(database.$id)}
-                        on:click={(e) => {
-                            // Prevent the link from being followed
-                            e.preventDefault();
-                            const el = e.currentTarget;
-                            if (!isHTMLInputElement(el)) return;
-
-                            selected = toggle(selected, database.$id);
-
-                            // Hack to make sure the checkbox is checked, independent of the
-                            // preventDefault() call above
-                            window.setTimeout(() => {
-                                el.checked = selected.includes(database.$id);
-                            });
-                        }} />
-                </TableCell>
+                <TableCellCheck bind:selectedIds={selected} id={database.$id} />
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}

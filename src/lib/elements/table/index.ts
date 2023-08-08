@@ -13,3 +13,4 @@ export { default as TableCellHeadCheck } from './cellHeadCheck.svelte';
 export { default as TableCellLink } from './cellLink.svelte';
 export { default as TableCellAvatar } from './cellAvatar.svelte';
 export { default as TableCellText } from './cellText.svelte';
+export { default as TableCellCheck } from './cellCheck.svelte';
