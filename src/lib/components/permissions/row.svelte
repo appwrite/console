@@ -39,7 +39,7 @@
         {:else if role === 'any'}
             <div>Any</div>
         {:else if !role.startsWith('user') && !role.startsWith('team') }
-            <div>Users/Verfified</div>
+            <div>{role}</div>
         {:else}
             <div
                 class="u-trim-1"
