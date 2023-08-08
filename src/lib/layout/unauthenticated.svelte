@@ -13,6 +13,9 @@
     import { isCloud } from '$lib/system';
     import { onDestroy } from 'svelte';
 
+    export let imgLight = LoginLight;
+    export let imgDark = LoginDark;
+
     const technologies = [
         'js',
         'flutter',
