@@ -9,7 +9,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    const projectId = $project.$id;
     let authPersonalDataCheck = $project.authPersonalDataCheck ?? false;
 
     async function updatePersonalDataCheck() {
@@ -22,7 +21,7 @@
                     'content-type': 'application/json'
                 },
                 {
-                    projectId,
+                    projectId: $project.$id,
                     enabled: authPersonalDataCheck
                 }
             );
