@@ -112,9 +112,9 @@
                 class="container u-margin-block-start-20 is-no-mobile u-flex u-main-center"
                 style="--p-container-max-size: var(--container-size-large);">
                 {#if $app.themeInUse === 'dark'}
-                    <img src={LoginDark} alt="" class="u-only-dark" />
+                    <img src={imgDark} alt="" class="u-only-dark" />
                 {:else}
-                    <img src={LoginLight} alt="" class="u-only-light" />
+                    <img src={imgLight} alt="" class="u-only-light" />
                 {/if}
             </div>
 
