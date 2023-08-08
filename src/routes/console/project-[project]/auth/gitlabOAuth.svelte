@@ -70,9 +70,7 @@
         <div>
             <p>URI</p>
             <CopyInput
-                value={`${
-                    sdk.forConsole.client.config.endpoint
-                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+                value={`${sdk.forConsole.client.config.endpoint}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">
@@ -81,7 +79,7 @@
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
-                !(appId && clientSecret && endpoint)}
+                !(appId && clientSecret)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

@@ -32,6 +32,7 @@
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
     import Create from './create.svelte';
+    import Rebuild from './rebuild.svelte';
     import Activate from './activate.svelte';
     import { browser } from '$app/environment';
     import { sdk } from '$lib/stores/sdk';
@@ -45,6 +46,7 @@
     let showDropdown = [];
     let showDelete = false;
     let showActivate = false;
+    let showRebuild = false;
 
     let selectedDeployment: Models.Deployment = null;
     let activeDeployment: Models.Deployment = null;
@@ -63,6 +65,12 @@
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
+
+    function handleRebuild() {
+        invalidate(Dependencies.DEPLOYMENTS);
+    }
+
+    $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
 
     if (browser) {
         sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
@@ -226,6 +234,17 @@
                                                 }}>
                                                 Activate
                                             </DropListItem>
+                                            {#if 'failed' === deployment.status}
+                                                <DropListItem
+                                                    icon="refresh"
+                                                    on:click={() => {
+                                                        selectedDeployment = deployment;
+                                                        showRebuild = true;
+                                                        showDropdown = [];
+                                                    }}>
+                                                    Retry Build
+                                                </DropListItem>
+                                            {/if}
                                             <DropListItem
                                                 icon="terminal"
                                                 on:click={() => {
@@ -292,4 +311,5 @@
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
     <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
+    <Rebuild {selectedDeployment} bind:showRebuild on:rebuild={handleRebuild} />
 {/if}

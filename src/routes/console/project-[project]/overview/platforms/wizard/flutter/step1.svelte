@@ -65,7 +65,7 @@
         },
         [Platform.Web]: {
             name: 'My Web App',
-            hostname: 'com.company.appname',
+            hostname: 'localhost',
             tooltip:
                 'The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required.'
         },

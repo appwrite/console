@@ -3,13 +3,13 @@
     import { page } from '$app/stores';
     import { Id } from '$lib/components';
     import {
-        Table,
         TableBody,
         TableCell,
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRowLink
+        TableRowLink,
+        TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { PageData } from './$types';
@@ -19,7 +19,7 @@
     const projectId = $page.params.project;
 </script>
 
-<Table>
+<TableScroll>
     <TableHeader>
         {#each $columns as column}
             {#if column.show}
@@ -55,4 +55,4 @@
             </TableRowLink>
         {/each}
     </TableBody>
-</Table>
+</TableScroll>

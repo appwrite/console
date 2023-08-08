@@ -1,26 +1,20 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import {
-        AvatarInitials,
-        DropList,
-        DropListItem,
-        DropListLink,
-        FeedbackGeneral,
-        FeedbackNPS
-    } from '$lib/components';
+    import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
+    import { app } from '$lib/stores/app';
+    import { user } from '$lib/stores/user';
+    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { app, feedback } from '$lib/stores/app';
-    import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
-    import { user } from '$lib/stores/user';
-
-    import { goto } from '$app/navigation';
+    import { slide } from 'svelte/transition';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
-    import { slide } from 'svelte/transition';
+    import { goto } from '$app/navigation';
+    import { feedback } from '$lib/stores/feedback';
+    import { Feedback } from '$lib/components/feedback';
     import { isCloud } from '$lib/system';
 
     let showFeedback = false;
@@ -90,11 +84,7 @@
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
-                {#if $feedback.type === 'nps'}
-                    <FeedbackNPS />
-                {:else}
-                    <FeedbackGeneral />
-                {/if}
+                <Feedback />
             </svelte:fragment>
         </DropList>
         <a
