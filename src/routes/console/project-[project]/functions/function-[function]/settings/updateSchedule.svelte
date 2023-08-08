@@ -1,0 +1,71 @@
+<script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button, Form, FormList, InputCron } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import { func } from '../store';
+
+    const functionId = $page.params.function;
+    let functionSchedule: string = null;
+
+    onMount(async () => {
+        functionSchedule ??= $func.schedule;
+    });
+
+    async function updateSchedule() {
+        try {
+            await sdk.forProject.functions.update(
+                functionId,
+                $func.name,
+                $func.execute || undefined,
+                $func.events || undefined,
+                functionSchedule,
+                $func.timeout || undefined,
+                $func.enabled
+            );
+            await invalidate(Dependencies.FUNCTION);
+            addNotification({
+                type: 'success',
+                message: 'Cron Schedule has been updated'
+            });
+            trackEvent(Submit.FunctionUpdateSchedule);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.FunctionUpdateSchedule);
+        }
+    }
+</script>
+
+<Form onSubmit={updateSchedule}>
+    <CardGrid>
+        <Heading tag="h6" size="7">Schedule</Heading>
+        <p>
+            Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
+                href="https://appwrite.io/docs/functions#scheduled-execution"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">
+                More details on Cron syntax here.</a>
+        </p>
+        <svelte:fragment slot="aside">
+            <FormList>
+                <InputCron
+                    bind:value={functionSchedule}
+                    label="Schedule (Cron Syntax)"
+                    id="schedule" />
+            </FormList>
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button disabled={$func.schedule === functionSchedule} submit>Update</Button>
+        </svelte:fragment>
+    </CardGrid>
+</Form>

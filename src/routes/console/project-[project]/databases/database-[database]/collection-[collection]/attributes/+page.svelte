@@ -84,7 +84,7 @@
                                                 aria-hidden="true" />
                                         {/if}
                                     </div>
-                                    <span class="text u-trim" data-private>{attribute.key}</span>
+                                    <span class="text u-trim-1" data-private>{attribute.key}</span>
                                 </div>
                                 {#if attribute.status !== 'available'}
                                     <Pill
@@ -180,7 +180,7 @@
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Check out our documentation.
+                    Need a hand? Learn more in our documentation.
                 </p>
             </div>
             <div class="u-flex u-gap-16 u-main-center">

@@ -1,10 +1,14 @@
 <script lang="ts">
     import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { toLocaleDate } from '$lib/helpers/date';
     import DeleteUser from './deleteUser.svelte';
     import { user } from './store';
 
     let showDelete = false;
+
+    // TODO: Remove this when the console SDK is updated
+    $: accessedAt = ($user as unknown as { accessedAt: string }).accessedAt;
 </script>
 
 <CardGrid danger>
@@ -42,6 +46,7 @@
                     ? [$user.email, $user.phone].join(',')
                     : $user.email || $user.phone}
             </p>
+            <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
         </Box>
     </svelte:fragment>
 
