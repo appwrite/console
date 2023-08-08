@@ -19,8 +19,9 @@
     },
     "dependencies": {
         "@analytics/google-analytics": "^1.0.5",
-        "@appwrite.io/console": "0.1.0",
-        "@appwrite.io/pink": "^0.0.6-rc.11",
+        "@appwrite.io/pink": "^0.0.6-rc.14",
+        "@appwrite.io/console": "0.2.0",
+        "@analytics/google-tag-manager": "^0.5.3",
         "@popperjs/core": "^2.11.6",
         "@sentry/svelte": "^7.44.2",
         "@sentry/tracing": "^7.44.2",
@@ -30,6 +31,7 @@
         "logrocket": "^3.0.1",
         "pretty-bytes": "^6.1.0",
         "prismjs": "^1.29.0",
+        "svelte-confetti": "^1.2.2",
         "tippy.js": "^6.3.7",
         "web-vitals": "^3.1.1"
     },

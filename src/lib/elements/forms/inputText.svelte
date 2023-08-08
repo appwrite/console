@@ -16,6 +16,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let fullWidth = false;
     export let maxlength: number = null;
     export let tooltip: string = null;
 
@@ -58,7 +59,7 @@
     $: showNullCheckbox = nullable && !required;
 </script>
 
-<FormItem>
+<FormItem {fullWidth}>
     <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
         {label}
     </Label>
