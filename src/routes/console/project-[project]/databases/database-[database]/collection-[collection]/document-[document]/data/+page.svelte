@@ -13,7 +13,7 @@
     import { collection, type Attributes } from '../../store';
     import { Container } from '$lib/layout';
     import AttributeItem from '../attributeItem.svelte';
-    import { difference, symmetricDifference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { isRelationship, isRelationshipToMany } from '../attributes/store';
 
     const databaseId = $page.params.database;
@@ -77,7 +77,7 @@
         const docAttribute = $doc?.[attribute.key];
 
         if (attribute.array) {
-            return !difference(Array.from(workAttribute), Array.from(docAttribute)).length;
+            return !symmetricDifference(Array.from(workAttribute), Array.from(docAttribute)).length;
         }
 
         if (isRelationship(attribute)) {
