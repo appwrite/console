@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { beforeNavigate, goto } from '$app/navigation';
+    import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/stores';
     import { INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
