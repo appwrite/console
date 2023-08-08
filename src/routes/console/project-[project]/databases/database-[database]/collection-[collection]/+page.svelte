@@ -41,7 +41,7 @@
 </script>
 
 <Container>
-    <div class="cool-grid u-main-justify-between u-cross-center">
+    <div class="heading-grid u-main-justify-between u-cross-center">
         <Heading tag="h2" size="5">Documents</Heading>
 
         <Filters />
@@ -110,7 +110,7 @@
 <CreateAttribute bind:showCreate={showCreateAttribute} selectedOption={selectedAttribute} />
 
 <style lang="scss">
-    .cool-grid {
+    .heading-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;

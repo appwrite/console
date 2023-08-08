@@ -241,7 +241,7 @@
             </Button>
         </form>
 
-        <ul class="tags">
+        <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
             {#each $tags as tag (tag)}
                 <button
                     class="tag"
@@ -285,13 +285,6 @@
     }
 
     .tags {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-
-        margin-block-start: 1rem;
-
         :global(b) {
             font-weight: bold;
         }

@@ -112,9 +112,10 @@
             {/each}
 
             <p class="u-text-center u-margin-block-start-24">
-                Signed in as test@test.com <button
-                    class="u-bold"
-                    on:click|preventDefault={deauthorizeGoogle}>Sign Out?</button>
+                Signed in
+                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>
+                    Sign Out?
+                </button>
             </p>
         {/if}
         <button
