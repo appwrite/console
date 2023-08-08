@@ -81,6 +81,7 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
+                $func.runtime,
                 entrypoint,
                 $func.execute || undefined,
                 $func.events || undefined,

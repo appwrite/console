@@ -9,26 +9,31 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
-    import { Roles } from '$lib/components/permissions';
-    import { symmetricDifference } from '$lib/helpers/array';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
     const functionId = $page.params.function;
+    let runtime: string = null;
 
-    let arePermsDisabled = true;
-    let permissions: string[] = [];
+    let options = [];
 
     onMount(async () => {
-        permissions = $func.execute;
+        runtime ??= $func.runtime;
+
+        let runtimes = await sdk.forProject.functions.listRuntimes();
+        options = runtimes.runtimes.map((runtime) => ({
+            label: `${runtime.name} - ${runtime.version}`,
+            value: runtime.$id
+        }));
     });
 
-    async function updatePermissions() {
+    async function updateName() {
         try {
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.runtime,
+                runtime,
                 $func.entrypoint || undefined,
-                permissions,
+                $func.execute || undefined,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
@@ -43,45 +48,38 @@
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'Permissions have been updated',
+                message: 'Runtime has been updated',
                 type: 'success'
             });
-            trackEvent(Submit.FunctionUpdatePermissions);
+            trackEvent(Submit.FunctionUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.FunctionUpdatePermissions);
+            trackError(error, Submit.FunctionUpdateName);
         }
-    }
-
-    $: if (permissions) {
-        if (symmetricDifference(permissions, $func.execute).length) {
-            arePermsDisabled = false;
-        } else arePermsDisabled = true;
     }
 </script>
 
-<Form onSubmit={updatePermissions}>
+<Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Execute Access</Heading>
-        <p>
-            Choose who can execute this function using the client API. For more information, check
-            out the <a
-                href="https://appwrite.io/docs/permissions"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">
-                Permissions Guide
-            </a>.
-        </p>
+        <Heading tag="h6" size="7">Runtime</Heading>
+
         <svelte:fragment slot="aside">
-            <Roles bind:roles={permissions} />
+            <ul>
+                <InputSelect
+                    label="Runtime"
+                    id="runtime"
+                    placeholder="Select runtime"
+                    bind:value={runtime}
+                    {options}
+                    required />
+            </ul>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={arePermsDisabled} submit>Update</Button>
+            <Button disabled={runtime === $func.runtime} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

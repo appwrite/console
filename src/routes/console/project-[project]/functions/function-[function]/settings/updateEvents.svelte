@@ -32,6 +32,7 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
+                $func.runtime,
                 $func.entrypoint || undefined,
                 $func.execute || undefined,
                 Array.from($eventSet),

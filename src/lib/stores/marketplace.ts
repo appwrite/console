@@ -45,7 +45,15 @@ export const marketplace = [
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
         providerBranch: 'main',
-        variables: []
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn More</a>`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: false
+            }
+        ]
     },
     {
         icon: 'icon-open-ai',

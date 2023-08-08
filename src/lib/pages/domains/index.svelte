@@ -126,9 +126,11 @@
                                     aria-hidden="true"
                                     style="color: hsl(var(--color-success-100))" />
                                 <span>Generated</span>
-                                <span style="color: hsl(var(--color-neutral-70));">
-                                    Auto-renewal: {toLocaleDate(domain.renewAt)}
-                                </span>
+                                {#if domain.renewAt}
+                                    <span style="color: hsl(var(--color-neutral-70));">
+                                        Auto-renewal: {toLocaleDate(domain.renewAt)}
+                                    </span>
+                                {/if}
                             </div>
                         {:else}
                             <div class="u-flex u-gap-8 u-cross-center">
