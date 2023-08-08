@@ -36,6 +36,7 @@
     import Activate from './activate.svelte';
     import { browser } from '$app/environment';
     import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
     import { onMount } from 'svelte';
