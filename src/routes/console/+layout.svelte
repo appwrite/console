@@ -21,15 +21,6 @@
     onMount(() => {
         loading.set(false);
 
-        // Check if user already viewed cloud hackathon page
-        // if (isCloud) {
-        //     const viewed = localStorage.getItem('cloud-hackathon-viewed');
-        //     if (viewed !== data.account.$id) {
-        //         localStorage.setItem('cloud-hackathon-viewed', data.account.$id);
-        //         goto('/hackathon');
-        //     }
-        // }
-
         setInterval(() => {
             checkForFeedback(INTERVAL);
         }, INTERVAL);
