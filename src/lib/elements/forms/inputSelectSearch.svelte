@@ -23,6 +23,7 @@
     export let fullWidth = false;
     export let autofocus = false;
     export let interactiveOutput = false;
+    // stretch is used inside of a flex container to give the element flex:1
     export let stretch = true;
     export let search = '';
     // The actual selected value

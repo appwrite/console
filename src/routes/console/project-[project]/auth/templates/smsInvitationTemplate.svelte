@@ -17,7 +17,7 @@
     async function onLocaleChange() {
         const timeout = setTimeout(() => {
             loading = true;
-        }, 1);
+        }, 1000);
         try {
             const template = await loadSmsTemplate(projectId, 'invitation', locale);
             clearTimeout(timeout);

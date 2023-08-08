@@ -120,6 +120,7 @@
                 <CollapsibleItem
                     bind:open={emailVerificationOpen}
                     on:click={(e) => {
+                        // preventing default and propagation to open the collapsible correctly
                         e.preventDefault();
                         e.stopImmediatePropagation();
                         openEmail('verification');
