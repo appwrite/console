@@ -17,12 +17,13 @@ let client = Client()
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Let's get coding</svelte:fragment>
+    <svelte:fragment slot="title">Initialize SDK</svelte:fragment>
 
     <h2 class="heading-level-7">Initialize your SDK</h2>
     <p>
         Initialize your SDK by pointing the client to your Appwrite project using your <Id
-            value={project}>Project ID</Id>
+            value={project}>Project ID</Id
+        >.
     </p>
     <Code label="Apple SDK" labelIcon="apple" language="swift" {code} withCopy withLineNumbers />
     <p class="u-margin-block-start-24">

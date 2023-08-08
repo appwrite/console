@@ -18,7 +18,8 @@ client
     <h2 class="heading-level-7">Initialize your SDK</h2>
     <p>
         Initialize your SDK by pointing the client to your Appwrite project using your <Id
-            value={project}>Project ID</Id>
+            value={project}>Project ID</Id
+        >.
     </p>
     <Code label="Web SDK" labelIcon="code" language="js" {code} withCopy withLineNumbers />
 </WizardStep>

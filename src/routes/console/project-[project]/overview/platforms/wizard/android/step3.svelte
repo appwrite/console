@@ -15,12 +15,13 @@ val client = Client(context)
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Let's get coding</svelte:fragment>
+    <svelte:fragment slot="title">Initialize</svelte:fragment>
 
     <h2 class="heading-level-7">Initialize your SDK</h2>
     <p>
         Initialize your SDK by pointing the client to your Appwrite project using your <Id
-            value={project}>Project ID</Id>
+            value={project}>Project ID</Id
+        >.
     </p>
     <Code
         label="Android SDK"

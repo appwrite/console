@@ -18,7 +18,7 @@ client
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Let's get coding</svelte:fragment>
+    <svelte:fragment slot="title">Initialize SDK</svelte:fragment>
 
     <h2 class="heading-level-7">Initialize your SDK</h2>
     <p>
