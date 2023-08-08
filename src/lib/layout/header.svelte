@@ -17,7 +17,6 @@
     import { Feedback } from '$lib/components/feedback';
     import { isCloud } from '$lib/system';
 
-    let showFeedback = false;
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
 

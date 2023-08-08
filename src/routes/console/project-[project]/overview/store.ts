@@ -6,11 +6,11 @@ import { writable, type Writable } from 'svelte/store';
 export const usage = cachedStore<
     Models.UsageProject,
     {
-        load: (projectId: string, range: string) => Promise<void>;
+        load: (range: string) => Promise<void>;
     }
 >('projectUsage', function ({ set }) {
     return {
-        load: async (projectId, range) => {
+        load: async (range) => {
             const usages = await sdk.forProject.project.getUsage(range);
             set(usages);
         }
