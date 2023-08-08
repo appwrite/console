@@ -6,6 +6,7 @@
 
     export let submit = false;
     export let secondary = false;
+    export let github = false;
     export let text = false;
     export let danger = false;
     export let disabled = false;
@@ -44,6 +45,7 @@
         class:is-disabled={disabled}
         class:is-only-icon={round}
         class:is-secondary={secondary}
+        class:is-github={github}
         class:is-text={text}
         class:is-danger={danger}
         class:is-full-width={fullWidth}
@@ -59,6 +61,7 @@
         class="button"
         class:is-only-icon={round}
         class:is-secondary={secondary}
+        class:is-github={github}
         class:is-danger={danger}
         class:is-text={text}
         class:is-full-width={fullWidth}
@@ -68,3 +71,17 @@
         <slot />
     </button>
 {/if}
+
+<style lang="scss">
+    .is-github {
+        background-color: #373b4d;
+
+        &:hover {
+            background-color: lighten($color: #373b4d, $amount: 2.5);
+        }
+
+        &:active {
+            background-color: darken($color: #373b4d, $amount: 5);
+        }
+    }
+</style>
