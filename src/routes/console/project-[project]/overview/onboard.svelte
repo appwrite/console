@@ -98,7 +98,7 @@
     <section class="common-section grid-1-2">
         <div class="grid-1-2-col-1">
             <h3 class="heading-level-7">Integrate With Your Server</h3>
-            <p class="u-line-height-1-5  u-margin-block-start-16">
+            <p class="u-line-height-1-5 u-margin-block-start-16">
                 Appwrite is designed to adapt to your existing backend. Integrate Appwrite with your
                 backend code base using Server SDKs or Webhooks.
             </p>
