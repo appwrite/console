@@ -1,5 +1,10 @@
 export const toLocaleDate = (datetime: string) => {
     const date = new Date(datetime);
+
+    if (isNaN(date.getTime())) {
+        return 'n/a';
+    }
+
     const options: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'short',
@@ -11,6 +16,11 @@ export const toLocaleDate = (datetime: string) => {
 
 export const toLocaleDateTime = (datetime: string | number) => {
     const date = new Date(datetime);
+
+    if (isNaN(date.getTime())) {
+        return 'n/a';
+    }
+
     const options: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'short',

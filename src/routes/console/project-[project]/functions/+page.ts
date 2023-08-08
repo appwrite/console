@@ -13,10 +13,6 @@ export const load: PageLoad = async ({ url, depends, route }) => {
     return {
         offset,
         limit,
-        functions: await sdk.forProject.functions.list([
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc('$createdAt')
-        ])
+        functions: await sdk.forProject.functions.list([Query.limit(limit), Query.offset(offset)])
     };
 };

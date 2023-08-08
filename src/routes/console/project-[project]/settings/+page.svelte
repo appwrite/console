@@ -74,6 +74,7 @@
                 'PATCH',
                 new URL(sdk.forConsole.client.config.endpoint + path),
                 {
+                    'X-Appwrite-Project': sdk.forConsole.client.config.project,
                     'content-type': 'application/json'
                 },
                 {
