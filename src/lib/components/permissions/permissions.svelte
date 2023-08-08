@@ -23,6 +23,7 @@
     import { writable, type Unsubscriber } from 'svelte/store';
     import Actions from './actions.svelte';
     import Row from './row.svelte';
+    import Table from '$lib/elements/table/table.svelte';
 
     export let withCreate = false;
     export let permissions: string[] = [];
@@ -142,7 +143,7 @@
 
 {#if [...$groups]?.length}
     <div class="table-wrapper">
-        <table class="table is-selected-columns-mobile is-remove-outer-styles" data-private>
+        <Table noMargin noStyles>
             <TableHeader>
                 <TableCellHead width={140}>Role</TableCellHead>
                 {#if withCreate}
@@ -209,7 +210,7 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </table>
+        </Table>
     </div>
 
     <Actions
