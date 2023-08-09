@@ -19,6 +19,7 @@
     import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
+    import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let data: PageData;
 
@@ -111,22 +112,26 @@
                                 {#if !isRelationshipToMany(attr)}
                                     {#if document[column.id]}
                                         {@const related = document[column.id]}
-                                        <button
-                                            class="link u-flex u-gap-4 u-padding-block-8"
-                                            type="button"
+                                        <div
+                                            tabindex="0"
+                                            class="link is-5px-offset u-trim-1 u-break-word"
+                                            role="button"
+                                            on:keyup={clickOnEnter}
                                             on:click|preventDefault|stopPropagation={() =>
                                                 goto(
                                                     `${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
                                                 )}>
                                             {#each args as arg, i}
                                                 {#if arg !== undefined}
-                                                    {i ? '|' : ''}
+                                                    {#if i}
+                                                        &nbsp;|
+                                                    {/if}
                                                     <span class="text" data-private>
                                                         {related?.[arg]}
                                                     </span>
                                                 {/if}
                                             {/each}
-                                        </button>
+                                        </div>
                                     {:else}
                                         <span class="text">n/a</span>
                                     {/if}

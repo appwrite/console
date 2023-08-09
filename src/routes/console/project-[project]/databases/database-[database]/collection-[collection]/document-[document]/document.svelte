@@ -65,7 +65,7 @@
             trackEvent(Submit.DocumentUpdate);
             disableUpdate = true;
             addNotification({
-                message: 'Document was updated!',
+                message: 'Document has been updated',
                 type: 'success'
             });
         } catch (error) {

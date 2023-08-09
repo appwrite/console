@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ url, route }) => {
         buckets: await sdk.forProject.storage.listBuckets([
             Query.limit(limit),
             Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.orderDesc('')
         ])
     };
 };
