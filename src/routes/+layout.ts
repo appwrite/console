@@ -39,7 +39,9 @@ export const load: LayoutLoad = async ({ depends, url }) => {
             '/invite',
             '/auth/magic-url',
             '/auth/oauth2/success',
-            '/auth/oauth2/failure'
+            '/auth/oauth2/failure',
+            '/card',
+            '/hackathon'
         ];
 
         if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {

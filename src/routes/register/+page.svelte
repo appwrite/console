@@ -15,26 +15,37 @@
     import { Unauthenticated } from '$lib/layout';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
 
-    let name: string, mail: string, pass: string;
+    let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
 
     async function register() {
         try {
+            disabled = true;
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdk.forConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             await goto(`${base}/console`);
             trackEvent(Submit.AccountCreate);
         } catch (error) {
+            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
             trackError(error, Submit.AccountCreate);
         }
+    }
+
+    function onGithubLogin() {
+        sdk.forConsole.account.createOAuth2Session(
+            'github',
+            window.location.origin,
+            window.location.origin,
+            ['read:user', 'user:email']
+        );
     }
 </script>
 
@@ -51,20 +62,21 @@
                     id="name"
                     label="Name"
                     placeholder="Your name"
-                    autofocus={true}
+                    autofocus
+                    required
                     bind:value={name} />
                 <InputEmail
                     id="email"
                     label="Email"
                     placeholder="Your email"
-                    required={true}
+                    required
                     bind:value={mail} />
                 <InputPassword
                     id="password"
                     label="Password"
                     placeholder="Your password"
-                    required={true}
-                    showPasswordButton={true}
+                    required
+                    showPasswordButton
                     bind:value={pass} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <a
@@ -81,7 +93,14 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <FormItem>
-                    <Button fullWidth submit>Sign up</Button>
+                    <Button fullWidth submit {disabled}>Sign up</Button>
+                </FormItem>
+                <span class="with-separators eyebrow-heading-3">or</span>
+                <FormItem>
+                    <Button github fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true" />
+                        <span class="text">Sign up with GitHub</span>
+                    </Button>
                 </FormItem>
             </FormList>
         </Form>

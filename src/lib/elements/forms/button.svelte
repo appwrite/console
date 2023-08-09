@@ -6,6 +6,7 @@
 
     export let submit = false;
     export let secondary = false;
+    export let github = false;
     export let text = false;
     export let danger = false;
     export let disabled = false;
@@ -40,6 +41,7 @@
         disabled && 'is-disabled',
         round && 'is-only-icon',
         secondary && 'is-secondary',
+        github && 'is-github',
         text && 'is-text',
         danger && 'is-danger',
         fullWidth && 'is-full-width',
@@ -71,3 +73,17 @@
         <slot />
     </button>
 {/if}
+
+<style lang="scss">
+    .is-github {
+        background-color: #373b4d;
+
+        &:hover {
+            background-color: lighten($color: #373b4d, $amount: 2.5);
+        }
+
+        &:active {
+            background-color: darken($color: #373b4d, $amount: 5);
+        }
+    }
+</style>

@@ -38,7 +38,7 @@
     };
 </script>
 
-<div class="table-with-scroll {noMargin ? '' : 'u-margin-block-start-32'}" data-private>
+<div class="table-with-scroll" class:u-margin-block-start-32={!noMargin} data-private>
     <div class="table-wrapper" use:hasOverflow={(v) => (isOverflowing = v)}>
         <table class="table" class:is-sticky-scroll={isSticky && isOverflowing}>
             <slot />

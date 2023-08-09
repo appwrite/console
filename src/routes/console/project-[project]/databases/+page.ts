@@ -18,7 +18,7 @@ export const load: PageLoad = async ({ url, route, depends }) => {
         databases: await sdk.forProject.databases.list([
             Query.limit(limit),
             Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.orderDesc('')
         ])
     };
 };

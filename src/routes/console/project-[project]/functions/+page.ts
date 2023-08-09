@@ -16,7 +16,7 @@ export const load: PageLoad = async ({ url, depends, route }) => {
         functions: await sdk.forProject.functions.list([
             Query.limit(limit),
             Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.orderDesc('')
         ])
     };
 };

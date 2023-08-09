@@ -26,7 +26,7 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Register your app',
+        label: 'Register your platform',
         component: Step1
     });
     stepsComponents.set(2, {
@@ -47,8 +47,8 @@
 </script>
 
 <Wizard
-    title="Add an Android Project"
+    title="Add an Android platform"
     steps={stepsComponents}
     on:finish={onFinish}
     on:exit={onFinish}
-    finalAction="Take me to my Dashboard" />
+    finalAction="Go to dashboard" />
