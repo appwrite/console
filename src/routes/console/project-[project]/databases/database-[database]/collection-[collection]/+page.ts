@@ -19,7 +19,6 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
 
     const queries = url.searchParams.get('query');
     const parsedQueries = queryParamToMap(queries || '[]');
-    console.log(parsedQueries);
 
     return {
         offset,
