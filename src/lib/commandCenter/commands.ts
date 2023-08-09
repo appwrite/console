@@ -30,7 +30,8 @@ const groups = [
     'teams',
     'security',
     'buckets',
-    'files'
+    'files',
+    'misc'
 ] as const;
 
 export type CommandGroup = (typeof groups)[number];
@@ -290,8 +291,9 @@ export const commandGroupRanks = derived(groupRanksMap, ($groupRankTransformatio
         databases: 3,
         users: 2,
         teams: 1,
-        navigation: -1,
-        help: -2
+        navigation: -10,
+        help: -20,
+        misc: -30
     } as CommandGroupRanks;
 
     const transformations = Array.from($groupRankTransformations.values());

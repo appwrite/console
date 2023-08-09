@@ -1,17 +1,19 @@
 <script lang="ts">
-    import { Empty, Heading, PaginationWithLimit } from '$lib/components';
-    import { Container, GridHeader } from '$lib/layout';
-    import { Button } from '$lib/elements/forms';
-    import { wizard } from '$lib/stores/wizard';
-    import Create from './createDocument.svelte';
-    import type { PageData } from './$types';
-    import { collection, columns } from './store';
-    import CreateAttribute from './createAttribute.svelte';
-    import Table from './table.svelte';
-    import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/stores';
+    import { Empty, Heading, PaginationWithLimit } from '$lib/components';
+    import ViewSelector from '$lib/components/viewSelector.svelte';
+    import { Button } from '$lib/elements/forms';
+    import { Container } from '$lib/layout';
+    import { preferences } from '$lib/stores/preferences';
+    import { wizard } from '$lib/stores/wizard';
+    import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
+    import CreateAttribute from './createAttribute.svelte';
+    import Create from './createDocument.svelte';
+    import Filters from './(filters)/filters.svelte';
+    import { collection, columns } from './store';
+    import Table from './table.svelte';
 
     export let data: PageData;
 
@@ -39,21 +41,39 @@
 </script>
 
 <Container>
-    <GridHeader
-        title="Documents"
-        {columns}
-        view={data.view}
-        hideView
-        isCustomCollection
-        allowNoColumns>
-        <Button
-            disabled={!(hasAttributes && hasValidAttributes)}
-            on:click={openWizard}
-            event="create_document">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create document</span>
-        </Button>
-    </GridHeader>
+    <div class="heading-grid u-main-justify-between u-cross-center">
+        <Heading tag="h2" size="5">Documents</Heading>
+        <div class="u-flex u-main-end is-only-mobile">
+            <Button
+                disabled={!(hasAttributes && hasValidAttributes)}
+                on:click={openWizard}
+                event="create_document">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create document</span>
+            </Button>
+        </div>
+
+        <Filters />
+
+        <div class="u-flex u-main-end u-gap-16">
+            <ViewSelector
+                view={data.view}
+                {columns}
+                isCustomCollection
+                hideView
+                allowNoColumns
+                showColsTextMobile />
+            <div class="is-not-mobile">
+                <Button
+                    disabled={!(hasAttributes && hasValidAttributes)}
+                    on:click={openWizard}
+                    event="create_document">
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create document</span>
+                </Button>
+            </div>
+        </div>
+    </div>
 
     {#if hasAttributes && hasValidAttributes}
         {#if data.documents.total}
@@ -105,3 +125,17 @@
 </Container>
 
 <CreateAttribute bind:showCreate={showCreateAttribute} selectedOption={selectedAttribute} />
+
+<style lang="scss">
+    .heading-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+
+        @media (min-width: 768px) {
+            :global(h2) {
+                grid-column: span 2;
+            }
+        }
+    }
+</style>
