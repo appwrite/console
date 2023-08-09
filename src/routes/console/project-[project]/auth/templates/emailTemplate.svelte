@@ -11,11 +11,14 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
     import ResetEmail from './resetEmail.svelte';
-    import { baseEmailTemplate, emailTemplate } from './strote';
+    import { baseEmailTemplate, emailTemplate } from './store';
     import { deepEqual } from '$lib/helpers/object';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     export let loading = false;
     let openResetModal = false;
+
+    let eventType = Submit.EmailUpdateInviteTemplate;
 
     async function saveEmailTemplate() {
         if (!$emailTemplate.locale) {
@@ -26,6 +29,20 @@
             return;
         }
         try {
+            switch ($emailTemplate.type) {
+                case 'invitation':
+                    eventType = Submit.EmailUpdateInviteTemplate;
+                    break;
+                case 'magicSession':
+                    eventType = Submit.EmailUpdateMagicUrlTemplate;
+                    break;
+                case 'recovery':
+                    eventType = Submit.EmailUpdateRecoveryTemplate;
+                    break;
+                case 'verification':
+                    eventType = Submit.EmailUpdateVerificationTemplate;
+                    break;
+            }
             await sdk.forConsole.projects.updateEmailTemplate(
                 $project.$id,
                 $emailTemplate.type,
@@ -40,11 +57,16 @@
             $baseEmailTemplate = {
                 ...$emailTemplate
             };
+
             addNotification({
                 type: 'success',
                 message: `Email ${$emailTemplate.type} template for ${$emailTemplate.locale} updated`
             });
+            trackEvent(eventType, {
+                locale: $emailTemplate.locale
+            });
         } catch (e) {
+            trackError(e, eventType);
             addNotification({
                 type: 'error',
                 message: e.message

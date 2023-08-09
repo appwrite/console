@@ -1,10 +1,11 @@
 <script lang="ts">
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
     import { loadSmsTemplate } from './+page.svelte';
-    import { baseSmsTemplate, smsTemplate } from './strote';
+    import { baseSmsTemplate, smsTemplate } from './store';
 
     export let show = false;
 
@@ -24,8 +25,13 @@
                 $smsTemplate.locale
             );
             $baseSmsTemplate = { ...$smsTemplate };
+            trackEvent(Submit.SmsResetTemplate, {
+                locale: $smsTemplate.locale,
+                type: $smsTemplate.type
+            });
             show = false;
         } catch (e) {
+            trackError(e, Submit.SmsResetTemplate);
             error = e.message;
         }
     }

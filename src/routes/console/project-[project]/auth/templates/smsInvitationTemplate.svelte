@@ -2,11 +2,12 @@
     import SmsTemplate from './smsTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { baseSmsTemplate, smsTemplate } from './strote';
+    import { baseSmsTemplate, smsTemplate } from './store';
     import { page } from '$app/stores';
     import { loadSmsTemplate } from './+page.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { Id } from '$lib/components';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     export let localeCodes: Models.LocaleCode[];
 
@@ -20,16 +21,17 @@
         }, 1000);
         try {
             const template = await loadSmsTemplate(projectId, 'invitation', locale);
-            clearTimeout(timeout);
             smsTemplate.set(template);
             $baseSmsTemplate = { ...$smsTemplate };
+            trackEvent(Submit.SmsChangeLocale, { locale, type: 'invitation' });
         } catch (error) {
-            clearTimeout(timeout);
+            trackError(error, Submit.SmsChangeLocale);
             addNotification({
                 type: 'error',
                 message: error.message
             });
         } finally {
+            clearTimeout(timeout);
             loading = false;
         }
     }

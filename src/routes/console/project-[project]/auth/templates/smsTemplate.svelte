@@ -2,14 +2,17 @@
     import { page } from '$app/stores';
     import { Button, Form, FormList, InputTextarea } from '$lib/elements/forms';
     import ResetSms from './resetSms.svelte';
-    import { baseSmsTemplate, smsTemplate } from './strote';
+    import { baseSmsTemplate, smsTemplate } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { deepEqual } from '$lib/helpers/object';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     export let loading = false;
     const projectId = $page.params.project;
     let openResetModal = false;
+
+    let eventType = Submit.SmsUpdateInviteTemplate;
 
     async function saveSmsTemplate() {
         if (!$smsTemplate.locale) {
@@ -20,6 +23,17 @@
             return;
         }
         try {
+            switch ($smsTemplate.type) {
+                case 'invitation':
+                    eventType = Submit.SmsUpdateInviteTemplate;
+                    break;
+                case 'login':
+                    eventType = Submit.SmsUpdateLoginTemplate;
+                    break;
+                case 'verification':
+                    eventType = Submit.SmsUpdateVerificationTemplate;
+                    break;
+            }
             await sdk.forConsole.projects.updateSmsTemplate(
                 projectId,
                 $smsTemplate.type,
@@ -34,7 +48,11 @@
                 type: 'success',
                 message: `SMS ${$smsTemplate.type} template for ${$smsTemplate.locale} updated`
             });
+            trackEvent(eventType, {
+                locale: $smsTemplate.locale
+            });
         } catch (e) {
+            trackError(e, eventType);
             addNotification({
                 type: 'error',
                 message: e.message

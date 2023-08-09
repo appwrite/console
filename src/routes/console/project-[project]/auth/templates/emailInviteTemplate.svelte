@@ -4,9 +4,10 @@
     import type { Models } from '@appwrite.io/console';
     import { loadEmailTemplate } from './+page.svelte';
     import { page } from '$app/stores';
-    import { baseEmailTemplate, emailTemplate } from './strote';
+    import { baseEmailTemplate, emailTemplate } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Id } from '$lib/components';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     export let localeCodes: Models.LocaleCode[];
 
@@ -20,16 +21,17 @@
         }, 1000);
         try {
             const template = await loadEmailTemplate(projectId, 'invitation', locale);
-            clearTimeout(timeout);
             emailTemplate.set(template);
             $baseEmailTemplate = { ...$emailTemplate };
+            trackEvent(Submit.EmailChangeLocale, { locale, type: 'invitation' });
         } catch (error) {
-            clearTimeout(timeout);
+            trackError(error, Submit.EmailChangeLocale);
             addNotification({
                 type: 'error',
                 message: error.message
             });
         } finally {
+            clearTimeout(timeout);
             loading = false;
         }
     }

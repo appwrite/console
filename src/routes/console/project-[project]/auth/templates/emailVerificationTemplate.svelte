@@ -3,10 +3,11 @@
     import LocaleOptions from './localeOptions.svelte';
     import type { Models } from '@appwrite.io/console';
     import { loadEmailTemplate } from './+page.svelte';
-    import { baseEmailTemplate, emailTemplate } from './strote';
+    import { baseEmailTemplate, emailTemplate } from './store';
     import { page } from '$app/stores';
     import { Id } from '$lib/components';
     import { addNotification } from '$lib/stores/notifications';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     export let localeCodes: Models.LocaleCode[];
     const projectId = $page.params.project;
@@ -20,16 +21,17 @@
         }, 1000);
         try {
             const template = await loadEmailTemplate(projectId, 'verification', locale);
-            clearTimeout(timeout);
             emailTemplate.set(template);
             $baseEmailTemplate = { ...$emailTemplate };
+            trackEvent(Submit.EmailChangeLocale, { locale, type: 'verification' });
         } catch (error) {
-            clearTimeout(timeout);
+            trackError(error, Submit.EmailChangeLocale);
             addNotification({
                 type: 'error',
                 message: error.message
             });
         } finally {
+            clearTimeout(timeout);
             loading = false;
         }
     }

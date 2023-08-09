@@ -38,7 +38,7 @@
     import EmailInviteTemplate from './emailInviteTemplate.svelte';
     import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
     import SmsLoginTemplate from './smsLoginTemplate.svelte';
-    import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './strote';
+    import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
     import { Button } from '$lib/elements/forms';
 
     export let data: PageData;
@@ -91,7 +91,7 @@
                     {
                         name: 'Add SMTP server',
                         method: () => {
-                            goto(base + '/console/project-' + $project.$id + '/settings/smtp');
+                            goto(`${base}/console/project-${$project.$id}/settings/smtp`);
                         }
                     }
                 ]}>
@@ -165,7 +165,7 @@
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button href={base + '/console/project-' + $project.$id + '/settings/smtp'} secondary>
+            <Button href={`${base}/console/project-${$project.$id}/settings/smtp`} secondary>
                 Add SMTP server
             </Button>
         </svelte:fragment>
