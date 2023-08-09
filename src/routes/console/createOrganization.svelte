@@ -42,8 +42,7 @@
     }
 </script>
 
-<Modal {error} onSubmit={create} size="big" bind:show>
-    <svelte:fragment slot="title">Create New Organization</svelte:fragment>
+<Modal title="Create New Organization" {error} onSubmit={create} size="big" bind:show>
     <FormList>
         <InputText
             id="organization-name"

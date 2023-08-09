@@ -49,8 +49,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="title">Invite Member</svelte:fragment>
+<Modal title="Invite Member" {error} size="big" bind:show={showCreate} onSubmit={create}>
     <FormList>
         <InputEmail
             required

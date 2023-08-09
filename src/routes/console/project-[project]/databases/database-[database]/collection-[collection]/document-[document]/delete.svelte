@@ -61,13 +61,12 @@
 </script>
 
 <Modal
+    title="Delete Document"
     icon="exclamation"
     state="warning"
     onSubmit={handleDelete}
     bind:show={showDelete}
     headerDivider={false}>
-    <svelte:fragment slot="title">Delete Document</svelte:fragment>
-
     <p data-private>
         Are you sure you want to delete <b
             >the document from <span data-private>{$collection.name}</span></b

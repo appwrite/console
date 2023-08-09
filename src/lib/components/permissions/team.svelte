@@ -61,8 +61,7 @@
     }
 </script>
 
-<Modal bind:show onSubmit={create} on:close={reset} size="big">
-    <svelte:fragment slot="title">Select teams</svelte:fragment>
+<Modal title="Select teams" bind:show onSubmit={create} on:close={reset} size="big">
     <p class="text">
         Grant access to any member of a specific team. To grant access to team members with specific
         roles, you will need to set a <button

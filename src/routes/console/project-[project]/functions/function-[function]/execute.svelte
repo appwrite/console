@@ -63,8 +63,7 @@
     afterNavigate(close);
 </script>
 
-<Modal bind:show size="big" onSubmit={handleSubmit} on:close={close}>
-    <svelte:fragment slot="title">Execute Function</svelte:fragment>
+<Modal title="Execute Function" bind:show size="big" onSubmit={handleSubmit} on:close={close}>
     <FormList>
         <InputTextarea bind:value={data} id="data" label="Custom data (optional)" />
         <InputChoice type="switchbox" id="json" label="Show example JSON" bind:value={showJson}>

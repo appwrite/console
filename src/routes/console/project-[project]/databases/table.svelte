@@ -115,13 +115,13 @@
 </FloatingActionBar>
 
 <Modal
+    title="Delete Database"
     icon="exclamation"
     state="warning"
     bind:show={showDelete}
     onSubmit={handleDelete}
     headerDivider={false}
     closable={!deleting}>
-    <svelte:fragment slot="title">Delete Database</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selected.length}</b>
         {selected.length > 1 ? 'databases' : 'database'}?

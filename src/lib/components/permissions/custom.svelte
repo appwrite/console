@@ -25,8 +25,7 @@
     $: disabled = !value || $groups.has(value);
 </script>
 
-<Modal bind:show on:close={reset} onSubmit={create}>
-    <svelte:fragment slot="title">Custom permission</svelte:fragment>
+<Modal title="Custom permission" bind:show on:close={reset} onSubmit={create}>
     <p class="text">
         Custom permissions allow you to grant access to specific users or teams using their ID and
         role.

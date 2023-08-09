@@ -36,8 +36,7 @@
     };
 </script>
 
-<Modal bind:show={showRebuild} onSubmit={handleSubmit}>
-    <svelte:fragment slot="title">Retry build</svelte:fragment>
+<Modal title="Retry build" bind:show={showRebuild} onSubmit={handleSubmit}>
     <p>Are you sure you want to retry building this deployment?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showRebuild = false)}>Cancel</Button>

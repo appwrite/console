@@ -45,8 +45,7 @@
     };
 </script>
 
-<Modal bind:show onSubmit={handleTransfer} headerDivider={false}>
-    <svelte:fragment slot="title">Transfer project</svelte:fragment>
+<Modal title="Transfer project" bind:show onSubmit={handleTransfer} headerDivider={false}>
     <p>Are you sure you want to transfer <b>{$project.name}</b> to <b>{teamName}</b>?</p>
     <p>
         Members who are not part of the destination organization must be invited to gain access to

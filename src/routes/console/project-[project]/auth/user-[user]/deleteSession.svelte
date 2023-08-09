@@ -32,13 +32,12 @@
 </script>
 
 <Modal
+    title="Delete Sessions"
     bind:show={showDelete}
     onSubmit={deleteSession}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="title">Delete Sessions</svelte:fragment>
-
     <p>Are you sure you want to delete this session?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

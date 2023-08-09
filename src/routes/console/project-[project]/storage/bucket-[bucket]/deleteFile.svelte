@@ -33,12 +33,12 @@
 </script>
 
 <Modal
+    title="Delete File"
     bind:show={showDelete}
     onSubmit={deleteFile}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="title">Delete File</svelte:fragment>
     <p data-private>Are you sure you want to delete <b>{file.name}</b>?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

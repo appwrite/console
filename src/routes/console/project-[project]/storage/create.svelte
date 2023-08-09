@@ -45,8 +45,7 @@
     }
 </script>
 
-<Modal {error} onSubmit={create} size="big" bind:show={showCreate}>
-    <svelte:fragment slot="title">Create Bucket</svelte:fragment>
+<Modal title="Create Bucket" {error} onSubmit={create} size="big" bind:show={showCreate}>
     <FormList>
         <InputText
             id="name"

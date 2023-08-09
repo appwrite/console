@@ -64,8 +64,7 @@
     }
 </script>
 
-<Modal bind:show onSubmit={handleSubmit} bind:error>
-    <svelte:fragment slot="title">Upload Variables</svelte:fragment>
+<Modal title="Upload Variables" bind:show onSubmit={handleSubmit} bind:error>
     <p>
         Upload multiple variables via a .env file that will be passed to your function at runtime.
     </p>

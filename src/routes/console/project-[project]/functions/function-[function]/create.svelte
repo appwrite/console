@@ -133,8 +133,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="title">Create Deployment</svelte:fragment>
+<Modal title="Create Deployment" {error} size="big" bind:show={showCreate} onSubmit={create}>
     <Tabs>
         <Tab on:click={() => (mode = Mode.CLI)} selected={mode === Mode.CLI} event="deploy_cli">
             CLI

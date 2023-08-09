@@ -34,12 +34,12 @@
 </script>
 
 <Modal
+    title="Delete Webhook"
     bind:show={showDelete}
     onSubmit={handleDelete}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="title">Delete Webhook</svelte:fragment>
     <p data-private>
         Are you sure you want to delete <b>{$webhook.name}</b> from '{$project.name}'?
     </p>

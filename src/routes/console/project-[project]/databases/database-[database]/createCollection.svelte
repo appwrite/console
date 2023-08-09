@@ -46,8 +46,7 @@
     };
 </script>
 
-<Modal size="big" bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="title">Create Collection</svelte:fragment>
+<Modal title="Create Collection" size="big" bind:show={showCreate} onSubmit={create}>
     <FormList>
         <InputText
             id="name"

@@ -33,12 +33,12 @@
 </script>
 
 <Modal
+    title="Delete User"
     bind:show={showDelete}
     onSubmit={deleteUser}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="title">Delete User</svelte:fragment>
     <p data-private>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

@@ -242,14 +242,13 @@
 </FloatingActionBar>
 
 <Modal
+    title="Delete Documents"
     icon="exclamation"
     state="warning"
     bind:show={showDelete}
     onSubmit={handleDelete}
     headerDivider={false}
     closable={!deleting}>
-    <svelte:fragment slot="title">Delete Documents</svelte:fragment>
-
     <div>
         <p class="text" data-private>
             Are you sure you want to delete <b>{selectedDb.length}</b>
