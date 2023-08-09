@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Alert, Modal } from '$lib/components';
+    import { Alert, Modal, Trim } from '$lib/components';
     import { Button, InputChoice } from '$lib/elements/forms';
     import {
         TableBody,
@@ -68,17 +68,12 @@
     headerDivider={false}>
     <svelte:fragment slot="header">Delete Document</svelte:fragment>
 
-    <p data-private>
-        Are you sure you want to delete <b
-            >the document from <span data-private>{$collection.name}</span></b
-        >?
-    </p>
-
     {#if relAttributes?.length}
-        <TableScroll>
+        <p class="text">This document contains the following relationships:</p>
+        <TableScroll noMargin>
             <TableHeader>
-                <TableCellHead width={50}>Relation</TableCellHead>
-                <TableCellHead width={50}>Setting</TableCellHead>
+                <TableCellHead width={70}>Relation</TableCellHead>
+                <TableCellHead width={70}>Setting</TableCellHead>
                 <TableCellHead width={200} />
             </TableHeader>
             <TableBody>
@@ -91,7 +86,7 @@
                                 {:else}
                                     <span class="icon-arrow-sm-right" />
                                 {/if}
-                                <span data-private>{attr.key}</span>
+                                <Trim>{attr.key}</Trim>
                             </span>
                         </TableCell>
                         <TableCellText title="Settings">
@@ -111,7 +106,14 @@
                 Delete document from <span data-private>{$collection.name}</span>
             </InputChoice>
         </div>
+    {:else}
+        <p data-private>
+            Are you sure you want to delete <b
+                >the document from <span data-private>{$collection.name}</span></b
+            >?
+        </p>
     {/if}
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit disabled={relAttributes?.length && !checked}>Delete</Button>

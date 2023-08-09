@@ -44,7 +44,7 @@
     afterNavigate(handle);
 
     async function handle() {
-        const promise = usage.load(projectId, period);
+        const promise = usage.load(period);
 
         if ($usage) {
             await promise;
@@ -53,7 +53,7 @@
 
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
-        usage.load(projectId, period);
+        usage.load(period);
     }
 </script>
 
@@ -67,7 +67,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(total($usage.storage) ?? 0)}
+                {@const storage = humanFileSize(total($usage.filesStorage) ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -91,14 +91,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.documents) ?? 0)}
+                                        {format(total($usage.documentsTotal) ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(total($usage.databases) ?? 0)}
+                                        Databases: {format(total($usage.databasesTotal) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +126,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(total($usage.buckets) ?? 0)}
+                                        Buckets: {format(total($usage.bucketsTotal) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +146,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.users) ?? 0)}
+                                        {format(total($usage.usersTotal) ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -167,7 +167,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.executions) ?? 0)}
+                                        {format(total($usage.executionsTotal) ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>

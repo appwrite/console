@@ -28,7 +28,7 @@
     import { log } from '$lib/stores/logs';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@appwrite.io/console';
+    import { Query, type Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
     import Create from './create.svelte';
@@ -36,8 +36,10 @@
     import Activate from './activate.svelte';
     import { browser } from '$app/environment';
     import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
+    import { onMount } from 'svelte';
 
     export let data: PageData;
 
@@ -48,6 +50,18 @@
     let showRebuild = false;
 
     let selectedDeployment: Models.Deployment = null;
+    let activeDeployment: Models.Deployment = null;
+
+    onMount(async () => {
+        activeDeployment = await getActiveDeployment();
+    });
+
+    async function getActiveDeployment() {
+        const list = await sdk.forProject.functions.listDeployments($page.params.function, [
+            Query.equal('$id', $func?.deployment)
+        ]);
+        return list?.deployments?.[0];
+    }
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
